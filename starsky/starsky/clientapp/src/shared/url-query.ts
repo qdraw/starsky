@@ -287,9 +287,10 @@ export class UrlQuery {
    * /api/thumbnail/zoom/{f}@{z}
    * @param f filehash
    * @param z zoomfactor
+   * @param id filePath
    */
-  public UrlThumbnailZoom = (f: string, z: number): string => {
-    return `${this.prefix}/api/thumbnail/zoom/${f}@${z}`;
+  public UrlThumbnailZoom = (f: string, id: string | undefined, z: number): string => {
+    return `${this.prefix}/api/thumbnail/zoom/${f}@${z}?filePath=${id}`;
   };
 
   public UrlThumbnailJsonApi = (fileHash: string): string => {

@@ -295,9 +295,10 @@ namespace starsky.Controllers
         [ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
         [ProducesResponseType(404)] // not found
         [ProducesResponseType(210)] // raw
-        public IActionResult ByZoomFactor(
+        public async Task<IActionResult> ByZoomFactor(
 	        string f,
-	        int z = 0)
+	        int z = 0, 
+	        string filePath = "")
         {
 	        // For serving jpeg files
 	        f = FilenamesHelper.GetFileNameWithoutExtension(f);
@@ -310,8 +311,15 @@ namespace starsky.Controllers
 	        }
 	        
 	        // Cached view of item
-	        var sourcePath = _query.GetSubPathByHash(f);
-	        if (sourcePath == null) return NotFound("not in index");
+	        var sourcePath = await _query.GetSubPathByHashAsync(f);
+	        if ( sourcePath == null )
+	        {
+		        if ( await _query.GetObjectByFilePathAsync(filePath) == null )
+		        {
+			        return NotFound("not in index");
+		        }
+		        sourcePath = filePath;
+	        }
 	        
 	        if (ExtensionRolesHelper.IsExtensionThumbnailSupported(sourcePath))
 	        {

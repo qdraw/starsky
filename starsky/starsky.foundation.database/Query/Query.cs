@@ -153,6 +153,24 @@ namespace starsky.foundation.database.Query
 		    return (string) cachedSubPath;
 		}
 
+		public async Task<string> GetSubPathByHashAsync(string fileHash)
+		{
+			// The CLI programs uses no cache
+			if( !IsCacheEnabled() ) return await QueryGetItemByHashAsync(fileHash);
+            
+			// Return values from IMemoryCache
+			var queryHashListCacheName = CachingDbName("hashList", fileHash);
+
+			// if result is not null return cached value
+			if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath) 
+			     && !string.IsNullOrEmpty((string)cachedSubPath)) return ( string ) cachedSubPath;
+
+			cachedSubPath = await QueryGetItemByHashAsync(fileHash);
+		    
+			_cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48,0,0));
+			return (string) cachedSubPath;
+		}
+
 		/// <summary>
 		/// Remove fileHash from hash-list-cache
 		/// </summary>
@@ -173,20 +191,43 @@ namespace starsky.foundation.database.Query
         // New added, directory hash now also hashes
         private string QueryGetItemByHash(string fileHash)
         {   
-	        try
+	        string LocalQueryGetItemByHash(ApplicationDbContext context)
 	        {
-		       return _context.FileIndex.TagWith("QueryGetItemByHash").FirstOrDefault(
-			        p => p.FileHash == fileHash 
-			             && p.IsDirectory != true
-		        )?.FilePath;
-	        }
-	        catch ( ObjectDisposedException )
-	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        return context.FileIndex.TagWith("QueryGetItemByHash").FirstOrDefault(
 			        p => p.FileHash == fileHash 
 			             && p.IsDirectory != true
 		        )?.FilePath;
+	        }
+	        
+	        try
+	        {
+		        return LocalQueryGetItemByHash(_context);
+	        }
+	        catch ( ObjectDisposedException )
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        return LocalQueryGetItemByHash(context);
+	        }
+        }
+        
+        private async Task<string> QueryGetItemByHashAsync(string fileHash)
+        {
+	        async Task<string> LocalQueryGetItemByHashAsync(ApplicationDbContext context)
+	        {
+		        return (await context.FileIndex.TagWith("QueryGetItemByHashAsync").FirstOrDefaultAsync(
+			        p => p.FileHash == fileHash 
+			             && p.IsDirectory != true
+		        ))?.FilePath;
+	        }
+	        
+	        try
+	        {
+		        return await LocalQueryGetItemByHashAsync(_context);
+	        }
+	        catch ( ObjectDisposedException )
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        return await LocalQueryGetItemByHashAsync(context);
 	        }
         }
         
