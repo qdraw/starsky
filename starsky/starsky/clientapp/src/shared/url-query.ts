@@ -289,7 +289,11 @@ export class UrlQuery {
    * @param z zoomfactor
    * @param id filePath
    */
-  public UrlThumbnailZoom = (f: string, id: string | undefined, z: number): string => {
+  public UrlThumbnailZoom = (
+    f: string,
+    id: string | undefined,
+    z: number
+  ): string => {
     return `${this.prefix}/api/thumbnail/zoom/${f}@${z}?filePath=${id}`;
   };
 
