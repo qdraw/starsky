@@ -176,6 +176,7 @@ describe("FileHashImage", () => {
         isError={false}
         fileHash="hash"
         orientation={Orientation.Horizontal}
+        id={"fallbackPath"}
       />
     );
 
@@ -187,7 +188,8 @@ describe("FileHashImage", () => {
     });
 
     expect(image.src).toBe(
-      "http://localhost" + new UrlQuery().UrlThumbnailZoom("hash", 1)
+      "http://localhost" +
+        new UrlQuery().UrlThumbnailZoom("hash", "fallbackPath", 1)
     );
   });
 

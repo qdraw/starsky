@@ -112,6 +112,7 @@ namespace starsky.foundation.database.Interfaces
         bool RemoveCacheParentItem(string directoryName);
 
         string GetSubPathByHash(string fileHash);
+        Task<string> GetSubPathByHashAsync(string fileHash);
 
         Task<List<FileIndexItem>> GetObjectsByFileHashAsync(
 	        List<string> fileHashesList);

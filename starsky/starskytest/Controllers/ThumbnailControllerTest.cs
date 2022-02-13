@@ -306,22 +306,22 @@ namespace starskytest.Controllers
 		}
 				
 		[TestMethod]
-		public void ByZoomFactor_NonExistingFile_API_Test()
+		public async Task ByZoomFactor_NonExistingFile_API_Test()
 		{
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var actionResult = controller.ByZoomFactor("404filehash", 1) as NotFoundObjectResult;
+			var actionResult = await controller.ByZoomFactor("404filehash", 1) as NotFoundObjectResult;
 			var thumbnailAnswer = actionResult.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
 		}
 
 		[TestMethod]
-		public void ByZoomFactor_InputBadRequest()
+		public async Task ByZoomFactor_InputBadRequest()
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
 			var controller = new ThumbnailController(_query,storageSelector);;
-			var actionResult = controller.ByZoomFactor("../") as BadRequestResult;
+			var actionResult = await controller.ByZoomFactor("../") as BadRequestResult;
 			Assert.AreEqual(400,actionResult.StatusCode);
 		}
 		
@@ -352,7 +352,27 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = controller.ByZoomFactor(createAnImage.FileHash, 1) as FileStreamResult;
+			var actionResult = await controller.ByZoomFactor(createAnImage.FileHash, 1) as FileStreamResult;
+			var thumbnailAnswer = actionResult.ContentType;
+			
+			controller.Response.Headers.TryGetValue("x-filename", out var value ); 
+			Assert.AreEqual("test.jpg", value.ToString());
+			
+			Assert.AreEqual("image/jpeg",thumbnailAnswer);
+			
+			await actionResult.FileStream.DisposeAsync(); // for windows
+		}
+		
+		[TestMethod]
+		public async Task ByZoomFactor_ShowOriginalImage_NoFileHash_API_Test()
+		{
+			InsertSearchData();
+			var storage = ArrangeStorage();
+
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var actionResult = await controller.ByZoomFactor("____", 1, "/test.jpg") as FileStreamResult;
 			var thumbnailAnswer = actionResult.ContentType;
 			
 			controller.Response.Headers.TryGetValue("x-filename", out var value ); 

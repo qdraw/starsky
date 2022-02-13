@@ -210,6 +210,11 @@ namespace starskytest.FakeMocks
 			return _fakeContext.FirstOrDefault(p => p.FileHash == fileHash)?.FilePath;
 		}
 
+		public Task<string> GetSubPathByHashAsync(string fileHash)
+		{
+			return Task.FromResult(GetSubPathByHash(fileHash));
+		}
+
 		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
 		{
 			var result = _fakeContext.Where(p =>

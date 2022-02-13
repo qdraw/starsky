@@ -114,6 +114,11 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
+		public Task<string> GetSubPathByHashAsync(string fileHash)
+		{
+			return Task.FromResult(GetSubPathByHash(fileHash));
+		}
+
 		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
 		{
 			throw _exception;

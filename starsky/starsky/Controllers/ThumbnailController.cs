@@ -284,6 +284,7 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="f">one single fileHash (NOT path)</param>
         /// <param name="z">zoom factor? </param>
+        /// <param name="filePath">fallback filePath</param>
         /// <returns>Image</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
@@ -295,9 +296,10 @@ namespace starsky.Controllers
         [ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
         [ProducesResponseType(404)] // not found
         [ProducesResponseType(210)] // raw
-        public IActionResult ByZoomFactor(
+        public async Task<IActionResult> ByZoomFactor(
 	        string f,
-	        int z = 0)
+	        int z = 0, 
+	        string filePath = "")
         {
 	        // For serving jpeg files
 	        f = FilenamesHelper.GetFileNameWithoutExtension(f);
@@ -310,8 +312,15 @@ namespace starsky.Controllers
 	        }
 	        
 	        // Cached view of item
-	        var sourcePath = _query.GetSubPathByHash(f);
-	        if (sourcePath == null) return NotFound("not in index");
+	        var sourcePath = await _query.GetSubPathByHashAsync(f);
+	        if ( sourcePath == null )
+	        {
+		        if ( await _query.GetObjectByFilePathAsync(filePath) == null )
+		        {
+			        return NotFound("not in index");
+		        }
+		        sourcePath = filePath;
+	        }
 	        
 	        if (ExtensionRolesHelper.IsExtensionThumbnailSupported(sourcePath))
 	        {

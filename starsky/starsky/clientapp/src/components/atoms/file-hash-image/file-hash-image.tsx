@@ -61,6 +61,11 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     );
   }, [props.fileHash]);
 
+  function onWheelCallback(z: number) {
+    setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, props.id, 1));
+    if (props.onWheelCallback) props.onWheelCallback(z);
+  }
+
   return (
     <PanAndZoomImage
       id={props.id}
@@ -68,10 +73,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
       onErrorCallback={props.onErrorCallback}
       setIsLoading={props.setIsLoading}
       translateRotation={translateRotation}
-      onWheelCallback={(z) => {
-        setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, 1));
-        if (props.onWheelCallback) props.onWheelCallback(z);
-      }}
+      onWheelCallback={onWheelCallback}
       onResetCallback={() => {
         setImageUrl(
           new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
