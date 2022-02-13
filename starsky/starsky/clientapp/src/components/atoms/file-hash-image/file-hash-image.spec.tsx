@@ -176,6 +176,7 @@ describe("FileHashImage", () => {
         isError={false}
         fileHash="hash"
         orientation={Orientation.Horizontal}
+        id={"fallbackPath"}
       />
     );
 
