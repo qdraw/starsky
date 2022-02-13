@@ -1,6 +1,10 @@
 name: ClientApp React Windows CI
 # see also Linux CI
 
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ master ]
