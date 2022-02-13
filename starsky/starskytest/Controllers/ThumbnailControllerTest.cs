@@ -364,6 +364,26 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task ByZoomFactor_ShowOriginalImage_NoFileHash_API_Test()
+		{
+			InsertSearchData();
+			var storage = ArrangeStorage();
+
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var actionResult = await controller.ByZoomFactor("____", 1, "/test.jpg") as FileStreamResult;
+			var thumbnailAnswer = actionResult.ContentType;
+			
+			controller.Response.Headers.TryGetValue("x-filename", out var value ); 
+			Assert.AreEqual("test.jpg", value.ToString());
+			
+			Assert.AreEqual("image/jpeg",thumbnailAnswer);
+			
+			await actionResult.FileStream.DisposeAsync(); // for windows
+		}
+		
+		[TestMethod]
 		public void ThumbnailSmallOrTinyMeta_InputBadRequest()
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
