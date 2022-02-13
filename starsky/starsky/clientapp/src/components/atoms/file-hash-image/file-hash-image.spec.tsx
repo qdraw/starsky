@@ -187,7 +187,8 @@ describe("FileHashImage", () => {
     });
 
     expect(image.src).toBe(
-      "http://localhost" + new UrlQuery().UrlThumbnailZoom("hash", "fallbackPath", 1)
+      "http://localhost" +
+        new UrlQuery().UrlThumbnailZoom("hash", "fallbackPath", 1)
     );
   });
 
@@ -270,7 +271,7 @@ describe("FileHashImage", () => {
     const img = component.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
   });
 
@@ -314,7 +315,7 @@ describe("FileHashImage", () => {
     const img = component.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
 
     expect(onResetCallbackSpy).toBeCalled();
