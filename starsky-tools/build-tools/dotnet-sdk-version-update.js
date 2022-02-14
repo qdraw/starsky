@@ -9,7 +9,7 @@ const { getFiles } = require("./lib/get-files-directory");
 const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
 
-var newRunTimeVersion = "3.1.x";
+var newRunTimeVersion = "6.0.x";
 
 const aspNetCorePackages = [
 	"Microsoft.AspNetCore.",
