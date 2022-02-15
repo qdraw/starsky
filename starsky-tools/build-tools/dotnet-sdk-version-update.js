@@ -10,6 +10,8 @@ const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
 
 var newRunTimeVersion = "6.0.x";
+var targetFrameworkMoniker = "net6.0";
+// https://docs.microsoft.com/en-us/dotnet/standard/frameworks
 
 const aspNetCorePackages = [
 	"Microsoft.AspNetCore.",
@@ -369,6 +371,23 @@ async function updateSingleNugetPackageVersion(filePath) {
 								.reverse();
 
 							const newVersion = sortfindedVersions[0].version;
+
+
+							if (sortfindedVersions[0]["@id"]) {
+								const versionSpecificData = await httpsGet(sortfindedVersions[0]["@id"]);
+								const catalogEntryData = await httpsGet(versionSpecificData.catalogEntry);
+
+
+								let targetFrameworkNames = [];
+								catalogEntryData.dependencyGroups.forEach(arr => {
+									if (!arr.targetFramework.startsWith(".NETFramework")) {
+										targetFrameworkNames.push(arr.targetFramework)										
+									}
+								});
+								console.log(targetFrameworkNames);
+									
+							}
+
 
 							var versionXMLRegex = new RegExp(
 								'(Version=")([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(" )',
