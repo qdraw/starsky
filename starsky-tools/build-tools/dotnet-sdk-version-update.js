@@ -2,7 +2,7 @@
  * Update the project versions to have the same version
  */
 
-const { join } = require("path");
+const { join, basename, dirname } = require("path");
 const { readFile, writeFile } = require("fs").promises;
 
 const { getFiles } = require("./lib/get-files-directory");
@@ -10,7 +10,6 @@ const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
 
 var newRunTimeVersion = "6.0.x";
-var targetFrameworkMoniker = "net6.0";
 // https://docs.microsoft.com/en-us/dotnet/standard/frameworks
 
 const aspNetCorePackages = [
@@ -256,18 +255,17 @@ async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 			let buffer = await readFile(filePath);
 			let fileContent = buffer.toString("utf8");
 
-			// <TargetFramework>netstandard
+			// <TargetFramework>net
 			var targetFrameworkNetStandard = new RegExp(
-				"(<TargetFramework>netstandard)",
+				"(<TargetFramework>net)",
 				"g"
 			);
 			var targetFrameworkNetStandardMatch = fileContent.match(
 				targetFrameworkNetStandard
 			);
 
-			// Should skip netstardard libs due the fact that those dont have RuntimeFrameworkVersion included
-
-			if (targetFrameworkNetStandardMatch == null) {
+			// Should check if file contains TargetFramework
+			if (targetFrameworkNetStandardMatch != null) {
 				// unescaped: (<RuntimeFrameworkVersion>)([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?(<\/RuntimeFrameworkVersion>)
 				var runtimeFrameworkVersionXMLRegex = new RegExp(
 					"(<RuntimeFrameworkVersion>)([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(</RuntimeFrameworkVersion>)",
@@ -312,6 +310,8 @@ async function updateSingleNugetPackageVersion(filePath) {
 			)
 		)
 	) {
+		const usedTargetFrameworkMonikers = [];
+
 		let buffer = await readFile(filePath);
 		let fileContent = buffer.toString("utf8");
 
@@ -326,7 +326,6 @@ async function updateSingleNugetPackageVersion(filePath) {
 		);
 
 		let toUpdatePackages = [];
-
 		for (const result of packageReferenceMatches) {
 			var name = result[0]
 				.replace('<PackageReference Include="', "")
@@ -344,6 +343,28 @@ async function updateSingleNugetPackageVersion(filePath) {
 		}
 		// e.
 
+		// Local ref projects
+		var localProjectReferenceRegex = new RegExp(
+			'<ProjectReference Include=".+" />',
+			"ig"
+		);
+
+		var localProjectReferenceMatches = fileContent.matchAll(
+			localProjectReferenceRegex
+		);
+
+		let localProjectPackagesPaths = [];
+		const currentDirName = dirname(filePath)
+
+		for (const result of localProjectReferenceMatches) {
+			let name = result[0]
+				.replace('<ProjectReference Include="', "")
+				.replace(/\" \/>$/, "")
+				.replace(/\\/ig,"/")
+				// .replace(/^\.\.\//ig,"");
+				localProjectPackagesPaths.push(join(currentDirName,name));
+		} // e.
+
 		if (toUpdatePackages.length >= 1) {
 			var searchVersion = newRunTimeVersion.replace(".x", "");
 
@@ -360,6 +381,7 @@ async function updateSingleNugetPackageVersion(filePath) {
 					!!nugetResult.data[0]
 				) {
 					const firstResult = { ...nugetResult.data[0] };
+
 					if (firstResult.id === toUpdatePackageName) {
 						var findedVersions = firstResult.versions.filter((x) =>
 							x.version.startsWith(searchVersion)
@@ -372,30 +394,27 @@ async function updateSingleNugetPackageVersion(filePath) {
 
 							const newVersion = sortfindedVersions[0].version;
 
-
+							// NetMoniker
 							if (sortfindedVersions[0]["@id"]) {
 								const versionSpecificData = await httpsGet(sortfindedVersions[0]["@id"]);
 								const catalogEntryData = await httpsGet(versionSpecificData.catalogEntry);
 
-
-								let targetFrameworkNames = [];
 								catalogEntryData.dependencyGroups.forEach(arr => {
 									if (!arr.targetFramework.startsWith(".NETFramework")) {
-										targetFrameworkNames.push(arr.targetFramework)										
+										const parsedName = arr.targetFramework.replace(/^\./ig,"").toLowerCase();
+										if (!usedTargetFrameworkMonikers.includes(parsedName)) {
+											usedTargetFrameworkMonikers.push(parsedName)										
+										}
 									}
-								});
-								console.log(targetFrameworkNames);
-									
-							}
-
+								});								
+							} //e.
 
 							var versionXMLRegex = new RegExp(
 								'(Version=")([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(" )',
 								"g"
 							);
 
-							updatedPackageReference =
-								toUpdatePackageReference.replace(
+							updatedPackageReference = toUpdatePackageReference.replace(
 									versionXMLRegex,
 									`Version="${newVersion}" `
 								);
@@ -421,6 +440,51 @@ async function updateSingleNugetPackageVersion(filePath) {
 					);
 				}
 			}
+
+
+			// read deps to scan if there other net monikers are used
+			for (const projectPackagePath of localProjectPackagesPaths) {
+				let buffer = await readFile(projectPackagePath);
+				let fileContent = buffer.toString("utf8");
+
+				// of dep
+				var targetFrameworkRegex = new RegExp(
+					"<TargetFramework>.+<\/TargetFramework>",
+					"g"
+				);
+				var targetFrameworkMatches = fileContent.match(
+					targetFrameworkRegex
+				);
+
+				if (targetFrameworkMatches.length >= 1) {
+
+					const targetFrameworkMatch = targetFrameworkMatches[0];
+
+					const netMon = targetFrameworkMatch.replace(/<TargetFramework>/,"").replace(/<\/TargetFramework>/,"")
+
+					if (!usedTargetFrameworkMonikers.includes(netMon)) {
+						usedTargetFrameworkMonikers.push(netMon)										
+					}
+				}
+			} // e. read deps
+
+			if (usedTargetFrameworkMonikers.find(p => p.startsWith("net"))) {
+				const lastNet = usedTargetFrameworkMonikers.sort().reverse()[0];
+				console.log(lastNet);
+
+				var targetFrameworkRegex = new RegExp(
+					"<TargetFramework>.+<\/TargetFramework>",
+					"g"
+				);
+
+				fileContent = fileContent.replace(
+					targetFrameworkRegex,
+					`<TargetFramework>${lastNet}<\/TargetFramework>`
+				);
+
+				await writeFile(filePath, fileContent);
+			}
+
 		}
 	}
 }
