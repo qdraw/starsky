@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>starsky.foundation.realtime</RootNamespace>
         <!-- SonarQube needs this -->
         <ProjectGuid>{b90175e1-ba3f-4a18-a0ff-2cde71e8151e}</ProjectGuid>
@@ -10,8 +10,8 @@
     
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.22" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.22" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{a0cce905-ae43-4d1b-a97a-2bcd2c010ed1}</ProjectGuid>
         <RuntimeFrameworkVersion>3.1.22</RuntimeFrameworkVersion>

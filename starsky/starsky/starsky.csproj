@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <RuntimeFrameworkVersion>3.1.22</RuntimeFrameworkVersion>
         <Description>An attempt to create a database driven photo library</Description>
         <!-- use node script to update version -->
@@ -37,7 +37,7 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.22" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.2" />
         <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
