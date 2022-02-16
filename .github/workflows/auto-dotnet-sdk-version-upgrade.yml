@@ -49,4 +49,10 @@ jobs:
           dependencies
         draft: false
 
-  
+    - name: Merge current branch into -> auto_dotnet_sdk_version_upgrade
+      uses: devmasx/merge-branch@master
+      if: github.event_name == 'workflow_dispatch'
+      with:
+        type: now
+        target_branch: feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
+        github_token: ${{ github.token }}
