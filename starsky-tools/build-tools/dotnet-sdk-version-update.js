@@ -44,13 +44,15 @@ console.log(`\nUpgrade version in csproj-files to ${newRunTimeVersion}\n`);
 getLatestDotnetRelease().then((newTargetVersion) => {
 	getFiles(join(__dirname, prefixPath)) // add "starsky" back when netframework is removed
 		.then(async (filePathList) => {
+			const sortedFilterPathList = sortFilterOnExeCSproj(filePathList);
+
 			if (newTargetVersion) {
 				await updateRuntimeFrameworkVersion(
-					filePathList,
+					sortedFilterPathList,
 					newTargetVersion
 				);
 				await updateNugetPackageVersions(
-					filePathList,
+					sortedFilterPathList,
 					newRunTimeVersion
 				);
 				// await is not working right here
@@ -494,4 +496,44 @@ async function updateSingleNugetPackageVersion(filePath) {
 		}
 
 	}
+}
+
+
+function sortFilterOnExeCSproj(filePathList) {
+	const exeFilePathList = [];
+	const libsFilePathList = [];
+
+	for (const filePath of filePathList) {
+
+		if (!filePath.match(
+			new RegExp(
+				"[a-z]?.csproj$",
+				"i"
+			)
+		)) {
+			continue;	
+		}
+		
+
+		let buffer = readFileSync(filePath);
+		let fileContent = buffer.toString("utf8");
+
+		// <OutputType>Exe<\/OutputType>|(Microsoft\.NET\.Sdk\.Web)|(Microsoft\.NET\.Test\.Sdk)
+		var isExeRegex = new RegExp(
+			'<OutputType>Exe<\/OutputType>|(Microsoft\.NET\.Sdk\.Web)|(Microsoft\.NET\.Test\.Sdk)',
+			"ig"
+		);
+
+		var isExeMatches = fileContent.match(
+			isExeRegex
+		);
+
+		if (!isExeMatches) {
+			libsFilePathList.push(filePath);
+			continue;
+		}
+		exeFilePathList.push(filePath);
+		
+	}
+	return [...libsFilePathList,...exeFilePathList];
 }
