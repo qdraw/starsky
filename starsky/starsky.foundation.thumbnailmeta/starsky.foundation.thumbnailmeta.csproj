@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{88e70822-ae50-4fc5-9384-a8726b70849a}</ProjectGuid>
         <DebugType>Full</DebugType>

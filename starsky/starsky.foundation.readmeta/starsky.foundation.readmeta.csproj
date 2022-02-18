@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{82ba730f-0aca-470d-ad0e-af046d422f8c}</ProjectGuid>
         <DebugType>Full</DebugType>
@@ -9,8 +9,8 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.22" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.22" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
         <PackageReference Include="XmpCore" Version="6.1.10.1" />
         <PackageReference Include="MetadataExtractor" Version="2.7.1" />
     </ItemGroup>
