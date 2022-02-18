@@ -1,6 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace starsky.foundation.database.Extensions
 {

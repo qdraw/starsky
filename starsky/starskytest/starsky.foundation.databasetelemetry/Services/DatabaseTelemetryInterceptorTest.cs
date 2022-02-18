@@ -4,7 +4,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using starsky.foundation.databasetelemetry.Services;
 
 namespace starskytest.starsky.foundation.databasetelemetry.Services

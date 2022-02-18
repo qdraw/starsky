@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -175,7 +175,7 @@ namespace starsky.foundation.database.Query
 	        {
 		        return LocalQuery(_context);
 	        }
-	        catch ( MySql.Data.MySqlClient.MySqlProtocolException )
+	        catch ( MySqlProtocolException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        return LocalQuery(context);

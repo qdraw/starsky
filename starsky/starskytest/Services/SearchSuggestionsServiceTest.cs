@@ -142,7 +142,7 @@ namespace starskytest.Services
 				.BuildServiceProvider();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseMySql("Server=test;database=test;uid=test;pwd=test;");
+			builder.UseMySql("Server=test;database=test;uid=test;pwd=test;", new MariaDbServerVersion("1"));
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
 			var fakeLogger = new FakeIWebLogger();

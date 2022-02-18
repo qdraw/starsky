@@ -34,11 +34,12 @@ namespace starsky.foundation.database.Helpers
 			switch ( _appSettings.DatabaseType )
 			{
 				case ( AppSettings.DatabaseTypeList.Mysql ):
+					
 					var mysql = new DbContextOptionsBuilder<ApplicationDbContext>()
-						.UseMySql(_appSettings.DatabaseConnection, mySqlOptions =>
+						.UseMySql(_appSettings.DatabaseConnection, 
+							ServerVersion.AutoDetect(_appSettings.DatabaseConnection), mySqlOptions =>
 						{
-							mySqlOptions.CharSet(CharSet.Utf8Mb4);
-							mySqlOptions.CharSetBehavior(CharSetBehavior.AppendToAllColumns);
+							// mySqlOptions.CharSet(CharSet.Utf8Mb4);
 							mySqlOptions.EnableRetryOnFailure(2);
 							if ( !string.IsNullOrWhiteSpace(foundationDatabaseName) )
 							{

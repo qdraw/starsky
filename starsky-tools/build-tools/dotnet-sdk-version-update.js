@@ -2,6 +2,8 @@
  * Update the project versions to have the same version
  */
 
+// https://mcr.microsoft.com/v2/dotnet/runtime/tags/list
+
 const { join, basename, dirname } = require("path");
 const { readFile, writeFile } = require("fs").promises;
 const { readFileSync } = require("fs");
@@ -57,45 +59,6 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 					sortedFilterPathList,
 					newRunTimeVersion
 				);
-
-				// const frameworkMonikerByPath = {
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.export/starsky.feature.export.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.geolookup/starsky.feature.geolookup.csproj': [ 'netstandard2.0', 'netstandard2.1' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.health/starsky.feature.health.csproj': [ 'net6.0', 'netstandard2.0' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.import/starsky.feature.import.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.metaupdate/starsky.feature.metaupdate.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.rename/starsky.feature.rename.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.webftppublish/starsky.feature.webftppublish.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.webhtmlpublish/starsky.feature.webhtmlpublish.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.accountmanagement/starsky.foundation.accountmanagement.csproj': [ 'net6.0', 'netstandard2.0' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.consoletelemetry/starsky.foundation.consoletelemetry.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.database/starsky.foundation.database.csproj': [ 'netstandard2.0', 'net6.0' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.databasetelemetry/starsky.foundation.databasetelemetry.csproj': [ 'net6.0' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.http/starsky.foundation.http.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.injection/starsky.foundation.injection.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.platform/starsky.foundation.platform.csproj': [ 'netstandard2.0', 'netstandard2.1', 'net6.0' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.readmeta/starsky.foundation.readmeta.csproj': [ 'netstandard2.0' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.realtime/starsky.foundation.realtime.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.storage/starsky.foundation.storage.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.sync/starsky.foundation.sync.csproj': [ 'netstandard2.0', 'netstandard2.1' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.thumbnailgeneration/starsky.foundation.thumbnailgeneration.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.thumbnailmeta/starsky.foundation.thumbnailmeta.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.webtelemetry/starsky.foundation.webtelemetry.csproj': [ 'netcoreapp3.1', 'net6.0', 'netstandard2.0' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.worker/starsky.foundation.worker.csproj': [ 'netstandard2.0', 'netstandard2.1' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky.foundation.writemeta/starsky.foundation.writemeta.csproj': [ 'netstandard2.0', 'netstandard2.1' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starskycore/starskycore.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starsky/starsky.csproj': [ 'net6.0' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starskyadmincli/starskyadmincli.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starskygeocli/starskygeocli.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starskyimportercli/starskyimportercli.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starskysynchronizecli/starskysynchronizecli.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starskytest/starskytest.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
-				// 	'/Users/dion/data/git/starsky/starsky/starskythumbnailcli/starskythumbnailcli.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starskythumbnailmetacli/starskythumbnailmetacli.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starskywebftpcli/starskywebftpcli.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky/starskywebhtmlcli/starskywebhtmlcli.csproj': [],
-				// 	'/Users/dion/data/git/starsky/starsky-tools/socket/ChannelWSClient.csproj': []
-				//   }
 
 				const sortedFrameworkMonikerByPath = await sortNetFrameworkMoniker(frameworkMonikerByPath);
 				await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
@@ -437,6 +400,7 @@ async function updateNugetPackageVersions(filePathList) {
 
 async function updateSingleNugetPackageVersion(filePath) {
 	let usedTargetFrameworkMonikers = [];
+	// '///starsky/starsky.foundation.consoletelemetry/starsky.foundation.consoletelemetry.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
 
 	if (
 		filePath.match(
