@@ -369,6 +369,8 @@ async function updateNetFrameworkMoniker(frameworkMonikerByPath) {
 				`✓ ${filePath} - .NET is updated to ${lastNet}`
 			);
 
+			usedTargetFrameworkMonikers[filePath].push(lastNet)
+
 		}
 	}
 }
