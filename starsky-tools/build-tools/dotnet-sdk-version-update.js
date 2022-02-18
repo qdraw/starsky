@@ -4,7 +4,7 @@
 
 const { join, basename, dirname } = require("path");
 const { readFile, writeFile } = require("fs").promises;
-
+const { readFileSync } = require("fs");
 const { getFiles } = require("./lib/get-files-directory");
 const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
@@ -51,11 +51,15 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 					sortedFilterPathList,
 					newTargetVersion
 				);
-				await updateNugetPackageVersions(
+				const frameworkMonikerByPath = await updateNugetPackageVersions(
 					sortedFilterPathList,
 					newRunTimeVersion
 				);
-				// await is not working right here
+
+				console.log(frameworkMonikerByPath);
+
+				await updateNetFrameworkMoniker(sortedFilterPathList, frameworkMonikerByPath);
+				console.log('---anfksdnflkdsdfsdffdsfsdsfdsdf');
 			}
 		})
 		.catch((err) => {
@@ -244,8 +248,91 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 	});
 }
 
+async function updateNetFrameworkMoniker(sortedFilterPathList, frameworkMonikerByPath) {
+
+	for (const filePath of frameworkMonikerByPath) {
+
+		let buffer = await readFile(filePath);
+		let fileContent = buffer.toString("utf8");
+
+		// Local ref projects
+		var localProjectReferenceRegex = new RegExp(
+			'<ProjectReference Include=".+" />',
+			"ig"
+		);
+
+		var localProjectReferenceMatches = fileContent.matchAll(
+			localProjectReferenceRegex
+		);
+
+		let localProjectPackagesPaths = [];
+		const currentDirName = dirname(filePath)
+
+		for (const result of localProjectReferenceMatches) {
+			let name = result[0]
+				.replace('<ProjectReference Include="', "")
+				.replace(/\" \/>$/, "")
+				.replace(/\\/ig,"/");
+			localProjectPackagesPaths.push(join(currentDirName,name));
+		} // e.
+
+		// read deps to scan if there other net monikers are used
+		for (const projectPackagePath of localProjectPackagesPaths) {
+			let buffer = await readFile(projectPackagePath);
+			let fileContent = buffer.toString("utf8");
+
+			// of dep
+			var targetFrameworkRegex = new RegExp(
+				"<TargetFramework>.+<\/TargetFramework>",
+				"ig"
+			);
+			var targetFrameworkMatches = fileContent.match(
+				targetFrameworkRegex
+			);
+
+			if (targetFrameworkMatches && targetFrameworkMatches.length >= 1) {
+
+				const targetFrameworkMatch = targetFrameworkMatches[0];
+
+				const netMon = targetFrameworkMatch.replace(/<TargetFramework>/,"").replace(/<\/TargetFramework>/,"")
+
+				if (!usedTargetFrameworkMonikers.includes(netMon)) {
+					usedTargetFrameworkMonikers.push(netMon)										
+				}
+			}
+			else {
+				console.log('[x] missing TargetFramework --> ' + projectPackagePath + " " + targetFrameworkMatches);
+				console.log(targetFrameworkMatches);
+			}
+		} // e. read deps
+
+		// reverse sort
+		usedTargetFrameworkMonikers = usedTargetFrameworkMonikers.sort();
+
+		if (usedTargetFrameworkMonikers.find(p => p.startsWith("net"))) {
+			const lastNet = usedTargetFrameworkMonikers[0];
+
+			var targetFrameworkRegex = new RegExp(
+				"<TargetFramework>.+<\/TargetFramework>",
+				"g"
+			);
+
+			fileContent = fileContent.replace(
+				targetFrameworkRegex,
+				`<TargetFramework>${lastNet}<\/TargetFramework>`
+			);
+
+			await writeFile(filePath, fileContent);
+			console.log(
+				`✓ ${filePath} - .NET is updated to ${lastNet}`
+			);
+
+		}
+	}
+}
+
 async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
-	await filePathList.forEach(async (filePath) => {
+	for (const filePath of filePathList) {
 		if (
 			filePath.match(
 				new RegExp(
@@ -294,16 +381,20 @@ async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 				}
 			}
 		}
-	});
+	}
 }
 
 async function updateNugetPackageVersions(filePathList) {
-	filePathList.forEach(async (filePath) => {
-		await updateSingleNugetPackageVersion(filePath);
-	});
+	const frameworkMonikerByPath = {}
+	for (const filePath of filePathList) {
+		frameworkMonikerByPath[filePath] = await updateSingleNugetPackageVersion(filePath);
+	}
+	return frameworkMonikerByPath;
 }
 
 async function updateSingleNugetPackageVersion(filePath) {
+	let usedTargetFrameworkMonikers = [];
+
 	if (
 		filePath.match(
 			new RegExp(
@@ -312,8 +403,6 @@ async function updateSingleNugetPackageVersion(filePath) {
 			)
 		)
 	) {
-		let usedTargetFrameworkMonikers = [];
-
 		let buffer = await readFile(filePath);
 		let fileContent = buffer.toString("utf8");
 
@@ -422,80 +511,8 @@ async function updateSingleNugetPackageVersion(filePath) {
 			}
 		} // e. toupdate
 
-
-
-		// Local ref projects
-		var localProjectReferenceRegex = new RegExp(
-			'<ProjectReference Include=".+" />',
-			"ig"
-		);
-
-		var localProjectReferenceMatches = fileContent.matchAll(
-			localProjectReferenceRegex
-		);
-
-		let localProjectPackagesPaths = [];
-		const currentDirName = dirname(filePath)
-
-		for (const result of localProjectReferenceMatches) {
-			let name = result[0]
-				.replace('<ProjectReference Include="', "")
-				.replace(/\" \/>$/, "")
-				.replace(/\\/ig,"/")
-				// .replace(/^\.\.\//ig,"");
-				localProjectPackagesPaths.push(join(currentDirName,name));
-		} // e.
-
-		// read deps to scan if there other net monikers are used
-		for (const projectPackagePath of localProjectPackagesPaths) {
-			let buffer = await readFile(projectPackagePath);
-			let fileContent = buffer.toString("utf8");
-
-			// of dep
-			var targetFrameworkRegex = new RegExp(
-				"<TargetFramework>.+<\/TargetFramework>",
-				"g"
-			);
-			var targetFrameworkMatches = fileContent.match(
-				targetFrameworkRegex
-			);
-
-			if (targetFrameworkMatches.length >= 1) {
-
-				const targetFrameworkMatch = targetFrameworkMatches[0];
-
-				const netMon = targetFrameworkMatch.replace(/<TargetFramework>/,"").replace(/<\/TargetFramework>/,"")
-
-				if (!usedTargetFrameworkMonikers.includes(netMon)) {
-					usedTargetFrameworkMonikers.push(netMon)										
-				}
-			}
-		} // e. read deps
-
-		// reverse sort
-		usedTargetFrameworkMonikers = usedTargetFrameworkMonikers.sort();
-
-		if (usedTargetFrameworkMonikers.find(p => p.startsWith("net"))) {
-			const lastNet = usedTargetFrameworkMonikers[0];
-
-			var targetFrameworkRegex = new RegExp(
-				"<TargetFramework>.+<\/TargetFramework>",
-				"g"
-			);
-
-			fileContent = fileContent.replace(
-				targetFrameworkRegex,
-				`<TargetFramework>${lastNet}<\/TargetFramework>`
-			);
-
-			await writeFile(filePath, fileContent);
-			console.log(
-				`✓ ${filePath} - .NET is updated to ${lastNet}`
-			);
-
-		}
-
 	}
+	return usedTargetFrameworkMonikers;
 }
 
 
