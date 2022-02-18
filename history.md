@@ -41,7 +41,7 @@ node starsky-tools/build-tools/app-version-update.js
 - package telementry
 - change mirror locations
 
-# version 0.5.0-beta.2 _(Unreleased)_ - 2022-02-??
+# version 0.5.0-beta.3 _(Unreleased)_ - 2022-02-??
 - WIP .NET 6 upgrade
 
 # version 0.5.0-beta.2 - 2022-02-18
