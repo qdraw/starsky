@@ -58,7 +58,7 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 					newRunTimeVersion
 				);
 
-				// const frameworkMonikerByPath1 = {
+				// const frameworkMonikerByPath = {
 				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.export/starsky.feature.export.csproj': [],
 				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.geolookup/starsky.feature.geolookup.csproj': [ 'netstandard2.0', 'netstandard2.1' ],
 				// 	'/Users/dion/data/git/starsky/starsky/starsky.feature.health/starsky.feature.health.csproj': [ 'net6.0', 'netstandard2.0' ],
@@ -97,7 +97,9 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 				// 	'/Users/dion/data/git/starsky/starsky-tools/socket/ChannelWSClient.csproj': []
 				//   }
 
-				await updateNetFrameworkMoniker(frameworkMonikerByPath);
+				const dependFilePathCounter = await sortNetFrameworkMoniker(frameworkMonikerByPath);
+				// await updateNetFrameworkMoniker(dependFilePathCounter);
+
 				console.log('---done');
 			}
 		})
@@ -287,9 +289,87 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 	});
 }
 
-async function updateNetFrameworkMoniker(frameworkMonikerByPath) {
+async function sortNetFrameworkMoniker(frameworkMonikerByPath) {
 
-	for (let [filePath, usedTargetFrameworkMonikers] of Object.entries(frameworkMonikerByPath)) {
+
+	console.log(frameworkMonikerByPath);
+	console.log('sdkfnsndfkldsfklnsdfsdfkln');
+	for (let [filePath,netMonikers] of Object.entries(frameworkMonikerByPath)) {
+		const referencedProjectPaths = await getReferencedProjectPaths(filePath);
+		for (const refPath of referencedProjectPaths) {
+			for (const netMoniker of netMonikers) {
+				frameworkMonikerByPath[refPath].push(netMoniker)
+			}
+		}
+	}
+
+	console.log(frameworkMonikerByPath);
+
+
+	// console.log(frameworkMonikerByPath);
+	console.log('-dsfnksdlf');
+
+	const localProjectPackagesPaths = {}
+	// await recursiveCaller(localProjectPackagesPaths, frameworkMonikerByPath)
+
+
+	// console.log(localProjectPackagesPaths);
+}
+
+// async function recursiveCaller(localProjectPackagesPaths, frameworkMonikerByPath) {
+// 	console.log(localProjectPackagesPaths,frameworkMonikerByPath);
+// 	for (let [filePath,_] of Object.entries(frameworkMonikerByPath)) {
+// 		const layerResult = await getRef(filePath)
+// 		// console.log(layerResult);
+// 		if (!localProjectPackagesPaths[filePath]) {
+// 			localProjectPackagesPaths[filePath] = {}
+// 		}
+// 		localProjectPackagesPaths[filePath] = layerResult;
+
+// 		await recursiveCaller(localProjectPackagesPaths, layerResult);
+
+// 	}
+
+// }
+
+async function getReferencedProjectPaths(filePath) {
+	// console.log('ref ' + filePath);
+	let buffer = await readFile(filePath);
+	let fileContent = buffer.toString("utf8");
+	const currentDirName = dirname(filePath)
+
+	const localProjectReferenceRegex = new RegExp(
+		'<ProjectReference Include=".+" />',
+		"ig"
+	);
+	const localProjectReferenceMatches = fileContent.matchAll(
+		localProjectReferenceRegex
+	);
+
+	let localProjectPackagesPaths = [];
+
+	for (const result of localProjectReferenceMatches) {
+
+
+		let name = result[0]
+			.replace('<ProjectReference Include="', "")
+			.replace(/\" \/>$/, "")
+			.replace(/\\/ig,"/");
+
+		// console.log(join(currentDirName,name));
+
+		const combinedPath = join(currentDirName,name);
+
+		localProjectPackagesPaths.push(combinedPath);
+
+	}
+	return localProjectPackagesPaths;
+}
+
+async function sortNetFrameworkMoniker1(frameworkMonikerByPath) {
+
+	const dependencies = {};
+	for (let [filePath,monikers] of Object.entries(frameworkMonikerByPath)) {
 
 		let buffer = await readFile(filePath);
 		let fileContent = buffer.toString("utf8");
@@ -304,20 +384,85 @@ async function updateNetFrameworkMoniker(frameworkMonikerByPath) {
 			localProjectReferenceRegex
 		);
 
-		let localProjectPackagesPaths = [];
+		let localProjectPackagesPaths = {};
 		const currentDirName = dirname(filePath)
+
+		console.log(localProjectReferenceMatches);
 
 		for (const result of localProjectReferenceMatches) {
 			let name = result[0]
 				.replace('<ProjectReference Include="', "")
 				.replace(/\" \/>$/, "")
 				.replace(/\\/ig,"/");
-			localProjectPackagesPaths.push(join(currentDirName,name));
+
+			console.log(name);
+
+			localProjectPackagesPaths[(join(currentDirName,name))];
+
+			for (const [refFilePath,_] of Object.entries(localProjectPackagesPaths)) {
+			
+				console.log(refFilePath);
+				let refBuffer = await readFile(refFilePath);
+				let refFileContent = refBuffer.toString("utf8");
+	
+				const refLocalProjectReferenceMatches = refFileContent.matchAll(
+					localProjectReferenceRegex
+				);
+	
+				for (const result of refLocalProjectReferenceMatches) {
+					let refName = result[0]
+						.replace('<ProjectReference Include="', "")
+						.replace(/\" \/>$/, "")
+						.replace(/\\/ig,"/");
+	
+						console.log(refName);
+						localProjectPackagesPaths[(join(currentDirName,refFilePath))][refName]
+				} // e.
+	
+			} // e.for
+
 		} // e.
 
+
+
+		dependencies[filePath] = localProjectPackagesPaths;
+	}
+
+	const dependFilePathCounter = [];
+
+	console.log('-sdfknsdlfskd');
+	console.log(dependencies);
+	console.log('dsfknlsdfk');
+
+	return;
+	//
+	for (let [referenceFrom, dependFilePaths] of Object.entries(dependencies)) {
+		for (const dependFilePath of dependFilePaths) {
+			const item = dependFilePathCounter.find(p => p.path == dependFilePath);
+			if (item) {
+				item.count++
+				item.referenceFroms.push(referenceFrom)
+				continue;
+			}
+			dependFilePathCounter.push({path: dependFilePath, count: 1, referenceFroms: [referenceFrom] })
+		}
+	}
+
+	return dependFilePathCounter.sort(p => p.count).reverse();
+}
+
+async function updateNetFrameworkMoniker(dependFilePathCounter) {
+
+	console.log('----');
+
+	for (let index = 0; index < dependFilePathCounter.length; index++) {
+		const dependObject = dependFilePathCounter[index];
+
+		let usedTargetFrameworkMonikers = [];
+
 		// read deps to scan if there other net monikers are used
-		for (const projectPackagePath of localProjectPackagesPaths) {
-			let buffer = await readFile(projectPackagePath);
+		for (const referenceFromPath of dependObject.referenceFroms) {
+			let buffer = await readFile(referenceFromPath);
 			let fileContent = buffer.toString("utf8");
 
 			// of dep
@@ -340,7 +485,7 @@ async function updateNetFrameworkMoniker(frameworkMonikerByPath) {
 				}
 			}
 			else {
-				console.log('[x] missing TargetFramework --> ' + projectPackagePath + " " + targetFrameworkMatches);
+				console.log('[x] missing TargetFramework --> ' + referenceFromPath + " " + targetFrameworkMatches);
 				console.log(targetFrameworkMatches);
 			}
 		} // e. read deps
@@ -348,8 +493,8 @@ async function updateNetFrameworkMoniker(frameworkMonikerByPath) {
 		// reverse sort
 		usedTargetFrameworkMonikers = usedTargetFrameworkMonikers.sort();
 
-		console.log('f -> ' + filePath);
-		console.log(usedTargetFrameworkMonikers);
+		// console.log('referenceFromPath -> ' + referenceFromPath);
+		// console.log(usedTargetFrameworkMonikers);
 
 		if (usedTargetFrameworkMonikers.find(p => p.startsWith("net"))) {
 			const lastNet = usedTargetFrameworkMonikers[0];
@@ -369,10 +514,13 @@ async function updateNetFrameworkMoniker(frameworkMonikerByPath) {
 				`✓ ${filePath} - .NET is updated to ${lastNet}`
 			);
 
+			if (!usedTargetFrameworkMonikers[filePath]) {
+				usedTargetFrameworkMonikers[filePath] = []
+			}
 			usedTargetFrameworkMonikers[filePath].push(lastNet)
-
-		}
+		}			
 	}
+
 }
 
 async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
@@ -442,7 +590,7 @@ async function updateSingleNugetPackageVersion(filePath) {
 	if (
 		filePath.match(
 			new RegExp(
-				"[a-z]((.feature|.foundation)|core)?(.[a-z]+)?.csproj$",
+				"[a-z].csproj$",
 				"i"
 			)
 		)
@@ -512,14 +660,16 @@ async function updateSingleNugetPackageVersion(filePath) {
 								const versionSpecificData = await httpsGet(sortfindedVersions[0]["@id"]);
 								const catalogEntryData = await httpsGet(versionSpecificData.catalogEntry);
 
-								catalogEntryData.dependencyGroups.forEach(arr => {
-									if (!arr.targetFramework.startsWith(".NETFramework")) {
-										const parsedName = arr.targetFramework.replace(/^\./ig,"").toLowerCase();
-										if (!usedTargetFrameworkMonikers.includes(parsedName)) {
-											usedTargetFrameworkMonikers.push(parsedName)										
-										}
+								var netStandardlist = catalogEntryData.dependencyGroups.filter(p => p.targetFramework.toLowerCase().includes(".netstandard"))
+								var netList = catalogEntryData.dependencyGroups.filter(p => p.targetFramework.toLowerCase().startsWith("net"));
+
+								for (const item of [...netStandardlist,...netList]) {
+									const parsedName = item.targetFramework.replace(/^\./ig,"").toLowerCase()
+
+									if (!usedTargetFrameworkMonikers.includes(parsedName) ) {
+										usedTargetFrameworkMonikers.push(parsedName)										
 									}
-								});								
+								}
 							} //e.
 
 							var versionXMLRegex = new RegExp(
@@ -556,7 +706,7 @@ async function updateSingleNugetPackageVersion(filePath) {
 		} // e. toupdate
 
 	}
-	return usedTargetFrameworkMonikers;
+	return [...new Set(usedTargetFrameworkMonikers)];
 }
 
 
