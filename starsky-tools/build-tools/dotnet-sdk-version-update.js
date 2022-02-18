@@ -10,6 +10,8 @@ const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
 
 var newRunTimeVersion = "6.0.x";
+const fallbackLibVersion = "netstandard2.0";
+
 // https://docs.microsoft.com/en-us/dotnet/standard/frameworks
 
 const aspNetCorePackages = [
@@ -51,14 +53,53 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 					sortedFilterPathList,
 					newTargetVersion
 				);
-				const frameworkMonikerByPath = await updateNugetPackageVersions(
-					sortedFilterPathList,
-					newRunTimeVersion
-				);
+				// const frameworkMonikerByPath = await updateNugetPackageVersions(
+				// 	sortedFilterPathList,
+				// 	newRunTimeVersion
+				// );
+
+				const frameworkMonikerByPath = {
+					'/Users/dion/data/git/starsky/starsky/starsky.feature.export/starsky.feature.export.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.feature.geolookup/starsky.feature.geolookup.csproj': [ 'netstandard2.0', 'netstandard2.1' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.feature.health/starsky.feature.health.csproj': [ 'net6.0', 'netstandard2.0' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.feature.import/starsky.feature.import.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.feature.metaupdate/starsky.feature.metaupdate.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.feature.rename/starsky.feature.rename.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.feature.webftppublish/starsky.feature.webftppublish.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.feature.webhtmlpublish/starsky.feature.webhtmlpublish.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.accountmanagement/starsky.foundation.accountmanagement.csproj': [ 'net6.0', 'netstandard2.0' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.consoletelemetry/starsky.foundation.consoletelemetry.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.database/starsky.foundation.database.csproj': [ 'netstandard2.0', 'net6.0' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.databasetelemetry/starsky.foundation.databasetelemetry.csproj': [ 'net6.0' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.http/starsky.foundation.http.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.injection/starsky.foundation.injection.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.platform/starsky.foundation.platform.csproj': [ 'netstandard2.0', 'netstandard2.1', 'net6.0' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.readmeta/starsky.foundation.readmeta.csproj': [ 'netstandard2.0' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.realtime/starsky.foundation.realtime.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.storage/starsky.foundation.storage.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.sync/starsky.foundation.sync.csproj': [ 'netstandard2.0', 'netstandard2.1' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.thumbnailgeneration/starsky.foundation.thumbnailgeneration.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.thumbnailmeta/starsky.foundation.thumbnailmeta.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.webtelemetry/starsky.foundation.webtelemetry.csproj': [ 'netcoreapp3.1', 'net6.0', 'netstandard2.0' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.worker/starsky.foundation.worker.csproj': [ 'netstandard2.0', 'netstandard2.1' ],
+					'/Users/dion/data/git/starsky/starsky/starsky.foundation.writemeta/starsky.foundation.writemeta.csproj': [ 'netstandard2.0', 'netstandard2.1' ],
+					'/Users/dion/data/git/starsky/starsky/starskycore/starskycore.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starsky/starsky.csproj': [ 'net6.0' ],
+					'/Users/dion/data/git/starsky/starsky/starskyadmincli/starskyadmincli.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starskygeocli/starskygeocli.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starskyimportercli/starskyimportercli.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starskysynchronizecli/starskysynchronizecli.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starskytest/starskytest.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
+					'/Users/dion/data/git/starsky/starsky/starskythumbnailcli/starskythumbnailcli.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starskythumbnailmetacli/starskythumbnailmetacli.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starskywebftpcli/starskywebftpcli.csproj': [],
+					'/Users/dion/data/git/starsky/starsky/starskywebhtmlcli/starskywebhtmlcli.csproj': [],
+					'/Users/dion/data/git/starsky/starsky-tools/socket/ChannelWSClient.csproj': []
+				  }
 
 				console.log(frameworkMonikerByPath);
 
-				await updateNetFrameworkMoniker(sortedFilterPathList, frameworkMonikerByPath);
+				await updateNetFrameworkMoniker(frameworkMonikerByPath);
 				console.log('---anfksdnflkdsdfsdffdsfsdsfdsdf');
 			}
 		})
@@ -248,9 +289,9 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 	});
 }
 
-async function updateNetFrameworkMoniker(sortedFilterPathList, frameworkMonikerByPath) {
+async function updateNetFrameworkMoniker(frameworkMonikerByPath) {
 
-	for (const filePath of frameworkMonikerByPath) {
+	for (let [filePath, usedTargetFrameworkMonikers] of Object.entries(frameworkMonikerByPath)) {
 
 		let buffer = await readFile(filePath);
 		let fileContent = buffer.toString("utf8");
@@ -308,6 +349,9 @@ async function updateNetFrameworkMoniker(sortedFilterPathList, frameworkMonikerB
 
 		// reverse sort
 		usedTargetFrameworkMonikers = usedTargetFrameworkMonikers.sort();
+
+		console.log('f -> ' + filePath);
+		console.log(usedTargetFrameworkMonikers);
 
 		if (usedTargetFrameworkMonikers.find(p => p.startsWith("net"))) {
 			const lastNet = usedTargetFrameworkMonikers[0];
