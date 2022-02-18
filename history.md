@@ -41,7 +41,10 @@ node starsky-tools/build-tools/app-version-update.js
 - package telementry
 - change mirror locations
 
-# version 0.5.0-beta.2 _(Unreleased)_ - 2022-01-??
+# version 0.5.0-beta.2 _(Unreleased)_ - 2022-02-??
+- WIP .NET 6 upgrade
+
+# version 0.5.0-beta.2 - 2022-02-18
 - [x]   (Changed) _Back-end_ Add correct connect-src url for websocket without port (PR #606)
 - [x]   (Changed) _Back-end_ UTC Time fix for quicktime based videos (PR #617)
 - [x]   (Fixed) _Back-end_ Unit test fix for dates that does not contain 1 (PR #617)
