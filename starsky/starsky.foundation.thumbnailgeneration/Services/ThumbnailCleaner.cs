@@ -44,7 +44,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			_logger.LogDebug($"Total files in thumb dir: {allThumbnailFiles.Count}");
 
 			var deletedFileHashes = new List<string>();
-			foreach ( var fileNamesInChunk in allThumbnailFiles.Chunk(chunkSize) )
+			foreach ( var fileNamesInChunk in allThumbnailFiles.ChunkyEnumerable(chunkSize) )
 			{
 				var itemsInChunk = GetFileNamesWithExtension(fileNamesInChunk.ToList());
 				try

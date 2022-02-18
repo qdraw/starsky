@@ -8,7 +8,7 @@ namespace starsky.foundation.platform.Extensions
 		/// <summary>
 		/// Break a list of items into chunks of a specific size
 		/// </summary>
-		public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int chunkSize)
+		public static IEnumerable<IEnumerable<T>> ChunkyEnumerable<T>(this IEnumerable<T> source, int chunkSize)
 		{
 			if ( source == null ) yield break;
 			// ReSharper disable once PossibleMultipleEnumeration

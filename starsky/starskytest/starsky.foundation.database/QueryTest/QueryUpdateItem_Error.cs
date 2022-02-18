@@ -92,7 +92,22 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				throw new DbUpdateConcurrencyException();
 				// System.NullReferenceException: Object reference not set to an instance of an object.
 			}
-		
+
+			public object? GetRelationshipSnapshotValue(IPropertyBase propertyBase)
+			{
+				throw new NotImplementedException();
+			}
+
+			public object? GetPreStoreGeneratedCurrentValue(IPropertyBase propertyBase)
+			{
+				throw new NotImplementedException();
+			}
+
+			public bool IsConceptualNull(IProperty property)
+			{
+				throw new NotImplementedException();
+			}
+
 			public IEntityType EntityType { get; }
 			public EntityState EntityState { get; set; }
 			public IUpdateEntry SharedIdentityEntry { get; }
