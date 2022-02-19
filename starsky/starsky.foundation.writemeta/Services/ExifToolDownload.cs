@@ -92,7 +92,7 @@ namespace starsky.foundation.writemeta.Services
 				GetChecksumsFromTextFile(checksums.Value.Value), !checksums.Value.Key);
 		}
 		
-		internal string GetUnixTarGzFromChecksum(string checksumsValue)
+		internal static string GetUnixTarGzFromChecksum(string checksumsValue)
 		{
 			// (?<=SHA1\()Image-ExifTool-[\d\.]+\.zip
 			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()Image-ExifTool-[0-9\.]+\.tar.gz");
@@ -179,14 +179,14 @@ namespace starsky.foundation.writemeta.Services
 			return await DownloadForWindows(matchExifToolForWindowsName,GetChecksumsFromTextFile(checksums.Value.Value), !checksums.Value.Key);
 		}
 
-		internal string GetWindowsZipFromChecksum(string checksumsValue)
+		internal static string GetWindowsZipFromChecksum(string checksumsValue)
 		{
 			// (?<=SHA1\()exiftool-[\d\.]+\.zip
 			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()exiftool-[0-9\.]+\.zip");
 			return regexExifToolForWindowsName.Match(checksumsValue).Value;
 		}
 		
-		internal string[] GetChecksumsFromTextFile(string checksumsValue)
+		private static string[] GetChecksumsFromTextFile(string checksumsValue)
 		{
 			var regexExifToolForWindowsName = new Regex("[a-z0-9]{40}");
 			var results = regexExifToolForWindowsName.Matches(checksumsValue).

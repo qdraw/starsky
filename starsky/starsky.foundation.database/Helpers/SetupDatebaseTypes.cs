@@ -39,6 +39,7 @@ namespace starsky.foundation.database.Helpers
 			}
 			catch ( MySqlException)
 			{
+				// nothing here
 			}
 			return new MariaDbServerVersion("10.2");
 		}

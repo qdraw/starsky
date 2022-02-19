@@ -62,14 +62,14 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		[TestMethod]
 		public void GetUnixTarGzFromChecksum()
 		{
-			var result = new ExifToolDownload(null, _appSettings, new FakeIWebLogger()).GetUnixTarGzFromChecksum(ExampleCheckSum);
+			var result = ExifToolDownload.GetUnixTarGzFromChecksum(ExampleCheckSum);
 			Assert.AreEqual("Image-ExifTool-11.99.tar.gz",result);
 		}
 		
 		[TestMethod]
 		public void GetWindowsZipFromChecksum()
 		{
-			var result = new ExifToolDownload(null, _appSettings, new FakeIWebLogger()).GetWindowsZipFromChecksum(ExampleCheckSum);
+			var result = ExifToolDownload.GetWindowsZipFromChecksum(ExampleCheckSum);
 			Assert.AreEqual("exiftool-11.99.zip",result);
 		}
 
@@ -145,7 +145,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			}
 		}
 
-		private async Task<AppSettings> CreateTempFolderWithExifTool(string name = "test temp")
+		private static async Task<AppSettings> CreateTempFolderWithExifTool(string name = "test temp")
 		{
 			var appSettings = new AppSettings{TempFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,name)};
 			Directory.CreateDirectory(appSettings.TempFolder);

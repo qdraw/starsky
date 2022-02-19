@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -295,7 +296,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		
 		private class FakePropertyValues : PropertyValues
 		{
+#pragma warning disable EF1001
 			public FakePropertyValues(InternalEntityEntry internalEntry) : base(internalEntry)
+#pragma warning restore EF1001
 			{
 			}
 
