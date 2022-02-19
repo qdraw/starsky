@@ -28,9 +28,9 @@ namespace starsky.foundation.writemeta.Services
 		private readonly IWebLogger _logger;
 
 		private const string CheckSumLocation = "https://exiftool.org/checksums.txt";
-		private const string CheckSumLocationMirror = "https://qdraw.nl/special/exiftool/checksums.txt";
+		private const string CheckSumLocationMirror = "https://qdraw.nl/special/mirror/exiftool/checksums.txt";
 		private const string ExiftoolDownloadBasePath = "https://exiftool.org/"; // with slash at the end
-		private const string ExiftoolDownloadBasePathMirror = "https://qdraw.nl/special/exiftool/"; // with slash at the end
+		private const string ExiftoolDownloadBasePathMirror = "https://qdraw.nl/special/mirror/exiftool/"; // with slash at the end
 
 		public ExifToolDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings, IWebLogger logger)
 		{
