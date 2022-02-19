@@ -37,7 +37,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 		private class UpdateEntryUpdateConcurrency : IUpdateEntry
 		{
-			public void SetOriginalValue(IProperty property, object value)
+			public void SetOriginalValue(IProperty property, object? value)
 			{
 				throw new System.NotImplementedException();
 			}
@@ -82,7 +82,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				throw new System.NotImplementedException();
 			}
 		
-			public void SetStoreGeneratedValue(IProperty property, object value)
+			public void SetStoreGeneratedValue(IProperty property, object? value)
 			{
 				throw new System.NotImplementedException();
 			}
@@ -335,13 +335,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			public override IReadOnlyList<IProperty> Properties { get; } =
 				new List<IProperty>();
 
-			public override object this[string propertyName]
+			public override object? this[string propertyName]
 			{
 				get => throw new NotImplementedException();
 				set => throw new NotImplementedException();
 			}
 
-			public override object this[IProperty property]
+			public override object? this[IProperty property]
 			{
 				get => throw new NotImplementedException();
 				set => throw new NotImplementedException();
