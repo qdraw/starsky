@@ -2,9 +2,7 @@
  * Update the project versions to have the same version
  */
 
-// https://mcr.microsoft.com/v2/dotnet/runtime/tags/list
-
-const { join, basename, dirname } = require("path");
+const { join, dirname } = require("path");
 const { readFile, writeFile } = require("fs").promises;
 const { readFileSync } = require("fs");
 const { getFiles } = require("./lib/get-files-directory");
@@ -12,7 +10,6 @@ const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
 
 var newRunTimeVersion = "6.0.x";
-const fallbackLibVersion = "netstandard2.0";
 
 // https://docs.microsoft.com/en-us/dotnet/standard/frameworks
 
@@ -32,6 +29,7 @@ if (argv && argv.length === 1) {
 async function getLatestDotnetRelease() {
 	const targetVersion = newRunTimeVersion.replace(".x", "");
 
+	// runtime
 	const data = await getByBlobMicrosoft(targetVersion, true);
 	if (data) {
 		return data[0];
@@ -46,29 +44,29 @@ async function getLatestDotnetRelease() {
 console.log(`\nUpgrade version in csproj-files to ${newRunTimeVersion}\n`);
 
 getLatestDotnetRelease().then((newTargetVersion) => {
-	getFiles(join(__dirname, prefixPath)) // add "starsky" back when netframework is removed
-		.then(async (filePathList) => {
-			const sortedFilterPathList = sortFilterOnExeCSproj(filePathList);
+	// getFiles(join(__dirname, prefixPath)) // add "starsky" back when netframework is removed
+	// 	.then(async (filePathList) => {
+	// 		const sortedFilterPathList = sortFilterOnExeCSproj(filePathList);
 
-			if (newTargetVersion) {
-				await updateRuntimeFrameworkVersion(
-					sortedFilterPathList,
-					newTargetVersion
-				);
-				const frameworkMonikerByPath = await updateNugetPackageVersions(
-					sortedFilterPathList,
-					newRunTimeVersion
-				);
+	// 		if (newTargetVersion) { // newTargetVersion -> is that there is a result
+	// 			await updateRuntimeFrameworkVersion(
+	// 				sortedFilterPathList,
+	// 				newTargetVersion
+	// 			);
 
-				const sortedFrameworkMonikerByPath = await sortNetFrameworkMoniker(frameworkMonikerByPath);
-				await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
+	// 			const frameworkMonikerByPath = await updateNugetPackageVersions(
+	// 				sortedFilterPathList,
+	// 				newRunTimeVersion
+	// 			);
+	// 			const sortedFrameworkMonikerByPath = await sortNetFrameworkMoniker(frameworkMonikerByPath);
+	// 			await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
 
-				console.log('---done');
-			}
-		})
-		.catch((err) => {
-			console.log(err);
-		});
+	// 			console.log('---done');
+	// 		}
+	// 	})
+	// 	.catch((err) => {
+	// 		console.log(err);
+	// 	});
 
 	getFiles(join(__dirname, prefixPath))
 		.then(async (filePathList) => {
@@ -78,11 +76,52 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 
 			await updateAzureYmlFile(filePathList, sdkVersion);
 			await updateGithubYmlFile(filePathList, sdkVersion);
+
+			await updateMcrDockerFile(filePathList);
 		})
 		.catch((err) => {
 			console.log(err);
 		});
 });
+
+async function updateMcrDockerFile(filePathList) {
+	const targetVersion = newRunTimeVersion.replace(".x", "");
+
+	const dockerFilePathList = filePathList.filter(p => p.endsWith("Dockerfile"));
+
+	// aspnet is runtime for asp.net apps
+	const aspNetResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list");
+	const sdkResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/sdk/tags/list");
+
+	const aspNetResult = aspNetResults.tags.find(p => p == targetVersion);
+	const sdkResult = sdkResults.tags.find(p => p == targetVersion);
+
+	if (newRunTimeVersion.includes(".x") && aspNetResult !== sdkResult) {
+		console.log('DockerFile versions dont match');
+		return;
+	}
+
+	for (const dockerFilePath of dockerFilePathList) {
+		let buffer = await readFile(dockerFilePath);
+		let fileContent = buffer.toString("utf8");
+		fileContent = replaceMcrFileContent(fileContent, "sdk",sdkResult);
+		fileContent = replaceMcrFileContent(fileContent, "aspnet",aspNetResult);
+		await writeFile(dockerFilePath, fileContent);
+	}
+
+}
+
+function replaceMcrFileContent(fileContent, what, sdkResult) {
+	const sdkFromBuildPlatformRegex = new RegExp("FROM (--platform=\\$BUILDPLATFORM)?( )?mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+", "g");
+	const sdkfromBuildPlatformMatches = fileContent.match(sdkFromBuildPlatformRegex);
+	if (sdkfromBuildPlatformMatches) {
+		for (const sdkfromBuildPlatformMatch of sdkfromBuildPlatformMatches) {
+			const replacedResult = sdkfromBuildPlatformMatch.replace(/(\d|\\.)+/g,sdkResult); // sdkResult = to version
+			fileContent = fileContent.replace(sdkfromBuildPlatformMatch, replacedResult);
+		}
+	}
+	return fileContent;
+}
 
 async function getByBlobMicrosoft(targetVersion, isRuntime) {
 	var what = "latest-sdk"
