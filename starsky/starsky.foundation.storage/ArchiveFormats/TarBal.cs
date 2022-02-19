@@ -30,11 +30,11 @@ namespace starsky.foundation.storage.ArchiveFormats
                 {
                     int read;
                     var buffer = new byte[chunk];
-                    do
+                    
+                    while ((read = gzip.Read(buffer, 0, buffer.Length)) > 0)
                     {
-                        read = gzip.Read(buffer, 0, chunk);
-                        memStr.Write(buffer, 0, read);
-                    } while (read == chunk);
+	                    memStr.Write(buffer, 0, read);
+                    }
 
                     memStr.Seek(0, SeekOrigin.Begin);
                     ExtractTar(memStr, outputDir);
@@ -54,8 +54,10 @@ namespace starsky.foundation.storage.ArchiveFormats
             {
                 stream.Read(buffer, 0, 100);
                 var name = Encoding.ASCII.GetString(buffer).Trim('\0');
-                if (string.IsNullOrEmpty(name))
-                    break;
+                if ( string.IsNullOrEmpty(name))
+                {
+	                break;
+                }
                 stream.Seek(24, SeekOrigin.Current);
                 stream.Read(buffer, 0, 12);
                 var size = Convert.ToInt64(Encoding.UTF8.GetString(buffer, 0, 12).Trim('\0').Trim(), 8);
@@ -63,9 +65,11 @@ namespace starsky.foundation.storage.ArchiveFormats
                 stream.Seek(376L, SeekOrigin.Current);
 
                 var output = $"{outputDir}/{name}";
-                if (!_storage.ExistFolder(FilenamesHelper.GetParentPath(output)))
+                if ( !_storage.ExistFolder(FilenamesHelper.GetParentPath(output)) )
+                {
 	                _storage.CreateDirectory(FilenamesHelper.GetParentPath(output));
-                if (!name.EndsWith("/"))
+                }
+                if(!name.EndsWith("/", StringComparison.InvariantCulture)) 
                 {
 	                var str = new MemoryStream();
 	                var buf = new byte[size];
