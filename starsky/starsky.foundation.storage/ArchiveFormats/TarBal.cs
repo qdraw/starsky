@@ -54,7 +54,7 @@ namespace starsky.foundation.storage.ArchiveFormats
             {
                 stream.Read(buffer, 0, 100);
                 var name = Encoding.ASCII.GetString(buffer).Trim('\0');
-                if ( string.IsNullOrEmpty(name))
+                if ( string.IsNullOrEmpty(name) || stream.Position > stream.Length)
                 {
 	                break;
                 }
