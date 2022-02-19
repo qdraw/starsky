@@ -44,29 +44,29 @@ async function getLatestDotnetRelease() {
 console.log(`\nUpgrade version in csproj-files to ${newRunTimeVersion}\n`);
 
 getLatestDotnetRelease().then((newTargetVersion) => {
-	// getFiles(join(__dirname, prefixPath)) // add "starsky" back when netframework is removed
-	// 	.then(async (filePathList) => {
-	// 		const sortedFilterPathList = sortFilterOnExeCSproj(filePathList);
+	getFiles(join(__dirname, prefixPath)) // add "starsky" back when netframework is removed
+		.then(async (filePathList) => {
+			const sortedFilterPathList = sortFilterOnExeCSproj(filePathList);
 
-	// 		if (newTargetVersion) { // newTargetVersion -> is that there is a result
-	// 			await updateRuntimeFrameworkVersion(
-	// 				sortedFilterPathList,
-	// 				newTargetVersion
-	// 			);
+			if (newTargetVersion) { // newTargetVersion -> is that there is a result
+				await updateRuntimeFrameworkVersion(
+					sortedFilterPathList,
+					newTargetVersion
+				);
 
-	// 			const frameworkMonikerByPath = await updateNugetPackageVersions(
-	// 				sortedFilterPathList,
-	// 				newRunTimeVersion
-	// 			);
-	// 			const sortedFrameworkMonikerByPath = await sortNetFrameworkMoniker(frameworkMonikerByPath);
-	// 			await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
+				const frameworkMonikerByPath = await updateNugetPackageVersions(
+					sortedFilterPathList,
+					newRunTimeVersion
+				);
+				const sortedFrameworkMonikerByPath = await sortNetFrameworkMoniker(frameworkMonikerByPath);
+				await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
 
-	// 			console.log('---done');
-	// 		}
-	// 	})
-	// 	.catch((err) => {
-	// 		console.log(err);
-	// 	});
+				console.log('---done');
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 
 	getFiles(join(__dirname, prefixPath))
 		.then(async (filePathList) => {
@@ -103,6 +103,7 @@ async function updateMcrDockerFile(filePathList) {
 
 	for (const dockerFilePath of dockerFilePathList) {
 		let buffer = await readFile(dockerFilePath);
+		console.log("✓ " + dockerFilePath);
 		let fileContent = buffer.toString("utf8");
 		fileContent = replaceMcrFileContent(fileContent, "sdk",sdkResult);
 		fileContent = replaceMcrFileContent(fileContent, "aspnet",aspNetResult);
@@ -112,11 +113,13 @@ async function updateMcrDockerFile(filePathList) {
 }
 
 function replaceMcrFileContent(fileContent, what, sdkResult) {
-	const sdkFromBuildPlatformRegex = new RegExp("FROM (--platform=\\$BUILDPLATFORM)?( )?mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+", "g");
+	// FROM (--platform=\$BUILDPLATFORM)?( )?mcr\.microsoft\.com\/dotnet\/sdk:(\d|\.)+ AS
+	const sdkFromBuildPlatformRegex = new RegExp("FROM (--platform=\\$BUILDPLATFORM)?( )?mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+ AS", "g");
 	const sdkfromBuildPlatformMatches = fileContent.match(sdkFromBuildPlatformRegex);
 	if (sdkfromBuildPlatformMatches) {
 		for (const sdkfromBuildPlatformMatch of sdkfromBuildPlatformMatches) {
-			const replacedResult = sdkfromBuildPlatformMatch.replace(/(\d|\\.)+/g,sdkResult); // sdkResult = to version
+			const replacedResult = sdkfromBuildPlatformMatch.replace(/(\d|\.)+ AS$/g,sdkResult + " AS"); // sdkResult = to version
+			console.log("  ✓  replaceMcrFileContent " + replacedResult);
 			fileContent = fileContent.replace(sdkfromBuildPlatformMatch, replacedResult);
 		}
 	}
