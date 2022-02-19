@@ -97,7 +97,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			if ( !_dbContext.CredentialTypes.Any(p => p.Code == "email") )
 			{
 				_dbContext.CredentialTypes.Add(
-					new CredentialType { Code = "email" });
+					new CredentialType { Code = "email", Name = "t"});
 				await _dbContext.SaveChangesAsync();
 			}
 			
@@ -115,7 +115,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			if ( !_dbContext.CredentialTypes.Any(p => p.Code == "email") )
 			{
 				_dbContext.CredentialTypes.Add(
-					new CredentialType { Code = "email" });
+					new CredentialType { Code = "email", Name = "T"});
 				await _dbContext.SaveChangesAsync();
 			}
 
@@ -428,7 +428,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				PermissionId = 101
 			});
 
-			_dbContext.Permissions.Add(new Permission { Id = 101, Code = "test"});
+			_dbContext.Permissions.Add(new Permission { Id = 101, Code = "test", Name = "t"});
 			_dbContext.SaveChanges();
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
 			var result = userManager.GetUserPermissionClaims(new Role { Id = 99 }).ToList();
