@@ -28,9 +28,9 @@ namespace starsky.foundation.writemeta.Services
 		private readonly IWebLogger _logger;
 
 		private const string CheckSumLocation = "https://exiftool.org/checksums.txt";
-		private const string CheckSumLocationMirror = "https://qdraw.nl/special/exiftool/checksums.txt";
+		private const string CheckSumLocationMirror = "https://qdraw.nl/special/mirror/exiftool/checksums.txt";
 		private const string ExiftoolDownloadBasePath = "https://exiftool.org/"; // with slash at the end
-		private const string ExiftoolDownloadBasePathMirror = "https://qdraw.nl/special/exiftool/"; // with slash at the end
+		private const string ExiftoolDownloadBasePathMirror = "https://qdraw.nl/special/mirror/exiftool/"; // with slash at the end
 
 		public ExifToolDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings, IWebLogger logger)
 		{
@@ -92,7 +92,7 @@ namespace starsky.foundation.writemeta.Services
 				GetChecksumsFromTextFile(checksums.Value.Value), !checksums.Value.Key);
 		}
 		
-		internal string GetUnixTarGzFromChecksum(string checksumsValue)
+		internal static string GetUnixTarGzFromChecksum(string checksumsValue)
 		{
 			// (?<=SHA1\()Image-ExifTool-[\d\.]+\.zip
 			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()Image-ExifTool-[0-9\.]+\.tar.gz");
@@ -138,6 +138,11 @@ namespace starsky.foundation.writemeta.Services
 				var exifToolUnixFolderFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool-unix");
 				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,exifToolUnixFolderFullFilePath);
 			}
+			else
+			{
+				_logger.LogError($"[DownloadForUnix] ExifTool folder does not exists");
+				return false;
+			}
 			
 			var exifToolExePath = Path.Combine(_appSettings.TempFolder, "exiftool-unix","exiftool");
 			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {exifToolExePath}");
@@ -174,14 +179,14 @@ namespace starsky.foundation.writemeta.Services
 			return await DownloadForWindows(matchExifToolForWindowsName,GetChecksumsFromTextFile(checksums.Value.Value), !checksums.Value.Key);
 		}
 
-		internal string GetWindowsZipFromChecksum(string checksumsValue)
+		internal static string GetWindowsZipFromChecksum(string checksumsValue)
 		{
 			// (?<=SHA1\()exiftool-[\d\.]+\.zip
 			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()exiftool-[0-9\.]+\.zip");
 			return regexExifToolForWindowsName.Match(checksumsValue).Value;
 		}
 		
-		internal string[] GetChecksumsFromTextFile(string checksumsValue)
+		private static string[] GetChecksumsFromTextFile(string checksumsValue)
 		{
 			var regexExifToolForWindowsName = new Regex("[a-z0-9]{40}");
 			var results = regexExifToolForWindowsName.Matches(checksumsValue).

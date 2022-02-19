@@ -112,7 +112,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/test.jpg", 
+			var actionResult = controller.PublishCreate("/test.jpg", 
 				"test", "test", true) as JsonResult;
 			var result = actionResult.Value as string;
 			
@@ -131,7 +131,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/test.jpg", 
+			var actionResult = controller.PublishCreate("/test.jpg", 
 				"test", "test", true) as JsonResult;
 			var result = actionResult.Value as string;
 			
@@ -149,7 +149,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				fakeBg, new FakeIWebLogger());
 			
-			await controller.PublishCreate("/test.jpg", 
+			 controller.PublishCreate("/test.jpg", 
 				"test", "test", true);
 			
 			Assert.AreEqual(1, fakeIWebHtmlPublishService.ItemNamesGenerateZip.Count);
@@ -169,7 +169,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/not-found.jpg", 
+			var actionResult = controller.PublishCreate("/not-found.jpg", 
 				"test", "test", true) as NotFoundObjectResult;
 			
 			Assert.AreEqual(404, actionResult.StatusCode);
@@ -188,7 +188,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(storage),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/test.jpg", 
+			var actionResult = controller.PublishCreate("/test.jpg", 
 				"test", "test", false) as ConflictObjectResult;
 			var result = actionResult.Value as string;
 			
@@ -211,7 +211,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(storage),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/test.jpg", 
+			var actionResult = controller.PublishCreate("/test.jpg", 
 				"test", "test", true) as JsonResult;
 			var result = actionResult.Value as string;
 			

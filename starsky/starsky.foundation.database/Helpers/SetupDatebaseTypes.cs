@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
@@ -28,17 +29,30 @@ namespace starsky.foundation.database.Helpers
 		{
 			return new ApplicationDbContext(BuilderDbFactorySwitch());
 		}
+
+		internal ServerVersion GetServerVersionMySql()
+		{
+			try
+			{
+				return ServerVersion.AutoDetect(
+						_appSettings.DatabaseConnection);
+			}
+			catch ( MySqlException)
+			{
+				// nothing here
+			}
+			return new MariaDbServerVersion("10.2");
+		}
 		
 		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string foundationDatabaseName = "")
 		{
 			switch ( _appSettings.DatabaseType )
 			{
 				case ( AppSettings.DatabaseTypeList.Mysql ):
+					
 					var mysql = new DbContextOptionsBuilder<ApplicationDbContext>()
-						.UseMySql(_appSettings.DatabaseConnection, mySqlOptions =>
+						.UseMySql(_appSettings.DatabaseConnection, GetServerVersionMySql(), mySqlOptions =>
 						{
-							mySqlOptions.CharSet(CharSet.Utf8Mb4);
-							mySqlOptions.CharSetBehavior(CharSetBehavior.AppendToAllColumns);
 							mySqlOptions.EnableRetryOnFailure(2);
 							if ( !string.IsNullOrWhiteSpace(foundationDatabaseName) )
 							{

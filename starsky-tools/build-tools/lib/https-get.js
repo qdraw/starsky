@@ -1,12 +1,24 @@
 const https = require("https");
 
+
+async function httpsGet(url) {
+	return new Promise((resolve, reject) => {
+		httpsGetInternal(url).then(resolve).catch(()=> {
+			httpsGetInternal(url).then(resolve).catch((err)=> {
+				console.log('failed');
+				reject(err)
+			})
+		})
+	});
+}
+
 /**
  * Handles the actual sending request.
  * We're turning the https.request into a promise here for convenience
  * @param url
  * @return {Promise}
  */
-async function httpsGet(url) {
+async function httpsGetInternal(url) {
 	let requestOptionsUrl = new URL(url);
 	const requestOptions = {
 		host: requestOptionsUrl.host,
@@ -32,7 +44,14 @@ async function httpsGet(url) {
 
 			// response finished, resolve the promise with data
 			res.on("end", () => {
-				resolve(JSON.parse(response));
+				try {
+					const parsedResponse = JSON.parse(response)
+					resolve(parsedResponse);
+				} catch (error) {
+					error.url = requestOptions.host + requestOptions.path
+					error.statusCode = res.statusCode
+					reject(error);
+				}
 			});
 		});
 

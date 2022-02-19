@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -238,6 +239,8 @@ namespace starsky.foundation.database.Query
         /// <param name="functionName">how is the function called</param>
         /// <param name="singleItemDbPath">the path</param>
         /// <returns>an unique key</returns>
+        [SuppressMessage("Performance", "CA1822:Mark members as static")]
+        // ReSharper disable once MemberCanBeMadeStatic.Global
         internal string CachingDbName(string functionName, string singleItemDbPath)
         {
 	        // when is nothing assume its the home item
@@ -529,6 +532,8 @@ namespace starsky.foundation.database.Query
         /// <param name="entryMetadataName">meta name</param>
         /// <param name="entryOriginalValuesSetValues">entry item</param>
         /// <exception cref="NotSupportedException">unknown how to fix</exception>
+        [SuppressMessage("Performance", "CA1822:Mark members as static")]
+        // ReSharper disable once MemberCanBeMadeStatic.Global
         internal void SolveConcurrencyException(object entryEntity, 
 	        PropertyValues proposedValues, PropertyValues databaseValues, string entryMetadataName, 
 	        OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)

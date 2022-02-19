@@ -40,7 +40,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			info.AddValue("RemoteStackIndex", 1);
 			info.AddValue("HResult", 1);
 			info.AddValue("Source", "");
-			info.AddValue("WatsonBuckets", new byte[0]);
+			info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
 			
 			var ctor =
 				typeof(EventQueueOverflowException).GetConstructors(BindingFlags.Instance |

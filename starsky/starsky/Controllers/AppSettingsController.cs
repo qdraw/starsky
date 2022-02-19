@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -79,7 +80,7 @@ namespace starsky.Controllers
 				{
 					new JsonBoolQuotedConverter(),
 				},
-				IgnoreNullValues = true
+				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
 			});
 
 			await _hostStorage.WriteStreamAsync(

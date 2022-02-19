@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -145,6 +146,8 @@ namespace starsky.foundation.database.Query
         /// </summary>
         /// <param name="queryItems">list of items</param>
         /// <returns>list without deleted items</returns>
+        [SuppressMessage("Performance", "CA1822:Mark members as static")]
+        // ReSharper disable once MemberCanBeMadeStatic.Global
         private IEnumerable<FileIndexItem> HideDeletedFileFolderList(List<FileIndexItem> queryItems){
             // temp feature to hide deleted items
             var displayItems = new List<FileIndexItem>();
@@ -175,7 +178,7 @@ namespace starsky.foundation.database.Query
 	        {
 		        return LocalQuery(_context);
 	        }
-	        catch ( MySql.Data.MySqlClient.MySqlProtocolException )
+	        catch ( MySqlProtocolException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        return LocalQuery(context);

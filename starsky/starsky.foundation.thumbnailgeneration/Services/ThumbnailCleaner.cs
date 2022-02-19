@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -44,7 +45,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			_logger.LogDebug($"Total files in thumb dir: {allThumbnailFiles.Count}");
 
 			var deletedFileHashes = new List<string>();
-			foreach ( var fileNamesInChunk in allThumbnailFiles.Chunk(chunkSize) )
+			foreach ( var fileNamesInChunk in allThumbnailFiles.ChunkyEnumerable(chunkSize) )
 			{
 				var itemsInChunk = GetFileNamesWithExtension(fileNamesInChunk.ToList());
 				try
@@ -88,6 +89,8 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			}
 		}
 
+		[SuppressMessage("Performance", "CA1822:Mark members as static")]
+		// ReSharper disable once MemberCanBeMadeStatic.Global
 		private HashSet<string> GetFileNamesWithExtension(List<string> allThumbnailFiles)
 		{
 			var results = new List<string>();

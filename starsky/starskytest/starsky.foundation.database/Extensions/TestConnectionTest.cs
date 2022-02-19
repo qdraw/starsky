@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Extensions;
 
@@ -44,7 +44,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 					info.AddValue("RemoteStackIndex", 1);
 					info.AddValue("HResult", 1);
 					info.AddValue("Source", "");
-					info.AddValue("WatsonBuckets", new byte[0]);
+					info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
 					
 					// private MySqlException(SerializationInfo info, StreamingContext context)
 					var ctor =

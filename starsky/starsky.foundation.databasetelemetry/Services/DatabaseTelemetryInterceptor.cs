@@ -62,25 +62,25 @@ namespace starsky.foundation.databasetelemetry.Services
 	        return result;
         }
 
-        public Task<InterceptionResult<DbDataReader>> ReaderExecutingAsync(DbCommand command, CommandEventData eventData,
+        public ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(DbCommand command, CommandEventData eventData,
 	        InterceptionResult<DbDataReader> result,
 	        CancellationToken cancellationToken = new CancellationToken())
         {
-	        return Task.FromResult(result);
+	        return ValueTask.FromResult(result);
         }
 
-        public Task<InterceptionResult<object>> ScalarExecutingAsync(DbCommand command, CommandEventData eventData,
+        public ValueTask<InterceptionResult<object>> ScalarExecutingAsync(DbCommand command, CommandEventData eventData,
 	        InterceptionResult<object> result,
 	        CancellationToken cancellationToken = new CancellationToken())
         {
-	        return Task.FromResult(result);
+	        return ValueTask.FromResult(result);
         }
 
-        public Task<InterceptionResult<int>> NonQueryExecutingAsync(DbCommand command, CommandEventData eventData,
+        public ValueTask<InterceptionResult<int>> NonQueryExecutingAsync(DbCommand command, CommandEventData eventData,
 	        InterceptionResult<int> result,
 	        CancellationToken cancellationToken = new CancellationToken())
         {
-	        return Task.FromResult(result);
+	        return ValueTask.FromResult(result);
         }
 
         public DbDataReader ReaderExecuted(DbCommand command,
@@ -101,25 +101,25 @@ namespace starsky.foundation.databasetelemetry.Services
 	        return result;
         }
 
-        public Task<DbDataReader> ReaderExecutedAsync(DbCommand command, CommandExecutedEventData eventData,
+        public ValueTask<DbDataReader> ReaderExecutedAsync(DbCommand command, CommandExecutedEventData eventData,
 	        DbDataReader result,
 	        CancellationToken cancellationToken = new CancellationToken())
         {
-	        return Task.FromResult(result);
+	        return ValueTask.FromResult(result);
         }
 
-        public Task<object> ScalarExecutedAsync(DbCommand command, CommandExecutedEventData eventData,
+        public ValueTask<object> ScalarExecutedAsync(DbCommand command, CommandExecutedEventData eventData,
 	        object result,
 	        CancellationToken cancellationToken = new CancellationToken())
         {
-	        return Task.FromResult(result);
+	        return ValueTask.FromResult(result);
         }
 
-        public Task<int> NonQueryExecutedAsync(DbCommand command,
+        public ValueTask<int> NonQueryExecutedAsync(DbCommand command,
 	        CommandExecutedEventData eventData, int result,
 	        CancellationToken cancellationToken = new CancellationToken())
         {
-	        return Task.FromResult(result);
+	        return ValueTask.FromResult(result);
         }
 
         public void CommandFailed(DbCommand command, CommandErrorEventData eventData)
