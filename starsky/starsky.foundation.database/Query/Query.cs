@@ -649,7 +649,7 @@ namespace starsky.foundation.database.Query
 			    _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 		    }
 
-		    if ( skippedCacheItems.Any() )
+		    if ( skippedCacheItems.Any() && _appSettings?.Verbose == true )
 		    {
 			    _logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
 		    }
