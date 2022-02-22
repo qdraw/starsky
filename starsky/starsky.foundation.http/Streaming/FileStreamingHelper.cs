@@ -65,17 +65,22 @@ namespace starsky.foundation.http.Streaming
                 if (contentType != "image/jpeg" && contentType != "application/octet-stream") 
                     throw new FileLoadException($"Expected a multipart request, but got {contentType}; add the header 'content-type' ");
 
-                var fullFilePath = Path.Combine(appSettings.TempFolder, headerFileName);
-                // Write to disk
-                await selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
-	                .WriteStreamAsync(requestBody, fullFilePath);
+                var randomFolderName = "stream_" +
+	                Base32.Encode(FileHash.GenerateRandomBytes(4));
+                var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName, headerFileName);
 
+                // Write to disk
+                var hostFileSystemStorage =
+	                selectorStorage.Get(SelectorStorage.StorageServices
+		                .HostFilesystem);
+                hostFileSystemStorage.CreateDirectory(Path.Combine(appSettings.TempFolder, randomFolderName));
+                await hostFileSystemStorage
+	                .WriteStreamAsync(requestBody, fullFilePath);
+                
                 tempPaths.Add(fullFilePath);
 
                 return tempPaths;
             }
-            
-            // From here on no unit tests anymore :(
             
             // Used to accumulate all the form url encoded key value pairs in the 
             // request.
@@ -97,10 +102,16 @@ namespace starsky.foundation.http.Streaming
 
                     var tempHash = appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName),
 	                    true, false); // underscore allowed
-                    var fullFilePath = Path.Combine(appSettings.TempFolder, tempHash + inputExtension);
+                    var randomFolderName = "stream_" +
+                                           Base32.Encode(FileHash.GenerateRandomBytes(4));
+                    var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName, tempHash + inputExtension);
                     tempPaths.Add(fullFilePath);
 
-                    await selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
+                    var hostFileSystemStorage =
+	                    selectorStorage.Get(SelectorStorage.StorageServices
+		                    .HostFilesystem);
+                    hostFileSystemStorage.CreateDirectory(Path.Combine(appSettings.TempFolder, randomFolderName));
+                    await hostFileSystemStorage
 	                    .WriteStreamAsync(section.Body, fullFilePath);
                 }
 

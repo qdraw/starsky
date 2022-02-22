@@ -119,9 +119,15 @@ namespace starsky.Controllers
 				
 				// clear directory cache
 				_query.RemoveCacheParentItem(subPath);
-			 
+
 				var deleteStatus = _iHostStorage.FileDelete(tempImportPaths[i]);
-				_logger.LogInformation($"delete {tempImportPaths[i]} is {deleteStatus}");
+				_logger.LogInformation($"[UploadController] delete {tempImportPaths[i]} is {deleteStatus}");
+				
+				var parentPath = Directory.GetParent(tempImportPaths[i])?.FullName;
+				if ( !string.IsNullOrEmpty(parentPath) && parentPath != _appSettings.TempFolder )
+				{
+					_iHostStorage.FolderDelete(parentPath);
+				}
 
 				await _metaExifThumbnailService.AddMetaThumbnail(subPath,
 					fileIndexResultsList[i].FileIndexItem.FileHash);

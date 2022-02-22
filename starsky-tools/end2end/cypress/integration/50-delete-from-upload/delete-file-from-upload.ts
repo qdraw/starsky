@@ -198,15 +198,13 @@ describe('Delete file from upload (50)', () => {
     // item should be in the trash
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).should('not.exist')
 
-    cy.intercept('/starsky/api/index?f=/starsky-end2end-test').as('e2e_page')
-    cy.visit(config.url)
-    cy.wait('@e2e_page')
-
-    if (envName === 'local') {
-      cy.request('/starsky/api/index?f=/starsky-end2end-test').then((res) => {
-        cy.log(JSON.stringify(res.body.fileIndexItems.find(p => p.fileName === fileName1)))
+    // display keys
+    cy.window().then(win => {
+      const keys = Object.keys(win.sessionStorage)
+      keys.forEach(key => {
+        cy.log(key)
       })
-    }
+    })
 
     // remove keys when exists, switching can be so fast that the removal isn't done
     cy.window().then(win => {
@@ -219,13 +217,16 @@ describe('Delete file from upload (50)', () => {
       })
     })
 
-    // display keys
-    cy.window().then(win => {
-      const keys = Object.keys(win.sessionStorage)
-      keys.forEach(key => {
-        cy.log(key)
+    cy.wait(500)
+    cy.intercept('/starsky/api/index?f=/starsky-end2end-test').as('e2e_page')
+    cy.visit(config.url)
+    cy.wait('@e2e_page')
+
+    if (envName === 'local') {
+      cy.request('/starsky/api/index?f=/starsky-end2end-test').then((res) => {
+        cy.log(JSON.stringify(res.body.fileIndexItems.find(p => p.fileName === fileName1)))
       })
-    })
+    }
 
     cy.request('/starsky/api/memorycachedebug').then((res) => {
       cy.log(JSON.stringify(res.body))

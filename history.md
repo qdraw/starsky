@@ -43,6 +43,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Breaking change) _Back-end_ Upgrade to .NET 6 - SDK 6.0.200 (PR #642)
 - [x]   (Breaking change) _Back-end_ Change mirror locations (exiftool/geonames) (PR #642)
 - [x]   (Changed) _Back-end_ Upgrade deps ImageSharp and RazorLight (PR #652) 
+- [x]   (Changed) _Back-end_ Write stream to unique temp folder to avoid collision with filenames (PR #653)
+- [x]   (Changed) _Tools_ Fix some end2end tests (PR #653)
 
 # version 0.5.0-beta.2 - 2022-02-18
 - [x]   (Changed) _Back-end_ Add correct connect-src url for websocket without port (PR #606)

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -133,9 +136,47 @@ namespace starskytest.Helpers
 			var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
 			Assert.AreEqual("UPPERCASE.JPG",result);    
 		}
+		
+		/// <summary>
+		/// @see: https://github.com/dotnet/aspnetcore/blob/main/src/Http/WebUtilities/test/MultipartReaderTests.cs
+		/// </summary>
+		private const string TwoPartBody =
+			"--9051914041544843365972754266\r\n" +
+			"Content-Disposition: form-data; name=\"text\"\r\n" +
+			"\r\n" +
+			"text default\r\n" +
+			"--9051914041544843365972754266\r\n" +
+			"Content-Disposition: form-data; name=\"file1\"; filename=\"a.txt\"\r\n" +
+			"Content-Type: text/plain\r\n" +
+			"\r\n" +
+			"Content of a.txt.\r\n" +
+			"\r\n" +
+			"--9051914041544843365972754266--\r\n";
+		
+		private static MemoryStream MakeStream(string text)
+		{
+			return new MemoryStream(Encoding.UTF8.GetBytes(text));
+		}
+		private const string Boundary = "9051914041544843365972754266";
+		
         
-      
-            
-            
+      	[TestMethod]
+      	public async Task FileStreamingHelper_MultipartRequestHelper()
+      	{
+	        var contentType = $"multipart/form-data; boundary=\"{Boundary}\"";
+	        
+	        // string contentType, Stream requestBody, AppSettings appSettings, 
+	        // ISelectorStorage selectorStorage, string headerFileName = null
+
+	        var stream = MakeStream(TwoPartBody);
+	        var storage = new FakeIStorage();
+	        storage.CreateDirectory(_appSettings.TempFolder);
+	        var streamSelector = new FakeSelectorStorage(storage);
+
+	        await FileStreamingHelper.StreamFile(contentType, stream, _appSettings, streamSelector);
+
+	        var tempPath = storage.GetAllFilesInDirectoryRecursive(_appSettings.TempFolder).FirstOrDefault();
+	        Assert.IsTrue(tempPath?.EndsWith("a.txt"));
+        }
 	}
 }

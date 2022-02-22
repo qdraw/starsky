@@ -134,7 +134,7 @@ namespace starsky.Controllers
 			// Remove source files
 			foreach ( var toDelPath in tempImportPaths )
 			{
-				_hostFileSystemStorage.FileDelete(toDelPath);
+				RemoveTempAndParentStreamFolder(toDelPath);
 			}
 
 			return importedFiles;
@@ -202,7 +202,7 @@ namespace starsky.Controllers
 				await _thumbnailStorage.WriteStreamAsync(
 					_hostFileSystemStorage.ReadStream(tempImportPaths[i]), thumbnailNames[i]);
 				// Remove from temp folder to avoid long list of files
-				_hostFileSystemStorage.FileDelete(tempImportPaths[i]);
+				RemoveTempAndParentStreamFolder(tempImportPaths[i]);
 			}
 
 			return Json(thumbnailNames);
@@ -239,9 +239,21 @@ namespace starsky.Controllers
 			if (!isDownloaded) return NotFound("'file url' not found or domain not allowed " + fileUrl);
 
 			var importedFiles = await _import.Importer(new List<string>{tempImportFullPath}, importSettings);
-			_hostFileSystemStorage.FileDelete(tempImportFullPath);
+			RemoveTempAndParentStreamFolder(tempImportFullPath);
+			
 			if(importedFiles.Count == 0) Response.StatusCode = 206;
 			return Json(importedFiles);
+		}
+
+		private void RemoveTempAndParentStreamFolder(string tempImportFullPath)
+		{
+			_hostFileSystemStorage.FileDelete(tempImportFullPath);
+			// remove parent folder of tempFile
+			var parentPath = Directory.GetParent(tempImportFullPath)?.FullName;
+			if ( !string.IsNullOrEmpty(parentPath) && parentPath != _appSettings.TempFolder )
+			{
+				_hostFileSystemStorage.FolderDelete(parentPath);
+			}
 		}
 	}
 }
