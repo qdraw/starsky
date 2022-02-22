@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
 using starskytest.FakeMocks;
@@ -30,8 +32,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			_logger = new FakeIWebLogger();
 			_query = new Query(dbContext, 
-				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
+				new AppSettings{Verbose = true}, serviceScope,_logger ,_memoryCache);
+			_queryNoVerbose = new Query(dbContext, 
+				new AppSettings{Verbose = false}, serviceScope,_logger ,_memoryCache);
 		}
 
 		private IServiceScopeFactory CreateNewScope()
@@ -50,6 +55,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		private static FileIndexItem _insertSearchDatahi4JpgInput;
 		private static FileIndexItem _insertSearchDatahi2SubfolderJpgInput;
 		private readonly IMemoryCache _memoryCache;
+		private readonly FakeIWebLogger _logger;
+		private readonly Query _queryNoVerbose;
 
 		private void InsertSearchData()
 		{
@@ -1005,7 +1012,28 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        
 			Assert.AreEqual(1,displayFileFolders.Count(p => p.FileName == "cache"));
 		}
+
+		[TestMethod]
+		public void CacheUpdateItem_Skip_ShouldSetItem()
+		{
+			var item1 = new FileIndexItem {Id = 400, Tags = "hi", FileName = "cache"};
+			// already verbose
+			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
+			
+			Assert.IsTrue(_logger.TrackedInformation.FirstOrDefault().Item2.Contains("[CacheUpdateItem]"));
+		}
 		
+		[TestMethod]
+		public void CacheUpdateItem_Skip_ShouldSetItem1()
+		{
+			_logger.TrackedInformation = new List<(Exception, string)>();
+			var item1 = new FileIndexItem {Id = 400, Tags = "hi", FileName = "cache"};
+			// not verbose
+			_queryNoVerbose.CacheUpdateItem(new List<FileIndexItem>{item1});
+			
+			Assert.AreEqual(0,_logger.TrackedInformation.Count);
+		}
+
 		[TestMethod]
 		public void CacheUpdateItem_ignore_when_parent_does_notExist()
 		{
