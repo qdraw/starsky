@@ -82,8 +82,6 @@ namespace starsky.foundation.http.Streaming
                 return tempPaths;
             }
             
-            // From here on no unit tests anymore :(
-            
             // Used to accumulate all the form url encoded key value pairs in the 
             // request.
 
