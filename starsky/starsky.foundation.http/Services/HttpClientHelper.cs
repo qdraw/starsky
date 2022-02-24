@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -72,6 +73,32 @@ namespace starsky.foundation.http.Services
 			try
 			{
 				using (HttpResponseMessage response = await _httpProvider.GetAsync(sourceHttpUrl))
+				using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+				{
+					var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
+					var result = await reader.ReadToEndAsync();
+					return new KeyValuePair<bool, string>(response.StatusCode == HttpStatusCode.OK,result);
+				}
+			}
+			catch (HttpRequestException exception)
+			{
+				return new KeyValuePair<bool, string>(false, exception.Message);
+			}
+		}
+		
+		public async Task<KeyValuePair<bool,string>> PostString(string sourceHttpUrl, HttpContent? httpContent)
+		{
+			Uri sourceUri = new Uri(sourceHttpUrl);
+
+			_logger.LogInformation("[PostString] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
+
+			// // allow whitelist and https only
+			if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
+				new KeyValuePair<bool, string>(false,string.Empty);
+
+			try
+			{
+				using (HttpResponseMessage response = await _httpProvider.PostAsync(sourceHttpUrl, httpContent))
 				using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
 				{
 					var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
