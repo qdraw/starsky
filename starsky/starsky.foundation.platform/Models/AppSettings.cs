@@ -633,12 +633,20 @@ namespace starsky.foundation.platform.Models
 		/// <returns>AppSettings duplicated></returns>
 		public AppSettings CloneToDisplay()
 		{
-
+			var userProfileFolder = Environment.GetFolderPath(
+				Environment.SpecialFolder.UserProfile);
+			
 			var appSettings = (AppSettings) MemberwiseClone();
 		    
 			if ( appSettings.DatabaseType != DatabaseTypeList.Sqlite )
 			{
 				appSettings.DatabaseConnection = CloneToDisplaySecurityWarning;
+			}
+			
+			if ( appSettings.DatabaseType == DatabaseTypeList.Sqlite )
+			{
+				appSettings.DatabaseConnection = appSettings.DatabaseConnection.
+					Replace(userProfileFolder, "~");
 			}
 
 			if ( !string.IsNullOrEmpty(appSettings.ApplicationInsightsInstrumentationKey) )
@@ -650,6 +658,38 @@ namespace starsky.foundation.platform.Models
 			{
 				appSettings._webftp = CloneToDisplaySecurityWarning;
 			}
+
+			
+			if ( !string.IsNullOrEmpty(appSettings.StorageFolder) )
+			{
+				appSettings.StorageFolder =
+					appSettings.StorageFolder.Replace(userProfileFolder, "~");
+			}
+
+			if ( !string.IsNullOrEmpty(appSettings.TempFolder) )
+			{
+				appSettings.TempFolder =
+					appSettings.TempFolder.Replace(userProfileFolder, "~");
+			}
+
+			if ( !string.IsNullOrEmpty(appSettings.ExifToolPath) )
+			{
+				appSettings.ExifToolPath =
+					appSettings.ExifToolPath.Replace(userProfileFolder, "~");
+			}
+			
+			if ( !string.IsNullOrEmpty(appSettings.ThumbnailTempFolder) )
+			{
+				appSettings.ThumbnailTempFolder =
+					appSettings.ThumbnailTempFolder.Replace(userProfileFolder, "~");
+			}
+			
+			if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) )
+			{
+				appSettings.AppSettingsPath =
+					appSettings.AppSettingsPath.Replace(userProfileFolder, "~");
+			}
+
 			return appSettings;
 		}
 

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using starsky.foundation.http.Interfaces;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Helpers;
 
 namespace starsky.foundation.webtelemetry.Helpers
 {
@@ -23,10 +24,14 @@ namespace starsky.foundation.webtelemetry.Helpers
 		}
 
 		private const string PackageTelemetryUrl = "https://qdraw.nl/special/starsky/telemetry";
-		
-		public async Task Push()
-		{
 
+		public static object GetPropValue(object src, string propName)
+		{
+			return src.GetType().GetProperty(propName).GetValue(src, null);
+		}
+		
+		private List<KeyValuePair<string, string>> CollectData()
+		{
 			OSPlatform? currentPlatform = null;
 			foreach ( var platform in new List<OSPlatform>{OSPlatform.Linux, 
 				         OSPlatform.Windows, OSPlatform.OSX, 
@@ -39,18 +44,43 @@ namespace starsky.foundation.webtelemetry.Helpers
 			                      Environment.GetEnvironmentVariable(
 				                      "DOTNET_RUNNING_IN_CONTAINER") == "true";
 			
+			var buildDate = DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly()).ToString(
+				new CultureInfo("nl-NL"));
+			
 			var data = new List<KeyValuePair<string, string>>
 			{
 				new KeyValuePair<string, string>("AppVersion", _appSettings.AppVersion),
-				new KeyValuePair<string, string>("NetVersion", System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription),
-				new KeyValuePair<string, string>("OSVersion", System.Environment.OSVersion.Version.ToString()),
-				new KeyValuePair<string, string>("OSLong", RuntimeInformation.OSDescription),
+				new KeyValuePair<string, string>("NetVersion", RuntimeInformation.FrameworkDescription),
+				new KeyValuePair<string, string>("OSVersion", Environment.OSVersion.Version.ToString()),
+				new KeyValuePair<string, string>("OSDescriptionLong", RuntimeInformation.OSDescription),
 				new KeyValuePair<string, string>("OSPlatform", currentPlatform.ToString()),
 				new KeyValuePair<string, string>("DockerContainer", dockerContainer.ToString()),
-				new KeyValuePair<string, string>("CurrentCulture", CultureInfo.CurrentCulture.ThreeLetterISOLanguageName)
+				new KeyValuePair<string, string>("CurrentCulture", CultureInfo.CurrentCulture.ThreeLetterISOLanguageName),
+				new KeyValuePair<string, string>("BuildDate", buildDate),
+				new KeyValuePair<string, string>("AspNetCoreEnvironment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")),
 			};
-			await _httpClientHelper.PostString(PackageTelemetryUrl,new FormUrlEncodedContent(data));
 			
+			var type = typeof(AppSettings);
+			var properties = type.GetProperties();
+			// ReSharper disable once LoopCanBeConvertedToQuery
+			foreach (var property in properties)
+			{
+				if ( property.Name == nameof(_appSettings.BaseDirectoryProject) )
+				{
+					continue;
+				}
+				
+				var value = GetPropValue(_appSettings.CloneToDisplay(), property.Name)?.ToString();
+				data.Add(new KeyValuePair<string, string>("AppSettings" + property.Name, value));
+			}
+
+			return data;
+		}
+		
+		public async Task Push()
+		{
+			var data = CollectData();
+			var result = await _httpClientHelper.PostString(PackageTelemetryUrl,new FormUrlEncodedContent(data));
 		}
 	}
 }
