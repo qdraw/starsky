@@ -125,8 +125,8 @@ namespace starsky.foundation.storage.Services
 				randBytes = new byte[1];
 			}
 
-			// Create a new RNGCryptoServiceProvider.
-			var rand = new RNGCryptoServiceProvider();
+			// Create a new RNGCryptoServiceProvider
+			var rand = RandomNumberGenerator.Create();
 
 			// Fill the buffer with random bytes.
 			rand.GetBytes(randBytes);
