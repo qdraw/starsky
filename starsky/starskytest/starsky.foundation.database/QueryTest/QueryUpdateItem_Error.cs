@@ -109,9 +109,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				throw new NotImplementedException();
 			}
 
+#pragma warning disable 8618
+			// ReSharper disable once UnassignedGetOnlyAutoProperty
 			public IEntityType EntityType { get; }
+#pragma warning restore 8618
 			public EntityState EntityState { get; set; }
+#pragma warning disable 8618
+			// ReSharper disable once UnassignedGetOnlyAutoProperty
 			public IUpdateEntry SharedIdentityEntry { get; }
+#pragma warning restore 8618
 		}
         
 		private class AppDbContextConcurrencyException : ApplicationDbContext
