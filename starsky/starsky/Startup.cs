@@ -60,10 +60,11 @@ namespace starsky
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
             
+            // LoggerFactory
             services.AddApplicationInsightsLogging(_appSettings);
 
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
-            new SetupDatabaseTypes(_appSettings,services, new ConsoleWrapper()).BuilderDb(foundationDatabaseName);
+            new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
 	            
             // Enable Dual Authentication 

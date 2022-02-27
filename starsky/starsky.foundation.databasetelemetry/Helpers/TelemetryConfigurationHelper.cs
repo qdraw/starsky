@@ -2,12 +2,13 @@ using System;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.ApplicationInsights.Extensibility;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.databasetelemetry.Helpers
 {
 	public static class TelemetryConfigurationHelper
 	{
-		public static TelemetryClient InitTelemetryClient(string appInsightsConnectionString, string roleName)
+		public static TelemetryClient InitTelemetryClient(string appInsightsConnectionString, string roleName, IWebLogger logger)
 		{
 			try
 			{
@@ -20,8 +21,11 @@ namespace starsky.foundation.databasetelemetry.Helpers
 				module.Initialize(telemetryConfiguration);
 				return telemetryClient;
 			}
-			catch (OutOfMemoryException)
+			catch (OutOfMemoryException exception)
 			{
+				logger.LogInformation($"catch-ed exception; {exception.Message} ", exception);
+				logger.LogInformation("run GC.Collect next -->");
+				GC.Collect();
 				return null;
 			}
 		}
