@@ -101,7 +101,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task PublishCreate_newItem()
+		public void PublishCreate_newItem()
 		{
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 				new FakeIWebHtmlPublishService(), 
@@ -120,7 +120,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task PublishCreate_newItem_readonly()
+		public void PublishCreate_newItem_readonly()
 		{
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 				new FakeIWebHtmlPublishService(), 
@@ -139,7 +139,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task PublishCreate_FakeBg_Expect_Generate_FakeZip_newItem()
+		public void PublishCreate_FakeBg_Expect_Generate_FakeZip_newItem()
 		{
 			var fakeBg = new FakeIUpdateBackgroundTaskQueue();
 			var fakeIWebHtmlPublishService = new FakeIWebHtmlPublishService();
@@ -157,7 +157,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task PublishCreate_NotFound()
+		public void PublishCreate_NotFound()
 		{
 			var controller = new PublishController(new AppSettings(), 
 				new FakeIPublishPreflight(),
@@ -176,7 +176,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task PublishCreate_existItem_NoForce()
+		public void PublishCreate_existItem_NoForce()
 		{
 			var appSettings = new AppSettings{TempFolder = Path.DirectorySeparatorChar.ToString() };
 			var storage = new FakeIStorage(new List<string> { Path.DirectorySeparatorChar + "test" },
@@ -196,7 +196,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task PublishCreate_existItem_Force()
+		public void PublishCreate_existItem_Force()
 		{
 			var appSettings = new AppSettings {TempFolder = Path.DirectorySeparatorChar.ToString() };
 			var storage = new FakeIStorage(new List<string> {Path.DirectorySeparatorChar + "test"}, 
