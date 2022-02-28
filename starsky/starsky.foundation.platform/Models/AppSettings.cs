@@ -59,6 +59,7 @@ namespace starsky.foundation.platform.Models
 			if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
 		}
 
+		[PackageTelemetry]
 		public string BaseDirectoryProject => AppDomain.CurrentDomain
 			.BaseDirectory
 			.Replace("starskyadmincli", "starsky")
@@ -173,6 +174,7 @@ namespace starsky.foundation.platform.Models
 			string.IsNullOrEmpty(
 				Environment.GetEnvironmentVariable("app__storageFolder"));
 
+		[PackageTelemetry]
 		public bool? Verbose { get; set; }
 
 		public bool IsVerbose()
@@ -183,6 +185,8 @@ namespace starsky.foundation.platform.Models
 		// Used in the webHtmlCli to store the log item name
 		// used for the url
 		private string _name;
+		
+		[PackageTelemetry]
 		public string Name
 		{
 			get => _name ?? "Starsky"; // defaults to this
@@ -235,6 +239,7 @@ namespace starsky.foundation.platform.Models
 		/// Type of the database, sqlite, mysql or inmemory
 		/// </summary>
 		[JsonConverter(typeof(JsonStringEnumConverter))]
+		[PackageTelemetry]
 		// newtonsoft uses: StringEnumConverter
 		public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
 
@@ -258,7 +263,12 @@ namespace starsky.foundation.platform.Models
 			}
 		}
 
+		/// <summary>
+		/// Internal Structure save location
+		/// </summary>
 		private string _structure;
+		
+		[PackageTelemetry]
 		public string Structure
 		{
 			get
@@ -296,7 +306,10 @@ namespace starsky.foundation.platform.Models
 			}
 		}
 
-		// Used for syncing gpx files
+		/// <summary>
+		/// Used for syncing gpx files
+		/// </summary>
+		[PackageTelemetry]
 		public string CameraTimeZone
 		{
 			get
@@ -426,13 +439,14 @@ namespace starsky.foundation.platform.Models
 			}
 		}
 
-		// C# 6+ required for this
+		[PackageTelemetry]
 		public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
 		/// <summary>
 		/// fallback in constructor
 		/// use env variable: app__ReadOnlyFolders__0 - value
 		/// </summary>
+		[PackageTelemetry]
 		public List<string> ReadOnlyFolders { get; set; }
 
 		/// <summary>
@@ -448,37 +462,45 @@ namespace starsky.foundation.platform.Models
 			return result != null;
 		}
         
-		// C# 6+ required for this
+		[PackageTelemetry]
 		public bool? AddMemoryCache { get; set; } = true;
         
 		/// <summary>
 		/// Display swagger pages
 		/// </summary>
+		[PackageTelemetry]
 		public bool? AddSwagger { get; set; } = false;
 
 		/// <summary>
 		/// Export swagger pages (use AddSwagger and AddSwaggerExport to export)
 		/// </summary>	    
+		[PackageTelemetry]
 		public bool? AddSwaggerExport { get; set; } = false;
 
 		/// <summary>
 		/// Stop application after swagger Export.
 		/// Need to set AddSwagger and AddSwaggerExport also to true to take effect
 		/// </summary>
+		[PackageTelemetry]
 		public bool? AddSwaggerExportExitAfter { get; set; } = false;
 
 		/// <summary>
 		/// Set Meta Thumbnails on import
 		/// </summary>
+		[PackageTelemetry]
 		public bool? MetaThumbnailOnImport { get; set; } = true;
 		
-		private string _webftp; 
+		/// <summary>
+		/// Internal location for webFtp credentials
+		/// </summary>
+		private string _webFtp; 
+		
 		public string WebFtp
 		{
 			get
 			{
-				if ( string.IsNullOrEmpty(_webftp) ) return string.Empty;
-				return _webftp;
+				if ( string.IsNullOrEmpty(_webFtp) ) return string.Empty;
+				return _webFtp;
 			}
 			set
 			{
@@ -490,7 +512,7 @@ namespace starsky.foundation.platform.Models
 				     && uriAddress.Scheme == "ftp" 
 				     && uriAddress.LocalPath.Length >= 1 )
 				{
-					_webftp = value;
+					_webFtp = value;
 				}
 
 			}
@@ -505,6 +527,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Publishing profiles used within the publishing module (Order by Key)
 		/// </summary>
+		[PackageTelemetry]
 		public Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfiles {
 			get => PublishProfilesPrivate;
 			set
@@ -520,22 +543,21 @@ namespace starsky.foundation.platform.Models
 		/// Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)
 		/// This setting is by default false. The only 2 build-in exceptions are when there are no accounts or you already logged in
 		/// </summary>
+		[PackageTelemetry]
 		public bool? IsAccountRegisterOpen { get; set; }
 
 		/// <summary>
 		/// Used for Desktop App, to allow localhost logins without password and use default account
 		/// </summary>
+		[PackageTelemetry]
 		public bool? NoAccountLocalhost { get; set; } = false;
 		
 		/// <summary>
 		/// When a new account is created, which Account Role is assigned 
 		/// Defaults to User, but can also be Administrator
 		/// </summary>
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-		[JsonConverter(typeof(StringEnumConverter))]
-#endif
+		[PackageTelemetry]
 		public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
 	    
 		/// <summary>
@@ -558,10 +580,13 @@ namespace starsky.foundation.platform.Models
 			set => ApplicationInsightsInstrumentationKeyPrivate = value;
 		}
 
+		[PackageTelemetry]
 		public bool? ApplicationInsightsLog { get; set; } = true;
 
+		[PackageTelemetry]
 		public bool? ApplicationInsightsDatabaseTracking { get; set; } = false;
 
+		[PackageTelemetry]
 		public int MaxDegreesOfParallelism { get; set; } = 6;
 	    
 		/// <summary>
@@ -569,21 +594,25 @@ namespace starsky.foundation.platform.Models
 		/// You should enable this when going to production
 		/// Ignored in Debug/Develop mode
 		/// </summary>
+		[PackageTelemetry]
 		public bool? UseHttpsRedirection { get; set; } = false;
 
 		/// <summary>
 		/// Use WebSockets to update the UI realtime
 		/// </summary>
+		[PackageTelemetry]
 		public bool? UseRealtime { get; set; } = true;
 
 		/// <summary>
 		/// Watch the fileSystem for changes
 		/// </summary>
+		[PackageTelemetry]
 		public bool? UseDiskWatcher { get; set; } = true;
 	    
 		/// <summary>
 		/// Check if there are updates
 		/// </summary>
+		[PackageTelemetry]
 		public bool? CheckForUpdates { get; set; } = true;
 
 		/// <summary>
@@ -610,7 +639,9 @@ namespace starsky.foundation.platform.Models
 		{
 			new CameraMakeModel("Apple",string.Empty)
 		};
-		
+
+		public bool? EnablePackageTelemetry { get; set; } = true;
+
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
 		// -------------------------------------------------
@@ -656,7 +687,7 @@ namespace starsky.foundation.platform.Models
 
 			if ( !string.IsNullOrEmpty(appSettings.WebFtp) )
 			{
-				appSettings._webftp = CloneToDisplaySecurityWarning;
+				appSettings._webFtp = CloneToDisplaySecurityWarning;
 			}
 
 			
@@ -821,4 +852,7 @@ namespace starsky.foundation.platform.Models
 
 	}
 
+	public class PackageTelemetryAttribute : Attribute
+	{
+	}
 }

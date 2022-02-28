@@ -25,12 +25,12 @@ namespace starsky.foundation.webtelemetry.Helpers
 
 		private const string PackageTelemetryUrl = "https://qdraw.nl/special/starsky/telemetry";
 
-		public static object GetPropValue(object src, string propName)
+		private static object GetPropValue(object src, string propName)
 		{
-			return src.GetType().GetProperty(propName).GetValue(src, null);
+			return src?.GetType().GetProperty(propName)?.GetValue(src, null);
 		}
-		
-		private List<KeyValuePair<string, string>> CollectData()
+
+		private static OSPlatform? GetCurrentOsPlatform()
 		{
 			OSPlatform? currentPlatform = null;
 			foreach ( var platform in new List<OSPlatform>{OSPlatform.Linux, 
@@ -39,6 +39,13 @@ namespace starsky.foundation.webtelemetry.Helpers
 			{
 				currentPlatform = platform;
 			}
+
+			return currentPlatform;
+		}
+
+		private List<KeyValuePair<string, string>> GetSystemData()
+		{
+			var currentPlatform = GetCurrentOsPlatform();
 
 			var dockerContainer = currentPlatform == OSPlatform.Linux &&
 			                      Environment.GetEnvironmentVariable(
@@ -51,6 +58,8 @@ namespace starsky.foundation.webtelemetry.Helpers
 			{
 				new KeyValuePair<string, string>("AppVersion", _appSettings.AppVersion),
 				new KeyValuePair<string, string>("NetVersion", RuntimeInformation.FrameworkDescription),
+				new KeyValuePair<string, string>("OSArchitecture", RuntimeInformation.OSArchitecture.ToString()),
+				new KeyValuePair<string, string>("ProcessArchitecture", RuntimeInformation.ProcessArchitecture.ToString()),
 				new KeyValuePair<string, string>("OSVersion", Environment.OSVersion.Version.ToString()),
 				new KeyValuePair<string, string>("OSDescriptionLong", RuntimeInformation.OSDescription),
 				new KeyValuePair<string, string>("OSPlatform", currentPlatform.ToString()),
@@ -59,27 +68,37 @@ namespace starsky.foundation.webtelemetry.Helpers
 				new KeyValuePair<string, string>("BuildDate", buildDate),
 				new KeyValuePair<string, string>("AspNetCoreEnvironment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")),
 			};
-			
+			return data;
+		}
+		
+		private List<KeyValuePair<string, string>> AddAppSettingsData( List<KeyValuePair<string, string>> data)
+		{
 			var type = typeof(AppSettings);
 			var properties = type.GetProperties();
 			// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (var property in properties)
 			{
-				if ( property.Name == nameof(_appSettings.BaseDirectoryProject) )
+
+				var someAttribute = Attribute.GetCustomAttributes(property).FirstOrDefault(x => x is PackageTelemetryAttribute);
+				if ( someAttribute == null )
 				{
 					continue;
 				}
-				
 				var value = GetPropValue(_appSettings.CloneToDisplay(), property.Name)?.ToString();
 				data.Add(new KeyValuePair<string, string>("AppSettings" + property.Name, value));
 			}
-
 			return data;
 		}
 		
 		public async Task Push()
 		{
-			var data = CollectData();
+			if ( _appSettings.EnablePackageTelemetry == false )
+			{
+				return;
+			}
+			
+			var data = GetSystemData();
+			data = AddAppSettingsData(data);
 			var result = await _httpClientHelper.PostString(PackageTelemetryUrl,new FormUrlEncodedContent(data));
 		}
 	}
