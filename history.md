@@ -47,7 +47,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Tools_ Fix some end2end tests (PR #653)
 - [x]   (Fixed) _Back-end_ System.OutOfMemoryException trigger Garbage collection (PR #661 / Issue #660)
 - [x]   (Fixed) _Back-end_ Remove Apple from VideoUseLocalTime since they use UTC (PR #661)
-- [x]   (Fixed) _Back-end_ Write first tmp file in upload controller to avoid partly written stream (PR #661 / Issue #662) 
+- [x]   (Fixed) _Back-end_ Write first tmp file in upload controller to avoid partly written stream (PR #661 / Issue #662)
+- [x]   (Fixed) _Back-end_ PreserveCompilationContext set for RazorLight cshtml generation
 
 # version 0.5.0-beta.2 - 2022-02-18
 - [x]   (Changed) _Back-end_ Add correct connect-src url for websocket without port (PR #606)

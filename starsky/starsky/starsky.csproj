@@ -24,7 +24,13 @@
         <None Remove="Properties\.gitkeep" />
         <ContentWithTargetPath Include="Properties/default-init-launchSettings.json" TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
-    
+
+    <PropertyGroup>
+        <!-- For RazorLight -->
+        <!-- https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnet-core/6.0/preservecompilationcontext-not-set-by-default -->
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+
     <PropertyGroup>
         <!-- https://www.ttmind.com/techpost/how-to-reduce-the-size-of-published-files-of-aspnet-core-pro-->
         <!--disable Quick JIT is enabled and creates fully optimized code -->

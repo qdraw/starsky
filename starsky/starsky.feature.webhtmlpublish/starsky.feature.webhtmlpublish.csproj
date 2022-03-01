@@ -9,6 +9,12 @@
         <Version>0.5.0-beta.3</Version>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- For RazorLight -->
+        <!-- https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnet-core/6.0/preservecompilationcontext-not-set-by-default -->
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+    
     <ItemGroup>
       <PackageReference Include="RazorLight" Version="2.0.0-rc.6" />
       <PackageReference Include="SixLabors.ImageSharp" Version="2.0.0" />
