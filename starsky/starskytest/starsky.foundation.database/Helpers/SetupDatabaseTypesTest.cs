@@ -96,19 +96,19 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public void BuilderDb_console()
 		{
-			var console = new FakeConsoleWrapper();
+			var console = new FakeIWebLogger();
 			var appSettings = new AppSettings {Verbose = true, DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase};
 			var services = new ServiceCollection();
 
 			new SetupDatabaseTypes(appSettings, services, console).BuilderDb();
 
-			Assert.IsTrue(console.WrittenLines[0].Contains("Database connection:"));
+			Assert.IsTrue(console.TrackedInformation[0].Item2.Contains("Database connection:"));
 		}
 
 		[TestMethod]
 		public void EnableDatabaseTracking_shouldEnable()
 		{
-			var console = new FakeConsoleWrapper();
+			var console = new FakeIWebLogger();
 			var appSettings = new AppSettings {
 				Verbose = true,
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
@@ -126,7 +126,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public void EnableDatabaseTracking_shouldDisable()
 		{
-			var console = new FakeConsoleWrapper();
+			var console = new FakeIWebLogger();
 			var appSettings = new AppSettings {
 				Verbose = true,
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,

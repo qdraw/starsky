@@ -14,4 +14,8 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+    </ItemGroup>
+
 </Project>

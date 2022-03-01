@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.webtelemetry.Helpers
 {
@@ -19,6 +21,8 @@ namespace starsky.foundation.webtelemetry.Helpers
 	            
 				logging.AddApplicationInsights(appSettings.ApplicationInsightsInstrumentationKey);
 			});
+
+			services.AddScoped<IWebLogger, WebLogger>();
 		}
 	}
 }

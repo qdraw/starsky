@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
@@ -16,13 +17,16 @@ namespace starsky.foundation.database.Helpers
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IServiceCollection _services;
-		private readonly IConsole _console;
+		private readonly IWebLogger _logger;
 
-		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services = null, IConsole console = null)
+		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services = null, IWebLogger logger = null)
 		{
 			_appSettings = appSettings;
 			_services = services;
-			_console = console;
+
+			// if null get from service collection
+			logger ??= _services?.BuildServiceProvider().GetService<IWebLogger>();
+			_logger = logger;
 		}
 
 		public ApplicationDbContext BuilderDbFactory()
@@ -98,7 +102,7 @@ namespace starsky.foundation.database.Helpers
 				new DatabaseTelemetryInterceptor(
 					TelemetryConfigurationHelper.InitTelemetryClient(
 						_appSettings.ApplicationInsightsInstrumentationKey, 
-						_appSettings.ApplicationType.ToString())
+						_appSettings.ApplicationType.ToString(),_logger)
 					)
 				);
 			return true;
@@ -107,11 +111,11 @@ namespace starsky.foundation.database.Helpers
 		public void BuilderDb(string foundationDatabaseName = "")
 		{
 			if ( _services == null ) throw new AggregateException("services is missing");
-			if ( _console != null && _appSettings.IsVerbose() )
+			if ( _logger != null && _appSettings.IsVerbose() )
 			{
-				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
+				_logger.LogInformation($"Database connection: {_appSettings.DatabaseConnection}");
 			}
-			_console?.WriteLine($"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}" );
+			_logger?.LogInformation($"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}" );
 
 #if ENABLE_DEFAULT_DATABASE
 				// dirty hack
