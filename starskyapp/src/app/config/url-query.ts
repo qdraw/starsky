@@ -22,6 +22,6 @@ export default class UrlQuery {
   }
 
   public DownloadPhoto(subPath: string) {
-    return `/starsky/api/download-photo?isThumbnail=false&f=${subPath}`;
+    return `/starsky/api/download-photo?isThumbnail=false&f=${subPath}&cache=false`;
   }
 }

@@ -89,9 +89,9 @@ namespace starsky.Controllers
             if (!isThumbnail)
             {
 	            if ( cache ) CacheControlOverwrite.SetExpiresResponseHeaders(Request);
-	            var fs = _iStorage.ReadStream(fileIndexItem.FilePath);
+	            var fileStream = _iStorage.ReadStream(fileIndexItem.FilePath);
 	            // Return the right mime type (enableRangeProcessing = needed for safari and mp4)
-	            return File(fs, MimeHelper.GetMimeTypeByFileName(fileIndexItem.FilePath),true);
+	            return File(fileStream, MimeHelper.GetMimeTypeByFileName(fileIndexItem.FilePath),true);
             }
 
             if (!_thumbnailStorage.ExistFolder("/"))
