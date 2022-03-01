@@ -25,7 +25,7 @@ namespace starsky.foundation.database.Helpers
 			_services = services;
 
 			// if null get from service collection
-			logger ??= _services.BuildServiceProvider().GetService<IWebLogger>();
+			logger ??= _services?.BuildServiceProvider().GetService<IWebLogger>();
 			_logger = logger;
 		}
 

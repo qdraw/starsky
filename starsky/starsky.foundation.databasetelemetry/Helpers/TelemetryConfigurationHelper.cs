@@ -23,8 +23,8 @@ namespace starsky.foundation.databasetelemetry.Helpers
 			}
 			catch (OutOfMemoryException exception)
 			{
-				logger.LogInformation($"catch-ed exception; {exception.Message} ", exception);
-				logger.LogInformation("run GC.Collect next -->");
+				logger?.LogInformation($"catch-ed exception; {exception.Message} ", exception);
+				logger?.LogInformation("run GC.Collect next -->");
 				GC.Collect();
 				return null;
 			}
