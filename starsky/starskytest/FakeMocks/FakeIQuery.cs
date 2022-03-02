@@ -253,7 +253,7 @@ namespace starskytest.FakeMocks
 		}
 
 		public async Task<List<FileIndexItem>> GetAllObjectsAsync(
-			List<string> filePaths, int fallbackDelay = TODO)
+			List<string> filePaths, int fallbackDelay = 5000)
 		{
 			var result = new List<FileIndexItem>();
 			foreach ( var subPath in filePaths )
