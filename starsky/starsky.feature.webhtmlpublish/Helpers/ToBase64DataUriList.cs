@@ -44,7 +44,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 				}
 				
 				base64ImageArray[i] = "data:image/png;base64," + Base64Helper.ToBase64(memoryStream);
-				memoryStream.Dispose();
+				await memoryStream.DisposeAsync();
 			}
 
 			return base64ImageArray;

@@ -290,7 +290,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				height = width;
 				width = 0;
 			}
-						
+
 			image.Mutate(x => x.AutoOrient());
 			image.Mutate(x => x
 				.Resize(width, height, KnownResamplers.Lanczos3)
@@ -327,7 +327,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			{
 				await image.SaveAsync(outputStream, new PngEncoder{
 					ColorType = PngColorType.Rgb, 
-					CompressionLevel = PngCompressionLevel.Level9, 
+					CompressionLevel = PngCompressionLevel.BestSpeed, 
+					IgnoreMetadata = true,
+					TransparentColorMode = PngTransparentColorMode.Clear,
 				});
 				return;
 			}
