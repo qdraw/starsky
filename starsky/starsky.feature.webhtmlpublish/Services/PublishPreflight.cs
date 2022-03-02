@@ -77,7 +77,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			{
 				name = suggestedInput;
 			}
-			return name;
+			return name.Trim();
 		}
 	}
 
