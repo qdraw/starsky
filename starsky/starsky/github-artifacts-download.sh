@@ -30,25 +30,29 @@ case $(uname -m) in
     ;;
 esac
 
-# get arguments
-ARGUMENTS=("$@")
-
 CURRENT_DIR=$(dirname "$0")
 OUTPUT_DIR=$CURRENT_DIR
 
+# get arguments
+ARGUMENTS=("$@")
+
+    echo ${ARGUMENTS}
+
+
 for ((i = 1; i <= $#; i++ )); do
+  CURRENT=$(($i-1))
+  if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
+  then
+    echo "--runtime linux-arm OR --runtime osx-x64 OR --runtime win-x64"
+    echo "--branch master"
+    echo "--token anything"
+    echo "--output output_dir default folder_of_this_file"
+    exit 0
+  fi
+  
   if [ $i -gt 1 ]; then
     PREV=$(($i-2))
-    CURRENT=$(($i-1))
-
-    if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
-    then
-        echo "--runtime linux-arm"
-        echo "--branch master"
-        echo "--token anything"
-        echo "--output output_dir default folder_of_this_file"
-    fi
-
+    
     if [[ ${ARGUMENTS[PREV]} == "--runtime" ]];
     then
         RUNTIME="${ARGUMENTS[CURRENT]}"
@@ -69,7 +73,6 @@ done
 # add slash if not exists
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
 [[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
-
 
 # rename
 VERSION=$RUNTIME

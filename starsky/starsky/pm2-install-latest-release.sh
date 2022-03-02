@@ -27,16 +27,20 @@ esac
 ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
+  CURRENT=$(($i-1))
+  if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
+  then
+      echo "--name pm2name"
+      echo "--runtime linux-arm"
+      echo "     (or:) --runtime linux-arm64"
+      echo "     (or:) --runtime osx-x64"
+      echo "     (or:) --runtime win7-x64"
+      exit 0
+  fi
+      
   if [ $i -gt 1 ]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
-
-    if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
-    then
-        echo "--name pm2name"
-        echo "--runtime linux-arm"
-        echo "(or:) --runtime linux-arm64"
-    fi
 
     if [[ ${ARGUMENTS[PREV]} == "--name" ]];
     then
