@@ -10,7 +10,8 @@ namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 		[TestMethod]
 		public void InitTelemetryClientTest()
 		{
-			var result = TelemetryConfigurationHelper.InitTelemetryClient("test","role", new FakeIWebLogger());
+			var result = TelemetryConfigurationHelper.InitTelemetryClient(
+				"test","role", new FakeIWebLogger(), null);
 			Assert.IsNotNull(result);
 		}
 	}
