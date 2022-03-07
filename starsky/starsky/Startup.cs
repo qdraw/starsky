@@ -60,10 +60,13 @@ namespace starsky
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
             
+            // Detect Application Insights (used in next SetupDatabaseTypes)
+            services.AddMonitoring(_appSettings);
+            
             // LoggerFactory
             services.AddApplicationInsightsLogging(_appSettings);
-
-            var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
+            
+            var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName?.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
 	            
@@ -124,8 +127,7 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
-			// Detect Application Insights
-			services.AddMonitoring(_appSettings);
+
 			
 			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
 
@@ -286,7 +288,7 @@ namespace starsky
 	        if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings
 		        .ApplicationInsightsInstrumentationKey) )
 	        {
-		        var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
+		        var configuration = app.ApplicationServices.GetRequiredService<TelemetryConfiguration>();
 		        configuration.TelemetryProcessorChainBuilder.Use(next => new FilterWebsocketsTelemetryProcessor(next));
 		        configuration.TelemetryProcessorChainBuilder.Build();
 

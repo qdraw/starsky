@@ -33,7 +33,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		{
 			var result = profile.Folder + _appSettings.GenerateSlug(
 				                            Path.GetFileNameWithoutExtension(sourceFilePath), true)
-			                            + profile.Append + Path.GetExtension(sourceFilePath).ToLowerInvariant();
+			                            + profile.Append + profile.GetExtensionWithDot(sourceFilePath);
 			return result;
 		}
 	    

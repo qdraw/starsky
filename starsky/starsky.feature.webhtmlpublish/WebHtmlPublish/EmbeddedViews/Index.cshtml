@@ -21,7 +21,10 @@
 		        .FirstOrDefault(p => p.SourceMaxWidth == 1000);
 	        var fileFolder1000 = profile1000?.Folder ?? "1000/";
 	        var append1000 = profile1000?.Append ?? string.Empty;
-	    }
+			// ReSharper disable once StringLiteralTypo
+			const string photoText = "foto";
+			const string className = "lightbox[blog]";
+		}
 
 
 	    @for (int i = 0; i < @Model.FileIndexItems.Count(); i++)
@@ -36,24 +39,26 @@
 	        //    // Logic to setup filename
 		    var filePath500 = @Model.AppSettings.GetWebSafeReplacedName(
 			    @Model.CurrentProfile.Prepend, @Model.ItemName) + @fileFolder500 + 
-		                      @item.FileCollectionName + @append500 + @System.IO.Path.GetExtension(item.FileName);
+		                      @item.FileCollectionName + @append500 + @Model.Profiles.FirstOrDefault(p => p.Folder == fileFolder500)?.GetExtensionWithDot(item.FileName);
 		    var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(
 			    @Model.CurrentProfile.Prepend, @Model.ItemName) + @fileFolder1000 + 
-		                       @item.FileCollectionName + @append1000 + @System.IO.Path.GetExtension(item.FileName);
+		                       @item.FileCollectionName + @append1000 + @Model.Profiles.FirstOrDefault(p => p.Folder == fileFolder500)?.GetExtensionWithDot(item.FileName);
 
 	        var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model.ItemName;
 
-			<a href="@filePath1000" class="lightbox[blog]"
-	           title="@Model.ItemName - @item.Title | foto @count"
+			<a href="@filePath1000" class="@className"
+	           title="@Model.ItemName - @item.Title | @photoText @count"
 	           data-gps="@latitude,@longitude" data-heightratio="@heightRatio">
-	            <noscript><img src="@filePath500" alt=" @item.Title" /></noscript>
-				<img src="@Model.Base64ImageArray[i]" title="@displayTitleName | foto @count" 
+	            <noscript><img src="@filePath500" alt="@item.Title" /></noscript>
+				<img src="@Model.Base64ImageArray[i]" title="@displayTitleName | @photoText @count" 
 				     alt="@Model.ItemName ; @item.Title ; @item.Tags" />
 	        </a>
 		}
 
     </div>
-    <script src="_bigimages-helper.js" type="text/javascript"></script>
+
+@* ReSharper disable once Html.PathError *@
+<script src="_bigimages-helper.js" type="text/javascript"></script>
 
 </body>
 </html>

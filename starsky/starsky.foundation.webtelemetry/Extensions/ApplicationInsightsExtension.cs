@@ -14,7 +14,7 @@ namespace starsky.foundation.webtelemetry.Extensions
 	public static class ApplicationInsightsExtension
 	{
 		/// <summary>
-		/// Add Metrics & Monitoring for Application Insights
+		/// Add Metrics & Monitoring for Application Insights (AddApplicationInsights)
 		/// </summary>
 		/// <param name="services">collection service</param>
 		/// <param name="appSettings">to use for ApplicationInsights InstrumentationKey</param>

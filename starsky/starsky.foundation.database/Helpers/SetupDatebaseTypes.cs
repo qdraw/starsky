@@ -1,12 +1,11 @@
+#nullable enable
 using System;
+using Microsoft.ApplicationInsights;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using Pomelo.EntityFrameworkCore.MySql.Storage;
 using starsky.foundation.databasetelemetry.Helpers;
 using starsky.foundation.databasetelemetry.Services;
 using starsky.foundation.platform.Interfaces;
@@ -16,16 +15,19 @@ namespace starsky.foundation.database.Helpers
 	public class SetupDatabaseTypes
 	{
 		private readonly AppSettings _appSettings;
-		private readonly IServiceCollection _services;
-		private readonly IWebLogger _logger;
+		private readonly IServiceCollection? _services;
+		private readonly IWebLogger? _logger;
+		private readonly TelemetryClient? _telemetryClient;
 
-		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services = null, IWebLogger logger = null)
+		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection? services = null, IWebLogger? logger = null)
 		{
 			_appSettings = appSettings;
 			_services = services;
 
 			// if null get from service collection
 			logger ??= _services?.BuildServiceProvider().GetService<IWebLogger>();
+			_telemetryClient = _services?.BuildServiceProvider().GetService<TelemetryClient>();
+
 			_logger = logger;
 		}
 
@@ -48,7 +50,7 @@ namespace starsky.foundation.database.Helpers
 			return new MariaDbServerVersion("10.2");
 		}
 		
-		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string foundationDatabaseName = "")
+		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string? foundationDatabaseName = "")
 		{
 			switch ( _appSettings.DatabaseType )
 			{
@@ -102,13 +104,13 @@ namespace starsky.foundation.database.Helpers
 				new DatabaseTelemetryInterceptor(
 					TelemetryConfigurationHelper.InitTelemetryClient(
 						_appSettings.ApplicationInsightsInstrumentationKey, 
-						_appSettings.ApplicationType.ToString(),_logger)
+						_appSettings.ApplicationType.ToString(),_logger,_telemetryClient)
 					)
 				);
 			return true;
 		}
 
-		public void BuilderDb(string foundationDatabaseName = "")
+		public void BuilderDb(string? foundationDatabaseName = "")
 		{
 			if ( _services == null ) throw new AggregateException("services is missing");
 			if ( _logger != null && _appSettings.IsVerbose() )
