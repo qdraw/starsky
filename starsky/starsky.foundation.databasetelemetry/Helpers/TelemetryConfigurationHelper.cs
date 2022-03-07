@@ -21,6 +21,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 
 			try
 			{
+				// Should skip to avoid memory issues
 				if ( telemetryClient == null )
 				{
 					var telemetryConfiguration =
@@ -31,6 +32,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 					telemetryClient.Context.Cloud.RoleName = roleName;
 					telemetryClient.Context.Cloud.RoleInstance =
 						Environment.MachineName;
+					logger?.LogInformation("Added TelemetryClient [should avoid due memory issues]");
 				}
 				
 				var module = CreateDatabaseDependencyTrackingTelemetryModule();
