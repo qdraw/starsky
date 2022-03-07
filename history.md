@@ -50,6 +50,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Write first tmp file in upload controller to avoid partly written stream (PR #661 / Issue #662)
 - [x]   (Fixed) _Back-end_ PreserveCompilationContext set for RazorLight cshtml generation
 - [x]   (Fixed) _Back-end_ Fix ImageSharp default behavior for writing base64 strings (PR #665 / Issue #664)
+- [x]   (Fixed) _Back-end_ Should not add TelemetryClient, instead re-use it to avoid memory issues (PR #666)
+- [x]   (Fixed) _Back-end_ When publish use extension of output type instead of source type (PR #666)
+- [x]   (Fixed) _Back-end_ Add retry with delay for QueryGetAllObjects (PR #666)
 
 # version 0.5.0-beta.2 - 2022-02-18
 - [x]   (Changed) _Back-end_ Add correct connect-src url for websocket without port (PR #606)
