@@ -286,7 +286,7 @@ namespace starsky
 	        if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings
 		        .ApplicationInsightsInstrumentationKey) )
 	        {
-		        var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
+		        var configuration = app.ApplicationServices.GetRequiredService<TelemetryConfiguration>();
 		        configuration.TelemetryProcessorChainBuilder.Use(next => new FilterWebsocketsTelemetryProcessor(next));
 		        configuration.TelemetryProcessorChainBuilder.Build();
 
