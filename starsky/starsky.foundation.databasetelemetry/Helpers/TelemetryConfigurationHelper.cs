@@ -9,7 +9,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 {
 	public static class TelemetryConfigurationHelper
 	{
-		public static TelemetryClient? InitTelemetryClient(string appInsightsConnectionString, string roleName, IWebLogger logger)
+		public static TelemetryClient? InitTelemetryClient(string appInsightsConnectionString, string roleName, IWebLogger? logger, TelemetryClient? telemetryClient)
 		{
 			TelemetryClient? Clean(Exception exception)
 			{
@@ -21,16 +21,20 @@ namespace starsky.foundation.databasetelemetry.Helpers
 
 			try
 			{
+				if ( telemetryClient == null )
+				{
+					var telemetryConfiguration =
+						CreateTelemetryConfiguration(appInsightsConnectionString);
+					if ( telemetryConfiguration == null ) return null;
+					telemetryClient =
+						new TelemetryClient(telemetryConfiguration);
+					telemetryClient.Context.Cloud.RoleName = roleName;
+					telemetryClient.Context.Cloud.RoleInstance =
+						Environment.MachineName;
+				}
+				
 				var module = CreateDatabaseDependencyTrackingTelemetryModule();
-				var telemetryConfiguration =
-					CreateTelemetryConfiguration(appInsightsConnectionString);
-				if ( telemetryConfiguration == null ) return null;
-				var telemetryClient =
-					new TelemetryClient(telemetryConfiguration);
-				telemetryClient.Context.Cloud.RoleName = roleName;
-				telemetryClient.Context.Cloud.RoleInstance =
-					Environment.MachineName;
-				module.Initialize(telemetryConfiguration);
+				module.Initialize(telemetryClient.TelemetryConfiguration);
 				return telemetryClient;
 			}
 			catch ( OutOfMemoryException exception )
