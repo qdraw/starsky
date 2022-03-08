@@ -84,7 +84,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			operation.Telemetry.Source = "FileSystem";
 			if ( !string.IsNullOrEmpty(fullFilePath) )
 			{
-				operation.Telemetry.Url = new Uri($"?f={fullFilePath}");
+				operation.Telemetry.Url = new Uri($"?f={fullFilePath}", UriKind.Relative);
 			}
 			new CloudRoleNameInitializer($"{_appSettings.ApplicationType}").Initialize(requestTelemetry);
 			return operation;
