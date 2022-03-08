@@ -106,7 +106,8 @@ namespace starsky.foundation.sync.WatcherHelpers
 			return true;
 		}
 
-		public async Task<List<FileIndexItem>> Sync(Tuple<string, string, WatcherChangeTypes> watcherOutput)
+		public Task<List<FileIndexItem>> Sync(
+			Tuple<string, string, WatcherChangeTypes> watcherOutput)
 		{
 			// Avoid Disposed Query objects
 			if ( _serviceScope != null ) InjectScopes();
@@ -115,18 +116,28 @@ namespace starsky.foundation.sync.WatcherHelpers
 				throw new ArgumentException("sync, logger, appSettings, _appSettings, _websockets or _query should not be null");
 			}
 			
+			return SyncTaskInternal(watcherOutput);
+		}
+
+		/// <summary>
+		/// Internal sync connector task
+		/// </summary>
+		/// <param name="watcherOutput">data</param>
+		/// <returns>Task with data</returns>
+		private async Task<List<FileIndexItem>> SyncTaskInternal(Tuple<string, string, WatcherChangeTypes> watcherOutput)
+		{
 			var (fullFilePath, toPath, type ) = watcherOutput;
 			var operation = CreateNewRequestTelemetry(fullFilePath);
 
 			var syncData = new List<FileIndexItem>();
 			
-			_logger.LogInformation($"[SyncWatcherConnector] [{fullFilePath}] - [{toPath}] - [{type}]");
+			_logger!.LogInformation($"[SyncWatcherConnector] [{fullFilePath}] - [{toPath}] - [{type}]");
 			
 			if ( type == WatcherChangeTypes.Renamed && !string.IsNullOrEmpty(toPath))
 			{
 				// from path sync
-				var path = _appSettings.FullPathToDatabaseStyle(fullFilePath);
-				await _synchronize.Sync(path); 
+				var path = _appSettings!.FullPathToDatabaseStyle(fullFilePath);
+				await _synchronize!.Sync(path); 
 				
 				syncData.Add(new FileIndexItem(_appSettings.FullPathToDatabaseStyle(fullFilePath))
 				{
@@ -140,7 +151,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 			else
 			{
-				syncData = await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(fullFilePath));
+				syncData = await _synchronize!.Sync(_appSettings!.FullPathToDatabaseStyle(fullFilePath));
 			}
 
 			var filtered = FilterBefore(syncData);
@@ -151,12 +162,12 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 
 			// update users who are active right now
-			await _websockets.SendToAllAsync("[system] SyncWatcherConnector",CancellationToken.None);
+			await _websockets!.SendToAllAsync("[system] SyncWatcherConnector",CancellationToken.None);
 			await _websockets.SendToAllAsync(JsonSerializer.Serialize(filtered,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			// And update the query Cache
-			_query.CacheUpdateItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.Ok ||
+			_query!.CacheUpdateItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.Ok ||
 				p.Status == FileIndexItem.ExifStatus.Deleted).ToList());
 			
 			// remove files that are not in the index from cache
