@@ -277,6 +277,15 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		}
 
 		[TestMethod]
+		public void Sync_InjectScopes_False()
+		{
+			var syncWatcherPreflight = new SyncWatcherConnector(null!, 
+				null!, null!, null!, null!, null!);
+			var result = syncWatcherPreflight.InjectScopes();
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
 		public void CreateNewRequestTelemetry_NoKey()
 		{
 			var connector = new SyncWatcherConnector(new AppSettings(), new FakeISynchronize(),
