@@ -30,6 +30,16 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 	public class SyncWatcherConnectorTest
 	{
 		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public async Task Sync_ArgumentException()
+		{
+			// ReSharper disable once AssignNullToNotNullAttribute
+			var syncWatcherPreflight = new SyncWatcherConnector(null,null!,null!,null!,null!,null);
+			await syncWatcherPreflight.Sync(
+				new Tuple<string, string, WatcherChangeTypes>("test", null, WatcherChangeTypes.Changed));
+		}
+		
+		[TestMethod]
 		public async Task Sync_CheckInput()
 		{
 			var sync = new FakeISynchronize();
@@ -267,6 +277,15 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		}
 
 		[TestMethod]
+		public void Sync_InjectScopes_False()
+		{
+			var syncWatcherPreflight = new SyncWatcherConnector(null!, 
+				null!, null!, null!, null!, null!);
+			var result = syncWatcherPreflight.InjectScopes();
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
 		public void CreateNewRequestTelemetry_NoKey()
 		{
 			var connector = new SyncWatcherConnector(new AppSettings(), new FakeISynchronize(),
@@ -291,6 +310,24 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			new CloudRoleNameInitializer($"{new AppSettings().ApplicationType}").Initialize(expected);
 			Assert.AreEqual(expected.Context.Cloud.RoleName, operationHolder.Telemetry.Context.Cloud.RoleName);
 			Assert.AreEqual(expected.Context.Cloud.RoleInstance, operationHolder.Telemetry.Context.Cloud.RoleInstance);
+			connector.EndRequestOperation(operationHolder);
+		}
+		
+		[TestMethod]
+		public void CreateNewRequestTelemetry_Key_WithUrl()
+		{
+			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
+				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
+				new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+
+			var operationHolder = connector.CreateNewRequestTelemetry("/test");
+			Assert.AreEqual("FSW SyncWatcherConnector", operationHolder.Telemetry.Name);
+			var expected = new RequestTelemetry {Url = new Uri("?f=/test", UriKind.Relative)};
+			new CloudRoleNameInitializer($"{new AppSettings().ApplicationType}").Initialize(expected);
+			Assert.AreEqual(expected.Context.Cloud.RoleName, operationHolder.Telemetry.Context.Cloud.RoleName);
+			Assert.AreEqual(expected.Context.Cloud.RoleInstance, operationHolder.Telemetry.Context.Cloud.RoleInstance);
+			// check url
+			Assert.AreEqual(expected.Url, operationHolder.Telemetry.Url);
 			connector.EndRequestOperation(operationHolder);
 		}
 		
