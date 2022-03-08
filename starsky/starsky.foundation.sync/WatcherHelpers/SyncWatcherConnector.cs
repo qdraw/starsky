@@ -112,8 +112,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			if ( _serviceScope != null ) InjectScopes();
 			if ( _synchronize == null || _logger == null || _appSettings == null || _websockets == null || _query == null)
 			{
-				throw new NullReferenceException(
-					"sync, logger, appSettings, _appSettings, _websockets or _query should not be null");
+				throw new ArgumentException("sync, logger, appSettings, _appSettings, _websockets or _query should not be null");
 			}
 			
 			var (fullFilePath, toPath, type ) = watcherOutput;
