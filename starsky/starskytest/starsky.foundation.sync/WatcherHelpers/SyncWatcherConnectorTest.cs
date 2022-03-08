@@ -305,6 +305,24 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		}
 		
 		[TestMethod]
+		public void CreateNewRequestTelemetry_Key_WithUrl()
+		{
+			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
+				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
+				new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+
+			var operationHolder = connector.CreateNewRequestTelemetry("/test");
+			Assert.AreEqual("FSW SyncWatcherConnector", operationHolder.Telemetry.Name);
+			var expected = new RequestTelemetry {Url = new Uri("?f=/test", UriKind.Relative)};
+			new CloudRoleNameInitializer($"{new AppSettings().ApplicationType}").Initialize(expected);
+			Assert.AreEqual(expected.Context.Cloud.RoleName, operationHolder.Telemetry.Context.Cloud.RoleName);
+			Assert.AreEqual(expected.Context.Cloud.RoleInstance, operationHolder.Telemetry.Context.Cloud.RoleInstance);
+			// check url
+			Assert.AreEqual(expected.Url, operationHolder.Telemetry.Url);
+			connector.EndRequestOperation(operationHolder);
+		}
+		
+		[TestMethod]
 		public void CreateNewRequestTelemetry_Key_NoTelemetryClient()
 		{
 			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
