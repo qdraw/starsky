@@ -30,6 +30,16 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 	public class SyncWatcherConnectorTest
 	{
 		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public async Task Sync_ArgumentException()
+		{
+			// ReSharper disable once AssignNullToNotNullAttribute
+			var syncWatcherPreflight = new SyncWatcherConnector(null,null!,null!,null!,null!,null);
+			await syncWatcherPreflight.Sync(
+				new Tuple<string, string, WatcherChangeTypes>("test", null, WatcherChangeTypes.Changed));
+		}
+		
+		[TestMethod]
 		public async Task Sync_CheckInput()
 		{
 			var sync = new FakeISynchronize();
