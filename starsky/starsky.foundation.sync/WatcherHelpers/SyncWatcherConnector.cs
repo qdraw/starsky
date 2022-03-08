@@ -38,7 +38,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		private TelemetryClient? _telemetryClient;
 
 		internal SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
-			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger, TelemetryClient telemetryClient)
+			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger, TelemetryClient? telemetryClient)
 		{
 			_appSettings = appSettings;
 			_synchronize = synchronize;
@@ -65,8 +65,8 @@ namespace starsky.foundation.sync.WatcherHelpers
 			var memoryCache = _serviceScope.ServiceProvider.GetService<IMemoryCache>();
 			_query = new QueryFactory(new SetupDatabaseTypes(_appSettings), query,
 				memoryCache, _appSettings, _logger).Query();
-			_telemetryClient = _serviceScope.ServiceProvider
-				.GetRequiredService<TelemetryClient>();
+			_telemetryClient = _serviceScope?.ServiceProvider
+				.GetService<TelemetryClient>();
 			return true;
 		}
 
