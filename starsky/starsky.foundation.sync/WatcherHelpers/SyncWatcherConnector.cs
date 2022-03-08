@@ -72,7 +72,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		internal IOperationHolder<RequestTelemetry> CreateNewRequestTelemetry(string? fullFilePath = null)
 		{
-			if (_telemetryClient == null || string.IsNullOrEmpty(_appSettings?
+			if (_telemetryClient == null || string.IsNullOrEmpty(_appSettings!
 				    .ApplicationInsightsInstrumentationKey) )
 			{
 				return new EmptyOperationHolder<RequestTelemetry>();
