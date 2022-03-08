@@ -92,7 +92,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		internal bool EndRequestOperation(IOperationHolder<RequestTelemetry> operation)
 		{
-			if ( _telemetryClient == null || string.IsNullOrEmpty(_appSettings?
+			if ( _telemetryClient == null || string.IsNullOrEmpty(_appSettings!
 				    .ApplicationInsightsInstrumentationKey) )
 			{
 				return false;
