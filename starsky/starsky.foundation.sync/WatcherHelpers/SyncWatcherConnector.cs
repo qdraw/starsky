@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,13 +29,13 @@ namespace starsky.foundation.sync.WatcherHelpers
 {
 	public class SyncWatcherConnector
 	{
-		private ISynchronize _synchronize;
-		private AppSettings _appSettings;
-		private IWebSocketConnectionsService _websockets;
-		private IQuery _query;
-		private IWebLogger _logger;
-		private readonly IServiceScope _serviceScope;
-		private TelemetryClient _telemetryClient;
+		private ISynchronize? _synchronize;
+		private AppSettings? _appSettings;
+		private IWebSocketConnectionsService? _websockets;
+		private IQuery? _query;
+		private IWebLogger? _logger;
+		private readonly IServiceScope? _serviceScope;
+		private TelemetryClient? _telemetryClient;
 
 		internal SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
 			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger, TelemetryClient telemetryClient)
@@ -54,6 +55,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		internal bool InjectScopes()
 		{
+			if ( _serviceScope == null ) return false;
 			// ISynchronize is a scoped service
 			_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
 			_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
@@ -64,13 +66,13 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_query = new QueryFactory(new SetupDatabaseTypes(_appSettings), query,
 				memoryCache, _appSettings, _logger).Query();
 			_telemetryClient = _serviceScope.ServiceProvider
-				.GetService<TelemetryClient>();
+				.GetRequiredService<TelemetryClient>();
 			return true;
 		}
 
-		internal IOperationHolder<RequestTelemetry> CreateNewRequestTelemetry()
+		internal IOperationHolder<RequestTelemetry> CreateNewRequestTelemetry(string? fullFilePath = null)
 		{
-			if (_telemetryClient == null || string.IsNullOrEmpty(_appSettings
+			if (_telemetryClient == null || string.IsNullOrEmpty(_appSettings?
 				    .ApplicationInsightsInstrumentationKey) )
 			{
 				return new EmptyOperationHolder<RequestTelemetry>();
@@ -80,13 +82,14 @@ namespace starsky.foundation.sync.WatcherHelpers
 			var operation = _telemetryClient.StartOperation(requestTelemetry);
 			operation.Telemetry.Timestamp = DateTimeOffset.UtcNow;
 			operation.Telemetry.Source = "FileSystem";
+			operation.Telemetry.Url = new Uri("");
 			new CloudRoleNameInitializer($"{_appSettings.ApplicationType}").Initialize(requestTelemetry);
 			return operation;
 		}
 
 		internal bool EndRequestOperation(IOperationHolder<RequestTelemetry> operation)
 		{
-			if ( _telemetryClient == null || string.IsNullOrEmpty(_appSettings
+			if ( _telemetryClient == null || string.IsNullOrEmpty(_appSettings?
 				    .ApplicationInsightsInstrumentationKey) )
 			{
 				return false;
@@ -104,9 +107,14 @@ namespace starsky.foundation.sync.WatcherHelpers
 		{
 			// Avoid Disposed Query objects
 			if ( _serviceScope != null ) InjectScopes();
-			var operation = CreateNewRequestTelemetry();
+			if ( _synchronize == null || _logger == null || _appSettings == null || _websockets == null || _query == null)
+			{
+				throw new NullReferenceException(
+					"sync, logger, appSettings, _appSettings, _websockets or _query should not be null");
+			}
 			
 			var (fullFilePath, toPath, type ) = watcherOutput;
+			var operation = CreateNewRequestTelemetry(fullFilePath);
 
 			var syncData = new List<FileIndexItem>();
 			
@@ -114,13 +122,19 @@ namespace starsky.foundation.sync.WatcherHelpers
 			
 			if ( type == WatcherChangeTypes.Renamed && !string.IsNullOrEmpty(toPath))
 			{
-				await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(fullFilePath));
-				syncData.Add(new FileIndexItem(_appSettings.FullPathToDatabaseStyle(fullFilePath))
+				// from path sync
+				var path = _appSettings?.FullPathToDatabaseStyle(fullFilePath);
+				await _synchronize.Sync(path); 
+				
+				syncData.Add(new FileIndexItem(_appSettings?.FullPathToDatabaseStyle(fullFilePath))
 				{
 					IsDirectory = true, 
 					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
 				});
-				syncData.AddRange(await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(toPath)));
+				
+				// and now to-path sync
+				var pathToDatabaseStyle = _appSettings?.FullPathToDatabaseStyle(toPath);
+				syncData.AddRange(await _synchronize.Sync(pathToDatabaseStyle));
 			}
 			else
 			{
@@ -147,7 +161,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_query.RemoveCacheItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
 				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList());
 
-			if ( _serviceScope != null ) await _query?.DisposeAsync();
+			if ( _serviceScope != null ) await _query.DisposeAsync();
 			EndRequestOperation(operation);
 			
 			return syncData;
