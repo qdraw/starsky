@@ -17,6 +17,11 @@ on:
     - '.github/workflows/auto-update-swagger-dotnet.yml'
     - 'starsky-tools/docs/assets/config/starsky.json'
 
+env:
+  app__AddSwagger: "true"
+  app__AddSwaggerExport: "true"
+  app__AddSwaggerExportExitAfter: "true"
+  
 jobs:
   build:
 
