@@ -1,7 +1,7 @@
 {
   "Info": {
     "Title": "Starsky",
-    "Version": "0.4.12.0",
+    "Version": "0.5.0.0",
     "Extensions": {}
   },
   "Servers": [
@@ -182,6 +182,35 @@
               "Examples": {},
               "Content": {},
               "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "fromLogout",
+              "In": 0,
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "boolean",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
             }
           ],
           "Responses": {
@@ -221,6 +250,35 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "fromLogout",
+              "In": 0,
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "boolean",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -2328,6 +2386,468 @@
             },
             "404": {
               "Description": "item not found on disk or !delete! tag is missing",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "array",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Items": {
+                      "ReadOnly": false,
+                      "WriteOnly": false,
+                      "AllOf": [],
+                      "OneOf": [],
+                      "AnyOf": [],
+                      "Required": [],
+                      "Properties": {},
+                      "AdditionalPropertiesAllowed": true,
+                      "Enum": [],
+                      "Nullable": false,
+                      "Deprecated": false,
+                      "Extensions": {},
+                      "UnresolvedReference": false,
+                      "Reference": {
+                        "Type": 0,
+                        "Id": "FileIndexItem",
+                        "IsExternal": false,
+                        "IsLocal": true,
+                        "ReferenceV3": "#/components/schemas/FileIndexItem",
+                        "ReferenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "401": {
+              "Description": "User unauthorized",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        }
+      },
+      "Servers": [],
+      "Parameters": [],
+      "Extensions": {}
+    },
+    "/api/disk/mkdir": {
+      "Operations": {
+        "Post": {
+          "Tags": [
+            {
+              "Name": "Disk",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Make a directory (-p)",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "f",
+              "In": 0,
+              "Description": "subPaths split by dot comma",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
+          "Responses": {
+            "200": {
+              "Description": "create the item on disk and in db",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "array",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Items": {
+                      "ReadOnly": false,
+                      "WriteOnly": false,
+                      "AllOf": [],
+                      "OneOf": [],
+                      "AnyOf": [],
+                      "Required": [],
+                      "Properties": {},
+                      "AdditionalPropertiesAllowed": true,
+                      "Enum": [],
+                      "Nullable": false,
+                      "Deprecated": false,
+                      "Extensions": {},
+                      "UnresolvedReference": false,
+                      "Reference": {
+                        "Type": 0,
+                        "Id": "SyncViewModel",
+                        "IsExternal": false,
+                        "IsLocal": true,
+                        "ReferenceV3": "#/components/schemas/SyncViewModel",
+                        "ReferenceV2": "#/definitions/SyncViewModel"
+                      }
+                    },
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "409": {
+              "Description": "A conflict, Directory already exist",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "array",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Items": {
+                      "ReadOnly": false,
+                      "WriteOnly": false,
+                      "AllOf": [],
+                      "OneOf": [],
+                      "AnyOf": [],
+                      "Required": [],
+                      "Properties": {},
+                      "AdditionalPropertiesAllowed": true,
+                      "Enum": [],
+                      "Nullable": false,
+                      "Deprecated": false,
+                      "Extensions": {},
+                      "UnresolvedReference": false,
+                      "Reference": {
+                        "Type": 0,
+                        "Id": "SyncViewModel",
+                        "IsExternal": false,
+                        "IsLocal": true,
+                        "ReferenceV3": "#/components/schemas/SyncViewModel",
+                        "ReferenceV2": "#/definitions/SyncViewModel"
+                      }
+                    },
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "401": {
+              "Description": "User unauthorized",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "string",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        }
+      },
+      "Servers": [],
+      "Parameters": [],
+      "Extensions": {}
+    },
+    "/api/disk/rename": {
+      "Operations": {
+        "Post": {
+          "Tags": [
+            {
+              "Name": "Disk",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Rename file/folder and update it in the database",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "f",
+              "In": 0,
+              "Description": "from subPath",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "to",
+              "In": 0,
+              "Description": "to subPath",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "collections",
+              "In": 0,
+              "Description": "is collections bool",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "boolean",
+                "Default": {
+                  "PrimitiveType": 7,
+                  "AnyType": 0,
+                  "Value": true
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "currentStatus",
+              "In": 0,
+              "Description": "default is to not included files that are removed in result",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "boolean",
+                "Default": {
+                  "PrimitiveType": 7,
+                  "AnyType": 0,
+                  "Value": true
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
+          "Responses": {
+            "200": {
+              "Description": "the item including the updated content",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "array",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Items": {
+                      "ReadOnly": false,
+                      "WriteOnly": false,
+                      "AllOf": [],
+                      "OneOf": [],
+                      "AnyOf": [],
+                      "Required": [],
+                      "Properties": {},
+                      "AdditionalPropertiesAllowed": true,
+                      "Enum": [],
+                      "Nullable": false,
+                      "Deprecated": false,
+                      "Extensions": {},
+                      "UnresolvedReference": false,
+                      "Reference": {
+                        "Type": 0,
+                        "Id": "FileIndexItem",
+                        "IsExternal": false,
+                        "IsLocal": true,
+                        "ReferenceV3": "#/components/schemas/FileIndexItem",
+                        "ReferenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "404": {
+              "Description": "item not found in the database or on disk",
               "Headers": {},
               "Content": {
                 "application/json": {
@@ -5090,6 +5610,38 @@
       "Parameters": [],
       "Extensions": {}
     },
+    "/api/MemoryCacheDebug": {
+      "Operations": {
+        "Get": {
+          "Tags": [
+            {
+              "Name": "MemoryCacheDebug",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Parameters": [],
+          "Responses": {
+            "200": {
+              "Description": "Success",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        }
+      },
+      "Servers": [],
+      "Parameters": [],
+      "Extensions": {}
+    },
     "/api/info": {
       "Operations": {
         "Get": {
@@ -6541,6 +7093,42 @@
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "ImageStabilisation",
+              "In": 0,
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false,
+                "Reference": {
+                  "Type": 0,
+                  "Id": "ImageStabilisationType",
+                  "IsExternal": false,
+                  "IsLocal": true,
+                  "ReferenceV3": "#/components/schemas/ImageStabilisationType",
+                  "ReferenceV2": "#/definitions/ImageStabilisationType"
+                }
               },
               "Examples": {},
               "Content": {},
@@ -8265,607 +8853,6 @@
       "Parameters": [],
       "Extensions": {}
     },
-    "/api/sync/mkdir": {
-      "Operations": {
-        "Post": {
-          "Tags": [
-            {
-              "Name": "Sync",
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          ],
-          "Summary": "Make a directory (-p)",
-          "Parameters": [
-            {
-              "UnresolvedReference": false,
-              "Name": "f",
-              "In": 0,
-              "Description": "subPaths split by dot comma",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "string",
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            }
-          ],
-          "Responses": {
-            "200": {
-              "Description": "create the item on disk and in db",
-              "Headers": {},
-              "Content": {
-                "application/json": {
-                  "Schema": {
-                    "Type": "array",
-                    "ReadOnly": false,
-                    "WriteOnly": false,
-                    "AllOf": [],
-                    "OneOf": [],
-                    "AnyOf": [],
-                    "Required": [],
-                    "Items": {
-                      "ReadOnly": false,
-                      "WriteOnly": false,
-                      "AllOf": [],
-                      "OneOf": [],
-                      "AnyOf": [],
-                      "Required": [],
-                      "Properties": {},
-                      "AdditionalPropertiesAllowed": true,
-                      "Enum": [],
-                      "Nullable": false,
-                      "Deprecated": false,
-                      "Extensions": {},
-                      "UnresolvedReference": false,
-                      "Reference": {
-                        "Type": 0,
-                        "Id": "SyncViewModel",
-                        "IsExternal": false,
-                        "IsLocal": true,
-                        "ReferenceV3": "#/components/schemas/SyncViewModel",
-                        "ReferenceV2": "#/definitions/SyncViewModel"
-                      }
-                    },
-                    "Properties": {},
-                    "AdditionalPropertiesAllowed": true,
-                    "Enum": [],
-                    "Nullable": false,
-                    "Deprecated": false,
-                    "Extensions": {},
-                    "UnresolvedReference": false
-                  },
-                  "Examples": {},
-                  "Encoding": {},
-                  "Extensions": {}
-                }
-              },
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "409": {
-              "Description": "A conflict, Directory already exist",
-              "Headers": {},
-              "Content": {
-                "application/json": {
-                  "Schema": {
-                    "Type": "array",
-                    "ReadOnly": false,
-                    "WriteOnly": false,
-                    "AllOf": [],
-                    "OneOf": [],
-                    "AnyOf": [],
-                    "Required": [],
-                    "Items": {
-                      "ReadOnly": false,
-                      "WriteOnly": false,
-                      "AllOf": [],
-                      "OneOf": [],
-                      "AnyOf": [],
-                      "Required": [],
-                      "Properties": {},
-                      "AdditionalPropertiesAllowed": true,
-                      "Enum": [],
-                      "Nullable": false,
-                      "Deprecated": false,
-                      "Extensions": {},
-                      "UnresolvedReference": false,
-                      "Reference": {
-                        "Type": 0,
-                        "Id": "SyncViewModel",
-                        "IsExternal": false,
-                        "IsLocal": true,
-                        "ReferenceV3": "#/components/schemas/SyncViewModel",
-                        "ReferenceV2": "#/definitions/SyncViewModel"
-                      }
-                    },
-                    "Properties": {},
-                    "AdditionalPropertiesAllowed": true,
-                    "Enum": [],
-                    "Nullable": false,
-                    "Deprecated": false,
-                    "Extensions": {},
-                    "UnresolvedReference": false
-                  },
-                  "Examples": {},
-                  "Encoding": {},
-                  "Extensions": {}
-                }
-              },
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "401": {
-              "Description": "User unauthorized",
-              "Headers": {},
-              "Content": {
-                "application/json": {
-                  "Schema": {
-                    "Type": "string",
-                    "ReadOnly": false,
-                    "WriteOnly": false,
-                    "AllOf": [],
-                    "OneOf": [],
-                    "AnyOf": [],
-                    "Required": [],
-                    "Properties": {},
-                    "AdditionalPropertiesAllowed": true,
-                    "Enum": [],
-                    "Nullable": false,
-                    "Deprecated": false,
-                    "Extensions": {},
-                    "UnresolvedReference": false
-                  },
-                  "Examples": {},
-                  "Encoding": {},
-                  "Extensions": {}
-                }
-              },
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          },
-          "Callbacks": {},
-          "Deprecated": false,
-          "Security": [],
-          "Servers": [],
-          "Extensions": {}
-        }
-      },
-      "Servers": [],
-      "Parameters": [],
-      "Extensions": {}
-    },
-    "/api/sync": {
-      "Operations": {
-        "Post": {
-          "Tags": [
-            {
-              "Name": "Sync",
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          ],
-          "Summary": "Do a file sync in a background process (replace with /api/synchronize)",
-          "Parameters": [
-            {
-              "UnresolvedReference": false,
-              "Name": "f",
-              "In": 0,
-              "Description": "subPaths split by dot comma",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "string",
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            }
-          ],
-          "Responses": {
-            "200": {
-              "Description": "started sync as background job",
-              "Headers": {},
-              "Content": {
-                "application/json": {
-                  "Schema": {
-                    "Type": "array",
-                    "ReadOnly": false,
-                    "WriteOnly": false,
-                    "AllOf": [],
-                    "OneOf": [],
-                    "AnyOf": [],
-                    "Required": [],
-                    "Items": {
-                      "ReadOnly": false,
-                      "WriteOnly": false,
-                      "AllOf": [],
-                      "OneOf": [],
-                      "AnyOf": [],
-                      "Required": [],
-                      "Properties": {},
-                      "AdditionalPropertiesAllowed": true,
-                      "Enum": [],
-                      "Nullable": false,
-                      "Deprecated": false,
-                      "Extensions": {},
-                      "UnresolvedReference": false,
-                      "Reference": {
-                        "Type": 0,
-                        "Id": "SyncViewModel",
-                        "IsExternal": false,
-                        "IsLocal": true,
-                        "ReferenceV3": "#/components/schemas/SyncViewModel",
-                        "ReferenceV2": "#/definitions/SyncViewModel"
-                      }
-                    },
-                    "Properties": {},
-                    "AdditionalPropertiesAllowed": true,
-                    "Enum": [],
-                    "Nullable": false,
-                    "Deprecated": false,
-                    "Extensions": {},
-                    "UnresolvedReference": false
-                  },
-                  "Examples": {},
-                  "Encoding": {},
-                  "Extensions": {}
-                }
-              },
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "401": {
-              "Description": "User unauthorized",
-              "Headers": {},
-              "Content": {
-                "application/json": {
-                  "Schema": {
-                    "Type": "string",
-                    "ReadOnly": false,
-                    "WriteOnly": false,
-                    "AllOf": [],
-                    "OneOf": [],
-                    "AnyOf": [],
-                    "Required": [],
-                    "Properties": {},
-                    "AdditionalPropertiesAllowed": true,
-                    "Enum": [],
-                    "Nullable": false,
-                    "Deprecated": false,
-                    "Extensions": {},
-                    "UnresolvedReference": false
-                  },
-                  "Examples": {},
-                  "Encoding": {},
-                  "Extensions": {}
-                }
-              },
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          },
-          "Callbacks": {},
-          "Deprecated": true,
-          "Security": [],
-          "Servers": [],
-          "Extensions": {}
-        }
-      },
-      "Servers": [],
-      "Parameters": [],
-      "Extensions": {}
-    },
-    "/api/sync/rename": {
-      "Operations": {
-        "Post": {
-          "Tags": [
-            {
-              "Name": "Sync",
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          ],
-          "Summary": "Rename file/folder and update it in the database",
-          "Parameters": [
-            {
-              "UnresolvedReference": false,
-              "Name": "f",
-              "In": 0,
-              "Description": "from subPath",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "string",
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            },
-            {
-              "UnresolvedReference": false,
-              "Name": "to",
-              "In": 0,
-              "Description": "to subPath",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "string",
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            },
-            {
-              "UnresolvedReference": false,
-              "Name": "collections",
-              "In": 0,
-              "Description": "is collections bool",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "boolean",
-                "Default": {
-                  "PrimitiveType": 7,
-                  "AnyType": 0,
-                  "Value": true
-                },
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            },
-            {
-              "UnresolvedReference": false,
-              "Name": "currentStatus",
-              "In": 0,
-              "Description": "default is to not included files that are removed in result",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "boolean",
-                "Default": {
-                  "PrimitiveType": 7,
-                  "AnyType": 0,
-                  "Value": true
-                },
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            }
-          ],
-          "Responses": {
-            "200": {
-              "Description": "the item including the updated content",
-              "Headers": {},
-              "Content": {
-                "application/json": {
-                  "Schema": {
-                    "Type": "array",
-                    "ReadOnly": false,
-                    "WriteOnly": false,
-                    "AllOf": [],
-                    "OneOf": [],
-                    "AnyOf": [],
-                    "Required": [],
-                    "Items": {
-                      "ReadOnly": false,
-                      "WriteOnly": false,
-                      "AllOf": [],
-                      "OneOf": [],
-                      "AnyOf": [],
-                      "Required": [],
-                      "Properties": {},
-                      "AdditionalPropertiesAllowed": true,
-                      "Enum": [],
-                      "Nullable": false,
-                      "Deprecated": false,
-                      "Extensions": {},
-                      "UnresolvedReference": false,
-                      "Reference": {
-                        "Type": 0,
-                        "Id": "FileIndexItem",
-                        "IsExternal": false,
-                        "IsLocal": true,
-                        "ReferenceV3": "#/components/schemas/FileIndexItem",
-                        "ReferenceV2": "#/definitions/FileIndexItem"
-                      }
-                    },
-                    "Properties": {},
-                    "AdditionalPropertiesAllowed": true,
-                    "Enum": [],
-                    "Nullable": false,
-                    "Deprecated": false,
-                    "Extensions": {},
-                    "UnresolvedReference": false
-                  },
-                  "Examples": {},
-                  "Encoding": {},
-                  "Extensions": {}
-                }
-              },
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "404": {
-              "Description": "item not found in the database or on disk",
-              "Headers": {},
-              "Content": {
-                "application/json": {
-                  "Schema": {
-                    "Type": "array",
-                    "ReadOnly": false,
-                    "WriteOnly": false,
-                    "AllOf": [],
-                    "OneOf": [],
-                    "AnyOf": [],
-                    "Required": [],
-                    "Items": {
-                      "ReadOnly": false,
-                      "WriteOnly": false,
-                      "AllOf": [],
-                      "OneOf": [],
-                      "AnyOf": [],
-                      "Required": [],
-                      "Properties": {},
-                      "AdditionalPropertiesAllowed": true,
-                      "Enum": [],
-                      "Nullable": false,
-                      "Deprecated": false,
-                      "Extensions": {},
-                      "UnresolvedReference": false,
-                      "Reference": {
-                        "Type": 0,
-                        "Id": "FileIndexItem",
-                        "IsExternal": false,
-                        "IsLocal": true,
-                        "ReferenceV3": "#/components/schemas/FileIndexItem",
-                        "ReferenceV2": "#/definitions/FileIndexItem"
-                      }
-                    },
-                    "Properties": {},
-                    "AdditionalPropertiesAllowed": true,
-                    "Enum": [],
-                    "Nullable": false,
-                    "Deprecated": false,
-                    "Extensions": {},
-                    "UnresolvedReference": false
-                  },
-                  "Examples": {},
-                  "Encoding": {},
-                  "Extensions": {}
-                }
-              },
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "401": {
-              "Description": "User unauthorized",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          },
-          "Callbacks": {},
-          "Deprecated": false,
-          "Security": [],
-          "Servers": [],
-          "Extensions": {}
-        }
-      },
-      "Servers": [],
-      "Parameters": [],
-      "Extensions": {}
-    },
     "/api/synchronize": {
       "Operations": {
         "Post": {
@@ -9559,6 +9546,41 @@
                   "PrimitiveType": 0,
                   "AnyType": 0,
                   "Value": 0
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "filePath",
+              "In": 0,
+              "Description": "fallback filePath",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "Default": {
+                  "PrimitiveType": 4,
+                  "AnyType": 0,
+                  "Value": ""
                 },
                 "ReadOnly": false,
                 "WriteOnly": false,
@@ -10554,7 +10576,7 @@
             "Extensions": {},
             "UnresolvedReference": false
           },
-          "addLegacyOverwrite": {
+          "addSwaggerExportExitAfter": {
             "Type": "boolean",
             "ReadOnly": false,
             "WriteOnly": false,
@@ -10565,7 +10587,7 @@
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
-            "Nullable": false,
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -10673,6 +10695,22 @@
             "Extensions": {},
             "UnresolvedReference": false
           },
+          "noAccountLocalhost": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
           "accountRegisterDefaultRole": {
             "ReadOnly": false,
             "WriteOnly": false,
@@ -10712,10 +10750,42 @@
             "Extensions": {},
             "UnresolvedReference": false
           },
+          "applicationInsightsLog": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "applicationInsightsDatabaseTracking": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
           "maxDegreesOfParallelism": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": true,
+            "ReadOnly": false,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -10848,6 +10918,45 @@
               "Deprecated": false,
               "Extensions": {},
               "UnresolvedReference": false
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "videoUseLocalTime": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false,
+              "Reference": {
+                "Type": 0,
+                "Id": "CameraMakeModel",
+                "IsExternal": false,
+                "IsLocal": true,
+                "ReferenceV3": "#/components/schemas/CameraMakeModel",
+                "ReferenceV2": "#/definitions/CameraMakeModel"
+              }
             },
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
@@ -11325,6 +11434,55 @@
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
             "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          }
+        },
+        "AdditionalPropertiesAllowed": false,
+        "Enum": [],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
+      "CameraMakeModel": {
+        "Type": "object",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {
+          "make": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "model": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -12183,6 +12341,29 @@
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
+          },
+          "imageStabilisation": {
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false,
+            "Reference": {
+              "Type": 0,
+              "Id": "ImageStabilisationType",
+              "IsExternal": false,
+              "IsLocal": true,
+              "ReferenceV3": "#/components/schemas/ImageStabilisationType",
+              "ReferenceV2": "#/definitions/ImageStabilisationType"
+            }
           }
         },
         "AdditionalPropertiesAllowed": false,
@@ -12494,6 +12675,39 @@
         "Extensions": {},
         "UnresolvedReference": false
       },
+      "ImageStabilisationType": {
+        "Type": "integer",
+        "Format": "int32",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {},
+        "AdditionalPropertiesAllowed": true,
+        "Enum": [
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 0
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 1
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 2
+          }
+        ],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
       "ImportIndexItem": {
         "Type": "object",
         "ReadOnly": false,
@@ -12614,6 +12828,22 @@
               "ReferenceV3": "#/components/schemas/FileIndexItem",
               "ReferenceV2": "#/definitions/FileIndexItem"
             }
+          },
+          "makeModel": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           }
         },
         "AdditionalPropertiesAllowed": false,
@@ -13310,6 +13540,11 @@
             "PrimitiveType": 0,
             "AnyType": 0,
             "Value": 8
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 9
           }
         ],
         "Nullable": false,
@@ -13438,7 +13673,7 @@
           "ticks": {
             "Type": "integer",
             "Format": "int64",
-            "ReadOnly": true,
+            "ReadOnly": false,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -13455,7 +13690,7 @@
           "days": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": true,
+            "ReadOnly": false,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -13472,7 +13707,7 @@
           "hours": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": true,
+            "ReadOnly": false,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -13489,7 +13724,7 @@
           "milliseconds": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": true,
+            "ReadOnly": false,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -13506,7 +13741,7 @@
           "minutes": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": true,
+            "ReadOnly": false,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -13523,7 +13758,7 @@
           "seconds": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": true,
+            "ReadOnly": false,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
