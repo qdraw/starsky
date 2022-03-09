@@ -49,6 +49,11 @@ jobs:
       working-directory: ./starsky
       run: bash build.sh --Target=BuildNetCore --no-sonar
 
+    - name: Remove launchSettings.json
+      shell: bash
+      working-directory: ./starsky
+      run: rm Properties/launchSettings.json
+      
     - name: Run With Exit
       shell: bash
       working-directory: ./starsky/starsky
@@ -58,4 +63,8 @@ jobs:
         app__AddSwaggerExportExitAfter: "true"
       run: dotnet run
 
+    - name: Display properties folder
+      shell: bash
+      working-directory: ./starsky
+      run: ls Properties
 
