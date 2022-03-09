@@ -86,6 +86,10 @@ namespace starsky.Helpers
 
 		public bool Add04SwaggerExportExitAfter(AppSettings appSettings, IHostApplicationLifetime applicationLifetime)
 		{
+			_logger.LogInformation($"[appSettings.AddSwagger] {appSettings.AddSwagger}" +
+			                       $"[appSettings.AddSwaggerExport] {appSettings.AddSwaggerExport}" +
+			                       $"[appSettings.AddSwaggerExportExitAfter] {appSettings.AddSwaggerExportExitAfter}");
+			
 			if ( appSettings.AddSwagger != true ||
 			     appSettings.AddSwaggerExport != true ||
 			     appSettings.AddSwaggerExportExitAfter != true ) return false;
