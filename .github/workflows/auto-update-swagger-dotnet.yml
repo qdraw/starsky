@@ -17,6 +17,7 @@ on:
     - '.github/workflows/auto-update-swagger-dotnet.yml'
     - 'starsky-tools/docs/assets/config/starsky.json'
 
+ 
 jobs:
   build:
 
@@ -43,12 +44,7 @@ jobs:
       shell: bash
       working-directory: ./starsky
       run: bash build.sh --Target=BuildNetCore --no-sonar
-
-    - name: Remove launchSettings.json
-      shell: bash
-      working-directory: ./starsky
-      run: rm Properties/launchSettings.json
-      
+     
     - name: Run With Exit
       shell: bash
       working-directory: ./starsky/starsky
@@ -56,10 +52,6 @@ jobs:
         app__AddSwagger: "true"
         app__AddSwaggerExport: "true"
         app__AddSwaggerExportExitAfter: "true"
-      run: dotnet run
+      run: dotnet run --no-launch-profile
 
-    - name: Display properties folder
-      shell: bash
-      working-directory: ./starsky
-      run: ls Properties
 
