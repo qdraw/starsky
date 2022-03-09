@@ -42,6 +42,12 @@ namespace starsky.foundation.writemeta.Services
 
 		public async Task<bool> DownloadExifTool(bool isWindows)
 		{
+			if ( _appSettings.AddSwaggerExport == true && _appSettings.AddSwaggerExportExitAfter == true )
+			{
+				_logger.LogInformation("[DownloadExifTool] Skipped due AddSwaggerExportExitAfter setting");
+				return false;
+			}
+			
 			if ( isWindows &&
 			     !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath ()) )
 			{
