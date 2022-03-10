@@ -55,12 +55,13 @@ namespace starsky.foundation.database.Helpers
 		    return FileIndexItem.ExifStatus.Default;
 	    }
 
-	    public FileIndexItem.ExifStatus IsDeletedStatus(FileIndexItem fileIndexItem)
+	    public static FileIndexItem.ExifStatus IsDeletedStatus(FileIndexItem fileIndexItem)
 	    {
-		    return fileIndexItem != null && fileIndexItem.Tags.Contains("!delete!") ? FileIndexItem.ExifStatus.Deleted : FileIndexItem.ExifStatus.Default;
+		    return fileIndexItem != null && fileIndexItem.Tags.Contains("!delete!") ? 
+			    FileIndexItem.ExifStatus.Deleted : FileIndexItem.ExifStatus.Default;
 	    }
 	    
-	    public FileIndexItem.ExifStatus IsDeletedStatus(DetailView detailView)
+	    public static FileIndexItem.ExifStatus IsDeletedStatus(DetailView detailView)
 	    {
 		    if (detailView != null && detailView.FileIndexItem.Tags.Contains("!delete!"))
 		    {
@@ -113,7 +114,7 @@ namespace starsky.foundation.database.Helpers
             return false;
         }
 
-        public bool ReadonlyDenied(FileIndexItem statusModel,
+        public static bool ReadonlyDenied(FileIndexItem statusModel,
 	        FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList)
         {
 	        switch (statusResults)
@@ -126,7 +127,7 @@ namespace starsky.foundation.database.Helpers
 	        return false;
         }
 
-        public void ReadonlyAllowed(FileIndexItem statusModel,
+        public static void ReadonlyAllowed(FileIndexItem statusModel,
 	        FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList)
         {
 	        // Readonly is allowed

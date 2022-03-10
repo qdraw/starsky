@@ -327,7 +327,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger());
 			var compareList = new List<string>();
 
-			var rotationCompare = metaPreflight.RotationCompare(0, 
+			var rotationCompare = MetaPreflight.RotationCompare(0, 
 				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
 				compareList);
 			Assert.AreEqual(rotationCompare.Orientation, FileIndexItem.Rotation.Horizontal);
@@ -340,7 +340,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var metaPreflight = new MetaPreflight(_query, _appSettings,
 				new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger());
 			var compareList = new List<string>();
-			var rotationCompare = metaPreflight.RotationCompare(1, 
+			var rotationCompare = MetaPreflight.RotationCompare(1, 
 				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
 				compareList);
 			Assert.AreEqual(rotationCompare.Orientation, FileIndexItem.Rotation.Rotate90Cw);
@@ -354,7 +354,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var metaPreflight = new MetaPreflight(_query, _appSettings,
 				new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger());
 			var compareList = new List<string>();
-			var rotationCompare = metaPreflight.RotationCompare(-1, 
+			var rotationCompare = MetaPreflight.RotationCompare(-1, 
 				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
 				compareList);
 			Assert.AreEqual(rotationCompare.Orientation, FileIndexItem.Rotation.Rotate270Cw);

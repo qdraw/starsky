@@ -454,26 +454,26 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		/// <param name="colorclassString">The color class string.</param>
 		/// <returns></returns>
-		public List<ColorClassParser.Color> GetColorClassList(string colorclassString = null)
+		public static List<ColorClassParser.Color> GetColorClassList(string colorclassString = null)
 		{
 			if (string.IsNullOrWhiteSpace(colorclassString)) return new List<ColorClassParser.Color>();
 
-			var colorclassStringList = new List<string>();
+			var colorClassStringList = new List<string>();
 
-			if (!colorclassString.Contains(","))
+			if (!colorclassString.Contains(',') )
 			{
 				if (!int.TryParse(colorclassString, out var parsedInt)) return new List<ColorClassParser.Color>();
-				colorclassStringList.Add(parsedInt.ToString());
+				colorClassStringList.Add(parsedInt.ToString());
 			}
 			if (colorclassString.Contains(",")) {
-				colorclassStringList = colorclassString.Split(",".ToCharArray()).ToList();
+				colorClassStringList = colorclassString.Split(",".ToCharArray()).ToList();
 			}
-			var colorclassList = new HashSet<ColorClassParser.Color>();
-			foreach (var colorclassStringItem in colorclassStringList)
+			var colorClassList = new HashSet<ColorClassParser.Color>();
+			foreach (var colorClassStringItem in colorClassStringList)
 			{
-				colorclassList.Add(ColorClassParser.GetColorClass(colorclassStringItem));
+				colorClassList.Add(ColorClassParser.GetColorClass(colorClassStringItem));
 			}
-			return colorclassList.ToList();
+			return colorClassList.ToList();
 		}
 
 
@@ -481,7 +481,7 @@ namespace starsky.foundation.database.Models
 		/// Create an List of all String, bool, Datetime, ImageFormat based database fields		
 		/// </summary>
 		/// <returns> Files the index property list.</returns>
-		public List<string> FileIndexPropList()
+		public static List<string> FileIndexPropList()
 		{
 			var fileIndexPropList = new List<string>();
 			// only for types String in FileIndexItem()
@@ -651,8 +651,10 @@ namespace starsky.foundation.database.Models
 		/// <param name="imageWidth">Width of the image.</param>
 		public void SetImageWidth(string imageWidth)
 		{
-			int.TryParse(imageWidth, out var parsedInt);
-			SetImageWidth(parsedInt);
+			if ( int.TryParse(imageWidth, out var parsedInt) )
+			{
+				SetImageWidth(parsedInt);
+			}
 		}
 
 		/// <summary>
@@ -671,8 +673,10 @@ namespace starsky.foundation.database.Models
 		/// <param name="imageHeight">Height of the image.</param>
 		public void SetImageHeight(string imageHeight)
 		{
-			int.TryParse(imageHeight, out var parsedInt);
-			SetImageHeight(parsedInt);
+			if ( int.TryParse(imageHeight, out var parsedInt) )
+			{
+				SetImageHeight(parsedInt);
+			}
 		}
 
 		/// <summary>
@@ -815,8 +819,10 @@ namespace starsky.foundation.database.Models
 		/// <param name="isoSpeed">The iso speed.</param>
 		public void SetIsoSpeed(string isoSpeed)
 		{
-			int.TryParse(isoSpeed, out var parsedInt);
-			SetIsoSpeed(parsedInt);
+			if ( int.TryParse(isoSpeed, out var parsedInt) )
+			{
+				SetIsoSpeed(parsedInt);
+			}
 		}
 
 		/// <summary>

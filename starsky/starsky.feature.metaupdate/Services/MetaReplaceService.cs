@@ -123,7 +123,7 @@ namespace starsky.feature.metaupdate.Services
 			return fileIndexResultList;
 		}
 		
-		public List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 
+		public static List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 
 			string fieldName, string search, string replace)
 		{
 			foreach ( var fileIndexItem in fileIndexResultsList.Where( 

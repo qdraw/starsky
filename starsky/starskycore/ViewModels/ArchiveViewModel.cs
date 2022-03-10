@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
 namespace starskycore.ViewModels
 {
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public class ArchiveViewModel
     {
         public IEnumerable<FileIndexItem> FileIndexItems { get; set; }

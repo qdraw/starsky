@@ -140,7 +140,7 @@ namespace starskytest.Models
 		{
 			var input = "8,7";
 			var eightSeven = new List<ColorClassParser.Color> {ColorClassParser.Color.Trash,ColorClassParser.Color.Extras};
-			var output = new FileIndexItem().GetColorClassList(input);
+			var output = FileIndexItem.GetColorClassList(input);
 			CollectionAssert.AreEqual(eightSeven,output);
 		}
 
@@ -148,7 +148,7 @@ namespace starskytest.Models
 		public void FileIndexItemTest_GetColorClassListString()
 		{
 			var input = "string";
-			var output = new FileIndexItem().GetColorClassList(input);
+			var output = FileIndexItem.GetColorClassList(input);
 			Assert.AreEqual(0,output.Count); // <= 0
 		}
 

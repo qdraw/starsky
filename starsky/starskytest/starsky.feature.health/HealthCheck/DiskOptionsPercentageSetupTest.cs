@@ -15,7 +15,7 @@ namespace starskytest.starsky.feature.health.HealthCheck
 		{
 			var appSettings = new AppSettings();
 			var diskOptions = new DiskStorageOptions();
-			new DiskOptionsPercentageSetup().Setup(appSettings.TempFolder,diskOptions);
+			DiskOptionsPercentageSetup.Setup(appSettings.TempFolder,diskOptions);
 
 			var value = diskOptions.GetType().GetRuntimeFields().FirstOrDefault();
 			Assert.IsNotNull(value);

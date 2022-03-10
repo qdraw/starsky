@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using starsky.foundation.platform.Models;
 
 namespace starsky.feature.webhtmlpublish.Models
 {
+	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public class PublishManifestModel
 	{
 		/// <summary>

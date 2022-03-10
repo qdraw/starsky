@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,8 @@ using starsky.foundation.readmeta.Helpers;
 namespace starsky.feature.geolookup.Services
 {
 	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Scoped)]
-    public class GeoReverseLookup : IGeoReverseLookup
+	[SuppressMessage("Performance", "CA1822:Mark members as static")]
+	public class GeoReverseLookup : IGeoReverseLookup
     {
         private ReverseGeoCode<ExtendedGeoName> _reverseGeoCode;
         private readonly IEnumerable<Admin1Code> _admin1CodesAscii;

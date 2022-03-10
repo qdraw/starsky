@@ -313,7 +313,7 @@ namespace starskycore.Services
 
 	        // Need to have the type registered in FileIndexPropList
 	        
-            foreach (var itemName in new FileIndexItem().FileIndexPropList())
+            foreach (var itemName in FileIndexItem.FileIndexPropList())
             {
                 SearchItemName(model, itemName);
             }

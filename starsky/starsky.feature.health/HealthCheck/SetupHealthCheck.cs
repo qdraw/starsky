@@ -27,21 +27,21 @@ namespace starsky.feature.health.HealthCheck
 	            .AddDiskStorageHealthCheck(
 		            setup: diskOptions =>
 		            {
-			            new DiskOptionsPercentageSetup().Setup(_appSettings.StorageFolder,
+			            DiskOptionsPercentageSetup.Setup(_appSettings.StorageFolder,
 				            diskOptions);
 		            },
 		            name: "Storage_StorageFolder")
 	            .AddDiskStorageHealthCheck(
 		            setup: diskOptions =>
 		            {
-			            new DiskOptionsPercentageSetup().Setup(_appSettings.ThumbnailTempFolder,
+			            DiskOptionsPercentageSetup.Setup(_appSettings.ThumbnailTempFolder,
 				            diskOptions);
 		            },
 		            name: "Storage_ThumbnailTempFolder")
 	            .AddDiskStorageHealthCheck(
 		            setup: diskOptions =>
 		            {
-			            new DiskOptionsPercentageSetup().Setup(_appSettings.TempFolder,
+			            DiskOptionsPercentageSetup.Setup(_appSettings.TempFolder,
 				            diskOptions);
 		            },
 		            name: "Storage_TempFolder")

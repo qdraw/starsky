@@ -144,7 +144,7 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="fileIndexItem">main db object</param>
 		/// <param name="comparedNamesList">list of types that are changes</param>
 		/// <returns>updated image</returns>
-		public FileIndexItem RotationCompare(int rotateClock, FileIndexItem fileIndexItem, 
+		public static FileIndexItem RotationCompare(int rotateClock, FileIndexItem fileIndexItem, 
 			ICollection<string> comparedNamesList)
 		{
 			// Do orientation / Rotate if needed (after compare)

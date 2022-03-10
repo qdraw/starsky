@@ -49,7 +49,7 @@ namespace starsky.Controllers
         {
             
             // Used in Detail and Index View => does not hide this single item
-            var colorClassActiveList = new FileIndexItem().GetColorClassList(colorClass);
+            var colorClassActiveList = FileIndexItem.GetColorClassList(colorClass);
 
             var subPath = PathHelper.PrefixDbSlash(f);
             subPath = PathHelper.RemoveLatestSlash(subPath);
