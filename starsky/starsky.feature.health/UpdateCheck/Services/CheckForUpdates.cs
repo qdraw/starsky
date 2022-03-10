@@ -68,8 +68,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 			return !key ? new List<ReleaseModel>() : JsonSerializer.Deserialize<List<ReleaseModel>>(value, new JsonSerializerOptions());
 		}
 
-		// ReSharper disable once MemberCanBeMadeStatic.Global
-		internal KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel> releaseModelList, string currentVersion )
+		internal static KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel> releaseModelList, string currentVersion )
 		{
 			var orderedReleaseModelList = releaseModelList.OrderByDescending(p => p.TagName);
 			var tagName = orderedReleaseModelList.FirstOrDefault(p => !p.Draft && !p.PreRelease)?.TagName;

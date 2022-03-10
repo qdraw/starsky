@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.geolookup.Models;
+using static System.Int32;
 
 namespace starsky.feature.geolookup.Services
 {
@@ -13,7 +14,6 @@ namespace starsky.feature.geolookup.Services
 			_cache = memoryCache;
 		}
 
-
 		public GeoCacheStatus Status(string path)
 		{
 			if(_cache == null || string.IsNullOrWhiteSpace(path)) return new GeoCacheStatus{Total = -1};
@@ -23,15 +23,20 @@ namespace starsky.feature.geolookup.Services
 			
 			if(_cache.TryGetValue(totalCacheName, out var statusObjectTotal))
 			{
-				int.TryParse(statusObjectTotal.ToString(), out var status);
-				result.Total = status;
+				if ( TryParse(statusObjectTotal.ToString(), out var status) )
+				{
+					result.Total = status;
+				}
 			}
 			
 			var currentCacheName = nameof(GeoCacheStatus) + path + StatusType.Current;
+			// ReSharper disable once InvertIf
 			if(_cache.TryGetValue(currentCacheName, out var statusObjectCurrent))
 			{
-				int.TryParse(statusObjectCurrent.ToString(), out var status);
-				result.Current = status;
+				if ( TryParse(statusObjectCurrent.ToString(), out var status) )
+				{
+					result.Current = status;
+				}
 			}
 			
 			return result;

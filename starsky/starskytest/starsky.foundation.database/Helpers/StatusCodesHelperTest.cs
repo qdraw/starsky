@@ -17,7 +17,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 		{
 			DetailView detailView = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			var status = new StatusCodesHelper().IsDeletedStatus(detailView);
+			var status = StatusCodesHelper.IsDeletedStatus(detailView);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
 		}
 		
@@ -91,7 +91,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			};
 			var istorage = new FakeIStorage(new List<string> {"/"}, 
 				new List<string> {"/test.jpg"});
-			var status = new StatusCodesHelper(appSettings).IsDeletedStatus(detailView);
+			var status = StatusCodesHelper.IsDeletedStatus(detailView);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,status);
 		}
@@ -149,7 +149,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults,
+			var statusBool = StatusCodesHelper.ReadonlyDenied(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
@@ -160,7 +160,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.Ok;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults,
+			var statusBool = StatusCodesHelper.ReadonlyDenied(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(false,statusBool);
 		}
@@ -171,7 +171,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			new StatusCodesHelper().ReadonlyAllowed(statusModel, statusResults,
+			StatusCodesHelper.ReadonlyAllowed(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly,fileIndexResultsList.FirstOrDefault().Status);
 		}

@@ -34,7 +34,7 @@ namespace starsky.foundation.database.Query
 			}
 		}
 		
-		private List<FileIndexItem> FormatOk(List<FileIndexItem> input)
+		private static List<FileIndexItem> FormatOk(List<FileIndexItem> input)
 		{
 			return input.Select(p =>
 			{

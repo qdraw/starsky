@@ -27,8 +27,7 @@ namespace starsky.foundation.accountmanagement.Middleware
 			var idAsString = httpContext.User.Claims
 				.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
 				?.Value;
-			int.TryParse(idAsString, out var id);
-			return id;
+			return int.TryParse(idAsString, out var id) ? id : 0;
 		}
 
 		public async Task Invoke(HttpContext context)

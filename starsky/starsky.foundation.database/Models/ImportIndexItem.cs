@@ -191,7 +191,7 @@ namespace starsky.foundation.database.Models
 	    /// </summary>
 	    /// <param name="inputString">to input</param>
 	    /// <returns>the input string without those characters</returns>
-	    public string RemoveEscapedCharacters(string inputString)
+	    public static string RemoveEscapedCharacters(string inputString)
 	    {
 		    var newString = new StringBuilder();
 		    for ( int i = 0; i < inputString.ToCharArray().Length; i++ )

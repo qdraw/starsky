@@ -42,7 +42,7 @@ namespace starsky.foundation.database.Models
 	    /// <param name="collections">bool, to enable</param>
 	    /// <param name="subPath">the file original requested in subPath style</param>
 	    /// <returns></returns>
-	    public List<string> GetCollectionSubPathList(FileIndexItem fileIndexItem, bool collections, string subPath)
+	    public static List<string> GetCollectionSubPathList(FileIndexItem fileIndexItem, bool collections, string subPath)
 	    {
 		    // Paths that are used
 		    var collectionSubPathList = fileIndexItem.CollectionPaths;

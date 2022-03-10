@@ -90,8 +90,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		[TestMethod]
 		public void Parse_CurrentVersionIsNewer()
 		{
-			var results = new CheckForUpdates(null, 
-				new AppSettings(),null).Parse(new List<ReleaseModel>
+			var results = CheckForUpdates.Parse(new List<ReleaseModel>
 			{
 				new ReleaseModel
 				{
@@ -108,8 +107,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		[TestMethod]
 		public void Parse_CurrentVersionIsNewer_Multiple()
 		{
-			var results = new CheckForUpdates(null, 
-				new AppSettings(),null).Parse(new List<ReleaseModel>
+			var results = CheckForUpdates.Parse(new List<ReleaseModel>
 			{
 				new ReleaseModel
 				{
@@ -138,8 +136,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		[TestMethod]
 		public void Parse_CurrentVersionIsOlder()
 		{
-			var results = new CheckForUpdates(null, 
-				new AppSettings(),null).Parse(new List<ReleaseModel>
+			var results = CheckForUpdates.Parse(new List<ReleaseModel>
 			{
 				new ReleaseModel
 				{
@@ -156,8 +153,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		[TestMethod]
 		public void Parse_wrongTagName()
 		{
-			var results = new CheckForUpdates(null, 
-				new AppSettings(),null).Parse(new List<ReleaseModel>
+			var results = CheckForUpdates.Parse(new List<ReleaseModel>
 			{
 				new ReleaseModel
 				{
@@ -173,8 +169,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		[TestMethod]
 		public void Parse_wrongTagName_ButDidntStartWithV()
 		{
-			var results = new CheckForUpdates(null, 
-				new AppSettings(),null).Parse(new List<ReleaseModel>
+			var results = CheckForUpdates.Parse(new List<ReleaseModel>
 			{
 				new ReleaseModel
 				{

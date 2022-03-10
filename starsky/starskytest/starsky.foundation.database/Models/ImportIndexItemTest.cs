@@ -53,7 +53,7 @@ namespace starskytest.starsky.foundation.database.Models
 		public void ImportIndexItemRemoveEscapedCharactersTest()
 		{
 			var structuredFileName = "yyyyMMdd_HHmmss_\\d.ext";
-			var result = new ImportIndexItem(new AppSettings()).RemoveEscapedCharacters(structuredFileName);
+			var result = ImportIndexItem.RemoveEscapedCharacters(structuredFileName);
 			Assert.AreEqual("yyyyMMdd_HHmmss_.ext",result);
 		}
 

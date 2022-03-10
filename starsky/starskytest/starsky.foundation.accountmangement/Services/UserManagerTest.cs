@@ -393,7 +393,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
 			var credType = new CredentialType { Id = 1 };
 
-			_memoryCache.Remove(userManager.CredentialCacheKey(credType,"test_cache_add"));
+			_memoryCache.Remove(UserManager.CredentialCacheKey(credType,"test_cache_add"));
 
 			await userManager.SignUpAsync("test", "email", "test_cache_add",
 				"secret");

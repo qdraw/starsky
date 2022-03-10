@@ -117,7 +117,7 @@ namespace starskycore.ViewModels
         public void SetAddSearchInStringType(string value)
         {
             // use ctor to have an empty list
-            var fileIndexPropList = new FileIndexItem().FileIndexPropList();
+            var fileIndexPropList = FileIndexItem.FileIndexPropList();
             var fileIndexPropListIndex = fileIndexPropList.FindIndex
                 (x => x.Equals(value, StringComparison.OrdinalIgnoreCase));
             if (fileIndexPropListIndex != -1 )
@@ -482,7 +482,7 @@ namespace starskycore.ViewModels
 
 		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
-			    var propertyStringName = new FileIndexItem().FileIndexPropList().FirstOrDefault(p =>
+			    var propertyStringName = FileIndexItem.FileIndexPropList().FirstOrDefault(p =>
 				    String.Equals(p, model.SearchIn[i], StringComparison.InvariantCultureIgnoreCase));
 			    if ( string.IsNullOrEmpty(propertyStringName) ) continue;
 

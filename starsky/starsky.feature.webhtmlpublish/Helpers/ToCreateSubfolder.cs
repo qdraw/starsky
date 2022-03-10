@@ -27,7 +27,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			if (!string.IsNullOrEmpty(parentFolder))
 			{
 				profileFolderStringBuilder.Append(parentFolder);
-				profileFolderStringBuilder.Append("/");
+				profileFolderStringBuilder.Append('/');
 			}
 	        
 			profileFolderStringBuilder.Append(profile.Folder);

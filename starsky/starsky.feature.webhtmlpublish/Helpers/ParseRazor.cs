@@ -32,9 +32,9 @@ namespace starsky.feature.webhtmlpublish.Helpers
         public async Task<string> EmbeddedViews(string viewName, object viewModel)
         {
 	        
-            if (!_hostFileSystemStorage.ExistFile(new EmbeddedViewsPath().GetViewFullPath(viewName)))
+            if (!_hostFileSystemStorage.ExistFile(EmbeddedViewsPath.GetViewFullPath(viewName)))
             {
-                Console.WriteLine("View Not Exist " + new EmbeddedViewsPath().GetViewFullPath(viewName));
+                Console.WriteLine("View Not Exist " + EmbeddedViewsPath.GetViewFullPath(viewName));
             }
             else 
             {
