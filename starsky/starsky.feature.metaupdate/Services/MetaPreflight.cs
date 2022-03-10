@@ -84,7 +84,7 @@ namespace starsky.feature.metaupdate.Services
 				}
 				
 				// Deleted is allowed but the status need be updated
-				if (( new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) 
+				if (( StatusCodesHelper.IsDeletedStatus(fileIndexItem) 
 				      == FileIndexItem.ExifStatus.Deleted) )
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
