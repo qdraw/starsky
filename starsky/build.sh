@@ -39,7 +39,12 @@ dotnet tool restore
 
 if [ $? -ne 0 ]; then
     echo "An error occured while installing Cake."
-    exit 1
+    sleep 5    
+    dotnet tool restore
+    if [ $? -ne 0 ]; then
+        echo "An error occured while retry and installing Cake."
+        exit 1
+    fi
 fi
 
 # Start Cake
