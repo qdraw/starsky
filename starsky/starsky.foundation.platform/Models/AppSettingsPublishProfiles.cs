@@ -23,6 +23,20 @@ namespace starsky.foundation.platform.Models
 	    // newtonsoft uses: StringEnumConverter
         public TemplateContentType ContentType { get; set; } = TemplateContentType.None;
 
+	    /// <summary>
+	    /// Get the extension of the new file based on content type
+	    /// </summary>
+	    /// <param name="sourceFilePath">path for fallback</param>
+	    /// <returns>extension with dot as prefix e.g. `.jpg`</returns>
+	    public string GetExtensionWithDot(string sourceFilePath)
+	    {
+		    return ContentType switch
+		    {
+			    TemplateContentType.Jpeg => ".jpg",
+			    _ => System.IO.Path.GetExtension(sourceFilePath).ToLowerInvariant()
+		    };
+	    }
+
         /// <summary>
         /// Private name of SourceMaxWidth
         /// </summary>

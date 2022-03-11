@@ -111,9 +111,11 @@ namespace starsky.feature.webftppublish.Services
 				pushDirectory // <= current log item
 			};
 			
+			// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach ( var copyItem in copyContent.Where(p => p.Value) )
 			{
 				var parentItems = Breadcrumbs.BreadcrumbHelper(copyItem.Key);
+				// ReSharper disable once LoopCanBeConvertedToQuery
 				foreach ( var item in parentItems.Where(p => p != Path.DirectorySeparatorChar.ToString()) )
 				{
 					if ( _storage.ExistFolder(parentDirectory + item ) )
@@ -130,13 +132,11 @@ namespace starsky.feature.webftppublish.Services
 		/// Makes a list of 'full file paths' of files on disk to copy
 		/// </summary>
 		/// <returns></returns>
-		internal HashSet<string> CreateListOfRemoteFiles(Dictionary<string, bool> copyContent)
+		internal static HashSet<string> CreateListOfRemoteFiles(Dictionary<string, bool> copyContent)
 		{
-			var copyThisFiles = new List<string>();
-			foreach ( var copyItem in copyContent.Where(p => p.Value) )
-			{
-				copyThisFiles.Add("/" + copyItem.Key);
-			}
+			var copyThisFiles = copyContent
+				.Where(p => p.Value)
+				.Select(copyItem => "/" + copyItem.Key).ToList();
 			return new HashSet<string>(copyThisFiles);
 		}
 

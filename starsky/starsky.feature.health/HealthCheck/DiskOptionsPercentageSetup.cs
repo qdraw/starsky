@@ -3,7 +3,7 @@ using System.IO;
 
 namespace starsky.feature.health.HealthCheck
 {
-	public class DiskOptionsPercentageSetup
+	public static class DiskOptionsPercentageSetup
 	{
 		/// <summary>
 		/// On the disk must be at least 10% free. 10% is the default value
@@ -11,7 +11,7 @@ namespace starsky.feature.health.HealthCheck
 		/// <param name="fullFilePath">full file path</param>
 		/// <param name="diskOptions">to add to this object</param>
 		/// <param name="percentage">(optional) between 0 and 1</param>
-		public void Setup(string fullFilePath, DiskStorageOptions diskOptions, float percentage = 0.1f)
+		public static void Setup(string fullFilePath, DiskStorageOptions diskOptions, float percentage = 0.1f)
 		{
 			var directoryInfo = new FileInfo(fullFilePath).Directory;
 			if ( directoryInfo == null ) return;

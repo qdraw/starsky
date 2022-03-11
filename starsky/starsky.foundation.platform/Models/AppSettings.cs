@@ -637,7 +637,7 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public List<CameraMakeModel> VideoUseLocalTime { get; set; } = new List<CameraMakeModel>
 		{
-			new CameraMakeModel("Apple",string.Empty)
+			new CameraMakeModel("Sony","A58")
 		};
 
 		public bool? EnablePackageTelemetry { get; set; } = true;

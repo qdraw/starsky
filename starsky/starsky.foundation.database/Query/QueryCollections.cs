@@ -7,7 +7,7 @@ namespace starsky.foundation.database.Query
 {
     public partial class Query
     {
-        public List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList)
+	    private static List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList)
         {
             
             // Get a list of duplicate items
@@ -42,6 +42,7 @@ namespace starsky.foundation.database.Query
             }
 
             // Then add the items that are non duplicate back to the list
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var dbItem in databaseSubFolderList.ToList())
             {
                 // check if any item is duplicate

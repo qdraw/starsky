@@ -145,7 +145,7 @@ namespace starsky.feature.rename.Services
 			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
-		private string GetFileName(string toFileSubPath, string inputFileSubPath)
+		private static string GetFileName(string toFileSubPath, string inputFileSubPath)
 		{
 			// Needed to create SetFilePath() for item that is copied, not the folder
 			// no double slash when moving to root folder
@@ -173,7 +173,7 @@ namespace starsky.feature.rename.Services
 			if ( inputFileSubPaths.SequenceEqual(toFileSubPaths) )
 			{
 				return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
-					new Tuple<string[], string[]>(new string[0], new string[0]),
+					new Tuple<string[], string[]>(Array.Empty<string>(), Array.Empty<string>()),
 					new List<FileIndexItem>
 					{
 						new FileIndexItem
@@ -246,7 +246,7 @@ namespace starsky.feature.rename.Services
 					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
 				});
 				return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
-					new Tuple<string[], string[]>(new string[0], new string[0]), 
+					new Tuple<string[], string[]>(Array.Empty<string>(), Array.Empty<string>()), 
 					fileIndexResultsList
 				);
 			}

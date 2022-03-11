@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <RuntimeFrameworkVersion>6.0.2</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>6.0.3</RuntimeFrameworkVersion>
         <Description>An attempt to create a database driven photo library</Description>
         <!-- use node script to update version -->
-        <Version>0.5.0-beta.3</Version>
+        <Version>0.5.0-beta.4</Version>
         <!-- SonarQube needs this -->
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
@@ -24,7 +24,13 @@
         <None Remove="Properties\.gitkeep" />
         <ContentWithTargetPath Include="Properties/default-init-launchSettings.json" TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
-    
+
+    <PropertyGroup>
+        <!-- For RazorLight -->
+        <!-- https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnet-core/6.0/preservecompilationcontext-not-set-by-default -->
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+
     <PropertyGroup>
         <!-- https://www.ttmind.com/techpost/how-to-reduce-the-size-of-published-files-of-aspnet-core-pro-->
         <!--disable Quick JIT is enabled and creates fully optimized code -->
@@ -37,7 +43,7 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.3" />
         <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>

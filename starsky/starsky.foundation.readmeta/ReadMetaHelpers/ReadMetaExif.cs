@@ -552,7 +552,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        : DateTimeStyles.AssumeLocal;
 	        
 	        // [QuickTime Movie Header] Created = Tue Oct 11 09:40:04 2011 or Sat Mar 20 21:29:11 2010 // time is in UTC
-	        DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", provider, 
+	        // Or Dutch (NL-nl) "zo mrt. 29 13:10:07 2020"
+	        DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.CurrentCulture, 
 		        dateTimeStyle, out var itemDateTimeQuickTime);
 
 	        // ReSharper disable once InvertIf

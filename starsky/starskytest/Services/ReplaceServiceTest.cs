@@ -110,7 +110,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchAndReplace_Nothing()
 		{
-			var result = _metaReplace.SearchAndReplace(
+			var result = MetaReplaceService.SearchAndReplace(
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}},
 				"tags", "test", string.Empty);
 
@@ -245,7 +245,7 @@ namespace starskytest.Services
 		public void SearchAndReplace_ReplaceDeletedTag_Default()
 		{
 			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !keyword!", Status = FileIndexItem.ExifStatus.Ok}};
-			var result =  _metaReplace.SearchAndReplace(items, "Tags", "!keyword!", "");
+			var result =  MetaReplaceService.SearchAndReplace(items, "Tags", "!keyword!", "");
 			Assert.AreEqual("test",result.FirstOrDefault().Tags);
 		}
 		
@@ -253,7 +253,7 @@ namespace starskytest.Services
 		public void SearchAndReplace_ReplaceDeletedTag_LowerCase()
 		{
 			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !keyword!", Status = FileIndexItem.ExifStatus.Ok}};
-			var result =  _metaReplace.SearchAndReplace(items, "tags", "!keyword!", "");
+			var result =  MetaReplaceService.SearchAndReplace(items, "tags", "!keyword!", "");
 			Assert.AreEqual("test",result.FirstOrDefault().Tags);
 		}
 		
@@ -261,7 +261,7 @@ namespace starskytest.Services
 		public void SearchAndReplace_ReplaceDeletedTag_StatusDeleted()
 		{
 			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !delete!", Status = FileIndexItem.ExifStatus.Deleted}};
-			var result =  _metaReplace.SearchAndReplace(items, "tags", "!delete!", "");
+			var result =  MetaReplaceService.SearchAndReplace(items, "tags", "!delete!", "");
 			Assert.AreEqual("test",result.FirstOrDefault().Tags);
 		}
 	}

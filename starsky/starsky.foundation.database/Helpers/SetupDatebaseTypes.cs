@@ -1,11 +1,11 @@
+#nullable enable
 using System;
+using Microsoft.ApplicationInsights;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using Pomelo.EntityFrameworkCore.MySql.Storage;
 using starsky.foundation.databasetelemetry.Helpers;
 using starsky.foundation.databasetelemetry.Services;
 using starsky.foundation.platform.Interfaces;
@@ -15,14 +15,20 @@ namespace starsky.foundation.database.Helpers
 	public class SetupDatabaseTypes
 	{
 		private readonly AppSettings _appSettings;
-		private readonly IServiceCollection _services;
-		private readonly IConsole _console;
+		private readonly IServiceCollection? _services;
+		private readonly IWebLogger? _logger;
+		private readonly TelemetryClient? _telemetryClient;
 
-		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services = null, IConsole console = null)
+		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection? services = null, IWebLogger? logger = null)
 		{
 			_appSettings = appSettings;
 			_services = services;
-			_console = console;
+
+			// if null get from service collection
+			logger ??= _services?.BuildServiceProvider().GetService<IWebLogger>();
+			_telemetryClient = _services?.BuildServiceProvider().GetService<TelemetryClient>();
+
+			_logger = logger;
 		}
 
 		public ApplicationDbContext BuilderDbFactory()
@@ -44,7 +50,7 @@ namespace starsky.foundation.database.Helpers
 			return new MariaDbServerVersion("10.2");
 		}
 		
-		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string foundationDatabaseName = "")
+		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string? foundationDatabaseName = "")
 		{
 			switch ( _appSettings.DatabaseType )
 			{
@@ -98,20 +104,20 @@ namespace starsky.foundation.database.Helpers
 				new DatabaseTelemetryInterceptor(
 					TelemetryConfigurationHelper.InitTelemetryClient(
 						_appSettings.ApplicationInsightsInstrumentationKey, 
-						_appSettings.ApplicationType.ToString())
+						_appSettings.ApplicationType.ToString(),_logger,_telemetryClient)
 					)
 				);
 			return true;
 		}
 
-		public void BuilderDb(string foundationDatabaseName = "")
+		public void BuilderDb(string? foundationDatabaseName = "")
 		{
 			if ( _services == null ) throw new AggregateException("services is missing");
-			if ( _console != null && _appSettings.IsVerbose() )
+			if ( _logger != null && _appSettings.IsVerbose() )
 			{
-				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
+				_logger.LogInformation($"Database connection: {_appSettings.DatabaseConnection}");
 			}
-			_console?.WriteLine($"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}" );
+			_logger?.LogInformation($"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}" );
 
 #if ENABLE_DEFAULT_DATABASE
 				// dirty hack

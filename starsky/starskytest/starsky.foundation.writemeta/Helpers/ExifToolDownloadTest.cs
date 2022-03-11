@@ -235,7 +235,23 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).DownloadExifTool(true);
 			Assert.IsFalse(result);
 		}
-		
+
+		[TestMethod]
+		public async Task DownloadExifTool_Skip_AddSwaggerExportExitAfter()
+		{
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+
+			var appSettings = new AppSettings
+			{
+				AddSwaggerExport = true,
+				AddSwaggerExportExitAfter = true
+			};
+			var logger = new FakeIWebLogger();
+			var result = await new ExifToolDownload(httpClientHelper,appSettings,  logger).DownloadExifTool(true);
+			Assert.IsFalse(result);
+			Assert.IsTrue(logger.TrackedInformation[0].Item2.Contains("Skipped due AddSwaggerExportExitAfter setting"));
+		}
+
 		[TestMethod]
 		public async Task DownloadExifTool_Unix()
 		{

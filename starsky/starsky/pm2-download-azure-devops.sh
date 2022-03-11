@@ -39,17 +39,20 @@ DEVOPSDEFIDS=( 17 20 )
 ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
+  CURRENT=$(($i-1))
+  if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
+  then
+      echo "--branch master"
+      echo "--token anything"
+      echo "--runtime linux-arm"
+      echo "     (or:) --runtime linux-arm64"
+      echo "     (or:) --runtime osx-x64"
+      echo "     (or:) --runtime win7-x64"
+      exit 0
+  fi
+  
   if [ $i -gt 1 ]; then
     PREV=$(($i-2))
-    CURRENT=$(($i-1))
-
-    if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
-    then
-        echo "--runtime linux-arm"
-        echo "--branch master"
-        echo "--token anything"
-
-    fi
 
     if [[ ${ARGUMENTS[PREV]} == "--branch" ]];
     then

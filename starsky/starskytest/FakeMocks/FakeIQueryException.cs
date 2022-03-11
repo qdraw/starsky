@@ -144,7 +144,8 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
-		public Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
+		public Task<List<FileIndexItem>> GetAllObjectsAsync(
+			List<string> filePaths, int fallbackDelay = 5000)
 		{
 			throw _exception;
 		}

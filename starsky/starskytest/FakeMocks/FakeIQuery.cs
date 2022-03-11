@@ -252,7 +252,8 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(_fakeContext.Where(p => p.ParentDirectory == subPath).ToList());
 		}
 
-		public async Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
+		public async Task<List<FileIndexItem>> GetAllObjectsAsync(
+			List<string> filePaths, int fallbackDelay = 5000)
 		{
 			var result = new List<FileIndexItem>();
 			foreach ( var subPath in filePaths )

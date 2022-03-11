@@ -54,8 +54,7 @@ namespace starskytest.starsky.feature.webftppublish.Services
 			{
 				{"/test.jpg",true}
 			};
-			var item  = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(),
-				new FakeIFtpWebRequestFactory()).CreateListOfRemoteFiles(copyContent).ToList();
+			var item  = FtpService.CreateListOfRemoteFiles(copyContent).ToList();
 			
 			Assert.AreEqual("//test.jpg",item.FirstOrDefault());
 		}

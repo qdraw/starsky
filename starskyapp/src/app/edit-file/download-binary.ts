@@ -1,4 +1,4 @@
-import { rmSync } from "fs";
+import { existsSync, rmSync } from "fs";
 import * as path from "path";
 import { FileExtensions } from "../../shared/file-extensions";
 import { IFileIndexItem } from "../../shared/IFileindexItem";
@@ -34,8 +34,11 @@ export async function downloadBinary(
     );
   } catch (error) {
     logger.info("retry > " + fileOnDisk);
-    
-    rmSync(fileOnDisk);
+
+    if (existsSync(fileOnDisk)) {
+      rmSync(fileOnDisk);
+    }
+    try {
       await downloadNetRequest(
         `${(await GetBaseUrlFromSettings()).location}${new UrlQuery().DownloadPhoto(
           lastSubPath
@@ -43,7 +46,9 @@ export async function downloadBinary(
         session,
         fileOnDisk
       );
-
+    } catch (error) {
+      logger.info("error > " + error);
+    }
   }
 
   return fileOnDisk;

@@ -128,6 +128,10 @@ namespace starskytest.Services
 		[ExcludeFromCoverage]
 		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_SetUtc()
 		{
+			var orgCulture =
+				CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("EN-us");
+			
 			var container = new List<Directory>();
 			var dir2 = new QuickTimeMovieHeaderDirectory();
 			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
@@ -143,6 +147,8 @@ namespace starskytest.Services
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
+			
+			CultureInfo.CurrentCulture = new CultureInfo(orgCulture);
 		}
 		
 				
@@ -150,6 +156,10 @@ namespace starskytest.Services
 		[ExcludeFromCoverage]
 		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_BrandOnly()
 		{
+			var orgCulture =
+				CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("EN-us");
+			
 			var container = new List<Directory>();
 			var dir2 = new QuickTimeMovieHeaderDirectory();
 			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
@@ -165,12 +175,18 @@ namespace starskytest.Services
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
+			
+			CultureInfo.CurrentCulture = new CultureInfo(orgCulture);
 		}
 		
 		[TestMethod]
 		[ExcludeFromCoverage]
 		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_AssumeLocal()
 		{
+			var orgCulture =
+				CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("EN-us");
+			
 			var container = new List<Directory>();
 			var dir2 = new QuickTimeMovieHeaderDirectory();
 			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
@@ -183,6 +199,8 @@ namespace starskytest.Services
 				CameraTimeZone = "Europe/London"
 			}).GetExifDateTime(container);
 			
+			CultureInfo.CurrentCulture = new CultureInfo(orgCulture);
+
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
@@ -392,6 +410,8 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_FileTest()
 		{
+			// CultureInfo.CurrentCulture = new CultureInfo("Nl-nl");
+			
 			var newImage = CreateAnQuickTimeMp4.Bytes;
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
@@ -407,10 +427,37 @@ namespace starskytest.Services
 			Assert.AreEqual(20, item.ImageHeight);
 			Assert.AreEqual(false,item.IsDirectory );
 		}
+		
+		[TestMethod]
+		public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_FileTest_DutchCulture()
+		{
+			var currentCultureThreeLetterIsoLanguageName = CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("NL-nl");
+			
+			var newImage = CreateAnQuickTimeMp4.Bytes;
+			var fakeStorage = new FakeIStorage(new List<string> {"/"},
+				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
+
+			var item = new ReadMetaExif(fakeStorage, new AppSettings{VideoUseLocalTime = new List<CameraMakeModel>
+			{
+				new CameraMakeModel("Apple","MacbookPro15,1")
+			}}).ReadExifFromFile("/test.mp4");
+
+			var date = new DateTime(2020, 03, 29, 13, 10, 07);
+			Assert.AreEqual(date, item.DateTime);
+			Assert.AreEqual(20, item.ImageWidth);
+			Assert.AreEqual(20, item.ImageHeight);
+			Assert.AreEqual(false,item.IsDirectory );
+			
+			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
+		}
 
 		[TestMethod]
 		public void ExifRead_ParseQuickTimeDateTime_AssumeUtc_CameraTimeZoneMissing()
 		{
+			var currentCultureThreeLetterIsoLanguageName = CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("EN-us");
+			
 			// CameraTimeZone = "Europe/London" is missing
 
 			var fakeStorage = new FakeIStorage();
@@ -424,6 +471,7 @@ namespace starskytest.Services
 				new List<Directory>{dir}, CultureInfo.InvariantCulture);
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
+			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
 
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
@@ -431,6 +479,9 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ExifRead_ParseQuickTimeDateTime_UseLocalTime()
 		{
+			var currentCultureThreeLetterIsoLanguageName = CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("EN-us");
+			
 			var fakeStorage = new FakeIStorage();
 			var item = new ReadMetaExif(fakeStorage, new AppSettings
 			{
@@ -445,6 +496,7 @@ namespace starskytest.Services
 				new List<Directory>{dir}, CultureInfo.InvariantCulture);
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
+			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
 
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
@@ -452,6 +504,9 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ExifRead_ParseQuickTimeDateTime_UseLocalTime1_WithTimeZone()
 		{
+			var currentCultureThreeLetterIsoLanguageName = CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("EN-us");
+			
 			var fakeStorage = new FakeIStorage();
 			var item = new ReadMetaExif(fakeStorage, new AppSettings
 			{
@@ -467,12 +522,17 @@ namespace starskytest.Services
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
 
+			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
+
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
 		
 		[TestMethod]
 		public void ExifRead_ParseQuickTimeDateTime_UseLocalTime_WithTimeZone_Wrong()
 		{
+			var currentCultureThreeLetterIsoLanguageName = CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("EN-us");
+
 			var fakeStorage = new FakeIStorage();
 			var item = new ReadMetaExif(fakeStorage, new AppSettings
 			{
@@ -487,6 +547,7 @@ namespace starskytest.Services
 				new List<Directory>{dir}, CultureInfo.InvariantCulture);
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4).ToLocalTime();
+			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
 
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
@@ -494,6 +555,9 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ExifRead_ParseQuickTimeDateTime_NoVideoUsedSet()
 		{
+			var currentCultureThreeLetterIsoLanguageName = CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("EN-us");
+
 			var fakeStorage = new FakeIStorage();
 			var item = new ReadMetaExif(fakeStorage, new AppSettings
 			{
@@ -508,10 +572,36 @@ namespace starskytest.Services
 				new List<Directory>{dir}, CultureInfo.InvariantCulture);
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4).ToLocalTime();
+			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
 
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
 
+		[TestMethod]
+		public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_WithLocation_FileTest_DutchCulture()
+		{
+			var currentCultureThreeLetterIsoLanguageName = CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+			CultureInfo.CurrentCulture = new CultureInfo("NL-nl");
+			
+			var newImage = CreateAnQuickTimeMp4.BytesWithLocation;
+			var fakeStorage = new FakeIStorage(new List<string> {"/"},
+				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
+
+			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
+
+			var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Local).ToLocalTime();
+			Assert.AreEqual(date, item.DateTime);
+			Assert.AreEqual(640, item.ImageWidth);
+			Assert.AreEqual(360, item.ImageHeight);
+			 
+			Assert.AreEqual(52.23829861111111, item.Latitude,0.001);
+			Assert.AreEqual(6.025800238715278, item.Longitude,0.001);
+
+			Assert.AreEqual(false,item.IsDirectory );
+			CultureInfo.CurrentCulture =
+				new CultureInfo(currentCultureThreeLetterIsoLanguageName);
+		}
+		
 		[TestMethod]
 		public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_WithLocation_FileTest()
 		{

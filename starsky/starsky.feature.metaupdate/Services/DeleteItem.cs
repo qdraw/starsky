@@ -74,7 +74,7 @@ namespace starsky.feature.metaupdate.Services
 				}
 
 				// Status should be deleted before you can delete the item
-				if ( _statusCodeHelper.IsDeletedStatus(detailView)
+				if ( StatusCodesHelper.IsDeletedStatus(detailView)
 				     != FileIndexItem.ExifStatus.Deleted )
 				{
 					_statusCodeHelper.ReturnExifStatusError(
@@ -84,7 +84,7 @@ namespace starsky.feature.metaupdate.Services
 					continue;
 				}
 				
-				collectionAndInsideDirectoryList.AddRange(detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath));
+				collectionAndInsideDirectoryList.AddRange(DetailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath));
 				
 				// For deleting content of an entire directory
 				if ( detailView.FileIndexItem.IsDirectory != true ) continue;

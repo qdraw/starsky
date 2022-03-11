@@ -111,11 +111,15 @@ namespace starsky.Controllers
 				fileIndexResultsList[i].FilePath = subPath;
 				// Do sync action before writing it down
 				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem);
-
+				
 				var writeStatus =
-					await _iStorage.WriteStreamAsync(tempFileStream, subPath);
-				_logger.LogInformation($"write {subPath} is {writeStatus}");
+					await _iStorage.WriteStreamAsync(tempFileStream, subPath + ".tmp");
 				await tempFileStream.DisposeAsync();
+				
+				// to avoid partly written stream to be read by an other application
+				_iStorage.FileDelete(subPath);
+				_iStorage.FileMove(subPath + ".tmp", subPath);
+				_logger.LogInformation($"write {subPath} is {writeStatus}");
 				
 				// clear directory cache
 				_query.RemoveCacheParentItem(subPath);

@@ -70,5 +70,38 @@ namespace starskytest.starsky.foundation.platform.Models
 			
 			Assert.IsTrue(model.Path.Contains("default.png"));
 		}
+
+		[TestMethod]
+		public void GetExtensionWithDot_Nothing()
+		{
+			var model = new AppSettingsPublishProfiles
+			{
+			};
+
+			var result = model.GetExtensionWithDot("");
+			Assert.AreEqual("",result);
+		}
+		
+		
+		[TestMethod]
+		public void GetExtensionWithDot_Jpeg()
+		{
+			var model = new AppSettingsPublishProfiles
+			{
+				ContentType = TemplateContentType.Jpeg
+			};
+
+			var result = model.GetExtensionWithDot("test.png");
+			Assert.AreEqual(".jpg",result);
+		}
+				
+		[TestMethod]
+		public void GetExtensionWithDot_Fallback()
+		{
+			var model = new AppSettingsPublishProfiles();
+
+			var result = model.GetExtensionWithDot("test.png");
+			Assert.AreEqual(".png",result);
+		}
 	}
 }

@@ -9,8 +9,13 @@
           "app__useDiskWatcher": "true",
           "app__AddSwagger": "true",
           "app__AddSwaggerExport": "true",
+          "app__AddSwaggerExportExitAfter": "false",
           "app__NoAccountLocalhost": "true",
-          "app__IsAccountRegisterOpen": "true"
+          "app__IsAccountRegisterOpen": "true",
+          "_app__storageFolder": "remove prefix underscore",
+          "_app__ApplicationInsightsInstrumentationKey": "remove prefix underscore",
+          "app__ApplicationInsightsDatabaseTracking": "true",
+          "app__ApplicationInsightsLog": "true"
       }
     }
   }

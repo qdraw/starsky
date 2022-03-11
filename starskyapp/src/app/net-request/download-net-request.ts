@@ -12,8 +12,8 @@ export function downloadNetRequest(
       throw new Error("please await promise first");
     }
 
-    var file = fs.createWriteStream(toPath);
-    logger.info("> request: " + url + " - " + toPath);
+    const file = fs.createWriteStream(toPath);
+    logger.info("> request: " + url + " -> " + toPath);
 
     const request = net.request({
       useSessionCookies: true,
@@ -30,13 +30,6 @@ export function downloadNetRequest(
         return;
       }
 
-      if (!response.headers["content-length"]) {
-        logger.info("no content length");
-        logger.info(JSON.stringify(response))
-        reject(-1);
-        return;
-      }
-
       fs.promises.writeFile(
         toPath + ".info",
         response.headers["content-length"]?.toString()
@@ -46,7 +39,7 @@ export function downloadNetRequest(
       response.pipe(file);
 
       file.on("error", function (err) {
-        fs.unlink(toPath, () => {}); // Delete the file async. (But we don't check the result)
+        fs.unlink(toPath, () => { }); // Delete the file async. (But we don't check the result)
         reject(err.message);
       });
 

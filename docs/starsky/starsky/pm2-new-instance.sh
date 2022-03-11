@@ -34,10 +34,13 @@ for ((i = 1; i <= $#; i++ )); do
     then
         echo "--name pm2name"
         echo "--runtime linux-arm"
-        echo "(or:) --runtime linux-arm64"
+        echo "     (or:) --runtime linux-arm64"
+        echo "     (or:) --runtime osx-x64"
+        echo "     (or:) --runtime win7-x64"
         echo "(optional) --port 4823"
         echo "(optional) --anywhere (to allow access from anywhere, defaults to false)"
         echo "(optional) --appinsights - to ask for app insights keys"
+        exit 0
     fi
 
     # When true, allow access from anywhere not only localhost
@@ -252,6 +255,10 @@ fi
 
 if [ -f pm2-download-azure-devops.sh ]; then
     chmod +rwx ./pm2-download-azure-devops.sh
+fi
+
+if [ -f github-artifacts-download.sh ]; then
+    chmod +rwx ./github-artifacts-download.sh
 fi
 
 if [ -f starsky ]; then

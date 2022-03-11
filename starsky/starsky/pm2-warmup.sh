@@ -15,6 +15,7 @@ for ((i = 1; i <= $#; i++ )); do
     if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
     then
         echo "--port 4823"
+        exit 0
     fi
 
     if [[ ${ARGUMENTS[PREV]} == "--port" ]];

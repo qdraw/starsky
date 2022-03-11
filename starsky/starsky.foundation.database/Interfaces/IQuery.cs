@@ -128,7 +128,8 @@ namespace starsky.foundation.database.Interfaces
 	    Task<List<FileIndexItem>> GetFoldersAsync(string subPath);
 
 	    Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath);
-	    Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths);
+	    Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths,
+		    int fallbackDelay = 5000);
 	    
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem);

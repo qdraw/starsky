@@ -71,7 +71,7 @@ export async function DefaultImageApplicationCallback(
       const result = await fileSelectorWindow();
       await appConfig.set(DefaultImageApplicationSetting, result[0]);
       event.reply(DefaultImageApplicationIpcKey, result[0]);
-    } catch (error) {}
+    } catch (error) { }
   }
 }
 
@@ -119,6 +119,8 @@ export async function LocationUrlCallback(
     args.match(ipRegex) ||
     args.startsWith("http://localhost:")
   ) {
+    console.log("ipc-bridge start update");
+
     // to avoid errors
     var locationUrl = args.replace(/\/$/, "");
 
@@ -161,6 +163,7 @@ export async function LocationUrlCallback(
     }
     return;
   }
+  console.log(`ipc-bridge ${args.match(urlRegex)}  ${args.match(ipRegex)} ${args.startsWith("http://localhost:")}`);
 
   event.reply(LocationUrlIpcKey, {
     isValid: false,

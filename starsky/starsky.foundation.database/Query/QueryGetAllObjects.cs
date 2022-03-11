@@ -31,8 +31,9 @@ namespace starsky.foundation.database.Query
 		/// Get all objects inside a folder
 		/// </summary>
 		/// <param name="filePaths">parent paths</param>
+		/// <param name="fallbackDelay">delay when fallback</param>
 		/// <returns>list of all objects inside the folder</returns>
-		public async Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
+		public async Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths, int fallbackDelay = 5000)
 		{
 			if ( !filePaths.Any() ) return new List<FileIndexItem>();
 
@@ -45,7 +46,7 @@ namespace starsky.foundation.database.Query
 				await dbContext.DisposeAsync();
 				return result;
 			}
-			
+
 			try
 			{
 				return FormatOk(await GetAllObjectsQuery(_context, filePaths)
@@ -58,6 +59,12 @@ namespace starsky.foundation.database.Query
 			catch ( InvalidOperationException )
 			{
 				// System.InvalidOperationException: ExecuteReader can only be called when the connection is open.
+				return await LocalGetAllObjectsAsync();
+			}
+			catch ( MySqlConnector.MySqlException exception)
+			{
+				_logger.LogError(exception, $"catch-ed mysql error [next delay {fallbackDelay}]");
+				await Task.Delay(fallbackDelay);
 				return await LocalGetAllObjectsAsync();
 			}
 		}

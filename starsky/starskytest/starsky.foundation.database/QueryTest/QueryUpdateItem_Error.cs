@@ -109,9 +109,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				throw new NotImplementedException();
 			}
 
+#pragma warning disable 8618
+			// ReSharper disable once UnassignedGetOnlyAutoProperty
 			public IEntityType EntityType { get; }
+#pragma warning restore 8618
 			public EntityState EntityState { get; set; }
+#pragma warning disable 8618
+			// ReSharper disable once UnassignedGetOnlyAutoProperty
 			public IUpdateEntry SharedIdentityEntry { get; }
+#pragma warning restore 8618
 		}
         
 		private class AppDbContextConcurrencyException : ApplicationDbContext
@@ -155,7 +161,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			public int Count { get; set; }
 
 
+#pragma warning disable 8603
 			public override DbSet<FileIndexItem> FileIndex => null;
+#pragma warning restore 8603
 
 			public override int SaveChanges()
 			{
@@ -262,6 +270,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = CreateNewScopeSqliteException();
 			var context = scope.CreateScope().ServiceProvider
 				.GetService<ApplicationDbContext>();
+			if ( context == null )
+			{
+				throw new NullReferenceException(
+					"test context should not be null");
+			}
 			await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
 			await context.SaveChangesAsync();
 			var item = await context.FileIndex.FirstOrDefaultAsync(
@@ -360,7 +373,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
 
 			fakeQuery.SolveConcurrencyException(new FileIndexItem(),
+#pragma warning disable 8625
 				new FakePropertyValues(null), new FakePropertyValues(null),
+#pragma warning restore 8625
 				"", values => IsWrittenConcurrencyException = true);
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -377,7 +392,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
 
 			fakeQuery.SolveConcurrencyException(null,
+#pragma warning disable 8625
 				new FakePropertyValues(null), new FakePropertyValues(null),
+#pragma warning restore 8625
 				"", values => IsWrittenConcurrencyException = true);
 			// expect error
 		}
@@ -448,7 +465,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			fakeQuery.UpdateItem(testItem);
 
-			Assert.AreEqual("test", dbContext.FileIndex.FirstOrDefault(p => p.FilePath == "/test.jpg").Tags);
+			Assert.AreEqual("test", dbContext.FileIndex.FirstOrDefault(p => p.FilePath == "/test.jpg")?.Tags);
 			Assert.AreEqual(2, appDbInvalidOperationException.Count);
 		}
 	}

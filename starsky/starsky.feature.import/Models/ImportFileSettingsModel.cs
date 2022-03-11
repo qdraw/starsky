@@ -24,8 +24,10 @@ namespace starskycore.Models
 	        // the header defaults to zero, and that's not the correct default value
 	        if ( !string.IsNullOrWhiteSpace(request.Headers["ColorClass"]) )
 	        {
-		        int.TryParse(request.Headers["ColorClass"], out var colorClass);
-		        ColorClass = colorClass;
+		        if ( int.TryParse(request.Headers["ColorClass"], out var colorClass) )
+		        {
+			        ColorClass = colorClass;
+		        }
 	        }
 
             Structure = request.Headers["Structure"].ToString();

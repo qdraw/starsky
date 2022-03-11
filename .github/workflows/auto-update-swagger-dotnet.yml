@@ -15,7 +15,9 @@ on:
     branches: [ master ]
     paths:
     - '.github/workflows/auto-update-swagger-dotnet.yml'
+    - 'starsky-tools/docs/assets/config/starsky.json'
 
+ 
 jobs:
   build:
 
@@ -27,7 +29,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.200
+        dotnet-version: 6.0.201
 
     - name: Cache nuget packages (*nix)
       uses: actions/cache@v2
@@ -42,7 +44,7 @@ jobs:
       shell: bash
       working-directory: ./starsky
       run: bash build.sh --Target=BuildNetCore --no-sonar
-
+     
     - name: Run With Exit
       shell: bash
       working-directory: ./starsky/starsky
@@ -50,6 +52,6 @@ jobs:
         app__AddSwagger: "true"
         app__AddSwaggerExport: "true"
         app__AddSwaggerExportExitAfter: "true"
-      run: dotnet run
+      run: dotnet run --no-launch-profile
 
 

@@ -373,7 +373,7 @@ namespace starsky.foundation.accountmanagement.Services
 			return new ChangeSecretResult(success: true);
 		}
 
-		internal string CredentialCacheKey(CredentialType credentialType, string identifier)
+		internal static string CredentialCacheKey(CredentialType credentialType, string identifier)
 		{
 			return "credential_" + credentialType.Id + "_" + identifier;
 		}
