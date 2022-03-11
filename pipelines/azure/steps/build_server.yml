@@ -8,6 +8,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: '[Cake] dotnet tool restore'
+    continueOnError: true
     inputs:
       command: custom
       custom: tool
