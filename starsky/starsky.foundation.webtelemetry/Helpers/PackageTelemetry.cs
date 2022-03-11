@@ -23,7 +23,8 @@ namespace starsky.foundation.webtelemetry.Helpers
 			_appSettings = appSettings;
 		}
 
-		private const string PackageTelemetryUrl = "https://qdraw.nl/special/starsky/telemetry";
+		// https://aaa7-86-87-142-180.ngrok.io/
+		private const string PackageTelemetryUrl = "https://qdraw.nl/special/starsky/telemetry/index.php";
 
 		private static object GetPropValue(object src, string propName)
 		{
@@ -92,6 +93,14 @@ namespace starsky.foundation.webtelemetry.Helpers
 		
 		public async Task Push()
 		{
+#if(DEBUG)
+			return;
+#endif
+			await Send();
+		}
+
+		internal async Task Send()
+		{
 			if ( _appSettings.EnablePackageTelemetry == false )
 			{
 				return;
@@ -99,7 +108,8 @@ namespace starsky.foundation.webtelemetry.Helpers
 			
 			var data = GetSystemData();
 			data = AddAppSettingsData(data);
-			var result = await _httpClientHelper.PostString(PackageTelemetryUrl,new FormUrlEncodedContent(data));
+			var formEncodedData = new FormUrlEncodedContent(data);
+			await _httpClientHelper.PostString(PackageTelemetryUrl,formEncodedData, false);
 		}
 	}
 }

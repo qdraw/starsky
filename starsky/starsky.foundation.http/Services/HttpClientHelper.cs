@@ -86,11 +86,11 @@ namespace starsky.foundation.http.Services
 			}
 		}
 		
-		public async Task<KeyValuePair<bool,string>> PostString(string sourceHttpUrl, HttpContent? httpContent)
+		public async Task<KeyValuePair<bool,string>> PostString(string sourceHttpUrl, HttpContent? httpContent, bool verbose = true)
 		{
 			Uri sourceUri = new Uri(sourceHttpUrl);
 
-			_logger.LogInformation("[PostString] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
+			if ( verbose ) _logger.LogInformation("[PostString] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
 			// // allow whitelist and https only
 			if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 

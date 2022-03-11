@@ -38,5 +38,10 @@ namespace starskytest.FakeMocks
 				};
 			return response;
 		}
+
+		public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

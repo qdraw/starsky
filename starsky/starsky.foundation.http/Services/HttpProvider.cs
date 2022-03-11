@@ -1,4 +1,6 @@
 #nullable enable
+using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using starsky.foundation.http.Interfaces;
@@ -45,8 +47,30 @@ namespace starsky.foundation.http.Services
 		/// <returns>Task with Response</returns>
 		public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content)
 		{
+			if ( content == null )
+			{
+				return new Task<HttpResponseMessage>(() => new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.LoopDetected,
+					Content = new StringContent("http content is null")
+				});
+			}
+			
 			_httpClient.DefaultRequestHeaders.Add("User-Agent",UserAgent);
-			return _httpClient.PostAsync(requestUri, content);
+			var request = new HttpRequestMessage
+			{
+				Method = HttpMethod.Post,
+				Content = content,
+				RequestUri =  new Uri(requestUri)
+			};
+			
+			if ( typeof(FormUrlEncodedContent) == content.GetType() )
+			{
+				request.Headers.TryAddWithoutValidation("Content-Type",
+					"application/x-www-form-urlencoded");
+			}
+			
+			return _httpClient.SendAsync(request);
 		}
 	}
 }

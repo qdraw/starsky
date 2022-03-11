@@ -10,6 +10,6 @@ namespace starsky.foundation.http.Interfaces
 		Task<bool> Download(string sourceHttpUrl, string fullLocalPath);
 		Task<KeyValuePair<bool, string>> ReadString(string sourceHttpUrl);
 		Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
-			HttpContent? httpContent);
+			HttpContent? httpContent, bool verbose = true);
 	}
 }
