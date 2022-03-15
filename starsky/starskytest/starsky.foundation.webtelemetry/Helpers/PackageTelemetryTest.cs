@@ -63,7 +63,27 @@ public class PackageTelemetryTest
 		var result = PackageTelemetry.ParseContent(null);
 		Assert.AreEqual("null",result);
 	}
+	
+	[TestMethod]
+	public void GetPropValue_Null()
+	{
+		var result = PackageTelemetry.GetPropValue(null, "test");
+		Assert.AreEqual(null,result);
+	}
 
+	private class PropValueTestClass
+	{
+		public string Test { get; set; }
+	}
+	
+	[TestMethod]
+	public void GetPropValue_ReadValue()
+	{
+		var result = PackageTelemetry.GetPropValue(new PropValueTestClass{Test = "1"}, "Test");
+		Assert.AreEqual("1",result);
+	}
+
+	
 	[TestMethod]
 	public void AddAppSettingsData()
 	{

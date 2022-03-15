@@ -27,7 +27,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 
 		internal const string PackageTelemetryUrl = "qdraw.nl/special/starsky/telemetry/index.php";
 
-		private static object GetPropValue(object src, string propName)
+		internal static object GetPropValue(object src, string propName)
 		{
 			return src?.GetType().GetProperty(propName)?.GetValue(src, null);
 		}
