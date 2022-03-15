@@ -1,3 +1,6 @@
+#nullable enable
+using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using starsky.foundation.http.Interfaces;
@@ -22,6 +25,9 @@ namespace starsky.foundation.http.Services
 			_httpClient = httpClient;
 		}
 
+		private const string UserAgent =
+			"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)";
+
 		/// <summary>
 		/// Get the Async results
 		/// </summary>
@@ -29,9 +35,42 @@ namespace starsky.foundation.http.Services
 		/// <returns>Task with Response</returns>
 		public Task<HttpResponseMessage> GetAsync(string requestUri)
 		{
-			_httpClient.DefaultRequestHeaders.Add("User-Agent",
-				"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
+			_httpClient.DefaultRequestHeaders.Add("User-Agent",UserAgent);
 			return _httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
+		}
+
+		/// <summary>
+		/// Post the Async results
+		/// </summary>
+		/// <param name="requestUri">https:// url</param>
+		/// <param name="content">http content</param>
+		/// <returns>Task with Response</returns>
+		public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content)
+		{
+			if ( content == null )
+			{
+				return Task.FromResult(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.LoopDetected,
+					Content = new StringContent("http content is null")
+				});
+			}
+			
+			_httpClient.DefaultRequestHeaders.Add("User-Agent",UserAgent);
+			var request = new HttpRequestMessage
+			{
+				Method = HttpMethod.Post,
+				Content = content,
+				RequestUri =  new Uri(requestUri)
+			};
+			
+			if ( typeof(FormUrlEncodedContent) == content.GetType() )
+			{
+				request.Headers.TryAddWithoutValidation("Content-Type",
+					"application/x-www-form-urlencoded");
+			}
+			
+			return _httpClient.SendAsync(request);
 		}
 	}
 }

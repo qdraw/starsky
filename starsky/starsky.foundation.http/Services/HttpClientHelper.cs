@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +18,7 @@ namespace starsky.foundation.http.Services
 	[Service(typeof(IHttpClientHelper), InjectionLifetime = InjectionLifetime.Singleton)]
     public class HttpClientHelper : IHttpClientHelper
     {
-	    private readonly IStorage _storage;
+	    private readonly IStorage? _storage;
 
 	    /// <summary>
 	    /// Set Http Provider
@@ -25,7 +26,7 @@ namespace starsky.foundation.http.Services
 	    /// <param name="httpProvider">IHttpProvider</param>
 	    /// <param name="serviceScopeFactory">ScopeFactory contains a IStorageSelector</param>
 	    /// <param name="logger">WebLogger</param>
-	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory serviceScopeFactory, IWebLogger logger)
+	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory? serviceScopeFactory, IWebLogger logger)
 	    {
 		    _httpProvider = httpProvider;
 		    _logger = logger;
@@ -49,7 +50,7 @@ namespace starsky.foundation.http.Services
 		/// <summary>
 		/// This domains are only allowed domains to download from (and https only)
 		/// </summary>
-		private readonly List<string> AllowedDomains = new List<string>
+		private readonly List<string> _allowedDomains = new List<string>
         {
             "dl.dropboxusercontent.com", 
             "qdraw.nl", // < used by test
@@ -66,12 +67,38 @@ namespace starsky.foundation.http.Services
 			_logger.LogInformation("[ReadString] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
 			// allow whitelist and https only
-			if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
+			if (!_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
 				new KeyValuePair<bool, string>(false,string.Empty);
 
 			try
 			{
 				using (HttpResponseMessage response = await _httpProvider.GetAsync(sourceHttpUrl))
+				using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+				{
+					var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
+					var result = await reader.ReadToEndAsync();
+					return new KeyValuePair<bool, string>(response.StatusCode == HttpStatusCode.OK,result);
+				}
+			}
+			catch (HttpRequestException exception)
+			{
+				return new KeyValuePair<bool, string>(false, exception.Message);
+			}
+		}
+		
+		public async Task<KeyValuePair<bool,string>> PostString(string sourceHttpUrl, HttpContent? httpContent, bool verbose = true)
+		{
+			Uri sourceUri = new Uri(sourceHttpUrl);
+
+			if ( verbose ) _logger.LogInformation("[PostString] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
+
+			// // allow whitelist and https only
+			if (!_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
+				new KeyValuePair<bool, string>(false,string.Empty);
+
+			try
+			{
+				using (HttpResponseMessage response = await _httpProvider.PostAsync(sourceHttpUrl, httpContent))
 				using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
 				{
 					var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
@@ -100,7 +127,7 @@ namespace starsky.foundation.http.Services
             _logger.LogInformation("[Download] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
             // allow whitelist and https only
-            if ( !AllowedDomains.Contains(sourceUri.Host) ||
+            if ( !_allowedDomains.Contains(sourceUri.Host) ||
                  sourceUri.Scheme != "https" )
             {
 	            _logger.LogInformation("[Download] HttpClientHelper > " + "skip: domain not whitelisted " + " ~ " + sourceHttpUrl);

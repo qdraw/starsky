@@ -345,5 +345,36 @@ namespace starskytest.starsky.foundation.platform.Models
 			var appVersionBuildDateTime = new AppSettings().AppVersion;
 			Assert.IsNotNull(appVersionBuildDateTime);
 		}
+
+		[TestMethod]
+		public void EnablePackageTelemetry_True()
+		{
+			var appSettings = new AppSettings {EnablePackageTelemetry = true};
+			Assert.IsTrue(appSettings.EnablePackageTelemetry);
+		}
+		
+		[TestMethod]
+		public void EnablePackageTelemetry_False()
+		{
+			var appSettings = new AppSettings {EnablePackageTelemetry = true};
+			Assert.IsTrue(appSettings.EnablePackageTelemetry);
+		}
+		
+#if(DEBUG)
+		[TestMethod]
+		public void EnablePackageTelemetry_Debug_False()
+		{
+			var appSettings = new AppSettings();
+			Assert.IsFalse(appSettings.EnablePackageTelemetry);
+		}
+#else 
+		[TestMethod]
+		public void EnablePackageTelemetry_Release_True()
+		{
+			var appSettings = new AppSettings();
+			Assert.IsTrue(appSettings.EnablePackageTelemetry);
+		}
+#endif
+		
 	}
 }

@@ -23,6 +23,7 @@ using starsky.foundation.accountmanagement.Extensions;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -295,6 +296,9 @@ namespace starsky
 		        var onStoppedSync = new FlushApplicationInsights(app);
 		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
+
+	        new PackageTelemetry(app.ApplicationServices
+		        .GetService<IHttpClientHelper>(), _appSettings).PackageTelemetrySend();
         }
 
 

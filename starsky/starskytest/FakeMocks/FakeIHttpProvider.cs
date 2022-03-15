@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -8,27 +9,25 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIHttpProvider : IHttpProvider
 	{
-		public List<string> UrlCalled = new List<string>();
+		public readonly List<string> UrlCalled = new List<string>();
 		
 		private readonly Dictionary<string, HttpContent> _inputDictionary;
 		
-		public FakeIHttpProvider(Dictionary<string,HttpContent> inputDictionary = null)
+		public FakeIHttpProvider(Dictionary<string,HttpContent>? inputDictionary = null)
 		{
 			if ( inputDictionary == null ) inputDictionary = new Dictionary<string, HttpContent>();
 			_inputDictionary = inputDictionary;
 		}
 		
-#pragma warning disable 1998
-		public async Task<HttpResponseMessage> GetAsync(string requestUri)
-#pragma warning restore 1998
+		public Task<HttpResponseMessage> GetAsync(string requestUri)
 		{
 			UrlCalled.Add(requestUri);
 
 			if ( !_inputDictionary.ContainsKey(requestUri) )
 			{
-				return new HttpResponseMessage(HttpStatusCode.NotFound){
+				return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound){
 					Content = new StringContent("Not Found")
-				};
+				});
 			}
 
 			var response =
@@ -36,7 +35,12 @@ namespace starskytest.FakeMocks
 				{
 					Content = _inputDictionary[requestUri]
 				};
-			return response;
+			return Task.FromResult(response);
+		}
+
+		public async Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content)
+		{
+			return await GetAsync(requestUri);
 		}
 	}
 }
