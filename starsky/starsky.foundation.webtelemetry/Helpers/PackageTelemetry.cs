@@ -25,7 +25,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			_appSettings = appSettings;
 		}
 
-		private const string PackageTelemetryUrl = "https://qdraw.nl/special/starsky/telemetry/index.php";
+		internal const string PackageTelemetryUrl = "qdraw.nl/special/starsky/telemetry/index.php";
 
 		private static object GetPropValue(object src, string propName)
 		{
@@ -103,27 +103,20 @@ namespace starsky.foundation.webtelemetry.Helpers
 
 		internal static string ParseContent(object propValue)
 		{
-			try
-			{
-				return JsonSerializer.Serialize(propValue);
-			}
-			catch ( Exception exception)
-			{
-				return exception.Message;
-			}
+			return JsonSerializer.Serialize(propValue);
 		}
 		
-		public async Task PackageTelemetrySend()
+		public async Task<bool?> PackageTelemetrySend()
 		{
 			if ( _appSettings.EnablePackageTelemetry == false )
 			{
-				return;
+				return null;
 			}
 			
 			var data = GetSystemData();
 			data = AddAppSettingsData(data);
 			var formEncodedData = new FormUrlEncodedContent(data);
-			await _httpClientHelper.PostString(PackageTelemetryUrl,formEncodedData, false);
+			return (await _httpClientHelper.PostString("https://" + PackageTelemetryUrl,formEncodedData, false)).Key;
 		}
 	}
 }

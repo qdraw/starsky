@@ -19,17 +19,15 @@ namespace starskytest.FakeMocks
 			_inputDictionary = inputDictionary;
 		}
 		
-#pragma warning disable 1998
-		public async Task<HttpResponseMessage> GetAsync(string requestUri)
-#pragma warning restore 1998
+		public Task<HttpResponseMessage> GetAsync(string requestUri)
 		{
 			UrlCalled.Add(requestUri);
 
 			if ( !_inputDictionary.ContainsKey(requestUri) )
 			{
-				return new HttpResponseMessage(HttpStatusCode.NotFound){
+				return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound){
 					Content = new StringContent("Not Found")
-				};
+				});
 			}
 
 			var response =
@@ -37,12 +35,12 @@ namespace starskytest.FakeMocks
 				{
 					Content = _inputDictionary[requestUri]
 				};
-			return response;
+			return Task.FromResult(response);
 		}
 
-		public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content)
+		public async Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content)
 		{
-			throw new System.NotImplementedException();
+			return await GetAsync(requestUri);
 		}
 	}
 }
