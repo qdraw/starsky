@@ -657,6 +657,7 @@ namespace starsky.foundation.platform.Models
 				}
 				return EnablePackageTelemetryPrivate;
 			}
+			// ReSharper disable once PropertyCanBeMadeInitOnly.Global
 			set
 			{
 				EnablePackageTelemetryPrivate = value;
