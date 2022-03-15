@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,8 +8,6 @@ using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starskycore.Helpers;
-using starskycore.Models;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -18,7 +17,7 @@ namespace starskytest.Helpers
 	public class HttpClientHelperTest
 	{
 		[TestMethod]
-		public async Task HttpClientHelperBadDomainDownload()
+		public async Task Download_HttpClientHelperBadDomainDownload()
 		{
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
@@ -40,7 +39,7 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
-		public async Task HttpClientHelper_404NotFoundTest()
+		public async Task Download_HttpClientHelper_404NotFoundTest()
 		{
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
@@ -61,7 +60,7 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
-		public async Task HttpClientHelper_HTTP_Not_Download()
+		public async Task Download_HttpClientHelper_HTTP_Not_Download()
 		{
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
@@ -82,7 +81,7 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
-		public async Task HttpClientHelper_Download()
+		public async Task Download_HttpClientHelper_Download()
 		{
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
@@ -108,7 +107,7 @@ namespace starskytest.Helpers
 		}
 
 		[TestMethod]
-		public async Task HttpClientHelper_Download_HttpRequestException()
+		public async Task Download_HttpClientHelper_Download_HttpRequestException()
 		{
 			// > next HttpRequestException
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler(new HttpRequestException("should fail"));
@@ -127,7 +126,14 @@ namespace starskytest.Helpers
 		}
 
 		[TestMethod]
-		public async Task HttpClientHelper_ReadString()
+		[ExpectedException(typeof(EndOfStreamException))]
+		public async Task Download_HttpClientHelper_Download_NoStorage()
+		{
+			await new HttpClientHelper(new FakeIHttpProvider(), null, new FakeIWebLogger()).Download("t","T");
+		}
+		
+		[TestMethod]
+		public async Task ReadString_HttpClientHelper_ReadString()
 		{
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
@@ -149,7 +155,7 @@ namespace starskytest.Helpers
 		
 		
 		[TestMethod]
-		public async Task HttpClientHelper_ReadString_HttpRequestException()
+		public async Task ReadString_HttpClientHelper_ReadString_HttpRequestException()
 		{
 			// > next HttpRequestException
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler(new HttpRequestException("should fail"));
@@ -168,7 +174,7 @@ namespace starskytest.Helpers
 		}
 
 		[TestMethod]
-		public async Task HttpClientHelper_HTTP_Not_ReadString()
+		public async Task ReadString_HttpClientHelper_HTTP_Not_ReadString()
 		{
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
@@ -188,7 +194,7 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
-		public async Task HttpClientHelper_404NotFound_ReadString_Test()
+		public async Task ReadString_HttpClientHelper_404NotFound_ReadString_Test()
 		{
 			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
@@ -205,12 +211,112 @@ namespace starskytest.Helpers
 			var output = await httpClientHelper.ReadString("https://download.geonames.org/404");
 			Assert.AreEqual(false,output.Key);
 		}
+				
+		[TestMethod]
+		public async Task PostString_HttpClientHelper()
+		{
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
+
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+
+			var output = await httpClientHelper
+				.PostString("https://qdraw.nl/test", new StringContent(string.Empty));
+			
+			Assert.AreEqual(true,output.Key);
+		}
+		
+		[TestMethod]
+		public async Task PostString_HttpClientHelper_VerboseFalse()
+		{
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
+
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+			var fakeLogger = new FakeIWebLogger();
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory,fakeLogger);
+
+			await httpClientHelper
+				.PostString("https://qdraw.nl/test", new StringContent(string.Empty),false);
+			
+			Assert.IsFalse(fakeLogger.TrackedInformation.Any(p => p.Item2.Contains("PostString")));
+			Assert.IsFalse(fakeLogger.TrackedInformation.Any(p => p.Item2.Contains("HttpClientHelper")));
+		}
+		
+		[TestMethod]
+		public async Task PostString_HttpRequestException()
+		{
+			// > next HttpRequestException
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler(new HttpRequestException("should fail"));
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
+			
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var output = await httpClientHelper
+				.PostString("https://qdraw.nl/test", new StringContent(string.Empty));
+			Assert.IsFalse(output.Key);
+		}
 
 		[TestMethod]
-		[ExpectedException(typeof(EndOfStreamException))]
-		public async Task HttpClientHelper_Download_NoStorage()
+		public async Task PostString_HTTP_Not_ReadString()
 		{
-			await new HttpClientHelper(new FakeIHttpProvider(), null, new FakeIWebLogger()).Download("t","T");
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
+
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+
+			// http is not used anymore
+			var output = await httpClientHelper
+				.PostString("http://qdraw.nl", new StringContent(string.Empty));
+			Assert.AreEqual(false,output.Key);
 		}
+		
+		[TestMethod]
+		public async Task PostString_404NotFound_Test()
+		{
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
+
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+
+			var output = await httpClientHelper
+				.PostString("https://download.geonames.org/404", new StringContent(string.Empty));
+			Assert.AreEqual(false,output.Key);
+		}
+
+
 	}
 }

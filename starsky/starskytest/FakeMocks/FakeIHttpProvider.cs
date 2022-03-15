@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -8,11 +9,11 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIHttpProvider : IHttpProvider
 	{
-		public List<string> UrlCalled = new List<string>();
+		public readonly List<string> UrlCalled = new List<string>();
 		
 		private readonly Dictionary<string, HttpContent> _inputDictionary;
 		
-		public FakeIHttpProvider(Dictionary<string,HttpContent> inputDictionary = null)
+		public FakeIHttpProvider(Dictionary<string,HttpContent>? inputDictionary = null)
 		{
 			if ( inputDictionary == null ) inputDictionary = new Dictionary<string, HttpContent>();
 			_inputDictionary = inputDictionary;

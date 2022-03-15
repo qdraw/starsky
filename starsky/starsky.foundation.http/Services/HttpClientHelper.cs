@@ -18,7 +18,7 @@ namespace starsky.foundation.http.Services
 	[Service(typeof(IHttpClientHelper), InjectionLifetime = InjectionLifetime.Singleton)]
     public class HttpClientHelper : IHttpClientHelper
     {
-	    private readonly IStorage _storage;
+	    private readonly IStorage? _storage;
 
 	    /// <summary>
 	    /// Set Http Provider
@@ -26,7 +26,7 @@ namespace starsky.foundation.http.Services
 	    /// <param name="httpProvider">IHttpProvider</param>
 	    /// <param name="serviceScopeFactory">ScopeFactory contains a IStorageSelector</param>
 	    /// <param name="logger">WebLogger</param>
-	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory serviceScopeFactory, IWebLogger logger)
+	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory? serviceScopeFactory, IWebLogger logger)
 	    {
 		    _httpProvider = httpProvider;
 		    _logger = logger;
@@ -50,7 +50,7 @@ namespace starsky.foundation.http.Services
 		/// <summary>
 		/// This domains are only allowed domains to download from (and https only)
 		/// </summary>
-		private readonly List<string> AllowedDomains = new List<string>
+		private readonly List<string> _allowedDomains = new List<string>
         {
             "dl.dropboxusercontent.com", 
             "qdraw.nl", // < used by test
@@ -67,7 +67,7 @@ namespace starsky.foundation.http.Services
 			_logger.LogInformation("[ReadString] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
 			// allow whitelist and https only
-			if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
+			if (!_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
 				new KeyValuePair<bool, string>(false,string.Empty);
 
 			try
@@ -93,7 +93,7 @@ namespace starsky.foundation.http.Services
 			if ( verbose ) _logger.LogInformation("[PostString] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
 			// // allow whitelist and https only
-			if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
+			if (!_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
 				new KeyValuePair<bool, string>(false,string.Empty);
 
 			try
@@ -127,7 +127,7 @@ namespace starsky.foundation.http.Services
             _logger.LogInformation("[Download] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
             // allow whitelist and https only
-            if ( !AllowedDomains.Contains(sourceUri.Host) ||
+            if ( !_allowedDomains.Contains(sourceUri.Host) ||
                  sourceUri.Scheme != "https" )
             {
 	            _logger.LogInformation("[Download] HttpClientHelper > " + "skip: domain not whitelisted " + " ~ " + sourceHttpUrl);

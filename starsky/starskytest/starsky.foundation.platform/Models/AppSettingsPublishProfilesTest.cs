@@ -103,5 +103,22 @@ namespace starskytest.starsky.foundation.platform.Models
 			var result = model.GetExtensionWithDot("test.png");
 			Assert.AreEqual(".png",result);
 		}
+
+		[TestMethod]
+		public void AppSettingsPublishProfilesString()
+		{
+			var data = new AppSettingsPublishProfiles().ToString();
+			Assert.IsTrue(data.Contains("ContentType"));
+			Assert.IsTrue(data.Contains("SourceMaxWidth"));
+			Assert.IsTrue(data.Contains("OverlayMaxWidth"));
+			Assert.IsTrue(data.Contains("Path"));
+			Assert.IsTrue(data.Contains("Folder"));
+			Assert.IsTrue(data.Contains("Append"));
+			Assert.IsTrue(data.Contains("OverlayMaxWidth"));
+			Assert.IsTrue(data.Contains("Template"));
+			Assert.IsTrue(data.Contains("Prepend"));
+			Assert.IsTrue(data.Contains("MetaData"));
+			Assert.IsTrue(data.Contains("Copy"));
+		}
 	}
 }

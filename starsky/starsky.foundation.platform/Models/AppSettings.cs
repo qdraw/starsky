@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using starsky.foundation.platform.Attributes;
 using starsky.foundation.platform.Helpers;
 using TimeZoneConverter;
 
@@ -847,7 +848,4 @@ namespace starsky.foundation.platform.Models
 
 	}
 
-	public class PackageTelemetryAttribute : Attribute
-	{
-	}
 }
