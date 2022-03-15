@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.http.Services;
 using starskytest.FakeMocks;
@@ -25,6 +26,7 @@ public class HttpProviderTest
 	}
 	
 	[TestMethod]
+	[Timeout(3000)]
 	public void PostAsync_Ok_Form_xWwwHeader()
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
@@ -41,27 +43,28 @@ public class HttpProviderTest
 	}
 	
 	[TestMethod]
-	public void PostAsync_Null()
+	[Timeout(3000)]
+	public async Task PostAsync_Null()
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
 		var httpProvider = new HttpProvider(httpClient);
 
-		var result = httpProvider.PostAsync("http://test", null);
+		var result = await httpProvider.PostAsync("http://test", null);
 
-		Assert.AreEqual(HttpStatusCode.LoopDetected,result.Result.StatusCode);
+		Assert.AreEqual(HttpStatusCode.LoopDetected,result.StatusCode);
 	}
 	
 	[TestMethod]
-	public void PostAsync_NotFound()
+	public async Task PostAsync_NotFound()
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
 		var httpProvider = new HttpProvider(httpClient);
 
-		var result = httpProvider.PostAsync(
+		var result = await httpProvider.PostAsync(
 			"https://download.geonames.org", new StringContent(string.Empty));
 
-		Assert.AreEqual(HttpStatusCode.NotFound,result.Result.StatusCode);
+		Assert.AreEqual(HttpStatusCode.NotFound,result.StatusCode);
 	}
 }

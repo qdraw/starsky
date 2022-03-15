@@ -49,7 +49,7 @@ namespace starsky.foundation.http.Services
 		{
 			if ( content == null )
 			{
-				return new Task<HttpResponseMessage>(() => new HttpResponseMessage
+				return Task.FromResult(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.LoopDetected,
 					Content = new StringContent("http content is null")
