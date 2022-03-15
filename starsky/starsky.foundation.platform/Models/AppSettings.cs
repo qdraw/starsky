@@ -640,7 +640,27 @@ namespace starsky.foundation.platform.Models
 			new CameraMakeModel("Sony","A58")
 		};
 
-		public bool? EnablePackageTelemetry { get; set; } = true;
+		private bool? EnablePackageTelemetryPrivate { get; set; } = null;
+
+		public bool? EnablePackageTelemetry
+		{
+			get
+			{
+				// ReSharper disable once InvertIf
+				if ( EnablePackageTelemetryPrivate == null )
+				{
+#if(DEBUG)
+					return false;
+#endif
+					return true;
+				}
+				return EnablePackageTelemetryPrivate;
+			}
+			set
+			{
+				EnablePackageTelemetryPrivate = value;
+			}
+		}
 
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
@@ -688,31 +708,6 @@ namespace starsky.foundation.platform.Models
 			if ( !string.IsNullOrEmpty(appSettings.WebFtp) )
 			{
 				appSettings._webFtp = CloneToDisplaySecurityWarning;
-			}
-
-			
-			if ( !string.IsNullOrEmpty(appSettings.StorageFolder) )
-			{
-				appSettings.StorageFolder =
-					appSettings.StorageFolder.Replace(userProfileFolder, "~");
-			}
-
-			if ( !string.IsNullOrEmpty(appSettings.TempFolder) )
-			{
-				appSettings.TempFolder =
-					appSettings.TempFolder.Replace(userProfileFolder, "~");
-			}
-
-			if ( !string.IsNullOrEmpty(appSettings.ExifToolPath) )
-			{
-				appSettings.ExifToolPath =
-					appSettings.ExifToolPath.Replace(userProfileFolder, "~");
-			}
-			
-			if ( !string.IsNullOrEmpty(appSettings.ThumbnailTempFolder) )
-			{
-				appSettings.ThumbnailTempFolder =
-					appSettings.ThumbnailTempFolder.Replace(userProfileFolder, "~");
 			}
 			
 			if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) )

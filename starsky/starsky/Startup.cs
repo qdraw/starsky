@@ -298,7 +298,7 @@ namespace starsky
 	        }
 
 	        new PackageTelemetry(app.ApplicationServices
-		        .GetService<IHttpClientHelper>(), _appSettings).Push();
+		        .GetService<IHttpClientHelper>(), _appSettings).PackageTelemetrySend();
         }
 
 

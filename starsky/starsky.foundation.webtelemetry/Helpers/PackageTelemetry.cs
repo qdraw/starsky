@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Helpers;
@@ -23,7 +24,6 @@ namespace starsky.foundation.webtelemetry.Helpers
 			_appSettings = appSettings;
 		}
 
-		// https://aaa7-86-87-142-180.ngrok.io/
 		private const string PackageTelemetryUrl = "https://qdraw.nl/special/starsky/telemetry/index.php";
 
 		private static object GetPropValue(object src, string propName)
@@ -31,7 +31,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			return src?.GetType().GetProperty(propName)?.GetValue(src, null);
 		}
 
-		private static OSPlatform? GetCurrentOsPlatform()
+		internal static OSPlatform? GetCurrentOsPlatform()
 		{
 			OSPlatform? currentPlatform = null;
 			foreach ( var platform in new List<OSPlatform>{OSPlatform.Linux, 
@@ -44,7 +44,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			return currentPlatform;
 		}
 
-		private List<KeyValuePair<string, string>> GetSystemData()
+		internal List<KeyValuePair<string, string>> GetSystemData()
 		{
 			var currentPlatform = GetCurrentOsPlatform();
 
@@ -72,34 +72,47 @@ namespace starsky.foundation.webtelemetry.Helpers
 			return data;
 		}
 		
-		private List<KeyValuePair<string, string>> AddAppSettingsData( List<KeyValuePair<string, string>> data)
+		internal List<KeyValuePair<string, string>> AddAppSettingsData( List<KeyValuePair<string, string>> data)
 		{
 			var type = typeof(AppSettings);
 			var properties = type.GetProperties();
 			// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (var property in properties)
 			{
-
 				var someAttribute = Attribute.GetCustomAttributes(property).FirstOrDefault(x => x is PackageTelemetryAttribute);
 				if ( someAttribute == null )
 				{
 					continue;
 				}
-				var value = GetPropValue(_appSettings.CloneToDisplay(), property.Name)?.ToString();
+
+				var propValue = GetPropValue(_appSettings.CloneToDisplay(),
+					property.Name);
+				var value = propValue?.ToString();
+				
+				if (propValue?.GetType() == typeof(List<string>) || 
+				    propValue?.GetType() == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
+				{
+					value = ParseContent(propValue);
+				}
+
 				data.Add(new KeyValuePair<string, string>("AppSettings" + property.Name, value));
 			}
 			return data;
 		}
-		
-		public async Task Push()
-		{
-#if(DEBUG)
-			return;
-#endif
-			await Send();
-		}
 
-		internal async Task Send()
+		internal static string ParseContent(object propValue)
+		{
+			try
+			{
+				return JsonSerializer.Serialize(propValue);
+			}
+			catch ( Exception exception)
+			{
+				return exception.Message;
+			}
+		}
+		
+		public async Task PackageTelemetrySend()
 		{
 			if ( _appSettings.EnablePackageTelemetry == false )
 			{

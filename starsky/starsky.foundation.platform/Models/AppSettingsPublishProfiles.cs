@@ -161,6 +161,19 @@ namespace starsky.foundation.platform.Models
 	    /// </summary>
 	    public bool Copy { get; set; } = true;
 
+	    public override string ToString()
+	    {
+		    return $"ContentType:{ContentType}," +
+		           $"SourceMaxWidth:{SourceMaxWidth}," +
+		           $"OverlayMaxWidth:{OverlayMaxWidth}," +
+		           $"Path:{Path}," +
+		           $"Folder:{Folder}," +
+		           $"Append:{Append}," +
+		           $"Template:{Template}," +
+		           $"Prepend:{Prepend}," +
+		           $"MetaData:{MetaData}," +
+		           $"Copy:{Copy}";
+	    }
     }
 
     public enum TemplateContentType
