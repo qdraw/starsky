@@ -9,7 +9,7 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIHttpProvider : IHttpProvider
 	{
-		public readonly List<string> UrlCalled = new List<string>();
+		public List<string> UrlCalled = new List<string>();
 		
 		private readonly Dictionary<string, HttpContent> _inputDictionary;
 		

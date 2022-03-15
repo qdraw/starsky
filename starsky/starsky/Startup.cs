@@ -296,9 +296,6 @@ namespace starsky
 		        var onStoppedSync = new FlushApplicationInsights(app);
 		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
-
-	        new PackageTelemetry(app.ApplicationServices
-		        .GetService<IHttpClientHelper>(), _appSettings).PackageTelemetrySend();
         }
 
 

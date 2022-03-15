@@ -58,6 +58,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			
 			var data = new List<KeyValuePair<string, string>>
 			{
+				new KeyValuePair<string, string>("UTCTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
 				new KeyValuePair<string, string>("AppVersion", _appSettings.AppVersion),
 				new KeyValuePair<string, string>("NetVersion", RuntimeInformation.FrameworkDescription),
 				new KeyValuePair<string, string>("OSArchitecture", RuntimeInformation.OSArchitecture.ToString()),
