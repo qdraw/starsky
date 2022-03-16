@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -268,6 +269,17 @@ namespace starsky.foundation.writemeta.Helpers
 					+ $" -xmp-exif:GPSLongitudeRef={longitudeString} ";
 			}
 			return command;
+		}
+
+		internal static string ReplaceBadChars(string inputText)
+		{
+			var cleanText = new StringBuilder();
+			const string badChars = "';`$\"\r\n\t*><?[]|&\\#()}{"; // removed space and dash
+			foreach ( var inputChar in inputText.Where(inputChar => !badChars.Contains(inputChar)) )
+			{
+				cleanText.Append(inputChar);
+			}
+			return cleanText.ToString();
 		}
 
 		private static string UpdateKeywordsCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
