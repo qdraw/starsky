@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.accountmanagement.Models.Account;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -21,13 +22,15 @@ namespace starsky.Controllers
         private readonly AppSettings _appSettings;
         private readonly IAntiforgery _antiForgery;
         private readonly IStorage _storageHostFullPathFilesystem;
+        private readonly IWebLogger _logger;
 
-        public AccountController(IUserManager userManager, AppSettings appSettings, IAntiforgery antiForgery, ISelectorStorage selectorStorage)
+        public AccountController(IUserManager userManager, AppSettings appSettings, IAntiforgery antiForgery, ISelectorStorage selectorStorage, IWebLogger logger)
         {
             _userManager = userManager;
             _appSettings = appSettings;
             _antiForgery = antiForgery;
             _storageHostFullPathFilesystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+            _logger = logger;
         }
         
 		/// <summary>
@@ -51,7 +54,7 @@ namespace starsky.Controllers
 				return Json("There are no accounts, you must create an account first");
 			}
 			
-			if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
+			if ( User.Identity?.IsAuthenticated == false) return Unauthorized("false");
 
 			// use model to avoid circular references
 			var currentUser = _userManager.GetCurrentUser(HttpContext);
@@ -112,6 +115,9 @@ namespace starsky.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> LoginPost(LoginViewModel model)
         {
+	        var remoteIp = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+	        _logger.LogInformation("[LoginPost]" +remoteIp);
+	        
             ValidateResult validateResult = await _userManager.ValidateAsync("Email", model.Email, model.Password);
 
             if (!validateResult.Success)
@@ -125,7 +131,7 @@ namespace starsky.Controllers
             } 
             
             await _userManager.SignIn(HttpContext, validateResult.User, model.RememberMe);
-            if ( User.Identity.IsAuthenticated)
+            if ( User.Identity?.IsAuthenticated == true)
             {
 	            return Json("Login Success");
             }
@@ -178,7 +184,7 @@ namespace starsky.Controllers
         [Authorize]
         public async Task<IActionResult> ChangeSecret(ChangePasswordViewModel model)
         {
-	        if ( !User.Identity.IsAuthenticated ) return Unauthorized("please login first");
+	        if ( User.Identity?.IsAuthenticated != true ) return Unauthorized("please login first");
 
 	        if ( !ModelState.IsValid || model.ChangedPassword != model.ChangedConfirmPassword )
 		        return BadRequest("Model is not correct");
@@ -186,6 +192,8 @@ namespace starsky.Controllers
 	        var currentUserId =
 		        _userManager.GetCurrentUser(HttpContext).Id;
 
+	        _logger.LogInformation($"[ChangeSecret] for {currentUserId}");
+	        
 	        var credential = _userManager.GetCredentialsByUserId(currentUserId);
 
 	        // Re-check password
@@ -222,7 +230,7 @@ namespace starsky.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-	        if ( await IsAccountRegisterClosed(User.Identity.IsAuthenticated) )
+	        if ( await IsAccountRegisterClosed(User.Identity?.IsAuthenticated) )
 	        {
 		        Response.StatusCode = 403;
 		        return Json("Account Register page is closed");
@@ -244,9 +252,9 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="userIdentityIsAuthenticated"></param>
         /// <returns></returns>
-        private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
+        private async Task<bool> IsAccountRegisterClosed(bool? userIdentityIsAuthenticated)
         {
-	        if ( userIdentityIsAuthenticated ) return false;
+	        if ( userIdentityIsAuthenticated == true) return false;
 	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsersAsync()).Any();
         }
         
