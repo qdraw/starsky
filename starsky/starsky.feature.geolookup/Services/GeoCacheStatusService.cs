@@ -21,22 +21,17 @@ namespace starsky.feature.geolookup.Services
 			var totalCacheName = nameof(GeoCacheStatus) + path + StatusType.Total;
 			var result = new GeoCacheStatus();
 			
-			if(_cache.TryGetValue(totalCacheName, out var statusObjectTotal))
+			if(_cache.TryGetValue(totalCacheName, out var statusObjectTotal) && 
+			   TryParse(statusObjectTotal.ToString(), out var totalStatus))
 			{
-				if ( TryParse(statusObjectTotal.ToString(), out var status) )
-				{
-					result.Total = status;
-				}
+				result.Total = totalStatus;
 			}
 			
 			var currentCacheName = nameof(GeoCacheStatus) + path + StatusType.Current;
-			// ReSharper disable once InvertIf
-			if(_cache.TryGetValue(currentCacheName, out var statusObjectCurrent))
+			if(_cache.TryGetValue(currentCacheName, out var statusObjectCurrent) && 
+			   TryParse(statusObjectCurrent.ToString(), out var currentStatus))
 			{
-				if ( TryParse(statusObjectCurrent.ToString(), out var status) )
-				{
-					result.Current = status;
-				}
+				result.Current = currentStatus;
 			}
 			
 			return result;

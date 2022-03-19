@@ -31,7 +31,7 @@ namespace starsky.feature.geolookup.Services
 	        _cache = memoryCache;
         }
         
-        private List<FileIndexItem> GetNoLocationItems(IEnumerable<FileIndexItem> metaFilesInDirectory)
+        private static List<FileIndexItem> GetNoLocationItems(IEnumerable<FileIndexItem> metaFilesInDirectory)
         {
             return metaFilesInDirectory.Where(
                     metaFileItem =>
