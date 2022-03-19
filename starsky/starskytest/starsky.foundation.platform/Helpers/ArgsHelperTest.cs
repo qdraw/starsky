@@ -213,18 +213,18 @@ namespace starskytest.starsky.foundation.platform.Helpers
         
 		[TestMethod]
 		[ExcludeFromCoverage]
-		public void ArgsHelper_IfSubpathTest()
+		public void ArgsHelper_IfSubPathTest()
 		{
 			_appSettings.StorageFolder = new CreateAnImage().BasePath;
 			var args = new List<string> {"-s", "/"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).IsSubPathOrPath(args));
+			Assert.IsTrue(ArgsHelper.IsSubPathOrPath(args));
             
 			// Default
 			args = new List<string>{string.Empty}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).IsSubPathOrPath(args));
+			Assert.IsTrue(ArgsHelper.IsSubPathOrPath(args));
             
 			args = new List<string> {"-p", "/"}.ToArray();
-			Assert.IsFalse(new ArgsHelper(_appSettings).IsSubPathOrPath(args));
+			Assert.IsFalse(ArgsHelper.IsSubPathOrPath(args));
 		}
 
 		[TestMethod]
@@ -232,7 +232,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// for selecting the current directory
 			var args = new List<string> {"-p"}.ToArray();
-			Assert.IsFalse(new ArgsHelper(_appSettings).IsSubPathOrPath(args));
+			Assert.IsFalse(ArgsHelper.IsSubPathOrPath(args));
 		}
 
 		[TestMethod]
