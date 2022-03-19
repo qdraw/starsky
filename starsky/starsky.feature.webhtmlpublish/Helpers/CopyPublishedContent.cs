@@ -47,7 +47,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			return copyResult;
 		}
 
-		internal string GetContentFolder()
+		internal static string GetContentFolder()
 		{
 			return PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory)  +
 			       Path.DirectorySeparatorChar +

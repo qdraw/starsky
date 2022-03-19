@@ -82,7 +82,7 @@ namespace starsky.feature.metaupdate.Services
 			{
 				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted ) // folder deleted
 				{
-					_statusCodeHelper.ReturnExifStatusError(fileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexUpdatedList);
 					continue; 
@@ -92,7 +92,7 @@ namespace starsky.feature.metaupdate.Services
 				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem) 
 				     == FileIndexItem.ExifStatus.ReadOnly)
 				{
-					_statusCodeHelper.ReturnExifStatusError(fileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.ReadOnly,
 						fileIndexUpdatedList);
 					continue; 

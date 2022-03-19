@@ -54,7 +54,7 @@ namespace starsky.feature.geolookup.Services
 		/// <returns>Void Task</returns>
 		public async Task CommandLineAsync(string[] args)
 		{
-			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 
 			// Download ExifTool 
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
@@ -65,7 +65,7 @@ namespace starsky.feature.geolookup.Services
 			
 			if ( new ArgsHelper().NeedHelp(args) ||
 			     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1
-			       && new ArgsHelper().GetSubpathFormArgs(args).Length <= 1
+			       && ArgsHelper.GetSubPathFormArgs(args).Length <= 1
 			       && new ArgsHelper(_appSettings).GetRelativeValue(args) == null ) )
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
@@ -78,7 +78,7 @@ namespace starsky.feature.geolookup.Services
 			if ( new ArgsHelper(_appSettings).IsSubPathOrPath(args) )
 			{
 				inputPath = _appSettings.DatabasePathToFilePath(
-					new ArgsHelper(_appSettings).GetSubpathFormArgs(args)
+					ArgsHelper.GetSubPathFormArgs(args)
 				);
 			}
 			else

@@ -80,7 +80,7 @@ namespace starsky.foundation.database.Helpers
         /// <param name="statusResults">the status by FileCollectionsCheck</param>
         /// <param name="fileIndexResultsList">list of object that will be returned</param>
         /// <returns>If true skip the next code</returns>
-        public bool ReturnExifStatusError(FileIndexItem statusModel, 
+        public static bool ReturnExifStatusError(FileIndexItem statusModel, 
             FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList)
         {
             switch (statusResults)

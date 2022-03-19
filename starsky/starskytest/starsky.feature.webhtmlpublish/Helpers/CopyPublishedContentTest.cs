@@ -14,7 +14,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 		[TestMethod]
 		public void CopyContent_Test()
 		{
-			var contentPath = new CopyPublishedContent(null, null, null).GetContentFolder();
+			var contentPath = CopyPublishedContent.GetContentFolder();
 			
 			var fakeStorage = new FakeIStorage(new List<string>{contentPath}, new List<string>
 			{

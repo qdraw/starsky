@@ -31,7 +31,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		
 		public async Task Thumbnail(string[] args)
 		{
-			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Thumbnail;
 
 			if (new ArgsHelper().NeedHelp(args))

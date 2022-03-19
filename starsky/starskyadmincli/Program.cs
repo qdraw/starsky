@@ -33,7 +33,7 @@ namespace starskyAdminCli
 			services = await SetupAppSettings.FirstStepToAddSingleton(services);
 
 			// Inject services
-			new RegisterDependencies().Configure(services);
+			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 						
@@ -46,7 +46,7 @@ namespace starskyAdminCli
 			serviceProvider = services.BuildServiceProvider();
 
 			// Use args in application
-			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+			appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			
 			var userManager = serviceProvider.GetService<IUserManager>();
 			appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
@@ -59,7 +59,7 @@ namespace starskyAdminCli
 			
 			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger);
 			await new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(
-				new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
+				ArgsHelper.GetName(args), ArgsHelper.GetUserInputPassword(args));
 			
 			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}

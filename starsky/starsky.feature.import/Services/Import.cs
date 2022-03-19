@@ -127,8 +127,11 @@ namespace starsky.feature.import.Services
 		{
 			var directoriesContent = new Dictionary<string,List<string>>();
 			foreach ( var importIndexItem in importIndexItemsList.Where(p =>
-				p.Status == ImportStatus.Ok && directoriesContent.ContainsKey(p.FileIndexItem.ParentDirectory)) )
+				p.Status == ImportStatus.Ok) )
 			{
+				if ( directoriesContent.ContainsKey(importIndexItem.FileIndexItem.ParentDirectory) )
+					continue;
+				
 				var parentDirectoryList =
 					_subPathStorage.GetAllFilesInDirectory(
 						importIndexItem.FileIndexItem

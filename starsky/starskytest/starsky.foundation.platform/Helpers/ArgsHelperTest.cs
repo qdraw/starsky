@@ -51,11 +51,11 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_NeedVerboseTest()
 		{
 			var args = new List<string> {"-v"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedVerbose(args));
+			Assert.IsTrue(ArgsHelper.NeedVerbose(args));
             
 			// Bool parse check
 			args = new List<string> {"-v","true"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedVerbose(args));
+			Assert.IsTrue(ArgsHelper.NeedVerbose(args));
 		}
         
 		[TestMethod]
@@ -117,14 +117,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void GetUserInputPassword()
 		{
 			var args = new List<string> {"-p", "test"}.ToArray();
-			Assert.AreEqual("test",new ArgsHelper(_appSettings).GetUserInputPassword(args));
+			Assert.AreEqual("test",ArgsHelper.GetUserInputPassword(args));
 		}
         
 		[TestMethod]
 		public void GetUserInputPasswordLong()
 		{
 			var args = new List<string> {"--password", "test"}.ToArray();
-			Assert.AreEqual("test",new ArgsHelper(_appSettings).GetUserInputPassword(args));
+			Assert.AreEqual("test",ArgsHelper.GetUserInputPassword(args));
 		}
 
 		[TestMethod]
@@ -208,7 +208,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			_appSettings.StorageFolder = new CreateAnImage().BasePath;
 			var args = new List<string> {"-s", "/"}.ToArray();
-			Assert.AreEqual("/",new ArgsHelper(_appSettings).GetSubpathFormArgs(args));
+			Assert.AreEqual("/",ArgsHelper.GetSubPathFormArgs(args));
 		}    
         
 		[TestMethod]
@@ -258,11 +258,11 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_GetMoveTest()
 		{
 			var args = new List<string> {"-m"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).GetMove(args));
+			Assert.IsTrue(ArgsHelper.GetMove(args));
             
 			// Bool parse check
 			args = new List<string> {"-m","true"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).GetMove(args));
+			Assert.IsTrue(ArgsHelper.GetMove(args));
 		}
         
 		[TestMethod]
@@ -635,7 +635,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			_appSettings.StorageFolder = new CreateAnImage().BasePath;
 			var args = new List<string> {"-n", "test"}.ToArray();
-			Assert.AreEqual("test",new ArgsHelper(_appSettings).GetName(args));
+			Assert.AreEqual("test",ArgsHelper.GetName(args));
 		}    
 	}
 }

@@ -59,7 +59,7 @@ namespace starsky.feature.export.Services
 				var detailView = _query.SingleItem(subPath, null, collections, false);
 				if ( detailView?.FileIndexItem == null )
 				{
-					_statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
+					StatusCodesHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
 					continue;
@@ -68,7 +68,7 @@ namespace starsky.feature.export.Services
 				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == 
 				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
-					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexResultsList);
 					continue; 

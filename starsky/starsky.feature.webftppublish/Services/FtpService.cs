@@ -115,7 +115,6 @@ namespace starsky.feature.webftppublish.Services
 			foreach ( var copyItem in copyContent.Where(p => p.Value) )
 			{
 				var parentItems = Breadcrumbs.BreadcrumbHelper(copyItem.Key);
-				// ReSharper disable once LoopCanBeConvertedToQuery
 				foreach ( var item in parentItems.Where(p => p != Path.DirectorySeparatorChar.ToString()) )
 				{
 					if ( _storage.ExistFolder(parentDirectory + item ) )

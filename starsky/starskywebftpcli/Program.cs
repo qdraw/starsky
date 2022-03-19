@@ -21,7 +21,7 @@ namespace starskywebftpcli
 			var services = await SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection());
 
 			// Inject services
-			new RegisterDependencies().Configure(services);
+			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
             

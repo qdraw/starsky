@@ -18,7 +18,6 @@ namespace starsky.feature.metaupdate.Services
 	public class MetaInfo : IMetaInfo
 	{
 		private readonly IQuery _query;
-		private readonly AppSettings _appSettings;
 		private readonly ReadMeta _readMeta;
 		private readonly IStorage _iStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
@@ -26,10 +25,9 @@ namespace starsky.feature.metaupdate.Services
 		public MetaInfo(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IMemoryCache memoryCache)
 		{
 			_query = query;
-			_appSettings = appSettings;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_readMeta = new ReadMeta(_iStorage,_appSettings, memoryCache);
-			_statusCodeHelper = new StatusCodesHelper(_appSettings);
+			_readMeta = new ReadMeta(_iStorage,appSettings, memoryCache);
+			_statusCodeHelper = new StatusCodesHelper(appSettings);
 		}
 		
 		public List<FileIndexItem> GetInfo(List<string> inputFilePaths, bool collections)
@@ -43,7 +41,7 @@ namespace starsky.feature.metaupdate.Services
 				
 				if ( detailView?.FileIndexItem == null )
 				{
-					_statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
+					StatusCodesHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
 					continue;
@@ -51,7 +49,7 @@ namespace starsky.feature.metaupdate.Services
 				
 				if ( !_iStorage.ExistFile(detailView.FileIndexItem.FilePath) )
 				{
-					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexResultsList);
 					continue; 
@@ -61,7 +59,7 @@ namespace starsky.feature.metaupdate.Services
 				// Not all files are able to write with exifTool
 				if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
 				{
-					_statusCodeHelper.ReturnExifStatusError(
+					StatusCodesHelper.ReturnExifStatusError(
 						new FileIndexItemJsonParser(_iStorage).Read(detailView.FileIndexItem), 
 						FileIndexItem.ExifStatus.ExifWriteNotSupported,
 						fileIndexResultsList);

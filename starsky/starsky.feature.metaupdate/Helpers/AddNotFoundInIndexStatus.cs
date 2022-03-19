@@ -15,7 +15,7 @@ namespace starsky.feature.metaupdate.Helpers
 				// when item is not in the database
 				if ( fileIndexResultsList.All(p => p.FilePath != subPath) )
 				{
-					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
+					StatusCodesHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
 				}
