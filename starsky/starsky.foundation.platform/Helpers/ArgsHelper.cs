@@ -700,7 +700,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns>bool</returns>
-		public bool GetAll(IReadOnlyList<string> args)
+		public static bool GetAll(IReadOnlyList<string> args)
 		{
 			// default false
 			var getAll = false;
@@ -725,7 +725,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns>bool</returns>
-		public bool NeedRecursive(IReadOnlyList<string> args)
+		public static bool NeedRecursive(IReadOnlyList<string> args)
 		{
 			bool needRecursive = false;
 			
@@ -764,7 +764,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns>number, but valid with colorClass</returns>
-		public int GetColorClass(IReadOnlyList<string> args)
+		public static int GetColorClass(IReadOnlyList<string> args)
 		{	
 			// --colorclass
 			var colorClass = -1;

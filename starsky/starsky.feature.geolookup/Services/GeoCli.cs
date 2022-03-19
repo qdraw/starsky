@@ -75,7 +75,7 @@ namespace starsky.feature.geolookup.Services
 			// Using both options
 			string inputPath;
 			// -s = if subPath || -p is path
-			if ( new ArgsHelper(_appSettings).IsSubPathOrPath(args) )
+			if ( ArgsHelper.IsSubPathOrPath(args) )
 			{
 				inputPath = _appSettings.DatabasePathToFilePath(
 					ArgsHelper.GetSubPathFormArgs(args)
@@ -129,7 +129,7 @@ namespace starsky.feature.geolookup.Services
 			}
     
 			fileIndexList = _geoReverseLookup.LoopFolderLookup(fileIndexList,
-					new ArgsHelper().GetAll(args));
+					ArgsHelper.GetAll(args));
 			if ( fileIndexList.Count >= 1 )
 			{
 				_console.Write("~ Add city, state and country info ~");

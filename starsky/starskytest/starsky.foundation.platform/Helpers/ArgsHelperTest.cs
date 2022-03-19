@@ -63,11 +63,11 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_NeedRecruisiveTest()
 		{
 			var args = new List<string> {"-r"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedRecursive(args));
+			Assert.IsTrue(ArgsHelper.NeedRecursive(args));
             
 			// Bool parse check
 			args = new List<string> {"-r","true"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedRecursive(args));
+			Assert.IsTrue(ArgsHelper.NeedRecursive(args));
 		}
 	    
 		[TestMethod]
@@ -270,14 +270,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_GetAllTest()
 		{
 			var args = new List<string> {"-a"}.ToArray();
-			Assert.AreEqual(true, new ArgsHelper(_appSettings).GetAll(args));
+			Assert.AreEqual(true, ArgsHelper.GetAll(args));
             
 			// Bool parse check
 			args = new List<string> {"-a","false"}.ToArray();
-			Assert.AreEqual(false, new ArgsHelper(_appSettings).GetAll(args));
+			Assert.AreEqual(false, ArgsHelper.GetAll(args));
             
 			args = new List<string> {}.ToArray();
-			Assert.AreEqual(false, new ArgsHelper(_appSettings).GetAll(args));
+			Assert.AreEqual(false, ArgsHelper.GetAll(args));
             
 		}
         
@@ -610,7 +610,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_GetColorClass()
 		{
 			var args = new List<string> {"--colorclass", "1"}.ToArray();
-			var value = new ArgsHelper(_appSettings).GetColorClass(args);
+			var value = ArgsHelper.GetColorClass(args);
 			Assert.AreEqual(1, value);
 		}
 	    
@@ -618,7 +618,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_GetColorClass_99_Fallback()
 		{
 			var args = new List<string> {"--colorclass", "99"}.ToArray();
-			var value = new ArgsHelper(_appSettings).GetColorClass(args);
+			var value = ArgsHelper.GetColorClass(args);
 			Assert.AreEqual(-1, value);
 		}
 	    
@@ -626,7 +626,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_GetColorClassFallback()
 		{
 			var args = new List<string> {}.ToArray();
-			var value = new ArgsHelper(_appSettings).GetColorClass(args);
+			var value = ArgsHelper.GetColorClass(args);
 			Assert.AreEqual(-1, value);
 		}
 	    

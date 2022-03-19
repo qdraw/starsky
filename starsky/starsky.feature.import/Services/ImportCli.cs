@@ -57,9 +57,9 @@ namespace starsky.feature.import.Services
 			
 			var importSettings = new ImportSettingsModel {
 					DeleteAfter = ArgsHelper.GetMove(args),
-					RecursiveDirectory = new ArgsHelper().NeedRecursive(args),
+					RecursiveDirectory = ArgsHelper.NeedRecursive(args),
 					IndexMode = new ArgsHelper().GetIndexMode(args),
-					ColorClass = new ArgsHelper().GetColorClass(args),
+					ColorClass = ArgsHelper.GetColorClass(args),
 					ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args)
 				};
 

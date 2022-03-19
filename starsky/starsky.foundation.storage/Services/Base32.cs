@@ -94,7 +94,7 @@ namespace starsky.foundation.storage.Services
             encoded = encoded.ToUpper();
             if (encoded.Length == 0)
             {
-                return new byte[0];
+                return Array.Empty<byte>();
             }
 
             int encodedLength = encoded.Length;
