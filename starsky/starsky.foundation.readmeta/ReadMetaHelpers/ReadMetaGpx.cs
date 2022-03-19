@@ -9,6 +9,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Helpers;
+#nullable enable
 
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
@@ -16,7 +17,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
     {
 	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
 	    
-        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream stream, string subPath)
+        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream? stream, string subPath)
         {
 	        if ( stream == null )
 	        {
@@ -73,7 +74,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <param name="geoList"></param>
 	    /// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
 	    /// <returns></returns>
-	    public List<GeoListItem> ReadGpxFile(Stream stream, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
+	    public static List<GeoListItem> ReadGpxFile(Stream stream, List<GeoListItem>? geoList = null, int returnAfter = int.MaxValue)
         {
             if (geoList == null) geoList = new List<GeoListItem>();
 
@@ -111,7 +112,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <param name="geoList">object to add</param>
 	    /// <param name="returnAfter">return after number of values; default return all</param>
 	    /// <returns></returns>
-	    private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem> geoList = null, 
+	    private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem>? geoList = null, 
 		    int returnAfter = int.MaxValue)
 	    {
 		    var gpxDoc = ParseXml(fileString);

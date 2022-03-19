@@ -72,7 +72,7 @@ namespace starskytest.Services
 		{
 			var gpxBytes = CreateAnGpx.Bytes;
 			MemoryStream stream = new MemoryStream(gpxBytes);
-			var returnItem = new ReadMetaGpx().ReadGpxFile(stream);
+			var returnItem = ReadMetaGpx.ReadGpxFile(stream);
 			Assert.AreEqual(5.485941,returnItem.FirstOrDefault().Longitude,0.001);
 			Assert.AreEqual(51.809360,returnItem.FirstOrDefault().Latitude,0.001);
 			DateTime.TryParseExact("2018-09-05T17:31:53Z", 

@@ -52,7 +52,7 @@ namespace starsky.feature.geolookup.Services
 	            
 	            using ( var stream = _iStorage.ReadStream(metaFileItem.FilePath) )
 	            {
-		            geoList.AddRange(_readMetaGpx.ReadGpxFile(stream, geoList));
+		            geoList.AddRange(ReadMetaGpx.ReadGpxFile(stream, geoList));
 	            }
             }
             return geoList;
