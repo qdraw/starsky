@@ -24,7 +24,7 @@ namespace starskythumbnailmetacli
 			services = await SetupAppSettings.FirstStepToAddSingleton(services);
 
 			// Inject services
-			new RegisterDependencies().Configure(services);
+			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
             

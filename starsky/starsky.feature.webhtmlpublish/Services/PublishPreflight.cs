@@ -65,7 +65,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		/// <returns>name, nothing is string.emthy</returns>
 		public string GetNameConsole(string inputPath, IReadOnlyList<string> args)
 		{
-			var name = new ArgsHelper().GetName(args);
+			var name = ArgsHelper.GetName(args);
 			if ( !string.IsNullOrWhiteSpace(name) ) return name;
 			
 			var suggestedInput = Path.GetFileName(inputPath);

@@ -15,102 +15,103 @@ using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.platform.Services;
+namespace starskytest.starsky.foundation.platform.Services {
 
-public static class ExtensionMethods
-{
-	public static async Task InvokeAsync(this MethodInfo @this, object obj, params object[] parameters)
+	public static class ExtensionMethods
 	{
-		dynamic awaitable = @this.Invoke(obj, parameters);
-		await awaitable;
-		awaitable.GetAwaiter();
-	}
-}
-
-[TestClass]
-public class PackageTelemetryBackgroundServiceTest
-{
-	private readonly IServiceScopeFactory _serviceScopeFactory;
-
-	public PackageTelemetryBackgroundServiceTest()
-	{
-		var services = new ServiceCollection();
-		services.AddSingleton<AppSettings>();
-		services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
-		services.AddSingleton<IHttpProvider, FakeIHttpProvider>();
-		services.AddSingleton<IWebLogger, FakeIWebLogger>();
-		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-
-		var serviceProvider = services.BuildServiceProvider();
-		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			
-		var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-		appSettings.EnablePackageTelemetry = true;
-	}
-	
-	
-	[TestMethod]
-	[Timeout(3000)]
-	public async Task ExecuteAsyncTest_WebController()
-	{
-		var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
-			.GetService<AppSettings>();
-		appSettings!.ApplicationType = AppSettings.StarskyAppType.WebController;
-		
-		var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
-			
-		CancellationTokenSource source = new CancellationTokenSource();
-		CancellationToken token = source.Token;
-		source.Cancel(); // <- cancel before start
-
-		MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
-			BindingFlags.NonPublic | BindingFlags.Instance);
-		if ( dynMethod == null )
-			throw new Exception("missing ExecuteAsync");
-		await dynMethod.InvokeAsync(service, new object[]
+		public static async Task InvokeAsync(this MethodInfo @this, object obj, params object[] parameters)
 		{
-			token
-		});
-
-		var httpProvider = _serviceScopeFactory.CreateScope().ServiceProvider
-			.GetService<IHttpProvider>();
-
-		var fakeHttpProvider = httpProvider as FakeIHttpProvider;
-		Assert.IsTrue(fakeHttpProvider?.UrlCalled.Any(p => p.Contains(PackageTelemetry.PackageTelemetryUrl)));
+			dynamic awaitable = @this.Invoke(obj, parameters);
+			await awaitable;
+			awaitable.GetAwaiter();
+		}
 	}
-	
-	[TestMethod]
-	[Timeout(2000)]
-	public void ExecuteAsyncTest_NotWhenDisabled()
+
+	[TestClass]
+	public class PackageTelemetryBackgroundServiceTest
 	{
-		var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
-			.GetService<AppSettings>();
-		appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
-		var httpProvider1 = _serviceScopeFactory.CreateScope().ServiceProvider
-			.GetService<IHttpProvider>();
+		private readonly IServiceScopeFactory _serviceScopeFactory;
 
-		var fakeHttpProvider1 = httpProvider1 as FakeIHttpProvider;
-		fakeHttpProvider1.UrlCalled = new List<string>();
-		
-		var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
-			
-		CancellationTokenSource source = new CancellationTokenSource();
-		CancellationToken token = source.Token;
-		source.Cancel(); // <- cancel before start
-
-		MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
-			BindingFlags.NonPublic | BindingFlags.Instance);
-		if ( dynMethod == null )
-			throw new Exception("missing ExecuteAsync");
-		dynMethod.Invoke(service, new object[]
+		public PackageTelemetryBackgroundServiceTest()
 		{
-			token
-		});
+			var services = new ServiceCollection();
+			services.AddSingleton<AppSettings>();
+			services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
+			services.AddSingleton<IHttpProvider, FakeIHttpProvider>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 
-		var httpProvider = _serviceScopeFactory.CreateScope().ServiceProvider
-			.GetService<IHttpProvider>();
+			var serviceProvider = services.BuildServiceProvider();
+			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+			appSettings.EnablePackageTelemetry = true;
+		}
+	
+	
+		[TestMethod]
+		[Timeout(3000)]
+		public async Task ExecuteAsyncTest_WebController()
+		{
+			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
+				.GetService<AppSettings>();
+			appSettings!.ApplicationType = AppSettings.StarskyAppType.WebController;
+		
+			var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
+			
+			CancellationTokenSource source = new CancellationTokenSource();
+			CancellationToken token = source.Token;
+			source.Cancel(); // <- cancel before start
 
-		var fakeHttpProvider = httpProvider as FakeIHttpProvider;
-		Assert.IsFalse(fakeHttpProvider?.UrlCalled.Contains(PackageTelemetry.PackageTelemetryUrl));
+			MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
+				BindingFlags.NonPublic | BindingFlags.Instance);
+			if ( dynMethod == null )
+				throw new Exception("missing ExecuteAsync");
+			await dynMethod.InvokeAsync(service, new object[]
+			{
+				token
+			});
+
+			var httpProvider = _serviceScopeFactory.CreateScope().ServiceProvider
+				.GetService<IHttpProvider>();
+
+			var fakeHttpProvider = httpProvider as FakeIHttpProvider;
+			Assert.IsTrue(fakeHttpProvider?.UrlCalled.Any(p => p.Contains(PackageTelemetry.PackageTelemetryUrl)));
+		}
+	
+		[TestMethod]
+		[Timeout(2000)]
+		public void ExecuteAsyncTest_NotWhenDisabled()
+		{
+			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
+				.GetService<AppSettings>();
+			appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
+			var httpProvider1 = _serviceScopeFactory.CreateScope().ServiceProvider
+				.GetService<IHttpProvider>();
+
+			var fakeHttpProvider1 = httpProvider1 as FakeIHttpProvider;
+			fakeHttpProvider1.UrlCalled = new List<string>();
+		
+			var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
+			
+			CancellationTokenSource source = new CancellationTokenSource();
+			CancellationToken token = source.Token;
+			source.Cancel(); // <- cancel before start
+
+			MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
+				BindingFlags.NonPublic | BindingFlags.Instance);
+			if ( dynMethod == null )
+				throw new Exception("missing ExecuteAsync");
+			dynMethod.Invoke(service, new object[]
+			{
+				token
+			});
+
+			var httpProvider = _serviceScopeFactory.CreateScope().ServiceProvider
+				.GetService<IHttpProvider>();
+
+			var fakeHttpProvider = httpProvider as FakeIHttpProvider;
+			Assert.IsFalse(fakeHttpProvider?.UrlCalled.Contains(PackageTelemetry.PackageTelemetryUrl));
+		}
 	}
 }

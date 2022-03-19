@@ -42,7 +42,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		/// <returns>void</returns>
 		public async Task Publisher(string[] args)
 		{
-			_appSettings.Verbose = _argsHelper.NeedVerbose(args);
+			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			
 			if (_argsHelper.NeedHelp(args))
 			{

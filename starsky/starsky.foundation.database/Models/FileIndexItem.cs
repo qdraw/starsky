@@ -465,7 +465,7 @@ namespace starsky.foundation.database.Models
 				if (!int.TryParse(colorclassString, out var parsedInt)) return new List<ColorClassParser.Color>();
 				colorClassStringList.Add(parsedInt.ToString());
 			}
-			if (colorclassString.Contains(",")) {
+			if (colorclassString.Contains(',')) {
 				colorClassStringList = colorclassString.Split(",".ToCharArray()).ToList();
 			}
 			var colorClassList = new HashSet<ColorClassParser.Color>();

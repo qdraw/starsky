@@ -40,7 +40,7 @@ namespace starsky.foundation.database.Query
 			}
 		}
 		
-		private IOrderedQueryable<FileIndexItem> GetObjectsByFilePathCollectionQuery(ApplicationDbContext context, 
+		private static IOrderedQueryable<FileIndexItem> GetObjectsByFilePathCollectionQuery(ApplicationDbContext context, 
 			IEnumerable<string> filePathList)
 		{
 			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  

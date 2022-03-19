@@ -138,7 +138,7 @@ namespace starsky.foundation.database.Query
             return itemResult;
         }
         
-        private RelativeObjects GetNextPrevInSubFolder(
+        private static RelativeObjects GetNextPrevInSubFolder(
 	        FileIndexItem currentFileIndexItem,
 	        List<FileIndexItem> fileIndexItemsList, SortType sortType)
         {

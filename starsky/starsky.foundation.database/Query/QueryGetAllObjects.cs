@@ -75,7 +75,7 @@ namespace starsky.foundation.database.Query
 		/// <param name="context">database context</param>
 		/// <param name="filePathList">list of paths</param>
 		/// <returns></returns>
-		private IOrderedQueryable<FileIndexItem> GetAllObjectsQuery(ApplicationDbContext context, List<string> filePathList)
+		private static IOrderedQueryable<FileIndexItem> GetAllObjectsQuery(ApplicationDbContext context, List<string> filePathList)
 		{
 			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
 

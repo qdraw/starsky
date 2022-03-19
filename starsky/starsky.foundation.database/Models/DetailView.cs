@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Models
 {
+    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
     public class DetailView
     {
         public FileIndexItem FileIndexItem { get; set; }
@@ -17,7 +19,8 @@ namespace starsky.foundation.database.Models
 	    /// <summary>
 	    /// Used by react client
 	    /// </summary>
-        public string PageType => PageViewType.PageType.DetailView.ToString();
+        [SuppressMessage("ReSharper", "CA1822")]
+	    public string PageType => PageViewType.PageType.DetailView.ToString();
 
         /// <summary>
         /// To return error codes in the json it is always false

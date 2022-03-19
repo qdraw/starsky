@@ -62,7 +62,7 @@ namespace starsky.foundation.metathumbnail.Services
 			var jpegTags = allExifItems.FirstOrDefault(p =>
 				p.Name == "JPEG")?.Tags;
 
-			var rotation = new ReadMetaExif(null).GetOrientationFromExifItem(
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(
 				allExifItems.FirstOrDefault(p => p.Name == "Exif IFD0"));
 					
 			int.TryParse(

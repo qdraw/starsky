@@ -27,7 +27,7 @@ namespace starsky.foundation.metathumbnail.Helpers
 		
 		public async Task CommandLineAsync(string[] args)
 		{
-			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.MetaThumbnail;
 
 			if (new ArgsHelper().NeedHelp(args))

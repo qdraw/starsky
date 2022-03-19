@@ -32,7 +32,6 @@ namespace starsky.feature.export.Services
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _hostFileSystemStorage;
-		private readonly StatusCodesHelper _statusCodeHelper;
 		private readonly IWebLogger _logger;
 
 		public ExportService(IQuery query, AppSettings appSettings, 
@@ -43,7 +42,6 @@ namespace starsky.feature.export.Services
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-			_statusCodeHelper = new StatusCodesHelper();
 			_logger = logger;
 		}
 
@@ -59,7 +57,7 @@ namespace starsky.feature.export.Services
 				var detailView = _query.SingleItem(subPath, null, collections, false);
 				if ( detailView?.FileIndexItem == null )
 				{
-					_statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
+					StatusCodesHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
 					continue;
@@ -68,7 +66,7 @@ namespace starsky.feature.export.Services
 				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == 
 				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
-					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexResultsList);
 					continue; 

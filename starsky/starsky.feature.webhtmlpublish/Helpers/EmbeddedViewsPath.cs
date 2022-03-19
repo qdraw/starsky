@@ -3,7 +3,7 @@ using System.IO;
 
 namespace starsky.feature.webhtmlpublish.Helpers
 {
-	public class EmbeddedViewsPath
+	public static class EmbeddedViewsPath
 	{
 		public static string GetViewFullPath(string viewName)
 		{

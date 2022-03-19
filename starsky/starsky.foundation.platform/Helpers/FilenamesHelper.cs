@@ -58,7 +58,7 @@ namespace starsky.foundation.platform.Helpers
 		public static string GetFileExtensionWithoutDot(string filename)
 		{
 			// ReSharper disable once ConvertIfStatementToReturnStatement
-			if ( !filename.Contains(".") ) return string.Empty;
+			if ( !filename.Contains('.') ) return string.Empty;
 			return Regex.Match(filename, @"[^.][a-zA-Z0-9]{1,4}$").Value.ToLowerInvariant();
 		}
 		

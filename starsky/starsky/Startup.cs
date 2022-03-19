@@ -137,7 +137,7 @@ namespace starsky
 			// Application Insights
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			
-			new RegisterDependencies().Configure(services);
+			RegisterDependencies.Configure(services);
         }
 
         /// <summary>

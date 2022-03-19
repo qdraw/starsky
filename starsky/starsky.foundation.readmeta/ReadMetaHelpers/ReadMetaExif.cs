@@ -246,17 +246,17 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return ImageStabilisationType.Unknown;
         }
 
-        private string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)
+        private static string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)
         {
 	        // only if there is nothing yet
 	        if ( !string.IsNullOrEmpty(lensModel) ) return string.Empty;
 	        var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 	        var lensId = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagLensId);
 	        
-	        return string.IsNullOrEmpty(lensId) ? string.Empty : new SonyLensIdConverter().GetById(lensId);
+	        return string.IsNullOrEmpty(lensId) ? string.Empty : SonyLensIdConverter.GetById(lensId);
         }
 
-		private ExtensionRolesHelper.ImageFormat GetFileSpecificTags(List<Directory> allExifItems)
+		private static ExtensionRolesHelper.ImageFormat GetFileSpecificTags(List<Directory> allExifItems)
 		{
 			if ( allExifItems.Any(p => p.Name == "JPEG") )
 				return ExtensionRolesHelper.ImageFormat.jpg;
@@ -273,7 +273,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			return ExtensionRolesHelper.ImageFormat.unknown;
 		}
 
-		public FileIndexItem.Rotation GetOrientationFromExifItem(Directory exifItem)
+		public static FileIndexItem.Rotation GetOrientationFromExifItem(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Orientation");
             if (tCounts < 1) return FileIndexItem.Rotation.DoNotChange;
@@ -298,7 +298,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             }
         }
 
-		private string GetSoftware(List<Directory> allExifItems)
+		private static string GetSoftware(List<Directory> allExifItems)
 		{
 			// [Exif IFD0] Software = 10.3.2
 			var exifIfd0Directory = allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault();
@@ -307,7 +307,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		}
 
 
-	    private string GetMakeModel(List<Directory> allExifItems, bool isMake)
+	    private static string GetMakeModel(List<Directory> allExifItems, bool isMake)
 	    {
 		    // [Exif IFD0] Make = SONY
 		    // [Exif IFD0] Model = SLT-A58
@@ -333,7 +333,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// </summary>
 	    /// <param name="exifItem"></param>
 	    /// <returns></returns>
-	    private string GetMakeLensModel(Directory exifItem)
+	    private static string GetMakeLensModel(Directory exifItem)
 	    {
 		    var lensModel = exifItem.Tags.FirstOrDefault(
 			    p => p.DirectoryName == "Exif SubIFD"
@@ -367,7 +367,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// </summary>
 	    /// <param name="exifItem">item</param>
 	    /// <returns></returns>
-	    public string GetXmpDataSubject(Directory exifItem) // 
+	    private static string GetXmpDataSubject(Directory exifItem) // 
 	    {
 		    if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
 			    return string.Empty;
@@ -383,7 +383,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    return HashSetHelper.HashSetToString(tagsList);
 	    }
 
-	    public string GetXmpData(Directory exifItem, string propertyPath)
+	    private static string GetXmpData(Directory exifItem, string propertyPath)
 	    {
 		    // for xmp notes
 		    if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
@@ -393,7 +393,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			    where property.Path == propertyPath select property.Value ).FirstOrDefault();
 	    }
 
-        public string GetObjectName (Directory exifItem)
+        public static string GetObjectName (Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Object Name");
             
@@ -407,7 +407,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         }
 
         
-        public string GetCaptionAbstract(Directory exifItem)
+        public static string GetCaptionAbstract(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Caption/Abstract");
 
@@ -420,7 +420,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return caption;
         }
         
-        public string GetExifKeywords(Directory exifItem)
+        public static string GetExifKeywords(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
             
@@ -437,7 +437,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return tags;
         }
 
-        private string GetColorClassString(MetadataExtractor.Directory exifItem)
+        private static string GetColorClassString(Directory exifItem)
         {
 	        var colorClassSting = string.Empty;
             var ratingCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
@@ -504,7 +504,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return null;
         }
 
-        internal DateTime ParseSubIfdDateTime(IEnumerable<Directory> allExifItems, IFormatProvider provider)
+        internal static DateTime ParseSubIfdDateTime(IEnumerable<Directory> allExifItems, IFormatProvider provider)
         {
 	        var pattern = "yyyy:MM:dd HH:mm:ss";
 
@@ -572,14 +572,14 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// </summary>
         /// <param name="allExifItems"></param>
         /// <returns></returns>
-        private double GetGeoLocationLatitude(List<Directory> allExifItems)
+        private static double GetGeoLocationLatitude(List<Directory> allExifItems)
         {
             var latitudeString = string.Empty;
             var latitudeRef = string.Empty;
             
-            foreach (var exifItem in allExifItems)
+            foreach (var exifItemTag in allExifItems.Select(p => p.Tags))
             {
-                var latitudeRefLocal = exifItem.Tags.FirstOrDefault(
+                var latitudeRefLocal = exifItemTag.FirstOrDefault(
                     p => p.DirectoryName == "GPS" 
                     && p.Name == "GPS Latitude Ref")?.Description;
                 
@@ -588,7 +588,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                     latitudeRef = latitudeRefLocal;
                 }
                 
-                var latitudeLocal = exifItem.Tags.FirstOrDefault(
+                var latitudeLocal = exifItemTag.FirstOrDefault(
                     p => p.DirectoryName == "GPS" 
                          && p.Name == "GPS Latitude")?.Description;
 
@@ -598,7 +598,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                     continue;
                 }
 
-                var locationQuickTime = exifItem.Tags.FirstOrDefault(
+                var locationQuickTime = exifItemTag.FirstOrDefault(
 	                p => p.DirectoryName == "QuickTime Metadata Header" 
 	                     && p.Name == "GPS Location")?.Description;
                 if ( locationQuickTime != null)
@@ -615,7 +615,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
         }
 
-        private double GetXmpGeoData(List<Directory> allExifItems, string propertyPath)
+        private static double GetXmpGeoData(List<Directory> allExifItems, string propertyPath)
         {
 	        var latitudeString = string.Empty;
 	        var latitudeRef = string.Empty;
@@ -637,7 +637,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return Math.Floor(latitudeDegreeMinutes * 10000000000) / 10000000000; 
         }
         
-        private double GetGeoLocationAltitude(List<Directory> allExifItems)
+        private static double GetGeoLocationAltitude(List<Directory> allExifItems)
         {
             //    [GPS] GPS Altitude Ref = Below sea level
             //    [GPS] GPS Altitude = 2 metres
@@ -682,7 +682,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return (int) altitude;
         }
 
-        private double GetXmpGeoAlt(List<Directory> allExifItems)
+        private static double GetXmpGeoAlt(List<Directory> allExifItems)
         {
 	        var altitudeRef = true;
 	        var altitude = 0d;
@@ -707,7 +707,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			        switch ( property.Path )
 			        {
 				        case "exif:GPSAltitude":
-					        altitude = new MathFraction().Fraction(property.Value);
+					        altitude = MathFraction.Fraction(property.Value);
 					        break;
 				        case "exif:GPSAltitudeRef":
 					        altitudeRef = property.Value == "1";
@@ -769,15 +769,26 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return GetXmpGeoData(allExifItems, "exif:GPSLongitude");
         }
 
-        private int GetImageWidthHeightMaxCount(string dirName, List<MetadataExtractor.Directory> allExifItems)
+        private static int GetImageWidthHeightMaxCount(string dirName, List<MetadataExtractor.Directory> allExifItems)
         {
             var maxCount =  6;
             if(dirName == "Exif SubIFD") maxCount = 30; // on header place 17&18
             if (allExifItems.Count <= 5) maxCount = allExifItems.Count;
             return maxCount;
         }
+
+        private static string GetImageWidthTypeName(string dirName,
+	        bool isWidth)
+        {
+	        var typeName = "Image Height";
+	        if(dirName == "QuickTime Track Header") typeName = "Height";
+                
+	        if (isWidth) typeName = "Image Width";
+	        if(isWidth && dirName == "QuickTime Track Header") typeName = "Width";
+	        return typeName;
+        }
             
-        public int GetImageWidthHeight(List<Directory> allExifItems, bool isWidth)
+        public static int GetImageWidthHeight(List<Directory> allExifItems, bool isWidth)
         {
             // The size lives normally in the first 5 headers
             // > "Exif IFD0" .dng
@@ -786,12 +797,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	            "QuickTime Track Header", "Exif IFD0", "Exif SubIFD"};
             foreach (var dirName in directoryNames)
             {
-                var typeName = "Image Height";
-                if(dirName == "QuickTime Track Header") typeName = "Height";
-                
-                if (isWidth) typeName = "Image Width";
-                if(isWidth && dirName == "QuickTime Track Header") typeName = "Width";
-
+	            var typeName = GetImageWidthTypeName(dirName,isWidth);
                 var maxCount = GetImageWidthHeightMaxCount(dirName, allExifItems);
                 
                 for (var i = 0; i < maxCount; i++)
@@ -805,7 +811,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return 0;
         }
 
-        private int GetImageSizeInsideLoop( Directory exifItem, string dirName, string typeName)
+        private static int GetImageSizeInsideLoop( Directory exifItem, string dirName, string typeName)
         {
 	        
 	        var ratingCountsJpeg =
@@ -835,7 +841,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// <param name="iptcName">City, State or Country</param>
         /// <param name="xmpPropertyPath">photoshop:State</param>
         /// <returns></returns>
-        public string GetLocationPlaces(Directory exifItem, string iptcName, string xmpPropertyPath)
+        private static string GetLocationPlaces(Directory exifItem, string iptcName, string xmpPropertyPath)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == iptcName);
             if ( tCounts < 1 )
@@ -853,7 +859,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// [Exif SubIFD] Focal Length
         /// </summary>
         /// <returns></returns>
-        public double GetFocalLength(Directory exifItem)
+        private static double GetFocalLength(Directory exifItem)
         {
 	        var focalLengthString = exifItem.Tags.FirstOrDefault(
 		        p => p.DirectoryName == "Exif SubIFD" 
@@ -863,7 +869,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        var focalLengthXmp = GetXmpData(exifItem, "exif:FocalLength");
 	        if (string.IsNullOrEmpty(focalLengthString) && !string.IsNullOrEmpty(focalLengthXmp))
 	        {
-		        return Math.Round(new MathFraction().Fraction(focalLengthXmp), 5);
+		        return Math.Round(MathFraction.Fraction(focalLengthXmp), 5);
 	        }
 	        
 	        if ( string.IsNullOrWhiteSpace(focalLengthString) ) return 0d;
@@ -876,8 +882,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return Math.Round(focalLength, 5);
         }
 
-        
-	    public double GetAperture(Directory exifItem)
+
+        private static double GetAperture(Directory exifItem)
 	    {
 		    var apertureString = exifItem.Tags.FirstOrDefault(p => 
 			    p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
@@ -892,7 +898,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    var fNumberXmp = GetXmpData(exifItem, "exif:FNumber");
 		    if (string.IsNullOrEmpty(apertureString) && !string.IsNullOrEmpty(fNumberXmp))
 		    {
-			    return new MathFraction().Fraction(fNumberXmp);
+			    return MathFraction.Fraction(fNumberXmp);
 		    }
 		    
 		    if(apertureString == null) return 0d; 
@@ -904,8 +910,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    return aperture;
 	    }
 	    
-	    // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
-	    public string GetShutterSpeedValue(Directory exifItem)
+	    /// <summary>
+	    /// [Exif SubIFD] Shutter Speed Value = 1/2403 sec
+	    /// </summary>
+	    /// <param name="exifItem">item to look in</param>
+	    /// <returns>value</returns>
+	    private static string GetShutterSpeedValue(Directory exifItem)
 	    {
 		    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => 
 			    p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
@@ -932,7 +942,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    return shutterSpeedString;
 	    }
 
-	    public int GetIsoSpeedValue(Directory exifItem)
+	    private static int GetIsoSpeedValue(Directory exifItem)
 	    {
 		    var isoSpeedString = exifItem.Tags.FirstOrDefault(p => 
 			    p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;

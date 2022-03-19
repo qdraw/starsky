@@ -36,7 +36,7 @@ namespace starsky.feature.import.Services
 		public async Task Importer(string[] args)
 		{
 			Console.WriteLine("run importer");
-			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
@@ -56,11 +56,11 @@ namespace starsky.feature.import.Services
 			}
 			
 			var importSettings = new ImportSettingsModel {
-					DeleteAfter = new ArgsHelper(_appSettings).GetMove(args),
-					RecursiveDirectory = new ArgsHelper().NeedRecursive(args),
+					DeleteAfter = ArgsHelper.GetMove(args),
+					RecursiveDirectory = ArgsHelper.NeedRecursive(args),
 					IndexMode = new ArgsHelper().GetIndexMode(args),
-					ColorClass = new ArgsHelper().GetColorClass(args),
-					ConsoleOutputMode = new ArgsHelper().GetConsoleOutputMode(args)
+					ColorClass = ArgsHelper.GetColorClass(args),
+					ConsoleOutputMode = ArgsHelper.GetConsoleOutputMode(args)
 				};
 
 			if ( _appSettings.IsVerbose() ) 

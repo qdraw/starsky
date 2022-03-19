@@ -78,14 +78,15 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns></returns>
-		public bool NeedVerbose(IReadOnlyList<string> args)
+		public static bool NeedVerbose(IReadOnlyList<string> args)
 		{
 			var needDebug = false;
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--verbose" || args[arg].ToLower() == "-v") && (arg + 1) != args.Count)
+				if ((args[arg].ToLower() == "--verbose" || args[arg].ToLower() == "-v") && (arg + 1) != args.Count 
+					&& bool.TryParse(args[arg + 1], out var needDebugParsed))
 				{
-					bool.TryParse(args[arg + 1], out needDebug);
+					needDebug = needDebugParsed;
 				}
 				if ((args[arg].ToLower() == "--verbose" || args[arg].ToLower() == "-v"))
 				{
@@ -443,7 +444,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">arg list</param>
 		/// <returns>path</returns>
-		private string GetUserInputPathFromArg(IReadOnlyList<string> args)
+		private static string GetUserInputPathFromArg(IReadOnlyList<string> args)
 		{
 			var path = string.Empty;
 			for (int arg = 0; arg < args.Count; arg++)
@@ -461,10 +462,10 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">arg list</param>
 		/// <returns>path</returns>
-		public string GetUserInputPassword(IReadOnlyList<string> args)
+		public static string GetUserInputPassword(IReadOnlyList<string> args)
 		{
 			var path = string.Empty;
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
 				if ((args[arg].ToLower() == "--password" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
 				{
@@ -479,16 +480,15 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">arg list</param>
 		/// <returns>path</returns>
-		public ConsoleOutputMode GetConsoleOutputMode(IReadOnlyList<string> args)
+		public static ConsoleOutputMode GetConsoleOutputMode(IReadOnlyList<string> args)
 		{
 			var outputMode = ConsoleOutputMode.Default;
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--output") && (arg + 1) != args.Count )
-				{
-					var outputModeItem = args[arg + 1];
-					Enum.TryParse<ConsoleOutputMode>(outputModeItem, true, out outputMode);				    
-				}
+				if ( ( args[arg].ToLower() != "--output" ) ||
+				     ( arg + 1 ) == args.Count ) continue;
+				var outputModeItem = args[arg + 1];
+				Enum.TryParse(outputModeItem, true, out outputMode);
 			}
 			return outputMode;
 		}
@@ -498,10 +498,10 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">arg list</param>
 		/// <returns>name</returns>
-		public string GetName(IReadOnlyList<string> args)
+		public static string GetName(IReadOnlyList<string> args)
 		{
 			var name = string.Empty;
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
 				if ((args[arg].ToLower() == "--name" || args[arg].ToLower() == "-n") && (arg + 1) != args.Count )
 				{
@@ -547,19 +547,19 @@ namespace starsky.foundation.platform.Helpers
 		/// Get --subpath from args
 		/// </summary>
 		/// <param name="args">args</param>
-		/// <returns>subpath string</returns>
-		public string GetSubpathFormArgs(IReadOnlyList<string> args)
+		/// <returns>subPath string</returns>
+		public static string GetSubPathFormArgs(IReadOnlyList<string> args)
 		{
-			var subpath = "/";
+			var subPath = "/";
 			
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
 				if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
 				{
-					subpath = args[arg + 1];
+					subPath = args[arg + 1];
 				}
 			}
-			return subpath;
+			return subPath;
 		}
 
 		/// <summary>
@@ -597,7 +597,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">input[]</param>
 		/// <returns>bool --path(true), false --subpath</returns>
-		public bool IsSubPathOrPath(IReadOnlyList<string> args)
+		public static bool IsSubPathOrPath(IReadOnlyList<string> args)
 		{
 			// To use only with -p or --path > current directory
 			if ( args.Any(arg => (arg.ToLower() == "--path" || arg.ToLower() == "-p")) )
@@ -624,7 +624,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns></returns>
 		public string SubPathOrPathValue(IReadOnlyList<string> args)
 		{
-			return IsSubPathOrPath(args) ? GetSubpathFormArgs(args) : GetPathFormArgs(args);
+			return IsSubPathOrPath(args) ? GetSubPathFormArgs(args) : GetPathFormArgs(args);
 		}
 	 
 		/// <summary>
@@ -674,7 +674,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">args input</param>
 		/// <returns>bool, true=move</returns>
-		public bool GetMove(IReadOnlyList<string> args)
+		public static bool GetMove(IReadOnlyList<string> args)
 		{
 			var getMove = false;
 			
@@ -700,7 +700,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns>bool</returns>
-		public bool GetAll(IReadOnlyList<string> args)
+		public static bool GetAll(IReadOnlyList<string> args)
 		{
 			// default false
 			var getAll = false;
@@ -725,7 +725,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns>bool</returns>
-		public bool NeedRecursive(IReadOnlyList<string> args)
+		public static bool NeedRecursive(IReadOnlyList<string> args)
 		{
 			bool needRecursive = false;
 			
@@ -764,7 +764,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns>number, but valid with colorClass</returns>
-		public int GetColorClass(IReadOnlyList<string> args)
+		public static int GetColorClass(IReadOnlyList<string> args)
 		{	
 			// --colorclass
 			var colorClass = -1;

@@ -44,7 +44,7 @@ namespace starsky.feature.metaupdate.Services
 
 				if ( detailView?.FileIndexItem == null )
 				{
-					_statusCodeHelper.ReturnExifStatusError(
+					StatusCodesHelper.ReturnExifStatusError(
 						new FileIndexItem(subPath),
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
@@ -55,7 +55,7 @@ namespace starsky.feature.metaupdate.Services
 					     .FilePath) ==
 				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
-					_statusCodeHelper.ReturnExifStatusError(
+					StatusCodesHelper.ReturnExifStatusError(
 						detailView.FileIndexItem,
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexResultsList);
@@ -66,7 +66,7 @@ namespace starsky.feature.metaupdate.Services
 				if ( _statusCodeHelper.IsReadOnlyStatus(detailView)
 				     == FileIndexItem.ExifStatus.ReadOnly )
 				{
-					_statusCodeHelper.ReturnExifStatusError(
+					StatusCodesHelper.ReturnExifStatusError(
 						detailView.FileIndexItem,
 						FileIndexItem.ExifStatus.ReadOnly,
 						fileIndexResultsList);
@@ -77,7 +77,7 @@ namespace starsky.feature.metaupdate.Services
 				if ( StatusCodesHelper.IsDeletedStatus(detailView)
 				     != FileIndexItem.ExifStatus.Deleted )
 				{
-					_statusCodeHelper.ReturnExifStatusError(
+					StatusCodesHelper.ReturnExifStatusError(
 						detailView.FileIndexItem,
 						FileIndexItem.ExifStatus.OperationNotSupported,
 						fileIndexResultsList);

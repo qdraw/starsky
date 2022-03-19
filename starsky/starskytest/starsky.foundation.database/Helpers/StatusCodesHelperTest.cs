@@ -103,7 +103,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.DirReadOnly;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
+			var statusBool = StatusCodesHelper.ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
@@ -115,7 +115,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.NotFoundNotInIndex;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
+			var statusBool = StatusCodesHelper.ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
@@ -127,7 +127,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.NotFoundSourceMissing;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
+			var statusBool = StatusCodesHelper.ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
@@ -138,7 +138,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
+			var statusBool = StatusCodesHelper.ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
