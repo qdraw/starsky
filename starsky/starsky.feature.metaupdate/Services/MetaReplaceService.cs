@@ -25,7 +25,6 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
-		private readonly StatusCodesHelper _statusCodeHelper;
 		private readonly IWebLogger _logger;
 
 		/// <summary>Replace meta content</summary>
@@ -38,7 +37,6 @@ namespace starsky.feature.metaupdate.Services
 			_query = query;
 			_appSettings = appSettings;
 			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_statusCodeHelper = new StatusCodesHelper(_appSettings);
 			_logger = logger;
 		}
 

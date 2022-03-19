@@ -6,7 +6,7 @@ namespace starsky.foundation.readmeta.Helpers
 	/// <summary>
 	/// @see: https://exiftool.org/TagNames/Sony.html
 	/// </summary>
-	public class SonyLensIdConverter
+	public static class SonyLensIdConverter
 	{
 
 		private static Dictionary<string, string> SonyIdDict =>
