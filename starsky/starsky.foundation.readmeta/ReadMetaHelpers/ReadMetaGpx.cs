@@ -9,7 +9,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Helpers;
-#nullable enable
 
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
@@ -31,7 +30,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        {
 		        return new FileIndexItem(subPath)
 		        {
-			        Title = readGpxFile.FirstOrDefault().Title,
+			        Title = readGpxFile.FirstOrDefault()?.Title,
 			        DateTime = readGpxFile.FirstOrDefault().DateTime,
 			        Latitude = readGpxFile.FirstOrDefault().Latitude,
 			        Longitude = readGpxFile.FirstOrDefault().Longitude,
@@ -52,29 +51,28 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         private static string GetTrkName(XmlDocument gpxDoc, XmlNamespaceManager namespaceManager)
         {
             XmlNodeList trkNodeList = gpxDoc.SelectNodes("//x:trk",  namespaceManager);
+            if ( trkNodeList == null ) return string.Empty;
             var trkName = new StringBuilder();
             foreach (XmlElement node in trkNodeList)
             {
                 foreach (XmlElement childNode in node.ChildNodes)
                 {
-                    if (childNode.Name == "name")
-                    {
-                        trkName.Append(childNode.InnerText);
-                        return trkName.ToString();
-                    }
+	                if ( childNode.Name != "name" ) continue;
+	                trkName.Append(childNode.InnerText);
+	                return trkName.ToString();
                 }
             }
             return string.Empty;
         }
 
 	    /// <summary>
-	    /// Read full gpx file, or return after trackpoint
+	    /// Read full gpx file, or return after trackPoint
 	    /// </summary>
 	    /// <param name="stream"></param>
 	    /// <param name="geoList"></param>
 	    /// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
 	    /// <returns></returns>
-	    public static List<GeoListItem> ReadGpxFile(Stream stream, List<GeoListItem>? geoList = null, int returnAfter = int.MaxValue)
+	    public static List<GeoListItem> ReadGpxFile(Stream stream, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
         {
             if (geoList == null) geoList = new List<GeoListItem>();
 
@@ -112,7 +110,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <param name="geoList">object to add</param>
 	    /// <param name="returnAfter">return after number of values; default return all</param>
 	    /// <returns></returns>
-	    private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem>? geoList = null, 
+	    private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem> geoList = null, 
 		    int returnAfter = int.MaxValue)
 	    {
 		    var gpxDoc = ParseXml(fileString);
@@ -121,6 +119,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			namespaceManager.AddNamespace("x", GpxXmlNameSpaceName);
             
             XmlNodeList nodeList = gpxDoc.SelectNodes("//x:trkpt", namespaceManager);
+            if ( nodeList == null ) return new List<GeoListItem>();
+            geoList ??= new List<GeoListItem>();
 
             var title = GetTrkName(gpxDoc, namespaceManager);
 
