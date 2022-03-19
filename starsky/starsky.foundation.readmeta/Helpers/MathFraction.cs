@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace starsky.foundation.readmeta.Helpers
 {
-	public class MathFraction
+	public static class MathFraction
 	{
 		/// <summary>
 		/// Get the output of a fraction string
@@ -10,7 +10,7 @@ namespace starsky.foundation.readmeta.Helpers
 		/// </summary>
 		/// <param name="value">1/8</param>
 		/// <returns></returns>
-		public double Fraction(string value)
+		public static double Fraction(string value)
 		{
 			var gpsAltitudeValues = value.Split("/".ToCharArray());
 			if(gpsAltitudeValues.Length != 2) return 0f;

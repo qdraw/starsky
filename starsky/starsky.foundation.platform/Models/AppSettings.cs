@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,6 +13,7 @@ using TimeZoneConverter;
 
 namespace starsky.foundation.platform.Models
 {
+	[SuppressMessage("ReSharper", "CA1822")]
 	public class AppSettings
 	{
 		public AppSettings()
@@ -837,7 +839,7 @@ namespace starsky.foundation.platform.Models
 			var databaseFileName = connectionString.Replace("Data Source=", "");
             
 			// Check if path is not absolute already
-			if (databaseFileName.Contains("/") || databaseFileName.Contains("\\")) return connectionString;
+			if (databaseFileName.Contains('/') || databaseFileName.Contains('\\')) return connectionString;
 
 			// Return if running in Microsoft.EntityFrameworkCore.Sqlite (location is now root folder)
 			if(baseDirectoryProject.Contains("entityframeworkcore")) return connectionString;

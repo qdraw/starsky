@@ -246,17 +246,17 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return ImageStabilisationType.Unknown;
         }
 
-        private string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)
+        private static string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)
         {
 	        // only if there is nothing yet
 	        if ( !string.IsNullOrEmpty(lensModel) ) return string.Empty;
 	        var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 	        var lensId = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagLensId);
 	        
-	        return string.IsNullOrEmpty(lensId) ? string.Empty : new SonyLensIdConverter().GetById(lensId);
+	        return string.IsNullOrEmpty(lensId) ? string.Empty : SonyLensIdConverter.GetById(lensId);
         }
 
-		private ExtensionRolesHelper.ImageFormat GetFileSpecificTags(List<Directory> allExifItems)
+		private static ExtensionRolesHelper.ImageFormat GetFileSpecificTags(List<Directory> allExifItems)
 		{
 			if ( allExifItems.Any(p => p.Name == "JPEG") )
 				return ExtensionRolesHelper.ImageFormat.jpg;
@@ -707,7 +707,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			        switch ( property.Path )
 			        {
 				        case "exif:GPSAltitude":
-					        altitude = new MathFraction().Fraction(property.Value);
+					        altitude = MathFraction.Fraction(property.Value);
 					        break;
 				        case "exif:GPSAltitudeRef":
 					        altitudeRef = property.Value == "1";
@@ -863,7 +863,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        var focalLengthXmp = GetXmpData(exifItem, "exif:FocalLength");
 	        if (string.IsNullOrEmpty(focalLengthString) && !string.IsNullOrEmpty(focalLengthXmp))
 	        {
-		        return Math.Round(new MathFraction().Fraction(focalLengthXmp), 5);
+		        return Math.Round(MathFraction.Fraction(focalLengthXmp), 5);
 	        }
 	        
 	        if ( string.IsNullOrWhiteSpace(focalLengthString) ) return 0d;
@@ -892,7 +892,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    var fNumberXmp = GetXmpData(exifItem, "exif:FNumber");
 		    if (string.IsNullOrEmpty(apertureString) && !string.IsNullOrEmpty(fNumberXmp))
 		    {
-			    return new MathFraction().Fraction(fNumberXmp);
+			    return MathFraction.Fraction(fNumberXmp);
 		    }
 		    
 		    if(apertureString == null) return 0d; 

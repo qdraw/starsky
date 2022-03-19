@@ -9,7 +9,7 @@ namespace starsky.foundation.readmeta.Helpers
 	public class SonyLensIdConverter
 	{
 
-		private Dictionary<string, string> SonyIdDict =>
+		private static Dictionary<string, string> SonyIdDict =>
 			new Dictionary<string, string>
 			{
 				{"0","Minolta AF 28-85mm F3.5-4.5 New"}, // # New added (ref 13/18)
@@ -304,7 +304,7 @@ namespace starsky.foundation.readmeta.Helpers
 				{"65535","E-Mount, T-Mount, Other Lens or no lens"}, // #JD/JR
 			};
 
-		public string GetById(string id)
+		public static string GetById(string id)
 		{
 			var idKeyValue = SonyIdDict.FirstOrDefault(p => p.Key == id);
 			return idKeyValue.Value;
