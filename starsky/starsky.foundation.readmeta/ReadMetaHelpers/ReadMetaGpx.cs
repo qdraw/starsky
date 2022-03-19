@@ -48,9 +48,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        
         }
 
-        private string GetTrkName(XmlDocument gpxDoc, XmlNamespaceManager namespaceManager)
+        private static string GetTrkName(XmlDocument gpxDoc, XmlNamespaceManager namespaceManager)
         {
-            
             XmlNodeList trkNodeList = gpxDoc.SelectNodes("//x:trk",  namespaceManager);
             var trkName = new StringBuilder();
             foreach (XmlElement node in trkNodeList)

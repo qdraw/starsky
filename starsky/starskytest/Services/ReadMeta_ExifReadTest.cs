@@ -242,7 +242,7 @@ namespace starskytest.Services
 			container.Add(dir2);
 			var provider = CultureInfo.InvariantCulture;
 
-			var result = new ReadMetaExif(null).ParseSubIfdDateTime(container, provider);
+			var result = ReadMetaExif.ParseSubIfdDateTime(container, provider);
 			Assert.AreEqual(new DateTime(2022,02,02,20,22,02),result);
 		}
 		
@@ -260,7 +260,7 @@ namespace starskytest.Services
 			container.Add(dir2);
 			var provider = CultureInfo.InvariantCulture;
 
-			var result = new ReadMetaExif(null).ParseSubIfdDateTime(container, provider);
+			var result = ReadMetaExif.ParseSubIfdDateTime(container, provider);
 			Assert.AreEqual(new DateTime(2022,02,02,20,22,02),result);
 		}
 		
@@ -276,7 +276,7 @@ namespace starskytest.Services
 			
 			var provider = CultureInfo.InvariantCulture;
 
-			var result = new ReadMetaExif(null).ParseSubIfdDateTime(container, provider);
+			var result = ReadMetaExif.ParseSubIfdDateTime(container, provider);
 			Assert.AreEqual(new DateTime(),result);
 		}
 		
@@ -289,7 +289,7 @@ namespace starskytest.Services
 			
 			var provider = CultureInfo.InvariantCulture;
 
-			var result = new ReadMetaExif(null).ParseSubIfdDateTime(container, provider);
+			var result = ReadMetaExif.ParseSubIfdDateTime(container, provider);
 			Assert.AreEqual(new DateTime(),result);
 		}
 

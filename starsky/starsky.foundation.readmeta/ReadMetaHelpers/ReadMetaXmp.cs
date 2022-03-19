@@ -72,7 +72,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// <param name="property">IXmpPropertyInfo read from string</param>
         /// <param name="xmpName">xmpName, for example dc:subject[1]</param>
         /// <returns>value or null</returns>
-        private string GetNullNameSpace(IXmpPropertyInfo property, string xmpName)
+        private static string GetNullNameSpace(IXmpPropertyInfo property, string xmpName)
         {
             if (property.Path == xmpName && !string.IsNullOrEmpty(property.Value) 
                                                      && string.IsNullOrEmpty(property.Namespace) )
