@@ -393,7 +393,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			    where property.Path == propertyPath select property.Value ).FirstOrDefault();
 	    }
 
-        public string GetObjectName (Directory exifItem)
+        public static string GetObjectName (Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Object Name");
             
@@ -407,7 +407,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         }
 
         
-        public string GetCaptionAbstract(Directory exifItem)
+        public static string GetCaptionAbstract(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Caption/Abstract");
 
@@ -420,7 +420,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return caption;
         }
         
-        public string GetExifKeywords(Directory exifItem)
+        public static string GetExifKeywords(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
             
@@ -437,7 +437,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return tags;
         }
 
-        private string GetColorClassString(MetadataExtractor.Directory exifItem)
+        private static string GetColorClassString(Directory exifItem)
         {
 	        var colorClassSting = string.Empty;
             var ratingCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
@@ -572,7 +572,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// </summary>
         /// <param name="allExifItems"></param>
         /// <returns></returns>
-        private double GetGeoLocationLatitude(List<Directory> allExifItems)
+        private static double GetGeoLocationLatitude(List<Directory> allExifItems)
         {
             var latitudeString = string.Empty;
             var latitudeRef = string.Empty;
@@ -637,7 +637,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return Math.Floor(latitudeDegreeMinutes * 10000000000) / 10000000000; 
         }
         
-        private double GetGeoLocationAltitude(List<Directory> allExifItems)
+        private static double GetGeoLocationAltitude(List<Directory> allExifItems)
         {
             //    [GPS] GPS Altitude Ref = Below sea level
             //    [GPS] GPS Altitude = 2 metres
@@ -788,7 +788,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return typeName;
         }
             
-        public int GetImageWidthHeight(List<Directory> allExifItems, bool isWidth)
+        public static int GetImageWidthHeight(List<Directory> allExifItems, bool isWidth)
         {
             // The size lives normally in the first 5 headers
             // > "Exif IFD0" .dng

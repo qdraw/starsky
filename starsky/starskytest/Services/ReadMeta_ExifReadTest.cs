@@ -44,7 +44,7 @@ namespace starskytest.Services
 		[ExcludeFromCoverage]
 		public void ExifRead_GetObjectNameNull()
 		{
-			var t = new ReadMetaExif(null).GetObjectName(new MockDirectory(null));
+			var t = ReadMetaExif.GetObjectName(new MockDirectory(null));
 			Assert.AreEqual( string.Empty,t);
 		}
 
@@ -54,7 +54,7 @@ namespace starskytest.Services
 		{
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagObjectName, "test" );
-			var t = new ReadMetaExif(null).GetObjectName(dir);
+			var t = ReadMetaExif.GetObjectName(dir);
 			Assert.AreEqual("test",t);
 		}
 
@@ -64,7 +64,7 @@ namespace starskytest.Services
 		{
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagCaption, "test123");
-			var t = new ReadMetaExif(null).GetCaptionAbstract(dir);
+			var t = ReadMetaExif.GetCaptionAbstract(dir);
 			Assert.AreEqual("test123", t);
 		}
 		 
@@ -74,7 +74,7 @@ namespace starskytest.Services
 		{
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagKeywords, "test123");
-			var t = new ReadMetaExif(null).GetExifKeywords(dir);
+			var t = ReadMetaExif.GetExifKeywords(dir);
 
 			Assert.AreEqual("test123", t);
 		}
@@ -85,7 +85,7 @@ namespace starskytest.Services
 		{
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagKeywords, "test123;test12");
-			var t = new ReadMetaExif(null).GetExifKeywords(dir);
+			var t = ReadMetaExif.GetExifKeywords(dir);
 			Assert.AreEqual("test123, test12",t); //with space
 		}
 		 
@@ -400,10 +400,10 @@ namespace starskytest.Services
 		public void ExifRead_GetImageWidthHeight_returnNothing()
 		{
 			var directory = new List<Directory> {BuildDirectory(new List<object>())};
-			var returnNothing = new ReadMetaExif(null).GetImageWidthHeight(directory,true);
+			var returnNothing = ReadMetaExif.GetImageWidthHeight(directory,true);
 			Assert.AreEqual(0,returnNothing);
 		     
-			var returnNothingFalse = new ReadMetaExif(null).GetImageWidthHeight(directory,false);
+			var returnNothingFalse = ReadMetaExif.GetImageWidthHeight(directory,false);
 			Assert.AreEqual(0,returnNothingFalse);
 		}
 
