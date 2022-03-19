@@ -841,7 +841,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// <param name="iptcName">City, State or Country</param>
         /// <param name="xmpPropertyPath">photoshop:State</param>
         /// <returns></returns>
-        public string GetLocationPlaces(Directory exifItem, string iptcName, string xmpPropertyPath)
+        private static string GetLocationPlaces(Directory exifItem, string iptcName, string xmpPropertyPath)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == iptcName);
             if ( tCounts < 1 )
@@ -859,7 +859,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// [Exif SubIFD] Focal Length
         /// </summary>
         /// <returns></returns>
-        public double GetFocalLength(Directory exifItem)
+        private static double GetFocalLength(Directory exifItem)
         {
 	        var focalLengthString = exifItem.Tags.FirstOrDefault(
 		        p => p.DirectoryName == "Exif SubIFD" 
@@ -882,8 +882,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return Math.Round(focalLength, 5);
         }
 
-        
-	    public double GetAperture(Directory exifItem)
+
+        private static double GetAperture(Directory exifItem)
 	    {
 		    var apertureString = exifItem.Tags.FirstOrDefault(p => 
 			    p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
@@ -910,8 +910,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    return aperture;
 	    }
 	    
-	    // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
-	    public string GetShutterSpeedValue(Directory exifItem)
+	    /// <summary>
+	    /// [Exif SubIFD] Shutter Speed Value = 1/2403 sec
+	    /// </summary>
+	    /// <param name="exifItem">item to look in</param>
+	    /// <returns>value</returns>
+	    private static string GetShutterSpeedValue(Directory exifItem)
 	    {
 		    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => 
 			    p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
@@ -938,7 +942,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    return shutterSpeedString;
 	    }
 
-	    public int GetIsoSpeedValue(Directory exifItem)
+	    private static int GetIsoSpeedValue(Directory exifItem)
 	    {
 		    var isoSpeedString = exifItem.Tags.FirstOrDefault(p => 
 			    p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;

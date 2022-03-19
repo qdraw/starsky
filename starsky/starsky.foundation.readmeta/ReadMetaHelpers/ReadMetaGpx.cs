@@ -99,7 +99,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <param name="geoList">object to add</param>
 	    /// <param name="returnAfter">return after number of values; default return all</param>
 	    /// <returns></returns>
-	    private List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem> geoList = null, 
+	    private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem> geoList = null, 
 		    int returnAfter = int.MaxValue)
 	    {
 		    XmlDocument gpxDoc = new XmlDocument();
