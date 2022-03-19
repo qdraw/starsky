@@ -93,6 +93,18 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         }
 
 	    /// <summary>
+	    /// Parse XML as XmlDocument
+	    /// </summary>
+	    /// <param name="fileString">input as string</param>
+	    /// <returns>parsed xml document</returns>
+	    internal static XmlDocument ParseXml(string fileString)
+	    {
+		    XmlDocument gpxDoc = new XmlDocument();
+		    gpxDoc.LoadXml(fileString);
+		    return gpxDoc;
+	    }
+
+	    /// <summary>
 	    /// Parse the gpx string
 	    /// </summary>
 	    /// <param name="fileString">string with xml</param>
@@ -102,9 +114,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem> geoList = null, 
 		    int returnAfter = int.MaxValue)
 	    {
-		    XmlDocument gpxDoc = new XmlDocument();
-            
-            gpxDoc.LoadXml(fileString);
+		    var gpxDoc = ParseXml(fileString);
             
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
 			namespaceManager.AddNamespace("x", GpxXmlNameSpaceName);

@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Helpers;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.Services
@@ -84,6 +85,18 @@ namespace starskytest.Services
 			Assert.AreEqual(expectDateTime,returnItem.FirstOrDefault().DateTime);
 			Assert.AreEqual("_20180905-fietsen-oss",returnItem.FirstOrDefault().Title);
 			Assert.AreEqual(7.263,returnItem.FirstOrDefault().Altitude,0.001);
+		}
+
+		[TestMethod]
+		public void ParseXml_XXETest()
+		{
+			var xxeExample = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+				"<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>" +
+				"<stockCheck><productId>&xxe;</productId></stockCheck>";
+
+			var returnItem = ReadMetaGpx.ParseXml(xxeExample);
+
+			Assert.AreEqual(string.Empty, returnItem.ChildNodes[1].InnerText);
 		}
 
 	}
