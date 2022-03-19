@@ -115,7 +115,7 @@ namespace starsky.foundation.database.Query
 		{
 			if ( _cache == null || cacheTime == null || result == null )
 			{
-				_logger.LogInformation("SetGetObjectByFilePathCache not used");
+				_logger.LogDebug("SetGetObjectByFilePathCache not used");
 				return;
 			}
 			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
