@@ -86,10 +86,12 @@ ARG TEST=true
 
 WORKDIR /app
 
-RUN if [ "$TEST" = "true" && "$BUILDPLATFORM" == "$TARGETPLATFORM" ]; then \
-        echo $TEST ; \
+RUN if [ "$TEST" = "true" ]; then \
         mkdir -p "/testresults" ;\
-        dotnet test -c release --results-directory /testresults --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage" --settings build.vstest.runsettings starskytest/starskytest.csproj ; \
+        if [ "$BUILDPLATFORM" = "$TARGETPLATFORM" ]; then \
+          echo $TEST $BUILDPLATFORM $TARGETPLATFORM ; \
+          dotnet test -c release --results-directory /testresults --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage" --settings build.vstest.runsettings starskytest/starskytest.csproj ; \
+        fi ;\
         touch "/testresults/test.enabled" ;\
     else \
       mkdir -p "/testresults" ;\
