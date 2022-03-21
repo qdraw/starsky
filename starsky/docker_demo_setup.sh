@@ -99,21 +99,22 @@ function  end_popd {
 
 function geoDeps {
     echo "download dependencies; exiftool and geo data"  
+    mkdir -p $TEMP_FOLDER
     starskygeocli=($(find $SOURCE_DIR -type f -name "starskygeocli.csproj"))
     dotnet run --project ${starskygeocli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --tempfolder $TEMP_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -h -v
 
-    if [[ ! -d "$THUMBNAILTEMPFOLDER/exiftool-unix" ]]
+    if [[ ! -d "$TEMP_FOLDER/exiftool-unix" ]]
     then
-        echo  "::warning:: $THUMBNAILTEMPFOLDER/exiftool-unix does not exists on your filesystem."
+        echo  "::warning:: $TEMP_FOLDER/exiftool-unix does not exists on your filesystem."
     fi
-    if [[ ! -f "$THUMBNAILTEMPFOLDER/cities1000.zip" ]]
+    if [[ ! -f "$TEMP_FOLDER/cities1000.zip" ]]
     then
-        echo  "::warning:: $THUMBNAILTEMPFOLDER/cities1000.zip does not exists on your filesystem."
+        echo  "::warning:: $TEMP_FOLDER/cities1000.zip does not exists on your filesystem."
     fi
     
-    if [[ ! -f "$THUMBNAILTEMPFOLDER/admin1CodesASCII.txt" ]]
+    if [[ ! -f "$TEMP_FOLDER/admin1CodesASCII.txt" ]]
     then
-        echo  "::warning:: $THUMBNAILTEMPFOLDER/admin1CodesASCII.txt does not exists on your filesystem."
+        echo  "::warning:: $TEMP_FOLDER/admin1CodesASCII.txt does not exists on your filesystem."
     fi
     echo "end download"
 }
