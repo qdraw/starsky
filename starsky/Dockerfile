@@ -4,6 +4,12 @@
 # cd /root_of_repo
 # docker buildx build --push starsky --tag qdraw/starsky:latest --platform linux/arm64
 
+# docker compose build --progress=plain
+# DEBUG Dockerfile:
+# export DOCKER_BUILDKIT=0
+# cd /root_of_repo
+# docker build -f starsky/Dockerfile . --no-cache --build-arg TEST=false
+
 # Stage 1 Front-end
 # # docker buildx imagetools inspect node:16-alpine
 FROM --platform=$BUILDPLATFORM node:16-alpine as react-build
@@ -36,7 +42,6 @@ COPY . ./
 ARG ISDEMO=""
 ENV E_ISDEMO=$ISDEMO
 RUN chmod +x docker_demo_setup.sh 
-RUN ls
 RUN ./docker_demo_setup.sh
 
 WORKDIR /app/starsky
@@ -62,13 +67,34 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     else \
        dotnet publish -c release -o out  ; \
     fi
+ 
+# no alpine build since there is no support for multi-arch
+# docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
+FROM --platform=$BUILDPLATFORM build-env AS test
+ARG BUILDPLATFORM
+ARG TEST=true
 
+WORKDIR /app
+
+RUN if [ "$TEST" = "true" ]; then \
+        echo $TEST ; \
+        mkdir -p "/testresults" ;\
+        dotnet test -c release --results-directory /testresults --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage" --settings build.vstest.runsettings starskytest/starskytest.csproj ; \
+        touch "/testresults/test.enabled" ;\
+    else \
+      mkdir -p "/testresults" ;\
+      touch "/testresults/test.disabled" ;\
+    fi
+    
 # build runtime image (multiarch)
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:3.1
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS release
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .
 COPY --from=react-build /app/starsky/clientapp ./clientapp
+
+# Makes sure the test stage is run when using docker buildkit
+COPY --from=test /testresults /tmp
 
 ENV ASPNETCORE_Environment=Production
 

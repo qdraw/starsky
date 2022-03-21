@@ -346,7 +346,7 @@ Task("TestNetCore")
                           .Append("--nologo")
                           .Append("--blame") // for debug
                           .Append("-v=normal") // v=normal is to show test names
-                          .Append("--logger trx")
+                          .Append("--logger \"trx;LogFileName=test_results.trx\"")
                           .Append("--collect:\"XPlat Code Coverage\"")
                           .Append("--settings build.vstest.runsettings")
                 });
