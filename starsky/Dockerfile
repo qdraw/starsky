@@ -86,7 +86,7 @@ ARG TEST=true
 
 WORKDIR /app
 
-RUN if [ "$TEST" = "true" ]; then \
+RUN if [ "$TEST" = "true" && "$BUILDPLATFORM" == "$TARGETPLATFORM" ]; then \
         echo $TEST ; \
         mkdir -p "/testresults" ;\
         dotnet test -c release --results-directory /testresults --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage" --settings build.vstest.runsettings starskytest/starskytest.csproj ; \
