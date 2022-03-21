@@ -27,6 +27,7 @@ namespace starsky.foundation.platform.Helpers
 		// --connection -c
 		// --basepath -b
 		// --thumbnailtempfolder -f
+		// --tempfolder -tf
 		// --exiftoolpath -e
 		// --help -h
 		// --index -i
@@ -101,7 +102,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		public readonly IEnumerable<string> ShortNameList = new List<string>
 		{
-			"-d","-c","-b","-f","-e","-u","-g","-x"
+			"-d","-c","-b","-f","-e","-u","-g","-x","-tf"
 		}.AsReadOnly();
 
 		/// <summary>
@@ -110,7 +111,7 @@ namespace starsky.foundation.platform.Helpers
 		public readonly IEnumerable<string> LongNameList = new List<string>
 		{
 			"--databasetype","--connection","--basepath","--thumbnailtempfolder",
-			"--exiftoolpath","--structure","--subpathrelative", "--clean"
+			"--exiftoolpath","--structure","--subpathrelative", "--clean", "--tempfolder"
 		}
 		.AsReadOnly();
 
@@ -120,7 +121,7 @@ namespace starsky.foundation.platform.Helpers
 		public readonly IEnumerable<string> EnvNameList = new List<string>
 		{
 			"app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder",
-			"app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__ExifToolImportXmpCreate"
+			"app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__ExifToolImportXmpCreate", "app__TempFolder"
 		}.AsReadOnly();
 
 		/// <summary>

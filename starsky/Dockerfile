@@ -41,8 +41,17 @@ COPY . ./
 # insert demo user and content
 ARG ISDEMO=""
 ENV E_ISDEMO=$ISDEMO
-RUN chmod +x docker_demo_setup.sh 
-RUN ./docker_demo_setup.sh
+
+RUN if [ "$ISDEMO" != "" ]; then \
+        chmod +x docker_demo_setup.sh ;\
+        ./docker_demo_setup.sh ;\
+    else \
+        # it should cache faster
+        GEO_CLI_PATH="/app/starskygeocli/starskygeocli.csproj" ;\
+        TEMP_FOLDER="/app/out/temp" ;\
+        mkdir -p $TEMP_FOLDER ;\
+        dotnet run --project $GEO_CLI_PATH --configuration Release -- --tempfolder $TEMP_FOLDER -h -v ;\
+    fi
 
 WORKDIR /app/starsky
 
