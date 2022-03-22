@@ -36,6 +36,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      cache_from:
+        - qdraw/starsky:latest
       args:
         - I__SDEMO=true # arg name is ISDEMO
     environment:
