@@ -13,6 +13,7 @@ if [[ ! $(cat /proc/1/sched | head -n 1 | grep init) ]]; then {
 SOURCE_DIR=/app
 APPLICATION_DIR=/app/starsky/out/
 STORAGE_FOLDER=/app/starsky/out/storageFolder
+TEMP_FOLDER="/app/out/temp"
 THUMBNAILTEMPFOLDER=/app/starsky/out/thumbnailTempFolder
 
 function makeDemoUser {
@@ -78,12 +79,12 @@ function getSamplePhotos {
   curl https://media.qdraw.nl/log/gers-in-de-franse-alpen-2020/1000/20200822_164141_dsc03321_e_kl1k.jpg --output $STORAGE_FOLDER"/gers/20200822_164141_dsc03321_e_kl1k.jpg"
 
   starskysynchronizecli=($(find $SOURCE_DIR -type f -name "starskysynchronizecli.csproj"))
-  dotnet run --project ${starskysynchronizecli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --connection "Data Source="$APPLICATION_DIR"/app__data.db"
+  dotnet run --project ${starskysynchronizecli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --tempfolder $TEMP_FOLDER --connection "Data Source="$APPLICATION_DIR"/app__data.db"
 
   echo "run thumbnailer"
   mkdir -p $THUMBNAILTEMPFOLDER
   starskythumbnailcli=($(find $SOURCE_DIR -type f -name "starskythumbnailcli.csproj"))
-  dotnet run --project ${starskythumbnailcli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -t true -v
+  dotnet run --project ${starskythumbnailcli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --tempfolder $TEMP_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -t true -v
 }
 
 function start_pushd {
@@ -98,21 +99,22 @@ function  end_popd {
 
 function geoDeps {
     echo "download dependencies; exiftool and geo data"  
+    mkdir -p $TEMP_FOLDER
     starskygeocli=($(find $SOURCE_DIR -type f -name "starskygeocli.csproj"))
-    dotnet run --project ${starskygeocli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -h -v
+    dotnet run --project ${starskygeocli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --tempfolder $TEMP_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -h -v
 
-    if [[ ! -d "$THUMBNAILTEMPFOLDER/exiftool-unix" ]]
+    if [[ ! -d "$TEMP_FOLDER/exiftool-unix" ]]
     then
-        echo  "::warning:: $THUMBNAILTEMPFOLDER/exiftool-unix does not exists on your filesystem."
+        echo  "::warning:: $TEMP_FOLDER/exiftool-unix does not exists on your filesystem."
     fi
-    if [[ ! -f "$THUMBNAILTEMPFOLDER/cities1000.zip" ]]
+    if [[ ! -f "$TEMP_FOLDER/cities1000.zip" ]]
     then
-        echo  "::warning:: $THUMBNAILTEMPFOLDER/cities1000.zip does not exists on your filesystem."
+        echo  "::warning:: $TEMP_FOLDER/cities1000.zip does not exists on your filesystem."
     fi
     
-    if [[ ! -f "$THUMBNAILTEMPFOLDER/admin1CodesASCII.txt" ]]
+    if [[ ! -f "$TEMP_FOLDER/admin1CodesASCII.txt" ]]
     then
-        echo  "::warning:: $THUMBNAILTEMPFOLDER/admin1CodesASCII.txt does not exists on your filesystem."
+        echo  "::warning:: $TEMP_FOLDER/admin1CodesASCII.txt does not exists on your filesystem."
     fi
     echo "end download"
 }
