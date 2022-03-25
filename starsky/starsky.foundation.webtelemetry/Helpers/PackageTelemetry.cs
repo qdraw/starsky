@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Attributes;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.webtelemetry.Helpers
@@ -18,11 +19,13 @@ namespace starsky.foundation.webtelemetry.Helpers
 	{
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly AppSettings _appSettings;
+		private readonly IWebLogger _logger;
 
-		public PackageTelemetry(IHttpClientHelper httpClientHelper, AppSettings appSettings)
+		public PackageTelemetry(IHttpClientHelper httpClientHelper, AppSettings appSettings, IWebLogger logger)
 		{
 			_httpClientHelper = httpClientHelper;
 			_appSettings = appSettings;
+			_logger = logger;
 		}
 
 		internal const string PackageTelemetryUrl = "qdraw.nl/special/starsky/telemetry/index.php";
@@ -53,9 +56,6 @@ namespace starsky.foundation.webtelemetry.Helpers
 			                      Environment.GetEnvironmentVariable(
 				                      "DOTNET_RUNNING_IN_CONTAINER") == "true";
 			
-			var buildDate = DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly()).ToString(
-				new CultureInfo("nl-NL"));
-			
 			var data = new List<KeyValuePair<string, string>>
 			{
 				new KeyValuePair<string, string>("UTCTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
@@ -68,7 +68,6 @@ namespace starsky.foundation.webtelemetry.Helpers
 				new KeyValuePair<string, string>("OSPlatform", currentPlatform.ToString()),
 				new KeyValuePair<string, string>("DockerContainer", dockerContainer.ToString()),
 				new KeyValuePair<string, string>("CurrentCulture", CultureInfo.CurrentCulture.ThreeLetterISOLanguageName),
-				new KeyValuePair<string, string>("BuildDate", buildDate),
 				new KeyValuePair<string, string>("AspNetCoreEnvironment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")),
 			};
 			return data;
@@ -90,6 +89,11 @@ namespace starsky.foundation.webtelemetry.Helpers
 				var propValue = GetPropValue(_appSettings.CloneToDisplay(),
 					property.Name);
 				var value = propValue?.ToString();
+
+				if ( propValue?.GetType() == typeof(DateTime) )
+				{
+					value = ((DateTime)propValue).ToString(CultureInfo.InvariantCulture);
+				}
 				
 				if (propValue?.GetType() == typeof(List<string>) || 
 				    propValue?.GetType() == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
@@ -106,6 +110,12 @@ namespace starsky.foundation.webtelemetry.Helpers
 		{
 			return JsonSerializer.Serialize(propValue);
 		}
+
+		private async Task<bool> PostData(HttpContent formUrlEncodedContent)
+		{
+			return (await _httpClientHelper.PostString("https://" + PackageTelemetryUrl,formUrlEncodedContent, 
+				_appSettings.EnablePackageTelemetryDebug == true)).Key;
+		}
 		
 		public async Task<bool?> PackageTelemetrySend()
 		{
@@ -114,10 +124,20 @@ namespace starsky.foundation.webtelemetry.Helpers
 				return null;
 			}
 			
-			var data = GetSystemData();
-			data = AddAppSettingsData(data);
-			var formEncodedData = new FormUrlEncodedContent(data);
-			return (await _httpClientHelper.PostString("https://" + PackageTelemetryUrl,formEncodedData, false)).Key;
+			var telemetryDataItems = GetSystemData();
+			telemetryDataItems = AddAppSettingsData(telemetryDataItems);
+			var formEncodedData = new FormUrlEncodedContent(telemetryDataItems);
+
+			if ( _appSettings.EnablePackageTelemetryDebug != true )
+				return await PostData(formEncodedData);
+			
+			foreach ( var (key, value) in telemetryDataItems )
+			{
+				_logger.LogInformation($"[EnablePackageTelemetryDebug] {key} - {value}");
+			}
+			return null;
+
+
 		}
 	}
 }
