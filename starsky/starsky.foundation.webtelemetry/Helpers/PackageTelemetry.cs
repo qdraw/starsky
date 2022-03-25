@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Attributes;
 using starsky.foundation.platform.Helpers;
@@ -20,12 +21,14 @@ namespace starsky.foundation.webtelemetry.Helpers
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly AppSettings _appSettings;
 		private readonly IWebLogger _logger;
+		private readonly IQuery _query;
 
-		public PackageTelemetry(IHttpClientHelper httpClientHelper, AppSettings appSettings, IWebLogger logger)
+		public PackageTelemetry(IHttpClientHelper httpClientHelper, AppSettings appSettings, IWebLogger logger, IQuery query)
 		{
 			_httpClientHelper = httpClientHelper;
 			_appSettings = appSettings;
 			_logger = logger;
+			_query = query;
 		}
 
 		internal const string PackageTelemetryUrl = "qdraw.nl/special/starsky/telemetry/index.php";
@@ -55,7 +58,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			var dockerContainer = currentPlatform == OSPlatform.Linux &&
 			                      Environment.GetEnvironmentVariable(
 				                      "DOTNET_RUNNING_IN_CONTAINER") == "true";
-			
+
 			var data = new List<KeyValuePair<string, string>>
 			{
 				new KeyValuePair<string, string>("UTCTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
@@ -72,7 +75,34 @@ namespace starsky.foundation.webtelemetry.Helpers
 			};
 			return data;
 		}
-		
+
+		internal async Task<List<KeyValuePair<string, string>>> AddDatabaseData(List<KeyValuePair<string, string>> data)
+		{
+			var fileIndexItemTotalCount = -1;
+			var fileIndexItemDirectoryCount = -1;
+			var fileIndexItemCount = -1;
+			
+			try
+			{
+				fileIndexItemTotalCount = await _query.CountAsync();
+				fileIndexItemDirectoryCount = await _query.CountAsync(p => p.IsDirectory == true);
+				fileIndexItemCount = await _query.CountAsync(p => p.IsDirectory != true);
+			}
+			catch ( Exception )
+			{
+				// ignored nothing here
+			}
+
+			data.AddRange(new List<KeyValuePair<string, string>>
+			{
+				new KeyValuePair<string, string>("FileIndexItemTotalCount",fileIndexItemTotalCount.ToString()),
+				new KeyValuePair<string, string>("FileIndexItemDirectoryCount",fileIndexItemDirectoryCount.ToString()),
+				new KeyValuePair<string, string>("FileIndexItemCount",fileIndexItemCount.ToString())
+			});
+			
+			return data;
+		}
+
 		internal List<KeyValuePair<string, string>> AddAppSettingsData( List<KeyValuePair<string, string>> data)
 		{
 			var type = typeof(AppSettings);
@@ -126,6 +156,8 @@ namespace starsky.foundation.webtelemetry.Helpers
 			
 			var telemetryDataItems = GetSystemData();
 			telemetryDataItems = AddAppSettingsData(telemetryDataItems);
+			telemetryDataItems = await AddDatabaseData(telemetryDataItems);
+
 			var formEncodedData = new FormUrlEncodedContent(telemetryDataItems);
 
 			if ( _appSettings.EnablePackageTelemetryDebug != true )
