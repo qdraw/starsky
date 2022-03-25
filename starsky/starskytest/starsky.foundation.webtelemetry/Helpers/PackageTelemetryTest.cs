@@ -95,6 +95,18 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			Assert.AreEqual(null,result);
 		}
 
+		private class TestClass
+		{
+			public bool Test { get; set; } = true;
+		}
+		
+		[TestMethod]
+		public void GetPropValue_Object_TestClass()
+		{
+			var result = PackageTelemetry.GetPropValue(new TestClass(), "Test");
+			Assert.AreEqual(true,result);
+		}
+
 		private class PropValueTestClass
 		{
 			public string Test { get; set; }
