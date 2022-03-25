@@ -116,8 +116,8 @@ namespace starsky.foundation.database.Helpers
 			if ( _logger != null && _appSettings.IsVerbose() )
 			{
 				_logger.LogInformation($"Database connection: {_appSettings.DatabaseConnection}");
+				_logger?.LogInformation($"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}" );
 			}
-			_logger?.LogInformation($"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}" );
 
 #if ENABLE_DEFAULT_DATABASE
 				// dirty hack
