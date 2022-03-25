@@ -51,9 +51,9 @@ namespace starsky.foundation.webtelemetry.Helpers
 			return currentPlatform;
 		}
 
-		internal List<KeyValuePair<string, string>> GetSystemData()
+		internal List<KeyValuePair<string, string>> GetSystemData(OSPlatform? currentPlatform = null)
 		{
-			var currentPlatform = GetCurrentOsPlatform();
+			currentPlatform ??= GetCurrentOsPlatform();
 
 			var dockerContainer = currentPlatform == OSPlatform.Linux &&
 			                      Environment.GetEnvironmentVariable(

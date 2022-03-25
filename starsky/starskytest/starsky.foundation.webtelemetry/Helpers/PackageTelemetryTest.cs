@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -55,6 +56,29 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			Assert.IsTrue(systemData.Any(p => p.Key == "DockerContainer"));
 			Assert.IsTrue(systemData.Any(p => p.Key == "CurrentCulture"));
 			Assert.IsTrue(systemData.Any(p => p.Key == "AspNetCoreEnvironment"));
+		}
+
+		[TestMethod]
+		public void GetSystemDataTestDocker()
+		{
+			var httpProvider = new FakeIHttpProvider();
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery());
+
+			var sourceValue = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","true");
+			
+			var systemData = packageTelemetry.GetSystemData(OSPlatform.Linux);
+			
+			Assert.AreEqual("True", systemData.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			
+			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","false");
+			
+			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
+
+			Assert.AreEqual("False", systemDataFalse.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			
+			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER",sourceValue);
 		}
 
 		[TestMethod]

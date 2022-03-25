@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Interfaces;
@@ -40,6 +41,7 @@ namespace starskytest.starsky.foundation.platform.Services {
 			services.AddSingleton<IHttpProvider, FakeIHttpProvider>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			services.AddSingleton<IQuery, FakeIQuery>();
 
 			var serviceProvider = services.BuildServiceProvider();
 			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
