@@ -54,7 +54,6 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			Assert.IsTrue(systemData.Any(p => p.Key == "OSPlatform"));
 			Assert.IsTrue(systemData.Any(p => p.Key == "DockerContainer"));
 			Assert.IsTrue(systemData.Any(p => p.Key == "CurrentCulture"));
-			Assert.IsTrue(systemData.Any(p => p.Key == "BuildDate"));
 			Assert.IsTrue(systemData.Any(p => p.Key == "AspNetCoreEnvironment"));
 		}
 
