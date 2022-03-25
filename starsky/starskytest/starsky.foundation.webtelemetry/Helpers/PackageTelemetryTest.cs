@@ -37,7 +37,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var httpProvider = new FakeIHttpProvider();
 			var appSettings = new AppSettings();
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger());
 
 			var systemData = packageTelemetry.GetSystemData();
 			Assert.IsTrue(systemData.Any(p => p.Key == "AppVersion"));
@@ -91,7 +91,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var httpProvider = new FakeIHttpProvider();
 			var appSettings = new AppSettings();
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings);
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger());
 			var result = packageTelemetry.AddAppSettingsData(new List<KeyValuePair<string, string>>());
 
 			Assert.IsTrue(result.Any(p => p.Key == "AppSettingsName"));
@@ -103,7 +103,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var httpProvider = new FakeIHttpProvider();
 			var appSettings = new AppSettings{EnablePackageTelemetry = false};
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings);
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger());
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsNull(result);
 		}
@@ -118,7 +118,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			});
 			var appSettings = new AppSettings{EnablePackageTelemetry = true};
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings);
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger());
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsTrue(result);
 		}
