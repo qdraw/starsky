@@ -29,7 +29,7 @@ namespace starskytest.FakeMocks
 			}
 			catch ( Exception e )
 			{
-				// ignored
+				Console.WriteLine(e);
 			}
 		}
 
