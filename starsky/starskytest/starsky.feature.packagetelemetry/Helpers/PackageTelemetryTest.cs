@@ -159,6 +159,21 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsTrue(result);
 		}
+		
+		
+		[TestMethod]
+		public async Task PackageTelemetrySend_False_EnablePackageTelemetryDebug()
+		{
+			var httpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://" + PackageTelemetry.PackageTelemetryUrl,new StringContent(string.Empty)}
+			});
+			var appSettings = new AppSettings{EnablePackageTelemetry = true, EnablePackageTelemetryDebug = true};
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery());
+			var result = await packageTelemetry.PackageTelemetrySend();
+			Assert.IsNull(result);
+		}
 
 		[TestMethod]
 		public async Task AddDatabaseData()

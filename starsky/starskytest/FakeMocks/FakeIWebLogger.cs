@@ -23,7 +23,14 @@ namespace starskytest.FakeMocks
 		public void LogInformation(string message, params object[] args)
 		{
 			TrackedInformation.Add((null, message));
-			Console.WriteLine(message, args);
+			try
+			{
+				Console.WriteLine(message, args);
+			}
+			catch ( Exception e )
+			{
+				// ignored
+			}
 		}
 
 		public void LogInformation(Exception exception, string message, params object[] args)
