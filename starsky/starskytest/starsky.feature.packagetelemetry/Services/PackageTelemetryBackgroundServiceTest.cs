@@ -6,17 +6,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.packagetelemetry.Helpers;
+using starsky.feature.packagetelemetry.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.webtelemetry.Helpers;
-using starsky.foundation.webtelemetry.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.platform.Services {
+namespace starskytest.starsky.feature.packagetelemetry.Services {
 
 	public static class ExtensionMethods
 	{

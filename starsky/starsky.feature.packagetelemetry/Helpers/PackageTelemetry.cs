@@ -1,20 +1,15 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Attributes;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.webtelemetry.Helpers
+[assembly: InternalsVisibleTo("starskytest")]
+namespace starsky.feature.packagetelemetry.Helpers
 {
 	public class PackageTelemetry
 	{
@@ -35,7 +30,9 @@ namespace starsky.foundation.webtelemetry.Helpers
 
 		internal static object GetPropValue(object src, string propName)
 		{
-			return src?.GetType().GetProperty(propName)?.GetValue(src, null);
+#pragma warning disable CS8603
+			return src.GetType().GetProperty(propName)?.GetValue(src, null);
+#pragma warning restore CS8603
 		}
 
 		internal static OSPlatform? GetCurrentOsPlatform()
@@ -68,10 +65,10 @@ namespace starsky.foundation.webtelemetry.Helpers
 				new KeyValuePair<string, string>("ProcessArchitecture", RuntimeInformation.ProcessArchitecture.ToString()),
 				new KeyValuePair<string, string>("OSVersion", Environment.OSVersion.Version.ToString()),
 				new KeyValuePair<string, string>("OSDescriptionLong", RuntimeInformation.OSDescription),
-				new KeyValuePair<string, string>("OSPlatform", currentPlatform.ToString()),
+				new KeyValuePair<string, string>("OSPlatform", currentPlatform.ToString()!),
 				new KeyValuePair<string, string>("DockerContainer", dockerContainer.ToString()),
 				new KeyValuePair<string, string>("CurrentCulture", CultureInfo.CurrentCulture.ThreeLetterISOLanguageName),
-				new KeyValuePair<string, string>("AspNetCoreEnvironment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")),
+				new KeyValuePair<string, string>("AspNetCoreEnvironment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!),
 			};
 			return data;
 		}
@@ -118,20 +115,23 @@ namespace starsky.foundation.webtelemetry.Helpers
 
 				var propValue = GetPropValue(_appSettings.CloneToDisplay(),
 					property.Name);
-				var value = propValue?.ToString();
+				var value = propValue.ToString();
 
-				if ( propValue?.GetType() == typeof(DateTime) )
+				if ( propValue is DateTime )
 				{
 					value = ((DateTime)propValue).ToString(CultureInfo.InvariantCulture);
 				}
 				
-				if (propValue?.GetType() == typeof(List<string>) || 
-				    propValue?.GetType() == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
+				if (propValue.GetType() == typeof(List<string>) || 
+				    propValue.GetType() == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
 				{
 					value = ParseContent(propValue);
 				}
 
-				data.Add(new KeyValuePair<string, string>("AppSettings" + property.Name, value));
+				if ( value != null )
+				{
+					data.Add(new KeyValuePair<string, string>("AppSettings" + property.Name, value));
+				}
 			}
 			return data;
 		}
