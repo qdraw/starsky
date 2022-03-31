@@ -317,6 +317,36 @@ namespace starskytest.starsky.foundation.platform.Models
 			Assert.AreEqual(display.WebFtp,AppSettings.CloneToDisplaySecurityWarning);
 			Assert.AreEqual(display.ApplicationInsightsInstrumentationKey,AppSettings.CloneToDisplaySecurityWarning);
 		}
+		
+		[TestMethod]
+		public void AppSettings_CloneToDisplay_hideSecurityItems_PublishProfiles()
+		{
+			var appSettings = new AppSettings
+			{
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{"test", new List<AppSettingsPublishProfiles>
+					{
+						new AppSettingsPublishProfiles
+						{
+						},
+						new AppSettingsPublishProfiles
+						{
+							Path = "value",
+							Prepend = "value"
+						}
+					}}
+				}
+			};
+			
+			var display = appSettings.CloneToDisplay();
+			// nr 0
+			Assert.AreEqual(string.Empty,display.PublishProfiles["test"][0].Path);
+			Assert.AreEqual(string.Empty,display.PublishProfiles["test"][0].Prepend);
+			// nr 1
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,display.PublishProfiles["test"][1].Path);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,display.PublishProfiles["test"][1].Prepend);
+		}
 
 		[TestMethod]
 		public void AppSettings_IsReadOnly_NullNoItemTest()
