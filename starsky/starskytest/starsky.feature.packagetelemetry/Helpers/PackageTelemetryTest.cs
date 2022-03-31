@@ -184,6 +184,31 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 				result.FirstOrDefault(p => p.Key == "FileIndexItemCount");
 			Assert.AreEqual("1", res3.Value);
 		}
+
+
+		[TestMethod]
+		public async Task AddDatabaseData_Exception()
+		{
+			var appSettings = new AppSettings {EnablePackageTelemetry = true};
+			var packageTelemetry = new PackageTelemetry(null!, appSettings,
+				new FakeIWebLogger(),
+				new FakeIQueryException(new ArgumentNullException()));
+			var result = await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
+			
+			var res1 =
+				result.FirstOrDefault(p => p.Key == "FileIndexItemTotalCount");
+			Assert.AreEqual("-1", res1.Value);
+			
+			var res2 =
+				result.FirstOrDefault(p => p.Key == "FileIndexItemDirectoryCount");
+			Assert.AreEqual("-1", res2.Value);
+			
+			var res3 =
+				result.FirstOrDefault(p => p.Key == "FileIndexItemCount");
+			Assert.AreEqual("-1", res3.Value);
+
+		}
+
 	}
 
 }
