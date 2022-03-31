@@ -40,6 +40,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.201 (Runtime: 6.0.3) (PR #674)
 - [x]   (Added) _Back-end_ Added package telemetry (Disable using: EnablePackageTelemetry setting) (PR #657)
 - [x]   (Added) _Back-end_  Add Package Telemetry to Background Service (PR #683)
+- [x]   (Added) _Back-end_  Add Telemetry debug option: `app__EnablePackageTelemetryDebug` (PR #701) 
 
 # version 0.5.0-beta.3 - 2022-03-09
 - [x]   (Breaking change) _Back-end_ Upgrade to .NET 6 - SDK 6.0.200 (PR #642)
