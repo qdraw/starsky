@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
@@ -197,6 +198,7 @@ namespace starsky.foundation.database.Interfaces
 	        TimeSpan? cacheTime);
 
         Task DisposeAsync();
+        Task<int> CountAsync(Expression<Func<FileIndexItem, bool>> expression = null);
     }
 }
 

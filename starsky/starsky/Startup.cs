@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.health.HealthCheck;
+using starsky.feature.packagetelemetry.Services;
 using starsky.foundation.accountmanagement.Extensions;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
@@ -136,8 +137,11 @@ namespace starsky
 	        
 			// Application Insights
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-			
+
 			RegisterDependencies.Configure(services);
+			
+			// Reference due missing links between services
+			services.AddSingleton<PackageTelemetryBackgroundService>();
         }
 
         /// <summary>
@@ -276,10 +280,19 @@ namespace starsky
             app.UseCheckIfAccountExist();
             
 			app.UseAuthorization();
-			app.UseEndpoints(endpoints =>
+			
+			try
 			{
-				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-			});
+				app.UseEndpoints(endpoints =>
+				{
+					endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+				});
+			}
+			catch (InvalidOperationException)
+			{
+				// for testing
+				// nothing here
+			}
 			
 			app.UseWebSockets();
 			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings?.UseRealtime);

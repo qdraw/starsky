@@ -62,7 +62,9 @@ namespace starsky.foundation.platform.Models
 			if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
 		}
 
-		[PackageTelemetry]
+		/// <summary>
+		/// Root of the project with replaced value
+		/// </summary>
 		public string BaseDirectoryProject => AppDomain.CurrentDomain
 			.BaseDirectory
 			.Replace("starskyadmincli", "starsky")
@@ -143,10 +145,13 @@ namespace starsky.foundation.platform.Models
 		{
 			get
 			{
-				var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-				return new Regex("\\.0$").Replace(assemblyVersion, string.Empty);
+				var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+				return string.IsNullOrEmpty(assemblyVersion) ? string.Empty : 
+					new Regex("\\.0$").Replace(assemblyVersion, string.Empty);
 			}
 		}
+		
+		[PackageTelemetry]
 		public DateTime AppVersionBuildDateTime => DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 
 		// Can be used in the cli session to select files out of the file database system
@@ -666,6 +671,12 @@ namespace starsky.foundation.platform.Models
 			}
 		}
 
+		/// <summary>
+		/// Show what is send in console/logger
+		/// </summary>
+		[PackageTelemetry]
+		public bool? EnablePackageTelemetryDebug { get; set; } = false;
+
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
 		// -------------------------------------------------
@@ -718,6 +729,21 @@ namespace starsky.foundation.platform.Models
 			{
 				appSettings.AppSettingsPath =
 					appSettings.AppSettingsPath.Replace(userProfileFolder, "~");
+			}
+
+			if ( appSettings.PublishProfiles != null )
+			{
+				foreach ( var value in appSettings.PublishProfiles.SelectMany(profile => profile.Value) )
+				{
+					if ( !string.IsNullOrEmpty(value.Path) )
+					{
+						value.Path = CloneToDisplaySecurityWarning;
+					}
+					if ( !string.IsNullOrEmpty(value.Prepend) )
+					{
+						value.Prepend = CloneToDisplaySecurityWarning;
+					}
+				}
 			}
 
 			return appSettings;

@@ -1,13 +1,15 @@
-using System.Threading;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using starsky.feature.packagetelemetry.Helpers;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.webtelemetry.Helpers;
 
-namespace starsky.foundation.webtelemetry.Services
+[assembly: InternalsVisibleTo("starskytest")]
+namespace starsky.feature.packagetelemetry.Services
 {
 
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
@@ -32,9 +34,12 @@ namespace starsky.foundation.webtelemetry.Services
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 				var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
+				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
+				var query = scope.ServiceProvider.GetRequiredService<IQuery>();
+				
 				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 				{
-					await new PackageTelemetry(httpClientHelper, appSettings).PackageTelemetrySend();
+					await new PackageTelemetry(httpClientHelper, appSettings,logger,query).PackageTelemetrySend();
 				}
 			}
 		}
