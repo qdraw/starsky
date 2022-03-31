@@ -280,10 +280,19 @@ namespace starsky
             app.UseCheckIfAccountExist();
             
 			app.UseAuthorization();
-			app.UseEndpoints(endpoints =>
+			
+			try
 			{
-				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-			});
+				app.UseEndpoints(endpoints =>
+				{
+					endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+				});
+			}
+			catch (InvalidOperationException)
+			{
+				// for testing
+				// nothing here
+			}
 			
 			app.UseWebSockets();
 			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings?.UseRealtime);
