@@ -416,7 +416,8 @@ namespace starskytest.FakeMocks
 
 		public Task<int> CountAsync(Expression<Func<FileIndexItem, bool>> expression = null)
 		{
-			throw new NotImplementedException();
+			var func = expression?.Compile();
+			return Task.FromResult(expression == null ? _fakeContext.Count : _fakeContext.Count(func));
 		}
 
 		public bool IsCacheEnabled()

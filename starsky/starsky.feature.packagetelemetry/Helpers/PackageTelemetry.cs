@@ -28,11 +28,9 @@ namespace starsky.feature.packagetelemetry.Helpers
 
 		internal const string PackageTelemetryUrl = "qdraw.nl/special/starsky/telemetry/index.php";
 
-		internal static object GetPropValue(object src, string propName)
+		internal static object? GetPropValue(object? src, string propName)
 		{
-#pragma warning disable CS8603
-			return src.GetType().GetProperty(propName)?.GetValue(src, null);
-#pragma warning restore CS8603
+			return src?.GetType().GetProperty(propName)?.GetValue(src, null);
 		}
 
 		internal static OSPlatform? GetCurrentOsPlatform()
@@ -115,15 +113,15 @@ namespace starsky.feature.packagetelemetry.Helpers
 
 				var propValue = GetPropValue(_appSettings.CloneToDisplay(),
 					property.Name);
-				var value = propValue.ToString();
+				var value = propValue?.ToString();
 
-				if ( propValue is DateTime )
+				if ( propValue?.GetType() == typeof(DateTime))
 				{
 					value = ((DateTime)propValue).ToString(CultureInfo.InvariantCulture);
 				}
 				
-				if (propValue.GetType() == typeof(List<string>) || 
-				    propValue.GetType() == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
+				if (propValue?.GetType() == typeof(List<string>) || 
+				    propValue?.GetType() == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
 				{
 					value = ParseContent(propValue);
 				}

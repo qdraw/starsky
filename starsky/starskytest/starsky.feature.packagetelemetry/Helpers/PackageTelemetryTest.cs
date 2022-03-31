@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.packagetelemetry.Helpers;
+using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.webtelemetry.Helpers;
@@ -157,6 +158,31 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery());
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public async Task AddDatabaseData()
+		{
+			var appSettings = new AppSettings{EnablePackageTelemetry = true};
+			var packageTelemetry = new PackageTelemetry(null!, appSettings, new FakeIWebLogger(), new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg"),
+				new FileIndexItem("/test"){IsDirectory = true},
+			}));
+			
+			var result = await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
+
+			var res1 =
+				result.FirstOrDefault(p => p.Key == "FileIndexItemTotalCount");
+			Assert.AreEqual("2", res1.Value);
+			
+			var res2 =
+				result.FirstOrDefault(p => p.Key == "FileIndexItemDirectoryCount");
+			Assert.AreEqual("1", res2.Value);
+			
+			var res3 =
+				result.FirstOrDefault(p => p.Key == "FileIndexItemCount");
+			Assert.AreEqual("1", res3.Value);
 		}
 	}
 
