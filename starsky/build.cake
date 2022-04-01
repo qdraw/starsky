@@ -719,8 +719,8 @@ Task("SonarBegin")
                    .Append($"/d:sonar.pullrequest.key=\"{githubPrNumber}\"")
                    .Append($"/d:sonar.pullrequest.branch=\"{gitBranchName}\"")
                    .Append($"/d:sonar.pullrequest.base=\"{githubBaseBranch}\"")
-                   .Append($"/d:sonar.pullrequest.provider:\"github\"")
-                   .Append($"/d:sonar.pullrequest.github.endpoint:\"https://api.github.com/\"")
+                   .Append($"/d:sonar.pullrequest.provider=\"github\"")
+                   .Append($"/d:sonar.pullrequest.github.endpoint=\"https://api.github.com/\"")
                    .Append($"/d:sonar.pullrequest.github.repository=\"{githubRepoSlug}\"");
         }
 
