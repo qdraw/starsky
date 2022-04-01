@@ -333,7 +333,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = await render(<DeletedTestComponent />);
+      var component = render(<DeletedTestComponent />);
 
       const statusDeleted = component.queryByTestId(
         "detailview-exifstatus-status-deleted"
@@ -346,7 +346,7 @@ describe("DetailViewSidebar", () => {
       const title = findDataName("title");
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
-      await waitFor(() => expect(tags?.classList).toContain("disabled"));
+      await waitFor(() => expect(tags?.classList).toContain("disabled"), { timeout: 2000 });
       await waitFor(() => expect(description?.classList).toContain("disabled"));
       await waitFor(() => expect(title?.classList).toContain("disabled"));
 
@@ -366,7 +366,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = await render(<DeletedTestComponent />);
+      var component = render(<DeletedTestComponent />);
 
       const statusReadOnly = component.queryByTestId(
         "detailview-exifstatus-status-read-only"
@@ -380,7 +380,7 @@ describe("DetailViewSidebar", () => {
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
 
-      await waitFor(() => expect(tags?.classList).toContain("disabled"));
+      await waitFor(() => expect(tags?.classList).toContain("disabled"), { timeout: 2000 });
       await waitFor(() => expect(description?.classList).toContain("disabled"));
       await waitFor(() => expect(title?.classList).toContain("disabled"));
 
