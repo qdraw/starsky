@@ -15,6 +15,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.worker.Interfaces;
@@ -108,8 +109,10 @@ namespace starsky.Controllers
 
 			// Push direct to socket when update or replace to avoid undo after a second
 			_logger.LogInformation($"[UpdateController] send to socket {f}");
-			await _connectionsService.SendToAllAsync("[system] /api/update called",CancellationToken.None);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(fileIndexResultsList, 
+			var webSocketResponse =
+				new ApiResponseModel<List<FileIndexItem>>(fileIndexResultsList, 
+					$"[system] /api/update called");
+			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse, 
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			return Json(returnNewResultList);
@@ -181,8 +184,10 @@ namespace starsky.Controllers
 			}
 			
 			// Push direct to socket when update or replace to avoid undo after a second
-			await _connectionsService.SendToAllAsync("[system] /api/replace called",CancellationToken.None);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(resultsOkOrDeleteList,
+			var webSocketResponse =
+				new ApiResponseModel<List<FileIndexItem>>(resultsOkOrDeleteList, 
+					"[system] /api/replace called");
+			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			return Json(fileIndexResultsList);

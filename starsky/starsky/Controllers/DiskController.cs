@@ -10,6 +10,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -99,9 +100,10 @@ namespace starsky.Controllers
 		        Status = t.Status, IsDirectory = true
 	        }).ToList();
 
-	        await _connectionsService.SendToAllAsync($"[system] {name}",
-		        CancellationToken.None);
-	        await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(list,
+	        var webSocketResponse =
+		        new ApiResponseModel<List<FileIndexItem>>(list, 
+			        $"[system] {name}");
+	        await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 		        DefaultJsonSerializer.CamelCase), CancellationToken.None);
         }
 
@@ -128,8 +130,10 @@ namespace starsky.Controllers
 		    if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 			    return NotFound(rename);
 		    
-		    await _connectionsService.SendToAllAsync($"[system] /api/disk/rename {f} > {to}", CancellationToken.None);
-		    await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(rename,
+		    var webSocketResponse =
+			    new ApiResponseModel<List<FileIndexItem>>(rename, 
+				    $"[system] /api/disk/rename {f} > {to}");
+		    await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 			    DefaultJsonSerializer.CamelCase), CancellationToken.None);
 
 		    return Json(currentStatus ? rename.Where(p => p.Status 

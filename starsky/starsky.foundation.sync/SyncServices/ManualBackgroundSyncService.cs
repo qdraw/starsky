@@ -11,6 +11,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.webtelemetry.Helpers;
@@ -78,10 +79,12 @@ namespace starsky.foundation.sync.SyncServices
 
 		internal async Task PushToSockets(List<FileIndexItem> updatedList)
 		{
-			await _connectionsService.SendToAllAsync($"[system] ManualBackgroundSyncService" +
-				$" {updatedList.FirstOrDefault()?.FilePath}", CancellationToken.None);
+			var webSocketResponse =
+				new ApiResponseModel<List<FileIndexItem>>(updatedList, 
+					$"[system] ManualBackgroundSyncService" +
+					$" {updatedList.FirstOrDefault()?.FilePath}");
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
-				updatedList,
+				webSocketResponse,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 		}
 

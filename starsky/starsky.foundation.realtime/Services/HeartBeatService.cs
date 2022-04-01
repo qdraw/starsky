@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
+using starsky.foundation.platform.JsonConverter;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 
 namespace starsky.foundation.realtime.Services
@@ -63,7 +67,12 @@ namespace starsky.foundation.realtime.Services
 				var message = HeartbeatMessage.Replace(SpeedInSecondsToken, 
 					SpeedInSeconds.ToString()).Replace(
 					InsertDateToken, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
-				await _webSocketConnectionsService.SendToAllAsync(message, cancellationToken);
+				
+				var webSocketResponse =
+					new ApiResponseModel<string>(message, 
+						$"[system] HeartbeatAsync");
+				await _webSocketConnectionsService.SendToAllAsync(JsonSerializer.Serialize(
+					webSocketResponse, DefaultJsonSerializer.CamelCase), cancellationToken);
 				await Task.Delay(TimeSpan.FromSeconds(SpeedInSeconds), cancellationToken);
 			}
 		}

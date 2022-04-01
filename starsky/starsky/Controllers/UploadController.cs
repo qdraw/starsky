@@ -141,9 +141,12 @@ namespace starsky.Controllers
 			var socketResult = fileIndexResultsList
 				.Where(p => p.Status == ImportStatus.Ok)
 				.Select(item => item.FileIndexItem).ToList();
-			await _connectionsService.SendToAllAsync($"[system] /api/disk/rename" +
-				$" {socketResult.FirstOrDefault()?.FilePath}", CancellationToken.None);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(socketResult, 
+			
+			var webSocketResponse =
+				new ApiResponseModel<List<FileIndexItem>>(socketResult, 
+					$"[system] /api/disk/rename" +
+					$" {socketResult.FirstOrDefault()?.FilePath}");
+			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse, 
 					DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			// Wrong input (extension is not allowed)
