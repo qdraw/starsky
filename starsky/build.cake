@@ -681,7 +681,48 @@ Task("SonarBegin")
         /* this should fix No inputs were found in config file 'tsconfig.json'.  */
         var tsconfig = System.IO.Path.Combine(clientAppProject,"tsconfig.json");
 
+
+        // For Pull Requests  
+        var isPRBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && EnvironmentVariable("GITHUB_JOB") != null && EnvironmentVariable("GITHUB_BASE_REF") != null;
+        var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
+        var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF"); 
+        var githubRepoSlug = EnvironmentVariable("GITHUB_REPOSITORY"); 
+        
         Information($">> Selecting Branch: {branchName}");
+
+        var sonarArguments = new ProcessArgumentBuilder()
+           .Append($"sonarscanner")
+           .Append($"begin")
+           /* .Append($"/d:sonar.verbose=true") */
+           .Append($"/d:sonar.host.url=\"{url}\"")
+           .Append($"/k:\"{key}\"")
+           .Append($"/n:\"Starsky\"")
+           .Append($"/d:sonar.login=\"{login}\"")
+           .Append($"/o:" + organisation)
+           .Append($"/d:sonar.typescript.tsconfigPath={tsconfig}")
+           .Append($"/d:sonar.coverageReportPaths={coverageFile}")
+           .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\"")
+           .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\"");
+        
+        // Normal build
+        if (!isPRBuild) {
+            Information($">> Normal Build");
+            sonarArguments
+               .Append($"/d:sonar.branch.name=\"{branchName}\"");
+        }
+        
+        // Pull Request Build
+        if (isPRBuild) {
+           Information($">> PR Build isPRBuild={isPRBuild}  githubPrNumber {githubPrNumber} githubBaseBranch {githubBaseBranch} githubRepoSlug {githubRepoSlug}");
+
+           sonarArguments
+                   .Append($"/d:sonar.pullrequest.key=\"{githubPrNumber}\"")
+                   .Append($"/d:sonar.pullrequest.branch=\"{gitBranchName}\"")
+                   .Append($"/d:sonar.pullrequest.base=\"{githubBaseBranch}\"")
+                   .Append($"/d:sonar.pullrequest.provider=\"github\"")
+                   .Append($"/d:sonar.pullrequest.github.endpoint=\"https://api.github.com/\"")
+                   .Append($"/d:sonar.pullrequest.github.repository=\"{githubRepoSlug}\"");
+        }
 
         IEnumerable<string> redirectedStandardOutput;
         IEnumerable<string> redirectedErrorOutput;
@@ -689,22 +730,9 @@ Task("SonarBegin")
             StartProcess(
                 "dotnet",
                 new ProcessSettings {
-                  Arguments = new ProcessArgumentBuilder()
-                      .Append($"sonarscanner")
-                      .Append($"begin")
-                      /* .Append($"/d:sonar.verbose=true") */
-                      .Append($"/d:sonar.host.url=\"{url}\"")
-                      .Append($"/k:\"{key}\"")
-                      .Append($"/n:\"Starsky\"")
-                      .Append($"/d:sonar.login=\"{login}\"")
-                      .Append($"/d:sonar.branch.name=\"{branchName}\"")
-                      .Append($"/o:" + organisation)
-                      .Append($"/d:sonar.typescript.tsconfigPath={tsconfig}")
-                      .Append($"/d:sonar.coverageReportPaths={coverageFile}")
-                      .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\"")
-                      .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\""),
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
+                  Arguments = sonarArguments,
+                  RedirectStandardOutput = true,
+                  RedirectStandardError = true
                 },
                 out redirectedStandardOutput,
                 out redirectedErrorOutput
