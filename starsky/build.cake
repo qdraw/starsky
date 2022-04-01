@@ -625,14 +625,6 @@ Task("SonarBegin")
         var key = EnvironmentVariable("STARSKY_SONAR_KEY");
         var login = EnvironmentVariable("STARSKY_SONAR_LOGIN");
         var organisation = EnvironmentVariable("STARSKY_SONAR_ORGANISATION");
-        
-        var isPRBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && EnvironmentVariable("GITHUB_JOB") != null && EnvironmentVariable("GITHUB_BASE_REF") != null;
-        var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
-        var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF"); 
-        
-        if (isPRBuild) {
-            Information($">> isPRBuild={isPRBuild}  githubJobId {githubJobId} githubBaseBranch {githubBaseBranch}");
-        }
 
         var url = EnvironmentVariable("STARSKY_SONAR_URL");
         if(string.IsNullOrEmpty(url)) {
@@ -689,6 +681,16 @@ Task("SonarBegin")
         /* this should fix No inputs were found in config file 'tsconfig.json'.  */
         var tsconfig = System.IO.Path.Combine(clientAppProject,"tsconfig.json");
 
+
+        // For Pull Requests  
+        var isPRBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && EnvironmentVariable("GITHUB_JOB") != null && EnvironmentVariable("GITHUB_BASE_REF") != null;
+        var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
+        var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF"); 
+        
+        if (isPRBuild) {
+            Information($">> isPRBuild={isPRBuild}  githubPrNumber {githubPrNumber} githubBaseBranch {githubBaseBranch}");
+        }
+        
         Information($">> Selecting Branch: {branchName}");
 
         IEnumerable<string> redirectedStandardOutput;
