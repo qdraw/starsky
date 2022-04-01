@@ -687,11 +687,31 @@ Task("SonarBegin")
         var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
         var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF"); 
         
+        Information($">> Selecting Branch: {branchName}");
+
+        var sonarArguments = new ProcessArgumentBuilder()
+           .Append($"sonarscanner")
+           .Append($"begin")
+           /* .Append($"/d:sonar.verbose=true") */
+           .Append($"/d:sonar.host.url=\"{url}\"")
+           .Append($"/k:\"{key}\"")
+           .Append($"/n:\"Starsky\"")
+           .Append($"/d:sonar.login=\"{login}\"")
+           .Append($"/d:sonar.branch.name=\"{branchName}\"")
+           .Append($"/o:" + organisation)
+           .Append($"/d:sonar.typescript.tsconfigPath={tsconfig}")
+           .Append($"/d:sonar.coverageReportPaths={coverageFile}")
+           .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\"")
+           .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\"");
+
         if (isPRBuild) {
             Information($">> isPRBuild={isPRBuild}  githubPrNumber {githubPrNumber} githubBaseBranch {githubBaseBranch}");
+
+           sonarArguments
+                   .Append($"/d:sonar.pullrequest.key=\"{githubPrNumber}\"")
+                   .Append($"/d:sonar.pullrequest.branch=\"{gitBranchName}\"")
+                   .Append($"/d:sonar.pullrequest.base=\"{githubBaseBranch}\"");
         }
-        
-        Information($">> Selecting Branch: {branchName}");
 
         IEnumerable<string> redirectedStandardOutput;
         IEnumerable<string> redirectedErrorOutput;
@@ -699,25 +719,9 @@ Task("SonarBegin")
             StartProcess(
                 "dotnet",
                 new ProcessSettings {
-                  Arguments = new ProcessArgumentBuilder()
-                      .Append($"sonarscanner")
-                      .Append($"begin")
-                      /* .Append($"/d:sonar.verbose=true") */
-                      .Append($"/d:sonar.host.url=\"{url}\"")
-                      .Append($"/k:\"{key}\"")
-                      .Append($"/n:\"Starsky\"")
-                      .Append(isPRBuild ? $"/d:sonar.pullrequest.key=\"{githubPrNumber}\"" : "")
-                      .Append(isPRBuild ? $"/d:sonar.pullrequest.branch=\"{gitBranchName}\"" : "")
-                      .Append(isPRBuild ? $"/d:sonar.pullrequest.base=\"{githubBaseBranch}\"" : "")
-                      .Append($"/d:sonar.login=\"{login}\"")
-                      .Append($"/d:sonar.branch.name=\"{branchName}\"")
-                      .Append($"/o:" + organisation)
-                      .Append($"/d:sonar.typescript.tsconfigPath={tsconfig}")
-                      .Append($"/d:sonar.coverageReportPaths={coverageFile}")
-                      .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\"")
-                      .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\""),
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
+                  Arguments = sonarArguments,
+                  RedirectStandardOutput = true,
+                  RedirectStandardError = true
                 },
                 out redirectedStandardOutput,
                 out redirectedErrorOutput
