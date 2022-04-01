@@ -347,7 +347,7 @@ describe("DetailViewSidebar", () => {
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
       await waitFor(() => expect(tags?.classList).toContain("disabled"), {
-        timeout: 2000
+        timeout: 3000
       });
       await waitFor(() => expect(description?.classList).toContain("disabled"));
       await waitFor(() => expect(title?.classList).toContain("disabled"));
