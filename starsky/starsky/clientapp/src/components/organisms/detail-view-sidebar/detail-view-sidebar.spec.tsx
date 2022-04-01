@@ -346,7 +346,9 @@ describe("DetailViewSidebar", () => {
       const title = findDataName("title");
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
-      await waitFor(() => expect(tags?.classList).toContain("disabled"), { timeout: 2000 });
+      await waitFor(() => expect(tags?.classList).toContain("disabled"), {
+        timeout: 2000
+      });
       await waitFor(() => expect(description?.classList).toContain("disabled"));
       await waitFor(() => expect(title?.classList).toContain("disabled"));
 
@@ -380,7 +382,9 @@ describe("DetailViewSidebar", () => {
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
 
-      await waitFor(() => expect(tags?.classList).toContain("disabled"), { timeout: 2000 });
+      await waitFor(() => expect(tags?.classList).toContain("disabled"), {
+        timeout: 2000
+      });
       await waitFor(() => expect(description?.classList).toContain("disabled"));
       await waitFor(() => expect(title?.classList).toContain("disabled"));
 
