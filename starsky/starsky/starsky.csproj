@@ -22,6 +22,9 @@
     </PropertyGroup>
     <ItemGroup>
         <None Remove="Properties\.gitkeep" />
+    </ItemGroup>
+    
+    <ItemGroup Condition="!Exists('Properties/launchSettings.json')">
         <ContentWithTargetPath Include="Properties/default-init-launchSettings.json" TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
