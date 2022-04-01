@@ -627,7 +627,7 @@ Task("SonarBegin")
         var organisation = EnvironmentVariable("STARSKY_SONAR_ORGANISATION");
         
         var isPRBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && EnvironmentVariable("GITHUB_JOB") != null && EnvironmentVariable("GITHUB_BASE_REF") != null;
-        var githubJobId = EnvironmentVariable("GITHUB_JOB");
+        var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
         var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF"); 
         
         if (isPRBuild) {
@@ -704,7 +704,7 @@ Task("SonarBegin")
                       .Append($"/d:sonar.host.url=\"{url}\"")
                       .Append($"/k:\"{key}\"")
                       .Append($"/n:\"Starsky\"")
-                      .Append(isPRBuild ? $"/d:sonar.pullrequest.key=\"{githubJobId}\"" : "")
+                      .Append(isPRBuild ? $"/d:sonar.pullrequest.key=\"{githubPrNumber}\"" : "")
                       .Append(isPRBuild ? $"/d:sonar.pullrequest.branch=\"{gitBranchName}\"" : "")
                       .Append(isPRBuild ? $"/d:sonar.pullrequest.base=\"{githubBaseBranch}\"" : "")
                       .Append($"/d:sonar.login=\"{login}\"")
