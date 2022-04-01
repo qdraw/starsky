@@ -333,7 +333,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = render(<DeletedTestComponent />);
+      var component = await render(<DeletedTestComponent />);
 
       const statusDeleted = component.queryByTestId(
         "detailview-exifstatus-status-deleted"
@@ -366,7 +366,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = render(<DeletedTestComponent />);
+      var component = await render(<DeletedTestComponent />);
 
       const statusReadOnly = component.queryByTestId(
         "detailview-exifstatus-status-read-only"
@@ -378,7 +378,6 @@ describe("DetailViewSidebar", () => {
       const description = findDataName("description");
       const title = findDataName("title");
 
-      // todo: fix
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
 
       await waitFor(() => expect(tags?.classList).toContain("disabled"));
