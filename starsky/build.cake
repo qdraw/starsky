@@ -625,6 +625,14 @@ Task("SonarBegin")
         var key = EnvironmentVariable("STARSKY_SONAR_KEY");
         var login = EnvironmentVariable("STARSKY_SONAR_LOGIN");
         var organisation = EnvironmentVariable("STARSKY_SONAR_ORGANISATION");
+        
+        var isPRBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && EnvironmentVariable("GITHUB_JOB") != null && EnvironmentVariable("GITHUB_BASE_REF") != null;
+        var githubJobId = EnvironmentVariable("GITHUB_JOB");
+        var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF"); 
+        
+        if (isPRBuild) {
+            Information($">> isPRBuild={isPRBuild}  githubJobId {githubJobId} githubBaseBranch {githubBaseBranch}");
+        }
 
         var url = EnvironmentVariable("STARSKY_SONAR_URL");
         if(string.IsNullOrEmpty(url)) {
@@ -696,6 +704,9 @@ Task("SonarBegin")
                       .Append($"/d:sonar.host.url=\"{url}\"")
                       .Append($"/k:\"{key}\"")
                       .Append($"/n:\"Starsky\"")
+                      .Append(isPRBuild ? $"/d:sonar.pullrequest.key=\"{githubJobId}\"" : "")
+                      .Append(isPRBuild ? $"/d:sonar.pullrequest.branch=\"{gitBranchName}\"" : "")
+                      .Append(isPRBuild ? $"/d:sonar.pullrequest.base=\"{githubBaseBranch}\"" : "")
                       .Append($"/d:sonar.login=\"{login}\"")
                       .Append($"/d:sonar.branch.name=\"{branchName}\"")
                       .Append($"/o:" + organisation)
