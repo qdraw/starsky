@@ -27,12 +27,12 @@ export const NewWebSocketService = (): WebSocketService => {
  * @returns
  */
 export function parseJson(data: string): any {
-  if (data && data.startsWith("[system]")) {
-    console.log(data);
-    return null;
-  }
   try {
-    return JSON.parse(data);
+    const parsedData = JSON.parse(data);
+    if (parsedData.type && parsedData.data && parsedData.type.includes("FileIndexItem")) {
+      return parsedData;
+    }
+    return
   } catch (error) {
     console.log(error);
     return null;
@@ -84,7 +84,8 @@ export function FireOnMessage(
   e: Event,
   setKeepAliveTime: Dispatch<SetStateAction<Date>>
 ) {
-  var item = parseJson((e as any).data);
+  const item = parseJson((e as any).data);
+  console.log(item);
 
   if (isKeepAliveMessage(item)) {
     HandleKeepAliveMessage(setKeepAliveTime, item);

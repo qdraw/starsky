@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace starsky.foundation.platform.Models
@@ -14,7 +15,7 @@ namespace starsky.foundation.platform.Models
 		public ApiResponseModel(T data = default, string debugName = null)
 		{
 			Data = data;
-			Type = typeof(T).Name;
+			Type = typeof(T).FullName?.Split(",")[0].Replace("`1[[",",");
 			DebugName = debugName;
 		}
 		public T Data { get; set; }

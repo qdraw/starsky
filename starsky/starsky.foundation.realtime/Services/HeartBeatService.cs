@@ -9,6 +9,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.realtime.Model;
 
 namespace starsky.foundation.realtime.Services
 {
@@ -16,10 +17,6 @@ namespace starsky.foundation.realtime.Services
 	public class HeartbeatService : IHostedService
 	{
 		private const int SpeedInSeconds = 30;
-		private const string InsertDateToken = "INSERT_DATE_TOKEN";
-		private const string SpeedInSecondsToken = "SPEED_TOKEN";
-		private const string HeartbeatMessage = "{ \"speed\": " + SpeedInSecondsToken + 
-		                                        ",  \"time\": \"" + InsertDateToken + "\"} ";
 
 		private readonly IWebSocketConnectionsService _webSocketConnectionsService;
 
@@ -64,12 +61,8 @@ namespace starsky.foundation.realtime.Services
 		{
 			while (!cancellationToken.IsCancellationRequested)
 			{
-				var message = HeartbeatMessage.Replace(SpeedInSecondsToken, 
-					SpeedInSeconds.ToString()).Replace(
-					InsertDateToken, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
-				
 				var webSocketResponse =
-					new ApiResponseModel<string>(message, 
+					new ApiResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds), 
 						$"[system] HeartbeatAsync");
 				await _webSocketConnectionsService.SendToAllAsync(JsonSerializer.Serialize(
 					webSocketResponse, DefaultJsonSerializer.CamelCase), cancellationToken);
