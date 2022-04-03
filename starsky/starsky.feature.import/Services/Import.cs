@@ -37,7 +37,7 @@ namespace starsky.feature.import.Services
 	[Service(typeof(IImport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class Import : IImport
 	{
-		private readonly IImportQuery _importQuery;
+		private readonly IImportQuery? _importQuery;
 		
 		// storage providers
 		private readonly IStorage _filesystemStorage;
@@ -272,7 +272,7 @@ namespace starsky.feature.import.Services
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key, SourceFullFilePath = inputFileFullPath.Key};
 			}
 			
-			if (importSettings.IndexMode && await _importQuery.IsHashInImportDbAsync(hashList.Key) )
+			if (importSettings.IndexMode && await _importQuery?.IsHashInImportDbAsync(hashList.Key) )
 			{
 				if ( _appSettings.IsVerbose() ) _console.WriteLine($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 				return new ImportIndexItem
@@ -548,11 +548,11 @@ namespace starsky.feature.import.Services
 			ImportIndexItem importIndexItem,
 			ImportSettingsModel importSettings)
 		{
-			if ( !importSettings.IndexMode || !_importQuery.TestConnection() )
+			if ( !importSettings.IndexMode || _importQuery?.TestConnection() != true )
 			{
 				if ( _appSettings.IsVerbose() ) _console.WriteLine($" AddToQueryAndImportDatabaseAsync Ignored - " +
 				                                               $"IndexMode {importSettings.IndexMode} " +
-				                                               $"TestConnection {_importQuery.TestConnection()}");
+				                                               $"TestConnection {_importQuery?.TestConnection()}");
 				return;
 			}
 
