@@ -479,7 +479,7 @@ namespace starsky.feature.import.Services
 		    {
 			    updateItemAsync = new QueryFactory(
 				    new SetupDatabaseTypes(_appSettings), _query,
-				    _memoryCache, _appSettings, _logger).Query().UpdateItemAsync;
+				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
 		    }
 		    
 		    importIndexItem.FileIndexItem = await _updateImportTransformations.UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
@@ -559,7 +559,7 @@ namespace starsky.feature.import.Services
 			// Add to Normal File Index database
 			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
 				_memoryCache, _appSettings,_logger).Query();
-			await query.AddItemAsync(importIndexItem.FileIndexItem);
+			await query!.AddItemAsync(importIndexItem.FileIndexItem);
 			
 			// Add to check db, to avoid duplicate input
 			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery,_console).ImportQuery();

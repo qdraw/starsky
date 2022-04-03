@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Attributes;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.JsonConverter;
 using TimeZoneConverter;
 
 namespace starsky.foundation.platform.Models
@@ -701,8 +702,8 @@ namespace starsky.foundation.platform.Models
 		{
 			var userProfileFolder = Environment.GetFolderPath(
 				Environment.SpecialFolder.UserProfile);
-			
-			var appSettings = (AppSettings) MemberwiseClone();
+
+			var appSettings = this.CloneViaJson();
 		    
 			if ( appSettings.DatabaseType != DatabaseTypeList.Sqlite )
 			{
