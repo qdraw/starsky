@@ -68,7 +68,7 @@ namespace starsky.feature.import.Helpers
 				new ReadMeta(_subPathStorage, _appSettings)).UpdateAsync(fileIndexItem, comparedNamesList);
 
 			// Only update database when indexMode is true
-			if ( !indexMode ) return fileIndexItem;
+			if ( !indexMode && queryUpdateDelegate == null) return fileIndexItem;
 			
 			// Hash is changed after transformation
 			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;

@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -474,9 +475,13 @@ namespace starsky.feature.import.Services
 		    await CreateSideCarFile(importIndexItem, xmpExistForThisFileType);
 
 		    // Run Exiftool to Update for example colorClass
-		    UpdateImportTransformations.QueryUpdateDelegate updateItemAsync = new QueryFactory(
-			    new SetupDatabaseTypes(_appSettings), _query,
-			    _memoryCache, _appSettings, _logger).Query().UpdateItemAsync;
+		    UpdateImportTransformations.QueryUpdateDelegate? updateItemAsync = null;
+		    if ( importSettings.IndexMode )
+		    {
+			    updateItemAsync = new QueryFactory(
+				    new SetupDatabaseTypes(_appSettings), _query,
+				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
+		    }
 		    
 		    importIndexItem.FileIndexItem = await _updateImportTransformations.UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
 			    importSettings.ColorClass, importIndexItem.DateTimeParsedFromFileName, importSettings.IndexMode);
