@@ -960,34 +960,5 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsFalse(result);
 		}
 
-
-		[TestMethod]
-		public async Task Importer_Database_Update_ColorClassTransformation()
-		{
-			var storage = new FakeIStorage(
-				new List<string>{"/"}, 
-				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
-			var appSettings = new AppSettings();
-			var importService = new Import(new FakeSelectorStorage(storage), 
-				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
-				_console,new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
-
-			var result = await importService.Importer(new ImportIndexItem
-				{
-					Status = ImportStatus.Ok, 
-					FileIndexItem = new FileIndexItem("/test.jpg")
-					{
-						ColorClass = ColorClassParser.Color.Typical
-					},
-					SourceFullFilePath = "/test.jpg",
-					FilePath = "/test.jpg",
-				},
-				new ImportSettingsModel {ColorClass = 2});
-
-			Console.WriteLine();
-			//Assert.AreEqual("test", result.FileIndexItem.ColorClassTransformation);
-		}
-
 	}
 }

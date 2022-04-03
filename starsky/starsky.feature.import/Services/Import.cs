@@ -272,7 +272,7 @@ namespace starsky.feature.import.Services
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key, SourceFullFilePath = inputFileFullPath.Key};
 			}
 			
-			if (importSettings.IndexMode && await _importQuery?.IsHashInImportDbAsync(hashList.Key) )
+			if (importSettings.IndexMode && await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
 			{
 				if ( _appSettings.IsVerbose() ) _console.WriteLine($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 				return new ImportIndexItem
