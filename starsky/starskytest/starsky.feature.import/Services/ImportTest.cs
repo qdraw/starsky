@@ -911,5 +911,83 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsTrue(fakeExifThumbnailService.Input.Any(p => p.Item1 == "/test.jpg"));
 		}
 
+		[TestMethod]
+		public void ExistXmpSidecarForThisFileType_Nothing_Filled_Ignore()
+		{
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(),
+				new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
+				new FakeIQuery(), _console,new FakeIMetaExifThumbnailService(), 
+				new FakeIWebLogger(), new FakeMemoryCache());
+			var result = importService.ExistXmpSidecarForThisFileType(new ImportIndexItem());
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public void ExistXmpSidecarForThisFileType_DngReturn_True()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			var appSettings = new AppSettings();
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
+			
+			var result = importService.ExistXmpSidecarForThisFileType(new ImportIndexItem
+			{
+				SourceFullFilePath = "/test.dng",
+			});
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void ExistXmpSidecarForThisFileType_JpegReturn_False()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			var appSettings = new AppSettings();
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
+			
+			var result = importService.ExistXmpSidecarForThisFileType(new ImportIndexItem
+			{
+				SourceFullFilePath = "/test.jpg",
+			});
+			Assert.IsFalse(result);
+		}
+
+
+		[TestMethod]
+		public async Task Importer_Database_Update_ColorClassTransformation()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			var appSettings = new AppSettings();
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
+
+			var result = await importService.Importer(new ImportIndexItem
+				{
+					Status = ImportStatus.Ok, 
+					FileIndexItem = new FileIndexItem("/test.jpg")
+					{
+						ColorClass = ColorClassParser.Color.Typical
+					},
+					SourceFullFilePath = "/test.jpg",
+					FilePath = "/test.jpg",
+				},
+				new ImportSettingsModel {ColorClass = 2});
+
+			Console.WriteLine();
+			//Assert.AreEqual("test", result.FileIndexItem.ColorClassTransformation);
+		}
+
 	}
 }

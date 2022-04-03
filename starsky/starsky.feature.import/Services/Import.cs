@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.feature.import.Helpers;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Import;
@@ -54,13 +55,13 @@ namespace starsky.feature.import.Services
 
 		private readonly IMemoryCache _memoryCache;
 		private readonly IWebLogger _logger;
-		
+		private readonly UpdateImportTransformations _updateImportTransformations;
+
 		/// <summary>
 		/// Used when File has no exif date in description
 		/// </summary>
 		internal string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
 
-		
 		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,
@@ -86,6 +87,7 @@ namespace starsky.feature.import.Services
             _metaExifThumbnailService = metaExifThumbnailService;
             _memoryCache = memoryCache;
             _logger = logger;
+            _updateImportTransformations = new UpdateImportTransformations(logger, _exifTool, selectorStorage, appSettings);
 		}
 
 		/// <summary>
@@ -472,7 +474,11 @@ namespace starsky.feature.import.Services
 		    await CreateSideCarFile(importIndexItem, xmpExistForThisFileType);
 
 		    // Run Exiftool to Update for example colorClass
-		    importIndexItem.FileIndexItem = await UpdateImportTransformations(importIndexItem.FileIndexItem, 
+		    UpdateImportTransformations.QueryUpdateDelegate updateItemAsync = new QueryFactory(
+			    new SetupDatabaseTypes(_appSettings), _query,
+			    _memoryCache, _appSettings, _logger).Query().UpdateItemAsync;
+		    
+		    importIndexItem.FileIndexItem = await _updateImportTransformations.UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
 			    importSettings.ColorClass, importIndexItem.DateTimeParsedFromFileName, importSettings.IndexMode);
 
 		    DeleteFileAfter(importSettings,importIndexItem);
@@ -515,8 +521,13 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		/// <param name="importIndexItem">to get the SourceFullFilePath</param>
 		/// <returns>True when exist && current filetype is raw</returns>
-		private bool ExistXmpSidecarForThisFileType(ImportIndexItem importIndexItem)
+		internal bool ExistXmpSidecarForThisFileType(ImportIndexItem importIndexItem)
 		{
+			if ( string.IsNullOrEmpty(importIndexItem.SourceFullFilePath) )
+			{
+				return false;
+			}
+			
 			// Support for include sidecar files
 			var xmpSourceFullFilePath =
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem
@@ -554,64 +565,6 @@ namespace starsky.feature.import.Services
 			return importIndexItem;
 		}
 
-		/// <summary>
-		/// Run Transformation on Import to the files in the database && Update fileHash in database
-		/// </summary>
-		/// <param name="fileIndexItem">information</param>
-		/// <param name="colorClassTransformation">change colorClass</param>
-		/// <param name="dateTimeParsedFromFileName">is date time parsed from fileName</param>
-		/// <param name="indexMode">should update database</param>
-		private async Task<FileIndexItem> UpdateImportTransformations(FileIndexItem fileIndexItem, 
-			int colorClassTransformation, bool dateTimeParsedFromFileName, bool indexMode)
-		{
-			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
-
-			var comparedNamesList = new List<string>();
-			if ( dateTimeParsedFromFileName )
-			{
-				_logger.LogInformation($"[Import] DateTimeParsedFromFileName ExifTool Sync {fileIndexItem.FilePath}");
-				comparedNamesList = DateTimeParsedComparedNamesList();
-			}
-
-			if ( colorClassTransformation >= 0 )
-			{
-				_logger.LogInformation($"[Import] ColorClassComparedNamesList ExifTool Sync {fileIndexItem.FilePath}");
-				comparedNamesList = ColorClassComparedNamesList(comparedNamesList);
-			}
-
-			if ( !comparedNamesList.Any() ) return fileIndexItem;
-			
-			await new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
-				new ReadMeta(_subPathStorage, _appSettings)).UpdateAsync(fileIndexItem, comparedNamesList);
-
-			// Only update database when indexMode is true
-			if ( !indexMode ) return fileIndexItem;
-			
-			// Hash is changed after transformation
-			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
-			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
-				_memoryCache, _appSettings,_logger).Query();
-			await query.UpdateItemAsync(fileIndexItem);
-			await query.DisposeAsync();
-
-			return fileIndexItem.Clone();
-		}
-
-		private static List<string> DateTimeParsedComparedNamesList()
-		{
-			return new List<string>
-			{
-				nameof(FileIndexItem.Description).ToLowerInvariant(),
-				nameof(FileIndexItem.DateTime).ToLowerInvariant(),
-			};
-		}
-		
-		private static List<string> ColorClassComparedNamesList(List<string> list)
-		{
-			list.Add(nameof(FileIndexItem.Description).ToLowerInvariant());
-			return list;
-		}
-		
 		/// <summary>
 		/// Number of checks for files with the same filePath.
 		/// Change only to get Exceptions earlier
