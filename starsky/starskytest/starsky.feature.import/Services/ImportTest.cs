@@ -158,7 +158,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(new DateTime(2020,04,27,11,07,00), 
 				result.FirstOrDefault().DateTime);
 
-			Assert.AreEqual(importService.MessageDateTimeBasedOnFilename,
+			Assert.AreEqual(Import.MessageDateTimeBasedOnFilename,
 				result.FirstOrDefault().FileIndexItem.Description);
 		}
 		
@@ -741,7 +741,7 @@ namespace starskytest.starsky.feature.import.Services
 			);
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,null,
-				new FakeExifTool(storage, appSettings),null, _console,
+				new FakeExifTool(storage, appSettings),null!, _console,
 				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
 
 			var result = await importService.Importer(new List<string> {"/test.jpg"},

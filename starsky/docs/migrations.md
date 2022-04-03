@@ -21,8 +21,7 @@ Define constance in `starsky.foundation.database.csproj`
 ## Run Migration
 ```bash
 cd starsky/starsky.foundation.database
-dotnet build -p:ENABLE_DEFAULT_DATABASE=true
-dotnet ef --no-build --startup-project ../starsky/starsky.csproj --project starsky.foundation.database.csproj migrations add test
+dotnet ef --startup-project ../starsky/starsky.csproj --project starsky.foundation.database.csproj migrations add test
 ```
 
 ## Instead of setting constance (is replaced by defined constance)

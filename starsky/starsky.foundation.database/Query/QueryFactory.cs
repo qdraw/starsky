@@ -25,9 +25,9 @@ namespace starsky.foundation.database.Query
 			_logger = logger;
 		}
 		
-		public IQuery? Query()
+		public IQuery Query()
 		{
-			if ( _query == null ) return null;
+			if ( _query == null ) return null!;
 			var context = _setupDatabaseTypes?.BuilderDbFactory();
 			if ( _query.GetType() == typeof(Query) )
 			{

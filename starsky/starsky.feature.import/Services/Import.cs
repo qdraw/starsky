@@ -24,7 +24,6 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 using starskycore.Models;
@@ -54,14 +53,14 @@ namespace starsky.feature.import.Services
 		private readonly IConsole _console;
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 
-		private readonly IMemoryCache _memoryCache;
+		private readonly IMemoryCache? _memoryCache;
 		private readonly IWebLogger _logger;
 		private readonly UpdateImportTransformations _updateImportTransformations;
 
 		/// <summary>
 		/// Used when File has no exif date in description
 		/// </summary>
-		internal string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
+		internal const string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
 
 		public Import(
 			ISelectorStorage selectorStorage,
@@ -72,7 +71,7 @@ namespace starsky.feature.import.Services
 			IConsole console,
 			IMetaExifThumbnailService metaExifThumbnailService,
 			IWebLogger logger,
-			IMemoryCache memoryCache = null)
+			IMemoryCache? memoryCache = null)
 		{
 			_importQuery = importQuery;
 			
@@ -339,7 +338,7 @@ namespace starsky.feature.import.Services
 				// only set when date is parsed if not ignore update
 				if ( importIndexItem.FileIndexItem.DateTime.Year != 1 )
 				{
-					importIndexItem.DateTimeParsedFromFileName = true;
+					importIndexItem.DateTimeFromFileName = true;
 				}
 			}
 
@@ -480,11 +479,11 @@ namespace starsky.feature.import.Services
 		    {
 			    updateItemAsync = new QueryFactory(
 				    new SetupDatabaseTypes(_appSettings), _query,
-				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
+				    _memoryCache, _appSettings, _logger).Query().UpdateItemAsync;
 		    }
 		    
 		    importIndexItem.FileIndexItem = await _updateImportTransformations.UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
-			    importSettings.ColorClass, importIndexItem.DateTimeParsedFromFileName, importSettings.IndexMode);
+			    importSettings.ColorClass, importIndexItem.DateTimeFromFileName, importSettings.IndexMode);
 
 		    DeleteFileAfter(importSettings,importIndexItem);
 		    
@@ -545,15 +544,16 @@ namespace starsky.feature.import.Services
 		/// <summary>
 		/// Add item to database
 		/// </summary>
-		private async Task<ImportIndexItem> AddToQueryAndImportDatabaseAsync(ImportIndexItem importIndexItem,
+		private async Task AddToQueryAndImportDatabaseAsync(
+			ImportIndexItem importIndexItem,
 			ImportSettingsModel importSettings)
 		{
 			if ( !importSettings.IndexMode || !_importQuery.TestConnection() )
 			{
 				if ( _appSettings.IsVerbose() ) _console.WriteLine($" AddToQueryAndImportDatabaseAsync Ignored - " +
 				                                               $"IndexMode {importSettings.IndexMode} " +
-				                                               $"TestConnection {_importQuery?.TestConnection()}");
-				return importIndexItem;
+				                                               $"TestConnection {_importQuery.TestConnection()}");
+				return;
 			}
 
 			// Add to Normal File Index database
@@ -566,8 +566,6 @@ namespace starsky.feature.import.Services
 			await importQuery.AddAsync(importIndexItem, importSettings.IsConsoleOutputModeDefault() );
 			
 			await query.DisposeAsync();
-			
-			return importIndexItem;
 		}
 
 		/// <summary>

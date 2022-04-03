@@ -154,6 +154,24 @@ namespace starskytest.starsky.foundation.database.Models
             
 			Assert.AreEqual(answerDateTime,input.DateTime);
 		}
+		
+		[TestMethod]
+		public void ImportIndexItemParse_Structure_Fallback()
+		{
+			_appSettings.Structure = null;
+			var input = new ImportIndexItem(_appSettings){SourceFullFilePath = ".jpg"};
+			var result = input.ParseDateTimeFromFileName();
+			Assert.AreEqual(result,new DateTime());
+		}
+		
+		[TestMethod]
+		public void ImportIndexItemParse_Structure_Fallback()
+		{
+			_appSettings.Structure = null;
+			var input = new ImportIndexItem(_appSettings){SourceFullFilePath = ".jpg"};
+			var result = input.ParseDateTimeFromFileName();
+			Assert.AreEqual(result,new DateTime());
+		}
         
 		[TestMethod]
 		public void ImportIndexItemParse_ParseDateTimeFromFileName_WithExtraDotsInName_Test()
