@@ -441,6 +441,7 @@ namespace starsky.feature.import.Services
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
 
+			// True when exist and file type is raw
 			var xmpExistForThisFileType = ExistXmpSidecarForThisFileType(importIndexItem);
 			
 			if ( xmpExistForThisFileType || (_appSettings.ExifToolImportXmpCreate 
@@ -455,7 +456,7 @@ namespace starsky.feature.import.Services
 			await AddToQueryAndImportDatabaseAsync(importIndexItem, importSettings);
 			
 			// Copy
-			if ( _appSettings.IsVerbose() ) Console.WriteLine("Next Action = Copy" +
+			if ( _appSettings.IsVerbose() ) _logger.LogInformation("[Import] Next Action = Copy" +
 			                        $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
 			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
 				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath);
@@ -472,7 +473,7 @@ namespace starsky.feature.import.Services
 
 		    // Run Exiftool to Update for example colorClass
 		    importIndexItem.FileIndexItem = await UpdateImportTransformations(importIndexItem.FileIndexItem, 
-			    importSettings.ColorClass, importIndexItem.DateTimeParsedFromFileName);
+			    importSettings.ColorClass, importIndexItem.DateTimeParsedFromFileName, importSettings.IndexMode);
 
 		    DeleteFileAfter(importSettings,importIndexItem);
 		    
@@ -510,7 +511,7 @@ namespace starsky.feature.import.Services
 		}
 
 		/// <summary>
-		/// Support for include sidecar files
+		/// Support for include sidecar files - True when exist && current filetype is raw
 		/// </summary>
 		/// <param name="importIndexItem">to get the SourceFullFilePath</param>
 		/// <returns>True when exist && current filetype is raw</returns>
@@ -559,8 +560,9 @@ namespace starsky.feature.import.Services
 		/// <param name="fileIndexItem">information</param>
 		/// <param name="colorClassTransformation">change colorClass</param>
 		/// <param name="dateTimeParsedFromFileName">is date time parsed from fileName</param>
+		/// <param name="indexMode">should update database</param>
 		private async Task<FileIndexItem> UpdateImportTransformations(FileIndexItem fileIndexItem, 
-			int colorClassTransformation, bool dateTimeParsedFromFileName)
+			int colorClassTransformation, bool dateTimeParsedFromFileName, bool indexMode)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
 
@@ -571,7 +573,7 @@ namespace starsky.feature.import.Services
 				comparedNamesList = DateTimeParsedComparedNamesList();
 			}
 
-			if ( colorClassTransformation == -1 )
+			if ( colorClassTransformation >= 0 )
 			{
 				_logger.LogInformation($"[Import] ColorClassComparedNamesList ExifTool Sync {fileIndexItem.FilePath}");
 				comparedNamesList = ColorClassComparedNamesList(comparedNamesList);
@@ -582,6 +584,9 @@ namespace starsky.feature.import.Services
 			await new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
 				new ReadMeta(_subPathStorage, _appSettings)).UpdateAsync(fileIndexItem, comparedNamesList);
 
+			// Only update database when indexMode is true
+			if ( !indexMode ) return fileIndexItem;
+			
 			// Hash is changed after transformation
 			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
 			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
