@@ -102,6 +102,11 @@ namespace starsky.foundation.database.Models
 
         public string MakeModel { get; set; }
 
+        /// <summary>
+        /// Is the Exif DateTime parsed from the fileName
+        /// </summary>
+        public bool DateTimeParsedFromFileName { get; set; } = false;
+
         public DateTime ParseDateTimeFromFileName()
         {
             // Depends on 'AppSettingsProvider.Structure'

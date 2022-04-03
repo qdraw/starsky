@@ -333,6 +333,11 @@ namespace starsky.feature.import.Services
 				importIndexItem.FileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
 				// used to sync exifTool and to let the user know that the transformation has been applied
 				importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
+				// only set when date is parsed if not ignore update
+				if ( importIndexItem.FileIndexItem.DateTime.Year != 1 )
+				{
+					importIndexItem.DateTimeParsedFromFileName = true;
+				}
 			}
 
 			// Also add Camera brand to list
@@ -463,26 +468,45 @@ namespace starsky.feature.import.Services
 			    _filesystemStorage.FileCopy(xmpSourceFullFilePath, destinationXmpFullPath);
 		    }
 		    
-		    // From here on the item is exit in the storage folder
-		    // Creation of a sidecar xmp file
-		    if ( _appSettings.ExifToolImportXmpCreate && !xmpExistForThisFileType)
-		    {
-			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, _appSettings));
-			    await exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
-		    }
+		    await CreateSideCarFile(importIndexItem, xmpExistForThisFileType);
 
 		    // Run Exiftool to Update for example colorClass
-		    importIndexItem.FileIndexItem = await UpdateImportTransformations(
-			    importIndexItem.FileIndexItem, importSettings.ColorClass);
+		    importIndexItem.FileIndexItem = await UpdateImportTransformations(importIndexItem.FileIndexItem, 
+			    importSettings.ColorClass, importIndexItem.DateTimeParsedFromFileName);
 
-			// to move files
-            if (importSettings.DeleteAfter)
-            {
-	            if ( _appSettings.IsVerbose() ) _console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
-	            _filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
-            }
-            if ( _appSettings.IsVerbose() ) Console.Write("+");
+		    DeleteFileAfter(importSettings,importIndexItem);
+		    
+            if ( _appSettings.IsVerbose() ) _console.Write("+");
             return importIndexItem;
+		}
+
+		/// <summary>
+		/// To Move Files after import
+		/// </summary>
+		/// <param name="importSettings">to enable the 'Delete After' flag</param>
+		/// <param name="importIndexItem">item</param>
+		private void DeleteFileAfter(ImportSettingsModel importSettings,
+			ImportIndexItem importIndexItem)
+		{
+			// to move files
+			if ( !importSettings.DeleteAfter ) return;
+			if ( _appSettings.IsVerbose() ) _console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
+			_filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
+		}
+
+		/// <summary>
+		///	From here on the item is exit in the storage folder
+		/// Creation of a sidecar xmp file
+		/// </summary>
+		/// <param name="importIndexItem"></param>
+		/// <param name="xmpExistForThisFileType"></param>
+		private async Task CreateSideCarFile(ImportIndexItem importIndexItem, bool xmpExistForThisFileType)
+		{
+			if ( _appSettings.ExifToolImportXmpCreate && !xmpExistForThisFileType)
+			{
+				var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, _appSettings));
+				await exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
+			}
 		}
 
 		/// <summary>
@@ -500,8 +524,10 @@ namespace starsky.feature.import.Services
 				       .SourceFullFilePath) &&
 			       _filesystemStorage.ExistFile(xmpSourceFullFilePath);
 		}
-
-
+		
+		/// <summary>
+		/// Add item to database
+		/// </summary>
 		private async Task<ImportIndexItem> AddToQueryAndImportDatabaseAsync(ImportIndexItem importIndexItem,
 			ImportSettingsModel importSettings)
 		{
@@ -516,42 +542,69 @@ namespace starsky.feature.import.Services
 			// Add to Normal File Index database
 			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
 				_memoryCache, _appSettings,_logger).Query();
-			
 			await query.AddItemAsync(importIndexItem.FileIndexItem);
 			
 			// Add to check db, to avoid duplicate input
 			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery,_console).ImportQuery();
 			await importQuery.AddAsync(importIndexItem, importSettings.IsConsoleOutputModeDefault() );
 			
+			await query.DisposeAsync();
+			
 			return importIndexItem;
 		}
 
 		/// <summary>
-		/// Run Transformation on Import to the files in the database
+		/// Run Transformation on Import to the files in the database && Update fileHash in database
 		/// </summary>
 		/// <param name="fileIndexItem">information</param>
 		/// <param name="colorClassTransformation">change colorClass</param>
-		private async Task<FileIndexItem> UpdateImportTransformations(FileIndexItem fileIndexItem, int colorClassTransformation)
+		/// <param name="dateTimeParsedFromFileName">is date time parsed from fileName</param>
+		private async Task<FileIndexItem> UpdateImportTransformations(FileIndexItem fileIndexItem, 
+			int colorClassTransformation, bool dateTimeParsedFromFileName)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
 
-			// Update the contents to the file the imported item
-			if ( fileIndexItem.Description != MessageDateTimeBasedOnFilename &&
-			     colorClassTransformation == -1 ) return fileIndexItem;
-			
-			if ( _appSettings.IsVerbose() ) Console.WriteLine("Do a exifToolSync");
-
-			var comparedNamesList = new List<string>
+			var comparedNamesList = new List<string>();
+			if ( dateTimeParsedFromFileName )
 			{
-				nameof(FileIndexItem.DateTime).ToLowerInvariant(),
-				nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
-				nameof(FileIndexItem.Description).ToLowerInvariant(),
-			};
+				_logger.LogInformation($"[Import] DateTimeParsedFromFileName ExifTool Sync {fileIndexItem.FilePath}");
+				comparedNamesList = DateTimeParsedComparedNamesList();
+			}
 
+			if ( colorClassTransformation == -1 )
+			{
+				_logger.LogInformation($"[Import] ColorClassComparedNamesList ExifTool Sync {fileIndexItem.FilePath}");
+				comparedNamesList = ColorClassComparedNamesList(comparedNamesList);
+			}
+
+			if ( !comparedNamesList.Any() ) return fileIndexItem;
+			
 			await new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
 				new ReadMeta(_subPathStorage, _appSettings)).UpdateAsync(fileIndexItem, comparedNamesList);
-			
+
+			// Hash is changed after transformation
+			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
+			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
+				_memoryCache, _appSettings,_logger).Query();
+			await query.UpdateItemAsync(fileIndexItem);
+			await query.DisposeAsync();
+
 			return fileIndexItem.Clone();
+		}
+
+		private static List<string> DateTimeParsedComparedNamesList()
+		{
+			return new List<string>
+			{
+				nameof(FileIndexItem.Description).ToLowerInvariant(),
+				nameof(FileIndexItem.DateTime).ToLowerInvariant(),
+			};
+		}
+		
+		private static List<string> ColorClassComparedNamesList(List<string> list)
+		{
+			list.Add(nameof(FileIndexItem.Description).ToLowerInvariant());
+			return list;
 		}
 		
 		/// <summary>
