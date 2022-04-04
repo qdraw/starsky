@@ -79,6 +79,39 @@ namespace starsky.foundation.platform.Models
 	    /// </summary>
 	    private string PathPrivate { get; set; } = string.Empty;
 
+	    private const string PathDefault = "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/default.png";
+
+	    /// <summary>
+	    /// Get the path to the overlay image and replace the {AssemblyDirectory}
+	    /// </summary>
+	    /// <param name="value">input value, can be null</param>
+	    /// <returns>system path with replaced {AssemblyDirectory}</returns>
+	    public static string GetDefaultPath(string value = null)
+	    {
+		    if ( string.IsNullOrEmpty(value) )
+		    {
+			    value = PathDefault;
+		    }
+		    
+		    // get current dir
+		    var assemblyDirectory = PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory);
+		    // replace value -- ignore this case
+		    var subPath = Regex.Replace(value, "{AssemblyDirectory}", 
+			    string.Empty, RegexOptions.IgnoreCase);
+			    
+		    // append and replace
+		    return assemblyDirectory + subPath
+			    .Replace("starskywebftpcli", "starskywebhtmlcli");
+	    }
+
+	    /// <summary>
+	    /// Reset the path to string.Empty
+	    /// </summary>
+	    public void ResetPath()
+	    {
+		    PathPrivate = string.Empty;
+	    }
+
 	    /// <summary>
 	    /// used for template url or overlay image
 	    /// </summary>
@@ -93,7 +126,7 @@ namespace starsky.foundation.platform.Models
 		    {
 			    if ( string.IsNullOrEmpty(value) )
 			    {
-				    value = "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/default.png";
+				    value = PathDefault;
 			    }
 
 			    if ( !value.Contains("{AssemblyDirectory}") )
@@ -101,15 +134,9 @@ namespace starsky.foundation.platform.Models
 				    PathPrivate = value;
 				    return;
 			    }
-				// get current dir
-			    var assemblyDirectory = PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory);
-			    // replace value -- ignore this case
-			    var subPath = Regex.Replace(value, "{AssemblyDirectory}", 
-				    string.Empty, RegexOptions.IgnoreCase);
 			    
 			    // append and replace
-			    PathPrivate = assemblyDirectory + subPath
-				    .Replace("starskywebftpcli", "starskywebhtmlcli");
+			    PathPrivate = GetDefaultPath(value);
 		    }
 	    }
 

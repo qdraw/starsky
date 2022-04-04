@@ -8,6 +8,7 @@ namespace starsky.foundation.platform.JsonConverter
 			new JsonSerializerOptions
 			{
 				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+				PropertyNameCaseInsensitive = true,
 			};
 	}
 }
