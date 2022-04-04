@@ -960,5 +960,45 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsFalse(result);
 		}
 
+		[TestMethod]
+		public void AddToQueryAndImportDatabaseAsync_NoConnection_NoVerbose()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+
+			var logger = new FakeIWebLogger();
+			var appSettings = new AppSettings();
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
+			
+			importService.AddToQueryAndImportDatabaseAsync(
+				new ImportIndexItem(), new ImportSettingsModel{ IndexMode = false});
+
+			Assert.AreEqual(0,logger.TrackedInformation.Count(p => p.Item2.Contains("AddToQueryAndImportDatabaseAsync")));
+		}
+		
+		[TestMethod]
+		public void AddToQueryAndImportDatabaseAsync_NoConnection_YesVerbose()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+
+			var logger = new FakeIWebLogger();
+			var appSettings = new AppSettings{Verbose = true};
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
+			
+			importService.AddToQueryAndImportDatabaseAsync(
+				new ImportIndexItem(), new ImportSettingsModel{ IndexMode = false});
+
+			Assert.AreEqual(1,logger.TrackedInformation.Count(p => p.Item2.Contains("AddToQueryAndImportDatabaseAsync")));
+		}
+
 	}
 }
