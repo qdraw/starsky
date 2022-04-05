@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.feature.import.Helpers;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Import;
@@ -22,7 +24,6 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 using starskycore.Models;
@@ -36,7 +37,7 @@ namespace starsky.feature.import.Services
 	[Service(typeof(IImport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class Import : IImport
 	{
-		private readonly IImportQuery _importQuery;
+		private readonly IImportQuery? _importQuery;
 		
 		// storage providers
 		private readonly IStorage _filesystemStorage;
@@ -52,15 +53,15 @@ namespace starsky.feature.import.Services
 		private readonly IConsole _console;
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 
-		private readonly IMemoryCache _memoryCache;
+		private readonly IMemoryCache? _memoryCache;
 		private readonly IWebLogger _logger;
-		
+		private readonly UpdateImportTransformations _updateImportTransformations;
+
 		/// <summary>
 		/// Used when File has no exif date in description
 		/// </summary>
-		internal string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
+		internal const string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
 
-		
 		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,
@@ -70,7 +71,7 @@ namespace starsky.feature.import.Services
 			IConsole console,
 			IMetaExifThumbnailService metaExifThumbnailService,
 			IWebLogger logger,
-			IMemoryCache memoryCache = null)
+			IMemoryCache? memoryCache = null)
 		{
 			_importQuery = importQuery;
 			
@@ -86,6 +87,7 @@ namespace starsky.feature.import.Services
             _metaExifThumbnailService = metaExifThumbnailService;
             _memoryCache = memoryCache;
             _logger = logger;
+            _updateImportTransformations = new UpdateImportTransformations(logger, _exifTool, selectorStorage, appSettings);
 		}
 
 		/// <summary>
@@ -270,7 +272,7 @@ namespace starsky.feature.import.Services
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key, SourceFullFilePath = inputFileFullPath.Key};
 			}
 			
-			if (importSettings.IndexMode && await _importQuery.IsHashInImportDbAsync(hashList.Key) )
+			if (importSettings.IndexMode && await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
 			{
 				if ( _appSettings.IsVerbose() ) _console.WriteLine($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 				return new ImportIndexItem
@@ -333,6 +335,11 @@ namespace starsky.feature.import.Services
 				importIndexItem.FileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
 				// used to sync exifTool and to let the user know that the transformation has been applied
 				importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
+				// only set when date is parsed if not ignore update
+				if ( importIndexItem.FileIndexItem.DateTime.Year != 1 )
+				{
+					importIndexItem.DateTimeFromFileName = true;
+				}
 			}
 
 			// Also add Camera brand to list
@@ -436,6 +443,7 @@ namespace starsky.feature.import.Services
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
 
+			// True when exist and file type is raw
 			var xmpExistForThisFileType = ExistXmpSidecarForThisFileType(importIndexItem);
 			
 			if ( xmpExistForThisFileType || (_appSettings.ExifToolImportXmpCreate 
@@ -450,7 +458,7 @@ namespace starsky.feature.import.Services
 			await AddToQueryAndImportDatabaseAsync(importIndexItem, importSettings);
 			
 			// Copy
-			if ( _appSettings.IsVerbose() ) Console.WriteLine("Next Action = Copy" +
+			if ( _appSettings.IsVerbose() ) _logger.LogInformation("[Import] Next Action = Copy" +
 			                        $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
 			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
 				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath);
@@ -463,35 +471,67 @@ namespace starsky.feature.import.Services
 			    _filesystemStorage.FileCopy(xmpSourceFullFilePath, destinationXmpFullPath);
 		    }
 		    
-		    // From here on the item is exit in the storage folder
-		    // Creation of a sidecar xmp file
-		    if ( _appSettings.ExifToolImportXmpCreate && !xmpExistForThisFileType)
-		    {
-			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, _appSettings));
-			    await exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
-		    }
+		    await CreateSideCarFile(importIndexItem, xmpExistForThisFileType);
 
 		    // Run Exiftool to Update for example colorClass
-		    importIndexItem.FileIndexItem = await UpdateImportTransformations(
-			    importIndexItem.FileIndexItem, importSettings.ColorClass);
+		    UpdateImportTransformations.QueryUpdateDelegate? updateItemAsync = null;
+		    if ( importSettings.IndexMode )
+		    {
+			    updateItemAsync = new QueryFactory(
+				    new SetupDatabaseTypes(_appSettings), _query,
+				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
+		    }
+		    
+		    importIndexItem.FileIndexItem = await _updateImportTransformations.UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
+			    importSettings.ColorClass, importIndexItem.DateTimeFromFileName, importSettings.IndexMode);
 
-			// to move files
-            if (importSettings.DeleteAfter)
-            {
-	            if ( _appSettings.IsVerbose() ) _console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
-	            _filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
-            }
-            if ( _appSettings.IsVerbose() ) Console.Write("+");
+		    DeleteFileAfter(importSettings,importIndexItem);
+		    
+            if ( _appSettings.IsVerbose() ) _console.Write("+");
             return importIndexItem;
 		}
 
 		/// <summary>
-		/// Support for include sidecar files
+		/// To Move Files after import
+		/// </summary>
+		/// <param name="importSettings">to enable the 'Delete After' flag</param>
+		/// <param name="importIndexItem">item</param>
+		private void DeleteFileAfter(ImportSettingsModel importSettings,
+			ImportIndexItem importIndexItem)
+		{
+			// to move files
+			if ( !importSettings.DeleteAfter ) return;
+			if ( _appSettings.IsVerbose() ) _console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
+			_filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
+		}
+
+		/// <summary>
+		///	From here on the item is exit in the storage folder
+		/// Creation of a sidecar xmp file
+		/// </summary>
+		/// <param name="importIndexItem"></param>
+		/// <param name="xmpExistForThisFileType"></param>
+		private async Task CreateSideCarFile(ImportIndexItem importIndexItem, bool xmpExistForThisFileType)
+		{
+			if ( _appSettings.ExifToolImportXmpCreate && !xmpExistForThisFileType)
+			{
+				var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, _appSettings));
+				await exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
+			}
+		}
+
+		/// <summary>
+		/// Support for include sidecar files - True when exist && current filetype is raw
 		/// </summary>
 		/// <param name="importIndexItem">to get the SourceFullFilePath</param>
 		/// <returns>True when exist && current filetype is raw</returns>
-		private bool ExistXmpSidecarForThisFileType(ImportIndexItem importIndexItem)
+		internal bool ExistXmpSidecarForThisFileType(ImportIndexItem importIndexItem)
 		{
+			if ( string.IsNullOrEmpty(importIndexItem.SourceFullFilePath) )
+			{
+				return false;
+			}
+			
 			// Support for include sidecar files
 			var xmpSourceFullFilePath =
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem
@@ -500,60 +540,34 @@ namespace starsky.feature.import.Services
 				       .SourceFullFilePath) &&
 			       _filesystemStorage.ExistFile(xmpSourceFullFilePath);
 		}
-
-
-		private async Task<ImportIndexItem> AddToQueryAndImportDatabaseAsync(ImportIndexItem importIndexItem,
+		
+		/// <summary>
+		/// Add item to database
+		/// </summary>
+		internal async Task AddToQueryAndImportDatabaseAsync(
+			ImportIndexItem importIndexItem,
 			ImportSettingsModel importSettings)
 		{
-			if ( !importSettings.IndexMode || !_importQuery.TestConnection() )
+			if ( !importSettings.IndexMode || _importQuery?.TestConnection() != true )
 			{
-				if ( _appSettings.IsVerbose() ) _console.WriteLine($" AddToQueryAndImportDatabaseAsync Ignored - " +
+				if ( _appSettings.IsVerbose() ) _logger.LogInformation(" AddToQueryAndImportDatabaseAsync Ignored - " +
 				                                               $"IndexMode {importSettings.IndexMode} " +
 				                                               $"TestConnection {_importQuery?.TestConnection()}");
-				return importIndexItem;
+				return;
 			}
 
 			// Add to Normal File Index database
 			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
 				_memoryCache, _appSettings,_logger).Query();
-			
-			await query.AddItemAsync(importIndexItem.FileIndexItem);
+			await query!.AddItemAsync(importIndexItem.FileIndexItem);
 			
 			// Add to check db, to avoid duplicate input
 			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery,_console).ImportQuery();
 			await importQuery.AddAsync(importIndexItem, importSettings.IsConsoleOutputModeDefault() );
 			
-			return importIndexItem;
+			await query.DisposeAsync();
 		}
 
-		/// <summary>
-		/// Run Transformation on Import to the files in the database
-		/// </summary>
-		/// <param name="fileIndexItem">information</param>
-		/// <param name="colorClassTransformation">change colorClass</param>
-		private async Task<FileIndexItem> UpdateImportTransformations(FileIndexItem fileIndexItem, int colorClassTransformation)
-		{
-			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
-
-			// Update the contents to the file the imported item
-			if ( fileIndexItem.Description != MessageDateTimeBasedOnFilename &&
-			     colorClassTransformation == -1 ) return fileIndexItem;
-			
-			if ( _appSettings.IsVerbose() ) Console.WriteLine("Do a exifToolSync");
-
-			var comparedNamesList = new List<string>
-			{
-				nameof(FileIndexItem.DateTime).ToLowerInvariant(),
-				nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
-				nameof(FileIndexItem.Description).ToLowerInvariant(),
-			};
-
-			await new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
-				new ReadMeta(_subPathStorage, _appSettings)).UpdateAsync(fileIndexItem, comparedNamesList);
-			
-			return fileIndexItem.Clone();
-		}
-		
 		/// <summary>
 		/// Number of checks for files with the same filePath.
 		/// Change only to get Exceptions earlier

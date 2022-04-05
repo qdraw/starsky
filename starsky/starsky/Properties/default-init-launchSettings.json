@@ -15,7 +15,9 @@
           "_app__storageFolder": "remove prefix underscore",
           "_app__ApplicationInsightsInstrumentationKey": "remove prefix underscore",
           "app__ApplicationInsightsDatabaseTracking": "true",
-          "app__ApplicationInsightsLog": "true"
+          "app__ApplicationInsightsLog": "true",
+          "app__EnablePackageTelemetry": "false",
+          "app__EnablePackageTelemetryDebug": "true"
       }
     }
   }

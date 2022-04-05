@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Attributes;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.JsonConverter;
 using TimeZoneConverter;
 
 namespace starsky.foundation.platform.Models
@@ -701,8 +702,8 @@ namespace starsky.foundation.platform.Models
 		{
 			var userProfileFolder = Environment.GetFolderPath(
 				Environment.SpecialFolder.UserProfile);
-			
-			var appSettings = (AppSettings) MemberwiseClone();
+
+			var appSettings = this.CloneViaJson();
 		    
 			if ( appSettings.DatabaseType != DatabaseTypeList.Sqlite )
 			{
@@ -735,18 +736,28 @@ namespace starsky.foundation.platform.Models
 			{
 				foreach ( var value in appSettings.PublishProfiles.SelectMany(profile => profile.Value) )
 				{
-					if ( !string.IsNullOrEmpty(value.Path) )
-					{
-						value.Path = CloneToDisplaySecurityWarning;
-					}
-					if ( !string.IsNullOrEmpty(value.Prepend) )
-					{
-						value.Prepend = CloneToDisplaySecurityWarning;
-					}
+					ReplaceAppSettingsPublishProfilesCloneToDisplay(value);
 				}
 			}
 
 			return appSettings;
+		}
+
+		private static void ReplaceAppSettingsPublishProfilesCloneToDisplay(AppSettingsPublishProfiles value)
+		{
+			if ( !string.IsNullOrEmpty(value.Path) && value.Path != AppSettingsPublishProfiles.GetDefaultPath() )
+			{
+				value.Path = CloneToDisplaySecurityWarning;
+			}
+			else if ( value.Path == AppSettingsPublishProfiles.GetDefaultPath() )
+			{
+				value.ResetPath();
+			}
+
+			if ( !string.IsNullOrEmpty(value.Prepend))
+			{
+				value.Prepend = CloneToDisplaySecurityWarning;
+			}
 		}
 
 		/// <summary>

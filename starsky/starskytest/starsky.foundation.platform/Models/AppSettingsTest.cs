@@ -313,6 +313,7 @@ namespace starskytest.starsky.foundation.platform.Models
 				ApplicationInsightsInstrumentationKey = "token"
 			};
 			var display = appSettings.CloneToDisplay();
+			
 			Assert.AreEqual(display.DatabaseConnection,AppSettings.CloneToDisplaySecurityWarning);
 			Assert.AreEqual(display.WebFtp,AppSettings.CloneToDisplaySecurityWarning);
 			Assert.AreEqual(display.ApplicationInsightsInstrumentationKey,AppSettings.CloneToDisplaySecurityWarning);
@@ -329,6 +330,7 @@ namespace starskytest.starsky.foundation.platform.Models
 					{
 						new AppSettingsPublishProfiles
 						{
+							Copy = true,
 						},
 						new AppSettingsPublishProfiles
 						{

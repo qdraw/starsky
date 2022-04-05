@@ -100,7 +100,14 @@ namespace starsky.foundation.database.Models
         [JsonIgnore]
         public string Structure { get; set; }
 
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public string MakeModel { get; set; }
+
+        /// <summary>
+        /// Is the Exif DateTime parsed from the fileName
+        /// </summary>
+        [NotMapped]
+        public bool DateTimeFromFileName { get; set; }
 
         public DateTime ParseDateTimeFromFileName()
         {
@@ -112,6 +119,7 @@ namespace starsky.foundation.database.Models
             
             // Replace asterisk > escape all options
             var structuredFileName = Structure.Split("/".ToCharArray()).LastOrDefault();
+            if ( structuredFileName == null || string.IsNullOrEmpty(fileName) ) return new DateTime();
             structuredFileName = structuredFileName.Replace("*", "");
             structuredFileName = structuredFileName.Replace(".ext", string.Empty);
             structuredFileName = structuredFileName.Replace("{filenamebase}", string.Empty);

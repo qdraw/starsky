@@ -8,8 +8,11 @@ Param(
 
 Push-Location $PSScriptRoot
 
-$env:DOTNET_CLI_TELEMETRY_OPTOUT = "true"
-$env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
+$env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = 1
+$env:DOTNET_CLI_TELEMETRY_OPTOUT = 1
+# When DOTNET_MULTILEVEL_LOOKUP is set to 0, .NET ignores any globally installed .NET version.
+$env:DOTNET_MULTILEVEL_LOOKUP = 1
+
 try { 
     [System.Environment]::SetEnvironmentVariable('DOTNET_CLI_TELEMETRY_OPTOUT','true')
     [System.Environment]::SetEnvironmentVariable('DOTNET_SKIP_FIRST_TIME_EXPERIENCE','1') 
