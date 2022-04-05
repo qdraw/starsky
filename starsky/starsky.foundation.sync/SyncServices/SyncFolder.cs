@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,10 +72,25 @@ namespace starsky.foundation.sync.SyncServices
 
 			// // remove the duplicates from a large list of folders
 			var folderList = await _query.GetObjectsByFilePathQueryAsync(subPaths);
-			await _duplicate.RemoveDuplicateAsync(folderList);
+			folderList = await _duplicate.RemoveDuplicateAsync(folderList);
+
+			await CompareFolderListAndFixMissingFolders(subPaths, folderList);
 				
 			allResults.Add(await AddParentFolder(inputSubPath));
 			return allResults;
+		}
+
+		internal async Task CompareFolderListAndFixMissingFolders(IEnumerable<string> subPaths, List<FileIndexItem> folderList)
+		{
+			foreach ( var path in subPaths.Where(path => folderList.All(p => p.FilePath != path)) )
+			{
+				await _query.AddItemAsync(new FileIndexItem(path)
+				{
+					IsDirectory = true,
+					AddToDatabase = DateTime.UtcNow,
+					ColorClass = ColorClassParser.Color.None
+				});
+			}
 		}
 	
 		private async Task<List<FileIndexItem>> LoopOverFolder(IReadOnlyCollection<FileIndexItem> fileIndexItems, 
