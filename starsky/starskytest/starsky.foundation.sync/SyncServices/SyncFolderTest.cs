@@ -396,9 +396,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public async Task CompareFolderListAndFixMissingFoldersTest()
+		public async Task CompareFolderListAndFixMissingFoldersTest_Ok()
 		{
-			var storage = new FakeIStorage();
+			var storage = new FakeIStorage(new List<string>{"/", "/2018", "/2018/02", "/2018/02/2018_02_01"});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
 			
@@ -411,5 +411,41 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual("/2018/02/2018_02_01",(await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01")).FilePath);
 		}
 		
+		[TestMethod]
+		public async Task CompareFolderListAndFixMissingFoldersTest_Ok_SameCount()
+		{
+			var storage = new FakeIStorage(new List<string>{"/", "/2018", "/2018/02", "/2018/02/2018_02_01"});
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
+			
+			await syncFolder.CompareFolderListAndFixMissingFolders(
+				new List<string>{"/", "/2018", "/2018/02", "/2018/02/2018_02_01"},
+				new List<FileIndexItem>{
+					new FileIndexItem("/"),
+					new FileIndexItem("/2018"), 
+					new FileIndexItem("/2018/02"), 
+					new FileIndexItem("/2018/02/2018_02_01")}
+				);
+			
+			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018")));
+			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018/02")));
+			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01")));
+		}
+		
+		[TestMethod]
+		public async Task CompareFolderListAndFixMissingFoldersTest_NotFound()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"});
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
+			
+			await syncFolder.CompareFolderListAndFixMissingFolders(
+				new List<string>{"/", "/2018", "/2018/02", "/2018/02/2018_02_01"},
+				new List<FileIndexItem>{new FileIndexItem("/2018")});
+			
+			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018")));
+			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018/02")));
+			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01")));
+		}
 	}
 }

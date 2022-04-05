@@ -80,16 +80,21 @@ namespace starsky.foundation.sync.SyncServices
 			return allResults;
 		}
 
-		internal async Task CompareFolderListAndFixMissingFolders(IEnumerable<string> subPaths, List<FileIndexItem> folderList)
+		internal async Task CompareFolderListAndFixMissingFolders(List<string> subPaths, List<FileIndexItem> folderList)
 		{
+			if ( subPaths.Count == folderList.Count ) return;
+			
 			foreach ( var path in subPaths.Where(path => folderList.All(p => p.FilePath != path)) )
 			{
-				await _query.AddItemAsync(new FileIndexItem(path)
+				if ( _subPathStorage.ExistFolder(path) )
 				{
-					IsDirectory = true,
-					AddToDatabase = DateTime.UtcNow,
-					ColorClass = ColorClassParser.Color.None
-				});
+					await _query.AddItemAsync(new FileIndexItem(path)
+					{
+						IsDirectory = true,
+						AddToDatabase = DateTime.UtcNow,
+						ColorClass = ColorClassParser.Color.None
+					});
+				}
 			}
 		}
 	
