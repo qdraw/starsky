@@ -84,17 +84,15 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			if ( subPaths.Count == folderList.Count ) return;
 			
-			foreach ( var path in subPaths.Where(path => folderList.All(p => p.FilePath != path)) )
+			foreach ( var path in subPaths.Where(path => folderList.All(p => p.FilePath != path) &&
+				         _subPathStorage.ExistFolder(path)) )
 			{
-				if ( _subPathStorage.ExistFolder(path) )
+				await _query.AddItemAsync(new FileIndexItem(path)
 				{
-					await _query.AddItemAsync(new FileIndexItem(path)
-					{
-						IsDirectory = true,
-						AddToDatabase = DateTime.UtcNow,
-						ColorClass = ColorClassParser.Color.None
-					});
-				}
+					IsDirectory = true,
+					AddToDatabase = DateTime.UtcNow,
+					ColorClass = ColorClassParser.Color.None
+				});
 			}
 		}
 	
