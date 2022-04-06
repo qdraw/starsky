@@ -44,6 +44,17 @@ To publish files generate markup and images with a logo use the [Web Html CLI](s
 
 All these projects are separately compiled using the build script and using the same application settings (`appsettings`) configuration.
 
+## GitHub Issues
+
+### Pay attention
+
+Please do not open an issue on GitHub, unless you have spotted an actual bug in Starsky.
+
+Use [GitHub Discussions](https://github.com/qdraw/starsky/discussions) to ask questions, bring up ideas, or other general items. Issues are not the place for questions, and will either be converted to a discussion or closed.
+
+This policy is in place to avoid bugs being drowned out in a pile of sensible suggestions for future enhancements and calls for help from people who forget to check back if they get it and so on.
+
+
 ## Release status
 
 [![Release](https://img.shields.io/github/v/release/qdraw/starsky)](https://github.com/qdraw/starsky/releases/)
