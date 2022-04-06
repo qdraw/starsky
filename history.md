@@ -43,6 +43,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_  Add Telemetry debug option: `app__EnablePackageTelemetryDebug` (PR #701) 
 - [x]   (Fixed) _Tools_ Show Quality Gate during Pull Requests (PR #707)
 - [x]   (Fixed) _Front-end_ React unit tests are now succeeding using Windows, Mac/Linux did already work (PR #708)
+- [x]   (Fixed) _Back-end_ Reference errors for Telemetry (PR #709 / Issue #710)
+- [x]   (Fixed) _Back-end_ Issue where colorClass import transform gives a wrong fileHash in database  (PR #709)
+- [x]   (Fixed) _Back-end_ Parent database items missing, added check (PR #713 / Issue #711)
 
 # version 0.5.0-beta.3 - 2022-03-09
 - [x]   (Breaking change) _Back-end_ Upgrade to .NET 6 - SDK 6.0.200 (PR #642)

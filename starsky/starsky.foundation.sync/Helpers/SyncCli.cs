@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -51,7 +52,11 @@ namespace starsky.foundation.sync.Helpers
 			{
 				var stopWatch = Stopwatch.StartNew();
 				_console.WriteLine($"Start indexing {subPath}");
-				await _synchronize.Sync(subPath);
+				var result = await _synchronize.Sync(subPath);
+				if ( result.All(p => p.FilePath != subPath) )
+				{
+					_console.WriteLine($"Not Found: {subPath}");
+				}
 				_console.WriteLine($"\nDone SyncFiles! (in sec: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)})");
 			}
 			_console.WriteLine("Done!");

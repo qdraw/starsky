@@ -49,7 +49,6 @@ namespace starskytest.starsky.foundation.platform.Models
 		[TestMethod]
 		public void AppSettingsPublishProfilesTest_Path_AssemblyDirectory()
 		{
-			var appSettings = new AppSettings();
 			var model = new AppSettingsPublishProfiles
 			{
 				Path = "{AssemblyDirectory}" + Path.DirectorySeparatorChar + "test.jpg"
@@ -57,7 +56,6 @@ namespace starskytest.starsky.foundation.platform.Models
 
 			// in real world this is not always BaseDirectoryProject
 			Assert.AreEqual(AppDomain.CurrentDomain.BaseDirectory + "test.jpg", model.Path);
-			
 		}
 
 		[TestMethod]

@@ -158,7 +158,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(new DateTime(2020,04,27,11,07,00), 
 				result.FirstOrDefault().DateTime);
 
-			Assert.AreEqual(importService.MessageDateTimeBasedOnFilename,
+			Assert.AreEqual(Import.MessageDateTimeBasedOnFilename,
 				result.FirstOrDefault().FileIndexItem.Description);
 		}
 		
@@ -400,7 +400,8 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{CreateAnImage.Bytes});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings),query,_console, new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
+				new FakeExifTool(storage, appSettings),query,_console, 
+				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
 
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel{DeleteAfter = true});
@@ -481,7 +482,13 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Importer_Xmp_NotOverWriteExistingFile()
 		{
 			// WhenImportingAFileThatAlreadyHasAnXmpSidecarFile
-			var appSettings = new AppSettings{Verbose = true, ExifToolImportXmpCreate = true};
+			// When importing just copy the xmp file and keep it, not create a new one
+			var appSettings = new AppSettings
+			{
+				Verbose = true, 
+				ExifToolImportXmpCreate = true
+			};
+			
 			var query = new FakeIQuery();
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
@@ -496,15 +503,15 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 			
 			Assert.AreEqual(1, result.Count);
-			var expectedFilePath = GetExpectedFilePath(storage, appSettings, 
+			var xmpExpectedFilePath = GetExpectedFilePath(storage, appSettings, 
 				"/test.dng").Replace(".dng",".xmp");
 
-			var stream = storage.ReadStream(expectedFilePath);
+			var xmpReadStream = storage.ReadStream(xmpExpectedFilePath);
 
-			var streamLength = stream.Length;
-			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(stream);
+			var xmpStreamLength = xmpReadStream.Length;
+			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(xmpReadStream);
 			
-			Assert.AreEqual(CreateAnXmp.Bytes.Length,streamLength);
+			Assert.AreEqual(CreateAnXmp.Bytes.Length,xmpStreamLength);
 			Assert.IsTrue(toStringAsync.Contains("<tiff:Make>Apple</tiff:Make>"));
 		}
 		
@@ -734,7 +741,7 @@ namespace starskytest.starsky.feature.import.Services
 			);
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,null,
-				new FakeExifTool(storage, appSettings),null, _console,
+				new FakeExifTool(storage, appSettings),null!, _console,
 				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
 
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
@@ -849,7 +856,13 @@ namespace starskytest.starsky.feature.import.Services
 
 			var result = await importService.CreateMataThumbnail(new List<ImportIndexItem>
 				{
-					new ImportIndexItem{FileHash = "hash", FilePath = "/test.jpg", Status = ImportStatus.Ok, FileIndexItem = new FileIndexItem(){FileHash = "hash"}}
+					new ImportIndexItem
+					{
+						FileHash = "hash", 
+						FilePath = "/test.jpg", 
+						Status = ImportStatus.Ok, 
+						FileIndexItem = new FileIndexItem(){FileHash = "hash"}
+					}
 				},
 				new ImportSettingsModel());
 			
@@ -885,11 +898,106 @@ namespace starskytest.starsky.feature.import.Services
 
 			await importService.CreateMataThumbnail(new List<ImportIndexItem>
 				{
-					new ImportIndexItem{FileHash = "hash", FilePath = "/test.jpg", Status = ImportStatus.Ok, FileIndexItem = new FileIndexItem(){FileHash = "hash"}}
+					new ImportIndexItem
+					{
+						FileHash = "hash", 
+						FilePath = "/test.jpg", 
+						Status = ImportStatus.Ok, 
+						FileIndexItem = new FileIndexItem(){FileHash = "hash"}
+					}
 				},
 				new ImportSettingsModel());
 			
 			Assert.IsTrue(fakeExifThumbnailService.Input.Any(p => p.Item1 == "/test.jpg"));
+		}
+
+		[TestMethod]
+		public void ExistXmpSidecarForThisFileType_Nothing_Filled_Ignore()
+		{
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(),
+				new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
+				new FakeIQuery(), _console,new FakeIMetaExifThumbnailService(), 
+				new FakeIWebLogger(), new FakeMemoryCache());
+			var result = importService.ExistXmpSidecarForThisFileType(new ImportIndexItem());
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public void ExistXmpSidecarForThisFileType_DngReturn_True()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			var appSettings = new AppSettings();
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
+			
+			var result = importService.ExistXmpSidecarForThisFileType(new ImportIndexItem
+			{
+				SourceFullFilePath = "/test.dng",
+			});
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void ExistXmpSidecarForThisFileType_JpegReturn_False()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			var appSettings = new AppSettings();
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeMemoryCache());
+			
+			var result = importService.ExistXmpSidecarForThisFileType(new ImportIndexItem
+			{
+				SourceFullFilePath = "/test.jpg",
+			});
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void AddToQueryAndImportDatabaseAsync_NoConnection_NoVerbose()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+
+			var logger = new FakeIWebLogger();
+			var appSettings = new AppSettings();
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
+			
+			importService.AddToQueryAndImportDatabaseAsync(
+				new ImportIndexItem(), new ImportSettingsModel{ IndexMode = false});
+
+			Assert.AreEqual(0,logger.TrackedInformation.Count(p => p.Item2.Contains("AddToQueryAndImportDatabaseAsync")));
+		}
+		
+		[TestMethod]
+		public void AddToQueryAndImportDatabaseAsync_NoConnection_YesVerbose()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+
+			var logger = new FakeIWebLogger();
+			var appSettings = new AppSettings{Verbose = true};
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
+			
+			importService.AddToQueryAndImportDatabaseAsync(
+				new ImportIndexItem(), new ImportSettingsModel{ IndexMode = false});
+
+			Assert.AreEqual(1,logger.TrackedInformation.Count(p => p.Item2.Contains("AddToQueryAndImportDatabaseAsync")));
 		}
 
 	}
