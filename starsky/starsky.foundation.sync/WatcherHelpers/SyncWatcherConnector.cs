@@ -16,6 +16,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
@@ -163,8 +164,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 			// update users who are active right now
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(filtered, 
-					$"[system] SyncWatcherConnector");
+				new ApiResponseModel<List<FileIndexItem>>(filtered, ApiMessageType.SyncWatcherConnector);
 			await _websockets!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			

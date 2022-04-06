@@ -43,7 +43,7 @@ namespace starsky.foundation.readmeta.Services
 			if ( _iStorage.ExistFile(subPath) 
 			     && ExtensionRolesHelper.IsExtensionForceGpx(subPath) )
 			{
-				return _readGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(subPath), subPath);
+				return ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(subPath), subPath);
 			}
 	        
 			var fileIndexItemWithPath = new FileIndexItem(subPath);

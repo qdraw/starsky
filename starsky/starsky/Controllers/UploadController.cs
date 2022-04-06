@@ -15,6 +15,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.metathumbnail.Interfaces;
 using starsky.foundation.metathumbnail.Services;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
@@ -143,9 +144,7 @@ namespace starsky.Controllers
 				.Select(item => item.FileIndexItem).ToList();
 			
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(socketResult, 
-					$"[system] /api/disk/rename" +
-					$" {socketResult.FirstOrDefault()?.FilePath}");
+				new ApiResponseModel<List<FileIndexItem>>(socketResult,ApiMessageType.UploadFile);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse, 
 					DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			

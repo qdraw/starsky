@@ -20,7 +20,8 @@ namespace starskytest.starsky.foundation.realtime.Services
 			CancellationToken token = source.Token;
 			
 			await service.StartAsync(token);
-			Assert.IsTrue(connectionService.FakeSendToAllAsync.LastOrDefault().Contains("time"));
+			Assert.IsTrue(connectionService.FakeSendToAllAsync.LastOrDefault()?.Contains("dateTime"));
+			Assert.IsTrue(connectionService.FakeSendToAllAsync.LastOrDefault()?.Contains("dateTime"));
 
 			source.Cancel();
 		}
@@ -52,7 +53,7 @@ namespace starskytest.starsky.foundation.realtime.Services
 			await service.StartAsync(token);
 			await service.StopAsync(token);
 
-			Assert.IsTrue(connectionService.FakeSendToAllAsync.LastOrDefault().Contains("time"));
+			Assert.IsTrue(connectionService.FakeSendToAllAsync.LastOrDefault()?.Contains("dateTime"));
 		}
 	}
 }

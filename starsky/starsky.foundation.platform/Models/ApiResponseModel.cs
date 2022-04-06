@@ -1,24 +1,25 @@
-using System;
+#nullable enable
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.platform.Models
 {
+	[SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
 	public class ApiResponseModel
 	{
-		public string DebugName { get; set; }
-		public string Type { get; set; } = "default";
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+		public ApiMessageType Type { get; set; } = ApiMessageType.Unknown;
 	}
 
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 	public class ApiResponseModel<T> : ApiResponseModel
 	{
-		public ApiResponseModel(T data = default, string debugName = null)
+		public ApiResponseModel(T? data = default, ApiMessageType type = ApiMessageType.Unknown)
 		{
 			Data = data;
-			Type = typeof(T).FullName?.Split(",")[0].Replace("`1[[",",");
-			DebugName = debugName;
+			Type = type;
 		}
-		public T Data { get; set; }
-
+		public T? Data { get; set; }
 	}
 }

@@ -312,7 +312,7 @@ namespace starskytest.Controllers
 
 			controller.Replace("/test09.jpg", "tags", "test", "");
 
-			Assert.AreEqual(2, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+			Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
 		}
         
 		[TestMethod]

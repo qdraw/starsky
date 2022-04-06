@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.feature.rename.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
@@ -82,7 +83,7 @@ namespace starsky.Controllers
 	        if (syncResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 		        Response.StatusCode = 409; // A conflict, Directory already exist
 	        
-	        await SyncMessageToSocket(syncResultsList,"Mkdir");
+	        await SyncMessageToSocket(syncResultsList, ApiMessageType.Mkdir);
 
 	        return Json(syncResultsList);
         }
@@ -91,9 +92,9 @@ namespace starsky.Controllers
         /// Update other users with a message from SyncViewModel
         /// </summary>
         /// <param name="syncResultsList">SyncViewModel</param>
-        /// <param name="name">optional debug name</param>
+        /// <param name="type">optional debug name</param>
         /// <returns>Completed send of Socket SendToAllAsync</returns>
-        private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, string name = "")
+        private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, ApiMessageType type = ApiMessageType.Unknown)
         {
 	        var list = syncResultsList.Select(t => new FileIndexItem(t.FilePath)
 	        {
@@ -101,8 +102,7 @@ namespace starsky.Controllers
 	        }).ToList();
 
 	        var webSocketResponse =
-		        new ApiResponseModel<List<FileIndexItem>>(list, 
-			        $"[system] {name}");
+		        new ApiResponseModel<List<FileIndexItem>>(list, type);
 	        await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 		        DefaultJsonSerializer.CamelCase), CancellationToken.None);
         }
@@ -131,8 +131,7 @@ namespace starsky.Controllers
 			    return NotFound(rename);
 		    
 		    var webSocketResponse =
-			    new ApiResponseModel<List<FileIndexItem>>(rename, 
-				    $"[system] /api/disk/rename {f} > {to}");
+			    new ApiResponseModel<List<FileIndexItem>>(rename,ApiMessageType.Rename);
 		    await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 			    DefaultJsonSerializer.CamelCase), CancellationToken.None);
 

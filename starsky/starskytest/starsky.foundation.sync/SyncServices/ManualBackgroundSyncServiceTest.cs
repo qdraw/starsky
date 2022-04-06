@@ -107,6 +107,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				Console.WriteLine(itemContent.FilePath);
 			}
 			
+			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test2__1234.jpg"));
+			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test3__1234.jpg"));
 			Assert.AreEqual(2,content.Count);
 		}
 		

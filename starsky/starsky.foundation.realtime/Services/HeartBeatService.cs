@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
@@ -63,7 +64,7 @@ namespace starsky.foundation.realtime.Services
 			{
 				var webSocketResponse =
 					new ApiResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds), 
-						$"[system] HeartbeatAsync");
+						ApiMessageType.Heartbeat);
 				await _webSocketConnectionsService.SendToAllAsync(JsonSerializer.Serialize(
 					webSocketResponse, DefaultJsonSerializer.CamelCase), cancellationToken);
 				await Task.Delay(TimeSpan.FromSeconds(SpeedInSeconds), cancellationToken);

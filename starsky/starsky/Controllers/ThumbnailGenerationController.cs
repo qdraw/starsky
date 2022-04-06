@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
@@ -86,8 +87,7 @@ namespace starsky.Controllers
 				if ( !result.Any() ) return;
 
 				var webSocketResponse =
-					new ApiResponseModel<List<FileIndexItem>>(result, 
-						"[system] /api/thumbnail-generation called");
+					new ApiResponseModel<List<FileIndexItem>>(result, ApiMessageType.ThumbnailGeneration);
 				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
 					webSocketResponse,
 					DefaultJsonSerializer.CamelCase), CancellationToken.None);

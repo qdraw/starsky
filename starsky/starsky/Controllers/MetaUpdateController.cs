@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
@@ -110,8 +111,7 @@ namespace starsky.Controllers
 			// Push direct to socket when update or replace to avoid undo after a second
 			_logger.LogInformation($"[UpdateController] send to socket {f}");
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(fileIndexResultsList, 
-					$"[system] /api/update called");
+				new ApiResponseModel<List<FileIndexItem>>(fileIndexResultsList, ApiMessageType.MetaUpdate);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse, 
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
@@ -185,8 +185,7 @@ namespace starsky.Controllers
 			
 			// Push direct to socket when update or replace to avoid undo after a second
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(resultsOkOrDeleteList, 
-					"[system] /api/replace called");
+				new ApiResponseModel<List<FileIndexItem>>(resultsOkOrDeleteList, ApiMessageType.Replace);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			

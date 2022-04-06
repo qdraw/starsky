@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
@@ -69,7 +70,7 @@ namespace starsky.foundation.sync.SyncServices
 			_cache.Set(ManualSyncCacheName + subPath, true, 
 				new TimeSpan(0,1,0));
 			
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
 			{
 				await BackgroundTask(fileIndexItem.FilePath, operationId);
 			});
@@ -80,9 +81,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task PushToSockets(List<FileIndexItem> updatedList)
 		{
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(updatedList, 
-					$"[system] ManualBackgroundSyncService" +
-					$" {updatedList.FirstOrDefault()?.FilePath}");
+				new ApiResponseModel<List<FileIndexItem>>(updatedList, ApiMessageType.ManualBackgroundSync);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
 				webSocketResponse,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);

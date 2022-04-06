@@ -26,8 +26,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			_appSettings = new AppSettings
 			{
-				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+				SyncIgnore = new List<string>{"/.git"}
 			};
+			
 			(_query, _) = CreateNewExampleData();
 		}
 		
@@ -409,6 +411,20 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018")));
 			Assert.AreEqual("/2018/02",(await _query.GetObjectByFilePathAsync("/2018/02")).FilePath);
 			Assert.AreEqual("/2018/02/2018_02_01",(await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01")).FilePath);
+		}
+		
+		[TestMethod]
+		public async Task CompareFolderListAndFixMissingFoldersTest_Ignored()
+		{
+			var storage = new FakeIStorage(new List<string>{"/", "/.git","/test"});
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
+			
+			await syncFolder.CompareFolderListAndFixMissingFolders(
+				new List<string>{"/", "/.git"},
+				new List<FileIndexItem>{new FileIndexItem("/")});
+			
+			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/.git")));
 		}
 		
 		[TestMethod]
