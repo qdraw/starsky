@@ -22,6 +22,7 @@ namespace starsky.foundation.database.Query
 {
 	
 	[Service(typeof(IQuery), InjectionLifetime = InjectionLifetime.Scoped)]
+	// ReSharper disable once RedundantExtendsListEntry
 	public partial class Query : IQuery
     {
         private ApplicationDbContext _context;
@@ -796,13 +797,13 @@ namespace starsky.foundation.database.Query
 		    }
 		    catch ( Microsoft.Data.Sqlite.SqliteException e)
 		    {
-			    _logger?.LogInformation(e, "catch-ed SqliteException going to retry 2 times");
+			    _logger?.LogInformation(e, $"catch-ed SqliteException going to retry 2 times {fileIndexItem.FilePath}");
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
 		    catch ( DbUpdateException e)
 		    {
-			    _logger?.LogInformation(e, "catch-ed DbUpdateException going to retry 2 times");
+			    _logger?.LogInformation(e, $"catch-ed DbUpdateException going to retry 2 times {fileIndexItem.FilePath}");
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
