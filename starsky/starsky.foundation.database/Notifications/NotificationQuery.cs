@@ -14,13 +14,10 @@ namespace starsky.foundation.database.Notifications
 	public class NotificationQuery : INotificationQuery
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly AppSettings _appSettings;
 
-		public NotificationQuery(ApplicationDbContext context, 
-			AppSettings appSettings)
+		public NotificationQuery(ApplicationDbContext context)
 		{
 			_context = context;
-			_appSettings = appSettings;
 		}
 
 		public async Task<NotificationItem> AddNotification(string content)
@@ -41,8 +38,5 @@ namespace starsky.foundation.database.Notifications
 			return AddNotification(stringMessage);
 		}
 	}
-	
-
-
 }
 
