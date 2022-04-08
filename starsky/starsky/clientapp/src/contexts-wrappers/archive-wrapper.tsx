@@ -10,6 +10,7 @@ import {
   ArchiveContextProvider
 } from "../contexts/archive-context";
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
+import { IApiNotificationResponseModel } from "../interfaces/IApiNotificationResponseModel";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
@@ -101,15 +102,17 @@ function updateArchiveFromEvent(
   event: Event,
   dispatch: React.Dispatch<ArchiveAction>
 ) {
-  const pushMessagesEvent = (event as CustomEvent<IFileIndexItem[]>).detail;
+  const pushMessagesEvent = (
+    event as CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>
+  ).detail;
   // useLocation, state or archive is here always the default value
   const parentLocationPath = new URLPath().StringToIUrl(
     window.location.search
   ).f;
 
-  dispatchEmptyFolder(pushMessagesEvent, parentLocationPath, dispatch);
+  dispatchEmptyFolder(pushMessagesEvent.data, parentLocationPath, dispatch);
   const toAddedFiles = filterArchiveFromEvent(
-    pushMessagesEvent,
+    pushMessagesEvent.data,
     parentLocationPath
   );
 
@@ -118,19 +121,17 @@ function updateArchiveFromEvent(
 
 /**
  * When a folder is renamed there is item send with status
- * @param pushMessagesEvent - list of items that contains
+ * @param itemList - list of items that contains
  * @param parentLocationPath - the path to check
  * @param dispatch - send reset
  * @returns
  */
 export function dispatchEmptyFolder(
-  pushMessagesEvent: IFileIndexItem[],
+  itemList: IFileIndexItem[],
   parentLocationPath: string | undefined,
   dispatch: (value: ArchiveAction) => void
 ) {
-  const parentItems = pushMessagesEvent.filter(
-    (p) => p.filePath === parentLocationPath
-  );
+  const parentItems = itemList.filter((p) => p.filePath === parentLocationPath);
   if (
     parentItems.length === 1 &&
     parentItems[0].status === IExifStatus.NotFoundSourceMissing

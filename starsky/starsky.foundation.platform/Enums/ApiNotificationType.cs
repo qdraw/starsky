@@ -6,6 +6,12 @@ namespace starsky.foundation.platform.Enums
 		/// Default uses anything as payload
 		/// </summary>
 		Unknown,
+
+		/// <summary>
+		/// String with dateTime
+		/// </summary>
+		Welcome,
+
 		
 		/// <summary>
 		/// Uses HeartbeatModel as payload
@@ -49,7 +55,7 @@ namespace starsky.foundation.platform.Enums
 		/// <summary>
 		/// Uses List&lt;FileIndexItem&gt; as payload
 		/// </summary>
-		Replace
+		Replace,
 	}
 }
 

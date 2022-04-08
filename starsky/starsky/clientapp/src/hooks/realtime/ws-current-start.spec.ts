@@ -113,7 +113,7 @@ describe("WsCurrentStart", () => {
     it("check if setKeepAliveTimeSpy is on Time", () => {
       var setKeepAliveTimeSpy = jest.fn();
       FireOnMessage(
-        new MessageEvent("t", { data: '{"time": 1}' }),
+        new MessageEvent("t", { data: '{"type" : "Welcome", "time": 1}' }),
         setKeepAliveTimeSpy
       );
       expect(setKeepAliveTimeSpy).toBeCalled();

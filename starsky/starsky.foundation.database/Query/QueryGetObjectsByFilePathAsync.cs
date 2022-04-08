@@ -92,20 +92,27 @@ namespace starsky.foundation.database.Query
 			{
 				return await LocalQuery(_context);
 			}
-			catch ( NullReferenceException )
+			catch ( NullReferenceException ex1)
 			{
+				_logger.LogInformation($"catch-ed null ref exception: {string.Join( ",", filePathList.ToArray() )} {ex1.StackTrace}", ex1);
+				await Task.Delay(50);
 				// System.NullReferenceException: Object reference not set to an instance of an object.
 				// at MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet()
 				try
 				{
 					return await LocalQuery(new InjectServiceScope(_scopeFactory)
-						.Context());
+							.Context());
 				}
-				catch ( MySqlProtocolException)
+				catch ( MySqlProtocolException )
 				{
 					// Packet received out-of-order. Expected 1; got 2.
-					return await LocalQuery(new InjectServiceScope(_scopeFactory)
-						.Context());
+					return await LocalQuery(
+						new InjectServiceScope(_scopeFactory).Context());
+				}
+				catch ( NullReferenceException ex2)
+				{
+					_logger.LogInformation($"catch-ed null ref exception 2: {string.Join( ",", filePathList.ToArray() )} {ex2.StackTrace}", ex2);
+					throw;
 				}
 			}
 			catch ( InvalidOperationException )

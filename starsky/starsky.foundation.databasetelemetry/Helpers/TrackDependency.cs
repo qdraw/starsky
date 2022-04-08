@@ -1,5 +1,5 @@
+#nullable enable
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -8,9 +8,9 @@ namespace starsky.foundation.databasetelemetry.Helpers
 {
 	public class TrackDependency
 	{
-		private readonly TelemetryClient _telemetryClient;
+		private readonly TelemetryClient? _telemetryClient;
 
-		public TrackDependency(TelemetryClient telemetryClient)
+		public TrackDependency(TelemetryClient? telemetryClient)
 		{
 			_telemetryClient = telemetryClient;
 		}
@@ -19,13 +19,13 @@ namespace starsky.foundation.databasetelemetry.Helpers
 		{
 			if ( startTime == null ) return false;
 			var duration = TimeSpan.Zero;
-			if (startTime.Value != default(DateTimeOffset))
+			if (startTime.Value != default)
 			{
 				duration = DateTimeOffset.UtcNow - startTime.Value;
 			}
 			
 			var commandName = command.CommandText;
-			_telemetryClient.TrackDependency(new DependencyTelemetry()
+			_telemetryClient?.TrackDependency(new DependencyTelemetry()
 			{
 				Name = name,
 				Data = commandName,
@@ -34,7 +34,8 @@ namespace starsky.foundation.databasetelemetry.Helpers
 				Timestamp = startTime.Value,
 				Success = success
 			});
-			return true;
+			
+			return _telemetryClient != null;
 		}
 
 	}

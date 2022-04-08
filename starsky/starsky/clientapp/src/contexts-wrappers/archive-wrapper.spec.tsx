@@ -200,16 +200,18 @@ describe("ArchiveContextWrapper", () => {
       };
 
       var result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
-      var detail = [
-        {
-          colorclass: undefined,
-          ...newIFileIndexItem(),
-          filePath: "/test.jpg",
-          fileName: "test",
-          parentDirectory: "/",
-          status: IExifStatus.Ok
-        }
-      ];
+      var detail = {
+        data: [
+          {
+            colorclass: undefined,
+            ...newIFileIndexItem(),
+            filePath: "/test.jpg",
+            fileName: "test",
+            parentDirectory: "/",
+            status: IExifStatus.Ok
+          }
+        ]
+      };
       var event = new CustomEvent(useSocketsEventName, {
         detail
       });
@@ -229,15 +231,17 @@ describe("ArchiveContextWrapper", () => {
       };
 
       var result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
-      var detail = [
-        {
-          colorclass: undefined,
-          ...newIFileIndexItem(),
-          filePath: "/test.jpg",
-          fileName: "test",
-          parentDirectory: "__something__different"
-        }
-      ];
+      const detail = {
+        data: [
+          {
+            colorclass: undefined,
+            ...newIFileIndexItem(),
+            filePath: "/test.jpg",
+            fileName: "test",
+            parentDirectory: "__something__different"
+          }
+        ]
+      };
       var event = new CustomEvent(useSocketsEventName, {
         detail
       });

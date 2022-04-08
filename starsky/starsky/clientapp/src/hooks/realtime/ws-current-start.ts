@@ -1,11 +1,13 @@
 import { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { IApiNotificationResponseModel } from "../../interfaces/IApiNotificationResponseModel";
+import { IFileIndexItem } from "../../interfaces/IFileIndexItem";
 import { UrlQuery } from "../../shared/url-query";
 import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";
 
 function isKeepAliveMessage(item: any) {
-  if (!item) return false;
-  if (item.welcome || item.time) return true;
+  if (!item || !item.type) return false;
+  if (item.type === "Welcome" || item.type === "Heartbeat") return true;
   return false;
 }
 
@@ -28,24 +30,16 @@ export const NewWebSocketService = (): WebSocketService => {
  */
 export function parseJson(data: string): any {
   try {
-    const parsedData = JSON.parse(data);
-    if (
-      parsedData.type &&
-      parsedData.data &&
-      parsedData.type.includes("FileIndexItem")
-    ) {
-      return parsedData;
-    }
-    return;
+    return JSON.parse(data);
   } catch (error) {
     console.log(error);
     return null;
   }
 }
 
-function parseMessage(item: string) {
+function parseMessage(item: IApiNotificationResponseModel<IFileIndexItem[]>) {
   if (!item) return;
-  console.log("[use-sockets] update", item);
+  console.log(`[use-sockets] update ${item.type}`, item.data);
   document.body.dispatchEvent(
     new CustomEvent(useSocketsEventName, { detail: item, bubbles: false })
   );
@@ -89,7 +83,6 @@ export function FireOnMessage(
   setKeepAliveTime: Dispatch<SetStateAction<Date>>
 ) {
   const item = parseJson((e as any).data);
-  console.log(item);
 
   if (isKeepAliveMessage(item)) {
     HandleKeepAliveMessage(setKeepAliveTime, item);

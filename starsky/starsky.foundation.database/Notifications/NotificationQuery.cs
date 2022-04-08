@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Notifications
 {
+	[Service(typeof(INotificationQuery), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class NotificationQuery : INotificationQuery
 	{
 		private readonly ApplicationDbContext _context;

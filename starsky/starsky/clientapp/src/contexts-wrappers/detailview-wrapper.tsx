@@ -6,6 +6,7 @@ import {
   useDetailViewContext
 } from "../contexts/detailview-context";
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
+import { IApiNotificationResponseModel } from "../interfaces/IApiNotificationResponseModel";
 import { IDetailView } from "../interfaces/IDetailView";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import DocumentTitle from "../shared/document-title";
@@ -75,11 +76,13 @@ function updateDetailViewFromEvent(
   event: Event,
   dispatch: React.Dispatch<DetailViewAction>
 ) {
-  const pushMessages = (event as CustomEvent<IFileIndexItem[]>).detail;
+  const pushMessages = (
+    event as CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>
+  ).detail;
   // useLocation, state or detailView is here always the default value
   var locationPath = new URLPath().StringToIUrl(window.location.search).f;
 
-  for (const pushMessage of pushMessages) {
+  for (const pushMessage of pushMessages.data) {
     // only update the state of the current view
     if (locationPath !== pushMessage.filePath) {
       // we choose to remove everything to avoid display errors

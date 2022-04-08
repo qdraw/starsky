@@ -104,18 +104,20 @@ describe("DetailViewWrapper", () => {
       document.body.innerHTML = "";
       var result = mountReactHook(DetailViewEventListenerUseEffect, [dispatch]);
 
-      var detail = [
-        {
-          ...newIFileIndexItem()
-          // should ignore this one
-        },
-        {
-          colorclass: undefined,
-          ...newIFileIndexItem(),
-          filePath: "/test.jpg",
-          type: "update"
-        }
-      ];
+      var detail = {
+        data: [
+          {
+            ...newIFileIndexItem()
+            // should ignore this one
+          },
+          {
+            colorclass: undefined,
+            ...newIFileIndexItem(),
+            filePath: "/test.jpg",
+            type: "update"
+          }
+        ]
+      };
       var event = new CustomEvent(useSocketsEventName, {
         detail
       });
@@ -123,7 +125,7 @@ describe("DetailViewWrapper", () => {
       document.body.dispatchEvent(event);
 
       expect(dispatch).toBeCalled();
-      expect(dispatch).toBeCalledWith(detail[1]);
+      expect(dispatch).toBeCalledWith(detail.data[1]);
 
       var element = result.componentMount as any;
       element.unmount();
