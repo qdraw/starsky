@@ -14,7 +14,7 @@ namespace starsky.foundation.database.Notifications
 	public class NotificationQuery : INotificationQuery
 	{
 		private readonly ApplicationDbContext _context;
-
+		
 		public NotificationQuery(ApplicationDbContext context)
 		{
 			_context = context;
@@ -27,11 +27,14 @@ namespace starsky.foundation.database.Notifications
 				DateTime = DateTime.UtcNow,
 				Content = content
 			};
+			
 			await _context.Notifications.AddAsync(item);
+			await _context.SaveChangesAsync();
+			
 			return item;
 		}
 
-		public Task<NotificationItem> AddNotification(ApiNotificationResponseModel content)
+		public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content)
 		{
 			var stringMessage = JsonSerializer.Serialize(content,
 				DefaultJsonSerializer.CamelCase);		

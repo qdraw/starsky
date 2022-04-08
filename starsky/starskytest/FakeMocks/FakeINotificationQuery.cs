@@ -24,7 +24,7 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(item);
 		}
 
-		public Task<NotificationItem> AddNotification(ApiNotificationResponseModel content)
+		public Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content)
 		{
 			var stringMessage = JsonSerializer.Serialize(content,
 				DefaultJsonSerializer.CamelCase);		
