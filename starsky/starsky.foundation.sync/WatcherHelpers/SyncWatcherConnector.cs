@@ -32,18 +32,18 @@ namespace starsky.foundation.sync.WatcherHelpers
 	{
 		private ISynchronize? _synchronize;
 		private AppSettings? _appSettings;
-		private IWebSocketConnectionsService? _websockets;
+		private IWebSocketConnectionsService? _connectionsService;
 		private IQuery? _query;
 		private IWebLogger? _logger;
 		private readonly IServiceScope? _serviceScope;
 		private TelemetryClient? _telemetryClient;
 
 		internal SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
-			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger, TelemetryClient? telemetryClient)
+			IWebSocketConnectionsService connectionsService, IQuery query, IWebLogger logger, TelemetryClient? telemetryClient)
 		{
 			_appSettings = appSettings;
 			_synchronize = synchronize;
-			_websockets = websockets;
+			_connectionsService = connectionsService;
 			_query = query;
 			_logger = logger;
 			_telemetryClient = telemetryClient;
@@ -60,7 +60,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			// ISynchronize is a scoped service
 			_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
 			_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
-			_websockets = _serviceScope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
+			_connectionsService = _serviceScope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
 			var query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();
 			_logger = _serviceScope.ServiceProvider.GetRequiredService<IWebLogger>();
 			var memoryCache = _serviceScope.ServiceProvider.GetService<IMemoryCache>();
@@ -112,7 +112,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		{
 			// Avoid Disposed Query objects
 			if ( _serviceScope != null ) InjectScopes();
-			if ( _synchronize == null || _logger == null || _appSettings == null || _websockets == null || _query == null)
+			if ( _synchronize == null || _logger == null || _appSettings == null || _connectionsService == null || _query == null)
 			{
 				throw new ArgumentException("sync, logger, appSettings, _appSettings, _websockets or _query should not be null");
 			}
@@ -164,8 +164,8 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 			// update users who are active right now
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(filtered, ApiNotificationType.SyncWatcherConnector);
-			await _websockets!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
+				new ApiNotificationResponseModel<List<FileIndexItem>>(filtered, ApiNotificationType.SyncWatcherConnector);
+			await _connectionsService!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			// And update the query Cache

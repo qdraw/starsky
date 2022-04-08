@@ -111,9 +111,8 @@ namespace starsky.Controllers
 			// Push direct to socket when update or replace to avoid undo after a second
 			_logger.LogInformation($"[UpdateController] send to socket {f}");
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(fileIndexResultsList, ApiNotificationType.MetaUpdate);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse, 
-				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+				new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList, ApiNotificationType.MetaUpdate);
+			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 			
 			return Json(returnNewResultList);
 		}
@@ -185,9 +184,8 @@ namespace starsky.Controllers
 			
 			// Push direct to socket when update or replace to avoid undo after a second
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(resultsOkOrDeleteList, ApiNotificationType.Replace);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
-				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+				new ApiNotificationResponseModel<List<FileIndexItem>>(resultsOkOrDeleteList, ApiNotificationType.Replace);
+			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 			
 			return Json(fileIndexResultsList);
 		}

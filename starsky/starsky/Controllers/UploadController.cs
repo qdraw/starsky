@@ -143,10 +143,9 @@ namespace starsky.Controllers
 				.Where(p => p.Status == ImportStatus.Ok)
 				.Select(item => item.FileIndexItem).ToList();
 			
-			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(socketResult,ApiNotificationType.UploadFile);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse, 
-					DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			var webSocketResponse = new ApiNotificationResponseModel<List<FileIndexItem>>(
+				socketResult,ApiNotificationType.UploadFile);
+			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 			
 			// Wrong input (extension is not allowed)
             if ( fileIndexResultsList.All(p => p.Status == ImportStatus.FileError) )

@@ -87,16 +87,14 @@ namespace starsky.Controllers
 				if ( !result.Any() ) return;
 
 				var webSocketResponse =
-					new ApiResponseModel<List<FileIndexItem>>(result, ApiNotificationType.ThumbnailGeneration);
-				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
-					webSocketResponse,
-					DefaultJsonSerializer.CamelCase), CancellationToken.None);
+					new ApiNotificationResponseModel<List<FileIndexItem>>(result, ApiNotificationType.ThumbnailGeneration);
+				await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 				
 				_logger.LogInformation($"[ThumbnailGenerationController] done {subPath}");
 			}
 			catch ( UnauthorizedAccessException e )
 			{
-				_logger.LogError($"[ThumbnailGenerationController] catch-ed exceptioin {e.Message}", e);
+				_logger.LogError($"[ThumbnailGenerationController] catch-ed exception {e.Message}", e);
 			}
 		}
 	}

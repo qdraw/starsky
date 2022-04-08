@@ -19,14 +19,14 @@ namespace starsky.foundation.realtime.Services
 	{
 		private const int SpeedInSeconds = 30;
 
-		private readonly IWebSocketConnectionsService _webSocketConnectionsService;
+		private readonly IWebSocketConnectionsService _connectionsService;
 
 		private Task _heartbeatTask;
 		private CancellationTokenSource _cancellationTokenSource;
 
-		public HeartbeatService(IWebSocketConnectionsService webSocketConnectionsService)
+		public HeartbeatService(IWebSocketConnectionsService connectionsService)
 		{
-			_webSocketConnectionsService = webSocketConnectionsService;
+			_connectionsService = connectionsService;
 		}
 
 		public Task StartAsync(CancellationToken cancellationToken)
@@ -63,10 +63,9 @@ namespace starsky.foundation.realtime.Services
 			while (!cancellationToken.IsCancellationRequested)
 			{
 				var webSocketResponse =
-					new ApiResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds), 
+					new ApiNotificationResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds), 
 						ApiNotificationType.Heartbeat);
-				await _webSocketConnectionsService.SendToAllAsync(JsonSerializer.Serialize(
-					webSocketResponse, DefaultJsonSerializer.CamelCase), cancellationToken);
+				await _connectionsService.SendToAllAsync(webSocketResponse, cancellationToken);
 				await Task.Delay(TimeSpan.FromSeconds(SpeedInSeconds), cancellationToken);
 			}
 		}

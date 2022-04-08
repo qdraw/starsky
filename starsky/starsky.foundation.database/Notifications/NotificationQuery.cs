@@ -1,8 +1,10 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Notifications
@@ -28,6 +30,13 @@ namespace starsky.foundation.database.Notifications
 			};
 			await _context.Notifications.AddAsync(item);
 			return item;
+		}
+
+		public Task<NotificationItem> AddNotification(ApiNotificationResponseModel content)
+		{
+			var stringMessage = JsonSerializer.Serialize(content,
+				DefaultJsonSerializer.CamelCase);		
+			return AddNotification(stringMessage);
 		}
 	}
 	

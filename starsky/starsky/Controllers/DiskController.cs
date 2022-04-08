@@ -25,13 +25,15 @@ namespace starsky.Controllers
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;
 	    private readonly IWebSocketConnectionsService _connectionsService;
+	    private readonly INotificationQuery _notificationQuery;
 
-        public DiskController(IQuery query, ISelectorStorage selectorStorage, 
-	        IWebSocketConnectionsService connectionsService)
+	    public DiskController(IQuery query, ISelectorStorage selectorStorage, 
+	        IWebSocketConnectionsService connectionsService, INotificationQuery notificationQuery)
         {
             _query = query;
 	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 	        _connectionsService = connectionsService;
+	        _notificationQuery = notificationQuery;
         }
 
         /// <summary>
@@ -101,10 +103,11 @@ namespace starsky.Controllers
 		        Status = t.Status, IsDirectory = true
 	        }).ToList();
 
-	        var webSocketResponse =
-		        new ApiResponseModel<List<FileIndexItem>>(list, type);
-	        await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
-		        DefaultJsonSerializer.CamelCase), CancellationToken.None);
+	        var webSocketResponse = new ApiNotificationResponseModel<
+		        List<FileIndexItem>>(list, type);
+
+	        await _notificationQuery.AddNotification(webSocketResponse);
+	        await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
         }
 
         /// <summary>
@@ -131,9 +134,10 @@ namespace starsky.Controllers
 			    return NotFound(rename);
 		    
 		    var webSocketResponse =
-			    new ApiResponseModel<List<FileIndexItem>>(rename,ApiNotificationType.Rename);
-		    await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
-			    DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			    new ApiNotificationResponseModel<List<FileIndexItem>>(rename,ApiNotificationType.Rename);
+
+		    await _notificationQuery.AddNotification(webSocketResponse);
+		    await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 
 		    return Json(currentStatus ? rename.Where(p => p.Status 
 				    != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList() : rename);

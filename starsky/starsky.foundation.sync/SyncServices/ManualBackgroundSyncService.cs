@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,7 +10,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
@@ -82,9 +80,7 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(updatedList, ApiNotificationType.ManualBackgroundSync);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
-				webSocketResponse,
-				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 		}
 
 		internal async Task BackgroundTask(string subPath, string operationId)
