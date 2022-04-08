@@ -19,13 +19,11 @@ namespace starsky.feature.geolookup.Services
     public class GeoIndexGpx : IGeoIndexGpx
     {
 	    private readonly AppSettings _appSettings;
-	    private readonly ReadMetaGpx _readMetaGpx;
 	    private readonly IStorage _iStorage;
 	    private readonly IMemoryCache _cache;
 
 	    public GeoIndexGpx(AppSettings appSettings, IStorage iStorage, IMemoryCache memoryCache = null )
         {
-	        _readMetaGpx = new ReadMetaGpx();
             _appSettings = appSettings;
 	        _iStorage = iStorage;
 	        _cache = memoryCache;

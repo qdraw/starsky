@@ -13,7 +13,7 @@ using starsky.foundation.storage.Helpers;
 
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
-    public class ReadMetaGpx
+    public static class ReadMetaGpx
     {
 	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
 	    
