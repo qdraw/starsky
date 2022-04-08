@@ -14,6 +14,6 @@ namespace starsky.foundation.realtime.Interfaces
 		void RemoveConnection(Guid connectionId);
 
 		Task SendToAllAsync(string message, CancellationToken cancellationToken);
-		Task SendToAllAsync(ApiNotificationResponseModel message, CancellationToken cancellationToken);
+		Task SendToAllAsync<T>(ApiNotificationResponseModel<T> message, CancellationToken cancellationToken);
 	}
 }

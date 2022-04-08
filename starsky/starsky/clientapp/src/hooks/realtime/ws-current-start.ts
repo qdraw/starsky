@@ -29,10 +29,14 @@ export const NewWebSocketService = (): WebSocketService => {
 export function parseJson(data: string): any {
   try {
     const parsedData = JSON.parse(data);
-    if (parsedData.type && parsedData.data && parsedData.type.includes("FileIndexItem")) {
+    if (
+      parsedData.type &&
+      parsedData.data &&
+      parsedData.type.includes("FileIndexItem")
+    ) {
       return parsedData;
     }
-    return
+    return;
   } catch (error) {
     console.log(error);
     return null;

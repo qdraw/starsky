@@ -31,7 +31,7 @@ namespace starskytest.starsky.foundation.realtime.Services
 			var fakeSocket = new FakeWebSocket();
 			service.AddConnection(new WebSocketConnection(fakeSocket));
 
-			await service.SendToAllAsync(null, CancellationToken.None);
+			await service.SendToAllAsync(null as string, CancellationToken.None);
 			Assert.AreEqual(1,logger.TrackedInformation.Count);
 		}
 	}

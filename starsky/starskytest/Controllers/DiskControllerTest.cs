@@ -150,7 +150,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var controller = new DiskController(_query, storageSelector, 
-				new FakeIWebSocketConnectionsService());
+				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery());
 			controller.ControllerContext = context;
 
 			var result = await controller.Rename("/notfound-image.jpg", "/test.jpg") as NotFoundObjectResult;
@@ -174,7 +174,7 @@ namespace starskytest.Controllers
 			
 			var controller =
 				new DiskController( _query, storageSelector, 
-					new FakeIWebSocketConnectionsService())
+					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery())
 				{
 					ControllerContext = context
 				};
@@ -203,7 +203,7 @@ namespace starskytest.Controllers
 			
 			var controller =
 				new DiskController(_query, storageSelector, 
-					new FakeIWebSocketConnectionsService())
+					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery())
 				{
 					ControllerContext = context
 				};
@@ -234,7 +234,7 @@ namespace starskytest.Controllers
 			
 			var controller =
 				new DiskController(_query, storageSelector, 
-					socket)
+					socket, new FakeINotificationQuery())
 				{
 					ControllerContext = context
 				};
@@ -262,7 +262,7 @@ namespace starskytest.Controllers
 
 			var controller =
 				new DiskController( _query, storageSelector, 
-					new FakeIWebSocketConnectionsService())
+					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery())
 				{
 					ControllerContext = context
 				};
@@ -288,7 +288,7 @@ namespace starskytest.Controllers
 
 			var controller =
 				new DiskController(_query, storageSelector, 
-					socket)
+					socket, new FakeINotificationQuery())
 				{
 					ControllerContext = context
 				};
@@ -297,6 +297,8 @@ namespace starskytest.Controllers
 			
 			var value = socket.FakeSendToAllAsync.FirstOrDefault(p =>
 				!p.StartsWith("[system]"));
+			
+			Assert.IsNotNull(value);
 			Assert.IsTrue(value.Contains("/test_dir"));
 		}
 		
@@ -315,7 +317,7 @@ namespace starskytest.Controllers
 
 			var controller =
 				new DiskController( _query, storageSelector, 
-					new FakeIWebSocketConnectionsService())
+					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery())
 				{
 					ControllerContext = context
 				};
