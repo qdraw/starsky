@@ -144,7 +144,7 @@ namespace starsky.Controllers
 				.Select(item => item.FileIndexItem).ToList();
 			
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(socketResult,ApiMessageType.UploadFile);
+				new ApiResponseModel<List<FileIndexItem>>(socketResult,ApiNotificationType.UploadFile);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse, 
 					DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			

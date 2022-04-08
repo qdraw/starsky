@@ -6,16 +6,16 @@ using starsky.foundation.platform.Enums;
 namespace starsky.foundation.platform.Models
 {
 	[SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
-	public class ApiResponseModel
+	public class ApiNotificationResponseModel
 	{
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-		public ApiMessageType Type { get; set; } = ApiMessageType.Unknown;
+		public ApiNotificationType Type { get; set; } = ApiNotificationType.Unknown;
 	}
 
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-	public class ApiResponseModel<T> : ApiResponseModel
+	public class ApiNotificationResponseModel<T> : ApiNotificationResponseModel
 	{
-		public ApiResponseModel(T? data = default, ApiMessageType type = ApiMessageType.Unknown)
+		public ApiNotificationResponseModel(T? data = default, ApiNotificationType type = ApiNotificationType.Unknown)
 		{
 			Data = data;
 			Type = type;

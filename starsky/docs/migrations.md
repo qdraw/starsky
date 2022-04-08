@@ -1,5 +1,6 @@
 
-# Migration
+# Add Migrations
+This document describes how to add a migration to the application.
 
 ## Install Dotnet EF as global installer
 ```bash

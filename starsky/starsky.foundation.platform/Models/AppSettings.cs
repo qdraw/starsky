@@ -632,7 +632,7 @@ namespace starsky.foundation.platform.Models
 		public List<string> SyncIgnore { get; set; } = new List<string>
 		{
 			"/lost+found",
-			"/.stignore", 
+			"/.stfolder", 
 			"/.git"
 		};
 		

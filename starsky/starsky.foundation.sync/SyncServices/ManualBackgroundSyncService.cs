@@ -81,7 +81,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task PushToSockets(List<FileIndexItem> updatedList)
 		{
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(updatedList, ApiMessageType.ManualBackgroundSync);
+				new ApiNotificationResponseModel<List<FileIndexItem>>(updatedList, ApiNotificationType.ManualBackgroundSync);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
 				webSocketResponse,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);

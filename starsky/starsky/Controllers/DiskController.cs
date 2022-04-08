@@ -83,7 +83,7 @@ namespace starsky.Controllers
 	        if (syncResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 		        Response.StatusCode = 409; // A conflict, Directory already exist
 	        
-	        await SyncMessageToSocket(syncResultsList, ApiMessageType.Mkdir);
+	        await SyncMessageToSocket(syncResultsList, ApiNotificationType.Mkdir);
 
 	        return Json(syncResultsList);
         }
@@ -94,7 +94,7 @@ namespace starsky.Controllers
         /// <param name="syncResultsList">SyncViewModel</param>
         /// <param name="type">optional debug name</param>
         /// <returns>Completed send of Socket SendToAllAsync</returns>
-        private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, ApiMessageType type = ApiMessageType.Unknown)
+        private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, ApiNotificationType type = ApiNotificationType.Unknown)
         {
 	        var list = syncResultsList.Select(t => new FileIndexItem(t.FilePath)
 	        {
@@ -131,7 +131,7 @@ namespace starsky.Controllers
 			    return NotFound(rename);
 		    
 		    var webSocketResponse =
-			    new ApiResponseModel<List<FileIndexItem>>(rename,ApiMessageType.Rename);
+			    new ApiResponseModel<List<FileIndexItem>>(rename,ApiNotificationType.Rename);
 		    await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 			    DefaultJsonSerializer.CamelCase), CancellationToken.None);
 

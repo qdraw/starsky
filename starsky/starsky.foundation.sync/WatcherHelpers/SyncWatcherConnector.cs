@@ -164,7 +164,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 			// update users who are active right now
 			var webSocketResponse =
-				new ApiResponseModel<List<FileIndexItem>>(filtered, ApiMessageType.SyncWatcherConnector);
+				new ApiResponseModel<List<FileIndexItem>>(filtered, ApiNotificationType.SyncWatcherConnector);
 			await _websockets!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			

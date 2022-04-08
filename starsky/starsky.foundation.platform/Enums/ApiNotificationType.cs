@@ -1,6 +1,6 @@
 namespace starsky.foundation.platform.Enums
 {
-	public enum ApiMessageType
+	public enum ApiNotificationType
 	{
 		/// <summary>
 		/// Default uses anything as payload

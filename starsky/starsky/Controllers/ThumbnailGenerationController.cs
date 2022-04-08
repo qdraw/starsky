@@ -87,7 +87,7 @@ namespace starsky.Controllers
 				if ( !result.Any() ) return;
 
 				var webSocketResponse =
-					new ApiResponseModel<List<FileIndexItem>>(result, ApiMessageType.ThumbnailGeneration);
+					new ApiResponseModel<List<FileIndexItem>>(result, ApiNotificationType.ThumbnailGeneration);
 				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
 					webSocketResponse,
 					DefaultJsonSerializer.CamelCase), CancellationToken.None);

@@ -64,7 +64,7 @@ namespace starsky.foundation.realtime.Services
 			{
 				var webSocketResponse =
 					new ApiResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds), 
-						ApiMessageType.Heartbeat);
+						ApiNotificationType.Heartbeat);
 				await _webSocketConnectionsService.SendToAllAsync(JsonSerializer.Serialize(
 					webSocketResponse, DefaultJsonSerializer.CamelCase), cancellationToken);
 				await Task.Delay(TimeSpan.FromSeconds(SpeedInSeconds), cancellationToken);
