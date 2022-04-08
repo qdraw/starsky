@@ -104,7 +104,9 @@ describe("WsCurrentStart", () => {
     it("check if setKeepAliveTimeSpy is on Welcome", () => {
       var setKeepAliveTimeSpy = jest.fn();
       FireOnMessage(
-        new MessageEvent("t", { data: '{"type" : "Welcome", "welcome": true}' }),
+        new MessageEvent("t", {
+          data: '{"type" : "Welcome", "welcome": true}'
+        }),
         setKeepAliveTimeSpy
       );
       expect(setKeepAliveTimeSpy).toBeCalled();
