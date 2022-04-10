@@ -86,12 +86,10 @@ namespace starsky.Controllers
 				var metaUpdateService = _scopeFactory.CreateScope()
 					.ServiceProvider.GetRequiredService<IMetaUpdateService>();
 
-				var data = await 
-					metaUpdateService.UpdateAsync(changedFileIndexItemName, fileIndexResultsList,
-						null,
+				var data = await metaUpdateService.UpdateAsync(
+					changedFileIndexItemName, fileIndexResultsList, null,
 						collections, append, rotateClock);
 				operationHolder.SetData(_scopeFactory, data);
-				_logger.LogInformation($"{nameof(UpdateAsync)}: {data.Count} items updated");
 			});
 
 			// before sending not founds
