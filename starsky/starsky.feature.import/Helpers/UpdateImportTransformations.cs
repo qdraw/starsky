@@ -88,7 +88,7 @@ namespace starsky.feature.import.Helpers
 		
 		private static List<string> ColorClassComparedNamesList(List<string> list)
 		{
-			list.Add(nameof(FileIndexItem.Description).ToLowerInvariant());
+			list.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant());
 			return list;
 		}
 
