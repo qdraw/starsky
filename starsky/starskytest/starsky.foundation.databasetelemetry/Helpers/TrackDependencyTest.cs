@@ -75,5 +75,13 @@ namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 			var result = new TrackDependency(new TelemetryClient(new TelemetryConfiguration())).Track(command, default(DateTimeOffset), "", "");
 			Assert.IsTrue(result);
 		}
+		
+		[TestMethod]
+		public void Track_ShouldGiveBackFalse_WhenNull()
+		{
+			var command = new TestDbCommand() as DbCommand;
+			var result = new TrackDependency(null).Track(command, DateTimeOffset.Now, "", "");
+			Assert.IsFalse(result);
+		}
 	}
 }
