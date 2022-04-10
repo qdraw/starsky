@@ -77,7 +77,7 @@ namespace starsky.feature.import.Helpers
 			return fileIndexItem.Clone();
 		}
 		
-		private static List<string> DateTimeParsedComparedNamesList()
+		internal static List<string> DateTimeParsedComparedNamesList()
 		{
 			return new List<string>
 			{
@@ -86,9 +86,9 @@ namespace starsky.feature.import.Helpers
 			};
 		}
 		
-		private static List<string> ColorClassComparedNamesList(List<string> list)
+		internal static List<string> ColorClassComparedNamesList(List<string> list)
 		{
-			list.Add(nameof(FileIndexItem.Description).ToLowerInvariant());
+			list.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant());
 			return list;
 		}
 

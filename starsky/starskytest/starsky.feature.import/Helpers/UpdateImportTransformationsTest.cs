@@ -91,6 +91,24 @@ namespace starskytest.starsky.feature.import.Helpers
 			var updatedItem = await query.GetObjectByFilePathAsync("/test.jpg");
 			Assert.AreEqual("test-ung",updatedItem.Description);
 		}
+
+		[TestMethod]
+		public void DateTimeParsedComparedNamesList_Contain()
+		{
+			var list = UpdateImportTransformations.DateTimeParsedComparedNamesList();
+			Assert.AreEqual(2,list.Count);
+			Assert.AreEqual(nameof(FileIndexItem.Description).ToLowerInvariant(),list[0]);
+			Assert.AreEqual(nameof(FileIndexItem.DateTime).ToLowerInvariant(),list[1]);
+		}
+		
+		
+		[TestMethod]
+		public void ColorClassComparedNamesList_Contain()
+		{
+			var list = UpdateImportTransformations.ColorClassComparedNamesList(new List<string>());
+			Assert.AreEqual(1,list.Count);
+			Assert.AreEqual(nameof(FileIndexItem.ColorClass).ToLowerInvariant(),list[0]);
+		}
 	}
 	
 }
