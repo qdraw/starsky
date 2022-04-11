@@ -244,12 +244,48 @@ describe("WsCurrentStart", () => {
 			expect(spyGet).toBeCalled();
 		});
 
-		it("fetch bad request", async () => {
+		it("data not array", async () => {
 
 			const mockGetIConnectionDefault: Promise<IConnectionDefault> =
 				Promise.resolve({
 					statusCode: 200,
 					data: {type: "Welcome"}
+				} as IConnectionDefault);
+			const spyGet = jest
+				.spyOn(FetchGet, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
+
+			const result = await RestoreDataOnOpen(true, "any");
+
+			expect(result).toBeFalsy();
+			expect(spyGet).toBeCalled();
+		});
+
+		it("data does not contain content", async () => {
+
+			const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+				Promise.resolve({
+					statusCode: 200,
+					data: {type: "Welcome", data: [{"test": "test"}]}
+				} as IConnectionDefault);
+			const spyGet = jest
+				.spyOn(FetchGet, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
+
+			const result = await RestoreDataOnOpen(true, "any");
+
+			expect(result).toBeFalsy();
+			expect(spyGet).toBeCalled();
+		});
+
+		it("data does not contain content", async () => {
+
+			// [{"id":6,"content":"{\u0022data\u0022:[{\u0022filePath\u0022:\u0022/__starsky/00_demo/2.png\u0022,\u0022fileName\u0022:\u00222.png\u0022,\u0022fileHash\u0022:\u0022PFAKCYTKFSXOKEAR6X5N5OBZBA\u0022,\u0022fileCollectionName\u0022:\u00222\u0022,\u0022parentDirectory\u0022:\u0022/__starsky/00_demo\u0022,\u0022isDirectory\u0022:false,\u0022tags\u0022:\u00229\u0022,\u0022status\u0022:\u0022Ok\u0022,\u0022description\u0022:\u0022\u0022,\u0022title\u0022:\u0022\u0022,\u0022dateTime\u0022:\u00220001-01-01T00:00:00\u0022,\u0022addToDatabase\u0022:\u00222022-04-10T16:53:25.682824\u0022,\u0022lastEdited\u0022:\u00222022-04-11T17:55:36.379421Z\u0022,\u0022latitude\u0022:0,\u0022longitude\u0022:0,\u0022locationAltitude\u0022:0,\u0022locationCity\u0022:\u0022\u0022,\u0022locationState\u0022:\u0022\u0022,\u0022locationCountry\u0022:\u0022\u0022,\u0022colorClass\u0022:0,\u0022orientation\u0022:\u0022Horizontal\u0022,\u0022imageWidth\u0022:623,\u0022imageHeight\u0022:561,\u0022imageFormat\u0022:\u0022png\u0022,\u0022collectionPaths\u0022:[],\u0022sidecarExtensionsList\u0022:[],\u0022aperture\u0022:0,\u0022shutterSpeed\u0022:\u0022\u0022,\u0022isoSpeed\u0022:0,\u0022software\u0022:\u0022\u0022,\u0022makeModel\u0022:\u0022\u0022,\u0022make\u0022:\u0022\u0022,\u0022model\u0022:\u0022\u0022,\u0022lensModel\u0022:\u0022\u0022,\u0022focalLength\u0022:0,\u0022size\u0022:920017,\u0022imageStabilisation\u0022:0}],\u0022type\u0022:\u0022MetaUpdate\u0022}","dateTime":"2022-04-11T17:55:36.413662"}]
+			
+			const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+				Promise.resolve({
+					statusCode: 200,
+					data: {type: "Welcome", data: [{"content": "{}"}]}
 				} as IConnectionDefault);
 			const spyGet = jest
 				.spyOn(FetchGet, "default")

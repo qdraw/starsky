@@ -95,7 +95,7 @@ export async function RestoreDataOnOpen(socketConnected: boolean, keepAliveServe
 	}
 	const result = await FetchGet(new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime));
 	console.log(result)
-	if (result.statusCode !== 200 || !result.data) {
+	if (result.statusCode !== 200 || !result.data || !Array.isArray(result.data)) {
 		return false;
 	}
 	let anyResults = false;
