@@ -84,34 +84,44 @@ export function FireOnOpen(
 ) {
   console.log("[use-sockets] socket connection opened");
   if (!socketConnected) {
-		setSocketConnected(true);
-	}
+    setSocketConnected(true);
+  }
 }
 
-export async function RestoreDataOnOpen(socketConnected: boolean, keepAliveServerTime: string ) : Promise<boolean> {
-	if (!socketConnected || !keepAliveServerTime) {
-		return false;
-	}
-	const result = await FetchGet(new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime));
-	console.log(result.data)
-	if (result.statusCode !== 200 || !result.data || !Array.isArray(result.data)) {
-		return false;
-	}
-	
-	let anyResults = false;
-	for (const dataItem of result.data) {
-		if (!dataItem.content){
-			console.log(dataItem)
-			console.log("no content")
-			continue;
-		}
-		const item = parseJson(dataItem.content);
-		PushMessage(item);
-		anyResults = true;
-	}
-	console.log(result.data)
+export async function RestoreDataOnOpen(
+  socketConnected: boolean,
+  keepAliveServerTime: string
+): Promise<boolean> {
+  if (!socketConnected || !keepAliveServerTime) {
+    return false;
+  }
+  const result = await FetchGet(
+    new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime)
+  );
+  console.log(result.data);
+  console.log(Array.isArray(result.data));
+  if (
+    result.statusCode !== 200 ||
+    !result.data ||
+    !Array.isArray(result.data)
+  ) {
+    return false;
+  }
 
-	return anyResults;
+  let anyResults = false;
+  for (const dataItem of result.data) {
+    if (!dataItem.content) {
+      console.log(dataItem);
+      console.log("no content");
+      continue;
+    }
+    const item = parseJson(dataItem.content);
+    PushMessage(item);
+    anyResults = true;
+  }
+  console.log(result.data);
+
+  return anyResults;
 }
 
 export function FireOnMessage(
@@ -126,7 +136,7 @@ export function FireOnMessage(
     HandleKeepAliveServerMessage(setKeepAliveServerTime, item);
     return;
   }
-	PushMessage(item);
+  PushMessage(item);
 }
 
 export default function WsCurrentStart(
@@ -142,9 +152,9 @@ export default function WsCurrentStart(
 
   const socket = InsertNewWebSocketService();
   socket.onOpen(async () => {
-		FireOnOpen(socketConnected, setSocketConnected);
-		await RestoreDataOnOpen(socketConnected, keepAliveServerTime);
-	});
+    FireOnOpen(socketConnected, setSocketConnected);
+    await RestoreDataOnOpen(socketConnected, keepAliveServerTime);
+  });
   socket.onClose((e) =>
     FireOnClose(e, socketConnected, setSocketConnected, isEnabled)
   );

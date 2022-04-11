@@ -237,12 +237,16 @@ export class UrlQuery {
     return this.prefix + "/api/update";
   };
 
-	/**
-	 * GET recent notifications
-	 */
-	public UrlNotificationsGetApi = (keepAliveServerTime: string): string => {
-		return this.prefix + "/api/notification/notification?dateTime="+ keepAliveServerTime;
-	};
+  /**
+   * GET recent notifications
+   */
+  public UrlNotificationsGetApi = (keepAliveServerTime: string): string => {
+    return (
+      this.prefix +
+      "/api/notification/notification?dateTime=" +
+      keepAliveServerTime
+    );
+  };
 
   /**
    * POST to this to search and replace meta information like: tags, descriptions and titles
