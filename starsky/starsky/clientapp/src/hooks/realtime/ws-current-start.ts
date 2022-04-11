@@ -90,11 +90,9 @@ export function FireOnOpen(
 
 export async function RestoreDataOnOpen(socketConnected: boolean, keepAliveServerTime: string) : Promise<boolean> {
 	if (!socketConnected || !keepAliveServerTime) {
-		console.log("[use-sockets] no need to restore data");
 		return false;
 	}
 	const result = await FetchGet(new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime));
-	console.log(result)
 	if (result.statusCode !== 200 || !result.data || !Array.isArray(result.data)) {
 		return false;
 	}
@@ -107,6 +105,8 @@ export async function RestoreDataOnOpen(socketConnected: boolean, keepAliveServe
 		PushMessage(item);
 		anyResults = true;
 	}
+	console.log(result.data)
+
 	return anyResults;
 }
 
