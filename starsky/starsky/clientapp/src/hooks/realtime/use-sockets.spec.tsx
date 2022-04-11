@@ -55,7 +55,9 @@ describe("useSockets", () => {
       expect.any(Function),
       { current: true },
       expect.any(Function),
-      expect.any(Function)
+      expect.any(Function),
+			expect.any(String),
+			expect.any(Function)
     );
 
     wsCurrent.mockReset();
@@ -94,8 +96,10 @@ describe("useSockets", () => {
       expect.any(Function),
       { current: true },
       expect.any(Function),
-      expect.any(Function)
-    );
+      expect.any(Function),
+			expect.any(String),
+			expect.any(Function),
+		);
 
     component.unmount();
     jest.useRealTimers();

@@ -90,6 +90,7 @@ export function FireOnOpen(
 
 export async function RestoreDataOnOpen(socketConnected: boolean, keepAliveServerTime: string) : Promise<boolean> {
 	if (!socketConnected || !keepAliveServerTime) {
+		console.log("[use-sockets] no need to restore data");
 		return false;
 	}
 	const result = await FetchGet(new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime));

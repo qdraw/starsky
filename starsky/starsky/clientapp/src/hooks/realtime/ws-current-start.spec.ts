@@ -228,15 +228,35 @@ describe("WsCurrentStart", () => {
 		});
 
 		it("fetch bad request", async () => {
+
 			const mockGetIConnectionDefault: Promise<IConnectionDefault> =
 				Promise.resolve({
 					statusCode: 400,
+					data: {type: "Welcome"}
 				} as IConnectionDefault);
 			const spyGet = jest
 				.spyOn(FetchGet, "default")
 				.mockImplementationOnce(() => mockGetIConnectionDefault);
 			
-			const result = await RestoreDataOnOpen(false, "any");
+			const result = await RestoreDataOnOpen(true, "any");
+			
+			expect(result).toBeFalsy();
+			expect(spyGet).toBeCalled();
+		});
+
+		it("fetch bad request", async () => {
+
+			const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+				Promise.resolve({
+					statusCode: 200,
+					data: {type: "Welcome"}
+				} as IConnectionDefault);
+			const spyGet = jest
+				.spyOn(FetchGet, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
+
+			const result = await RestoreDataOnOpen(true, "any");
+
 			expect(result).toBeFalsy();
 			expect(spyGet).toBeCalled();
 		});
