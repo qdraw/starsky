@@ -30,17 +30,10 @@ namespace starsky.feature.realtime.Services
 		{
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
-				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
-
 				var connectionsService = scope.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
-				try
-				{
-					await connectionsService.CleanOldMessagesAsync();
-				}
-				catch ( Exception e )
-				{
-					logger.LogInformation(e.ToString());
-				}
+				
+				//exception is already catch-ed in the service
+				await connectionsService.CleanOldMessagesAsync();
 			}
 		}
 	}
