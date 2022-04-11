@@ -1,5 +1,7 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
@@ -11,6 +13,16 @@ namespace starskytest.FakeMocks
 {
 	public class FakeINotificationQuery : INotificationQuery
 	{
+		
+		public FakeINotificationQuery(IReadOnlyCollection<NotificationItem>? notificationItem = null)
+		{
+			if ( notificationItem == null )
+			{
+				return;
+			}
+			FakeContent.AddRange(notificationItem);
+		}
+
 		public List<NotificationItem> FakeContent { get; set; } = new List<NotificationItem>();
 
 		public Task<NotificationItem> AddNotification(string content)
@@ -33,7 +45,7 @@ namespace starskytest.FakeMocks
 
 		public Task<List<NotificationItem>> Get(DateTime parsedDateTime)
 		{
-			throw new NotImplementedException();
+			return Task.FromResult(FakeContent.Where(x => x.DateTime > parsedDateTime).ToList());
 		}
 	}
 }
