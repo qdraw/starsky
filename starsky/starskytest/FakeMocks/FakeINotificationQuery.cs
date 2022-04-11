@@ -30,6 +30,11 @@ namespace starskytest.FakeMocks
 				DefaultJsonSerializer.CamelCase);		
 			return AddNotification(stringMessage);
 		}
+
+		public Task<List<NotificationItem>> Get(DateTime parsedDateTime)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
 
