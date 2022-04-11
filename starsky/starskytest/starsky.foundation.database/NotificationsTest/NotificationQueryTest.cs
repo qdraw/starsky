@@ -16,13 +16,13 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 	/// NotificationQuery
 	/// </summary>
 	[TestClass]
-	public class NotificationsQueryTest
+	public class NotificationQueryTest
 	{
 		private readonly NotificationQuery _notificationQuery;
 		private readonly FakeIWebLogger _logger;
 		private readonly ApplicationDbContext _dbContext;
 
-		public NotificationsQueryTest()
+		public NotificationQueryTest()
 		{
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
@@ -33,7 +33,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 		private IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
-			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(NotificationsQueryTest)));
+			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(NotificationQueryTest)));
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
@@ -72,7 +72,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 		}
 		
 		[TestMethod]
-		public async Task Get_RecentItems_OldIgnored()
+		public async Task GetNewerThan_RecentItems_OldIgnored()
 		{
 			var currentTime = DateTime.UtcNow;
 			_dbContext.Notifications.Add(
@@ -81,6 +81,41 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			
 			var recent = await _notificationQuery.GetNewerThan(currentTime);
 			Assert.AreEqual(0, recent.Count);
+			
+			_dbContext.Notifications.RemoveRange(_dbContext.Notifications);
+			await _dbContext.SaveChangesAsync();
+		}
+		
+		[TestMethod]
+		public async Task Get_OlderItems()
+		{
+			var currentTime = DateTime.UtcNow;
+			_dbContext.Notifications.Add(
+				new NotificationItem() {DateTime = DateTime.UtcNow.AddMinutes(-10)});
+			await _dbContext.SaveChangesAsync();
+			
+			var recent = await _notificationQuery.GetOlderThan(currentTime);
+			Assert.AreEqual(1, recent.Count);
+			
+			_dbContext.Notifications.RemoveRange(_dbContext.Notifications);
+			await _dbContext.SaveChangesAsync();
+		}
+		
+		[TestMethod]
+		public async Task RemoveAsyncTest()
+		{
+			var currentTime = DateTime.UtcNow;
+			_dbContext.Notifications.Add(
+				new NotificationItem() {DateTime = DateTime.UtcNow.AddMinutes(-10)});
+			await _dbContext.SaveChangesAsync();
+			
+			var recent = await _notificationQuery.GetOlderThan(currentTime);
+			Assert.AreEqual(1, recent.Count);
+
+			await _notificationQuery.RemoveAsync(recent);
+			
+			var countAsync = await _dbContext.Notifications.CountAsync();
+			Assert.AreEqual(0,countAsync);
 		}
 	}
 }
