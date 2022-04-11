@@ -88,17 +88,21 @@ export function FireOnOpen(
 	}
 }
 
-export async function RestoreDataOnOpen(socketConnected: boolean, keepAliveServerTime: string) : Promise<boolean> {
+export async function RestoreDataOnOpen(socketConnected: boolean, keepAliveServerTime: string ) : Promise<boolean> {
 	if (!socketConnected || !keepAliveServerTime) {
 		return false;
 	}
 	const result = await FetchGet(new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime));
+	console.log(result.data)
 	if (result.statusCode !== 200 || !result.data || !Array.isArray(result.data)) {
 		return false;
 	}
+	
 	let anyResults = false;
 	for (const dataItem of result.data) {
 		if (!dataItem.content){
+			console.log(dataItem)
+			console.log("no content")
 			continue;
 		}
 		const item = parseJson(dataItem.content);
