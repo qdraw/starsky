@@ -47,6 +47,14 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Issue where colorClass import transform gives a wrong fileHash in database  (PR #709)
 - [x]   (Fixed) _Back-end_ Parent database items missing, added check (PR #713 / Issue #711)
 - [x]   (Fixed) _Back-end_ ColorClass is not written down (bug from #709) (PR #717)
+- [x]   (Breaking Change) _Back-end_ WebSocket Data Model is changed (PR #712)
+- [x]   (Breaking Change) _Back-end_ Add types for web sockets (PR #712)
+- [x]   (Change) _Back-end_ Notification Table (including Data Migration) (PR #712)
+- [x]   (Change) _Back-end_ The following Import Table fields: ColorClass and DateTimeFromFileName are added (including Data Migration) (PR #712)
+- [x]   (Fixed) _Back-end_ TrackDependency will be ignored when null (PR #712)
+- [x]   (Change) _Back-end_ Split MetaReplace and MetaUpdate into two separate controllers (PR #712)
+- [x]   (Change) _Back-end_ Fix null checks for ReadGpxFile (PR #712)
+- [x]   (Change) _Back-end_ Add Notification controller to get recent history of notifications (PR #712)
 
 # version 0.5.0-beta.3 - 2022-03-09
 - [x]   (Breaking change) _Back-end_ Upgrade to .NET 6 - SDK 6.0.200 (PR #642)

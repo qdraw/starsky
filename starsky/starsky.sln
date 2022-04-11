@@ -125,6 +125,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build-tools", "Build-tools"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.packagetelemetry", "starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj", "{7AB42607-88DF-427C-823B-033A224A73A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.realtime", "starsky.feature.realtime\starsky.feature.realtime.csproj", "{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -283,6 +285,10 @@ Global
 		{7AB42607-88DF-427C-823B-033A224A73A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AB42607-88DF-427C-823B-033A224A73A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AB42607-88DF-427C-823B-033A224A73A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -329,5 +335,6 @@ Global
 		{48D826B3-2262-422A-941A-AF90E458F647} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{52237C88-FC6B-4DE3-BB27-8D2F9FF45F25} = {A3C71266-A3AD-4611-8990-846EC0DDA16E}
 		{7AB42607-88DF-427C-823B-033A224A73A6} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 	EndGlobalSection
 EndGlobal

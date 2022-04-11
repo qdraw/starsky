@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.metaupdate.Interfaces;
+using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
@@ -22,21 +23,18 @@ namespace starsky.Controllers
 	{
 		private readonly IMetaReplaceService _metaReplaceService;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
-		private readonly IWebSocketConnectionsService _connectionsService;
+		private readonly IRealtimeConnectionsService _connectionsService;
 		private readonly IWebLogger _logger;
 		private readonly IServiceScopeFactory _scopeFactory;
-		private readonly INotificationQuery _notificationQuery;
 
 		public MetaReplaceController(IMetaReplaceService metaReplaceService,  IUpdateBackgroundTaskQueue queue, 
-			IWebSocketConnectionsService connectionsService, IWebLogger logger, IServiceScopeFactory scopeFactory, 
-			INotificationQuery notificationQuery)
+			IRealtimeConnectionsService connectionsService, IWebLogger logger, IServiceScopeFactory scopeFactory)
 		{
 			_scopeFactory = scopeFactory;
 			_metaReplaceService = metaReplaceService;
 			_bgTaskQueue = queue;
 			_connectionsService = connectionsService;
 			_logger = logger;
-			_notificationQuery = notificationQuery;
 		}
 
 		/// <summary>
@@ -92,8 +90,7 @@ namespace starsky.Controllers
 			// Push direct to socket when update or replace to avoid undo after a second
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(resultsOkOrDeleteList, ApiNotificationType.Replace);
-			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
-			await _notificationQuery.AddNotification(webSocketResponse);
+			await _connectionsService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
 
 			return Json(fileIndexResultsList);
 		}

@@ -156,7 +156,7 @@ namespace starskytest.Controllers
 			
 			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 			var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),NewScopeFactory(), new FakeINotificationQuery());
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),NewScopeFactory());
 
 			var jsonResult =  await controller.Replace("/test09.jpg","Tags", "test", 
 				string.Empty) as JsonResult;
@@ -174,7 +174,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task Replace_ShouldTriggerBackgroundService_Ok()
 		{
-			var fakeFakeIWebSocketConnectionsService = new FakeIWebSocketConnectionsService();
+			var fakeFakeIWebSocketConnectionsService = new FakeIRealtimeConnectionsService();
 
 			var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
 			{
@@ -184,7 +184,7 @@ namespace starskytest.Controllers
 				}
 			});
 			var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue, 
-				fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(),NewScopeFactory(), new FakeINotificationQuery());
+				fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(),NewScopeFactory());
 			
 			await controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -205,7 +205,7 @@ namespace starskytest.Controllers
 				}
 			});
 			var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),NewScopeFactory(), new FakeINotificationQuery());
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),NewScopeFactory());
 			
 			controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -235,7 +235,7 @@ namespace starskytest.Controllers
 			});
 			
 			var controller = new MetaReplaceController(metaReplaceService, new FakeIUpdateBackgroundTaskQueue(), 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),serviceScopeFactory, new FakeINotificationQuery());
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),serviceScopeFactory);
 
 			var jsonResult = await controller.Replace(createAnImage.DbPath,"tags", "a","b") as JsonResult;
 			if ( jsonResult == null )

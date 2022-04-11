@@ -2,15 +2,15 @@
 
 <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>starsky.feature.packagetelemetry</RootNamespace>
-    <ProjectGuid>{6fbad8a6-53fa-41d2-98a4-61eb46d70794}</ProjectGuid>
+    <RootNamespace>starsky.feature.realtime</RootNamespace>
+    <ProjectGuid>{4a749ec1-4e6d-4c68-b69c-00c5c80f5660}</ProjectGuid>
     <Version>0.5.0-beta.4</Version>
     <Nullable>enable</Nullable>
 </PropertyGroup>
 
 <ItemGroup>
     <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-    <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
+    <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
 </ItemGroup>
 
 <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

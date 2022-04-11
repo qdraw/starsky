@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
 using starsky.feature.import.Interfaces;
+using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -39,13 +40,13 @@ namespace starsky.Controllers
 		private readonly IStorage _iHostStorage;
 		private readonly IQuery _query;
 		private readonly ISelectorStorage _selectorStorage;
-		private readonly IWebSocketConnectionsService _connectionsService;
+		private readonly IRealtimeConnectionsService _connectionsService;
 		private readonly IWebLogger _logger;
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 
 		public UploadController(IImport import, AppSettings appSettings, 
 			ISelectorStorage selectorStorage, IQuery query, 
-			IWebSocketConnectionsService connectionsService, IWebLogger logger, 
+			IRealtimeConnectionsService connectionsService, IWebLogger logger, 
 			IMetaExifThumbnailService metaExifThumbnailService)
 		{
 			_appSettings = appSettings;
@@ -145,7 +146,7 @@ namespace starsky.Controllers
 			
 			var webSocketResponse = new ApiNotificationResponseModel<List<FileIndexItem>>(
 				socketResult,ApiNotificationType.UploadFile);
-			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
+			await _connectionsService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
 			
 			// Wrong input (extension is not allowed)
             if ( fileIndexResultsList.All(p => p.Status == ImportStatus.FileError) )
