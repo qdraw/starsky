@@ -6,6 +6,7 @@ import WsCurrentStart, {
   FireOnMessage,
   FireOnOpen,
   HandleKeepAliveMessage,
+  HandleKeepAliveServerMessage,
   isKeepAliveMessage,
   parseJson,
   RestoreDataOnOpen
@@ -196,6 +197,31 @@ describe("WsCurrentStart", () => {
       var setKeepAliveTimeSpy = jest.fn();
       HandleKeepAliveMessage(setKeepAliveTimeSpy, { data: '{"data": 1}' });
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
+    });
+  });
+
+  describe("HandleKeepAliveServerMessage", () => {
+    it("should ignore keep alive when sending real message", () => {
+      const setKeepAliveServerTimeSpy = jest.fn();
+      HandleKeepAliveServerMessage(setKeepAliveServerTimeSpy, {
+        data: '{"data": 1}'
+      });
+      expect(setKeepAliveServerTimeSpy).toBeCalledTimes(0);
+    });
+    it("should trigger when message is valid", () => {
+      const setKeepAliveServerTimeSpy = jest.fn();
+      HandleKeepAliveServerMessage(setKeepAliveServerTimeSpy, {
+        type: "Welcome",
+        data: { dateTime: 1 }
+      });
+      expect(setKeepAliveServerTimeSpy).toBeCalledTimes(1);
+    });
+    it("should trigger when message has no welcome", () => {
+      const setKeepAliveServerTimeSpy = jest.fn();
+      HandleKeepAliveServerMessage(setKeepAliveServerTimeSpy, {
+        data: { dateTime: 1 }
+      }); // should have type
+      expect(setKeepAliveServerTimeSpy).toBeCalledTimes(0);
     });
   });
 
