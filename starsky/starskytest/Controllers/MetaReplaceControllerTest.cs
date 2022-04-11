@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -43,6 +45,7 @@ namespace starskytest.Controllers
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
+		private static ServiceProvider _serviceProvider;
 
 		public MetaReplaceControllerTest()
 		{
@@ -131,7 +134,10 @@ namespace starskytest.Controllers
 			services.AddSingleton<IStorage, FakeIStorage>();
 			services.AddSingleton<ISelectorStorage, SelectorStorage>();
 			services.AddSingleton<IExifTool, FakeExifTool>();
+			services.AddSingleton<IMetaReplaceService, FakeIMetaReplaceService>();
+			services.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>();
 			var serviceProvider = services.BuildServiceProvider();
+			_serviceProvider = serviceProvider;
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
         
@@ -190,12 +196,6 @@ namespace starskytest.Controllers
 		{
 			var fakeFakeIWebSocketConnectionsService =
 				new FakeIWebSocketConnectionsService();
-			// var controller = new MetaUpdateController(new FakeMetaPreflight(),new FakeIMetaUpdateService(), 
-			// 	new FakeIMetaReplaceService(new List<FileIndexItem>{new FileIndexItem("/test09.jpg")
-			// 	{
-			// 		Status = FileIndexItem.ExifStatus.OperationNotSupported
-			// 	}}), 
-			// 	new FakeIUpdateBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(),NewScopeFactory());
 
 			var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
 			{
@@ -210,6 +210,49 @@ namespace starskytest.Controllers
 			controller.Replace("/test09.jpg", "tags", "test", "");
 
 			Assert.AreEqual(0, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+		}
+		
+		[TestMethod]
+		public async Task Replace_ChangedFileIndexItemNameContent()
+		{
+			var createAnImage = new CreateAnImage();
+			InsertSearchData();
+			var serviceScopeFactory = NewScopeFactory();
+			
+			var fakeIMetaUpdateService =  _serviceProvider.GetService<IMetaUpdateService>() as
+				FakeIMetaUpdateService;
+			Assert.IsNotNull(fakeIMetaUpdateService);
+			fakeIMetaUpdateService.ChangedFileIndexItemNameContent =
+				new List<Dictionary<string, List<string>>>();
+
+			var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
+			{
+				new FileIndexItem(createAnImage.DbPath)
+				{
+					Tags = "a",
+					Status = FileIndexItem.ExifStatus.Ok
+				}
+			});
+			
+			var controller = new MetaReplaceController(metaReplaceService, new FakeIUpdateBackgroundTaskQueue(), 
+				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),serviceScopeFactory, new FakeINotificationQuery());
+
+			var jsonResult = await controller.Replace(createAnImage.DbPath,"tags", "a","b") as JsonResult;
+			if ( jsonResult == null )
+			{
+				Console.WriteLine("json should not be null");
+				throw new NullReferenceException(nameof(jsonResult));
+			}
+			
+			Assert.IsNotNull(fakeIMetaUpdateService);
+			Assert.AreEqual(1, fakeIMetaUpdateService.ChangedFileIndexItemNameContent.Count);
+
+			var actual = JsonSerializer.Serialize(
+				fakeIMetaUpdateService.ChangedFileIndexItemNameContent[0],
+				DefaultJsonSerializer.CamelCase);
+
+			var expected = "{\"" + createAnImage.DbPath + "\":[\"tags\"]}";
+			Assert.AreEqual(expected, actual);
 		}
 	}
 }
