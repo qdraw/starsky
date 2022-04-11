@@ -52,7 +52,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 	
 	
 		[TestMethod]
-		[Timeout(3000)]
+		[Timeout(5000)]
 		public async Task ExecuteAsyncTest_WebController()
 		{
 			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
