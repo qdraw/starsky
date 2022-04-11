@@ -88,7 +88,7 @@
           "endOfLine": "auto"
         }
       ],
-      "testing-library/render-result-naming-convention": "warn",
+      "testing-library/render-result-naming-convention": "off",
       "testing-library/no-container": "warn",
       "testing-library/prefer-screen-queries": "warn",
       "testing-library/prefer-presence-queries": "warn",

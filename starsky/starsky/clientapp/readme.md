@@ -185,7 +185,7 @@ This is added to the `package.json`
 
 ```json
 "postbuild": "npm run lint",
-"lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
+"lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 715",
 "lint:fix": "node node_modules/eslint/bin/eslint.js --fix \"src/**\"",
 "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
@@ -246,7 +246,15 @@ You should replace the existing eslintConfig chapter
         {
           "endOfLine": "auto"
         }
-      ]
+      ],
+        "testing-library/render-result-naming-convention": "off",
+        "testing-library/no-container": "warn",
+        "testing-library/prefer-screen-queries": "warn",
+        "testing-library/prefer-presence-queries": "warn",
+        "testing-library/no-unnecessary-act": "warn",
+        "testing-library/no-node-access": "warn",
+        "testing-library/no-render-in-setup": "warn",
+        "testing-library/no-wait-for-multiple-assertions": "warn"
     }
   },
   "prettier": {
