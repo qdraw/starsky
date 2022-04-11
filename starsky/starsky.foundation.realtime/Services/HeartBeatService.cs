@@ -1,10 +1,12 @@
 using System;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.realtime.Model;
 
 namespace starsky.foundation.realtime.Services
 {
@@ -12,19 +14,15 @@ namespace starsky.foundation.realtime.Services
 	public class HeartbeatService : IHostedService
 	{
 		private const int SpeedInSeconds = 30;
-		private const string InsertDateToken = "INSERT_DATE_TOKEN";
-		private const string SpeedInSecondsToken = "SPEED_TOKEN";
-		private const string HeartbeatMessage = "{ \"speed\": " + SpeedInSecondsToken + 
-		                                        ",  \"time\": \"" + InsertDateToken + "\"} ";
 
-		private readonly IWebSocketConnectionsService _webSocketConnectionsService;
+		private readonly IWebSocketConnectionsService _connectionsService;
 
 		private Task _heartbeatTask;
 		private CancellationTokenSource _cancellationTokenSource;
 
-		public HeartbeatService(IWebSocketConnectionsService webSocketConnectionsService)
+		public HeartbeatService(IWebSocketConnectionsService connectionsService)
 		{
-			_webSocketConnectionsService = webSocketConnectionsService;
+			_connectionsService = connectionsService;
 		}
 
 		public Task StartAsync(CancellationToken cancellationToken)
@@ -60,10 +58,10 @@ namespace starsky.foundation.realtime.Services
 		{
 			while (!cancellationToken.IsCancellationRequested)
 			{
-				var message = HeartbeatMessage.Replace(SpeedInSecondsToken, 
-					SpeedInSeconds.ToString()).Replace(
-					InsertDateToken, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
-				await _webSocketConnectionsService.SendToAllAsync(message, cancellationToken);
+				var webSocketResponse =
+					new ApiNotificationResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds), 
+						ApiNotificationType.Heartbeat);
+				await _connectionsService.SendToAllAsync(webSocketResponse, cancellationToken);
 				await Task.Delay(TimeSpan.FromSeconds(SpeedInSeconds), cancellationToken);
 			}
 		}

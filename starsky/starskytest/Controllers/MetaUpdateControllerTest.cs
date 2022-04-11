@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -43,6 +45,7 @@ namespace starskytest.Controllers
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
+		private ServiceProvider _serviceProvider;
 
 		public MetaUpdateControllerTest()
 		{
@@ -131,12 +134,14 @@ namespace starskytest.Controllers
 			services.AddSingleton<IStorage, FakeIStorage>();
 			services.AddSingleton<ISelectorStorage, SelectorStorage>();
 			services.AddSingleton<IExifTool, FakeExifTool>();
+			services.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>();
 			var serviceProvider = services.BuildServiceProvider();
+			_serviceProvider = serviceProvider;
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 
 		[TestMethod]
-		public async Task ApiController_Update_AllDataIncluded_WithFakeExifTool()
+		public async Task Update_AllDataIncluded_WithFakeExifTool()
 		{
 			var createAnImage = new CreateAnImage();
 			InsertSearchData();
@@ -149,10 +154,8 @@ namespace starskytest.Controllers
 				selectorStorage, new FakeMetaPreflight(),
 				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
 			
-			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
-			
-			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(), NewScopeFactory());
+			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, _bgTaskQueue, 
+				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(), NewScopeFactory(), new FakeINotificationQuery());
 
 			var input = new FileIndexItem
 			{
@@ -173,7 +176,7 @@ namespace starskytest.Controllers
 		}
         
 		[TestMethod]
-		public async Task ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool()
+		public async Task Update_SourceImageMissingOnDisk_WithFakeExifTool()
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
@@ -189,14 +192,13 @@ namespace starskytest.Controllers
 				selectorStorage, new FakeMetaPreflight(),
 				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
 			
-			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
-	        
-			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),NewScopeFactory())
+			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, _bgTaskQueue, 
+				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),NewScopeFactory(), new FakeINotificationQuery())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 
+			// Not Found --> 404
 			var testElement = new FileIndexItem();
 			var notFoundResult = await controller.UpdateAsync(testElement, "/ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool.jpg",
 				false,false) as NotFoundObjectResult;
@@ -208,14 +210,18 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task Replace_SourceImageMissingOnDisk_WithFakeExifTool()
+		public async Task Update_ChangedFileIndexItemNameContent()
 		{
-			await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = "345678765434567.jpg",
-				ParentDirectory = "/",
-				FileHash = "345678765434567"
-			});
+			var createAnImage = new CreateAnImage();
+			InsertSearchData();
+			var serviceScopeFactory = NewScopeFactory();
+			
+			var fakeIMetaUpdateService =  _serviceProvider.GetService<IMetaUpdateService>() as
+				FakeIMetaUpdateService;
+			Assert.IsNotNull(fakeIMetaUpdateService);
+			fakeIMetaUpdateService.ChangedFileIndexItemNameContent =
+				new List<Dictionary<string, List<string>>>();
+			
 			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
 
 			var metaPreflight = new MetaPreflight(_query,
@@ -224,112 +230,33 @@ namespace starskytest.Controllers
 				selectorStorage, new FakeMetaPreflight(),
 				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
 			
-			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
-	        
-			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),NewScopeFactory())
+			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, new FakeIUpdateBackgroundTaskQueue(), 
+				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),serviceScopeFactory, new FakeINotificationQuery())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
-
-			var notFoundResult = await controller.Replace( "/345678765434567.jpg", "test", "search", 
-				string.Empty) as NotFoundObjectResult;
-			if ( notFoundResult == null ) throw new NullReferenceException(nameof(notFoundResult));
-
-			Assert.AreEqual(404,notFoundResult.StatusCode);
-
-			await _query.RemoveItemAsync(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
-		}
-        
-		[TestMethod]
-		public async Task Replace_AllDataIncluded_WithFakeExifTool()
-		{
-			var item = await _query.AddItemAsync(new FileIndexItem
+			var input = new FileIndexItem
 			{
-				FileName = "test09.jpg",
-				ParentDirectory = "/",
-				Tags = "7test"
-			});
-	        
-			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test09.jpg"}));
-	        
-			var metaPreflight = new MetaPreflight(_query,
-				_appSettings,selectorStorage,new FakeIWebLogger());
-			var metaUpdateService = new MetaUpdateService(_query, _exifTool,
-				selectorStorage, new FakeMetaPreflight(),
-				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
+				Tags = "test"
+			};
+			var jsonResult = await controller.UpdateAsync(input, 
+				createAnImage.DbPath,false, false) as JsonResult;
+			if ( jsonResult == null )
+			{
+				Console.WriteLine("json should not be null");
+				throw new NullReferenceException(nameof(jsonResult));
+			}
 			
-			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
-			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),NewScopeFactory());
+			Assert.IsNotNull(fakeIMetaUpdateService);
+			Assert.AreEqual(1, fakeIMetaUpdateService.ChangedFileIndexItemNameContent.Count);
 
-			var jsonResult =  await controller.Replace("/test09.jpg","Tags", "test", 
-				string.Empty) as JsonResult;
-			if ( jsonResult == null ) throw new NullReferenceException(nameof(jsonResult));
-			var fileModel = jsonResult.Value as List<FileIndexItem>;
-			if ( fileModel == null ) throw new NullReferenceException(nameof(fileModel));
+			var actual = JsonSerializer.Serialize(
+				fakeIMetaUpdateService.ChangedFileIndexItemNameContent[0],
+				DefaultJsonSerializer.CamelCase);
 
-			Assert.AreNotEqual(null,fileModel.FirstOrDefault()?.Tags);
-			Assert.AreEqual("7", fileModel.FirstOrDefault()?.Tags);
-
-			await _query.RemoveItemAsync(item);
+			var expected = "{\"" + createAnImage.DbPath + "\":[\"tags\"]}";
+			Assert.AreEqual(expected, actual);
 		}
-
-		[TestMethod]
-		public async Task UpdateAsync_ShouldTriggerBackgroundService()
-		{
-			var fakeFakeIWebSocketConnectionsService =
-				new FakeIWebSocketConnectionsService();
-			
-			var controller = new MetaUpdateController(
-				new FakeMetaPreflight(),
-				new FakeIMetaUpdateService(), 
-				new FakeIMetaReplaceService(), 
-				new FakeIUpdateBackgroundTaskQueue(), 
-				fakeFakeIWebSocketConnectionsService, 
-				new FakeIWebLogger(),
-				null);
-
-			await controller.UpdateAsync(new FileIndexItem{ Status =  FileIndexItem.ExifStatus.Ok}, "/test09.jpg",
-				true);
-
-			Assert.AreEqual(1,fakeFakeIWebSocketConnectionsService
-				.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
-		}
-        
-		[TestMethod]
-		public void Replace_ShouldTriggerBackgroundService_Ok()
-		{
-			var fakeFakeIWebSocketConnectionsService =
-				new FakeIWebSocketConnectionsService();
-			var controller = new MetaUpdateController(new FakeMetaPreflight(),new FakeIMetaUpdateService(), 
-				new FakeIMetaReplaceService(new List<FileIndexItem>{new FileIndexItem("/test09.jpg")
-				{
-					Status = FileIndexItem.ExifStatus.Ok
-				}}), 
-				new FakeIUpdateBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(),NewScopeFactory());
-
-			controller.Replace("/test09.jpg", "tags", "test", "");
-
-			Assert.AreEqual(2, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
-		}
-        
-		[TestMethod]
-		public void Replace_ShouldTriggerBackgroundService_Fail()
-		{
-			var fakeFakeIWebSocketConnectionsService =
-				new FakeIWebSocketConnectionsService();
-			var controller = new MetaUpdateController(new FakeMetaPreflight(),new FakeIMetaUpdateService(), 
-				new FakeIMetaReplaceService(new List<FileIndexItem>{new FileIndexItem("/test09.jpg")
-				{
-					Status = FileIndexItem.ExifStatus.OperationNotSupported
-				}}), 
-				new FakeIUpdateBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(),NewScopeFactory());
-
-			controller.Replace("/test09.jpg", "tags", "test", "");
-
-			Assert.AreEqual(0, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
-		}
+		
 	}
 }

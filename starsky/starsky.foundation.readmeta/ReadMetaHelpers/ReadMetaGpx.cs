@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -12,11 +13,11 @@ using starsky.foundation.storage.Helpers;
 
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
-    public class ReadMetaGpx
+    public static class ReadMetaGpx
     {
 	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
 	    
-        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream? stream, string subPath)
+        public static FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream? stream, string subPath)
         {
 	        if ( stream == null )
 	        {
@@ -25,32 +26,37 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
 
 	        var readGpxFile = ReadGpxFile(stream, null, 1);
-	        
-	        if ( readGpxFile.Any() )
+
+	        if ( !readGpxFile.Any() )
 	        {
 		        return new FileIndexItem(subPath)
 		        {
-			        Title = readGpxFile.FirstOrDefault()?.Title,
-			        DateTime = readGpxFile.FirstOrDefault().DateTime,
-			        Latitude = readGpxFile.FirstOrDefault().Latitude,
-			        Longitude = readGpxFile.FirstOrDefault().Longitude,
-			        LocationAltitude = readGpxFile.FirstOrDefault().Altitude,
-			        ColorClass = ColorClassParser.Color.None,
-			        ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
-		        }; 
+			        Tags = "SystemXmlXmlException",
+			        ColorClass = ColorClassParser.Color.None
+		        };
 	        }
-	        
+
+	        var title = readGpxFile.FirstOrDefault()?.Title ?? string.Empty;
+	        var dateTime = readGpxFile.FirstOrDefault()?.DateTime ?? new DateTime();
+	        var latitude = readGpxFile.FirstOrDefault()?.Latitude ?? 0d;
+	        var longitude = readGpxFile.FirstOrDefault()?.Longitude ?? 0d;
+	        var altitude = readGpxFile.FirstOrDefault()?.Altitude ?? 0d;
+
 	        return new FileIndexItem(subPath)
 	        {
-		        Tags = "SystemXmlXmlException",
-		        ColorClass = ColorClassParser.Color.None
+		        Title = title,
+		        DateTime = dateTime,
+		        Latitude = latitude,
+		        Longitude = longitude,
+		        LocationAltitude = altitude,
+		        ColorClass = ColorClassParser.Color.None,
+		        ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
 	        };
-	        
         }
 
-        private static string GetTrkName(XmlDocument gpxDoc, XmlNamespaceManager namespaceManager)
+        private static string GetTrkName(XmlNode? gpxDoc, XmlNamespaceManager namespaceManager)
         {
-            XmlNodeList trkNodeList = gpxDoc.SelectNodes("//x:trk",  namespaceManager);
+	        var trkNodeList = gpxDoc?.SelectNodes("//x:trk",  namespaceManager);
             if ( trkNodeList == null ) return string.Empty;
             var trkName = new StringBuilder();
             foreach (XmlElement node in trkNodeList)
@@ -72,7 +78,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <param name="geoList"></param>
 	    /// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
 	    /// <returns></returns>
-	    public static List<GeoListItem> ReadGpxFile(Stream stream, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
+	    public static List<GeoListItem> ReadGpxFile(Stream stream, List<GeoListItem>? geoList = null, int returnAfter = int.MaxValue)
         {
             if (geoList == null) geoList = new List<GeoListItem>();
 
@@ -110,7 +116,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <param name="geoList">object to add</param>
 	    /// <param name="returnAfter">return after number of values; default return all</param>
 	    /// <returns></returns>
-	    private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem> geoList = null, 
+	    private static List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem>? geoList = null, 
 		    int returnAfter = int.MaxValue)
 	    {
 		    var gpxDoc = ParseXml(fileString);
@@ -118,7 +124,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
 			namespaceManager.AddNamespace("x", GpxXmlNameSpaceName);
             
-            XmlNodeList nodeList = gpxDoc.SelectNodes("//x:trkpt", namespaceManager);
+            XmlNodeList? nodeList = gpxDoc.SelectNodes("//x:trkpt", namespaceManager);
             if ( nodeList == null ) return new List<GeoListItem>();
             geoList ??= new List<GeoListItem>();
 

@@ -55,6 +55,8 @@ describe("useSockets", () => {
       expect.any(Function),
       { current: true },
       expect.any(Function),
+      expect.any(Function),
+      expect.any(String),
       expect.any(Function)
     );
 
@@ -94,6 +96,8 @@ describe("useSockets", () => {
       expect.any(Function),
       { current: true },
       expect.any(Function),
+      expect.any(Function),
+      expect.any(String),
       expect.any(Function)
     );
 

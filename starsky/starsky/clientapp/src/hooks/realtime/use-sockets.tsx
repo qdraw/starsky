@@ -31,6 +31,8 @@ const useSockets = (): IUseSockets => {
   // time the server has pinged me back (it should every 20 seconds)
   const [keepAliveTime, setKeepAliveTime] = useState(new Date());
 
+  const [keepAliveServerTime, setKeepAliveServerTime] = useState("");
+
   // number of failures
   const [countRetry, setCountRetry] = useState(0);
 
@@ -65,7 +67,9 @@ const useSockets = (): IUseSockets => {
         setSocketConnected,
         isEnabled,
         setKeepAliveTime,
-        NewWebSocketService
+        NewWebSocketService,
+        keepAliveServerTime,
+        setKeepAliveServerTime
       );
     } else {
       setCountRetry(0);
@@ -92,7 +96,9 @@ const useSockets = (): IUseSockets => {
       setSocketConnected,
       isEnabled,
       setKeepAliveTime,
-      NewWebSocketService
+      NewWebSocketService,
+      keepAliveServerTime,
+      setKeepAliveServerTime
     );
 
     // when effect ends ->

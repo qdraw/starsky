@@ -2,10 +2,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.WebSockets;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.JsonConverter;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Helpers;
 using starsky.foundation.realtime.Interfaces;
 
@@ -19,13 +22,9 @@ namespace starsky.foundation.realtime.Services
 			_logger = logger;
 		}
 		
-		#region Fields
 		private readonly ConcurrentDictionary<Guid, WebSocketConnection> _connections = new ConcurrentDictionary<Guid, WebSocketConnection>();
 		private readonly IWebLogger _logger;
 
-		#endregion
-
-		#region Methods
 		public void AddConnection(WebSocketConnection connection)
 		{
 			_connections.TryAdd(connection.Id, connection);
@@ -54,6 +53,12 @@ namespace starsky.foundation.realtime.Services
 
 			return Task.WhenAll(connectionsTasks);
 		}
-		#endregion
+
+		public Task SendToAllAsync<T>(ApiNotificationResponseModel<T> message, CancellationToken cancellationToken)
+		{
+			var stringMessage = JsonSerializer.Serialize(message,
+				DefaultJsonSerializer.CamelCase);
+			return SendToAllAsync(stringMessage, cancellationToken);
+		}
 	}
 }

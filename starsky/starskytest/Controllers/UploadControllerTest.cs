@@ -122,7 +122,7 @@ namespace starskytest.Controllers
 			var controller =
 				new UploadController(_import, _appSettings, 
 					new FakeSelectorStorage(new FakeIStorage()), _query, 
-					new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+					new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 					new FakeIMetaExifThumbnailService())
 				{
 					ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -138,7 +138,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new UploadController(_import, _appSettings,  
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = RequestWithFile(),
@@ -167,7 +167,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new UploadController(_import, _appSettings,  
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = RequestWithFile(CreateAnImageColorClass.Bytes),
@@ -198,7 +198,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new UploadController(_import, _appSettings,  
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = RequestWithFile(),
@@ -242,7 +242,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new UploadController(_import, _appSettings,  
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = RequestWithFile(),
@@ -272,7 +272,7 @@ namespace starskytest.Controllers
 			var controller =
 				new UploadController(_import, _appSettings,  
 					new FakeSelectorStorage(_iStorage), _query, 
-					new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+					new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 					new FakeIMetaExifThumbnailService())
 				{
 					ControllerContext = RequestWithFile(),
@@ -289,7 +289,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = RequestWithFile(),
@@ -311,7 +311,7 @@ namespace starskytest.Controllers
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = controllerContext
@@ -329,7 +329,7 @@ namespace starskytest.Controllers
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = controllerContext
@@ -347,7 +347,7 @@ namespace starskytest.Controllers
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = controllerContext
@@ -366,7 +366,7 @@ namespace starskytest.Controllers
 			var controller =
 				new UploadController(_import, _appSettings, 
 					new FakeSelectorStorage(_iStorage), _query, 
-					new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+					new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 					new FakeIMetaExifThumbnailService())
 				{
 					ControllerContext = controllerContext
@@ -395,7 +395,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = RequestWithSidecar(),
@@ -416,7 +416,7 @@ namespace starskytest.Controllers
 			// it should add a reference to the main item
 			var controller = new UploadController(_import, new AppSettings{UseDiskWatcher = false}, 
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = RequestWithSidecar(),
@@ -442,7 +442,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService())
 			{
 				ControllerContext = RequestWithFile() // < - - - - - - this is not an xml
@@ -463,7 +463,7 @@ namespace starskytest.Controllers
 			var controller =
 				new UploadController(_import, _appSettings,  
 					new FakeSelectorStorage(_iStorage), _query, 
-					new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+					new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 					new FakeIMetaExifThumbnailService())
 				{
 					ControllerContext = RequestWithFile(),
@@ -481,7 +481,7 @@ namespace starskytest.Controllers
 			var controller =
 				new UploadController(_import, _appSettings, 
 					new FakeSelectorStorage(new FakeIStorage()), _query, 
-					new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),
+					new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 					new FakeIMetaExifThumbnailService())
 				{
 					ControllerContext = {HttpContext = new DefaultHttpContext()}

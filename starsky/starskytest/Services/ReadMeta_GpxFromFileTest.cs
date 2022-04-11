@@ -17,7 +17,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile_Null()
 		{
-			var returnItem = new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(null,"/test.gpx");
+			var returnItem = ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(null,"/test.gpx");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,returnItem.Status);
 			Assert.AreEqual("/test.gpx",returnItem.FilePath);
 		}
@@ -28,7 +28,7 @@ namespace starskytest.Services
 			var gpxBytes = CreateAnGpx.Bytes;
 			MemoryStream stream = new MemoryStream(gpxBytes);
 	        
-			var returnItem = new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
+			var returnItem = ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
 			Assert.AreEqual(5.485941,returnItem.Longitude,0.001);
 			Assert.AreEqual(51.809360,returnItem.Latitude,0.001);
 			Assert.AreEqual("_20180905-fietsen-oss",returnItem.Title);
@@ -50,7 +50,7 @@ namespace starskytest.Services
 			var gpxBytes = new byte[0];
 			MemoryStream stream = new MemoryStream(gpxBytes);
 	        
-			var returnItem = new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
+			var returnItem = ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
 			Assert.AreEqual(new DateTime(),returnItem.DateTime );
 			Assert.AreEqual("/test.gpx",returnItem.FilePath);
 		}
@@ -62,7 +62,7 @@ namespace starskytest.Services
 			MemoryStream stream = new MemoryStream(gpxBytes);
 
 			var returnItem =
-				new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(stream, "/test.gpx");
+				ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(stream, "/test.gpx");
 			Assert.AreEqual("test.gpx",returnItem.FileName);
 			Assert.AreEqual("/",returnItem.ParentDirectory);
 		}

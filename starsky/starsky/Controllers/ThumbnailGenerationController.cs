@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -84,16 +86,15 @@ namespace starsky.Controllers
 
 				if ( !result.Any() ) return;
 
-				await _connectionsService.SendToAllAsync("[system] /api/thumbnail-generation called",CancellationToken.None);
-				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
-					result,
-					DefaultJsonSerializer.CamelCase), CancellationToken.None);
+				var webSocketResponse =
+					new ApiNotificationResponseModel<List<FileIndexItem>>(result, ApiNotificationType.ThumbnailGeneration);
+				await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 				
 				_logger.LogInformation($"[ThumbnailGenerationController] done {subPath}");
 			}
 			catch ( UnauthorizedAccessException e )
 			{
-				_logger.LogError($"[ThumbnailGenerationController] catch-ed exceptioin {e.Message}", e);
+				_logger.LogError($"[ThumbnailGenerationController] catch-ed exception {e.Message}", e);
 			}
 		}
 	}

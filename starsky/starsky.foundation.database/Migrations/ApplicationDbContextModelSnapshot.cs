@@ -15,7 +15,7 @@ namespace starsky.foundation.database.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "3.1.22");
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.3");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -215,11 +215,13 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<string>("FileName")
                         .HasMaxLength(190)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("FilePath")
                         .HasMaxLength(380)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasColumnOrder(2);
 
                     b.Property<double>("FocalLength")
                         .HasColumnType("REAL");
@@ -301,7 +303,7 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("FileName", "ParentDirectory");
 
-                    b.ToTable("FileIndex", (string)null);
+                    b.ToTable("FileIndex");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.ImportIndexItem", b =>
@@ -313,8 +315,14 @@ namespace starsky.foundation.database.Migrations
                     b.Property<DateTime>("AddToDatabase")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ColorClass")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("DateTimeFromFileName")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("FileHash")
                         .HasColumnType("TEXT");
@@ -329,7 +337,24 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("FileHash");
 
-                    b.ToTable("ImportIndex", (string)null);
+                    b.ToTable("ImportIndex");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.NotificationItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>

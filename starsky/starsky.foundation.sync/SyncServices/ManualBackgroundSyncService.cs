@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,8 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.JsonConverter;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.webtelemetry.Helpers;
@@ -68,7 +68,7 @@ namespace starsky.foundation.sync.SyncServices
 			_cache.Set(ManualSyncCacheName + subPath, true, 
 				new TimeSpan(0,1,0));
 			
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
 			{
 				await BackgroundTask(fileIndexItem.FilePath, operationId);
 			});
@@ -78,11 +78,9 @@ namespace starsky.foundation.sync.SyncServices
 
 		internal async Task PushToSockets(List<FileIndexItem> updatedList)
 		{
-			await _connectionsService.SendToAllAsync($"[system] ManualBackgroundSyncService" +
-				$" {updatedList.FirstOrDefault()?.FilePath}", CancellationToken.None);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
-				updatedList,
-				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			var webSocketResponse =
+				new ApiNotificationResponseModel<List<FileIndexItem>>(updatedList, ApiNotificationType.ManualBackgroundSync);
+			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 		}
 
 		internal async Task BackgroundTask(string subPath, string operationId)

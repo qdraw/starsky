@@ -327,6 +327,7 @@ namespace starsky.feature.import.Services
 				FileIndexItem = fileIndexItem,
 				Status = ImportStatus.Ok,
 				FilePath = fileIndexItem.FilePath,
+				ColorClass = fileIndexItem.ColorClass
 			};
 			
 			// used for files without a Exif Date for example WhatsApp images
@@ -353,11 +354,12 @@ namespace starsky.feature.import.Services
 			importIndexItem.FileIndexItem.FileHash = fileHashCode;
 			importIndexItem.FileIndexItem.ImageFormat = imageFormat;
 			importIndexItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+			if ( colorClassTransformation < 0 ) return importIndexItem;
+
 			// only when set in ImportSettingsModel
-			if ( colorClassTransformation >= 0 )
-			{
-				importIndexItem.FileIndexItem.ColorClass = ( ColorClassParser.Color ) colorClassTransformation;
-			}
+			var colorClass = ( ColorClassParser.Color ) colorClassTransformation;
+			importIndexItem.FileIndexItem.ColorClass = colorClass;
+			importIndexItem.ColorClass = colorClass;
 			return importIndexItem;
 		}
 

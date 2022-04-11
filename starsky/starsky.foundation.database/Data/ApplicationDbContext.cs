@@ -26,6 +26,8 @@ namespace starsky.foundation.database.Data
 		public DbSet<Permission> Permissions { get; set; }
 		public DbSet<RolePermission> RolePermissions { get; set; }
 
+		public DbSet<NotificationItem> Notifications { get; set; }
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			// Do nothing because of that in debug mode this only triggered

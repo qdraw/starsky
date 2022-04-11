@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.feature.rename.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -23,13 +25,15 @@ namespace starsky.Controllers
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;
 	    private readonly IWebSocketConnectionsService _connectionsService;
+	    private readonly INotificationQuery _notificationQuery;
 
-        public DiskController(IQuery query, ISelectorStorage selectorStorage, 
-	        IWebSocketConnectionsService connectionsService)
+	    public DiskController(IQuery query, ISelectorStorage selectorStorage, 
+	        IWebSocketConnectionsService connectionsService, INotificationQuery notificationQuery)
         {
             _query = query;
 	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 	        _connectionsService = connectionsService;
+	        _notificationQuery = notificationQuery;
         }
 
         /// <summary>
@@ -81,7 +85,7 @@ namespace starsky.Controllers
 	        if (syncResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 		        Response.StatusCode = 409; // A conflict, Directory already exist
 	        
-	        await SyncMessageToSocket(syncResultsList,"Mkdir");
+	        await SyncMessageToSocket(syncResultsList, ApiNotificationType.Mkdir);
 
 	        return Json(syncResultsList);
         }
@@ -90,19 +94,20 @@ namespace starsky.Controllers
         /// Update other users with a message from SyncViewModel
         /// </summary>
         /// <param name="syncResultsList">SyncViewModel</param>
-        /// <param name="name">optional debug name</param>
+        /// <param name="type">optional debug name</param>
         /// <returns>Completed send of Socket SendToAllAsync</returns>
-        private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, string name = "")
+        private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, ApiNotificationType type = ApiNotificationType.Unknown)
         {
 	        var list = syncResultsList.Select(t => new FileIndexItem(t.FilePath)
 	        {
 		        Status = t.Status, IsDirectory = true
 	        }).ToList();
 
-	        await _connectionsService.SendToAllAsync($"[system] {name}",
-		        CancellationToken.None);
-	        await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(list,
-		        DefaultJsonSerializer.CamelCase), CancellationToken.None);
+	        var webSocketResponse = new ApiNotificationResponseModel<
+		        List<FileIndexItem>>(list, type);
+
+	        await _notificationQuery.AddNotification(webSocketResponse);
+	        await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
         }
 
         /// <summary>
@@ -128,9 +133,11 @@ namespace starsky.Controllers
 		    if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 			    return NotFound(rename);
 		    
-		    await _connectionsService.SendToAllAsync($"[system] /api/disk/rename {f} > {to}", CancellationToken.None);
-		    await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(rename,
-			    DefaultJsonSerializer.CamelCase), CancellationToken.None);
+		    var webSocketResponse =
+			    new ApiNotificationResponseModel<List<FileIndexItem>>(rename,ApiNotificationType.Rename);
+
+		    await _notificationQuery.AddNotification(webSocketResponse);
+		    await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 
 		    return Json(currentStatus ? rename.Where(p => p.Status 
 				    != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList() : rename);

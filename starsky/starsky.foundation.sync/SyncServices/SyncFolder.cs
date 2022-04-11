@@ -13,6 +13,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
@@ -27,6 +28,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly Duplicate _duplicate;
 		private readonly IWebLogger _logger;
 		private readonly IMemoryCache _memoryCache;
+		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
 		public SyncFolder(AppSettings appSettings, IQuery query, 
 			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger, IMemoryCache memoryCache)
@@ -39,6 +41,7 @@ namespace starsky.foundation.sync.SyncServices
 			_duplicate = new Duplicate(_query);
 			_logger = logger;
 			_memoryCache = memoryCache;
+			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, console);
 		}
 
 		public async Task<List<FileIndexItem>> Folder(string inputSubPath,
@@ -85,7 +88,7 @@ namespace starsky.foundation.sync.SyncServices
 			if ( subPaths.Count == folderList.Count ) return;
 			
 			foreach ( var path in subPaths.Where(path => folderList.All(p => p.FilePath != path) &&
-				         _subPathStorage.ExistFolder(path)) )
+				         _subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path) ) )
 			{
 				await _query.AddItemAsync(new FileIndexItem(path)
 				{

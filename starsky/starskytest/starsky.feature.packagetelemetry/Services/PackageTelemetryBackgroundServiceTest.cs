@@ -23,7 +23,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 		public static async Task InvokeAsync(this MethodInfo @this, object obj, params object[] parameters)
 		{
 			dynamic awaitable = @this.Invoke(obj, parameters);
-			await awaitable;
+			await awaitable!;
 			awaitable.GetAwaiter();
 		}
 	}
@@ -52,7 +52,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 	
 	
 		[TestMethod]
-		[Timeout(3000)]
+		[Timeout(5000)]
 		public async Task ExecuteAsyncTest_WebController()
 		{
 			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
@@ -87,12 +87,12 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 		{
 			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
 				.GetService<AppSettings>();
-			appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
+			appSettings!.ApplicationType = AppSettings.StarskyAppType.Admin;
 			var httpProvider1 = _serviceScopeFactory.CreateScope().ServiceProvider
 				.GetService<IHttpProvider>();
 
 			var fakeHttpProvider1 = httpProvider1 as FakeIHttpProvider;
-			fakeHttpProvider1.UrlCalled = new List<string>();
+			fakeHttpProvider1!.UrlCalled = new List<string>();
 		
 			var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
 			

@@ -629,7 +629,12 @@ namespace starsky.foundation.platform.Models
 		/// use env variable: app__SyncIgnore__0 - value
 		/// Use always UNIX style
 		/// </summary>
-		public List<string> SyncIgnore { get; set; } = new List<string>{"/lost+found"};
+		public List<string> SyncIgnore { get; set; } = new List<string>
+		{
+			"/lost+found",
+			"/.stfolder", 
+			"/.git"
+		};
 		
 		/// <summary>
 		/// Ignore this part of a path while importing

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Models
@@ -106,8 +107,12 @@ namespace starsky.foundation.database.Models
         /// <summary>
         /// Is the Exif DateTime parsed from the fileName
         /// </summary>
-        [NotMapped]
         public bool DateTimeFromFileName { get; set; }
+
+        /// <summary>
+        /// ColorClass
+        /// </summary>
+        public ColorClassParser.Color ColorClass { get; set; }
 
         public DateTime ParseDateTimeFromFileName()
         {

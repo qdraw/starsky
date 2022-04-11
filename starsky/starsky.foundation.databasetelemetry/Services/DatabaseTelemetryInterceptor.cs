@@ -1,3 +1,4 @@
+#nullable enable
 using System.Data.Common;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -14,11 +15,11 @@ namespace starsky.foundation.databasetelemetry.Services
 	/// </summary>
     public class DatabaseTelemetryInterceptor : IDbCommandInterceptor
     {
-        private readonly TelemetryClient _telemetryClient;
+        private readonly TelemetryClient? _telemetryClient;
 
         private const string TelemetryType = "Database";
         
-        public DatabaseTelemetryInterceptor(TelemetryClient telemetryClient)
+        public DatabaseTelemetryInterceptor(TelemetryClient? telemetryClient)
         {
             _telemetryClient = telemetryClient;
         }
@@ -89,8 +90,8 @@ namespace starsky.foundation.databasetelemetry.Services
 	        return result;
         }
 
-        public object ScalarExecuted(DbCommand command, CommandExecutedEventData eventData,
-	        object result)
+        public object? ScalarExecuted(DbCommand command, CommandExecutedEventData eventData,
+	        object? result)
         {
 	        return result;
         }
@@ -108,8 +109,8 @@ namespace starsky.foundation.databasetelemetry.Services
 	        return ValueTask.FromResult(result);
         }
 
-        public ValueTask<object> ScalarExecutedAsync(DbCommand command, CommandExecutedEventData eventData,
-	        object result,
+        public ValueTask<object?> ScalarExecutedAsync(DbCommand command, CommandExecutedEventData eventData,
+	        object? result,
 	        CancellationToken cancellationToken = new CancellationToken())
         {
 	        return ValueTask.FromResult(result);
@@ -134,7 +135,7 @@ namespace starsky.foundation.databasetelemetry.Services
         }
 
         public InterceptionResult DataReaderDisposing(DbCommand command,
-	        DataReaderDisposingEventData eventData, InterceptionResult result)
+	        DataReaderDisposingEventData? eventData, InterceptionResult result)
         {
 	        if ( command.CommandText.Contains("__EFMigrationsHistory") || command.CommandText.Contains("SearchSuggestionsService"))
 	        {

@@ -1,8 +1,14 @@
 using System;
+using System.Globalization;
 using System.Net.WebSockets;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.JsonConverter;
+using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Helpers;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.realtime.Model;
@@ -49,7 +55,12 @@ namespace starsky.foundation.realtime.Middleware
 						await Task.Delay(150);
 						try
 						{
-							await webSocketConnection.SendAsync("{\"welcome\": true}", CancellationToken.None);
+							var welcomeMessage = new ApiNotificationResponseModel<HeartbeatModel>(new HeartbeatModel(null))
+							{
+								Type =  ApiNotificationType.Welcome,
+							};
+							await webSocketConnection.SendAsync(JsonSerializer.Serialize(welcomeMessage,
+								DefaultJsonSerializer.CamelCase), CancellationToken.None);
 						}
 						catch ( WebSocketException )
 						{
