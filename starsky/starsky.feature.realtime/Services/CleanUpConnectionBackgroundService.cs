@@ -1,11 +1,9 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Interfaces;
 
 namespace starsky.feature.realtime.Services
 {
