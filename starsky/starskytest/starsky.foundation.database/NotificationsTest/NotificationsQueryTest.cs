@@ -1,15 +1,20 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
 using starsky.foundation.database.Notifications;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.database
+namespace starskytest.starsky.foundation.database.NotificationsTest
 {
+	/// <summary>
+	/// NotificationQuery
+	/// </summary>
 	[TestClass]
 	public class NotificationsQueryTest
 	{
@@ -48,6 +53,34 @@ namespace starskytest.starsky.foundation.database
 			_dbContext.Notifications.Remove(testNotification);
 			await _dbContext.SaveChangesAsync();
 		}
+
+		[TestMethod]
+		public async Task Get_RecentItems_Ok()
+		{
+			var currentTime = DateTime.UtcNow;
+			await _notificationQuery.AddNotification(
+				new ApiNotificationResponseModel<string>("test")
+				{
+					Type = ApiNotificationType.Welcome
+				});
+
+			var recent = await _notificationQuery.Get(currentTime);
+			Assert.AreEqual(1, recent.Count);
+			
+			_dbContext.Notifications.RemoveRange(recent);
+			await _dbContext.SaveChangesAsync();
+		}
+		
+		[TestMethod]
+		public async Task Get_RecentItems_OldIgnored()
+		{
+			var currentTime = DateTime.UtcNow;
+			_dbContext.Notifications.Add(
+				new NotificationItem() {DateTime = DateTime.UnixEpoch});
+			await _dbContext.SaveChangesAsync();
+			
+			var recent = await _notificationQuery.Get(currentTime);
+			Assert.AreEqual(0, recent.Count);
+		}
 	}
 }
-
