@@ -1,15 +1,20 @@
 import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";
 import WsCurrentStart, {
-  FireOnClose,
-  FireOnError,
-  FireOnMessage,
-  FireOnOpen,
-  HandleKeepAliveMessage,
-  isKeepAliveMessage,
-  parseJson
+	FireOnClose,
+	FireOnError,
+	FireOnMessage,
+	FireOnOpen,
+	HandleKeepAliveMessage,
+	isKeepAliveMessage,
+	parseJson, RestoreDataOnOpen
 } from "./ws-current-start";
 import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
+import {IConnectionDefault} from "../../interfaces/IConnectionDefault";
+import {IDetailView, PageType} from "../../interfaces/IDetailView";
+import {Orientation} from "../../interfaces/IFileIndexItem";
+import {IExifStatus} from "../../interfaces/IExifStatus";
+import * as FetchGet from "../../shared/fetch-get";
 
 describe("WsCurrentStart", () => {
   let onOpenEvent = new Event("t");
@@ -26,7 +31,9 @@ describe("WsCurrentStart", () => {
         setSocketConnectedSpy,
         { current: true },
         jest.fn(),
-        NewFakeWebSocketService
+        NewFakeWebSocketService,
+				"",
+				jest.fn() as any
       ) as FakeWebSocketService;
 
       expect(setSocketConnectedSpy).toBeCalled();
@@ -39,8 +46,8 @@ describe("WsCurrentStart", () => {
 
   describe("FireOnClose", () => {
     it("feature toggle disabled when statusCode is 1008", () => {
-      var isEnabled = { current: true };
-      FireOnClose(
+			const isEnabled = {current: true};
+			FireOnClose(
         new CloseEvent("t", { code: 1008 }),
         true,
         jest.fn(),
@@ -49,8 +56,8 @@ describe("WsCurrentStart", () => {
       expect(isEnabled.current).toBeFalsy();
     });
     it("feature toggle disabled when statusCode is 1009", () => {
-      var isEnabled = { current: true };
-      FireOnClose(
+			const isEnabled = {current: true};
+			FireOnClose(
         new CloseEvent("t", { code: 1009 }),
         true,
         jest.fn(),
@@ -59,8 +66,8 @@ describe("WsCurrentStart", () => {
       expect(isEnabled.current).toBeFalsy();
     });
     it("feature toggle enabled when statusCode is 1000", () => {
-      var isEnabled = { current: true };
-      FireOnClose(
+			const isEnabled = {current: true};
+			FireOnClose(
         new CloseEvent("t", { code: 1000 }),
         true,
         jest.fn(),
@@ -69,8 +76,8 @@ describe("WsCurrentStart", () => {
       expect(isEnabled.current).toBeTruthy();
     });
     it("check if setSocketConnected is called", () => {
-      var setSocketConnectedSpy = jest.fn();
-      FireOnClose(
+			const setSocketConnectedSpy = jest.fn();
+			FireOnClose(
         new CloseEvent("t", { code: 1000 }),
         true,
         setSocketConnectedSpy,
@@ -82,8 +89,8 @@ describe("WsCurrentStart", () => {
 
   describe("FireOnError", () => {
     it("check if setSocketConnected is called", () => {
-      var setSocketConnectedSpy = jest.fn();
-      FireOnError(true, setSocketConnectedSpy);
+			const setSocketConnectedSpy = jest.fn();
+			FireOnError(true, setSocketConnectedSpy);
       expect(setSocketConnectedSpy).toBeCalled();
     });
   });
@@ -122,7 +129,9 @@ describe("WsCurrentStart", () => {
         new MessageEvent("t", {
           data: '{"type" : "Welcome", "welcome": true}'
         }),
-        setKeepAliveTimeSpy
+        setKeepAliveTimeSpy,
+				jest.fn() as any,
+				
       );
       expect(setKeepAliveTimeSpy).toBeCalled();
     });
@@ -131,25 +140,28 @@ describe("WsCurrentStart", () => {
       var setKeepAliveTimeSpy = jest.fn();
       FireOnMessage(
         new MessageEvent("t", { data: '{"type" : "Welcome", "time": 1}' }),
-        setKeepAliveTimeSpy
+        setKeepAliveTimeSpy,
+				jest.fn() as any
       );
       expect(setKeepAliveTimeSpy).toBeCalled();
     });
 
     it("should ignore undefined data", () => {
-      var setKeepAliveTimeSpy = jest.fn();
+      const setKeepAliveTimeSpy = jest.fn();
       FireOnMessage(
         new MessageEvent("t", { data: undefined }),
-        setKeepAliveTimeSpy
+        setKeepAliveTimeSpy,
+				jest.fn() as any
       );
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
     });
 
     it("should ignore invalid json data", () => {
-      var setKeepAliveTimeSpy = jest.fn();
+      const setKeepAliveTimeSpy = jest.fn();
       FireOnMessage(
         new MessageEvent("t", { data: "1{1\\" }),
-        setKeepAliveTimeSpy
+        setKeepAliveTimeSpy,
+				jest.fn() as any
       );
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
     });
@@ -158,7 +170,8 @@ describe("WsCurrentStart", () => {
       var setKeepAliveTimeSpy = jest.fn();
       FireOnMessage(
         new MessageEvent("t", { data: '{"data": 1}' }),
-        setKeepAliveTimeSpy
+        setKeepAliveTimeSpy,
+				jest.fn() as any
       );
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
     });
@@ -170,7 +183,7 @@ describe("WsCurrentStart", () => {
         done();
       });
 
-      FireOnMessage(new MessageEvent("t", { data: '{"data": 1}' }), jest.fn());
+      FireOnMessage(new MessageEvent("t", { data: '{"data": 1}' }), jest.fn(), jest.fn() as any);
     });
   });
 
@@ -199,4 +212,34 @@ describe("WsCurrentStart", () => {
       expect(result).toBe(83);
     });
   });
+
+	describe("RestoreDataOnOpen", () => {
+		it("both null", async () => {
+			const result = await RestoreDataOnOpen(false, "");
+			expect(result).toBeFalsy();
+		});
+		it("time null", async () => {
+			const result = await RestoreDataOnOpen(true, "");
+			expect(result).toBeFalsy();
+		});
+		it("connected false", async () => {
+			const result = await RestoreDataOnOpen(false, "any");
+			expect(result).toBeFalsy();
+		});
+
+		it("fetch bad request", async () => {
+			const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+				Promise.resolve({
+					statusCode: 400,
+				} as IConnectionDefault);
+			const spyGet = jest
+				.spyOn(FetchGet, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
+			
+			const result = await RestoreDataOnOpen(false, "any");
+			expect(result).toBeFalsy();
+			expect(spyGet).toBeCalled();
+		});
+	});
+	
 });

@@ -1,16 +1,19 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace starsky.foundation.realtime.Model
 {
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 	public class HeartbeatModel
 	{
-		public HeartbeatModel(int speedInSeconds)
+		public HeartbeatModel(int? speedInSeconds)
 		{
 			SpeedInSeconds = speedInSeconds;
 		}
-		public int SpeedInSeconds { get; set; }
+		
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+		public int? SpeedInSeconds { get; set; }
 		
 		public DateTime DateTime { get; set; } = DateTime.UtcNow;
 	}

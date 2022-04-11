@@ -4,11 +4,11 @@ import { IFileIndexItem } from "../../interfaces/IFileIndexItem";
 import { UrlQuery } from "../../shared/url-query";
 import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";
+import FetchGet from "../../shared/fetch-get";
 
 export function isKeepAliveMessage(item: any) {
   if (!item || !item.type) return false;
-  if (item.type === "Welcome" || item.type === "Heartbeat") return true;
-  return false;
+  return item.type === "Welcome" || item.type === "Heartbeat";
 }
 
 export function HandleKeepAliveMessage(
@@ -17,6 +17,14 @@ export function HandleKeepAliveMessage(
 ) {
   if (!isKeepAliveMessage(item)) return;
   setKeepAliveTime(new Date());
+}
+
+export function HandleKeepAliveServerMessage(
+  setKeepAliveServerTime: Dispatch<SetStateAction<string>>,
+  item: any
+) {
+  if (!isKeepAliveMessage(item) || !item.data || !item.data.dateTime) return;
+  setKeepAliveServerTime(item.data.dateTime);
 }
 
 export const NewWebSocketService = (): WebSocketService => {
@@ -37,7 +45,7 @@ export function parseJson(data: string): any {
   }
 }
 
-function parseMessage(item: IApiNotificationResponseModel<IFileIndexItem[]>) {
+function PushMessage(item: IApiNotificationResponseModel<IFileIndexItem[]>) {
   if (!item) return;
   console.log(`[use-sockets] update ${item.type}`, item.data);
   document.body.dispatchEvent(
@@ -75,20 +83,45 @@ export function FireOnOpen(
   setSocketConnected: Dispatch<SetStateAction<boolean>>
 ) {
   console.log("[use-sockets] socket connection opened");
-  if (!socketConnected) setSocketConnected(true);
+  if (!socketConnected) {
+		setSocketConnected(true);
+	}
+}
+
+export async function RestoreDataOnOpen(socketConnected: boolean, keepAliveServerTime: string) : Promise<boolean> {
+	if (!socketConnected || !keepAliveServerTime) {
+		return false;
+	}
+	const result = await FetchGet(new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime));
+	console.log(result)
+	if (result.statusCode !== 200 || !result.data) {
+		return false;
+	}
+	let anyResults = false;
+	for (const dataItem of result.data) {
+		if (!dataItem.content){
+			continue;
+		}
+		const item = parseJson(dataItem.content);
+		PushMessage(item);
+		anyResults = true;
+	}
+	return anyResults;
 }
 
 export function FireOnMessage(
   e: Event,
-  setKeepAliveTime: Dispatch<SetStateAction<Date>>
+  setKeepAliveTime: Dispatch<SetStateAction<Date>>,
+  setKeepAliveServerTime: Dispatch<SetStateAction<string>>
 ) {
   const item = parseJson((e as any).data);
 
   if (isKeepAliveMessage(item)) {
     HandleKeepAliveMessage(setKeepAliveTime, item);
+    HandleKeepAliveServerMessage(setKeepAliveServerTime, item);
     return;
   }
-  parseMessage(item);
+	PushMessage(item);
 }
 
 export default function WsCurrentStart(
@@ -96,17 +129,24 @@ export default function WsCurrentStart(
   setSocketConnected: Dispatch<SetStateAction<boolean>>,
   isEnabled: MutableRefObject<boolean>,
   setKeepAliveTime: Dispatch<SetStateAction<Date>>,
-  InsertNewWebSocketService: () => WebSocketService
+  InsertNewWebSocketService: () => WebSocketService,
+  keepAliveServerTime: string,
+  setKeepAliveServerTime: Dispatch<SetStateAction<string>>
 ): WebSocketService {
   setSocketConnected(true);
 
-  var socket = InsertNewWebSocketService();
-  socket.onOpen(() => FireOnOpen(socketConnected, setSocketConnected));
+  const socket = InsertNewWebSocketService();
+  socket.onOpen(async () => {
+		FireOnOpen(socketConnected, setSocketConnected);
+		await RestoreDataOnOpen(socketConnected, keepAliveServerTime);
+	});
   socket.onClose((e) =>
     FireOnClose(e, socketConnected, setSocketConnected, isEnabled)
   );
   socket.onError(() => FireOnError(socketConnected, setSocketConnected));
-  socket.onMessage((e) => FireOnMessage(e, setKeepAliveTime));
+  socket.onMessage((e) =>
+    FireOnMessage(e, setKeepAliveTime, setKeepAliveServerTime)
+  );
 
   return socket;
 }

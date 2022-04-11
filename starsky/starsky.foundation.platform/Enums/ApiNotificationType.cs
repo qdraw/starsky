@@ -8,7 +8,7 @@ namespace starsky.foundation.platform.Enums
 		Unknown,
 
 		/// <summary>
-		/// String with dateTime
+		/// Uses HeartbeatModel as payload (without SpeedInSeconds)
 		/// </summary>
 		Welcome,
 

@@ -55,9 +55,9 @@ namespace starsky.foundation.realtime.Middleware
 						await Task.Delay(150);
 						try
 						{
-							var welcomeMessage = new ApiNotificationResponseModel<string>(DateTime.UtcNow.ToString(CultureInfo.InvariantCulture))
+							var welcomeMessage = new ApiNotificationResponseModel<HeartbeatModel>(new HeartbeatModel(null))
 							{
-								Type =  ApiNotificationType.Welcome
+								Type =  ApiNotificationType.Welcome,
 							};
 							await webSocketConnection.SendAsync(JsonSerializer.Serialize(welcomeMessage,
 								DefaultJsonSerializer.CamelCase), CancellationToken.None);

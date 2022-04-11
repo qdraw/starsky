@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -39,6 +42,11 @@ namespace starsky.foundation.database.Notifications
 			var stringMessage = JsonSerializer.Serialize(content,
 				DefaultJsonSerializer.CamelCase);		
 			return AddNotification(stringMessage);
+		}
+
+		public Task<List<NotificationItem>> Get(DateTime parsedDateTime)
+		{
+			return _context.Notifications.Where(x => x.DateTime > parsedDateTime).ToListAsync();
 		}
 	}
 }
