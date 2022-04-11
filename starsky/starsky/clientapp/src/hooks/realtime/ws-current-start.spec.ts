@@ -267,7 +267,7 @@ describe("WsCurrentStart", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: { type: "Welcome", data: [{ test: "test" }] }
+          data: [{ test: "test" }]
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchGet, "default")
