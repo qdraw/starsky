@@ -20,6 +20,11 @@ namespace starskytest.FakeMocks
 				message, DefaultJsonSerializer.CamelCase));
 			return Task.CompletedTask;
 		}
+
+		public Task CleanOldMessagesAsync()
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }
 

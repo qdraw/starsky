@@ -64,7 +64,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 					Type = ApiNotificationType.Welcome
 				});
 
-			var recent = await _notificationQuery.Get(currentTime);
+			var recent = await _notificationQuery.GetNewerThan(currentTime);
 			Assert.AreEqual(1, recent.Count);
 			
 			_dbContext.Notifications.RemoveRange(recent);
@@ -79,7 +79,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 				new NotificationItem() {DateTime = DateTime.UnixEpoch});
 			await _dbContext.SaveChangesAsync();
 			
-			var recent = await _notificationQuery.Get(currentTime);
+			var recent = await _notificationQuery.GetNewerThan(currentTime);
 			Assert.AreEqual(0, recent.Count);
 		}
 	}

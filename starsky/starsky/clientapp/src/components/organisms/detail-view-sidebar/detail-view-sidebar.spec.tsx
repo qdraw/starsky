@@ -347,13 +347,13 @@ describe("DetailViewSidebar", () => {
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
       await waitFor(() => expect(tags?.classList).toContain("disabled"), {
-        timeout: 4000
+        timeout: 5000
       });
       await waitFor(() => expect(description?.classList).toContain("disabled"));
       await waitFor(() => expect(title?.classList).toContain("disabled"));
 
       component.unmount();
-    });
+    }, 10000);
 
     it("ReadOnly status (from FileIndexItem)", async () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.ReadOnly;

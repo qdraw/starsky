@@ -32,7 +32,7 @@ namespace starsky.Controllers
 			{
 				return BadRequest("Please enter a valid dateTime");
 			}
-			return Json(await _notificationQuery.Get(parsedDateTime.ToUniversalTime()));
+			return Json(await _notificationQuery.GetNewerThan(parsedDateTime.ToUniversalTime()));
 		}	
 	}
 }

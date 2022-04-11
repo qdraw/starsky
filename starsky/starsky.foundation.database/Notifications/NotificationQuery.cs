@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -44,9 +45,20 @@ namespace starsky.foundation.database.Notifications
 			return AddNotification(stringMessage);
 		}
 
-		public Task<List<NotificationItem>> Get(DateTime parsedDateTime)
+		public Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime)
 		{
 			return _context.Notifications.Where(x => x.DateTime > parsedDateTime).ToListAsync();
+		}
+
+		public Task<List<NotificationItem>> GetOlderThan(DateTime parsedDateTime)
+		{
+			return _context.Notifications.Where(x => x.DateTime < parsedDateTime).ToListAsync();
+		}
+
+		public async Task RemoveAsync(IEnumerable<NotificationItem> content)
+		{
+			_context.Notifications.RemoveRange(content);
+			await _context.SaveChangesAsync();
 		}
 	}
 }

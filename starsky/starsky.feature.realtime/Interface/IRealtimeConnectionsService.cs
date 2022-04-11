@@ -7,6 +7,7 @@ namespace starsky.feature.realtime.Interface
 	public interface IRealtimeConnectionsService
 	{
 		Task NotificationToAllAsync<T>(ApiNotificationResponseModel<T> message, CancellationToken cancellationToken);
+		Task CleanOldMessagesAsync();
 	}
 }
 

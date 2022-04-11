@@ -43,9 +43,27 @@ namespace starskytest.FakeMocks
 			return AddNotification(stringMessage);
 		}
 
-		public Task<List<NotificationItem>> Get(DateTime parsedDateTime)
+		public Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime)
 		{
 			return Task.FromResult(FakeContent.Where(x => x.DateTime > parsedDateTime).ToList());
+		}
+		
+		public Task<List<NotificationItem>> GetOlderThan(DateTime parsedDateTime)
+		{
+			return Task.FromResult(FakeContent.Where(x => x.DateTime < parsedDateTime).ToList());
+		}
+
+		public Task RemoveAsync(IEnumerable<NotificationItem> content)
+		{
+			foreach ( var contentItem in content )
+			{
+				if ( FakeContent.Contains(contentItem) )
+				{	
+					FakeContent.Remove(contentItem);
+				}
+			}
+			
+			return Task.CompletedTask;
 		}
 	}
 }
