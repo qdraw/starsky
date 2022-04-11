@@ -59,6 +59,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Default values .stfolder, .git to SyncIgnore (PR #712)
 - [x]   (Added) _Front-end_ Change checks for WebSocket Messages to support new pattern (PR #712)
 - [x]   (Added) _Front-end_ Save server side datetime objects to query history notifications api (PR #712)
+- [x]   (Added) _Back-end_ Add cleanup job for old notifications in database (PR #712)
 
 # version 0.5.0-beta.3 - 2022-03-09
 - [x]   (Breaking change) _Back-end_ Upgrade to .NET 6 - SDK 6.0.200 (PR #642)
