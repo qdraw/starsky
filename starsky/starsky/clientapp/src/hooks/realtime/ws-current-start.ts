@@ -5,7 +5,7 @@ import { UrlQuery } from "../../shared/url-query";
 import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";
 
-function isKeepAliveMessage(item: any) {
+export function isKeepAliveMessage(item: any) {
   if (!item || !item.type) return false;
   if (item.type === "Welcome" || item.type === "Heartbeat") return true;
   return false;

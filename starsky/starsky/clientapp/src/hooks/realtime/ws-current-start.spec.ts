@@ -6,6 +6,7 @@ import WsCurrentStart, {
   FireOnMessage,
   FireOnOpen,
   HandleKeepAliveMessage,
+  isKeepAliveMessage,
   parseJson
 } from "./ws-current-start";
 import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
@@ -97,6 +98,20 @@ describe("WsCurrentStart", () => {
       var setSocketConnectedSpy = jest.fn();
       FireOnOpen(true, setSocketConnectedSpy);
       expect(setSocketConnectedSpy).toBeCalledTimes(0);
+    });
+  });
+
+  describe("isKeepAliveMessage", () => {
+    it("isKeepAliveMessage false", () => {
+      expect(isKeepAliveMessage({})).toBeFalsy();
+    });
+
+    it("isKeepAliveMessage welcome true", () => {
+      expect(isKeepAliveMessage({ type: "Welcome" })).toBeTruthy();
+    });
+
+    it("isKeepAliveMessage Heartbeat true", () => {
+      expect(isKeepAliveMessage({ type: "Heartbeat" })).toBeTruthy();
     });
   });
 
