@@ -48,6 +48,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Parent database items missing, added check (PR #713 / Issue #711)
 - [x]   (Fixed) _Back-end_ ColorClass is not written down (bug from #709) (PR #717)
 - [x]   (Breaking Change) _Back-end_ WebSocket Data Model is changed (PR #712)
+- [x]   (Breaking Change) _Back-end_ remove System messages and replaced it with type keyword (PR #712)
 - [x]   (Breaking Change) _Back-end_ Add types for web sockets (PR #712)
 - [x]   (Change) _Back-end_ Notification Table (including Data Migration) (PR #712)
 - [x]   (Change) _Back-end_ The following Import Table fields: ColorClass and DateTimeFromFileName are added (including Data Migration) (PR #712)
@@ -55,6 +56,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Change) _Back-end_ Split MetaReplace and MetaUpdate into two separate controllers (PR #712)
 - [x]   (Change) _Back-end_ Fix null checks for ReadGpxFile (PR #712)
 - [x]   (Change) _Back-end_ Add Notification controller to get recent history of notifications (PR #712)
+- [x]   (Added) _Back-end_ Default values .stfolder, .git to SyncIgnore (PR #712)
+- [x]   (Added) _Front-end_ Change checks for WebSocket Messages to support new pattern (PR #712)
+- [x]   (Added) _Front-end_ Save server side datetime objects to query history notifications api (PR #712)
 
 # version 0.5.0-beta.3 - 2022-03-09
 - [x]   (Breaking change) _Back-end_ Upgrade to .NET 6 - SDK 6.0.200 (PR #642)
