@@ -166,7 +166,7 @@ npm install --save @types/node
 <h4 id="npm-run-testci-is-used-by-the-build-script-to-run-all-tests-and-eslint"><code>npm run test:ci</code> is used by the build-script to run all tests and ESlint</h4>
 <p>This is added to the <code>package.json</code></p>
 <pre><code class="language-json">&quot;postbuild&quot;: &quot;npm run lint&quot;,
-&quot;lint&quot;: &quot;node node_modules/eslint/bin/eslint.js \&quot;src/**\&quot; --max-warnings 0&quot;,
+&quot;lint&quot;: &quot;node node_modules/eslint/bin/eslint.js \&quot;src/**\&quot; --max-warnings 715&quot;,
 &quot;lint:fix&quot;: &quot;node node_modules/eslint/bin/eslint.js --fix \&quot;src/**\&quot;&quot;,
 &quot;format&quot;: &quot;prettier --write \&quot;**/*.+(js|jsx|json|yml|yaml|css|md|vue)\&quot;&quot;,
 &quot;test:ci&quot;: &quot;npm run lint &amp;&amp; react-scripts test --watchAll=false --coverage --reporters=default 2&gt;&amp;1&quot;,
@@ -219,7 +219,15 @@ npm install --save @types/node
         {
           &quot;endOfLine&quot;: &quot;auto&quot;
         }
-      ]
+      ],
+        &quot;testing-library/render-result-naming-convention&quot;: &quot;off&quot;,
+        &quot;testing-library/no-container&quot;: &quot;warn&quot;,
+        &quot;testing-library/prefer-screen-queries&quot;: &quot;warn&quot;,
+        &quot;testing-library/prefer-presence-queries&quot;: &quot;warn&quot;,
+        &quot;testing-library/no-unnecessary-act&quot;: &quot;warn&quot;,
+        &quot;testing-library/no-node-access&quot;: &quot;warn&quot;,
+        &quot;testing-library/no-render-in-setup&quot;: &quot;warn&quot;,
+        &quot;testing-library/no-wait-for-multiple-assertions&quot;: &quot;warn&quot;
     }
   },
   &quot;prettier&quot;: {
