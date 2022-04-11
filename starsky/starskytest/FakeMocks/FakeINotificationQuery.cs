@@ -13,7 +13,8 @@ namespace starskytest.FakeMocks
 {
 	public class FakeINotificationQuery : INotificationQuery
 	{
-		
+		private readonly Exception? _exception;
+
 		public FakeINotificationQuery(IReadOnlyCollection<NotificationItem>? notificationItem = null)
 		{
 			if ( notificationItem == null )
@@ -21,6 +22,16 @@ namespace starskytest.FakeMocks
 				return;
 			}
 			FakeContent.AddRange(notificationItem);
+		}
+
+		public FakeINotificationQuery()
+		{
+			// nothing here
+		}
+
+		public FakeINotificationQuery(Exception? exception = null)
+		{
+			_exception = exception;
 		}
 
 		public List<NotificationItem> FakeContent { get; set; } = new List<NotificationItem>();
@@ -55,6 +66,11 @@ namespace starskytest.FakeMocks
 
 		public Task RemoveAsync(IEnumerable<NotificationItem> content)
 		{
+			if ( _exception != null )
+			{
+				throw _exception;
+			}
+			
 			foreach ( var contentItem in content )
 			{
 				if ( FakeContent.Contains(contentItem) )

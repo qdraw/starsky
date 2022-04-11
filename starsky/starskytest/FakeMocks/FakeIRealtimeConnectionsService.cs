@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,19 +12,19 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIRealtimeConnectionsService : IRealtimeConnectionsService
 	{
-		public List<string> FakeSendToAllAsync { get; set; } = new List<string>();
+		public List<Tuple<string,DateTime>> FakeSendToAllAsync { get; set; } = new List<Tuple<string,DateTime>>();
 
 		public Task NotificationToAllAsync<T>(ApiNotificationResponseModel<T> message,
 			CancellationToken cancellationToken)
 		{
-			FakeSendToAllAsync.Add(JsonSerializer.Serialize(
-				message, DefaultJsonSerializer.CamelCase));
+			FakeSendToAllAsync.Add(new Tuple<string, DateTime>(JsonSerializer.Serialize(message), DateTime.UtcNow));
 			return Task.CompletedTask;
 		}
 
 		public Task CleanOldMessagesAsync()
 		{
-			throw new System.NotImplementedException();
+			FakeSendToAllAsync.RemoveAll(p => p.Item2 < DateTime.UtcNow.AddDays(-30));
+			return Task.CompletedTask;
 		}
 	}
 }
