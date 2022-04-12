@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.metaupdate.Services;
+using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -135,6 +136,8 @@ namespace starskytest.Controllers
 			services.AddSingleton<ISelectorStorage, SelectorStorage>();
 			services.AddSingleton<IExifTool, FakeExifTool>();
 			services.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>();
+			services.AddSingleton<IRealtimeConnectionsService,
+					FakeIRealtimeConnectionsService>();
 			var serviceProvider = services.BuildServiceProvider();
 			_serviceProvider = serviceProvider;
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -155,7 +158,7 @@ namespace starskytest.Controllers
 				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
 			
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(), NewScopeFactory(), new FakeINotificationQuery());
+				new FakeIWebLogger(), NewScopeFactory());
 
 			var input = new FileIndexItem
 			{
@@ -193,7 +196,7 @@ namespace starskytest.Controllers
 				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
 			
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),NewScopeFactory(), new FakeINotificationQuery())
+				new FakeIWebLogger(),NewScopeFactory())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -231,7 +234,7 @@ namespace starskytest.Controllers
 				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
 			
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, new FakeIUpdateBackgroundTaskQueue(), 
-				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),serviceScopeFactory, new FakeINotificationQuery())
+				new FakeIWebLogger(),serviceScopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};

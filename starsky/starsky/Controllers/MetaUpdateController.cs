@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.metaupdate.Interfaces;
+using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
@@ -23,26 +24,21 @@ namespace starsky.Controllers
 	{
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
-		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly IWebLogger _logger;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly IMetaUpdateService _metaUpdateService;
-		private readonly INotificationQuery _notificationQuery;
 
 		public MetaUpdateController(IMetaPreflight metaPreflight, 
 			IMetaUpdateService metaUpdateService,
 			IUpdateBackgroundTaskQueue queue, 
-			IWebSocketConnectionsService connectionsService, IWebLogger logger, 
-			IServiceScopeFactory scopeFactory, 
-			INotificationQuery notificationQuery)
+			IWebLogger logger, 
+			IServiceScopeFactory scopeFactory)
 		{
 			_metaPreflight = metaPreflight;
 			_scopeFactory = scopeFactory;
 			_metaUpdateService = metaUpdateService;
 			_bgTaskQueue = queue;
-			_connectionsService = connectionsService;
 			_logger = logger;
-			_notificationQuery = notificationQuery;
 		}
 	    
 		/// <summary>
@@ -108,10 +104,15 @@ namespace starsky.Controllers
 			
 			// Push direct to socket when update or replace to avoid undo after a second
 			_logger.LogInformation($"[UpdateController] send to socket {f}");
-			var webSocketResponse =
-				new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList, ApiNotificationType.MetaUpdate);
-			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
-			await _notificationQuery.AddNotification(webSocketResponse);
+
+			await Task.Run(async () =>
+			{
+				var webSocketResponse =
+					new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList, ApiNotificationType.MetaUpdate);
+				var realtimeConnectionsService = _scopeFactory.CreateScope()
+					.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
+				await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
+			});
 
 			return Json(returnNewResultList);
 		}
