@@ -105,16 +105,18 @@ namespace starsky.Controllers
 			// Push direct to socket when update or replace to avoid undo after a second
 			_logger.LogInformation($"[UpdateController] send to socket {f}");
 
-			await Task.Run(async () =>
-			{
-				var webSocketResponse =
-					new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList, ApiNotificationType.MetaUpdate);
-				var realtimeConnectionsService = _scopeFactory.CreateScope()
-					.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
-				await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
-			});
+			await Task.Run(async () => await TaskRun(fileIndexResultsList));
 
 			return Json(returnNewResultList);
+		}
+
+		private async Task TaskRun(List<FileIndexItem> fileIndexResultsList)
+		{
+			var webSocketResponse =
+				new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList, ApiNotificationType.MetaUpdate);
+			var realtimeConnectionsService = _scopeFactory.CreateScope()
+				.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
+			await realtimeConnectionsService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
 		}
 	}
 }
