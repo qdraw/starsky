@@ -344,7 +344,8 @@ namespace starsky.foundation.database.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 
                     b.Property<string>("Content")
                         .HasColumnType("TEXT");
