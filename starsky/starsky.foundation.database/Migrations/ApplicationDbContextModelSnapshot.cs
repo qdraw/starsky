@@ -355,7 +355,7 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>

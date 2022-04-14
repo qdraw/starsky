@@ -136,6 +136,16 @@ namespace starsky.foundation.database.Data
 			modelBuilder.Entity<ImportIndexItem>()
 				.HasIndex(x => new { x.FileHash });
 			
+			modelBuilder.Entity<NotificationItem>(etb =>
+				{
+					etb.HasKey(e => e.Id);
+					etb.Property(e => e.Id)
+						.ValueGeneratedOnAdd()
+						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+					etb.ToTable("Notifications");
+				}
+			);
+			
 		}
 	}
 }
