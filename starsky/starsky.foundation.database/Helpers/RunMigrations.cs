@@ -34,20 +34,20 @@ namespace starsky.foundation.database.Helpers
 				
 				await dbContext.Database.MigrateAsync();
 
-				if ( appSettings.DatabaseType == AppSettings.DatabaseTypeList.Mysql )
-				{
-					var connection = new MySqlConnection(appSettings.DatabaseConnection);
-					var databaseFixes =
-						new MySqlDatabaseFixes(connection, appSettings);
-					await databaseFixes.OpenConnection();
+				if ( appSettings.DatabaseType !=
+				     AppSettings.DatabaseTypeList.Mysql ) return true;
+				
+				var connection = new MySqlConnection(appSettings.DatabaseConnection);
+				var databaseFixes =
+					new MySqlDatabaseFixes(connection, appSettings);
+				await databaseFixes.OpenConnection();
 					
-					var tableNames = dbContext.Model.GetEntityTypes()
-						.Select(t => t.GetTableName())
-						.Distinct()
-						.ToList();
-					await databaseFixes.FixUtf8Encoding(tableNames);
-					await databaseFixes.FixAutoIncrement("Notifications");
-				}
+				var tableNames = dbContext.Model.GetEntityTypes()
+					.Select(t => t.GetTableName())
+					.Distinct()
+					.ToList();
+				await databaseFixes.FixUtf8Encoding(tableNames);
+				await databaseFixes.FixAutoIncrement("Notifications");
 
 				return true;
 			}
