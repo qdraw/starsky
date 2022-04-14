@@ -58,9 +58,9 @@ public class FixMySqlAutoIncrement
 			tableNames.Add(reader.GetString(0));
 		}
 
-		if ( tableNames.Count != 1 ) return true;
+		if ( tableNames.Count != 1 ) return false;
 		await _connection.DisposeAsync();
-		return false;
+		return true;
 	}
 	
 	internal async Task<bool?> AlterTable(string tableName)
