@@ -14,7 +14,7 @@ services:
       - MYSQL_USER=${MYSQL_USER} #optional
       - MYSQL_PASSWORD=${MYSQL_PASSWORD} #optional
     volumes:
-      - sqldata:/config
+      - sqldata:/config/databases
     ports:
       - "${MARIA_DB_PORT}:3306"
     restart: unless-stopped

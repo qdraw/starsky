@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Data;
@@ -346,7 +347,10 @@ namespace starsky.foundation.database.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("MySql:ValueGenerationStrategy",
+	                        MySqlValueGenerationStrategy.IdentityColumn)
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 
                     b.Property<string>("Content")
                         .HasColumnType("TEXT");

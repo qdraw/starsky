@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
@@ -141,7 +142,10 @@ namespace starsky.foundation.database.Data
 					etb.HasKey(e => e.Id);
 					etb.Property(e => e.Id)
 						.ValueGeneratedOnAdd()
-						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+						.HasAnnotation("MySql:ValueGeneratedOnAdd", true)
+						.HasAnnotation("Sqlite:Autoincrement", true)
+						.HasAnnotation("MySql:ValueGenerationStrategy",
+							MySqlValueGenerationStrategy.IdentityColumn);
 					etb.ToTable("Notifications");
 				}
 			);

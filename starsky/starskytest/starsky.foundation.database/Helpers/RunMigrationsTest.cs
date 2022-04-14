@@ -11,6 +11,7 @@ using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Helpers
@@ -84,9 +85,10 @@ namespace starskytest.starsky.foundation.database.Helpers
 				.Options;
 			
 			Assert.IsNotNull(options);
-			await RunMigrations.Run(new AppDbMySqlException(options), new FakeIWebLogger());
+			await RunMigrations.Run(new AppDbMySqlException(options), new FakeIWebLogger(),new AppSettings());
 			
 			// should not crash
 		}
+
 	}
 }
