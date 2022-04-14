@@ -32,7 +32,7 @@ public class FixMySqlAutoIncrementTest
 	}
 	
 	[TestMethod]
-	[ExpectedException(typeof(MySqlException))]
+	[ExpectedException(typeof(InvalidOperationException))]
 	public async Task AutoIncrement_MySqlException()
 	{
 		var fakeConnectionString =
