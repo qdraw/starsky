@@ -126,12 +126,13 @@ public class MySqlDatabaseFixes
 		return true;
 	}
 
-	private async Task<List<string>> ReadCommand(MySqlCommand command)
+	private static async Task<List<string>> ReadCommand(MySqlCommand command)
 	{
 		var tableNames = new List<string>();
 		await using var reader = await command.ExecuteReaderAsync();
 		while (reader.Read())
 		{
+			// at least two columns
 			tableNames.Add(reader.GetString(0) + "," + reader.GetString(1));
 		}
 		return tableNames;
