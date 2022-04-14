@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
@@ -11,11 +12,34 @@ public class FixMySqlAutoIncrementTest
 {
 	
 	[TestMethod]
-	public async Task FixMySqlAutoIncrement_NotUsed()
+	public async Task AutoIncrement_NotUsed()
 	{
 		var result = await new FixMySqlAutoIncrement(null,new AppSettings
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+		}).AutoIncrement("test");
+		Assert.IsNull(result);
+	}
+	
+	[TestMethod]
+	public async Task AutoIncrement_NotUsed1()
+	{
+		var result = await new FixMySqlAutoIncrement(new MySqlConnection(),new AppSettings
+		{
+			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+		}).AutoIncrement("test");
+		Assert.IsNull(result);
+	}
+	
+	[TestMethod]
+	[ExpectedException(typeof(MySqlException))]
+	public async Task AutoIncrement_MySqlException()
+	{
+		var fakeConnectionString =
+			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
+		var result = await new FixMySqlAutoIncrement(new MySqlConnection(fakeConnectionString),new AppSettings
+		{
+			DatabaseType = AppSettings.DatabaseTypeList.Mysql
 		}).AutoIncrement("test");
 		Assert.IsNull(result);
 	}
@@ -32,6 +56,7 @@ public class FixMySqlAutoIncrementTest
 	
 		
 	[TestMethod]
+	[ExpectedException(typeof(InvalidOperationException))]
 	public async Task CheckAutoIncrementExist_True()
 	{
 		var appSettings = new AppSettings
@@ -56,6 +81,7 @@ public class FixMySqlAutoIncrementTest
 	}
 			
 	[TestMethod]
+	[ExpectedException(typeof(InvalidOperationException))]
 	public async Task AlterTable_NoConnection()
 	{
 		var appSettings = new AppSettings

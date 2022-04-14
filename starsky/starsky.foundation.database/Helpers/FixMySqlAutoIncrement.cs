@@ -1,6 +1,5 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using MySqlConnector;
 using starsky.foundation.platform.Models;
@@ -53,35 +52,26 @@ public class FixMySqlAutoIncrement
 		await using var command = new MySqlCommand(query, _connection);
 
 		var tableNames = new List<string>();
-		if ( _connection.State == ConnectionState.Open )
+		await using var reader = await command.ExecuteReaderAsync();
+		while (reader.Read())
 		{
-			await using var reader = await command.ExecuteReaderAsync();
-			while (reader.Read())
-			{
-				tableNames.Add(reader.GetString(0));
-			}
+			tableNames.Add(reader.GetString(0));
 		}
 
 		if ( tableNames.Count != 1 ) return true;
 		await _connection.DisposeAsync();
 		return false;
 	}
-
+	
 	internal async Task<bool?> AlterTable(string tableName)
 	{
 		if ( _connection == null ) return null;
 		var myInsertQuery = "ALTER TABLE "+ tableName+ " MODIFY Id INTEGER NOT NULL AUTO_INCREMENT;";
 		var myCommand = new MySqlCommand(myInsertQuery);
 		myCommand.Connection = _connection;
-		if (myCommand.Connection == null || _connection.State != ConnectionState.Open )
-		{
-			return null;
-		}
-
 		myCommand.ExecuteNonQuery();
 		await myCommand.Connection.CloseAsync();
 		return true;
 	}
-
 
 }
