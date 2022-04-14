@@ -85,7 +85,8 @@ namespace starskytest.starsky.foundation.database.Helpers
 				.Options;
 			
 			Assert.IsNotNull(options);
-			await RunMigrations.Run(new AppDbMySqlException(options), new FakeIWebLogger(),new AppSettings());
+			await RunMigrations.Run(
+				new AppDbMySqlException(options), new FakeIWebLogger(),new AppSettings{DatabaseType = AppSettings.DatabaseTypeList.Mysql},1);
 			
 			// should not crash
 		}
