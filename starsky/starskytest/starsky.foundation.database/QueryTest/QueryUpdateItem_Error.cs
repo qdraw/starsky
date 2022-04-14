@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public class QueryUpdateItemError
 	{
-		private IServiceScopeFactory _serviceScopeFactory;
+		private IServiceScopeFactory? _serviceScopeFactory;
 
 		private IServiceScopeFactory CreateNewScopeSqliteException()
 		{
