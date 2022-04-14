@@ -45,7 +45,7 @@ namespace starsky.foundation.database.Helpers
 						.Select(t => t.GetTableName())
 						.Distinct()
 						.ToList();
-					await databaseFixes.FixEncoding(tableNames);
+					await databaseFixes.FixUtf8Encoding(tableNames);
 					await databaseFixes.FixAutoIncrement("Notifications");
 				}
 

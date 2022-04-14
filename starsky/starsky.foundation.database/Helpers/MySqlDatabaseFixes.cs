@@ -22,14 +22,15 @@ public class MySqlDatabaseFixes
 	/// <summary>
 	/// Fix the database
 	/// To undo:
-	/// ALTER DATABASE `deb40577_devstarsky` CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+	/// ALTER DATABASE `database_name` CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 	/// 
 	/// </summary>
 	/// <param name="tableNames"></param>
 	/// <returns></returns>
-	public async Task<bool?> FixEncoding(List<string?> tableNames)
+	public async Task<bool?> FixUtf8Encoding(List<string?> tableNames)
 	{
-		if ( await IsUtf8() != false ) return false;
+		var isUtf8 = await IsUtf8();
+		if (isUtf8 != false ) return isUtf8;
 		await SetDatabaseSettingToUtf8();
 		foreach ( var tableName in tableNames )
 		{
