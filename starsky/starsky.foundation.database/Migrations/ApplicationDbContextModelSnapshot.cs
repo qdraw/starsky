@@ -16,7 +16,10 @@ namespace starsky.foundation.database.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.3");
+            modelBuilder
+                .HasAnnotation("MySql:CharSet", "utf8mb4")
+                .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
+                .HasAnnotation("ProductVersion", "6.0.3");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {

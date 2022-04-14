@@ -40,8 +40,13 @@ namespace starsky.foundation.database.Data
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+			
+			// does not have direct effect
+			modelBuilder.HasCharSet("utf8mb4",
+				DelegationModes.ApplyToAll);
 
 			// Add Index to speed performance (on MySQL max key length is 3072 bytes)
+			// MySql:CharSet might be working a future release but now it does nothing
 			modelBuilder.Entity<FileIndexItem>()
 				.HasAnnotation("MySql:CharSet", "utf8mb4")
 				.HasIndex(x => new {x.FileName, x.ParentDirectory});

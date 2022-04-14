@@ -14,20 +14,20 @@ public class FixMySqlAutoIncrementTest
 	[TestMethod]
 	public async Task AutoIncrement_NotUsed()
 	{
-		var result = await new FixMySqlAutoIncrement(null,new AppSettings
+		var result = await new MySqlDatabaseFixes(null,new AppSettings
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-		}).AutoIncrement("test");
+		}).FixAutoIncrement("test");
 		Assert.IsNull(result);
 	}
 	
 	[TestMethod]
 	public async Task AutoIncrement_NotUsed1()
 	{
-		var result = await new FixMySqlAutoIncrement(new MySqlConnection(),new AppSettings
+		var result = await new MySqlDatabaseFixes(new MySqlConnection(),new AppSettings
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-		}).AutoIncrement("test");
+		}).FixAutoIncrement("test");
 		Assert.IsNull(result);
 	}
 	
@@ -37,20 +37,20 @@ public class FixMySqlAutoIncrementTest
 	{
 		var fakeConnectionString =
 			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
-		var result = await new FixMySqlAutoIncrement(new MySqlConnection(fakeConnectionString),new AppSettings
+		var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).AutoIncrement("test");
+		}).FixAutoIncrement("test");
 		Assert.IsNull(result);
 	}
 		
 	[TestMethod]
 	public async Task FixMySqlAutoIncrement_ConnectionNullIgnore()
 	{
-		var result = await new FixMySqlAutoIncrement(null,new AppSettings
+		var result = await new MySqlDatabaseFixes(null,new AppSettings
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).AutoIncrement("test");
+		}).FixAutoIncrement("test");
 		Assert.IsNull(result);
 	}
 	
@@ -65,7 +65,7 @@ public class FixMySqlAutoIncrementTest
 			DatabaseConnection = "Server=localhost;port=4785;database=TEST;uid=starsky;pwd=TEST;maximumpoolsize=30;"
 		};
 		var mysqlConnection = new MySqlConnection(appSettings.DatabaseConnection);
-		var result = await new FixMySqlAutoIncrement(mysqlConnection,appSettings).CheckAutoIncrementExist("test");
+		var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings).CheckAutoIncrementExist("test");
 		Assert.IsTrue(result);
 	}
 	
@@ -76,7 +76,7 @@ public class FixMySqlAutoIncrementTest
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.Mysql,
 		};
-		var result = await new FixMySqlAutoIncrement(null,appSettings).CheckAutoIncrementExist("test");
+		var result = await new MySqlDatabaseFixes(null,appSettings).CheckAutoIncrementExist("test");
 		Assert.IsNull(result);
 	}
 			
@@ -90,7 +90,7 @@ public class FixMySqlAutoIncrementTest
 			DatabaseConnection = "Server=localhost;port=4785;database=TEST;uid=starsky;pwd=TEST;maximumpoolsize=30;"
 		};
 		var mysqlConnection = new MySqlConnection(appSettings.DatabaseConnection);
-		var result = await new FixMySqlAutoIncrement(mysqlConnection,appSettings).AlterTable("test");
+		var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings).AlterTableAutoIncrement("test");
 		Assert.IsNull(result);
 	}
 	
@@ -101,7 +101,7 @@ public class FixMySqlAutoIncrementTest
 		{
 			DatabaseType = AppSettings.DatabaseTypeList.Mysql,
 		};
-		var result = await new FixMySqlAutoIncrement(null,appSettings).AlterTable("test");
+		var result = await new MySqlDatabaseFixes(null,appSettings).AlterTableAutoIncrement("test");
 		Assert.IsNull(result);
 	}
 }

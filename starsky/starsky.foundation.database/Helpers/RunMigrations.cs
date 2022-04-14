@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,13 +31,23 @@ namespace starsky.foundation.database.Helpers
 					return true;
 				}
 				
+				
 				await dbContext.Database.MigrateAsync();
 
-				if ( appSettings.DatabaseType !=
-				     AppSettings.DatabaseTypeList.Mysql ) return true;
-				
-				var connection = new MySqlConnection(appSettings.DatabaseConnection);
-				await new FixMySqlAutoIncrement(connection,appSettings).AutoIncrement("Notifications");
+				if ( appSettings.DatabaseType == AppSettings.DatabaseTypeList.Mysql )
+				{
+					var connection = new MySqlConnection(appSettings.DatabaseConnection);
+					var databaseFixes =
+						new MySqlDatabaseFixes(connection, appSettings);
+					await databaseFixes.OpenConnection();
+					
+					var tableNames = dbContext.Model.GetEntityTypes()
+						.Select(t => t.GetTableName())
+						.Distinct()
+						.ToList();
+					await databaseFixes.FixEncoding(tableNames);
+					await databaseFixes.FixAutoIncrement("Notifications");
+				}
 
 				return true;
 			}
