@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Extensions;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Extensions
 {
@@ -69,7 +70,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var result = new AppDbMySqlException(options).TestConnection();
+			var result = new AppDbMySqlException(options).TestConnection(new FakeIWebLogger());
 			Assert.IsFalse(result);
 		}
 	}
