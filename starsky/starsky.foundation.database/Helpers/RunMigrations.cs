@@ -25,13 +25,18 @@ namespace starsky.foundation.database.Helpers
 		{
 			async Task<bool> Migrate()
 			{
+				if ( appSettings.DatabaseType == AppSettings.DatabaseTypeList.InMemoryDatabase )
+				{
+					return true;
+				}
+				
 				await dbContext.Database.MigrateAsync();
 
-				if ( appSettings.DatabaseType == AppSettings.DatabaseTypeList.Mysql )
-				{
-					var connection = new MySqlConnection(appSettings.DatabaseConnection);
-					await new FixMySqlAutoIncrement(connection,appSettings).AutoIncrement("Notifications");
-				}
+				if ( appSettings.DatabaseType !=
+				     AppSettings.DatabaseTypeList.Mysql ) return true;
+				
+				var connection = new MySqlConnection(appSettings.DatabaseConnection);
+				await new FixMySqlAutoIncrement(connection,appSettings).AutoIncrement("Notifications");
 
 				return true;
 			}
