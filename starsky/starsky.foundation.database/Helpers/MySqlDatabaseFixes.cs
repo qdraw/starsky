@@ -71,7 +71,7 @@ public class MySqlDatabaseFixes
 
 		var query = "SELECT DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME " +
 		            "FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '"+ _connection.Database + "'; ";
-		await using var command = new MySqlCommand(query, _connection);
+		var command = new MySqlCommand(query, _connection);
 		
 		var tableNames = await ReadCommand(command);
 
@@ -99,6 +99,7 @@ public class MySqlDatabaseFixes
 		var autoIncrementExist = await CheckAutoIncrementExist(tableName);
 		if (autoIncrementExist != false )
 		{
+			await _connection.DisposeAsync();
 			return autoIncrementExist;
 		}
 
@@ -107,24 +108,22 @@ public class MySqlDatabaseFixes
 		return true;
 	}
 
-	internal async Task<bool?> CheckAutoIncrementExist(string tableName)
+	internal async Task<bool?> CheckAutoIncrementExist(string tableName, string columnName = "Id")
 	{
 		if ( _connection == null ) return null;
 
 		var query = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS " +
 		            "WHERE TABLE_NAME = '"+ tableName + "' " +
-		            "AND COLUMN_NAME = 'Id' " +
+		            "AND COLUMN_NAME = '" + columnName + "' " +
 		            "AND DATA_TYPE = 'int' " +
 		            "AND COLUMN_DEFAULT IS NULL " +
 		            "AND IS_NULLABLE = 'NO' " +
 		            "AND EXTRA like '%auto_increment%'";
-		await using var command = new MySqlCommand(query, _connection);
+		var command = new MySqlCommand(query, _connection);
 
 		var tableNames = await ReadCommand(command);
 
-		if ( tableNames.Count != 1 ) return false;
-		await _connection.DisposeAsync();
-		return true;
+		return tableNames.Count == 1;
 	}
 
 	private static async Task<List<string>> ReadCommand(MySqlCommand command)
@@ -139,10 +138,10 @@ public class MySqlDatabaseFixes
 		return tableNames;
 	}
 	
-	internal async Task<bool?> AlterTableAutoIncrement(string tableName)
+	internal async Task<bool?> AlterTableAutoIncrement(string tableName, string columnName = "Id")
 	{
 		if ( _connection == null ) return null;
-		var myInsertQuery = "ALTER TABLE `"+ tableName+ "` MODIFY Id INTEGER NOT NULL AUTO_INCREMENT;";
+		var myInsertQuery = "ALTER TABLE `"+ tableName+ "` MODIFY " + columnName + " INTEGER NOT NULL AUTO_INCREMENT;";
 		await ExecuteNonQueryAsync(myInsertQuery);
 		return true;
 	}

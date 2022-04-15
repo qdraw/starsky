@@ -70,6 +70,7 @@ ProjectSection(SolutionItems) = preProject
 	build.sh = build.sh
 	build.ps1 = build.ps1
 	telemetry.md = telemetry.md
+	compose-build-up.sh = compose-build-up.sh
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.metaupdate", "starsky.feature.metaupdate\starsky.feature.metaupdate.csproj", "{FBB448C3-A995-469C-8004-11FA006F65C5}"

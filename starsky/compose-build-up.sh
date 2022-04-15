@@ -101,4 +101,4 @@ END_TIME=$(date +%s)
 DURATION=$(($END_TIME-$START_TIME))
 echo "$(($DURATION / 60)) minutes and $(($DURATION % 60)) seconds elapsed."
 
-popd
+
