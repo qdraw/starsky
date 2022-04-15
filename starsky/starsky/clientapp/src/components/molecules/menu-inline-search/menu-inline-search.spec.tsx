@@ -25,7 +25,7 @@ describe("Menu.SearchBar", () => {
           return { ...newIConnectionDefault(), statusCode: 200 };
         });
 
-      var menuBar = render(<MenuInlineSearch>t</MenuInlineSearch>);
+      var menuBar = render(<MenuInlineSearch />);
 
       // default
       expect(menuBar.container.querySelector("label")?.classList).toContain(
