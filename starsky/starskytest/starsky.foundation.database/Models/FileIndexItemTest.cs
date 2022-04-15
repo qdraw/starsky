@@ -525,20 +525,6 @@ namespace starskytest.starsky.foundation.database.Models
 		    
 			Assert.AreEqual(2, item.Size);
 		}
-		
-		//        [TestMethod]
-		//        public void FileIndexItemParseFileNameTest()
-		//        {
-		//            var createAnImage = new CreateAnImage();
-		//
-		//            var fileIndexItem = new FileIndexItem
-		//            {
-		//                FilePath = createAnImage.FullFilePath
-		//            };
-		////            var t = fileIndexItem.ParseFileName();
-		//            
-		//        }
-
 
 	}
 }
