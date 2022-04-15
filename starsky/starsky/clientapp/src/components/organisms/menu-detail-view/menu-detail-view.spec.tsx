@@ -52,9 +52,7 @@ describe("MenuDetailView", () => {
         });
 
       var component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const move = component.queryByTestId("move");
@@ -102,9 +100,7 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       var component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const trash = component.queryByTestId("trash");
@@ -133,9 +129,7 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
       var component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const anchor = component.queryByTestId(
@@ -164,9 +158,7 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
       var component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const anchor = component.queryByTestId(
@@ -201,9 +193,7 @@ describe("MenuDetailView", () => {
       globalHistory.navigate("/?t=test&p=0");
 
       var component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const anchor = component.queryByTestId(
@@ -252,9 +242,7 @@ describe("MenuDetailView", () => {
       });
 
       var component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()}>
-          t
-        </MenuDetailView>
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       expect(component.queryByTestId("menu-detail-view-autosave")).toBeFalsy();
@@ -279,7 +267,10 @@ describe("MenuDetailView", () => {
 
       const exportButton = component.queryByTestId("export");
       expect(exportButton).toBeTruthy();
-      exportButton?.click();
+
+      act(() => {
+        exportButton?.click();
+      });
 
       expect(exportModal).toBeCalled();
 
@@ -364,7 +355,10 @@ describe("MenuDetailView", () => {
 
       const move = component.queryByTestId("move");
       expect(move).toBeTruthy();
-      move?.click();
+
+      act(() => {
+        move?.click();
+      });
 
       expect(moveModal).toBeCalled();
 
@@ -388,7 +382,10 @@ describe("MenuDetailView", () => {
 
       const rename = component.queryByTestId("rename");
       expect(rename).toBeTruthy();
-      rename?.click();
+
+      act(() => {
+        rename?.click();
+      });
 
       expect(renameModal).toBeCalled();
 
