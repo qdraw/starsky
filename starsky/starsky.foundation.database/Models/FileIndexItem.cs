@@ -926,10 +926,36 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		public double FocalLength { get; set; }
 
+		
+		/// <summary>
+		/// Private field to store the ByteSize Data
+		/// </summary>
+		private long _size;
+		
 		/// <summary>
 		/// Size of the file in bytes
 		/// </summary>
-		public long Size { get; set; }
+		public long Size {
+			get => _size;
+			set
+			{
+				switch ( value )
+				{
+					case >= int.MaxValue:
+						_size = int.MinValue;
+						return;
+					case <= 0:
+						if ( value != int.MinValue)
+						{
+							_size = 0;
+						}
+						return;
+					default:
+						_size = value;
+						break;
+				}
+			} 
+		}
 
 	    
 		/// <summary>

@@ -5,9 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
-using starskycore.Models;
 
-namespace starskytest.Models
+namespace starskytest.starsky.foundation.database.Models
 {
 	[TestClass]
 	public class FileIndexItemTest
@@ -487,6 +486,46 @@ namespace starskytest.Models
 			Assert.AreEqual("/test", item.ParentDirectory);
 		}
 	    
+		
+		[TestMethod]
+		public void Size_Gt_IntMax()
+		{
+			var value = 99999999999999999;
+			var item = new FileIndexItem(){Size = value};
+		    
+			// should write to large values to min value
+			Assert.AreEqual(int.MinValue, item.Size);
+		}
+		
+		[TestMethod]
+		public void Size_Lt_0()
+		{
+			var value = -1;
+			var item = new FileIndexItem(){Size = value};
+		    
+			Assert.AreEqual(0, item.Size);
+		}
+		
+		[TestMethod]
+		public void Size_MinValue()
+		{
+			var item = new FileIndexItem(){Size = 99999999999999999};
+			// overwrite here, should not be 0
+			item.Size = int.MinValue;
+			
+			// should write to large values to min value
+			Assert.AreEqual(int.MinValue, item.Size);
+		}
+		
+		[TestMethod]
+		public void Size_ShouldAdd()
+		{
+			var value = 2;
+			var item = new FileIndexItem(){Size = value};
+		    
+			Assert.AreEqual(2, item.Size);
+		}
+		
 		//        [TestMethod]
 		//        public void FileIndexItemParseFileNameTest()
 		//        {
