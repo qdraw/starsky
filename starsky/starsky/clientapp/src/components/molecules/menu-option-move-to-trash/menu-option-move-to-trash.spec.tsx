@@ -66,9 +66,7 @@ describe("MenuOptionMoveToTrash", () => {
           isReadOnly={false}
           state={test}
           dispatch={dispatch}
-        >
-          t
-        </MenuOptionMoveToTrash>
+        />
       );
 
       const trashButton = component.queryByTestId("trash") as HTMLButtonElement;
@@ -127,9 +125,7 @@ describe("MenuOptionMoveToTrash", () => {
           isReadOnly={false}
           state={test}
           dispatch={dispatch}
-        >
-          t
-        </MenuOptionMoveToTrash>
+        />
       );
 
       act(() => {

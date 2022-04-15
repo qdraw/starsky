@@ -135,9 +135,7 @@ describe("ItemListView", () => {
           iconList={true}
           fileIndexItems={exampleData}
           colorClassUsage={[]}
-        >
-          item
-        </ItemListView>
+        ></ItemListView>
         // { attachTo: (window as any).domNode }
       );
 

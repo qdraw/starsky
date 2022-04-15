@@ -41,9 +41,7 @@ describe("ArchiveSidebar", () => {
           isReadOnly={true}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        >
-          t
-        </ArchiveSidebar>
+        />
       );
 
       act(() => {
