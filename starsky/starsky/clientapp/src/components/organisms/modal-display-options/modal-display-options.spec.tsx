@@ -12,9 +12,11 @@ describe("ModalDisplayOptions", () => {
 
   it("renders", () => {
     render(
-      <ModalDisplayOptions isOpen={true} parentFolder="/" handleExit={() => {}}>
-        test
-      </ModalDisplayOptions>
+      <ModalDisplayOptions
+        isOpen={true}
+        parentFolder="/"
+        handleExit={() => {}}
+      ></ModalDisplayOptions>
     );
   });
 

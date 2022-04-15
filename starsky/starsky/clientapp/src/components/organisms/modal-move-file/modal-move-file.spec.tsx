@@ -343,9 +343,7 @@ describe("ModalMoveFile", () => {
           selectedSubPath="/test.jpg"
           isOpen={true}
           handleExit={() => {}}
-        >
-          t
-        </ModalMoveFile>
+        ></ModalMoveFile>
       );
       const btnTest = modal.queryByTestId("btn-test");
       expect(btnTest).toBeTruthy();

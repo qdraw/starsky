@@ -19,9 +19,11 @@ describe("ModalArchiveMkdir", () => {
 
   it("renders", () => {
     render(
-      <ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}>
-        test
-      </ModalDatetime>
+      <ModalDatetime
+        isOpen={true}
+        subPath="/"
+        handleExit={() => {}}
+      ></ModalDatetime>
     );
   });
   describe("with Context", () => {

@@ -6,9 +6,10 @@ storiesOf("components/organisms/modal-display-options", module).add(
   "default",
   () => {
     return (
-      <ModalDisplayOptions isOpen={true} handleExit={() => {}}>
-        test
-      </ModalDisplayOptions>
+      <ModalDisplayOptions
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalDisplayOptions>
     );
   }
 );
