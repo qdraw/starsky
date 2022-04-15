@@ -35,8 +35,10 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
+# version 0.5.0-beta.4 _(Unreleased)_ - 2022-0?-??
+- nothing yet
 
-# version 0.5.0-beta.4 _(Unreleased)_ - 2022-04-??
+# version 0.5.0-beta.4 - 2022-04-15
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.201 (Runtime: 6.0.3) (PR #674)
 - [x]   (Added) _Back-end_ Added package telemetry (Disable using: EnablePackageTelemetry setting) (PR #657)
 - [x]   (Added) _Back-end_  Add Package Telemetry to Background Service (PR #683)
@@ -60,6 +62,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Change checks for WebSocket Messages to support new pattern (PR #712)
 - [x]   (Added) _Front-end_ Save server side datetime objects to query history notifications api (PR #712)
 - [x]   (Added) _Back-end_ Add cleanup job for old notifications in database (PR #712)
+- [x]   (Breaking Change) for mysql: utf8mb4 is now used for the database and applied after the migrations are executed (PR #723)
+- [x]   (Added) _Back-end_ for mysql: AutoIncrement on Notifications table (PR #723)
+- [x]   (Removed) ImportQuery.NetFramework class is removed (PR #723)
+- [x]   (Change) _Back-end_ Retry when: Can't replace active reader (mysql) (PR #723)
 
 # version 0.5.0-beta.3 - 2022-03-09
 - [x]   (Breaking change) _Back-end_ Upgrade to .NET 6 - SDK 6.0.200 (PR #642)
