@@ -57,7 +57,7 @@ namespace starskycore.Services
 			}
 			catch ( Exception e )
 			{
-				_logger.LogError(e, "mysql search suggest exception catch-ed");
+				//_logger.LogError(e, "mysql search suggest exception catch-ed");
 				return allFilesList;
 			}
 

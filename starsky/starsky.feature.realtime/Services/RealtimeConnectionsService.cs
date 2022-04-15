@@ -40,7 +40,7 @@ namespace starsky.feature.realtime.Services
 			}
 			catch ( Exception e )
 			{
-				_logger.LogError(e, "RealtimeConnectionsService CleanOldMessagesAsync");
+				//_logger.LogError(e, "RealtimeConnectionsService CleanOldMessagesAsync");
 			}
 
 		}
