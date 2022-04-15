@@ -22,8 +22,8 @@ describe("ColorClassFilter", () => {
         itemsCount={1}
         subPath={"/test"}
         colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]} /
-      >
+        colorClassUsage={[1, 2]}
+      />
     );
 
     const colorClass = component.queryByTestId(
@@ -39,7 +39,8 @@ describe("ColorClassFilter", () => {
         itemsCount={1}
         subPath={"/test"}
         colorClassActiveList={[1]}
-        colorClassUsage={[3]} />
+        colorClassUsage={[3]}
+      />
     );
 
     expect(component.queryByTestId("color-class-filter-reset")).toBeTruthy();
@@ -51,7 +52,8 @@ describe("ColorClassFilter", () => {
         itemsCount={1}
         subPath={"/test"}
         colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]} />
+        colorClassUsage={[1, 2]}
+      />
     );
 
     const colorClass = component.queryByTestId(
@@ -77,7 +79,8 @@ describe("ColorClassFilter", () => {
         itemsCount={1}
         subPath={"/test"}
         colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]} />
+        colorClassUsage={[1, 2]}
+      />
     );
 
     const colorClass = component.queryByTestId(
