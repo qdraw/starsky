@@ -20,7 +20,7 @@ describe("ColorClassSelect", () => {
         collections={true}
         isEnabled={true}
         filePath={"/test"}
-        onToggle={() => { }}
+        onToggle={() => {}}
       />
     );
   });
@@ -44,7 +44,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => { }}
+        onToggle={(value) => {}}
       />
     );
 
@@ -80,7 +80,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={false}
         filePath={"/test1"}
-        onToggle={(value) => { }}
+        onToggle={(value) => {}}
       />
     );
 
@@ -120,7 +120,8 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => { }} />
+        onToggle={(value) => {}}
+      />
     );
 
     // need to await this click
@@ -176,7 +177,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => { }}
+        onToggle={(value) => {}}
       />
     );
 
@@ -212,7 +213,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={() => { }}
+        onToggle={() => {}}
       />
     );
 

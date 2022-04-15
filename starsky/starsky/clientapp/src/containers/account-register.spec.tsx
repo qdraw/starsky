@@ -361,7 +361,6 @@ describe("AccountRegister", () => {
       await loginContent.submit();
     });
 
-
     expect(fetchPostSpy).toBeCalled();
     expect(fetchPostSpy).toBeCalledTimes(1);
 

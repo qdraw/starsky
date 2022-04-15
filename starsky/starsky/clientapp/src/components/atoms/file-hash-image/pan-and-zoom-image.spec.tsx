@@ -69,7 +69,7 @@ describe("PanAndZoomImage", () => {
 
       const moveSpy = jest
         .spyOn(OnMoveMouseTouchAction.prototype, "move")
-        .mockImplementationOnce(() => { });
+        .mockImplementationOnce(() => {});
 
       const component = render(
         <PanAndZoomImage
@@ -200,7 +200,7 @@ describe("PanAndZoomImage", () => {
       // after simulate wheel due spy on
       const zoomSpy = jest
         .spyOn(OnWheelMouseAction.prototype, "zoom")
-        .mockImplementationOnce(() => { });
+        .mockImplementationOnce(() => {});
 
       const component = render(
         <PanAndZoomImage
@@ -226,7 +226,7 @@ describe("PanAndZoomImage", () => {
 
       const zoomSpy = jest
         .spyOn(OnWheelMouseAction.prototype, "zoom")
-        .mockImplementationOnce(() => { });
+        .mockImplementationOnce(() => {});
 
       const component = render(
         <PanAndZoomImage

@@ -83,7 +83,6 @@ describe("Menu.SearchBar", () => {
         input.blur();
       });
 
-
       expect(menuBar.container.querySelector("label")?.classList).toContain(
         "icon-addon--search"
       );
@@ -212,7 +211,7 @@ describe("Menu.SearchBar", () => {
 
       var arrowKeyDownSpy = jest
         .spyOn(ArrowKeyDown, "default")
-        .mockImplementationOnce(() => { });
+        .mockImplementationOnce(() => {});
 
       const input = menuBar.queryByTestId(
         "menu-inline-search"
