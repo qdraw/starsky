@@ -66,6 +66,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ for mysql: AutoIncrement on Notifications table (PR #723)
 - [x]   (Removed) ImportQuery.NetFramework class is removed (PR #723)
 - [x]   (Change) _Back-end_ Retry when: Can't replace active reader (mysql) (PR #723)
+- [x]   (Change) _Back-end_ Fix for sizes larger than int.MaxValue (no PR 15/4)
 
 # version 0.5.0-beta.3 - 2022-03-09
 - [x]   (Breaking change) _Back-end_ Upgrade to .NET 6 - SDK 6.0.200 (PR #642)
