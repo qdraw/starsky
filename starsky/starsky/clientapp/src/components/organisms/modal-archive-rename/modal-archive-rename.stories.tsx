@@ -10,9 +10,7 @@ storiesOf("components/organisms/modal-archive-rename", module).add(
         subPath="/test/child_folder"
         isOpen={true}
         handleExit={() => {}}
-      >
-        test
-      </ModalArchiveRename>
+      />
     );
   }
 );

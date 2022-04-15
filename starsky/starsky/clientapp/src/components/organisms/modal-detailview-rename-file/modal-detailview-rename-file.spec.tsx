@@ -19,9 +19,7 @@ describe("ModalDetailviewRenameFile", () => {
         state={{} as any}
         isOpen={true}
         handleExit={() => {}}
-      >
-        test
-      </ModalDetailviewRenameFile>
+      />
     );
   });
 
