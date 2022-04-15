@@ -148,7 +148,7 @@ describe("DetailViewMp4", () => {
         .mockImplementationOnce(() => {
           return <></>;
         });
-      var component = render(<DetailViewMp4>g</DetailViewMp4>);
+      const component = render(<DetailViewMp4 />);
 
       expect(useContextSpy).toBeCalled();
       expect(notificationSpy).toBeCalled();

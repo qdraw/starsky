@@ -21,9 +21,11 @@ describe("ModalArchiveRename", () => {
 
   it("renders", () => {
     render(
-      <ModalArchiveRename isOpen={true} subPath="/" handleExit={() => {}}>
-        test
-      </ModalArchiveRename>
+      <ModalArchiveRename
+        isOpen={true}
+        subPath="/"
+        handleExit={() => {}}
+      ></ModalArchiveRename>
     );
   });
   describe("rename", () => {
