@@ -20,7 +20,7 @@ describe("ColorClassSelect", () => {
         collections={true}
         isEnabled={true}
         filePath={"/test"}
-        onToggle={() => {}}
+        onToggle={() => { }}
       />
     );
   });
@@ -44,7 +44,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => {}}
+        onToggle={(value) => { }}
       />
     );
 
@@ -80,7 +80,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={false}
         filePath={"/test1"}
-        onToggle={(value) => {}}
+        onToggle={(value) => { }}
       />
     );
 
@@ -120,10 +120,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => {}}
-      >
-        t
-      </ColorClassSelect>
+        onToggle={(value) => { }} />
     );
 
     // need to await this click
@@ -133,7 +130,10 @@ describe("ColorClassSelect", () => {
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
-    await colorClass.click();
+    // need to await here
+    await act(async () => {
+      await colorClass.click();
+    });
 
     colorClass = wrapper.queryByTestId(
       "color-class-select-2"
@@ -176,7 +176,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => {}}
+        onToggle={(value) => { }}
       />
     );
 
@@ -189,7 +189,10 @@ describe("ColorClassSelect", () => {
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
-    await colorClass.click();
+    // need to await here
+    await act(async () => {
+      await colorClass.click();
+    });
 
     expect(fetchPostSpy).toBeCalled();
     expect(notificationSpy).toBeCalled();
@@ -209,7 +212,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={() => {}}
+        onToggle={() => { }}
       />
     );
 
