@@ -2,11 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Data;
-
-#nullable disable
 
 namespace starsky.foundation.database.Migrations
 {
@@ -17,9 +14,7 @@ namespace starsky.foundation.database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("MySql:CharSet", "utf8mb4")
-                .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "6.0.3");
+                .HasAnnotation("ProductVersion", "3.1.22");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -36,12 +31,12 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<string>("Identifier")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(64);
 
                     b.Property<string>("Secret")
-                        .HasMaxLength(1024)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(1024);
 
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
@@ -54,9 +49,7 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("Id", "Identifier");
 
-                    b.ToTable("Credentials", (string)null);
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                    b.ToTable("Credentials");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.CredentialType", b =>
@@ -68,22 +61,20 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(32);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(64);
 
                     b.Property<int?>("Position")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.ToTable("CredentialTypes", (string)null);
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                    b.ToTable("CredentialTypes");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Permission", b =>
@@ -95,22 +86,20 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(32);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(64);
 
                     b.Property<int?>("Position")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Role", b =>
@@ -122,22 +111,20 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(32);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(64);
 
                     b.Property<int?>("Position")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.RolePermission", b =>
@@ -152,9 +139,7 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("RolePermissions", (string)null);
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.User", b =>
@@ -179,14 +164,12 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(64);
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.UserRole", b =>
@@ -201,9 +184,7 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles", (string)null);
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.FileIndexItem", b =>
@@ -228,18 +209,16 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FileHash")
-                        .HasMaxLength(190)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(190);
 
                     b.Property<string>("FileName")
-                        .HasMaxLength(190)
                         .HasColumnType("TEXT")
-                        .HasColumnOrder(1);
+                        .HasMaxLength(190);
 
                     b.Property<string>("FilePath")
-                        .HasMaxLength(380)
                         .HasColumnType("TEXT")
-                        .HasColumnOrder(2);
+                        .HasMaxLength(380);
 
                     b.Property<double>("FocalLength")
                         .HasColumnType("REAL");
@@ -272,16 +251,16 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("REAL");
 
                     b.Property<string>("LocationCity")
-                        .HasMaxLength(40)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(40);
 
                     b.Property<string>("LocationCountry")
-                        .HasMaxLength(40)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(40);
 
                     b.Property<string>("LocationState")
-                        .HasMaxLength(40)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(40);
 
                     b.Property<double>("Longitude")
                         .HasColumnType("REAL");
@@ -293,12 +272,12 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ParentDirectory")
-                        .HasMaxLength(190)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(190);
 
                     b.Property<string>("ShutterSpeed")
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(20);
 
                     b.Property<string>("SidecarExtensions")
                         .HasColumnType("TEXT");
@@ -307,12 +286,12 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Software")
-                        .HasMaxLength(40)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(40);
 
                     b.Property<string>("Tags")
-                        .HasMaxLength(1024)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(1024);
 
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
@@ -322,8 +301,6 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("FileName", "ParentDirectory");
 
                     b.ToTable("FileIndex");
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.ImportIndexItem", b =>
@@ -335,14 +312,8 @@ namespace starsky.foundation.database.Migrations
                     b.Property<DateTime>("AddToDatabase")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ColorClass")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("DateTimeFromFileName")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("FileHash")
                         .HasColumnType("TEXT");
@@ -355,32 +326,9 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileHash")
-                        .HasAnnotation("MySql:CharSet", "utf8mb4");
+                    b.HasIndex("FileHash");
 
                     b.ToTable("ImportIndex");
-                });
-
-            modelBuilder.Entity("starsky.foundation.database.Models.NotificationItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true)
-                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
-                        .HasAnnotation("Sqlite:Autoincrement", true);
-
-                    b.Property<string>("Content")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Notifications", (string)null);
-
-                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
@@ -396,10 +344,6 @@ namespace starsky.foundation.database.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CredentialType");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.RolePermission", b =>
@@ -415,10 +359,6 @@ namespace starsky.foundation.database.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.UserRole", b =>
@@ -434,20 +374,6 @@ namespace starsky.foundation.database.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("starsky.foundation.database.Models.Account.CredentialType", b =>
-                {
-                    b.Navigation("Credentials");
-                });
-
-            modelBuilder.Entity("starsky.foundation.database.Models.Account.User", b =>
-                {
-                    b.Navigation("Credentials");
                 });
 #pragma warning restore 612, 618
         }
