@@ -55,9 +55,12 @@ namespace starskycore.Services
 					.TagWith("Inflate SearchSuggestionsService")
 					.Select(val => new KeyValuePair<string, int>(val.Key, val.Count())).ToListAsync();
 			}
-			catch ( Exception e )
+			catch ( Exception exception )
 			{
-				//_logger.LogError(e, "mysql search suggest exception catch-ed");
+				if ( !exception.Message.Contains("doesn't exist") )
+				{
+					_logger.LogError(exception, "mysql search suggest exception catch-ed");
+				}
 				return allFilesList;
 			}
 

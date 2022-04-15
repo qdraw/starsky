@@ -60,7 +60,8 @@ namespace starsky.foundation.database.Helpers
 			{
 				logger.LogInformation("[RunMigrations] start migration failed");
 				logger.LogError(exception.Message);
-				logger.LogError("end catch-ed");
+				logger.LogError(exception.InnerException?.Message);
+				logger.LogError("[RunMigrations] end catch-ed");
 			}
 		}
 		

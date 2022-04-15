@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ public class MySqlDatabaseFixes
 	internal async Task<bool?> SetTableToUtf8(string? tableName)
 	{
 		if ( _connection == null || tableName == null) return null;
-		var query = "ALTER TABLE " + tableName +
+		var query = "ALTER TABLE `" + tableName + "`" +
 			" CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
 		await ExecuteNonQueryAsync(query);
 		return true;
@@ -51,7 +52,7 @@ public class MySqlDatabaseFixes
 	internal async Task<bool?> SetDatabaseSettingToUtf8()
 	{
 		if ( _connection == null ) return null;
-		var query = "ALTER DATABASE '" + _connection.Database + "'; " +
+		var query = "ALTER DATABASE `" + _connection.Database + "` " +
 		            "CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
 		await ExecuteNonQueryAsync(query);
 		return true;
@@ -141,7 +142,7 @@ public class MySqlDatabaseFixes
 	internal async Task<bool?> AlterTableAutoIncrement(string tableName)
 	{
 		if ( _connection == null ) return null;
-		var myInsertQuery = "ALTER TABLE "+ tableName+ " MODIFY Id INTEGER NOT NULL AUTO_INCREMENT;";
+		var myInsertQuery = "ALTER TABLE `"+ tableName+ "` MODIFY Id INTEGER NOT NULL AUTO_INCREMENT;";
 		await ExecuteNonQueryAsync(myInsertQuery);
 		return true;
 	}
