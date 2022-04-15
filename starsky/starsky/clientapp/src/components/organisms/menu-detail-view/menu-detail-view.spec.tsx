@@ -342,7 +342,7 @@ describe("MenuDetailView", () => {
       });
     });
 
-    it("move click", () => {
+    it("[menu detail] move click", () => {
       var moveModal = jest
         .spyOn(ModalMoveFile, "default")
         .mockImplementationOnce(() => {
