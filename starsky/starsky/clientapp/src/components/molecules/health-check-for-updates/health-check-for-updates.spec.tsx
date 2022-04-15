@@ -122,7 +122,7 @@ describe("HealthCheckForUpdates", () => {
         .spyOn(Notification, "default")
         .mockImplementationOnce(() => <>t</>);
 
-      var component = render(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
+      var component = render(<HealthCheckForUpdates></HealthCheckForUpdates>);
 
       expect(notificationSpy).toBeCalledTimes(1);
 
@@ -147,7 +147,7 @@ describe("HealthCheckForUpdates", () => {
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = render(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
+      var component = render(<HealthCheckForUpdates></HealthCheckForUpdates>);
 
       expect(notificationSpy).toBeCalledTimes(1);
 

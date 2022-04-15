@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 
 export interface IButtonProps {
+  children?: React.ReactNode;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   className?: string;

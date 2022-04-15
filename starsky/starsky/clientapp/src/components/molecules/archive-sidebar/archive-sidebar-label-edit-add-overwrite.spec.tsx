@@ -208,11 +208,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("Should change value when onChange was called", () => {
-      const component = render(
-        <ArchiveSidebarLabelEditAddOverwrite>
-          t
-        </ArchiveSidebarLabelEditAddOverwrite>
-      );
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
       const formControls = component
         .queryAllByTestId("form-control")
