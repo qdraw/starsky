@@ -22,10 +22,8 @@ describe("ColorClassFilter", () => {
         itemsCount={1}
         subPath={"/test"}
         colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]}
+        colorClassUsage={[1, 2]} /
       >
-        t
-      </ColorClassFilter>
     );
 
     const colorClass = component.queryByTestId(
@@ -41,10 +39,7 @@ describe("ColorClassFilter", () => {
         itemsCount={1}
         subPath={"/test"}
         colorClassActiveList={[1]}
-        colorClassUsage={[3]}
-      >
-        t
-      </ColorClassFilter>
+        colorClassUsage={[3]} />
     );
 
     expect(component.queryByTestId("color-class-filter-reset")).toBeTruthy();
@@ -56,10 +51,7 @@ describe("ColorClassFilter", () => {
         itemsCount={1}
         subPath={"/test"}
         colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]}
-      >
-        t
-      </ColorClassFilter>
+        colorClassUsage={[1, 2]} />
     );
 
     const colorClass = component.queryByTestId(
@@ -67,7 +59,9 @@ describe("ColorClassFilter", () => {
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
-    colorClass.click();
+    act(() => {
+      colorClass.click();
+    });
 
     const preloader = component.queryByTestId("preloader") as HTMLElement;
     expect(preloader).toBeTruthy();
@@ -83,10 +77,7 @@ describe("ColorClassFilter", () => {
         itemsCount={1}
         subPath={"/test"}
         colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]}
-      >
-        t
-      </ColorClassFilter>
+        colorClassUsage={[1, 2]} />
     );
 
     const colorClass = component.queryByTestId(
