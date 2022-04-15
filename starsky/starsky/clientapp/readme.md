@@ -135,7 +135,7 @@ npx create-react-app my-app --template typescript
 npm ci
 ```
 
-The following packages are added:
+The following packages are added and removed
 
 ```
 npm install --save abortcontroller-polyfill
@@ -145,12 +145,13 @@ npm install --save @types/reach__router
 npm install --save leaflet
 npm install --save @types/leaflet
 npm install --save @types/storybook__react
-npm install --save-dev @storybook/react
+npm install --save-dev @storybook/react --force
 npm install --save eslint-config-prettier
 npm install --save eslint-plugin-prettier
 npm install --save prettier
 npm uninstall --save @types/node
 npm install --save @types/node
+npm uninstall --save web-vitals
 ```
 
 > Note:
@@ -158,11 +159,6 @@ npm install --save @types/node
 
 > @types/node 16.x is used instead of 12.x
 
-Remove this package
-
-```
-npm uninstall --save web-vitals
-```
 
 #### Update the name of the project
 
@@ -184,13 +180,13 @@ Used when running `npm start`
 This is added to the `package.json`
 
 ```json
-"postbuild": "npm run lint",
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 715",
 "lint:fix": "node node_modules/eslint/bin/eslint.js --fix \"src/**\"",
+"fix": "npm run lint:fix",
 "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.md 20211219  v5.0.0'"
+"upgrade": "echo 'check readme.md 20220415 v5.0.1'"
 ```
 
 ### collectCoverageFrom and coverageReporters
