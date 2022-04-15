@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import MenuDefault from "./menu-default";
 
@@ -13,13 +13,16 @@ describe("MenuDefault", () => {
       expect(component.queryByTestId("hamburger")).toBeTruthy();
     });
 
-    it("check if on click the hamburger opens", () => {
-      var component = render(<MenuDefault isEnabled={true}>t</MenuDefault>);
+    it("[menu default]check if on click the hamburger opens", () => {
+      var component = render(<MenuDefault isEnabled={true} />);
 
       const hamburger = component.queryByTestId("hamburger");
       expect(hamburger?.querySelector(".open")).toBeFalsy();
 
-      hamburger?.click();
+      act(() => {
+        hamburger?.click();
+      });
+
       expect(hamburger?.querySelector(".open")).toBeTruthy();
 
       component.unmount();
