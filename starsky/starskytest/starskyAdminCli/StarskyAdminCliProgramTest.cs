@@ -20,6 +20,24 @@ namespace starskytest.starskyAdminCli
 				"-c", "-test"
 			}.ToArray();
 			Program.Main(args);
+			// should not throw an exception
+			Assert.IsNotNull(args);
+		}
+		
+		[TestMethod]
+		public void StarskyAdminCliProgramTest_LoopThough()
+		{
+			Environment.SetEnvironmentVariable("app__databaseType","InMemoryDatabase");
+			Environment.SetEnvironmentVariable("app__databaseConnection", "test");
+				
+			var args = new List<string> {
+				"-d", "InMemoryDatabase",
+				"-c", "-test",
+				"--name", "test@mail.me",
+				"--password", "test123456789",
+			}.ToArray();
+			Program.Main(args);
+			// should not throw an exception
 			Assert.IsNotNull(args);
 		}
 

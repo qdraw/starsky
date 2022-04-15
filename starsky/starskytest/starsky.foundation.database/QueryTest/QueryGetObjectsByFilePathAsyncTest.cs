@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -220,6 +221,16 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual("/disposed/single_item_disposed_1.jpg",result[0].FilePath);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(NullReferenceException))]
+		public async Task GetObjectsByFilePathQueryAsyncTest_NullReferenceException()
+		{
+			var logger = new FakeIWebLogger();
+			var fakeQuery = new Query(null, 
+				null, null,logger,null);
+			await fakeQuery.GetObjectsByFilePathQueryAsync(new List<string>{"test"});
 		}
 		
 	}

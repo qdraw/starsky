@@ -14,7 +14,7 @@
           "app__IsAccountRegisterOpen": "true",
           "_app__storageFolder": "remove prefix underscore",
           "_app__ApplicationInsightsInstrumentationKey": "remove prefix underscore",
-          "_app__DatabaseConnection": "Server=REMOVE_PREFIX;port=8415;database=starsky;uid=starsky;pwd=CHANGE_PASSWORD;maximumpoolsize=30;",
+          "_app__DatabaseConnection": "Server=localhost;port=12838;database=starsky;uid=starsky;pwd=ad12dc47-a411-4dce-92b3-2649a755426c;maximumpoolsize=30;",
           "app__DatabaseType": "Sqlite",
           "app__ApplicationInsightsDatabaseTracking": "true",
           "app__ApplicationInsightsLog": "true",

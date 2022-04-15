@@ -22,8 +22,7 @@ namespace starsky.foundation.database.Migrations
             migrationBuilder.AddColumn<DateTime>(
                 name: "LockoutEnd",
                 table: "Users",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                nullable: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

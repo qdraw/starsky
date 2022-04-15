@@ -17,7 +17,10 @@ Define constance in `starsky.foundation.database.csproj`
 ```xml
         <DefineConstants>SYSTEM_TEXT_ENABLED;ENABLE_DEFAULT_DATABASE</DefineConstants>
 ```
-
+or mysql:
+```xml
+        <DefineConstants>ENABLE_MYSQL_DATABASE</DefineConstants>
+```
 
 ## Run Migration
 ```bash

@@ -1,11 +1,13 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace starsky.foundation.database.Models
 {
 	public class NotificationItem
 	{
 		[Key]
+		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
 		public string Content { get; set; }

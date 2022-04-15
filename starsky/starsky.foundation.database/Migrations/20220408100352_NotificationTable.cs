@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -14,7 +15,10 @@ namespace starsky.foundation.database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Sqlite:Autoincrement", true)
+	                    .Annotation("MySql:ValueGeneratedOnAdd", true)
+	                    .Annotation("MySql:ValueGenerationStrategy",
+		                    MySqlValueGenerationStrategy.IdentityColumn),
                     Content = table.Column<string>(type: "TEXT", nullable: true),
                     DateTime = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },

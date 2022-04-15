@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
@@ -39,13 +40,20 @@ namespace starsky.foundation.database.Data
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+			
+			// does not have direct effect
+			modelBuilder.HasCharSet("utf8mb4",
+				DelegationModes.ApplyToAll);
 
 			// Add Index to speed performance (on MySQL max key length is 3072 bytes)
+			// MySql:CharSet might be working a future release but now it does nothing
 			modelBuilder.Entity<FileIndexItem>()
-				.HasIndex(x => new { x.FileName, x.ParentDirectory });
+				.HasAnnotation("MySql:CharSet", "utf8mb4")
+				.HasIndex(x => new {x.FileName, x.ParentDirectory});
 			
 			modelBuilder.Entity<User>(etb =>
 				{
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 					etb.HasKey(e => e.Id);
 					etb.Property(e => e.Id)
 						.ValueGeneratedOnAdd()
@@ -71,6 +79,7 @@ namespace starsky.foundation.database.Data
 
 			modelBuilder.Entity<CredentialType>(etb =>
 				{
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 					etb.HasKey(e => e.Id);
 					etb.Property(e => e.Id)
 						.ValueGeneratedOnAdd()
@@ -83,6 +92,7 @@ namespace starsky.foundation.database.Data
 
 			modelBuilder.Entity<Credential>(etb =>
 			{
+				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				etb.HasKey(e => e.Id);
 				etb.Property(e => e.Id)
 					.ValueGeneratedOnAdd()
@@ -97,6 +107,7 @@ namespace starsky.foundation.database.Data
 
 			modelBuilder.Entity<Role>(etb =>
 				{
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 					etb.HasKey(e => e.Id);
 					etb.Property(e => e.Id)
 						.ValueGeneratedOnAdd()
@@ -109,6 +120,7 @@ namespace starsky.foundation.database.Data
 
 			modelBuilder.Entity<UserRole>(etb =>
 				{
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 					etb.HasKey(e => new { e.UserId, e.RoleId });
 					etb.ToTable("UserRoles");
 				}
@@ -116,6 +128,7 @@ namespace starsky.foundation.database.Data
 
 			modelBuilder.Entity<Permission>(etb =>
 				{
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 					etb.HasKey(e => e.Id);
 					etb.Property(e => e.Id)
 						.ValueGeneratedOnAdd()
@@ -128,13 +141,29 @@ namespace starsky.foundation.database.Data
 
 			modelBuilder.Entity<RolePermission>(etb =>
 				{
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 					etb.HasKey(e => new { e.RoleId, e.PermissionId });
 					etb.ToTable("RolePermissions");
 				}
 			);
-			
+
 			modelBuilder.Entity<ImportIndexItem>()
-				.HasIndex(x => new { x.FileHash });
+				.HasIndex(x => new {x.FileHash})
+				.HasAnnotation("MySql:CharSet", "utf8mb4");
+
+			modelBuilder.Entity<NotificationItem>(etb =>
+				{
+					etb.HasKey(e => e.Id);
+					etb.Property(e => e.Id)
+						.ValueGeneratedOnAdd()
+						.HasAnnotation("MySql:ValueGeneratedOnAdd", true)
+						.HasAnnotation("Sqlite:Autoincrement", true)
+						.HasAnnotation("MySql:ValueGenerationStrategy",
+							MySqlValueGenerationStrategy.IdentityColumn);
+					etb.ToTable("Notifications");
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+				}
+			);
 			
 		}
 	}

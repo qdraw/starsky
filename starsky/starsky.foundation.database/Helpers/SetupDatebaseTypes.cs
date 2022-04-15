@@ -131,6 +131,19 @@ namespace starsky.foundation.database.Helpers
 					}
 				}));		
 #endif
+#if ENABLE_MYSQL_DATABASE
+			// dirty hack
+
+			_services.AddDbContext<ApplicationDbContext>(options =>
+				options.UseMySql(_appSettings.DatabaseConnection, GetServerVersionMySql(), 
+					b =>
+					{
+						if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
+						{
+							b.MigrationsAssembly(foundationDatabaseName);
+						}
+					}));
+#endif
 
 			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
 		}

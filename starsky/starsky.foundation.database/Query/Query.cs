@@ -279,6 +279,11 @@ namespace starsky.foundation.database.Query
 	        {
 		        await RetrySaveChangesAsync(updateStatusContent, e);
 	        }
+	        catch ( InvalidOperationException e)
+	        {
+		        // System.InvalidOperationException: Can't replace active reader.
+		        await RetrySaveChangesAsync(updateStatusContent, e);
+	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);

@@ -22,6 +22,7 @@ namespace starsky.foundation.database.Import
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly ApplicationDbContext _dbContext;
 		private readonly IConsole _console;
+		private readonly IWebLogger _logger;
 
 		/// <summary>
 		/// Query Already imported Database
@@ -31,11 +32,12 @@ namespace starsky.foundation.database.Import
 		/// <param name="scopeFactory">to avoid threading issues with DbContext</param>
 		/// <param name="console">console output</param>
 		/// <param name="dbContext"></param>
-		public ImportQuery(IServiceScopeFactory scopeFactory, IConsole console,  ApplicationDbContext dbContext = null)
+		public ImportQuery(IServiceScopeFactory scopeFactory, IConsole console, IWebLogger logger,  ApplicationDbContext dbContext = null)
 		{
 			_scopeFactory = scopeFactory;
 
 			_console = console;
+			_logger = logger;
 			_dbContext = dbContext;
 			_isConnection = TestConnection();
 		}
@@ -55,7 +57,7 @@ namespace starsky.foundation.database.Import
 		/// <returns>successful database connection</returns>
 		public bool TestConnection()
 		{
-			return !_isConnection ? GetDbContext().TestConnection() : _isConnection;
+			return !_isConnection ? GetDbContext().TestConnection(_logger) : _isConnection;
 		}
 
 		public virtual async Task<bool> IsHashInImportDbAsync(string fileHashCode)

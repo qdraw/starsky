@@ -44,7 +44,7 @@ namespace starskyimportercli
             var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 
             // Migrations before importing
-            await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger);
+            await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger,appSettings);
             
             // Help and other Command Line Tools args are included in the ImporterCli 
             await new ImportCli(import, appSettings, console, exifToolDownload).Importer(args);

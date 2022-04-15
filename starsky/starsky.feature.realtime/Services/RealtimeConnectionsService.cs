@@ -38,9 +38,12 @@ namespace starsky.feature.realtime.Services
 				var messages = await _notificationQuery.GetOlderThan(DateTime.UtcNow.AddDays(-30));
 				await _notificationQuery.RemoveAsync(messages);
 			}
-			catch ( Exception e )
+			catch ( Exception exception )
 			{
-				_logger.LogError(e, "RealtimeConnectionsService CleanOldMessagesAsync");
+				if (! exception.Message.Contains("Notifications' doesn't exist") )
+				{
+					_logger.LogError(exception, "[CleanOldMessagesAsync] catch-ed exception");
+				}
 			}
 
 		}

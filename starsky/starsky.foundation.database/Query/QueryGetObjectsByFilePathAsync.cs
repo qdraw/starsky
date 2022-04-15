@@ -95,7 +95,7 @@ namespace starsky.foundation.database.Query
 			catch ( NullReferenceException ex1)
 			{
 				_logger.LogInformation($"catch-ed null ref exception: {string.Join( ",", filePathList.ToArray() )} {ex1.StackTrace}", ex1);
-				await Task.Delay(50);
+				await Task.Delay(10);
 				// System.NullReferenceException: Object reference not set to an instance of an object.
 				// at MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet()
 				try

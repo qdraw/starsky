@@ -33,8 +33,9 @@ namespace starskytest.FakeMocks
 		/// </summary>
 		/// <param name="scopeFactory"></param>
 		/// <param name="console"></param>
+		/// <param name="logger"></param>
 		/// <param name="dbContext"></param>
-		public FakeIImportQuery(IServiceScopeFactory scopeFactory, IConsole console, ApplicationDbContext dbContext = null)
+		public FakeIImportQuery(IServiceScopeFactory scopeFactory, IConsole console, IWebLogger logger, ApplicationDbContext dbContext = null)
 		{
 			_exist = new List<string>();
 			_isConnection = true;

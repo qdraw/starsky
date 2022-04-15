@@ -185,13 +185,14 @@ namespace starskytest.Helpers
 			
 			await userManager.SignIn(httpContextAccessor.HttpContext, result.User);
 
-			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create<ApplicationInsightsServiceOptions>(new ApplicationInsightsServiceOptions());
+			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create(new ApplicationInsightsServiceOptions());
 			
 			var fakeJs = new MockJavaScriptSnippet(_telemetryConfiguration, someOptions, httpContextAccessor,
 				new JavaScriptTestEncoder());
 			
+			
 			var script = new ApplicationInsightsJsHelper(httpContextAccessor, fakeJs).GetCurrentUserId();
-			Assert.AreEqual("1", script);
+			Assert.AreEqual(userManager.GetUser("email","test").Id.ToString(), script);
 		}
 		
 		[TestMethod]

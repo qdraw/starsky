@@ -564,7 +564,7 @@ namespace starsky.feature.import.Services
 			await query!.AddItemAsync(importIndexItem.FileIndexItem);
 			
 			// Add to check db, to avoid duplicate input
-			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery,_console).ImportQuery();
+			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery,_console, _logger).ImportQuery();
 			await importQuery.AddAsync(importIndexItem, importSettings.IsConsoleOutputModeDefault() );
 			
 			await query.DisposeAsync();
