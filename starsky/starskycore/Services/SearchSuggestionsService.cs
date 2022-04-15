@@ -57,7 +57,7 @@ namespace starskycore.Services
 			}
 			catch ( Exception exception )
 			{
-				if ( !exception.Message.Contains("doesn't exist") )
+				if ( !exception.Message.Contains("Unknown column") )
 				{
 					_logger.LogError(exception, "mysql search suggest exception catch-ed");
 				}
