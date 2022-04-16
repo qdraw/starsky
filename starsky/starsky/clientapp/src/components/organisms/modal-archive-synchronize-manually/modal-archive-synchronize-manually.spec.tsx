@@ -18,9 +18,7 @@ describe("ModalArchiveSynchronizeManually", () => {
         isOpen={true}
         parentFolder="/"
         handleExit={() => {}}
-      >
-        test
-      </ModalArchiveSynchronizeManually>
+      />
     );
   });
 

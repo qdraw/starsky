@@ -19,9 +19,10 @@ describe("useInterval", () => {
       done();
     }
     render(
-      <UseIntervalComponentTest timer={0} callback={callback}>
-        t
-      </UseIntervalComponentTest>
+      <UseIntervalComponentTest
+        timer={0}
+        callback={callback}
+      ></UseIntervalComponentTest>
     );
   });
 

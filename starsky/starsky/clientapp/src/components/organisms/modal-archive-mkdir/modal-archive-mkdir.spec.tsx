@@ -22,9 +22,7 @@ describe("ModalArchiveMkdir", () => {
         state={{} as any}
         isOpen={true}
         handleExit={() => {}}
-      >
-        test
-      </ModalArchiveMkdir>
+      />
     );
   });
 

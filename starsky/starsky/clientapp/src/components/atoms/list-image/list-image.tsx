@@ -7,6 +7,7 @@ import { UrlQuery } from "../../../shared/url-query";
 import EmptyImage from "../../../style/images/empty-image.gif";
 
 interface IListImageProps {
+  children?: React.ReactNode;
   fileHash: string;
   imageFormat?: ImageFormat;
   alt?: string;

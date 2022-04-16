@@ -5,6 +5,7 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { Language } from "../../../shared/language";
 
 interface ItemListProps {
+  children?: React.ReactNode;
   fileIndexItems: IFileIndexItem[];
   isLoading?: boolean;
   callback?(path: string): void;

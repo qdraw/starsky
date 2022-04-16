@@ -16,7 +16,7 @@ describe("SearchPagination", () => {
     });
 
     var component = render(
-      <SearchPagination lastPageNumber={2}>t</SearchPagination>
+      <SearchPagination lastPageNumber={2}></SearchPagination>
     );
 
     const nextButton = component.queryByTestId(
@@ -38,7 +38,7 @@ describe("SearchPagination", () => {
     });
 
     var component = render(
-      <SearchPagination lastPageNumber={2}>t</SearchPagination>
+      <SearchPagination lastPageNumber={2}></SearchPagination>
     );
 
     const prevButton = component.queryByTestId(
@@ -58,7 +58,7 @@ describe("SearchPagination", () => {
     });
 
     var component = render(
-      <SearchPagination lastPageNumber={2}>t</SearchPagination>
+      <SearchPagination lastPageNumber={2}></SearchPagination>
     );
 
     const prevButton = component.queryByTestId(
@@ -77,7 +77,7 @@ describe("SearchPagination", () => {
     });
 
     var component = render(
-      <SearchPagination lastPageNumber={2}>t</SearchPagination>
+      <SearchPagination lastPageNumber={2}></SearchPagination>
     );
 
     const nextButton = component.queryByTestId(

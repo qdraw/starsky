@@ -10,9 +10,7 @@ storiesOf("components/organisms/modal-detailview-rename-file", module).add(
         state={{} as any}
         isOpen={true}
         handleExit={() => {}}
-      >
-        test
-      </ModalDetailviewRenameFile>
+      ></ModalDetailviewRenameFile>
     );
   }
 );

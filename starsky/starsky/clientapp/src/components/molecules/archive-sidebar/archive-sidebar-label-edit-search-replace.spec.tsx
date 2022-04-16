@@ -207,12 +207,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       jest.spyOn(Notification, "default").mockRestore();
     });
 
-    it("Should change value when onChange was called", () => {
-      const component = render(
-        <ArchiveSidebarLabelEditSearchReplace>
-          t
-        </ArchiveSidebarLabelEditSearchReplace>
-      );
+    it("[replace] Should change value when onChange was called", () => {
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
       const formControls = component
         .queryAllByTestId("form-control")

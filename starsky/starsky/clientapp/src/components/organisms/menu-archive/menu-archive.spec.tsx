@@ -57,13 +57,16 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
-    it("check if on click the hamburger opens", () => {
+    it("[menu archive] check if on click the hamburger opens", () => {
       var component = render(<MenuArchive />);
 
       const hamburger = component.queryByTestId("hamburger");
       expect(hamburger?.querySelector(".open")).toBeFalsy();
 
-      hamburger?.click();
+      act(() => {
+        hamburger?.click();
+      });
+
       expect(hamburger?.querySelector(".open")).toBeTruthy();
 
       component.unmount();
@@ -131,7 +134,7 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
-    it("menu click mkdir", () => {
+    it("[archive] menu click mkdir", async () => {
       jest.spyOn(React, "useContext").mockReset();
 
       globalHistory.navigate("/");
@@ -167,14 +170,15 @@ describe("MenuArchive", () => {
 
       const mkdir = component.queryByTestId("mkdir");
 
-      mkdir?.click();
+      // need async
+      await mkdir?.click();
 
       expect(mkdirModalSpy).toBeCalled();
 
       component.unmount();
     });
 
-    it("menu click rename (dir)", () => {
+    it("[archive] menu click rename (dir)", async () => {
       globalHistory.navigate("/?f=/test");
 
       var state = {
@@ -209,7 +213,8 @@ describe("MenuArchive", () => {
       const rename = component.queryByTestId("rename");
       expect(rename).not.toBeNull();
 
-      rename?.click();
+      // need async
+      await rename?.click();
 
       expect(renameModalSpy).toBeCalled();
 
@@ -218,7 +223,7 @@ describe("MenuArchive", () => {
       globalHistory.navigate("/");
     });
 
-    it("menu click rename should call dispatch(dir)", () => {
+    it("[archive] menu click rename should call dispatch(dir)", () => {
       globalHistory.navigate("/?f=/test");
 
       var state = {
@@ -264,7 +269,9 @@ describe("MenuArchive", () => {
       const rename = component.queryByTestId("rename");
       expect(rename).not.toBeNull();
 
-      rename?.click();
+      act(() => {
+        rename?.click();
+      });
 
       const fakeButton = component.queryByTestId("test-btn-fake");
       fakeButton?.click();
@@ -280,7 +287,7 @@ describe("MenuArchive", () => {
       globalHistory.navigate("/");
     });
 
-    it("display options (default menu)", () => {
+    it("[archive] display options (default menu)", () => {
       jest.spyOn(React, "useContext").mockRestore();
 
       globalHistory.navigate("/?f=/test");
@@ -317,7 +324,9 @@ describe("MenuArchive", () => {
       const displayOptions = component.queryByTestId("display-options");
       expect(displayOptions).not.toBeNull();
 
-      displayOptions?.click();
+      act(() => {
+        displayOptions?.click();
+      });
 
       expect(renameModalSpy).toBeCalled();
 
@@ -326,7 +335,7 @@ describe("MenuArchive", () => {
       globalHistory.navigate("/");
     });
 
-    it("display options (select menu)", () => {
+    it("[archive] display options (select menu)", () => {
       jest.spyOn(React, "useContext").mockReset();
 
       globalHistory.navigate("/?f=/trashed&select=test1.jpg");
@@ -371,7 +380,9 @@ describe("MenuArchive", () => {
       const displayOptions = component.queryByTestId("display-options");
       expect(displayOptions).not.toBeNull();
 
-      displayOptions?.click();
+      act(() => {
+        displayOptions?.click();
+      });
 
       expect(renameModalSpy).toBeCalled();
 
@@ -380,7 +391,7 @@ describe("MenuArchive", () => {
       globalHistory.navigate("/");
     });
 
-    it("synchronize-manually (default menu)", () => {
+    it("[archive] synchronize-manually (default menu)", async () => {
       jest.spyOn(React, "useContext").mockReset();
 
       globalHistory.navigate("/?f=/test");
@@ -417,7 +428,8 @@ describe("MenuArchive", () => {
       const syncManual = component.queryByTestId("synchronize-manually");
       expect(syncManual).not.toBeNull();
 
-      syncManual?.click();
+      // need async
+      await syncManual?.click();
 
       expect(renameModalSpy).toBeCalled();
 
@@ -425,7 +437,7 @@ describe("MenuArchive", () => {
       globalHistory.navigate("/");
     });
 
-    it("synchronize-manually (select menu)", () => {
+    it("[archive] synchronize-manually (select menu)", () => {
       jest.spyOn(React, "useContext").mockReset();
 
       globalHistory.navigate("/?f=/trashed&select=test1.jpg");
@@ -470,7 +482,9 @@ describe("MenuArchive", () => {
       const syncManual = component.queryByTestId("synchronize-manually");
       expect(syncManual).not.toBeNull();
 
-      syncManual?.click();
+      act(() => {
+        syncManual?.click();
+      });
 
       expect(renameModalSpy).toBeCalled();
 
@@ -523,7 +537,9 @@ describe("MenuArchive", () => {
       const undoSelection = component.queryByTestId("undo-selection");
       expect(undoSelection).not.toBeNull();
 
-      undoSelection?.click();
+      act(() => {
+        undoSelection?.click();
+      });
 
       // you did press to de-select all
       expect(globalHistory.location.search).toBe("?select=");
@@ -582,7 +598,9 @@ describe("MenuArchive", () => {
       const undoSelection = component.queryByTestId("undo-selection");
       expect(undoSelection).not.toBeNull();
 
-      undoSelection?.click();
+      act(() => {
+        undoSelection?.click();
+      });
 
       expect(globalHistory.location.search).toBe("?select=");
 
@@ -747,14 +765,16 @@ describe("MenuArchive", () => {
       const exportButton = component.queryByTestId("export");
       expect(exportButton).not.toBeNull();
 
-      exportButton?.click();
+      act(() => {
+        exportButton?.click();
+      });
 
       expect(exportModalSpy).toBeCalled();
 
       component.unmount();
     });
 
-    it("menu click publish", () => {
+    it("[archive] menu click publish", () => {
       jest.spyOn(React, "useContext").mockReset();
 
       globalHistory.navigate("/?select=test1.jpg");
@@ -798,7 +818,9 @@ describe("MenuArchive", () => {
       const publish = component.queryByTestId("publish");
       expect(publish).not.toBeNull();
 
-      publish?.click();
+      act(() => {
+        publish?.click();
+      });
 
       expect(exportModalSpy).toBeCalled();
 

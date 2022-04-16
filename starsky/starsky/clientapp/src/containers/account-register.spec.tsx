@@ -355,8 +355,11 @@ describe("AccountRegister", () => {
     const loginContent = container.queryByTestId(
       "account-register-form"
     ) as HTMLFormElement;
+
     // need to await
-    await loginContent.submit();
+    await act(async () => {
+      await loginContent.submit();
+    });
 
     expect(fetchPostSpy).toBeCalled();
     expect(fetchPostSpy).toBeCalledTimes(1);

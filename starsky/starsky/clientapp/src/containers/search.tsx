@@ -81,9 +81,7 @@ function Search(archive: IArchiveProps) {
               iconList={true}
               {...archive}
               colorClassUsage={archive.colorClassUsage}
-            >
-              {" "}
-            </ItemListView>
+            />
           ) : null}
           {archive.collectionsCount === 0 ? (
             <div className="folder">

@@ -71,9 +71,7 @@ function Trash(archive: IArchiveProps) {
               iconList={true}
               {...archive}
               colorClassUsage={archive.colorClassUsage}
-            >
-              {" "}
-            </ItemListView>
+            />
           ) : null}
           {collectionsCount === 0 ? (
             <div className="folder">

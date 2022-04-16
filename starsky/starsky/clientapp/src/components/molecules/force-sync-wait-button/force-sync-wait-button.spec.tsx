@@ -39,9 +39,7 @@ describe("ForceSyncWaitButton", () => {
         historyLocationSearch={""}
         dispatch={jest.fn()}
         callback={jest.fn()}
-      >
-        t
-      </ForceSyncWaitButton>
+      />
     );
 
     const forceSync = component.queryByTestId(

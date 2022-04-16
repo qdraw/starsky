@@ -8,13 +8,14 @@ describe("CurrentLocationButton", () => {
   });
 
   describe("context", () => {
-    it("no navigator.geolocation wrong_location", () => {
+    it("no navigator.geolocation wrong_location", async () => {
       const component = render(<CurrentLocationButton />);
       const button = component.getByRole("button");
-      button.click();
+
+      // need to await
+      await button.click();
 
       const list = component.getByRole("button").classList;
-
       expect(list).toContain("icon--wrong_location");
     });
 
@@ -69,7 +70,7 @@ describe("CurrentLocationButton", () => {
       );
     });
 
-    it("getCurrentPosition error", () => {
+    it("getCurrentPosition error", async () => {
       const mockGeolocation = {
         getCurrentPosition: jest
           .fn()
@@ -79,7 +80,9 @@ describe("CurrentLocationButton", () => {
 
       var callback = jest.fn();
       var component = render(<CurrentLocationButton callback={callback} />);
-      component.getByRole("button").click();
+
+      // need to await here
+      await component.getByRole("button").click();
 
       expect(component.getByRole("button").classList).toContain(
         "icon--wrong_location"

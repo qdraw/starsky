@@ -33,7 +33,10 @@ describe("PanAndZoomImage", () => {
       );
 
       const zoomIn = component.queryAllByTestId("zoom_in")[0];
-      zoomIn.click();
+
+      act(() => {
+        zoomIn.click();
+      });
 
       const panZoomImage = component.queryAllByTestId("pan-zoom-image")[0];
 
@@ -283,10 +286,16 @@ describe("PanAndZoomImage", () => {
       );
 
       const zoom_in = component.queryAllByTestId("zoom_in")[0];
-      zoom_in.click();
+
+      act(() => {
+        zoom_in.click();
+      });
 
       const zoom_reset = component.queryAllByTestId("zoom_reset")[0];
-      zoom_reset.click();
+
+      act(() => {
+        zoom_reset.click();
+      });
 
       expect(onResetCallbackSpy).toBeCalled();
 

@@ -14,11 +14,12 @@ describe("More Menu", () => {
     expect(menuOptions.innerHTML).toBe("test");
   });
 
-  it("toggle", () => {
+  it("toggle", async () => {
     const element = render(<MoreMenu>test</MoreMenu>);
 
     const menuContext = element.queryAllByTestId("menu-context")[0];
-    menuContext.click();
+    // need to await here
+    await menuContext.click();
 
     expect(menuContext.className).toBe("menu-context");
   });

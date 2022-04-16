@@ -121,9 +121,7 @@ describe("ColorClassSelect", () => {
         isEnabled={true}
         filePath={"/test1"}
         onToggle={(value) => {}}
-      >
-        t
-      </ColorClassSelect>
+      />
     );
 
     // need to await this click
@@ -133,7 +131,10 @@ describe("ColorClassSelect", () => {
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
-    await colorClass.click();
+    // need to await here
+    await act(async () => {
+      await colorClass.click();
+    });
 
     colorClass = wrapper.queryByTestId(
       "color-class-select-2"
@@ -189,7 +190,10 @@ describe("ColorClassSelect", () => {
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
-    await colorClass.click();
+    // need to await here
+    await act(async () => {
+      await colorClass.click();
+    });
 
     expect(fetchPostSpy).toBeCalled();
     expect(notificationSpy).toBeCalled();

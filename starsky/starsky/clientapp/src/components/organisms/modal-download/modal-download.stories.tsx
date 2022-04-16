@@ -9,8 +9,6 @@ storiesOf("components/organisms/modal-download", module).add("default", () => {
       collections={false}
       select={["/"]}
       handleExit={() => {}}
-    >
-      test
-    </ModalDownload>
+    ></ModalDownload>
   );
 });

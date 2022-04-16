@@ -7,8 +7,6 @@ storiesOf(
   module
 ).add("default", () => {
   return (
-    <ModalArchiveSynchronizeManually isOpen={true} handleExit={() => {}}>
-      test
-    </ModalArchiveSynchronizeManually>
+    <ModalArchiveSynchronizeManually isOpen={true} handleExit={() => {}} />
   );
 });

@@ -45,7 +45,7 @@ describe("HealthStatusError", () => {
           return null;
         });
 
-      var component = render(<HealthStatusError>t</HealthStatusError>);
+      var component = render(<HealthStatusError></HealthStatusError>);
 
       expect(notificationSpy).toBeCalled();
 
