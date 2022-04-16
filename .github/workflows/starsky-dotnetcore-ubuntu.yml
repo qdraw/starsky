@@ -27,8 +27,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      LANG: "nl_NL.UTF-8"
 
     steps:
     - uses: actions/checkout@v2
@@ -58,14 +56,17 @@ jobs:
   
     - name: "Set locale to: nl_NL.UTF-8"
       run: |
+          export LANG="nl_NL.UTF-8"
           sudo locale-gen nl_NL.UTF-8
           sudo update-locale LANG=nl_NL.UTF-8
           date         
 
-    - name: TestNetCore [with different locale]
+    - name: "Locale TestNetCore [nl_NL]"
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target=TestNetCore
+      run: |
+          export LANG="nl_NL.UTF-8"
+          bash build.sh --Target=TestNetCore
 
   trigger_pipe_release_desktop:
     runs-on: ubuntu-latest
