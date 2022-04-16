@@ -59,30 +59,16 @@ jobs:
         name: build-output
         path: ./starsky
   
-  test_locale:
-    needs: [build]
-    env:
-      LANG: "pt_BR.UTF-8"
-    runs-on: ubuntu-latest
-    steps:
+    - name: "Set locale to: pt_BR.UTF-8"
+      run: |
+          sudo locale-gen pt_BR.UTF-8
+          sudo update-locale LANG=pt_BR.UTF-8
+          date         
 
-      - name: pt_BR.UTF-8
-        run: |
-            sudo locale-gen pt_BR.UTF-8
-            sudo update-locale LANG=pt_BR.UTF-8
-            
-      - name: date
-        run: |
-            date
-          
-      - uses: actions/download-artifact@v2
-        with:
-          name: build-output
-    
-      - name: TestNetCore
-        shell: bash
-        working-directory: ./starsky
-        run: bash build.sh --Target=TestNetCore
+    - name: TestNetCore [with different locale]
+      shell: bash
+      working-directory: ./starsky
+      run: bash build.sh --Target=TestNetCore
 
   trigger_pipe_release_desktop:
     runs-on: ubuntu-latest
