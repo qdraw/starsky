@@ -27,6 +27,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      LANG: "nl_NL.UTF-8"
 
     steps:
     - uses: actions/checkout@v2
@@ -54,10 +56,10 @@ jobs:
       working-directory: ./starsky
       run: bash build.sh --Target=TestNetCore
   
-    - name: "Set locale to: pt_BR.UTF-8"
+    - name: "Set locale to: nl_NL.UTF-8"
       run: |
-          sudo locale-gen pt_BR.UTF-8
-          sudo update-locale LANG=pt_BR.UTF-8
+          sudo locale-gen nl_NL.UTF-8
+          sudo update-locale LANG=nl_NL.UTF-8
           date         
 
     - name: TestNetCore [with different locale]
