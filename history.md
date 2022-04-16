@@ -35,7 +35,7 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
-# version 0.5.0-beta.4 _(Unreleased)_ - 2022-0?-??
+# version 0.5.0-beta.5 _(Unreleased)_ - 2022-0?-??
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4) (PR #720)
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (PR #724)
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 5.0.1 (2022-04-12))_ (PR #724)
