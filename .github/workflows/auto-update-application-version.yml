@@ -5,7 +5,8 @@ on:
       - master
       - release/*
     paths: 
-      - 'starsky-tools/build-tools/**'
+      - 'starsky-tools/build-tools/app-version-update.js'
+  workflow_dispatch:
 
 jobs: 
   run:
