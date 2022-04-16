@@ -10,7 +10,7 @@ on:
 
 jobs: 
   run:
-    name: Update Nuget packages list
+    name: Application Version Auto update (job)
     runs-on: ubuntu-latest
     steps: 
     - name: Checkout repo
