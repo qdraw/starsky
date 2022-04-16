@@ -130,7 +130,7 @@ In the repository of <a href="https://github.com/facebook/create-react-app/relea
 </ul>
 <pre><code>npm ci
 </code></pre>
-<p>The following packages are added:</p>
+<p>The following packages are added and removed</p>
 <pre><code>npm install --save abortcontroller-polyfill
 npm install --save @reach/router --force
 npm install --save intersection-observer
@@ -138,12 +138,13 @@ npm install --save @types/reach__router
 npm install --save leaflet
 npm install --save @types/leaflet
 npm install --save @types/storybook__react
-npm install --save-dev @storybook/react
+npm install --save-dev @storybook/react --force
 npm install --save eslint-config-prettier
 npm install --save eslint-plugin-prettier
 npm install --save prettier
 npm uninstall --save @types/node
 npm install --save @types/node
+npm uninstall --save web-vitals
 </code></pre>
 <blockquote>
 <p>Note:
@@ -152,9 +153,6 @@ npm install --save @types/node
 <blockquote>
 <p>@types/node 16.x is used instead of 12.x</p>
 </blockquote>
-<p>Remove this package</p>
-<pre><code>npm uninstall --save web-vitals
-</code></pre>
 <h4 id="update-the-name-of-the-project">Update the name of the project</h4>
 <pre><code class="language-json"> &quot;name&quot;: &quot;clientapp&quot;,
 </code></pre>
@@ -165,13 +163,13 @@ npm install --save @types/node
 </code></pre>
 <h4 id="npm-run-testci-is-used-by-the-build-script-to-run-all-tests-and-eslint"><code>npm run test:ci</code> is used by the build-script to run all tests and ESlint</h4>
 <p>This is added to the <code>package.json</code></p>
-<pre><code class="language-json">&quot;postbuild&quot;: &quot;npm run lint&quot;,
-&quot;lint&quot;: &quot;node node_modules/eslint/bin/eslint.js \&quot;src/**\&quot; --max-warnings 715&quot;,
+<pre><code class="language-json">&quot;lint&quot;: &quot;node node_modules/eslint/bin/eslint.js \&quot;src/**\&quot; --max-warnings 715&quot;,
 &quot;lint:fix&quot;: &quot;node node_modules/eslint/bin/eslint.js --fix \&quot;src/**\&quot;&quot;,
+&quot;fix&quot;: &quot;npm run lint:fix&quot;,
 &quot;format&quot;: &quot;prettier --write \&quot;**/*.+(js|jsx|json|yml|yaml|css|md|vue)\&quot;&quot;,
 &quot;test:ci&quot;: &quot;npm run lint &amp;&amp; react-scripts test --watchAll=false --coverage --reporters=default 2&gt;&amp;1&quot;,
 &quot;storybook&quot;: &quot;start-storybook&quot;,
-&quot;upgrade&quot;: &quot;echo &#39;check readme.md 20211219  v5.0.0&#39;&quot;
+&quot;upgrade&quot;: &quot;echo &#39;check readme.md 20220415 v5.0.1&#39;&quot;
 </code></pre>
 <h3 id="collectcoveragefrom-and-coveragereporters">collectCoverageFrom and coverageReporters</h3>
 <p>With jest <code>collectCoverageFrom</code> and <code>coverageReporters</code> are used to get the right output</p>
