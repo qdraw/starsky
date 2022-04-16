@@ -53,11 +53,6 @@ jobs:
       shell: bash
       working-directory: ./starsky
       run: bash build.sh --Target=TestNetCore
-      
-    - uses: actions/upload-artifact@v2
-      with:
-        name: build-output
-        path: ./starsky
   
     - name: "Set locale to: pt_BR.UTF-8"
       run: |
