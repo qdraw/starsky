@@ -53,6 +53,25 @@ jobs:
       shell: bash
       working-directory: ./starsky
       run: bash build.sh --Target=TestNetCore
+      
+    - uses: actions/upload-artifact@v2
+      with:
+        name: build-output
+        path: ./starsky
+  
+  test_locale:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: build-output
+    
+      - name: TestNetCore
+        shell: bash
+        working-directory: ./starsky
+        run: bash build.sh --Target=TestNetCore
 
   trigger_pipe_release_desktop:
     runs-on: ubuntu-latest
