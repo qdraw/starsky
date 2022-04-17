@@ -488,16 +488,6 @@ namespace starskytest.starsky.foundation.database.Models
 	    
 		
 		[TestMethod]
-		public void Size_Gt_IntMax()
-		{
-			var value = 99999999999999999;
-			var item = new FileIndexItem(){Size = value};
-		    
-			// should write to large values to min value
-			Assert.AreEqual(int.MinValue, item.Size);
-		}
-		
-		[TestMethod]
 		public void Size_Lt_0()
 		{
 			var value = -1;
@@ -514,7 +504,7 @@ namespace starskytest.starsky.foundation.database.Models
 			item.Size = int.MinValue;
 			
 			// should write to large values to min value
-			Assert.AreEqual(int.MinValue, item.Size);
+			Assert.AreEqual(0, item.Size);
 		}
 		
 		[TestMethod]

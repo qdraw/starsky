@@ -39,12 +39,39 @@ namespace starskytest.Controllers
 			{
 				DateTime = DateTime.UtcNow
 			}}));
-			
-			var result = await notificationController.GetNotifications(DateTime.UtcNow.AddMinutes(-1).ToString(CultureInfo.InvariantCulture)) as JsonResult;
+
+			var dateTime = DateTime.UtcNow.AddMinutes(-1)
+				.ToString(CultureInfo.InvariantCulture);
+			var result = await notificationController.GetNotifications(dateTime) as JsonResult;
 			Assert.IsNotNull(result);
 			var parsedResult = result.Value as List<NotificationItem>;
 			Assert.IsNotNull(parsedResult);
 			Assert.AreEqual(1, parsedResult.Count);
+		}
+
+		[TestMethod]
+		public void ParseDate1()
+		{
+			var (parsed, parsedDateTime) = NotificationController.ParseDate("2020-04-11T17:55:35.922319Z");
+			Assert.IsTrue(parsed);
+			var expected = new DateTime(2020, 4, 11, 17, 55, 35, 922).ToString(CultureInfo.InvariantCulture);
+			Assert.AreEqual(expected,parsedDateTime.ToString(CultureInfo.InvariantCulture));
+		}
+		
+		[TestMethod]
+		public void ParseDateNonValid()
+		{
+			var (parsed,_) = NotificationController.ParseDate("non-valid");
+			Assert.IsFalse(parsed);
+		}
+		
+		[TestMethod]
+		public void ParseDateInt()
+		{
+			var (parsed, parsedDateTime) = NotificationController.ParseDate("2");
+			Assert.IsTrue(parsed);
+			var expected = DateTime.UtcNow.AddHours(-2).ToString(CultureInfo.InvariantCulture);
+			Assert.AreEqual(expected,parsedDateTime.ToString(CultureInfo.InvariantCulture));
 		}
 	}
 	

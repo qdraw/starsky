@@ -10,6 +10,9 @@ namespace starsky.foundation.database.Models
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
+		/// <summary>
+		/// Size: MediumText
+		/// </summary>
 		public string Content { get; set; }
 
 		public DateTime DateTime { get; set; }

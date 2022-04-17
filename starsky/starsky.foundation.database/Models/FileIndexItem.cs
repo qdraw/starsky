@@ -926,37 +926,26 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		public double FocalLength { get; set; }
 
-		
 		/// <summary>
 		/// Private field to store the ByteSize Data
 		/// </summary>
 		private long _size;
 		
 		/// <summary>
-		/// Size of the file in bytes
+		/// Size of the file in bytes (BigInt)
 		/// </summary>
-		public long Size {
+		public long Size
+		{
 			get => _size;
-			set
-			{
-				switch ( value )
+			set {
+				if ( value < 0 )
 				{
-					case >= int.MaxValue:
-						_size = int.MinValue;
-						return;
-					case <= 0:
-						if ( value != int.MinValue)
-						{
-							_size = 0;
-						}
-						return;
-					default:
-						_size = value;
-						break;
+					_size = 0;
+					return;
 				}
+				_size = value;
 			} 
 		}
-
 	    
 		/// <summary>
 		/// To add Make (without comma and TitleCase) and second follow by Model (same as input)
