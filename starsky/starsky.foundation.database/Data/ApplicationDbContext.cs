@@ -47,9 +47,13 @@ namespace starsky.foundation.database.Data
 
 			// Add Index to speed performance (on MySQL max key length is 3072 bytes)
 			// MySql:CharSet might be working a future release but now it does nothing
-			modelBuilder.Entity<FileIndexItem>()
-				.HasAnnotation("MySql:CharSet", "utf8mb4")
-				.HasIndex(x => new {x.FileName, x.ParentDirectory});
+			modelBuilder.Entity<FileIndexItem>(etb =>
+			{
+				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+				etb.HasIndex(x => new {x.FileName, x.ParentDirectory});
+				
+				etb.Property(p => p.Size).HasColumnType("bigint");
+			});
 			
 			modelBuilder.Entity<User>(etb =>
 				{
