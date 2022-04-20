@@ -40,8 +40,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (PR #724)
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 5.0.1 (2022-04-12))_ (PR #724)
 - [x]   (Added) _Back-end_ Fixed locale issue with Notification API _(CultureInfo.CurrentCulture)_ (PR #730)
-- [x]   (Breaking Change) _Back-end_ Notification Content change from text to mediumtext, **existing data will be lost** (PR #731)
-- [x]   (Breaking Change) _Back-end_ FileIndexItem Size column change from int to bigint, **existing data will be lost, run full sync please** (PR #731)
+- [x]   (Change) _Back-end_ Notification Content change from text to mediumtext (PR #731)
+- [x]   (Change) _Back-end_ FileIndexItem Size column change from int to bigint (PR #731)
+- [x]   (Security) _App_ Upgrade Electron to 18.0.4 (Node 16.x and Chromium 100.0.x) (PR #729)
 
 # version 0.5.0-beta.4 - 2022-04-15
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.201 (Runtime: 6.0.3) (PR #674)
