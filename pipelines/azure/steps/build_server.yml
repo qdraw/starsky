@@ -7,12 +7,12 @@ parameters:
 steps:
 
   - task: DotNetCoreCLI@2
-    displayName: '[Cake] dotnet tool restore'
+    displayName: '[Cake/server] dotnet tool restore'
     continueOnError: true
     inputs:
       command: custom
       custom: tool
-      arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
+      arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json' --ignore-failed-sources --disable-parallel
 
   - template: /pipelines/azure/steps/cache_nuget_packages.yml
 
