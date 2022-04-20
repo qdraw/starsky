@@ -28,7 +28,6 @@ async function createMainWindow(
     webPreferences: {
       allowRunningInsecureContent: false,
       nodeIntegration: false,
-      nativeWindowOpen: true,
       sandbox: false,
       partition: "persist:main",
       contextIsolation: true,

@@ -1,3 +1,4 @@
+/* reload-redirect.css */
 
 .preloader.preloader--overlay, .preloader.preloader--overlay-no-transition {
     position: fixed;
@@ -28,6 +29,27 @@
   background-size: contain; */
 }
 
+.preloader--icon.hide {
+  display: none;
+}
+
 .upgrade {
   display: none;
+}
+
+.not-found-warning {
+  display: none;
+  left: calc(50% - 100px);
+  top: calc(50% - 100px);
+  display: block;
+  width: 200px;
+  height: 200px;
+  font-size: 18pt;
+  color:white;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  z-index: 411;
+}
+
+.not-found-warning.show{
+  position: fixed;
 }

@@ -35,7 +35,7 @@ export function warmupLocalOrRemote() {
 
     window.api.receive(
       LocationUrlIpcKey,
-      (locationData: IlocationUrlSettings) => {
+      (locationData: IlocationUrlSettings) => {       
         document.title += ` going to ${locationData?.location}`;
         warmupScript(locationData.location, 0, 300, (isOk: boolean) => {
           if (isOk) {
@@ -46,7 +46,25 @@ export function warmupLocalOrRemote() {
               });
             return;
           }
-          alert("The domain in te configuration is not valid");
+          const notFoundWarning = document.querySelectorAll(".not-found-warning");
+          if (notFoundWarning && notFoundWarning[0]) {
+            const preloaderIcon = document.querySelectorAll(".preloader--icon");
+            if (preloaderIcon && preloaderIcon[0]) {
+              preloaderIcon[0].classList.add("hide");
+            }
+            
+            notFoundWarning[0].classList.add("show");
+            notFoundWarning[0].innerHTML = "There was an error loading " + locationData.location;
+            if (!locationData.isLocal) {
+              notFoundWarning[0].innerHTML += "<br />This is a remote service"
+            }
+            else {
+              notFoundWarning[0].innerHTML += "<br />This is a local service"
+            }
+          }
+          else {
+            alert("There was an error loading: "+ locationData.location + " isLocal:" + locationData.isLocal);
+          }
         });
       }
     );

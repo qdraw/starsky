@@ -1,8 +1,8 @@
 import * as spawn from "child_process";
 import { app } from "electron";
 import * as fs from "fs";
-import * as getPort from "get-port";
 import * as readline from "readline";
+import * as GetPortProxy from "../get-free-port/get-free-port";
 import logger from "../logger/logger";
 import { setupChildProcess } from "./setup-child-process";
 
@@ -33,7 +33,7 @@ describe("setupChildProcess", () => {
         .mockImplementationOnce(() => false)
         .mockImplementationOnce(() => false);
 
-      jest.spyOn(getPort, "makeRange").mockImplementationOnce(() => {
+      jest.spyOn(GetPortProxy, "GetFreePort").mockImplementationOnce(() => {
         return Promise.resolve(0) as any;
       });
 
