@@ -45,7 +45,6 @@
   "dependencies": {
     "chokidar": "^3.5.3",
     "electron-settings": "4.0.2",
-    "get-port": "^6.1.2",
     "winston": "^3.7.2"
   },
   "build": {

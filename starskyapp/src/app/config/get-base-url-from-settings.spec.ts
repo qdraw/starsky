@@ -1,3 +1,12 @@
+jest.mock('net', () => ({
+    Socket: function() {
+        return {
+            connect() {
+                return 'Hello World'
+            }
+        }
+    }
+}))
 import * as appConfig from "electron-settings";
 import { GetBaseUrlFromSettings } from "./get-base-url-from-settings";
 jest.mock("electron", () => {

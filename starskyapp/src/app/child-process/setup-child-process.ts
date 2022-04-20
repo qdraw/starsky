@@ -1,9 +1,9 @@
 import { spawn } from "child_process";
 import { app } from "electron";
 import * as fs from "fs";
-import * as getFreePort from "get-port";
 import * as path from "path";
 import * as readline from "readline";
+import { GetFreePort } from "../get-free-port/get-free-port";
 import logger from "../logger/logger";
 import { isPackaged } from "../os-info/is-packaged";
 import { childProcessPath } from "./child-process-path";
@@ -29,7 +29,9 @@ export async function setupChildProcess() {
   var databaseConnection =
     "Data Source=" + path.join(electronCacheLocation(), "starsky.db");
 
-  appPort = await getFreePort();
+  appPort = await GetFreePort();
+
+  logger.info("next: port: " + appPort);
 
   logger.info('-appSettingsPath >');
   logger.info(appSettingsPath);
