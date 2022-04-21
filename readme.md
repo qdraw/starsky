@@ -17,6 +17,9 @@
     * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
  * [Changelog](history.md) _Release notes and history_
 
+## Badges
+![GitHub all releases](https://img.shields.io/github/downloads/qdraw/starsky/total?label=release%20downloads) ![Docker](https://img.shields.io/docker/pulls/qdraw/starsky.svg) ![GitHub Repo stars](https://img.shields.io/github/stars/qdraw/starsky?label=Give%20me%20a%20star%20please&style=social) ![GitHub issues](https://img.shields.io/github/issues-raw/qdraw/starsky) ![Starsky .NET Core (Ubuntu)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Ubuntu)/badge.svg)  [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/qdraw/starsky?include_prereleases)](https://github.com/qdraw/starsky/releases/)
+
 ## What is Starsky?
 > [Check the introduction page to learn more about the scope of the application](index.md)
 
@@ -54,10 +57,13 @@ Use [GitHub Discussions](https://github.com/qdraw/starsky/discussions) to ask qu
 
 This policy is in place to avoid bugs being drowned out in a pile of sensible suggestions for future enhancements and calls for help from people who forget to check back if they get it and so on.
 
+If a feature request is actually going to be built, it will get its own issue with the tag: Feature Request
 
 ## Release status
 
 [![Release](https://img.shields.io/github/v/release/qdraw/starsky)](https://github.com/qdraw/starsky/releases/)
+
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/qdraw/starsky?include_prereleases)](https://github.com/qdraw/starsky/releases/)
 
 
 ## Build status
