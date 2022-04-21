@@ -4,13 +4,18 @@ parameters:
   npmConfigCache: $(Pipeline.Workspace)/.npm
 
 steps:
-  - task: DotNetCoreCLI@2
+  - task: PowerShell@2
     displayName: "[Cake/clientapp] dotnet tool restore"
     continueOnError: true
     inputs:
-      command: custom
-      custom: tool
-      arguments: "restore --tool-manifest starsky/.config/dotnet-tools.json --ignore-failed-sources --disable-parallel"
+      targetType: "inline"
+      script: |
+        dotnet tool restore --tool-manifest starsky/.config/dotnet-tools.json
+        if ($LASTEXITCODE != 0) {
+          write-host "retry:"
+          dotnet tool restore --tool-manifest starsky/.config/dotnet-tools.json
+          exit 0
+        }
 
   - task: Cache@2
     inputs:
