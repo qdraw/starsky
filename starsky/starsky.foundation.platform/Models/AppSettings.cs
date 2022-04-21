@@ -663,10 +663,12 @@ namespace starsky.foundation.platform.Models
 				// ReSharper disable once InvertIf
 				if ( EnablePackageTelemetryPrivate == null )
 				{
+#pragma warning disable CS0162
 #if(DEBUG)
 					return false;
 #endif
 					return true;
+#pragma warning restore CS0162
 				}
 				return EnablePackageTelemetryPrivate;
 			}
