@@ -201,16 +201,31 @@ namespace starsky.foundation.writemeta.Services
 			return regexExifToolForWindowsName.Match(checksumsValue).Value;
 		}
 		
-		private static string[] GetChecksumsFromTextFile(string checksumsValue)
+		/// <summary>
+		/// Parse the content of checksum file
+		/// </summary>
+		/// <param name="checksumsValue">input file: see test for example</param>
+		/// <param name="max">max number of SHA1 results</param>
+		/// <returns></returns>
+		internal string[] GetChecksumsFromTextFile(string checksumsValue, int max = 8)
 		{
 			var regexExifToolForWindowsName = new Regex("[a-z0-9]{40}");
 			var results = regexExifToolForWindowsName.Matches(checksumsValue).
-				Cast<Match>().
 				Select(m => m.Value).
 				ToArray();
-			return results;
+			if ( results.Length < max ) return results;
+			
+			_logger.LogError($"More than {max} checksums found, this is not expected, code stops now");
+			return Array.Empty<string>();
 		}
 
+		/// <summary>
+		/// Check if SHA1 hash is valid
+		/// Instead of SHA1CryptoServiceProvider, we use SHA1.Create
+		/// </summary>
+		/// <param name="fullFilePath">path of exiftool.exe</param>
+		/// <param name="checkSumOptions">list of sha1 hashes</param>
+		/// <returns></returns>
 		internal bool CheckSha1(string fullFilePath, IEnumerable<string> checkSumOptions)
 		{
 			using var buffer = _hostFileSystemStorage.ReadStream(fullFilePath);

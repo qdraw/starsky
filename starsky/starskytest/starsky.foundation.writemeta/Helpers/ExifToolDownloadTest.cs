@@ -500,5 +500,48 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			}
 			throw new HttpRequestException("This test should hit the catch");
 		}
-	}
+
+		[TestMethod]
+		public void GetChecksumsFromTextFile_ToManyShaResults()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>());
+
+			var example =
+				"SHA1(Image-ExifTool-12.40.tar.gz)= 09f3bee6491251390028580eb8af990e79674ada\n" +
+				"SHA1(exiftool-12.40.zip)= 9428bb167512a8eec5891d3b8d2341427688f2f8\n" +
+				"SHA1(ExifTool-12.40.dmg)= e20ed19da096807774b68cf8c15e29f1903ca641\n" +
+				"MD5 (Image-ExifTool-12.40.tar.gz) = 72b40d69cf518edebbf5b661465950e7\n" +
+				"MD5 (exiftool-12.40.zip) = fc834fd43d79da19fcb6461fb791b275\n" +
+				"MD5 (ExifTool-12.40.dmg) = b30e391a4b53564de60a72f4347cade4\n";
+			
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
+				new FakeIWebLogger(), new FakeIStorage());
+			var result = exifToolDownload.GetChecksumsFromTextFile(example,2);
+			Assert.AreEqual(0, result.Length);
+		}
+		
+		
+		[TestMethod]
+		public void GetChecksumsFromTextFile_Good()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>());
+
+			var example =
+				"SHA1(Image-ExifTool-12.40.tar.gz)= 09f3bee6491251390028580eb8af990e79674ada\n" +
+				"SHA1(exiftool-12.40.zip)= 9428bb167512a8eec5891d3b8d2341427688f2f8\n" +
+				"SHA1(ExifTool-12.40.dmg)= e20ed19da096807774b68cf8c15e29f1903ca641\n" +
+				"MD5 (Image-ExifTool-12.40.tar.gz) = 72b40d69cf518edebbf5b661465950e7\n" +
+				"MD5 (exiftool-12.40.zip) = fc834fd43d79da19fcb6461fb791b275\n" +
+				"MD5 (ExifTool-12.40.dmg) = b30e391a4b53564de60a72f4347cade4\n";
+			
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
+				new FakeIWebLogger(), new FakeIStorage());
+			var result = exifToolDownload.GetChecksumsFromTextFile(example);
+			Assert.AreEqual(3, result.Length);
+		}
+ 	}
 }

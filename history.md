@@ -44,6 +44,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Change) _Back-end_ FileIndexItem Size column change from int to bigint (PR #731)
 - [x]   (Security) _App_ Upgrade Electron to 18.0.4 (Node 16.x and Chromium 100.0.x) (PR #729)
 - [x]   (Security) _Front-end_ Upgrade npm packages tools and ClientApp (PR #732)
+- [x]   (Change) _Back-end_ Changed SHA1CryptoServiceProvider to SHA1.Create (PR #733)
 
 # version 0.5.0-beta.4 - 2022-04-15
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.201 (Runtime: 6.0.3) (PR #674)
