@@ -13,6 +13,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 
@@ -24,7 +25,7 @@ namespace starsky.foundation.writemeta.Services
 	{
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly AppSettings _appSettings;
-		private readonly StorageHostFullPathFilesystem _hostFileSystemStorage;
+		private readonly IStorage _hostFileSystemStorage;
 		private readonly IWebLogger _logger;
 
 		private const string CheckSumLocation = "https://exiftool.org/checksums.txt";
@@ -37,6 +38,14 @@ namespace starsky.foundation.writemeta.Services
 			_httpClientHelper = httpClientHelper;
 			_appSettings = appSettings;
 			_hostFileSystemStorage = new StorageHostFullPathFilesystem(logger);
+			_logger = logger;
+		}
+		
+		internal ExifToolDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings, IWebLogger logger, IStorage storage)
+		{
+			_httpClientHelper = httpClientHelper;
+			_appSettings = appSettings;
+			_hostFileSystemStorage = storage;
 			_logger = logger;
 		}
 
@@ -202,15 +211,14 @@ namespace starsky.foundation.writemeta.Services
 			return results;
 		}
 
-		private bool CheckSha1(string fullFilePath, string[] checkSumOptions)
+		internal bool CheckSha1(string fullFilePath, IEnumerable<string> checkSumOptions)
 		{
-			using ( var buffer = _hostFileSystemStorage.ReadStream(fullFilePath) )
-			using(var cryptoProvider = new SHA1CryptoServiceProvider())
-			{
-				var hash = BitConverter
-					.ToString(cryptoProvider.ComputeHash(buffer)).Replace("-","").ToLowerInvariant();
-				return checkSumOptions.AsEnumerable().Any(p => p.ToLowerInvariant() == hash);
-			}
+			using var buffer = _hostFileSystemStorage.ReadStream(fullFilePath);
+			using var hashAlgorithm = SHA1.Create();
+			
+			var byteHash = hashAlgorithm.ComputeHash(buffer);
+			var hash = BitConverter.ToString(byteHash).Replace("-",string.Empty).ToLowerInvariant();
+			return checkSumOptions.AsEnumerable().Any(p => p.ToLowerInvariant() == hash);
 		}
 
 		private string ExeExifToolWindowsFullFilePath()

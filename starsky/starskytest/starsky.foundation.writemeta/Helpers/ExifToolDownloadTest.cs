@@ -397,6 +397,30 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		}
 
 		[TestMethod]
+		public void CheckSha1_Good()
+		{
+			var fakeIStorage = new FakeIStorage(new List<string> {"/"},
+				new List<string> {"/exiftool.exe"},
+				new List<byte[]> {CreateAnExifToolTarGz.Bytes});
+			
+			var result2 = new ExifToolDownload(null,_appSettings, new FakeIWebLogger(), fakeIStorage)
+				.CheckSha1("/exiftool.exe", new List<string>{CreateAnExifToolTarGz.Sha1});
+			Assert.IsTrue(result2);
+		}
+		
+		[TestMethod]
+		public void CheckSha1_Bad()
+		{
+			var fakeIStorage = new FakeIStorage(new List<string> {"/"},
+				new List<string> {"/exiftool.exe"},
+				new List<byte[]> {CreateAnExifToolTarGz.Bytes});
+			
+			var result2 = new ExifToolDownload(null,_appSettings, new FakeIWebLogger(), fakeIStorage)
+				.CheckSha1("/exiftool.exe", new List<string>{"random_value"});
+			Assert.IsFalse(result2);
+		}
+
+		[TestMethod]
 		[ExpectedException(typeof(HttpRequestException))]
 		public async Task StartDownloadForUnix_WrongHash()
 		{
