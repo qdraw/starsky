@@ -10,7 +10,7 @@ steps:
     inputs:
       command: custom
       custom: tool
-      arguments: "restore --tool-manifest starsky/.config/dotnet-tools.json"
+      arguments: "restore --tool-manifest starsky/.config/dotnet-tools.json --ignore-failed-sources --disable-parallel"
 
   - task: Cache@2
     inputs:

@@ -5,60 +5,58 @@ parameters:
   nugetPackages: $(Pipeline.Workspace)/.nuget/packages
 
 steps:
-
   - task: DotNetCoreCLI@2
-    displayName: '[Cake/server] dotnet tool restore'
+    displayName: "[Cake/server] dotnet tool restore"
     continueOnError: true
     inputs:
       command: custom
       custom: tool
-      arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json' --ignore-failed-sources --disable-parallel
+      arguments: "restore --tool-manifest starsky/.config/dotnet-tools.json"
 
   - template: /pipelines/azure/steps/cache_nuget_packages.yml
 
   - task: PowerShell@2
-    displayName: 'Cake SonarBuildTest (with tests) '
+    displayName: "Cake SonarBuildTest (with tests) "
     condition: and(succeeded(), eq('${{ parameters.vstest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
-      filePath: 'starsky/build.ps1'
+      filePath: "starsky/build.ps1"
       arguments: '${{ parameters.runtimeArg }} --target="SonarBuildTest" --branch="$(Build.SourceBranch)"'
       pwsh: true
-      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+      workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
   - task: PowerShell@2
-    displayName: 'Cake SonarBuildTest --no-unit-tests'
+    displayName: "Cake SonarBuildTest --no-unit-tests"
     condition: and(succeeded(), ne('${{ parameters.vstest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
-      filePath: 'starsky/build.ps1'
+      filePath: "starsky/build.ps1"
       arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target="SonarBuildTest" --branch="$(Build.SourceBranch)"'
       pwsh: true
-      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+      workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
   - task: PowerShell@2
-    displayName: 'Cake BuildNetCoreRuntimeSpecific'
+    displayName: "Cake BuildNetCoreRuntimeSpecific"
     inputs:
-      filePath: 'starsky/build.ps1'
+      filePath: "starsky/build.ps1"
       arguments: '${{ parameters.runtimeArg }} --target="BuildNetCoreRuntimeSpecific"'
       pwsh: true
-      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+      workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
   - task: PowerShell@2
-    displayName: 'Cake PublishWeb'
+    displayName: "Cake PublishWeb"
     inputs:
-      filePath: 'starsky/build.ps1'
+      filePath: "starsky/build.ps1"
       arguments: '${{ parameters.runtimeArg }} --target="PublishWeb"'
       pwsh: true
-      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+      workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
   - task: PowerShell@2
-    displayName: 'Cake DocsGenerate'
+    displayName: "Cake DocsGenerate"
     inputs:
-      filePath: 'starsky/build.ps1'
+      filePath: "starsky/build.ps1"
       arguments: '${{ parameters.runtimeArg }} --target="DocsGenerate"'
       pwsh: true
-      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
-
+      workingDirectory: "$(Build.SourcesDirectory)/starsky/"
