@@ -16,7 +16,7 @@
   - [starskyTest](../../../starsky/starskytest/readme.md) _mstest unit tests_
 - [starsky-tools](../../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
 - [starskyapp](../../../starskyapp/readme.md) _Desktop Application_
-    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
+  - [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
 - [Changelog](../../../history.md) _Release notes and history_
 
 ## starsky/starsky/clientapp docs
@@ -152,13 +152,13 @@ npm install --save prettier
 npm uninstall --save @types/node
 npm install --save @types/node
 npm uninstall --save web-vitals
+npm install concurrently --save-dev
 ```
 
 > Note:
 > `@types/storybook__react`is deprecated but needed to build devDependencies
 
 > @types/node 16.x is used instead of 12.x
-
 
 #### Update the name of the project
 
@@ -180,6 +180,8 @@ Used when running `npm start`
 This is added to the `package.json`
 
 ```json
+"dev": "concurrently --kill-others \"npm run mock\" \"npm run start\"",
+"mock": "node ../../../starsky-tools/mock/mock.js",
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 715",
 "lint:fix": "node node_modules/eslint/bin/eslint.js --fix \"src/**\"",
 "fix": "npm run lint:fix",
