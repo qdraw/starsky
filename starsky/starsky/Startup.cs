@@ -161,8 +161,8 @@ namespace starsky
         /// Enable Gzip Compression Provider (.NET Core Compression)
         /// You need to enable this before anything else
         /// also needed to UseResponseCompression before using static content
-        /// test without: `curl http://localhost:5000/starsky/manifest.json --silent --write-out "%{size_download}\n" --output /dev/null`
-        /// test with: `curl http://localhost:5000/starsky/manifest.json --silent
+        /// test without: `curl http://localhost:4000/starsky/manifest.json --silent --write-out "%{size_download}\n" --output /dev/null`
+        /// test with: `curl http://localhost:4000/starsky/manifest.json --silent
         /// -H "Accept-Encoding: gzip,deflate" --write-out "%{size_download}\n" --output /dev/null`
         /// </summary>
         /// <param name="services"></param>

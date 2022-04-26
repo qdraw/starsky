@@ -109,7 +109,7 @@ You may opt out-by running Starsky telemetry disable to set the following env va
 
 You may check the status of telemetry collection at any time by running the app telemetry status in the root of your project directory:
 
-go to the application url: for example http://localhost:5000/api/env
+go to the application url: for example http://localhost:4000/api/env
 
 You may re-enable telemetry if you'd like to re-join the program by running the following in the root of your project directory:
 

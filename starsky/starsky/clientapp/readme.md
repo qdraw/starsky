@@ -35,7 +35,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
-Make sure you run the Starsky API on http://localhost:5000 or us a localtunnel proxy (which you can find in `./starsky-tools/localtunnel`)
+Make sure you run the Starsky API on http://localhost:4000 or us a local tunnel proxy (which you can find in `./starsky-tools/localtunnel`)
 
 ### `npm test`
 
@@ -171,7 +171,7 @@ npm uninstall --save web-vitals
 Used when running `npm start`
 
 ```json
-"proxy": "http://localhost:5000",
+"proxy": "http://localhost:4000",
 "homepage": "/starsky/",
 ```
 
