@@ -82,7 +82,7 @@ to compile the application for development</p>
 <ol start="5">
 <li>Run</li>
 </ol>
-<pre><code class="language-sh">dotnet run --project starsky/starsky
+<pre><code class="language-sh">dotnet run --project starsky/starsky --urls &quot;http://localhost:4000&quot;
 </code></pre>
 <ol start="6">
 <li>Create a account in the Starsky application. Those credentials are only required by the web application<blockquote>
@@ -90,7 +90,7 @@ to compile the application for development</p>
 </blockquote>
 </li>
 </ol>
-<pre><code>http://localhost:64556/account/register
+<pre><code>http://localhost:4000/account/register
 </code></pre>
 <h2 id="dev-dependencies">Dev-dependencies:</h2>
 <ol>
@@ -106,7 +106,7 @@ But in this guide we build it first on your laptop and copy to your Raspberry Pi
 <pre><code class="language-sh">git clone &quot;https://github.com/qdraw/starsky.git&quot;
 </code></pre>
 <ol start="2">
-<li><p>On your laptop (x86/x64 machine). Get the <code>dotnet</code> 3.0.1 or newer SDK. To get the &#39;Build apps - SDK&#39; .NET Core from <a href="https://www.microsoft.com/net/download">https://www.microsoft.com/net/download</a></p>
+<li><p>On your laptop (x86/x64 machine). Get the <code>dotnet</code> 6.0 or newer SDK. To get the &#39;Build apps - SDK&#39; .NET Core from <a href="https://www.microsoft.com/net/download">https://www.microsoft.com/net/download</a></p>
 </li>
 <li><p>Compile the Starsky-installation on your x86/x64 machine first. The cake build script with parameters can be used to build for this runtime.</p>
 </li>
@@ -126,7 +126,7 @@ But in this guide we build it first on your laptop and copy to your Raspberry Pi
 <pre><code class="language-sh">sudo apt-get install curl libunwind8 gettext apt-transport-https tzdata
 </code></pre>
 <ol start="6">
-<li>(Optional) On the Raspi, install Exiftool</li>
+<li>(Optional) On the Raspberry PI, install Exiftool</li>
 </ol>
 <p>ExifTool is installed on the first run. When you use system ExifTool you need to update the AppSettings</p>
 <pre><code class="language-sh">sudo apt-get install libimage-exiftool-perl
