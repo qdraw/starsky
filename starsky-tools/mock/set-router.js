@@ -30,7 +30,8 @@ var githubComReposQdrawStarskyReleaseIndex = require('./github.com/repos/qdraw/s
 function setRouter(app) {
   var prefix = "/starsky";
 
-  app.get(prefix + '/', (req, res) => res.send('Hello World!'));
+  app.get(prefix + '/', (_, res) => res.send('Mock of backend api!, also run clientapp'));
+  app.get('/', (_, res) => res.send('Mock of backend api!, also run clientapp'));
 
   app.get(prefix + '/api/account/status', (req, res) => {
     res.statusCode = 200

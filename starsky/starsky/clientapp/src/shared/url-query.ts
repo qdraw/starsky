@@ -429,7 +429,7 @@ export class UrlQuery {
 
     // Create React App is not supporting websockets. At least is isn't working
     if (isDev()) {
-      url = url.replace(":3000", ":5000");
+      url = url.replace(":3000", ":4000");
     }
     return url;
   }

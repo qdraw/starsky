@@ -35,7 +35,10 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
-# version 0.5.0-beta.5 _(Unreleased)_ - 2022-0?-??
+# version 0.5.0-beta.6 _(Unreleased)_ - 2022-05-??
+- nothing yet
+
+# version 0.5.0-beta.5 _(Unreleased)_ - 2022-04-??
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4) (PR #720)
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (PR #724)
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 5.0.1 (2022-04-12))_ (PR #724)
@@ -45,6 +48,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _App_ Upgrade Electron to 18.0.4 (Node 16.x and Chromium 100.0.x) (PR #729)
 - [x]   (Security) _Front-end_ Upgrade npm packages tools and ClientApp (PR #732)
 - [x]   (Change) _Back-end_ Changed SHA1CryptoServiceProvider to SHA1.Create (PR #733)
+- [x]   (Change) _Back-end_ For Development change http port to 4000 instead of 5000 (PR #738)
+- Known issue/bug: In the StarskyApp click with the middle mouse button on item gives a blank page (Issue #735)  _not fixed yet_
+- Known issue/bug: In the StarskyApp Reload waiting to go to app keeps hanging (Issue #737) _not fixed yet_
 
 # version 0.5.0-beta.4 - 2022-04-15
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.201 (Runtime: 6.0.3) (PR #674)

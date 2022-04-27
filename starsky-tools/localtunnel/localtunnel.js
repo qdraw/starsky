@@ -31,10 +31,18 @@ httpServer.use(cookieParser());
 
 var createReactAppRouteUrl = 'http://localhost:3000/';
 
+if (process.env.STARSKYURL) {
+  console.log("Warning: missing SUBDOMAIN env variable but this is optional");
+}
+
 // To change for example to a different domain
 if (process.env.STARSKYURL) {
   netCoreAppRouteUrl = process.env.STARSKYURL;
   console.log('running on ' + netCoreAppRouteUrl);
+}
+else {
+  console.log("missing .env file with STARSKYURL (back-end)");
+  process.exit(1)
 }
 
 

@@ -62,14 +62,14 @@ _Or using bash (on Linux and Mac OS)_
 5.  Run
 
 ```sh
-dotnet run --project starsky/starsky
+dotnet run --project starsky/starsky --urls "http://localhost:4000"
 ```
 
 6.  Create a account in the Starsky application. Those credentials are only required by the web application
     > Security issue: After creating the first account this endpoint is closed, keep the env variable `app__isAccountRegisterOpen` to `false`
 
 ```
-http://localhost:64556/account/register
+http://localhost:4000/account/register
 ```
 
 ## Dev-dependencies:
@@ -88,7 +88,7 @@ But in this guide we build it first on your laptop and copy to your Raspberry Pi
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2.  On your laptop (x86/x64 machine). Get the `dotnet` 3.0.1 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+2.  On your laptop (x86/x64 machine). Get the `dotnet` 6.0 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
 3.  Compile the Starsky-installation on your x86/x64 machine first. The cake build script with parameters can be used to build for this runtime.
 
@@ -112,7 +112,7 @@ powershell -File build.ps1 -ScriptArgs '-runtime="linux-arm"'
 sudo apt-get install curl libunwind8 gettext apt-transport-https tzdata
 ```
 
-6. (Optional) On the Raspi, install Exiftool
+6. (Optional) On the Raspberry PI, install Exiftool
 
 ExifTool is installed on the first run. When you use system ExifTool you need to update the AppSettings
 

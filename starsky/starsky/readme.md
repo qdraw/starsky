@@ -255,7 +255,7 @@ app__AddSwagger=true
 
 This is the default location of the swagger documentation
 ```
-http://localhost:5000/swagger
+http://localhost:4000/swagger
 ```
 
 ### Known 'There are critical errors in the following components:'
