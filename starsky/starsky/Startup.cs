@@ -166,7 +166,7 @@ namespace starsky
         /// -H "Accept-Encoding: gzip,deflate" --write-out "%{size_download}\n" --output /dev/null`
         /// </summary>
         /// <param name="services"></param>
-        private void EnableCompression(IServiceCollection services)
+        private static void EnableCompression(IServiceCollection services)
         {
 	        services.AddResponseCompression(options =>
 	        {
