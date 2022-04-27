@@ -23,6 +23,8 @@ export function GetNetRequest(
 
     let body = "";
     request.on("response", (response) => {
+      console.log('-response');
+      
       response.on("data", (chunk) => {
         body += chunk.toString();
       });
@@ -60,6 +62,11 @@ export function GetNetRequest(
       reject({ error: error, statusCode: 999 });
     });
 
+    request.on("abort", () => {
+      logger.info(".net abort");
+      reject({ error: "abort", statusCode: 999 });
+    });
+    
     request.end();
   });
 }

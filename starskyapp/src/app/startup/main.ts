@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from "electron";
-import { setupChildProcess } from "../child-process/setup-child-process";
+import { appPort, setupChildProcess } from "../child-process/setup-child-process";
 import { MakeLogsPath } from "../config/logs-path";
 import { MakeTempPath } from "../config/temp-path";
 import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
@@ -8,6 +8,7 @@ import createMainWindow from "../main-window/create-main-window";
 import { restoreMainWindow } from "../main-window/restore-main-window";
 import AppMenu from "../menu/app-menu";
 import DockMenu from "../menu/dock-menu";
+import { RetryGetNetRequest } from "../net-request/retry-get-net-request";
 import createCheckForUpdatesContainerWindow from "../updates-warning-window/updates-warning-window";
 import defaultAppSettings from "./app-settings";
 import { willNavigateSecurity } from "./will-navigate-security";
@@ -19,12 +20,20 @@ setupChildProcess();
 MakeTempPath();
 SetupFileWatcher();
 
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
   AppMenu();
   DockMenu();
+
+    console.log('fdmnkslnfsedknsdfklfsdnklsdfnlksfdnklsfdlknsfnklsdf');
+    
+     RetryGetNetRequest(`http://localhost:${appPort}/api/health`, 0, 10, (isOk: boolean) => {
+       console.log('sdknfsdflksdnflkdsfnlksfd');
+    });
+
   restoreMainWindow().then(() => {
     createCheckForUpdatesContainerWindow().catch(() => {});
   });

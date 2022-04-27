@@ -1,4 +1,5 @@
 import UrlQuery from "../../app/config/url-query";
+import { GetNetRequest } from "./get-net-request";
 
 /**
  * no slash at end
@@ -6,7 +7,7 @@ import UrlQuery from "../../app/config/url-query";
  * @param {*} count
  * @param {*} maxCount
  */
-export function warmupScript(
+export function RetryGetNetRequest(
   domainUrl: string,
   count: number,
   maxCount: number,
@@ -14,15 +15,12 @@ export function warmupScript(
 ): void {
   console.log('--fetch');
   
-  fetch(domainUrl + new UrlQuery().HealthApi())
+  GetNetRequest(domainUrl + new UrlQuery().HealthApi())
     .then((response) => {
       console.log('-any respone');
       
-      if (response.status === 200 || response.status === 503) {
-        response.text().then((text) => {
-          console.log(text);
-          callback(text.includes(new UrlQuery().HealthShouldContain()));
-        });
+      if (response.statusCode === 200 || response.statusCode === 503) {
+        callback(response.data.includes(new UrlQuery().HealthShouldContain()))
         return;
       }
       next();
@@ -36,7 +34,7 @@ export function warmupScript(
     if (count <= maxCount) {
       count++;
       setTimeout(() => {
-        warmupScript(domainUrl, count, maxCount, callback);
+        RetryGetNetRequest(domainUrl, count, maxCount, callback);
       }, 200);
     } else {
       console.log(
