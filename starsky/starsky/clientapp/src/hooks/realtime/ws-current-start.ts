@@ -1,10 +1,10 @@
 import { Dispatch, MutableRefObject, SetStateAction } from "react";
 import { IApiNotificationResponseModel } from "../../interfaces/IApiNotificationResponseModel";
 import { IFileIndexItem } from "../../interfaces/IFileIndexItem";
+import FetchGet from "../../shared/fetch-get";
 import { UrlQuery } from "../../shared/url-query";
 import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";
-import FetchGet from "../../shared/fetch-get";
 
 export function isKeepAliveMessage(item: any) {
   if (!item || !item.type) return false;
@@ -98,8 +98,7 @@ export async function RestoreDataOnOpen(
   const result = await FetchGet(
     new UrlQuery().UrlNotificationsGetApi(keepAliveServerTime)
   );
-  console.log(result.data);
-  console.log(Array.isArray(result.data));
+
   if (
     result.statusCode !== 200 ||
     !result.data ||

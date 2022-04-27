@@ -255,13 +255,13 @@ describe("url-query", () => {
       expect(url).toBe("ws://localhost:3000/starsky/realtime");
       expect(url).toContain("realtime");
     });
-    it("replace port 3000 with 5000 in dev context", () => {
+    it("replace port 3000 with 4000 in dev context", () => {
       jest.spyOn(isDev, "default").mockImplementationOnce(() => true);
 
       window.location.protocol = "http:";
       window.location.host = "localhost:3000";
       var url = new UrlQuery().UrlRealtime();
-      expect(url).toBe("ws://localhost:5000/starsky/realtime");
+      expect(url).toBe("ws://localhost:4000/starsky/realtime");
       expect(url).toContain("realtime");
     });
   });
