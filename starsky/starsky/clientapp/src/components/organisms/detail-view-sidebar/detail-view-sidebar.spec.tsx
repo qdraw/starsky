@@ -344,11 +344,11 @@ describe("DetailViewSidebar", () => {
       const tags = findDataName("tags") as HTMLInputElement;
       const description = findDataName("description");
       const title = findDataName("title");
-			
-			// need await here
-			await act(async () => {
-				await tags.click()
-			});
+
+      // need await here
+      await act(async () => {
+        await tags.click();
+      });
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
       await waitFor(() => expect(tags?.classList).toContain("disabled"), {
