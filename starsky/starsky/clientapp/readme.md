@@ -132,7 +132,7 @@ npx create-react-app my-app --template typescript
 - copy the `package.json` and `package-lock.json` from the `my-app` folder to the `clientapp` folder
 
 ```
-npm ci
+npm ci --legacy-peer-deps
 ```
 
 The following packages are added and removed

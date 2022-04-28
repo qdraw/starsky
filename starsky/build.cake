@@ -15,9 +15,6 @@ Raspberry Pi: 'linux-arm'
 Windows 32 bits: 'win7-x86'
 */
 
-// For NPM
-#addin "Cake.Npm&version=1.0.0"
-
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
 var configuration = Argument("Configuration", "Release");
@@ -146,6 +143,52 @@ Task("CleanNetCore")
         }
     });
 
+public class NpmRun
+{
+    ICakeContext Context { get; }
+    public NpmRun(ICakeContext context)
+    {
+        Context = context;
+    }
+    
+    public void Run(ProcessArgumentBuilder inputArguments, string uiName, string workingDirectory = "./starsky/clientapp")
+    {
+        IEnumerable<string> redirectedStandardOutput;
+        IEnumerable<string> redirectedErrorOutput;
+        var exitCodeWithArgument =
+            Context.StartProcess(
+                "npm",
+                new ProcessSettings {
+                  WorkingDirectory = workingDirectory, 
+                  Arguments = inputArguments,
+                  RedirectStandardOutput = true,
+                  RedirectStandardError = true
+                },
+                out redirectedStandardOutput,
+                out redirectedErrorOutput
+            );
+    
+        // Output process output.
+        foreach(var stdOutput in redirectedStandardOutput)
+        {
+            Context.Information($"{uiName} {stdOutput}");
+        }
+        
+        // output npm warnings
+        foreach(var stdError in redirectedErrorOutput)
+        {
+            System.Console.WriteLine($"{uiName} {stdError}");
+        }
+        
+        if (exitCodeWithArgument != 0)
+        {
+            throw new Exception($"{uiName} failed with exit code {exitCodeWithArgument}");
+        }
+        
+    }
+}
+
+
 // Running Client Build
 Task("ClientRestore")
     .Does(() =>
@@ -159,13 +202,19 @@ Task("ClientRestore")
         if (!DirectoryExists($"./starsky/clientapp/node_modules/react"))
         {
             Information("npm ci restore for ./starsky/clientapp");
-            var settings =
-                new NpmCiSettings
-                {
-                    Production = isProduction
-                };
-            settings.FromPath("./starsky/clientapp");
-            NpmCi(settings);
+        
+            var ciArguments = new ProcessArgumentBuilder()
+              .Append($"ci")
+              .Append($"--legacy-peer-deps")
+              .Append($"--no-progress")
+              .Append($"--prefer-offline")
+              .Append($"--no-audit");
+    
+            if(isProduction) {
+                ciArguments.Append($"--production");
+            }
+            new NpmRun(Context).Run(ciArguments, "Npm ci", "./starsky/clientapp");
+
         }
         else {
             Information("Restore skipped for ./starsky/clientapp");
@@ -178,7 +227,13 @@ Task("ClientBuild")
     {
         /* with CI=true eslint errors will break the build */
         Environment.SetEnvironmentVariable("CI","true");
-        NpmRunScript("build", s => s.FromPath("./starsky/clientapp/"));
+        
+        var buildArguments = new ProcessArgumentBuilder()
+          .Append($"run")
+          .Append($"build");
+       
+        new NpmRun(Context).Run(buildArguments, "Npm run build", "./starsky/clientapp");
+        
   });
 
 // npm run start
@@ -188,7 +243,11 @@ Task("ClientDevelopWatchStart")
         /* should NOT be used in build pipeline */
 
         /* npm watcher to start develop server */
-        NpmRunScript("start", s => s.FromPath("./starsky/clientapp/"));
+        var startArguments = new ProcessArgumentBuilder()
+          .Append($"run")
+          .Append($"start");
+          
+        new NpmRun(Context).Run(startArguments, "Npm run start", "./starsky/clientapp");
     });
 
 Task("ClientDevelopTestWatch")
@@ -196,8 +255,14 @@ Task("ClientDevelopTestWatch")
     {
         /* should NOT be used in build pipeline */
 
-        /* npm watcher to run jest tester as watcher */
-        NpmRunScript("test", s => s.FromPath("./starsky/clientapp/"));
+        Information("npm run test-watch does not display output");
+
+        /* npm watcher to run jest tester as watcher */       
+        var testArguments = new ProcessArgumentBuilder()
+          .Append($"run")
+          .Append($"test");
+          
+        new NpmRun(Context).Run(testArguments, "Npm run test", "./starsky/clientapp");
     });
 
 
@@ -210,7 +275,11 @@ Task("ClientTest")
           Information($">> ClientTest is disable due the --no-unit-test flag");
           return;
         }
-        NpmRunScript("test:ci", s => s.FromPath("./starsky/clientapp/"));
+        var testArguments = new ProcessArgumentBuilder()
+          .Append($"run")
+          .Append($"test:ci");
+          
+        new NpmRun(Context).Run(testArguments, "", "./starsky/clientapp");
   });
 
 // Run dotnet restore to restore all package references.
@@ -834,7 +903,10 @@ Task("DocsGenerate")
       Information("npm ci restore and build for ../starsky-tools/docs");
 
       // and build folder
-      NpmRunScript("build", s => s.FromPath("../starsky-tools/docs"));
+      var docsArguments = new ProcessArgumentBuilder()
+        .Append($"run")
+        .Append($"build");
+      new NpmRun(Context).Run(docsArguments, "docs", "../starsky-tools/docs");
 
       // copy to build directory
       foreach(var runtime in runtimes)
@@ -846,10 +918,10 @@ Task("DocsGenerate")
           var docsDistDirectory = System.IO.Path.Combine(Environment.CurrentDirectory, runtime, "docs");
           Information("copy to: " + docsDistDirectory);
 
-          NpmRunScript("copy", (s) => {
-              s.FromPath("../starsky-tools/docs");
-              s.WithArguments(docsDistDirectory);
-            });
+          var docsCopyArguments = new ProcessArgumentBuilder()
+            .Append($"run")
+            .Append($"copy");
+          new NpmRun(Context).Run(docsCopyArguments, "copy", "../starsky-tools/docs");
       }
   });
 
@@ -858,12 +930,22 @@ Task("ProjectCheckNetCore")
     .Does(() =>
     {
         // check branch names on CI
-        NpmRunScript("release-version-check", s => s.FromPath("../starsky-tools/build-tools/"));
+        var releaseArguments = new ProcessArgumentBuilder()
+            .Append("run")
+            .Append("release-version-check");
+        new NpmRun(Context).Run(releaseArguments, "release-version-check", "../starsky-tools/build-tools/");
+              
+        // Checks for valid Project GUIDs in csproj files
+        var projectGuidArguments = new ProcessArgumentBuilder()
+            .Append("run")
+            .Append("project-guid");
+        new NpmRun(Context).Run(projectGuidArguments, "project-guid", "../starsky-tools/build-tools/");
 
-        /* Checks for valid Project GUIDs in csproj files */
-        NpmRunScript("project-guid", s => s.FromPath("../starsky-tools/build-tools/"));
         /* List of nuget packages */
-        NpmRunScript("nuget-package-list", s => s.FromPath("../starsky-tools/build-tools/"));
+         var nugetListArguments = new ProcessArgumentBuilder()
+             .Append("run")
+             .Append("nuget-package-list");
+         new NpmRun(Context).Run(nugetListArguments, "nuget-package-list", "../starsky-tools/build-tools/");
   });
 
 // React app build steps
