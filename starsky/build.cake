@@ -151,7 +151,7 @@ public class NpmRun
         Context = context;
     }
     
-    public void Run(ProcessArgumentBuilder inputArguments, string uiName, string workingDirectory = "./starsky/clientapp")
+    public void Run(ProcessArgumentBuilder inputArguments, string uiName, string workingDirectory = "")
     {
         IEnumerable<string> redirectedStandardOutput;
         IEnumerable<string> redirectedErrorOutput;
@@ -213,7 +213,7 @@ Task("ClientRestore")
             if(isProduction) {
                 ciArguments.Append($"--production");
             }
-            new NpmRun(Context).Run(ciArguments, "Npm ci", "./starsky/clientapp");
+            new NpmRun(Context).Run(ciArguments, "Npm ci", $"starsky{System.IO.Path.DirectorySeparatorChar}clientapp");
 
         }
         else {
@@ -933,7 +933,7 @@ Task("ProjectCheckNetCore")
         var releaseArguments = new ProcessArgumentBuilder()
             .Append("run")
             .Append("release-version-check");
-        new NpmRun(Context).Run(releaseArguments, "release-version-check", "../starsky-tools/build-tools/");
+        new NpmRun(Context).Run(releaseArguments, "release-version-check", $"..{System.IO.Path.DirectorySeparatorChar}starsky-tools{System.IO.Path.DirectorySeparatorChar}build-tools");
               
         // Checks for valid Project GUIDs in csproj files
         var projectGuidArguments = new ProcessArgumentBuilder()
