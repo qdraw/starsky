@@ -66,7 +66,7 @@ export async function setupChildProcess() {
   });
 
   starskyChild.stdout.on("data", function (data) {
-    logger.info(data.toString());
+    // logger.info(data.toString());
   });
 
   starskyChild.stderr.on("data", function (data) {

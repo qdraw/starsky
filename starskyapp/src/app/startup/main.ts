@@ -8,8 +8,9 @@ import createMainWindow from "../main-window/create-main-window";
 import { restoreMainWindow } from "../main-window/restore-main-window";
 import AppMenu from "../menu/app-menu";
 import DockMenu from "../menu/dock-menu";
-import { RetryGetNetRequest } from "../net-request/retry-get-net-request";
 import createCheckForUpdatesContainerWindow from "../updates-warning-window/updates-warning-window";
+import { CloseSplash, SetupSplash } from "../warmup/splash";
+import { WarmupServer } from "../warmup/warmup-server";
 import defaultAppSettings from "./app-settings";
 import { willNavigateSecurity } from "./will-navigate-security";
 
@@ -28,15 +29,16 @@ app.on("ready", () => {
   AppMenu();
   DockMenu();
 
-    console.log('fdmnkslnfsedknsdfklfsdnklsdfnlksfdnklsfdlknsfnklsdf');
-    
-     RetryGetNetRequest(`http://localhost:${appPort}/api/health`, 0, 10, (isOk: boolean) => {
-       console.log('sdknfsdflksdnflkdsfnlksfd');
-    });
+
+  const window = SetupSplash();
+  WarmupServer(appPort).then(()=>{
+    CloseSplash(window);
+  });
 
   restoreMainWindow().then(() => {
     createCheckForUpdatesContainerWindow().catch(() => {});
   });
+
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.

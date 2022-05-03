@@ -44,6 +44,7 @@ namespace starsky.Controllers
 		/// <response code="200">Ok</response>
 		/// <response code="503">503 Service Unavailable</response>
 		[HttpGet("/api/health")]
+		[HttpHead("/api/health")]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(string), 200)]
 		[ProducesResponseType(typeof(string), 503)]

@@ -12,12 +12,10 @@ export function warmupScript(
   maxCount: number,
   callback: Function
 ): void {
-  console.log('--fetch');
+  console.log('--fetch (warmupScript)');
   
   fetch(domainUrl + new UrlQuery().HealthApi())
-    .then((response) => {
-      console.log('-any respone');
-      
+    .then((response) => {    
       if (response.status === 200 || response.status === 503) {
         response.text().then((text) => {
           console.log(text);
