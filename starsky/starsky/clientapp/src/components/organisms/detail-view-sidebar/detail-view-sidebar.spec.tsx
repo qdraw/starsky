@@ -323,7 +323,7 @@ describe("DetailViewSidebar", () => {
     it("Deleted status (from FileIndexItem)", async () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
 
-      var DeletedTestComponent = () => (
+      const DeletedTestComponent = () => (
         <DetailViewContext.Provider value={contextProvider}>
           <DetailViewSidebar
             status={IExifStatus.Ok}
@@ -333,7 +333,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = render(<DeletedTestComponent />);
+      const component = render(<DeletedTestComponent />);
 
       const statusDeleted = component.queryByTestId(
         "detailview-exifstatus-status-deleted"
@@ -345,15 +345,20 @@ describe("DetailViewSidebar", () => {
       const description = findDataName("description");
       const title = findDataName("title");
 
+      // need await here
+      await act(async () => {
+        await tags.click();
+      });
+
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
       await waitFor(() => expect(tags?.classList).toContain("disabled"), {
-        timeout: 5000
+        timeout: 10000
       });
       await waitFor(() => expect(description?.classList).toContain("disabled"));
       await waitFor(() => expect(title?.classList).toContain("disabled"));
 
       component.unmount();
-    }, 10000);
+    }, 14000);
 
     it("ReadOnly status (from FileIndexItem)", async () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.ReadOnly;
@@ -383,13 +388,13 @@ describe("DetailViewSidebar", () => {
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
 
       await waitFor(() => expect(tags?.classList).toContain("disabled"), {
-        timeout: 5000
+        timeout: 8000
       });
       await waitFor(() => expect(description?.classList).toContain("disabled"));
       await waitFor(() => expect(title?.classList).toContain("disabled"));
 
       component.unmount();
-    }, 10000);
+    }, 13000);
 
     it("search cache clear AND when a tag is updated", async () => {
       document.location.search = "/?t=test";
