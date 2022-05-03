@@ -10,6 +10,8 @@ import * as restoreMainWindow from "../main-window/restore-main-window";
 import * as AppMenu from "../menu/app-menu";
 import * as DockMenu from "../menu/dock-menu";
 import * as updatesWarningWindow from "../updates-warning-window/updates-warning-window";
+import * as SetupSplash from "../warmup/splash";
+import * as WarmupServer from "../warmup/warmup-server";
 import * as defaultAppSettings from "./app-settings";
 import * as willNavigateSecurity from "./will-navigate-security";
 
@@ -62,6 +64,25 @@ describe("main", () => {
       .spyOn(SetupFileWatcher, "SetupFileWatcher")
       .mockImplementationOnce(() => Promise.resolve());
 
+    jest
+      .spyOn(SetupSplash, "SetupSplash")
+      .mockImplementationOnce(() => {
+        return {} as any;
+      });
+
+    jest
+      .spyOn(SetupSplash, "CloseSplash")
+      .mockImplementationOnce(() => {
+        return {
+          close: jest.fn()
+        } as any;
+      });
+
+    jest
+      .spyOn(WarmupServer, "WarmupServer")
+      .mockImplementationOnce(() => Promise.resolve(true));
+
+
     // this excuted only once
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       onState[name.replace(/-/gi, "")] = func;
@@ -90,6 +111,12 @@ describe("main", () => {
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
     jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
 
+    jest
+      .spyOn(SetupSplash, "SetupSplash")
+      .mockImplementationOnce(() => {
+        return {} as any;
+      });
+
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       return null;
     });
@@ -114,6 +141,12 @@ describe("main", () => {
       .mockReset()
       .mockImplementationOnce(() => Promise.resolve() as any);
 
+    jest
+      .spyOn(SetupSplash, "SetupSplash")
+      .mockImplementationOnce(() => {
+        return {} as any;
+      });
+      
     jest
       .spyOn(BrowserWindow, "getAllWindows")
       .mockImplementation(() => [] as any);

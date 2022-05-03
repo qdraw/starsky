@@ -29,14 +29,12 @@ app.on("ready", () => {
   AppMenu();
   DockMenu();
 
-
-  const window = SetupSplash();
+  const splashWindow = SetupSplash();
   WarmupServer(appPort).then(()=>{
-    CloseSplash(window);
-  });
-
-  restoreMainWindow().then(() => {
-    createCheckForUpdatesContainerWindow().catch(() => {});
+    restoreMainWindow().then(() => {
+      createCheckForUpdatesContainerWindow().catch(() => {});
+    });
+    CloseSplash(splashWindow);
   });
 
   app.on("activate", function () {

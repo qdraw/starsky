@@ -55,6 +55,10 @@ async function createMainWindow(
   spellCheck(newWindow);
   onHeaderReceived(newWindow);
 
+  newWindow.once("ready-to-show", () => {
+    newWindow.show();
+  });
+
   newWindow.webContents.setWindowOpenHandler(({ url }) => {
     return {
       action: 'allow',
