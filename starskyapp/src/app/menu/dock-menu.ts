@@ -11,7 +11,13 @@ export default function DockMenu() {
         click() {
           createMainWindow("?f=/");
         }
-      }
+      },
+        {
+          label: IsDutch() ? "Prullenmand" : "Trash",
+          click: () => {
+            createMainWindow("/trash");
+          }
+        }
     ]);
     app.dock.setMenu(dockMenu);
   }

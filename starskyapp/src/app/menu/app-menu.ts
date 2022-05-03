@@ -52,6 +52,12 @@ function AppMenu() {
           accelerator: "CmdOrCtrl+N"
         },
         {
+          label: IsDutch() ? "Prullenmand" : "Trash",
+          click: () => {
+            createMainWindow("/trash");
+          }
+        },
+        {
           label: IsDutch() ? "Bewerk bestand in editor" : "Edit file in Editor",
           click: () => {
             const focusWindow = BrowserWindow.getFocusedWindow();
