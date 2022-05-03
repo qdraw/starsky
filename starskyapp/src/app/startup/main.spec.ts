@@ -110,7 +110,17 @@ describe("main", () => {
       .mockImplementationOnce(() => Promise.resolve() as any);
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
     jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
-
+    // jest
+    //   .spyOn(WarmupServer, "WarmupServer")
+    //   .mockImplementationOnce(() => Promise.resolve(true));
+    //       jest
+    //   .spyOn(SetupSplash, "CloseSplash")
+    //   .mockImplementationOnce(() => {
+    //     return {
+    //       close: jest.fn()
+    //     } as any;
+    //   });
+      
     jest
       .spyOn(SetupSplash, "SetupSplash")
       .mockImplementationOnce(() => {
@@ -120,6 +130,7 @@ describe("main", () => {
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       return null;
     });
+    
     onState.ready();
     expect(restoreMainWindowSpy).toBeCalled();
   });

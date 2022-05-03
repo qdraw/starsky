@@ -9,6 +9,7 @@ import { restoreMainWindow } from "../main-window/restore-main-window";
 import AppMenu from "../menu/app-menu";
 import DockMenu from "../menu/dock-menu";
 import createCheckForUpdatesContainerWindow from "../updates-warning-window/updates-warning-window";
+import { IsRemote } from "../warmup/is-remote";
 import { CloseSplash, SetupSplash } from "../warmup/splash";
 import { WarmupServer } from "../warmup/warmup-server";
 import defaultAppSettings from "./app-settings";
@@ -21,6 +22,22 @@ setupChildProcess();
 MakeTempPath();
 SetupFileWatcher();
 
+function RestoreMainWindowAndCloseSplash(splashWindow: BrowserWindow) {
+    restoreMainWindow().then(() => {
+      createCheckForUpdatesContainerWindow().catch(() => {});
+    });
+    CloseSplash(splashWindow);
+}
+
+function RestoreWarmupMainWindowAndCloseSplash(splashWindow: BrowserWindow, isRemote : Boolean) {
+    if (!isRemote) {    
+        WarmupServer(appPort).then(()=>{
+            RestoreMainWindowAndCloseSplash(splashWindow);
+        });
+        return;
+    }
+    RestoreMainWindowAndCloseSplash(splashWindow);
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -30,12 +47,9 @@ app.on("ready", () => {
   DockMenu();
 
   const splashWindow = SetupSplash();
-  WarmupServer(appPort).then(()=>{
-    restoreMainWindow().then(() => {
-      createCheckForUpdatesContainerWindow().catch(() => {});
-    });
-    CloseSplash(splashWindow);
-  });
+  IsRemote().then((isRemote)=>{
+    RestoreWarmupMainWindowAndCloseSplash(splashWindow, isRemote);
+  })
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
