@@ -10,7 +10,7 @@ import DockMenu from "../menu/dock-menu";
 import { IsRemote } from "../warmup/is-remote";
 import { SetupSplash } from "../warmup/splash";
 import defaultAppSettings from "./app-settings";
-import { RestoreWarmupMainWindowAndCloseSplash } from "./restore-warmup-main-window-and-close-splash";
+import RestoreWarmupMainWindowAndCloseSplash from "./restore-warmup-main-window-and-close-splash";
 import { willNavigateSecurity } from "./will-navigate-security";
 
 MakeLogsPath();
