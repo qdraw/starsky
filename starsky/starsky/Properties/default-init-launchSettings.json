@@ -3,7 +3,8 @@
   "profiles": {
     "starsky": {
       "commandName": "Project",
-      "environmentVariables": {
+        "commandLineArgs": "--urls \"http://localhost:4000\"",
+        "environmentVariables": {
           "ASPNETCORE_URLS": "http://localhost:4000/",
           "ASPNETCORE_ENVIRONMENT": "Development",
           "app__useDiskWatcher": "true",
