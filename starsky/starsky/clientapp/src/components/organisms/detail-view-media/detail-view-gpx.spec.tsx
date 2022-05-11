@@ -283,13 +283,16 @@ describe("DetailViewGpx", () => {
 
       // Enable first
       const button = gpx.queryByTestId("lock") as HTMLButtonElement;
-      button.click();
+      // need to await
+      await button.click();
 
       expect(enable).toBeCalled();
 
       // And disable afterwards
       const button2 = gpx.queryByTestId("lock") as HTMLButtonElement;
-      button2.click();
+
+      // need to await
+      await button2.click();
 
       expect(disable).toBeCalled();
 
