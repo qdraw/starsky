@@ -22,7 +22,7 @@ describe("Slugify", () => {
     expect(slugifyResult).toBe("testtest");
   });
 
-    it("replace ----", () => {
+  it("replace ----", () => {
     var slugifyResult = Slugify("test-----test");
     expect(slugifyResult).toBe("test-test");
   });
