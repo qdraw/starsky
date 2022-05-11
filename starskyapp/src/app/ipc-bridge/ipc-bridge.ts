@@ -28,6 +28,7 @@ import createMainWindow from "../main-window/create-main-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import { GetNetRequest } from "../net-request/get-net-request";
 import { settingsWindows } from "../settings-window/settings-windows.const";
+import { IsRemote } from "../warmup/is-remote";
 
 function ipcBridge() {
   // When adding a new key also update preload-main.ts
@@ -86,14 +87,7 @@ export async function LocationIsRemoteCallback(
     await SetupFileWatcher();
   }
 
-  const currentSettings = await appConfig.get(LocationIsRemoteSettingsKey);
-
-  let isLocationRemote = false;
-  if (currentSettings !== undefined && currentSettings !== null) {
-    isLocationRemote = currentSettings.toString() === "true";
-  }
-
-  event.reply(LocationIsRemoteIpcKey, isLocationRemote);
+  event.reply(LocationIsRemoteIpcKey, await IsRemote());
 }
 
 export async function AppVersionCallback(event: Electron.IpcMainEvent) {

@@ -29,6 +29,8 @@ async function createMainWindow(
       allowRunningInsecureContent: false,
       nodeIntegration: false,
       sandbox: false,
+      webviewTag: true,
+      spellcheck:true, 
       partition: "persist:main",
       contextIsolation: true,
       preload: path.join(__dirname, "..", "..", "preload", "preload-main.js") // use a preload script
@@ -60,10 +62,13 @@ async function createMainWindow(
   });
 
   newWindow.webContents.setWindowOpenHandler(({ url }) => {
+    console.log(url);
+    
     return {
       action: 'allow',
       overrideBrowserWindowOptions: {
         webPreferences: {
+          devTools: true, // allow
           partition: "persist:main",
           contextIsolation: true,
           preload: path.join(__dirname, "..", "..", "preload", "preload-main.js") // use a preload script

@@ -9,7 +9,8 @@
     "copy": "node build/setup/html-copy.js ",
     "copy:dev": "tsc src/setup/html-copy --outDir build/setup && node build/setup/html-copy.js ",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "npm run build && electron ./build/app/startup/main.js",
+    "start": "npm run build && npm run launch",
+    "launch": "electron ./build/app/startup/main.js",
     "postinstall": "electron-builder install-app-deps",
     "dist": "npm run build && electron-builder build",
     "mac": "npm run build && electron-builder build -m",
@@ -24,7 +25,8 @@
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.24",
-    "electron": "^18.0.4",
+    "@types/wait-on": "^5.3.1",
+    "electron": "^17.0.1",
     "electron-builder": "^23.0.3",
     "jest": "^27.5.1",
     "prettier": "^2.6.2",
@@ -45,6 +47,7 @@
   "dependencies": {
     "chokidar": "^3.5.3",
     "electron-settings": "4.0.2",
+    "wait-on": "^6.0.1",
     "winston": "^3.7.2"
   },
   "build": {
@@ -90,6 +93,13 @@
       "ts",
       "tsx",
       "js"
+    ],
+    "testPathIgnorePatterns": [
+      "dist",
+      "node_modules",
+      "docs-assets",
+      "coverage",
+      "tmp"
     ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"

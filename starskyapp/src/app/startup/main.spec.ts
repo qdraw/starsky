@@ -10,7 +10,11 @@ import * as restoreMainWindow from "../main-window/restore-main-window";
 import * as AppMenu from "../menu/app-menu";
 import * as DockMenu from "../menu/dock-menu";
 import * as updatesWarningWindow from "../updates-warning-window/updates-warning-window";
+import * as IsRemote from "../warmup/is-remote";
+import * as SetupSplash from "../warmup/splash";
+import * as WarmupServer from "../warmup/warmup-server";
 import * as defaultAppSettings from "./app-settings";
+import * as RestoreWarmupMainWindowAndCloseSplash from "./restore-warmup-main-window-and-close-splash";
 import * as willNavigateSecurity from "./will-navigate-security";
 
 jest.mock("electron", () => {
@@ -38,6 +42,8 @@ describe("main", () => {
   const onState = {} as any;
 
   let setupChildProcessSpy: any = jest.fn();
+  let restoreWarmupMainWindowAndCloseSplashSpy: any = jest.fn();
+  let isRemoteSpy: any = jest.fn();
 
   beforeAll(() => {
     jest
@@ -61,6 +67,32 @@ describe("main", () => {
     jest
       .spyOn(SetupFileWatcher, "SetupFileWatcher")
       .mockImplementationOnce(() => Promise.resolve());
+
+    restoreWarmupMainWindowAndCloseSplashSpy = jest.spyOn(RestoreWarmupMainWindowAndCloseSplash, 
+      "default").mockImplementationOnce(() => {});
+
+    isRemoteSpy = jest.spyOn(IsRemote, "IsRemote").mockImplementationOnce(() => {
+      return Promise.resolve(false);
+    });
+    
+    jest
+      .spyOn(SetupSplash, "SetupSplash")
+      .mockImplementationOnce(() => {
+        return {} as any;
+      });
+
+    jest
+      .spyOn(SetupSplash, "CloseSplash")
+      .mockImplementationOnce(() => {
+        return {
+          close: jest.fn()
+        } as any;
+      });
+
+    jest
+      .spyOn(WarmupServer, "WarmupServer")
+      .mockImplementationOnce(() => Promise.resolve(true));
+
 
     // this excuted only once
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
@@ -89,12 +121,19 @@ describe("main", () => {
       .mockImplementationOnce(() => Promise.resolve() as any);
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
     jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
+      
+    jest
+      .spyOn(SetupSplash, "SetupSplash")
+      .mockImplementationOnce(() => {
+        return {} as any;
+      });
 
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       return null;
     });
+    
     onState.ready();
-    expect(restoreMainWindowSpy).toBeCalled();
+    expect(isRemoteSpy).toBeCalled();
   });
 
   it("when activate and there a no windows it should create one", () => {
@@ -115,6 +154,12 @@ describe("main", () => {
       .mockImplementationOnce(() => Promise.resolve() as any);
 
     jest
+      .spyOn(SetupSplash, "SetupSplash")
+      .mockImplementationOnce(() => {
+        return {} as any;
+      });
+      
+    jest
       .spyOn(BrowserWindow, "getAllWindows")
       .mockImplementation(() => [] as any);
 
@@ -127,11 +172,9 @@ describe("main", () => {
 
     onState.ready();
 
-    expect(restoreMainWindowSpy).toBeCalled();
-    expect(restoreMainWindowSpy).toBeCalledTimes(1);
+    expect(restoreWarmupMainWindowAndCloseSplashSpy).toBeCalled();
+    expect(restoreWarmupMainWindowAndCloseSplashSpy).toBeCalledTimes(1);
 
-    expect(createMainWindowSpy).toBeCalled();
-    expect(createMainWindowSpy).toBeCalledTimes(1);
   });
 
   it("when activate and there windows it not should create one", () => {
@@ -154,8 +197,8 @@ describe("main", () => {
     });
     onState.ready();
 
-    expect(restoreMainWindowSpy).toBeCalled();
-    expect(restoreMainWindowSpy).toBeCalledTimes(1);
+    expect(restoreWarmupMainWindowAndCloseSplashSpy).toBeCalled();
+    expect(restoreWarmupMainWindowAndCloseSplashSpy).toBeCalledTimes(1);
   });
 
   let originalPlatform = process.platform;

@@ -5,11 +5,12 @@ import { MakeTempPath } from "../config/temp-path";
 import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
 import ipcBridge from "../ipc-bridge/ipc-bridge";
 import createMainWindow from "../main-window/create-main-window";
-import { restoreMainWindow } from "../main-window/restore-main-window";
 import AppMenu from "../menu/app-menu";
 import DockMenu from "../menu/dock-menu";
-import createCheckForUpdatesContainerWindow from "../updates-warning-window/updates-warning-window";
+import { IsRemote } from "../warmup/is-remote";
+import { SetupSplash } from "../warmup/splash";
 import defaultAppSettings from "./app-settings";
+import RestoreWarmupMainWindowAndCloseSplash from "./restore-warmup-main-window-and-close-splash";
 import { willNavigateSecurity } from "./will-navigate-security";
 
 MakeLogsPath();
@@ -25,9 +26,12 @@ SetupFileWatcher();
 app.on("ready", () => {
   AppMenu();
   DockMenu();
-  restoreMainWindow().then(() => {
-    createCheckForUpdatesContainerWindow().catch(() => {});
-  });
+
+  const splashWindow = SetupSplash();
+  IsRemote().then((isRemote)=>{
+    RestoreWarmupMainWindowAndCloseSplash(splashWindow, isRemote);
+  })
+
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.

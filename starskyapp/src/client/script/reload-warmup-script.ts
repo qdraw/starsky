@@ -11,7 +11,7 @@ export function warmupScript(
   count: number,
   maxCount: number,
   callback: Function
-): void {
+): void {  
   fetch(domainUrl + new UrlQuery().HealthApi())
     .then((response) => {
       if (response.status === 200 || response.status === 503) {
