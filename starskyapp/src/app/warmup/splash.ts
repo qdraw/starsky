@@ -4,7 +4,7 @@ import path = require("path");
 export function SetupSplash() :BrowserWindow {
   const splash = new BrowserWindow({
     width: 300,
-    height: 200,
+    height: 150,
     transparent: true,
     frame: false,
     alwaysOnTop: true

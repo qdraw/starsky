@@ -1,8 +1,10 @@
 body {
-  background-color: #f9f9fa;
-  background-image: url('background.jpg');
+  background-color: rgba(120, 144, 156, 0.3);
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   user-select: none;
   -webkit-app-region: drag;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
 .flex {
@@ -12,9 +14,9 @@ body {
 }
 
 .loader {
-  border: 5px solid rgba(18, 65, 145, 255);
+  border: 5px solid #263238;
   border-radius: 50%;
-  border-top: 5px solid #ffffff;
+  border-top: 5px solid #eceff1;
   width: 40px;
   height: 40px;
   -webkit-animation: spin 1s linear infinite;
@@ -52,4 +54,36 @@ body {
 .center {
   border: none !important;
   text-align: center;
+}
+
+.close {
+  position: absolute;
+  cursor: pointer;
+  right: 14px;
+  top: 10px;
+  width: 32px;
+  height: 32px;
+  opacity: 1;
+}
+
+.close:hover {
+  opacity: 1;
+}
+
+.close:before,
+.close:after {
+  position: absolute;
+  left: 15px;
+  content: ' ';
+  height: 33px;
+  width: 2px;
+  background-color: #000;
+}
+
+.close:before {
+  transform: rotate(45deg);
+}
+
+.close:after {
+  transform: rotate(-45deg);
 }
