@@ -137,12 +137,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 		
 		[TestMethod]
-		public void ResizeOverlayImageLarge_Ignore_If_Exist()
+		public async Task ResizeOverlayImageLarge_Ignore_If_Exist()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageLarge("/test.jpg", "/test.jpg", new AppSettingsPublishProfiles
+			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/test.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1,
@@ -171,12 +171,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 		
 		[TestMethod]
-		public void ResizeOverlayImageLarge_Done()
+		public async Task ResizeOverlayImageLarge_Done()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out_large.jpg", new AppSettingsPublishProfiles
+			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out_large.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1,
@@ -187,12 +187,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 		
 		[TestMethod]
-		public void ResizeOverlayImageThumbnails_Done()
+		public async Task ResizeOverlayImageThumbnails_Done()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/out_thumb.jpg", new AppSettingsPublishProfiles
+			await overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/out_thumb.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1,
