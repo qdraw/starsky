@@ -55,7 +55,7 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
 export function DetailViewEventListenerUseEffect(
   dispatch: React.Dispatch<DetailViewAction>
 ) {
-  // Catch events from updates
+  // Catch events from updates [Detail]
   const update = (event: Event) => updateDetailViewFromEvent(event, dispatch);
   useEffect(() => {
     document.body.addEventListener(useSocketsEventName, update);

@@ -111,6 +111,7 @@ function updateArchiveFromEvent(
   ).f;
 
   dispatchEmptyFolder(pushMessagesEvent.data, parentLocationPath, dispatch);
+
   const toAddedFiles = filterArchiveFromEvent(
     pushMessagesEvent.data,
     parentLocationPath
@@ -152,6 +153,10 @@ export function filterArchiveFromEvent(
   pushMessagesEvent: IFileIndexItem[],
   parentLocationPath?: string
 ) {
+  if (!parentLocationPath) {
+    parentLocationPath = "/";
+  }
+
   const toAddedFiles = [];
   for (const pushMessage of pushMessagesEvent) {
     // only update in current directory view && parent directory

@@ -7,6 +7,8 @@ var apiHealthCheckForUpdates = require('./api/health/check-for-updates/index.jso
 
 var apiIndexIndex = require('./api/index/index.json')
 var apiIndex__Starsky = require('./api/index/__starsky.json');
+var apiIndex0001 = require('./api/index/0001.json');
+
 var apiIndex__Starsky01dif = require('./api/index/__starsky_01-dif.json')
 var apiIndex__Starsky01difColorclass0 = require('./api/index/__starsky_01-dif_colorclass0.json')
 
@@ -88,6 +90,9 @@ function setRouter(app) {
     }
     if (req.query.f === "/__starsky") {
       return res.json(apiIndex__Starsky);
+    }
+    if (req.query.f === "/0001") {
+      return res.json(apiIndex0001);
     }
     if (req.query.f === "/__starsky/01-dif" && req.query.colorClass === "0") {
       return res.json(apiIndex__Starsky01difColorclass0);
