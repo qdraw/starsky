@@ -183,6 +183,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       const filterOkCondition = (value: IFileIndexItem) => {
         return (
           value.status === IExifStatus.Ok ||
+          value.status === IExifStatus.OkAndSame ||
           value.status === IExifStatus.Default ||
           value.status === IExifStatus.OperationNotSupported // pushed when trying to create a map that already exist
         );
@@ -343,6 +344,9 @@ function UpdateColorClassUsageActiveList(
       state.colorClassUsage.splice(indexer, 1);
     }
   });
+
+  // to trigger useEffects
+  state.colorClassUsage = [...state.colorClassUsage];
 }
 
 /**

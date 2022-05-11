@@ -1,0 +1,51 @@
+{
+  "fileIndexItem": {
+    "filePath": "/0001/toggleDeleted.jpg",
+    "fileName": "toggleDeleted.jpg",
+    "fileHash": "XLMDPBLIR3NLZ7SHSPDAAKI5OA",
+    "fileCollectionName": "toggleDeleted",
+    "parentDirectory": "/0001",
+    "isDirectory": false,
+    "keywords": [
+    ],
+    "tags": "",
+    "status": "Default",
+    "description": "d",
+    "title": "",
+    "dateTime": "0001-01-01T00:00:00",
+    "addToDatabase": "2019-08-19T16:01:01.084211",
+    "lastEdited": "2020-01-27T19:31:34.7807877",
+    "latitude": 0.0,
+    "longitude": 0.0,
+    "locationAltitude": 0.0,
+    "locationCity": "",
+    "locationState": "",
+    "locationCountry": "",
+    "colorClass": 8,
+    "orientation": "Horizontal",
+    "imageWidth": 1200,
+    "imageHeight": 1599,
+    "imageFormat": "jpg",
+    "collectionPaths": [
+    ],
+    "aperture": 0.0,
+    "shutterSpeed": "",
+    "isoSpeed": 0,
+    "software": null,
+    "makeModel": "",
+    "make": "",
+    "model": "",
+    "focalLength": 0.0
+  },
+  "breadcrumb": [
+    "/",
+    "/0001"
+  ],
+  "colorClassActiveList": [],
+  "pageType": "DetailView",
+  "isDirectory": false,
+  "subPath": "/0001/toggleDeleted.jpg",
+  "collections": true,
+  "relativeObjects": {
+  }
+}
