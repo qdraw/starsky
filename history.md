@@ -49,6 +49,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Front-end_ Upgrade npm packages tools and ClientApp (PR #732)
 - [x]   (Change) _Back-end_ Changed SHA1CryptoServiceProvider to SHA1.Create (PR #733)
 - [x]   (Change) _Back-end_ For Development change http port to 4000 instead of 5000 (PR #738)
+- [x]   (Changed) Back-end Upgrade to .NET 6 - SDK 6.0.300 (Runtime: 6.0.5) (PR #746)
 - Known issue/bug: In the StarskyApp click with the middle mouse button on item gives a blank page (Issue #735)  _not fixed yet_
 - Known issue/bug: In the StarskyApp Reload waiting to go to app keeps hanging (Issue #737) _not fixed yet_
 
