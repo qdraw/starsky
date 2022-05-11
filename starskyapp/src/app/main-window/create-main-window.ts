@@ -77,10 +77,6 @@ async function createMainWindow(
     }
   })
 
-  newWindow.webContents.on("did-create-window",()=> {
-    newWindow.webContents.openDevTools()
-  })
-
   // normal navigations
   newWindow.webContents.on("did-navigate", () => {
     saveRememberUrl(newWindow);

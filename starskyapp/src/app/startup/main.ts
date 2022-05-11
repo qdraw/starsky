@@ -1,18 +1,16 @@
 import { app, BrowserWindow } from "electron";
-import { appPort, setupChildProcess } from "../child-process/setup-child-process";
+import { setupChildProcess } from "../child-process/setup-child-process";
 import { MakeLogsPath } from "../config/logs-path";
 import { MakeTempPath } from "../config/temp-path";
 import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
 import ipcBridge from "../ipc-bridge/ipc-bridge";
 import createMainWindow from "../main-window/create-main-window";
-import { restoreMainWindow } from "../main-window/restore-main-window";
 import AppMenu from "../menu/app-menu";
 import DockMenu from "../menu/dock-menu";
-import createCheckForUpdatesContainerWindow from "../updates-warning-window/updates-warning-window";
 import { IsRemote } from "../warmup/is-remote";
-import { CloseSplash, SetupSplash } from "../warmup/splash";
-import { WarmupServer } from "../warmup/warmup-server";
+import { SetupSplash } from "../warmup/splash";
 import defaultAppSettings from "./app-settings";
+import { RestoreWarmupMainWindowAndCloseSplash } from "./restore-warmup-main-window-and-close-splash";
 import { willNavigateSecurity } from "./will-navigate-security";
 
 MakeLogsPath();
@@ -21,23 +19,6 @@ defaultAppSettings();
 setupChildProcess();
 MakeTempPath();
 SetupFileWatcher();
-
-function RestoreMainWindowAndCloseSplash(splashWindow: BrowserWindow) {
-    restoreMainWindow().then(() => {
-      createCheckForUpdatesContainerWindow().catch(() => {});
-    });
-    CloseSplash(splashWindow);
-}
-
-function RestoreWarmupMainWindowAndCloseSplash(splashWindow: BrowserWindow, isRemote : Boolean) {
-    if (!isRemote) {    
-        WarmupServer(appPort).then(()=>{
-            RestoreMainWindowAndCloseSplash(splashWindow);
-        });
-        return;
-    }
-    RestoreMainWindowAndCloseSplash(splashWindow);
-}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
