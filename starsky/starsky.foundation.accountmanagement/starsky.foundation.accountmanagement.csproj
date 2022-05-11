@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.4" />
+      <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.5" />
       <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!--      instead of : Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0, -->
 <!--        Microsoft.AspNetCore.Authentication-->
