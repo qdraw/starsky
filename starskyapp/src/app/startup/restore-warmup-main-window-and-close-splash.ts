@@ -5,14 +5,14 @@ import createCheckForUpdatesContainerWindow from "../updates-warning-window/upda
 import { CloseSplash } from "../warmup/splash";
 import { WarmupServer } from "../warmup/warmup-server";
 
-function RestoreMainWindowAndCloseSplash(splashWindow: BrowserWindow) {
+export function RestoreMainWindowAndCloseSplash(splashWindow: BrowserWindow) {
     restoreMainWindow().then(() => {
       createCheckForUpdatesContainerWindow().catch(() => {});
     });
     CloseSplash(splashWindow);
 }
 
-export function RestoreWarmupMainWindowAndCloseSplash(splashWindow: BrowserWindow, isRemote : Boolean) {
+export default function RestoreWarmupMainWindowAndCloseSplash(splashWindow: BrowserWindow, isRemote : Boolean) {
     if (!isRemote) {    
         WarmupServer(appPort).then(()=>{
             RestoreMainWindowAndCloseSplash(splashWindow);

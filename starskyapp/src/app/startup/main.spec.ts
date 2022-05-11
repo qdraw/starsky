@@ -69,7 +69,7 @@ describe("main", () => {
       .mockImplementationOnce(() => Promise.resolve());
 
     restoreWarmupMainWindowAndCloseSplashSpy = jest.spyOn(RestoreWarmupMainWindowAndCloseSplash, 
-      "RestoreWarmupMainWindowAndCloseSplash").mockImplementationOnce(() => {});
+      "default").mockImplementationOnce(() => {});
 
     isRemoteSpy = jest.spyOn(IsRemote, "IsRemote").mockImplementationOnce(() => {
       return Promise.resolve(false);
@@ -197,8 +197,8 @@ describe("main", () => {
     });
     onState.ready();
 
-    expect(restoreMainWindowSpy).toBeCalled();
-    expect(restoreMainWindowSpy).toBeCalledTimes(1);
+    expect(restoreWarmupMainWindowAndCloseSplashSpy).toBeCalled();
+    expect(restoreWarmupMainWindowAndCloseSplashSpy).toBeCalledTimes(1);
   });
 
   let originalPlatform = process.platform;
