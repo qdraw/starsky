@@ -7,22 +7,25 @@ import "core-js/features/promise"; // Yes I promise
 import "core-js/features/string/match"; // event.key.match
 import "core-js/features/url-search-params"; // new UrlSearchParams
 import React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import RouterApp from "./router-app/router-app";
 import "./style/css/00-index.css";
 
 /* used for image policy */
 /// <reference path='./index.d.ts'/>
 
-ReactDOM.render(
-  <React.StrictMode>
-    <RouterApp />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+const container = document.getElementById("root");
+if (container) {
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <RouterApp />
+    </React.StrictMode>
+  );
+}
 
 // when React is loaded 'trouble loading' is not needed
 const troubleLoading = document.querySelector(".trouble-loading");
-if (troubleLoading && troubleLoading.parentElement) {
+if (!container && troubleLoading && troubleLoading.parentElement) {
   troubleLoading.parentElement.removeChild(troubleLoading);
 }
