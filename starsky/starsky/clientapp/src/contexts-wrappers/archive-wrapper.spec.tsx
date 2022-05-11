@@ -326,5 +326,20 @@ describe("ArchiveContextWrapper", () => {
       const result = filterArchiveFromEvent(list, "/");
       expect(result.length).toBe(2);
     });
+
+    it("should not include parent folder [undefined]", () => {
+      const list = [
+        {
+          filePath: "/",
+          parentDirectory: "/"
+        },
+        {
+          filePath: "/test.jpg",
+          parentDirectory: "/"
+        }
+      ] as IFileIndexItem[];
+      const result = filterArchiveFromEvent(list, undefined);
+      expect(result.length).toBe(2);
+    });
   });
 });

@@ -55,7 +55,6 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
     );
 
     useEffect(() => {
-      if (!state.colorClassUsage) return;
       setIsColorClassUsage(state.colorClassUsage);
       // it should not update when the prop are changing
       // eslint-disable-next-line
@@ -65,16 +64,13 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
       props.colorClassActiveList
     );
     useEffect(() => {
-      if (!state.colorClassActiveList) return;
       setIsColorClassActiveList(state.colorClassActiveList);
       // it should not update when the prop are changing
       // eslint-disable-next-line
     }, [state.colorClassActiveList]);
 
     const [collectionsCount, setCollectionsCount] = useState(props.itemsCount);
-
     useEffect(() => {
-      if (!state.collectionsCount) return;
       setCollectionsCount(state.collectionsCount);
       // it should not update when the prop are changing
       // eslint-disable-next-line
