@@ -73,7 +73,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Change) _Back-end_ Split MetaReplace and MetaUpdate into two separate controllers (PR #712)
 - [x]   (Change) _Back-end_ Fix null checks for ReadGpxFile (PR #712)
 - [x]   (Change) _Back-end_ Add Notification controller to get recent history of notifications (PR #712)
-- [x]   (Added) _Back-end_ Default values .stfolder, .git to SyncIgnore (PR #712)
+- [x]   (Added) _Back-end_ Default values `.stfolder`, `.git` to SyncIgnore (PR #712)
 - [x]   (Added) _Front-end_ Change checks for WebSocket Messages to support new pattern (PR #712)
 - [x]   (Added) _Front-end_ Save server side datetime objects to query history notifications api (PR #712)
 - [x]   (Added) _Back-end_ Add cleanup job for old notifications in database (PR #712)
