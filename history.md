@@ -38,6 +38,8 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.5.0-beta.6 _(Unreleased)_ - 2022-05-??
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (Part 2) CreateRoot change (PR #748)
 - [x]   (Fixed) _Front-end_ Also allow realtime updates on home page (PR #748)
+- [x]   (Security) _Back-end_ Upgrade HealthChecks-packages, RazorLight, MetadataExtractor, System.Text.Json to latest version (PR #749)
+- [x]   (Security) _Back-end_ Upgrade Swashbuckle, Test.Sdk, TestFramework to latest version (PR #749)
 
 # version 0.5.0-beta.5 - 2022-05-11
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4) (PR #720)
@@ -144,7 +146,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Add ImageStabilisation and database migration (only add new field)  (PR #483)
 - [x]   (Fixed) _Back-end_ Fixed issue with Sony Lens Tamron lenses are diplaying dashes (PR #483)
 - [x]   (App) _Back-end_  UI update with storage folder is reverted after restart (PR #584 Issue #582)
-- [x]   (Breaking change) _Back_-end_ Droped support for older Mac OS version: now 10.15+ is required see: https://github.com/dotnet/core/blob/main/release-notes/3.1/3.1-supported-os.md
+- [x]   (Breaking change) _Back_-end_ Dropped support for older Mac OS version: now 10.15+ is required see: 
+- [x]   (Breaking change) Dropped support link: https://github.com/dotnet/core/blob/main/release-notes/3.1/3.1-supported-os.md
 - [x]   (Added) _Back-end_ Application Insights track events in DiskwatcherQueue (PR #583)
 - [x]   (Changed) _App_ Missing content length (PR #587)
 - [x]   (Changed) _App_ Use generic OSX id (PR #588)
@@ -158,7 +161,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Add feature (appSettings) `ApplicationInsightsDatabaseTracking` - Track database dependencies  (PR #528)
 - [x]   (Added) _Back-end_ Add feature toggle (appSettings) `ApplicationInsightsLog` - Add WebLogger output to Application Insights (PR #528)
 - [x]   (Added) _Back-end_ Filter for DiskWatcher sync to prevent database overload (PR #529)
-- [x]   (Changed) _Back-end_ Upgrade dependencies for SixLabors.ImageSharp, ApplicationInsights, System.Threading.Tasks.Dataflow, Swashbuckle.AspNetCore and MSTest (PR #533)
+- [x]   (Changed) _Back-end_ Upgrade dependencies for SixLabors.ImageSharp, ApplicationInsights, (PR #533)
+- [x]   (Changed) _Back-end_ Upgrade dependencies: System.Threading.Tasks.Dataflow, Swashbuckle.AspNetCore and MSTest (PR #533)
 - [x]   (Changed) _Back-end_ Upgrade SDK Version to 3.1.415 & Runtime version to 3.1.21 (PR #535)
 - [x]   (Changed) _Back-end_ Rewrite thumbnail cleaner with chunks (CleanAllUnusedFilesAsync) (PR #531)
 - [x]   (Changed) _Back-end_ Auto download Exiftool from mirror when main source is not up (PR #531)
