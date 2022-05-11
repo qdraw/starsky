@@ -33,6 +33,20 @@ describe("ColorClassFilter", () => {
     colorClass.click();
   });
 
+  it("itemsCount = 0 should return nothing", () => {
+    const component = render(
+      <ColorClassFilter
+        itemsCount={0}
+        subPath={"/test"}
+        colorClassActiveList={[1]}
+        colorClassUsage={[1, 2]}
+      />
+    );
+
+    expect(component).toBeTruthy();
+    expect(component.container.innerHTML).toBeFalsy();
+  });
+
   it("outside current scope display reset", () => {
     var component = render(
       <ColorClassFilter
