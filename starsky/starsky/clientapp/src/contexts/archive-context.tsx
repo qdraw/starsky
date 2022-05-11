@@ -344,6 +344,9 @@ function UpdateColorClassUsageActiveList(
       state.colorClassUsage.splice(indexer, 1);
     }
   });
+
+  // to trigger useEffects
+  state.colorClassUsage = [...state.colorClassUsage];
 }
 
 /**

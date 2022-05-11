@@ -42,8 +42,14 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
 
     let { state } = React.useContext(ArchiveContext);
     // props is used as default, state only for update
-    if (!state)
-      state = { ...newIArchive(), colorClassUsage: props.colorClassUsage };
+    if (!state) {
+      state = {
+        ...newIArchive(),
+        colorClassUsage: props.colorClassUsage,
+        colorClassActiveList: props.colorClassActiveList,
+        collectionsCount: props.itemsCount ? props.itemsCount : 0
+      };
+    }
     const [colorClassUsage, setIsColorClassUsage] = useState(
       props.colorClassUsage
     );
@@ -54,6 +60,25 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
       // it should not update when the prop are changing
       // eslint-disable-next-line
     }, [state.colorClassUsage]);
+
+    const [colorClassActiveList, setIsColorClassActiveList] = useState(
+      props.colorClassActiveList
+    );
+    useEffect(() => {
+      if (!state.colorClassActiveList) return;
+      setIsColorClassActiveList(state.colorClassActiveList);
+      // it should not update when the prop are changing
+      // eslint-disable-next-line
+    }, [state.colorClassActiveList]);
+
+    const [collectionsCount, setCollectionsCount] = useState(props.itemsCount);
+
+    useEffect(() => {
+      if (!state.collectionsCount) return;
+      setCollectionsCount(state.collectionsCount);
+      // it should not update when the prop are changing
+      // eslint-disable-next-line
+    }, [state.collectionsCount]);
 
     const [isLoading, setIsLoading] = useState(false);
     // When change-ing page the loader should be gone
@@ -108,15 +133,16 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
     );
 
     // there is no content ?
-    if (
-      props.colorClassUsage.length === 1 &&
-      props.colorClassActiveList.length >= 1
-    )
+    if (colorClassUsage.length === 1 && colorClassActiveList.length >= 1) {
       return (
         <div className="colorclass colorclass--filter"> {resetButton}</div>
       );
+    }
 
-    if (props.itemsCount === 0 || colorClassUsage.length === 1) return <></>;
+    if (collectionsCount === 0 || colorClassUsage.length === 1) {
+      return <></>;
+    }
+
     return (
       <div className="colorclass colorclass--filter">
         {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : null}
