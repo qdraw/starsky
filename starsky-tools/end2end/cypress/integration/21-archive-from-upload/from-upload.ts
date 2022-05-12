@@ -1,4 +1,3 @@
-import { RequestOptions } from 'http'
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
 import flow from './flow.json'
@@ -88,26 +87,36 @@ describe('Archive (from upload)', () => {
         const sourceTags2 = response2.body.fileIndexItem.tags
         expect(sourceTags2).eq('test')
 
+        cy.reload()
+
         cy.log('next step: check DOM')
 
         cy.get('[data-filepath="/starsky-end2end-test/20200822_111408.jpg"]').should('have.length', 1)
 
         cy.get('[data-filepath="/starsky-end2end-test/20200822_111408.jpg"] .tags').should('have.length', 1)
-        cy.get('[data-filepath="/starsky-end2end-test/20200822_111408.jpg"] .tags').contains('test')
 
-        cy.log('next step: reset afterwards')
-        cy.request({
-          method: 'POST',
-          url: config.updateApi, // baseUrl is prepend to URL
-          form: true, // indicates the body should be form urlencoded and sets Content-Type: application/x-www-form-urlencoded headers
-          body: {
-            append: false,
-            collections: true,
-            tags: sourceTags,
-            f: '/starsky-end2end-test/20200822_111408.jpg'
-          }
-        })
+        try {
+          cy.get('[data-filepath="/starsky-end2end-test/20200822_111408.jpg"] .tags').contains('test')
+        } catch (error) {
+          resetAfterwards(sourceTags)
+        }
+        resetAfterwards(sourceTags)
       })
     })
   })
+
+  function resetAfterwards (sourceTags: string): void {
+    cy.log('next step: reset afterwards')
+    cy.request({
+      method: 'POST',
+      url: config.updateApi, // baseUrl is prepend to URL
+      form: true, // indicates the body should be form urlencoded and sets Content-Type: application/x-www-form-urlencoded headers
+      body: {
+        append: false,
+        collections: true,
+        tags: sourceTags,
+        f: '/starsky-end2end-test/20200822_111408.jpg'
+      }
+    })
+  }
 })

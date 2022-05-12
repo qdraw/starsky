@@ -217,7 +217,7 @@ describe("DetailViewGpx", () => {
       await waitFor(() => expect(spyMap).toBeCalled());
       expect(polylineSpy).toBeCalled();
 
-      const zoom_out = gpx.queryByTestId("zoom_out"); //.simulate("click");
+      const zoom_out = gpx.queryByTestId("zoom_out");
       act(() => {
         zoom_out?.click();
       });
@@ -283,16 +283,18 @@ describe("DetailViewGpx", () => {
 
       // Enable first
       const button = gpx.queryByTestId("lock") as HTMLButtonElement;
-      // need to await
-      await button.click();
+      act(() => {
+        button.click();
+      });
 
       expect(enable).toBeCalled();
 
       // And disable afterwards
       const button2 = gpx.queryByTestId("lock") as HTMLButtonElement;
 
-      // need to await
-      await button2.click();
+      act(() => {
+        button2.click();
+      });
 
       expect(disable).toBeCalled();
 
