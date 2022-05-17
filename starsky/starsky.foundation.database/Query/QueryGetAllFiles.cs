@@ -58,14 +58,15 @@ namespace starsky.foundation.database.Query
 		{
 			return await GetAllFilesAsync(new List<string> {subPath});
 		}
-		
+
 		/// <summary>
 		/// Get a list of all files inside an folder (NOT recursive)
 		/// But this uses a database as source
 		/// </summary>
 		/// <param name="filePaths">relative database paths</param>
+		/// <param name="timeout">when fail retry once after milliseconds</param>
 		/// <returns>list of FileIndex-objects</returns>
-		public async Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths)
+		public async Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths, int timeout = 1000)
 		{
 			try
 			{
@@ -75,8 +76,8 @@ namespace starsky.foundation.database.Query
 			// InvalidOperationException can also be disposed
 			catch (InvalidOperationException invalidOperationException)
 			{
-				_logger.LogInformation("[GetAllFilesAsync] catch-ed and retry", invalidOperationException);
-				await Task.Delay(15);
+				_logger.LogInformation($"[GetAllFilesAsync] catch-ed and retry after {timeout}", invalidOperationException);
+				await Task.Delay(timeout);
 				return FormatOk(await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),filePaths).ToListAsync());
 			}
 		}

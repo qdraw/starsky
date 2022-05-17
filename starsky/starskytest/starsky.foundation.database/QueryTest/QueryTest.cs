@@ -193,7 +193,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// And dispose
 			await dbContext.DisposeAsync();
 	        
-			var items = await query.GetAllFilesAsync("/");
+			var items = await query.GetAllFilesAsync(new List<string>{"/"},0);
 
 			Assert.AreEqual("/test.jpg", items[0].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[0].Status);
