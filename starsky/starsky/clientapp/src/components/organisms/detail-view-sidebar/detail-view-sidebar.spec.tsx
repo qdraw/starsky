@@ -346,6 +346,8 @@ describe("DetailViewSidebar", () => {
       );
       expect(statusDeleted).not.toBeNull();
 
+      contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
+
       // windows has random timeout issues on this test
       component.rerender(<DeletedTestComponent />);
 
