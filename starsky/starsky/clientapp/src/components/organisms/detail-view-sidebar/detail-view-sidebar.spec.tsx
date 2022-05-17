@@ -350,6 +350,9 @@ describe("DetailViewSidebar", () => {
         await tags.click();
       });
 
+      // windows has random timeout issues on this test
+      component.rerender(<DeletedTestComponent />);
+
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
       await waitFor(() => expect(tags?.classList).toContain("disabled"), {
         timeout: 10000
