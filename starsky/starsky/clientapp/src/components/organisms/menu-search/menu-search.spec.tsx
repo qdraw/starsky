@@ -2,6 +2,9 @@ import { globalHistory } from "@reach/router";
 import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
+import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
+import { IArchive } from "../../../interfaces/IArchive";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
 import MenuSearch from "./menu-search";
 
 describe("MenuSearch", () => {
@@ -54,6 +57,45 @@ describe("MenuSearch", () => {
 
       component.unmount();
       globalHistory.navigate("/");
+    });
+
+    it("keyboard ctrl a and command a", () => {
+      jest.spyOn(React, "useContext").mockRestore();
+
+      const useHotkeysSpy = jest
+        .spyOn(useHotKeys, "default")
+        .mockImplementationOnce(() => {
+          return { key: "a", ctrlKey: true };
+        });
+
+      var state = {
+        subPath: "/",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() };
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      var component = render(
+        <MenuSearch state={undefined as any} dispatch={jest.fn()} />
+      );
+
+      expect(useHotkeysSpy).toBeCalled();
+      expect(useHotkeysSpy).toBeCalledTimes(1);
+
+      jest.spyOn(React, "useContext").mockRestore();
+      component.unmount();
     });
   });
 });
