@@ -83,6 +83,24 @@ namespace starsky.foundation.sync.SyncServices
 			
 			return updatedDbItem;
 		}
+		
+		internal async Task<List<FileIndexItem>> SingleFileList(List<string> filePathList,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+		{
+			var dbItemList = await _query.GetAllObjectsAsync(filePathList);
+			return await SingleFileList(dbItemList, updateDelegate);
+		}
+		
+		internal async Task<List<FileIndexItem>> SingleFileList(List<FileIndexItem> dbItemList,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+		{
+			var items = new List<FileIndexItem>();
+			foreach ( var dbItem in dbItemList )
+			{
+				items.Add(await SingleFile(dbItem.FilePath, dbItem, updateDelegate));
+			}
+			return items;
+		}
 
 		/// <summary>
 		/// Query the database and check if an single item has changed
@@ -237,7 +255,7 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
-				_logger.LogDebug($"[SyncSingleFile] Trigger Update Item {subPath}");
+				_logger.LogDebug($"[SyncSingleFile/UpdateItem] Trigger Update Item {subPath}");
 			}
 			
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);

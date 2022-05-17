@@ -122,5 +122,15 @@ namespace starsky.foundation.sync.SyncServices
 
 			Console.WriteLine();
 		}
+
+		public async Task Remove(IEnumerable<FileIndexItem> dbItemList)
+		{
+			var subPaths = dbItemList
+				.Where(p =>
+					p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex)
+				.Select(p => p.FilePath).ToList();
+			
+			await Remove(subPaths);
+		}
 	}
 }

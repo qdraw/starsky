@@ -108,34 +108,36 @@ namespace starsky.foundation.sync.SyncServices
 			
 			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
 			if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
-				
-			var result = await pathsToUpdateInDatabase
+
+			var parallelResult = await pathsToUpdateInDatabase
+				.Chunk(20)
 				.ForEachAsync(async subPathInFiles =>
 				{
 					var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
+
+					var subPathInFilesList = subPathInFiles.ToList();
+					var dbItemList = await new SyncSingleFile(
+						_appSettings, query, _subPathStorage, _logger)
+						.SingleFileList(subPathInFilesList, updateDelegate);
+
+					await new SyncRemove(_appSettings, _setupDatabaseTypes,
+							query, _memoryCache, _logger)
+						.Remove(dbItemList);
 					
-					var dbItem = await new SyncSingleFile(_appSettings, query, 
-						_subPathStorage, _logger).SingleFile(subPathInFiles, 
-						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles), updateDelegate);
-
-					if ( dbItem.Status ==
-					     FileIndexItem.ExifStatus.NotFoundSourceMissing )
-					{
-						await new SyncRemove(_appSettings, _setupDatabaseTypes,
-								query, _memoryCache, _logger)
-							.Remove(subPathInFiles);
-					}
-
-					_console.Write(dbItem.Status == FileIndexItem.ExifStatus
-							.NotFoundSourceMissing
-							? "≠"
-							: "•");
-
-					// only used in Parallelism loop
-					await query.DisposeAsync();
-					return dbItem;
+					return dbItemList;
 				}, _appSettings.MaxDegreesOfParallelism);
-			return result == null ? new List<FileIndexItem>() : result.ToList();
+
+			if ( parallelResult == null )
+			{
+				return new List<FileIndexItem>();
+			}
+			
+			var result = new List<FileIndexItem>();
+			foreach ( var parallelResultItem in parallelResult.ToList() )
+			{
+				result.AddRange(parallelResultItem);
+			}
+			return result;
 		}
 		
 		internal async Task<FileIndexItem> AddParentFolder(string subPath)
