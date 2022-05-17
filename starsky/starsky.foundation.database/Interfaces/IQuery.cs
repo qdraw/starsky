@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Interfaces
         /// <param name="filePaths">relative database path</param>
         /// <param name="timeout"></param>
         /// <returns>list of FileIndex-objects</returns>
-        Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths,  int timeout = 200);
+        Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths,  int timeout = 1000);
         
         /// <summary>
         /// Get a list of all files inside an folder (NOT recursive)
