@@ -40,6 +40,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ Also allow realtime updates on home page (PR #748)
 - [x]   (Security) _Back-end_ Upgrade HealthChecks-packages, RazorLight, MetadataExtractor, System.Text.Json to latest version (PR #749)
 - [x]   (Security) _Back-end_ Upgrade Swashbuckle, Test.Sdk, TestFramework to latest version (PR #749)
+- [x]   (Fixed) _Back-end_ retry: InvalidOperationException: Can't replace active reader (PR #745)
 
 # version 0.5.0-beta.5 - 2022-05-11
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4) (PR #720)

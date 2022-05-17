@@ -22,7 +22,7 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
-		public Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths)
+		public Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths, int timeout = 1000)
 		{
 			throw _exception;
 		}

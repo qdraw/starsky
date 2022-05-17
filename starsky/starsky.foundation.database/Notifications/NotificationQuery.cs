@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
@@ -18,10 +20,12 @@ namespace starsky.foundation.database.Notifications
 	public class NotificationQuery : INotificationQuery
 	{
 		private readonly ApplicationDbContext _context;
-		
-		public NotificationQuery(ApplicationDbContext context)
+		private readonly IWebLogger _logger;
+
+		public NotificationQuery(ApplicationDbContext context, IWebLogger logger)
 		{
 			_context = context;
+			_logger = logger;
 		}
 
 		public async Task<NotificationItem> AddNotification(string content)
@@ -32,8 +36,17 @@ namespace starsky.foundation.database.Notifications
 				Content = content
 			};
 			
-			await _context.Notifications.AddAsync(item);
-			await _context.SaveChangesAsync();
+			try
+			{
+				await _context.Notifications.AddAsync(item);
+				await _context.SaveChangesAsync();
+			}
+			catch ( DbUpdateConcurrencyException concurrencyException )
+			{
+				_logger.LogInformation("[AddNotification] try to fix DbUpdateConcurrencyException", concurrencyException);
+				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+				await _context.SaveChangesAsync();
+			}
 			
 			return item;
 		}

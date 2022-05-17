@@ -76,6 +76,7 @@ namespace starsky.foundation.platform.Helpers
 				{
 					if (attempted > 0)
 					{
+						// Thread.Sleep
 						await Task.Delay(delay);
 					}
 					return await operation();

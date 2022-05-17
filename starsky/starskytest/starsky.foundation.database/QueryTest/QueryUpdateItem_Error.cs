@@ -417,9 +417,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
-
-			fakeQuery.SolveConcurrencyException(new FileIndexItem(),
+			SolveConcurrency.SolveConcurrencyException(new FileIndexItem(),
 #pragma warning disable 8625
 				new FakePropertyValues(null), new FakePropertyValues(null),
 #pragma warning restore 8625
@@ -436,9 +434,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
-
-			fakeQuery.SolveConcurrencyException(null,
+			SolveConcurrency.SolveConcurrencyException(null,
 #pragma warning disable 8625
 				new FakePropertyValues(null), new FakePropertyValues(null),
 #pragma warning restore 8625

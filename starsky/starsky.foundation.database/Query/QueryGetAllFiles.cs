@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
@@ -57,21 +58,26 @@ namespace starsky.foundation.database.Query
 		{
 			return await GetAllFilesAsync(new List<string> {subPath});
 		}
-		
+
 		/// <summary>
 		/// Get a list of all files inside an folder (NOT recursive)
 		/// But this uses a database as source
 		/// </summary>
 		/// <param name="filePaths">relative database paths</param>
+		/// <param name="timeout">when fail retry once after milliseconds</param>
 		/// <returns>list of FileIndex-objects</returns>
-		public async Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths)
+		public async Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths, int timeout = 1000)
 		{
 			try
 			{
-				return FormatOk(await GetAllFilesQuery(_context, filePaths).ToListAsync());
+				return FormatOk(await GetAllFilesQuery(_context, filePaths)
+					.ToListAsync());
 			}
-			catch ( ObjectDisposedException )
+			// InvalidOperationException can also be disposed
+			catch (InvalidOperationException invalidOperationException)
 			{
+				_logger.LogInformation($"[GetAllFilesAsync] catch-ed and retry after {timeout}", invalidOperationException);
+				await Task.Delay(timeout);
 				return FormatOk(await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),filePaths).ToListAsync());
 			}
 		}
