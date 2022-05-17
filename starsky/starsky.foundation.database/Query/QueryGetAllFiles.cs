@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
@@ -68,10 +69,14 @@ namespace starsky.foundation.database.Query
 		{
 			try
 			{
-				return FormatOk(await GetAllFilesQuery(_context, filePaths).ToListAsync());
+				return FormatOk(await GetAllFilesQuery(_context, filePaths)
+					.ToListAsync());
 			}
-			catch ( ObjectDisposedException )
+			// InvalidOperationException can also be disposed
+			catch (InvalidOperationException invalidOperationException)
 			{
+				_logger.LogInformation("[GetAllFilesAsync] catch-ed and retry", invalidOperationException);
+				await Task.Delay(15);
 				return FormatOk(await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),filePaths).ToListAsync());
 			}
 		}
