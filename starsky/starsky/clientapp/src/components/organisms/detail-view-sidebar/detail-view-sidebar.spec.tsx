@@ -320,6 +320,15 @@ describe("DetailViewSidebar", () => {
       fetchPostSpy.mockClear();
     });
 
+    function findDataNameCurrent(
+      component: RenderResult<any, HTMLElement, HTMLElement>,
+      name: string
+    ) {
+      return (component as any)
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === name);
+    }
+
     it("Deleted status (from FileIndexItem)", async () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
 
@@ -340,18 +349,21 @@ describe("DetailViewSidebar", () => {
       );
       expect(statusDeleted).not.toBeNull();
 
+      // windows has random timeout issues on this test
+      component.rerender(<DeletedTestComponent />);
+
       // Tags and other input fields are disabled
-      const tags = findDataName("tags") as HTMLInputElement;
-      const description = findDataName("description");
-      const title = findDataName("title");
+      const tags = findDataNameCurrent(
+        component as any,
+        "tags"
+      ) as HTMLInputElement;
+      const description = findDataNameCurrent(component as any, "description");
+      const title = findDataNameCurrent(component as any, "title");
 
       // need await here
       await act(async () => {
         await tags.click();
       });
-
-      // windows has random timeout issues on this test
-      component.rerender(<DeletedTestComponent />);
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
       await waitFor(() => expect(tags?.classList).toContain("disabled"), {
@@ -384,9 +396,12 @@ describe("DetailViewSidebar", () => {
       expect(statusReadOnly).not.toBeNull();
 
       // Tags and other input fields are disabled
-      const tags = findDataName("tags") as HTMLInputElement;
-      const description = findDataName("description");
-      const title = findDataName("title");
+      const tags = findDataNameCurrent(
+        component as any,
+        "tags"
+      ) as HTMLInputElement;
+      const description = findDataNameCurrent(component as any, "description");
+      const title = findDataNameCurrent(component as any, "title");
 
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
 
