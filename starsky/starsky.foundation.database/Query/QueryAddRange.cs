@@ -28,7 +28,7 @@ namespace starsky.foundation.database.Query
 			}
 			catch ( DbUpdateConcurrencyException concurrencyException)
 			{
-				SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
 				try
 				{
 					await _context.SaveChangesAsync();

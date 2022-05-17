@@ -28,7 +28,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			var scope = serviceScope.CreateScope();
 			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			_logger = new FakeIWebLogger();
-			_notificationQuery = new NotificationQuery(_dbContext);
+			_notificationQuery = new NotificationQuery(_dbContext, new FakeIWebLogger());
 		}
 		private IServiceScopeFactory CreateNewScope()
 		{
