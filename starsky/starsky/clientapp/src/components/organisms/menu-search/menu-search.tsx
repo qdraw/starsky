@@ -4,6 +4,7 @@ import {
   defaultStateFallback
 } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { Language } from "../../../shared/language";
@@ -64,6 +65,9 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
     new Select(select, setSelect, state, history).removeSidebarSelection();
   var undoSelection = () =>
     new Select(select, setSelect, state, history).undoSelection();
+
+  // Command + A for mac os || Ctrl + A for windows
+  useHotKeys({ key: "a", ctrlKeyOrMetaKey: true }, allSelection, []);
 
   // Sidebar
   const [sidebar, setSidebar] = React.useState(
