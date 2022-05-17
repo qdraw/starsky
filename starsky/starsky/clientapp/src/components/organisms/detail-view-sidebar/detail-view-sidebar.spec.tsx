@@ -320,13 +320,10 @@ describe("DetailViewSidebar", () => {
       fetchPostSpy.mockClear();
     });
 
-    function findDataNameCurrent(
-      component: RenderResult<any, HTMLElement, HTMLElement>,
-      name: string
-    ) {
-      return (component as any)
+    function findDataNameCurrent(component: RenderResult, name: string) {
+      return (component as RenderResult)
         .queryAllByTestId("form-control")
-        .find((p) => p.getAttribute("data-name") === name);
+        .find((p) => (p as HTMLElement).getAttribute("data-name") === name);
     }
 
     it("Deleted status (from FileIndexItem)", async () => {
