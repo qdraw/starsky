@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import FetchPost from "../../../shared/fetch-post";
@@ -66,6 +67,9 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     new Select(select, setSelect, state, history).undoSelection();
   const removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
+
+  // Command + A for mac os || Ctrl + A for windows
+  useHotKeys({ key: "a", ctrlKeyOrMetaKey: true }, allSelection, []);
 
   function undoTrash() {
     if (!select) return;

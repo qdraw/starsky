@@ -41,7 +41,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Back-end_ Upgrade HealthChecks-packages, RazorLight, MetadataExtractor, System.Text.Json to latest version (PR #749)
 - [x]   (Security) _Back-end_ Upgrade Swashbuckle, Test.Sdk, TestFramework to latest version (PR #749)
 - [x]   (Fixed) _Back-end_ retry: InvalidOperationException: Can't replace active reader (PR #745)
-
+- [x]   (Fixed) _Front-end_ Cmd or Ctrl + A in Search/Trash is selecting all items (PR #755)
+- 
 # version 0.5.0-beta.5 - 2022-05-11
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4) (PR #720)
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (except createRoot change) (PR #724)
