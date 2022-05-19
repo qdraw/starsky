@@ -87,7 +87,7 @@ GET_DATA () {
   URLBUILDS="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds?api-version=5.1&\$top=1&statusFilter=completed&definitions="$LOCALDEVOPSDEFID"&branchName=refs%2Fheads%2F"$BRANCH
   RESULTBUILDS=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLBUILDS)
   
-  if [[ "$RESULTBUILDS" == *"Object moved to"* ]]; then
+  if [[ "$RESULTBUILDS" == *"Object moved to"* || "$RESULTBUILDS" == *"Access Denied"* ]]; then
     echo "FAIL: You don't have access!"
     exit 1
   fi
