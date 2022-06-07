@@ -1,58 +1,62 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-# Windows 64 bits: 'win7-x64'
-# Mac: 'osx-x64'
-# ARM64: 'linux-arm64'
-# Raspberry Pi: 'linux-arm'
-# Windows 32 bits: 'win7-x86'
+bash --version 2>&1 | head -n 1
 
-# >>>>>>>>>>>                WHEN NEW PROJECT RUN FIRST!!    >>>
-# dotnet new tool-manifest
-# dotnet tool install Cake.Tool
-# <<<<<<<<<<<               WHEN NEW PROJECT RUN FIRST!!    <<<
+set -eo pipefail
+SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 
-#  Source: Simplifying the Cake global tool bootstrapper scripts with .NET Core 3 local tools (https://andrewlock.net/simplifying-the-cake-global-tool-bootstrapper-scripts-in-netcore3-with-local-tools/)
+###########################################################################
+# CONFIGURATION
+###########################################################################
 
-# set some .NET settings 
+BUILD_PROJECT_FILE="$SCRIPT_DIR/../build/_build.csproj"
+TEMP_DIRECTORY="$SCRIPT_DIR/../.nuke/temp"
+
+DOTNET_GLOBAL_FILE="$SCRIPT_DIR/../global.json"
+DOTNET_INSTALL_URL="https://dot.net/v1/dotnet-install.sh"
+DOTNET_CHANNEL="Current"
+
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+export DOTNET_MULTILEVEL_LOOKUP=0
 
-pushd $(dirname "$0")
+###########################################################################
+# EXECUTION
+###########################################################################
 
-# Define default arguments.
-SCRIPT="build.cake"
-CAKE_ARGUMENTS=""
+function FirstJsonValue {
+    perl -nle 'print $1 if m{"'"$1"'": "([^"]+)",?}' <<< "${@:2}"
+}
 
-# Parse arguments.
-for i in "$@"; do
-    case $1 in
-        -s|--script) SCRIPT="$2"; shift ;;
-        --) shift; CAKE_ARGUMENTS="${CAKE_ARGUMENTS} $@"; break ;;
-        *) CAKE_ARGUMENTS="${CAKE_ARGUMENTS} $1" ;;
-    esac
-    shift
-done
-set -- ${CAKE_ARGUMENTS}
+# If dotnet CLI is installed globally and it matches requested version, use for execution
+if [ -x "$(command -v dotnet)" ] && dotnet --version &>/dev/null; then
+    export DOTNET_EXE="$(command -v dotnet)"
+else
+    # Download install script
+    DOTNET_INSTALL_FILE="$TEMP_DIRECTORY/dotnet-install.sh"
+    mkdir -p "$TEMP_DIRECTORY"
+    curl -Lsfo "$DOTNET_INSTALL_FILE" "$DOTNET_INSTALL_URL"
+    chmod +x "$DOTNET_INSTALL_FILE"
 
-# Restore Cake tool
-dotnet tool restore
-
-if [ $? -ne 0 ]; then
-    echo "An error occured while installing Cake."
-    sleep 5    
-    dotnet tool restore
-    if [ $? -ne 0 ]; then
-        echo "An error occured while retry and installing Cake."
-        exit 1
+    # If global.json exists, load expected version
+    if [[ -f "$DOTNET_GLOBAL_FILE" ]]; then
+        DOTNET_VERSION=$(FirstJsonValue "version" "$(cat "$DOTNET_GLOBAL_FILE")")
+        if [[ "$DOTNET_VERSION" == ""  ]]; then
+            unset DOTNET_VERSION
+        fi
     fi
+
+    # Install by channel or version
+    DOTNET_DIRECTORY="$TEMP_DIRECTORY/dotnet-unix"
+    if [[ -z ${DOTNET_VERSION+x} ]]; then
+        "$DOTNET_INSTALL_FILE" --install-dir "$DOTNET_DIRECTORY" --channel "$DOTNET_CHANNEL" --no-path
+    else
+        "$DOTNET_INSTALL_FILE" --install-dir "$DOTNET_DIRECTORY" --version "$DOTNET_VERSION" --no-path
+    fi
+    export DOTNET_EXE="$DOTNET_DIRECTORY/dotnet"
 fi
 
-# Start Cake
+echo "Microsoft (R) .NET SDK version $("$DOTNET_EXE" --version)"
 
-dotnet tool run dotnet-cake  "--" "$SCRIPT" "$@"
-EXITSTATUS=$?
-
-popd
-
-[ $EXITSTATUS -eq 0 ] && echo "Build was successful :)" || echo "Build has failed - unit test search for: Error Message"
-exit $EXITSTATUS
+"$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
+"$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- "$@"

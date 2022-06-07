@@ -128,12 +128,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.packagetele
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.realtime", "starsky.feature.realtime\starsky.feature.realtime.csproj", "{6630A2A7-FB58-40FA-B27B-013FDA1F74AA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "..\build\_build.csproj", "{03F86FB5-8F91-4040-A464-C9D47B748FC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03F86FB5-8F91-4040-A464-C9D47B748FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03F86FB5-8F91-4040-A464-C9D47B748FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}.Release|Any CPU.ActiveCfg = Release|Any CPU
