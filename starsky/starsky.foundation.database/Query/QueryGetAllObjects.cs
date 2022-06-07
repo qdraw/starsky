@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,8 +42,8 @@ namespace starsky.foundation.database.Query
 			{
 				var dbContext = new InjectServiceScope(_scopeFactory).Context();
 				var result =
-					FormatOk(await GetAllObjectsQuery(dbContext, filePaths)
-						.ToListAsync());
+					FormatOk(
+						await GetAllObjectsQuery(dbContext, filePaths)?.ToListAsync());
 				await dbContext.DisposeAsync();
 				return result;
 			}
@@ -75,7 +76,7 @@ namespace starsky.foundation.database.Query
 		/// <param name="context">database context</param>
 		/// <param name="filePathList">list of paths</param>
 		/// <returns></returns>
-		private static IOrderedQueryable<FileIndexItem> GetAllObjectsQuery(ApplicationDbContext context, List<string> filePathList)
+		private static IOrderedQueryable<FileIndexItem>? GetAllObjectsQuery(ApplicationDbContext context, List<string> filePathList)
 		{
 			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
 

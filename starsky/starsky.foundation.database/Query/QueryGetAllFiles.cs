@@ -1,20 +1,19 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
 	// QueryGetAllFiles
-	public partial class Query : IQuery
+	public partial class Query
 	{
 		
 		/// <summary>
@@ -27,16 +26,17 @@ namespace starsky.foundation.database.Query
 		{
 			try
 			{
-				return GetAllFilesQuery(_context,new List<string>{subPath}).ToList();
+				return GetAllFilesQuery(_context,new List<string>{subPath}).ToList()!;
 			}
 			catch ( ObjectDisposedException )
 			{
-				return  GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),new List<string>{subPath}).ToList();
+				return  GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),new List<string>{subPath}).ToList()!;
 			}
 		}
 		
-		private static List<FileIndexItem> FormatOk(List<FileIndexItem> input)
+		private static List<FileIndexItem> FormatOk(List<FileIndexItem?>? input)
 		{
+			if ( input == null ) return new List<FileIndexItem>();
 			return input.Select(p =>
 			{
 				// status check for some referenced based code
@@ -44,6 +44,14 @@ namespace starsky.foundation.database.Query
 				{
 					p.Status = FileIndexItem.ExifStatus.Ok;
 				}
+
+				if ( p == null )
+					return new FileIndexItem
+					{
+						Status = FileIndexItem.ExifStatus
+							.OperationNotSupported,
+						Description = "null error format"
+					};
 				return p;
 			}).ToList();
 		}
@@ -82,7 +90,7 @@ namespace starsky.foundation.database.Query
 			}
 		}
 
-		private static IOrderedQueryable<FileIndexItem> GetAllFilesQuery(ApplicationDbContext context, List<string> filePathList)
+		private static IOrderedQueryable<FileIndexItem?> GetAllFilesQuery(ApplicationDbContext context, List<string> filePathList)
 		{
 			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
 
@@ -98,7 +106,6 @@ namespace starsky.foundation.database.Query
 					
 			return context.FileIndex.Where(predicate).OrderBy(r => r.FileName);
 		}
-
 
 	}
 }
