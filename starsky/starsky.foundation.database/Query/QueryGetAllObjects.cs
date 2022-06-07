@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
@@ -16,7 +15,7 @@ namespace starsky.foundation.database.Query
 	/// <summary>
 	/// QueryGetAllObjects
 	/// </summary>
-	public partial class Query : IQuery
+	public partial class Query
 	{
 		/// <summary>
 		/// Get all objects inside a folder
@@ -43,15 +42,15 @@ namespace starsky.foundation.database.Query
 				var dbContext = new InjectServiceScope(_scopeFactory).Context();
 				var result =
 					FormatOk(
-						await GetAllObjectsQuery(dbContext, filePaths)?.ToListAsync());
+						(await GetAllObjectsQuery(dbContext, filePaths)?.ToListAsync()!)!);
 				await dbContext.DisposeAsync();
 				return result;
 			}
 
 			try
 			{
-				return FormatOk(await GetAllObjectsQuery(_context, filePaths)
-					.ToListAsync());
+				return FormatOk((await GetAllObjectsQuery(_context, filePaths)!
+					.ToListAsync())!);
 			}
 			catch ( ObjectDisposedException )
 			{
