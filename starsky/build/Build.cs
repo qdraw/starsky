@@ -17,10 +17,12 @@ using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static SimpleExec.Command;
-using static helpers.GetSolutionAllProjects;
+using static helpers.SonarQube;
+
+using static helpers.ProjectAssetsCopier;
 
 [ShutdownDotNetAfterServerBuild]
-[CheckBuildProjectConfigurations(TimeoutInMilliseconds = 0)]
+//[CheckBuildProjectConfigurations(TimeoutInMilliseconds = 0)]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -95,57 +97,25 @@ class Build : NukeBuild
 		    // ClientRestoreCommand();
 	    });
 
-    void CopyAssetFileToCurrentRuntime(string runtime)
-    {
-	    // Restore Asset runtime file
-	    foreach ( var path in GetSolutionAllProjects.GetSolutionAllProjectsList(Solution) )
-	    {
-		    var parent = Directory.GetParent(path)?.FullName;
-		    var assetFile = $"{parent}/obj/project.assets.json";
-		    var assetRuntimeFile = $"{parent}/obj/project.assets_{runtime}.json";
-
-		    if ( File.Exists(assetRuntimeFile) )
-		    {
-			    // Restore
-			    CopyFile(assetRuntimeFile,assetFile, FileExistsPolicy.Overwrite, false);
-		    }
-	    }
-    }
-
-    void CopyNewAssetFileByRuntimeId(string runtime)
-    {
-	    // Create a new one
-	    foreach ( var path in GetSolutionAllProjectsList(Solution) )
-	    {
-		    var parent = Directory.GetParent(path)?.FullName;
-		    var assetFile = $"{parent}/obj/project.assets.json";
-		    var assetRuntimeFile = $"{parent}/obj/project.assets_{runtime}.json";
-		    if ( File.Exists(assetFile) )
-		    {
-			    CopyFile(assetFile,assetRuntimeFile, FileExistsPolicy.Overwrite);
-		    }
-	    }
-    }
-
     void RestoreNetCoreCommand()
     {
 	    
 	    if ( IsRuntimeGeneric() )
 	    {
-		    CopyAssetFileToCurrentRuntime(GenericRuntimeName);
+		    CopyAssetFileToCurrentRuntime(GenericRuntimeName, Solution);
 		    DotNetRestore(_ => _
 			    .SetProjectFile(Solution));
-		    CopyNewAssetFileByRuntimeId(GenericRuntimeName);
+		    CopyNewAssetFileByRuntimeId(GenericRuntimeName, Solution);
 	    }
 
 	    foreach ( var runtime in GetRuntimesWithoutGeneric() )
 	    {
-		    CopyAssetFileToCurrentRuntime(runtime);
+		    CopyAssetFileToCurrentRuntime(runtime, Solution);
 		    // OverwriteRuntimeIdentifier is done via Directory.Build.props
 		    DotNetRestore(_ => _
 			    .SetProjectFile(Solution)
 			    .SetProcessArgumentConfigurator(args => args.Add($"/p:OverwriteRuntimeIdentifier={runtime}")));
-		    CopyNewAssetFileByRuntimeId(runtime);
+		    CopyNewAssetFileByRuntimeId(runtime, Solution);
 	    }
     }
 
@@ -154,7 +124,7 @@ class Build : NukeBuild
 	    
 	    if ( IsRuntimeGeneric() )
 	    {
-		    CopyAssetFileToCurrentRuntime(GenericRuntimeName);
+		    CopyAssetFileToCurrentRuntime(GenericRuntimeName, Solution);
 		    
 		    DotNetBuild(_ => _
 			    .SetConfiguration(Configuration)
@@ -162,12 +132,12 @@ class Build : NukeBuild
 			    .EnableNoLogo()
 			    .SetProjectFile(Solution));
 
-		    CopyNewAssetFileByRuntimeId(GenericRuntimeName);
+		    CopyNewAssetFileByRuntimeId(GenericRuntimeName, Solution);
 	    }
 
 	    foreach ( var runtime in GetRuntimesWithoutGeneric() )
 	    {
-		    CopyAssetFileToCurrentRuntime(runtime);
+		    CopyAssetFileToCurrentRuntime(runtime, Solution);
 		    // OverwriteRuntimeIdentifier is done via Directory.Build.props
 		    DotNetBuild(_ => _
 			    .SetProjectFile(Solution)
@@ -175,7 +145,7 @@ class Build : NukeBuild
 			    .EnableNoLogo()
 			    .SetConfiguration(Configuration)
 			    .SetProcessArgumentConfigurator(args => args.Add($"/p:OverwriteRuntimeIdentifier={runtime}")));
-		    CopyNewAssetFileByRuntimeId(runtime);
+		    CopyNewAssetFileByRuntimeId(runtime, Solution);
 	    }
     }
 
@@ -183,7 +153,7 @@ class Build : NukeBuild
     {
 	    if ( IsRuntimeGeneric() )
 	    {
-		    CopyAssetFileToCurrentRuntime(GenericRuntimeName);
+		    CopyAssetFileToCurrentRuntime(GenericRuntimeName, Solution);
 
 		    foreach ( var publishProject in PublishProjectsList )
 		    {
@@ -197,12 +167,12 @@ class Build : NukeBuild
 				    .SetProject(publishProject)
 				    .EnableNoLogo());
 		    }
-		    CopyNewAssetFileByRuntimeId(GenericRuntimeName);
+		    CopyNewAssetFileByRuntimeId(GenericRuntimeName, Solution);
 	    }
 	    
 	    foreach ( var runtime in GetRuntimesWithoutGeneric() )
 	    {
-		    CopyAssetFileToCurrentRuntime(runtime);
+		    CopyAssetFileToCurrentRuntime(runtime, Solution);
 		    foreach ( var publishProject in PublishProjectsList )
 		    {
 			    DotNetPublish(_ => _
@@ -216,9 +186,8 @@ class Build : NukeBuild
 				    .SetRuntime(runtime)
 				    .EnableNoLogo());
 		    }
-		    CopyNewAssetFileByRuntimeId(runtime);
+		    CopyNewAssetFileByRuntimeId(runtime, Solution);
 	    }
-	    
     }
 
     static void ClientRestoreCommand()
@@ -243,7 +212,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
 	        Console.WriteLine("restore");
-	        RestoreNetCoreCommand();
+	        // RestoreNetCoreCommand();
         });
 
     Target Compile => _ => _
@@ -255,7 +224,8 @@ class Build : NukeBuild
 	    .DependsOn(Restore)
 	    .Executes(() =>
 	    {
-		    BuildNetCoreGenericCommand();
-		    PublishNetCoreGenericCommand();
+		    InstallSonarTool();
+		    // BuildNetCoreGenericCommand();
+		    // PublishNetCoreGenericCommand();
 	    });
 }
