@@ -72,6 +72,12 @@ class Build : NukeBuild
     public const string NpmBaseCommand = "npm";
     public const string ClientAppFolder = "starsky/clientapp";
 
+    private string GetClientAppFolder()
+    {
+	    var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
+		    .BaseDirectory).Parent.Parent.Parent.FullName;
+	    return Path.Combine(rootDirectory, ClientAppFolder);
+    }
 
     
     private string BuildToolsPath()
@@ -121,20 +127,21 @@ class Build : NukeBuild
 
     void BuildNetCoreGenericCommand()
     {
-	    
-	    if ( IsRuntimeGeneric() )
-	    {
-		    CopyAssetFileToCurrentRuntime(GenericRuntimeName, Solution);
+	    CopyAssetFileToCurrentRuntime(GenericRuntimeName, Solution);
 		    
-		    DotNetBuild(_ => _
-			    .SetConfiguration(Configuration)
-			    .EnableNoRestore()
-			    .EnableNoLogo()
-			    .SetProjectFile(Solution));
+	    DotNetBuild(_ => _
+		    .SetConfiguration(Configuration)
+		    .EnableNoRestore()
+		    .EnableNoLogo()
+		    .SetProjectFile(Solution));
 
-		    CopyNewAssetFileByRuntimeId(GenericRuntimeName, Solution);
-	    }
+	    CopyNewAssetFileByRuntimeId(GenericRuntimeName, Solution);
+    }
+    
+  
 
+    void BuildNetCoreRuntimes()
+    {
 	    foreach ( var runtime in GetRuntimesWithoutGeneric() )
 	    {
 		    CopyAssetFileToCurrentRuntime(runtime, Solution);
@@ -180,7 +187,7 @@ class Build : NukeBuild
 				    .EnableNoRestore()
 				    .EnableNoBuild()
 				    .EnableNoDependencies()
-				    .SetSelfContained(true)
+				    .EnableSelfContained()
 				    .SetOutput(runtime)
 				    .SetProject(publishProject)
 				    .SetRuntime(runtime)
@@ -224,8 +231,12 @@ class Build : NukeBuild
 	    .DependsOn(Restore)
 	    .Executes(() =>
 	    {
+		    Console.WriteLine(GetClientAppFolder());
 		    InstallSonarTool();
-		    // BuildNetCoreGenericCommand();
+		    SonarBegin(false,false,"test",GetClientAppFolder(),"starskytest/coverage-merge-sonarqube.xml");
+			BuildNetCoreGenericCommand();
+			DotnetTestHelper.TestNetCoreGenericCommand(Configuration,false);
+		    SonarEnd(false,false);
 		    // PublishNetCoreGenericCommand();
 	    });
 }
