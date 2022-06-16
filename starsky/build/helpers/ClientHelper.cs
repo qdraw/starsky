@@ -36,6 +36,4 @@ public static class ClientHelper
 		Run(NpmBaseCommand, "run test:ci", ClientAppFolder, 
 			false, null, null, false);
 	}
-
-
 }

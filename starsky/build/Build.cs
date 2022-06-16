@@ -29,7 +29,35 @@ namespace build
 
 		[Parameter("Runtime arg")]
 		readonly string Runtime = GenericRuntimeName;
-    
+		
+		[Parameter("Is SonarQube Disabled")]
+		readonly bool NoSonar;
+
+		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)")] 
+		readonly bool NoUnitTest;
+		
+		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)")] 
+		readonly bool NoUnitTests;
+		
+		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)")] 
+		readonly bool NoTest;
+	
+		bool IsUnitTestDisabled()
+		{
+			return NoUnitTest || NoUnitTests || NoTest;
+		}
+		
+		[Parameter("Overwrite branch name")] 
+		readonly string Branch;
+		string GetBranchName()
+		{
+			var branchName = Branch;
+			if(branchName.StartsWith("refs/heads/")) {
+				branchName  = branchName.Replace("refs/heads/","");
+			}
+			return branchName;
+		}
+		
 		List<string> GetRuntimesWithoutGeneric()
 		{
 			return Runtime.Split(",", StringSplitOptions.TrimEntries).Where(p => p != GenericRuntimeName).ToList();
@@ -63,33 +91,46 @@ namespace build
 				ClientHelper.ClientBuildCommand();
 				ClientHelper.ClientTestCommand();
 			});
+		
+		Target ShowSettingsInformation => _ => _
+			.Executes(() =>
+			{
+				Console.WriteLine(IsUnitTestDisabled()
+					? "Unit test disabled"
+					: "Unit test enabled");
+				
+				Console.WriteLine(NoSonar
+					? "Sonar disabled"
+					: "Sonar enabled");
+
+			});
 
 		/// <summary>
 		/// Default Target
 		/// </summary>
 		Target Compile => _ => _
+			.DependsOn(ShowSettingsInformation)
 			.DependsOn(Client)
-			.DependsOn(DotnetGenericBuildAndTest)
-			.DependsOn(DotnetRuntimeSpecific);
-    
-		Target DotnetGenericBuildAndTest => _ => _
-			.DependsOn(Client)
+			.DependsOn(SonarBuildTest)
+			.DependsOn(BuildNetCoreRuntimeSpecific);
+		
+		Target SonarBuildTest => _ => _
+			.DependsOn(ShowSettingsInformation)
 			.Executes(() =>
 			{
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 				DotnetGenericHelper.RestoreNetCoreCommand(Solution);
 				InstallSonarTool();
-				SonarBegin(false,false,"test", ClientHelper.GetClientAppFolder(),"starskytest/coverage-merge-sonarqube.xml");
+				SonarBegin(NoUnitTest,NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),"starskytest/coverage-merge-sonarqube.xml");
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
-				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,false);
-				MergeCoverageFiles.Merge(false);
-				SonarEnd(false,false);
+				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
+				MergeCoverageFiles.Merge(NoUnitTest);
+				SonarEnd(NoUnitTest,NoSonar);
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
 			});
 		
-		Target DotnetRuntimeSpecific => _ => _
-			.DependsOn(Client)
-			.DependsOn(DotnetGenericBuildAndTest)
+		Target BuildNetCoreRuntimeSpecific => _ => _
+			.DependsOn(ShowSettingsInformation)
 			.Executes(() =>
 			{
 				if ( !GetRuntimesWithoutGeneric().Any() )
@@ -104,6 +145,34 @@ namespace build
 					GetRuntimesWithoutGeneric(),Configuration);
 				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Solution,
 					GetRuntimesWithoutGeneric(),Configuration);
+			});
+		
+		Target BuildNetCore => _ => _
+			.Executes(() =>
+			{
+				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
+				DotnetGenericHelper.RestoreNetCoreCommand(Solution);
+				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
+			});
+		
+		Target TestNetCore => _ => _
+			.Executes(() =>
+			{
+				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
+			});
+		
+		Target DocsGenerate => _ => _
+			.DependsOn(ShowSettingsInformation)
+			.Executes(() =>
+			{
+				// todo!
+			});
+		
+		Target Zip => _ => _
+			.DependsOn(ShowSettingsInformation)
+			.Executes(() =>
+			{
+				// todo!
 			});
 	}
 }

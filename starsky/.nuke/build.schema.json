@@ -6,6 +6,10 @@
     "build": {
       "type": "object",
       "properties": {
+        "Branch": {
+          "type": "string",
+          "description": "Overwrite branch name"
+        },
         "Configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
@@ -47,6 +51,22 @@
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
+        "NoSonar": {
+          "type": "boolean",
+          "description": "Is SonarQube Disabled"
+        },
+        "NoTest": {
+          "type": "boolean",
+          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)"
+        },
+        "NoUnitTest": {
+          "type": "boolean",
+          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)"
+        },
+        "NoUnitTests": {
+          "type": "boolean",
+          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)"
+        },
         "Partition": {
           "type": "string",
           "description": "Partition to use on CI"
@@ -76,10 +96,13 @@
           "items": {
             "type": "string",
             "enum": [
+              "BuildNetCore",
               "Client",
               "Compile",
               "DotnetGenericBuildAndTest",
-              "DotnetRuntimeSpecific"
+              "DotnetRuntimeSpecific",
+              "ShowSettingsInformation",
+              "TestNetCore"
             ]
           }
         },
@@ -93,10 +116,13 @@
           "items": {
             "type": "string",
             "enum": [
+              "BuildNetCore",
               "Client",
               "Compile",
               "DotnetGenericBuildAndTest",
-              "DotnetRuntimeSpecific"
+              "DotnetRuntimeSpecific",
+              "ShowSettingsInformation",
+              "TestNetCore"
             ]
           }
         },

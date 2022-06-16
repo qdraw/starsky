@@ -22,7 +22,7 @@ steps:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target="SonarBuildTest" --branch="$(Build.SourceBranch)"'
+      arguments: '${{ parameters.runtimeArg }} --target SonarBuildTest  --branch "$(Build.SourceBranch)"'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
@@ -33,7 +33,7 @@ steps:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target="SonarBuildTest" --branch="$(Build.SourceBranch)"'
+      arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target SonarBuildTest --branch="$(Build.SourceBranch)"'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
@@ -42,14 +42,6 @@ steps:
     inputs:
       filePath: "starsky/build.ps1"
       arguments: '${{ parameters.runtimeArg }} --target="BuildNetCoreRuntimeSpecific"'
-      pwsh: true
-      workingDirectory: "$(Build.SourcesDirectory)/starsky/"
-
-  - task: PowerShell@2
-    displayName: "Cake PublishWeb"
-    inputs:
-      filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target="PublishWeb"'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
