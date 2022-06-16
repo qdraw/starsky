@@ -3,23 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using helpers;
+using build;
 using Microsoft.Extensions.FileSystemGlobbing;
-using Nuke.Common;
-using Nuke.Common.CI;
-using Nuke.Common.Execution;
-using Nuke.Common.Git;
 using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static SimpleExec.Command;
-using static helpers.GetSolutionAllProjects;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 namespace helpers;
@@ -91,23 +80,6 @@ public static class DotnetTestHelper
 	            .SetDataCollector("XPlat Code Coverage")
 	            .SetSettingsFile("build.vstest.runsettings")
 	            .SetProjectFile(project));
-
-            // DotNetCoreTest(
-            //     project.ToString(),
-            //     new DotNetCoreTestSettings()
-            //     {
-            //         Configuration = configuration,
-            //         NoBuild = true,
-            //         ArgumentCustomization = args => args
-            //               .Append("--no-restore")
-            //               .Append("--no-build")
-            //               .Append("--nologo")
-            //               .Append("--blame") // for debug
-            //               .Append("-v=normal") // v=normal is to show test names
-            //               .Append("--logger \"trx;LogFileName=test_results.trx\"")
-            //               .Append("--collect:\"XPlat Code Coverage\"")
-            //               .Append("--settings build.vstest.runsettings")
-            //     });
 
             Information("on Error: search for: Error Message");
             var coverageEnum = GetFiles("./**/coverage.opencover.xml");

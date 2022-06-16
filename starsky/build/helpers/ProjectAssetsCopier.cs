@@ -1,7 +1,6 @@
 using System.IO;
 using Nuke.Common.ProjectModel;
 using static helpers.GetSolutionAllProjects;
-using static helpers.SonarQube;
 
 namespace helpers;
 
@@ -20,12 +19,9 @@ public static class ProjectAssetsCopier
 			if ( File.Exists(assetRuntimeFile) )
 			{
 				File.Copy(assetRuntimeFile,assetFile,true);
-				// // Restore
-				// CopyFile(assetRuntimeFile,assetFile, FileExistsPolicy.Overwrite, false);
 			}
 		}
 	}
-	
 	
 	public static void CopyNewAssetFileByRuntimeId(string runtime,
 		Solution solution)
@@ -39,7 +35,6 @@ public static class ProjectAssetsCopier
 			if ( File.Exists(assetFile) )
 			{
 				File.Copy(assetFile,assetRuntimeFile,true);
-				// CopyFile(assetFile,assetRuntimeFile, FileExistsPolicy.Overwrite);
 			}
 		}
 	}

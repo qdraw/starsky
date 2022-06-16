@@ -1,13 +1,39 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 
 namespace helpers;
 
 public static class MergeCoverageFiles
 {
-	public static void Merge()
+	static void Information(string value)
 	{
+		Console.WriteLine(value);
+	}
+	
+	static bool FileExists(string value)
+	{
+		return File.Exists(value);
+	}
+	
+	static void DeleteFile(string value)
+	{
+		File.Delete(value);
+	}
+	
+	static void MoveFile(string from, string to)
+	{
+		File.Move(from,to, true);
+	}
+	
+	static void CopyFile(string from, string to)
+	{
+		File.Copy(from,to, true);
+	}
+	
+	public static void Merge(bool noUnitTest)
+	{
+		var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
+			.BaseDirectory).Parent.Parent.Parent.FullName;
 		
 		if(noUnitTest)
 		{
@@ -15,21 +41,21 @@ public static class MergeCoverageFiles
 			return;
 		}
 
-		if (! FileExists($"./starsky/clientapp/coverage/cobertura-coverage.xml")) {
+		if (! FileExists(Path.Combine(rootDirectory, $"starsky/clientapp/coverage/cobertura-coverage.xml"))) {
 			throw new Exception($"Missing jest coverage file ./starsky/clientapp/coverage/cobertura-coverage.xml");
 		}
 
-		if (! FileExists("./starskytest/netcore-coverage.opencover.xml")) {
+		if (! FileExists(Path.Combine(rootDirectory, "starskytest/netcore-coverage.opencover.xml"))) {
 			throw new Exception($"Missing .NET Core coverage file ./starskytest/netcore-coverage.opencover.xml");
 		}
 
-		var outputCoverageFile = $"./starskytest/coverage-merge-cobertura.xml";
+		var outputCoverageFile = Path.Combine(rootDirectory,"./starskytest/coverage-merge-cobertura.xml");
 
 		if (FileExists(outputCoverageFile)) {
 			DeleteFile(outputCoverageFile);
 		}
 
-		var outputCoverageSonarQubeFile = $"./starskytest/coverage-merge-sonarqube.xml";
+		var outputCoverageSonarQubeFile = Path.Combine(rootDirectory,"starskytest/coverage-merge-sonarqube.xml");
 
 		if (FileExists(outputCoverageSonarQubeFile)) {
 			DeleteFile(outputCoverageSonarQubeFile);
@@ -40,48 +66,17 @@ public static class MergeCoverageFiles
 			Information($"Copy ./starsky/clientapp/coverage/cobertura-coverage.xml ./starskytest/jest-coverage.cobertura.xml");
 			CopyFile($"./starsky/clientapp/coverage/cobertura-coverage.xml", $"./starskytest/jest-coverage.cobertura.xml");
 		}
-
-
-		Palmmedia.ReportGenerator.Core.Program.Main(new []{"--help"});
-	    
-		IEnumerable<string> redirectedStandardOutput;
-		IEnumerable<string> redirectedErrorOutput;
-		var exitCodeWithArgument =
-			StartProcess(
-				"dotnet",
-				new ProcessSettings {
-					Arguments = new ProcessArgumentBuilder()
-						.Append($"reportgenerator")
-						.Append($"-reports:./starskytest/*coverage.*.xml")
-						.Append($"-targetdir:./starskytest/")
-						.Append($"-reporttypes:Cobertura;SonarQube"),
-					RedirectStandardOutput = true,
-					RedirectStandardError = true
-				},
-				out redirectedStandardOutput,
-				out redirectedErrorOutput
-			);
-
-		// Output process output.
-		foreach(var stdOutput in redirectedStandardOutput)
-		{
-			Information("reportgenerator: {0}", stdOutput);
-		}
-
-		// Throw exception if anything was written to the standard error.
-		if (redirectedErrorOutput.Any())
-		{
-			throw new Exception(
-				string.Format(
-					"Errors occurred: {0}",
-					string.Join(", ", redirectedErrorOutput)));
-		}
-
-		// This should output 0 as valid arguments supplied
-		Information("Exit code: {0}", exitCodeWithArgument);
+		
+		var args = new []
+			{
+				$"-reports:{rootDirectory}/starskytest/*coverage.*.xml",
+				$"-targetdir:{rootDirectory}/starskytest/",
+				$"-reporttypes:Cobertura;SonarQube"
+			};
+		Palmmedia.ReportGenerator.Core.Program.Main(args);
 
 		// And rename it
-		MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
-		MoveFile($"./starskytest/SonarQube.xml", outputCoverageSonarQubeFile);
+		MoveFile($"{rootDirectory}/starskytest/Cobertura.xml", outputCoverageFile);
+		MoveFile($"{rootDirectory}/starskytest/SonarQube.xml", outputCoverageSonarQubeFile);
 	}
 }

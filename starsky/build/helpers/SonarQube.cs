@@ -131,8 +131,8 @@ public static class SonarQube
            .Append($"/o:" + organisation +" ")
            .Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
            .Append($"/d:sonar.coverageReportPaths={coverageFile} ")
-           .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\" ")
-           .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\" ");
+           .Append($"/d:sonar.exclusions=\"**/build/*,**/build/helpers/*,**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\" ")
+           .Append($"/d:sonar.coverage.exclusions=\"**/build/*,**/build/helpers/*,**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\" ");
         
         // Normal build
         if (!isPrBuild) {
@@ -154,42 +154,8 @@ public static class SonarQube
                    .Append($"/d:sonar.pullrequest.github.repository=\"{githubRepoSlug}\" ");
         }
 
-        var dotNetResult = DotNet(sonarArguments.ToString());
+        DotNet(sonarArguments.ToString());
 
-        Console.WriteLine();
-        // IEnumerable<string> redirectedStandardOutput;
-        // IEnumerable<string> redirectedErrorOutput;
-        // var exitCodeWithArgument =
-        //     StartProcess(
-        //         "dotnet",
-        //         new ProcessSettings {
-        //           Arguments = sonarArguments,
-        //           RedirectStandardOutput = true,
-        //           RedirectStandardError = true
-        //         },
-        //         out redirectedStandardOutput,
-        //         out redirectedErrorOutput
-        //     );
-
-        // Output process output.
-        // foreach(var stdOutput in redirectedStandardOutput)
-        // {
-        //     Information($"sonarscanner: {stdOutput}" );
-        // }
-        //
-        // Information($"exitCodeWithArgument: {exitCodeWithArgument}" );
-        //
-        // // Throw exception if anything was written to the standard error.
-        // if (redirectedErrorOutput.Any() )
-        // {
-        //     throw new Exception(
-        //         string.Format(
-        //             "Errors occurred: {0}",
-        //             string.Join(", ", redirectedErrorOutput)));
-        // }
-        //
-        // // This should output 0 as valid arguments supplied
-        // Information("Exit code: {0}", exitCodeWithArgument);
 	}
 
 	public static void SonarEnd(bool noUnitTest, bool noSonar)
@@ -215,7 +181,7 @@ public static class SonarQube
 			.Append($"end ")
 			.Append($"/d:sonar.login=\"{login}\" ");
 
-		var dotNetResult = DotNet(sonarArguments.ToString());
+		 DotNet(sonarArguments.ToString());
 		
 	}
 }

@@ -78,8 +78,8 @@
             "enum": [
               "Client",
               "Compile",
-              "DotNetProjectBuild",
-              "Restore"
+              "DotnetGenericBuildAndTest",
+              "DotnetRuntimeSpecific"
             ]
           }
         },
@@ -95,8 +95,8 @@
             "enum": [
               "Client",
               "Compile",
-              "DotNetProjectBuild",
-              "Restore"
+              "DotnetGenericBuildAndTest",
+              "DotnetRuntimeSpecific"
             ]
           }
         },
