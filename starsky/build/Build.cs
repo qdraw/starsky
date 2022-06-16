@@ -52,7 +52,7 @@ namespace build
 		string GetBranchName()
 		{
 			var branchName = Branch;
-			if(branchName.StartsWith("refs/heads/")) {
+			if( !string.IsNullOrEmpty(branchName) && branchName.StartsWith("refs/heads/")) {
 				branchName  = branchName.Replace("refs/heads/","");
 			}
 			return branchName;
@@ -63,8 +63,8 @@ namespace build
 			return Runtime.Split(",", StringSplitOptions.TrimEntries).Where(p => p != GenericRuntimeName).ToList();
 		}
 
-		[Solution] readonly Solution Solution;
-		[GitRepository] readonly GitRepository GitRepository;
+		[Solution] 
+		readonly Solution Solution;
 
 		public static readonly List<string> PublishProjectsList = new List<string>
 		{
@@ -103,6 +103,14 @@ namespace build
 					? "Sonar disabled"
 					: "Sonar enabled");
 
+				Console.WriteLine("Branch:");
+				Console.WriteLine(GetBranchName());
+
+				Console.WriteLine("Runtime:");
+				foreach ( var runtime in GetRuntimesWithoutGeneric() )
+				{
+					Console.WriteLine(runtime);
+				}
 			});
 
 		/// <summary>
