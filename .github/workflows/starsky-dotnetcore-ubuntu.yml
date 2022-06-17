@@ -47,12 +47,12 @@ jobs:
     - name: BuildNetCore
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target=BuildNetCore --no-sonar
+      run: bash build.sh --Target=BuildNetCore --no-sonar --skip
 
     - name: TestNetCore
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target=TestNetCore
+      run: bash build.sh --Target=TestNetCore --skip
   
     - name: "Set locale to: nl_NL.UTF-8"
       run: |
@@ -66,7 +66,7 @@ jobs:
       working-directory: ./starsky
       run: |
           export LANG="nl_NL.UTF-8"
-          bash build.sh --Target=TestNetCore
+          bash build.sh --Target=TestNetCore --skip
 
   trigger_pipe_release_desktop:
     runs-on: ubuntu-latest
