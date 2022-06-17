@@ -101,7 +101,7 @@ GET_DATA () {
 
    # echo '-28T16:20:31.273Z"},"uri":"vstfs:///Build/Build/3216","sou' | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+'
 
-  if [[ $BUILD_ID_DEF -z ]]; then
+  if [[ -z $BUILD_ID_DEF ]]; then
       VSTFSURL=$(echo $RESULTBUILDS | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+') 
     
       BUILDNUMBER=$(echo $RESULTBUILDS | grep -Eo '(buildNumber.{3})([0-9]{8}.[0-9]{1,5})') 
