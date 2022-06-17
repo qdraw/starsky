@@ -112,7 +112,7 @@ namespace build
 					Console.WriteLine(runtime);
 				}
 			});
-
+		
 		/// <summary>
 		/// Default Target
 		/// </summary>
@@ -181,6 +181,20 @@ namespace build
 			.Executes(() =>
 			{
 				// todo!
+			});
+		
+		Target Clean => _ => _
+			.DependsOn(ShowSettingsInformation)
+			.Executes(() =>
+			{
+				
+			});
+			
+		Target CoverageReport => _ => _
+			.DependsOn(ShowSettingsInformation)
+			.Executes(() =>
+			{
+				// todo:
 			});
 	}
 }
