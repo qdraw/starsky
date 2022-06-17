@@ -1,5 +1,5 @@
 parameters:
-  runtimeArg: '--runtime="linux-arm,linux-arm64"'
+  runtimeArg: '--runtime "linux-arm,linux-arm64"'
 
 steps:
 
