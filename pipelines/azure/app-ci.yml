@@ -62,12 +62,12 @@ stages:
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: false
-        runtimeArg: '--runtime="win7-x64,win7-x86,osx-x64"'
+        runtimeArg: '--runtime "win7-x64,win7-x86,osx-x64,osx-arm64"'
         nugetPackages: $(NUGET_PACKAGES)
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
       parameters:
-        runtimeArg: '--runtime="win7-x64,win7-x86,osx-x64"'
+        runtimeArg: '--runtime "win7-x64,win7-x86,osx-x64,osx-arm64"'
 
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:

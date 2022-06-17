@@ -4,20 +4,11 @@ parameters:
 steps:
 
   - task: PowerShell@2
-    displayName: 'Cake MergeCoverageFiles'
-    condition: and(succeeded(), eq('${{ parameters.unitTest }}', true) )
-    inputs:
-      filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} --target="MergeCoverageFiles"'
-      pwsh: true
-      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
-
-  - task: PowerShell@2
     displayName: 'Cake CoverageReport'
     condition: and(succeeded(), eq('${{ parameters.unitTest }}', true) )
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} --target="CoverageReport"'
+      arguments: '${{ parameters.runtimeArg }} --target CoverageReport --skip'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
