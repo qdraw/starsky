@@ -10,13 +10,13 @@ public static class CoverageReportHelper
 		Console.WriteLine(value);
 	}
 
-	public static void GenerateHtml(bool noUnitTest)
+	public static string GenerateHtml(bool noUnitTest)
 	{
 		if ( noUnitTest )
 		{
 			Information(
 				$">> MergeCoverageFiles is disable due the --no-unit-test flag");
-			return;
+			return null;
 		}
 		
 		var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
@@ -41,6 +41,8 @@ public static class CoverageReportHelper
 			$"-reporttypes:HtmlInline"
 		};
 		Palmmedia.ReportGenerator.Core.Program.Main(args);
+		
+		return reportFolder;
 	}
 
 }

@@ -212,7 +212,8 @@ namespace build
 			.Executes(() =>
 			{
 				ShowSettingsInfo();
-				CoverageReportHelper.GenerateHtml(IsUnitTestDisabled());
+				var folder = CoverageReportHelper.GenerateHtml(IsUnitTestDisabled());
+				ZipperHelper.ZipHtmlCoverageReport(folder, IsUnitTestDisabled());
 			});
 	}
 }

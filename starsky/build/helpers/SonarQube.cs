@@ -33,7 +33,10 @@ public static class SonarQube
 		if ( toolList.Any(p => p.Text.Contains(SonarQubePackageName) 
 				&& toolList.Any(p => p.Text.Contains(SonarQubePackageVersion)) ))
 		{
-			Console.WriteLine("Skip tool install, it already exists");
+			Console.WriteLine("Next: tool restore");
+			DotNet($"tool restore", rootDirectory, envs, null, true);
+
+			Console.WriteLine("Skip creation of manifest files and install");
 			return;
 		}
 

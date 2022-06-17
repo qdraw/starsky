@@ -69,4 +69,33 @@ public class ZipperHelper
 			ZipFile.CreateFromDirectory(runtimeFullPath, zipPath);
 		}
 	}
+
+	const string CoverageReportZip = "coverage-report.zip";
+	
+	public static void ZipHtmlCoverageReport(string fromFolder,
+		bool noUnitTest)
+	{
+		if ( noUnitTest )
+		{
+			Console.WriteLine(
+				$">> ZipHtmlCoverageReport is disable due the --no-unit-test flag");
+			return;
+		}
+		
+		if ( !Directory.Exists(fromFolder) )
+		{
+			throw new Exception($"dir {fromFolder} not found");
+		}
+
+		var zipPath = Path.Join(BasePath(), "starskytest", CoverageReportZip);
+
+		if ( File.Exists(zipPath) )
+		{
+			File.Delete(zipPath);
+		}
+		
+		Console.WriteLine($"next: zip {fromFolder} -> {zipPath}");
+		ZipFile.CreateFromDirectory(fromFolder, 
+			zipPath);
+	}
 }
