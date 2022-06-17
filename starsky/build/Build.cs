@@ -63,7 +63,7 @@ namespace build
 			return Runtime.Split(",", StringSplitOptions.TrimEntries).Where(p => p != GenericRuntimeName).ToList();
 		}
 
-		[Solution] 
+		[Solution(SuppressBuildProjectCheck = true)] 
 		readonly Solution Solution;
 
 		public static readonly List<string> PublishProjectsList = new List<string>
