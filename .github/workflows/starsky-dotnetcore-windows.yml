@@ -33,8 +33,8 @@ jobs:
     - name: BuildNetCore
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target=BuildNetCore --no-sonar --skip
+      run: pwsh build.ps1 --Target BuildNetCore --no-sonar --skip
     - name: TestNetCore
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target=TestNetCore --no-sonar --skip
+      run: pwsh build.ps1 --Target TestNetCore --no-sonar --skip
