@@ -32,6 +32,7 @@ BRANCH="master"
 ORGANIZATION="qdraw"
 DEVOPSPROJECT="starsky"
 DEVOPSDEFIDS=( 17 20 )
+BUILD_ID_DEF=""
 # STARSKY_DEVOPS_PAT <= use this one
 # export STARSKY_DEVOPS_PAT=""
 
@@ -48,6 +49,7 @@ for ((i = 1; i <= $#; i++ )); do
       echo "     (or:) --runtime linux-arm64"
       echo "     (or:) --runtime osx-x64"
       echo "     (or:) --runtime win7-x64"
+      echo "(optional) --id BUILD_ID"
       exit 0
   fi
   
@@ -67,6 +69,11 @@ for ((i = 1; i <= $#; i++ )); do
     if [[ ${ARGUMENTS[PREV]} == "--token" ]];
     then
         STARSKY_DEVOPS_PAT="${ARGUMENTS[CURRENT]}"
+    fi
+    
+    if [[ ${ARGUMENTS[PREV]} == "--id" ]];
+    then
+        BUILD_ID_DEF="${ARGUMENTS[CURRENT]}"
     fi
   fi
 done
@@ -94,18 +101,23 @@ GET_DATA () {
 
    # echo '-28T16:20:31.273Z"},"uri":"vstfs:///Build/Build/3216","sou' | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+'
 
-  VSTFSURL=$(echo $RESULTBUILDS | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+') 
-
-  BUILDNUMBER=$(echo $RESULTBUILDS | grep -Eo '(buildNumber.{3})([0-9]{8}.[0-9]{1,5})') 
-  if [[ ! -z $BUILDNUMBER ]]; then
-     echo $BUILDNUMBER
-  fi
+  if [[ -z $BUILD_ID_DEF ]]; then
+      VSTFSURL=$(echo $RESULTBUILDS | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+') 
     
-  BUILDID=$(grep -E -o '[0-9]+' <<< $VSTFSURL)
-  if [[ -z $BUILDID ]]; then
-    echo "Continue > No build id found for: "$LOCALDEVOPSDEFID
-    return 1
+      BUILDNUMBER=$(echo $RESULTBUILDS | grep -Eo '(buildNumber.{3})([0-9]{8}.[0-9]{1,5})') 
+      if [[ ! -z $BUILDNUMBER ]]; then
+         echo $BUILDNUMBER
+      fi
+        
+      BUILDID=$(grep -E -o '[0-9]+' <<< $VSTFSURL)
+      if [[ -z $BUILDID ]]; then
+        echo "Continue > No build id found for: "$LOCALDEVOPSDEFID
+        return 1
+      fi   
+  else 
+     BUILDID=$BUILD_ID_DEF
   fi
+  echo "build id: "$BUILDID
 
   URLGETARTIFACT="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds/"$BUILDID"/artifacts?api-version=5.1&artifactName="$RUNTIME
   RESULTARTIFACT=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLGETARTIFACT)
