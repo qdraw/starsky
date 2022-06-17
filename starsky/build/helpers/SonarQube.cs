@@ -137,9 +137,9 @@ public static class SonarQube
         
         // Normal build
         if (!isPrBuild) {
-            Information($">> Normal Build");
+            Information($">> Normal Build (non-pr)");
             sonarArguments
-               .Append($"/d:sonar.branch.name=\"{branchName}\" ");
+			    .Append($"/d:sonar.branch.name=\"{branchName}\" ");
         }
         
         // Pull Request Build

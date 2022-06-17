@@ -112,7 +112,7 @@ namespace build
 					Console.WriteLine(runtime);
 				}
 			});
-		
+
 		/// <summary>
 		/// Default Target
 		/// </summary>
@@ -120,7 +120,10 @@ namespace build
 			.DependsOn(ShowSettingsInformation)
 			.DependsOn(Client)
 			.DependsOn(SonarBuildTest)
-			.DependsOn(BuildNetCoreRuntimeSpecific);
+			.DependsOn(BuildNetCoreRuntimeSpecific)
+			.DependsOn(DocsGenerate)
+			.DependsOn(Zip)
+			.DependsOn(CoverageReport);
 		
 		Target SonarBuildTest => _ => _
 			.DependsOn(ShowSettingsInformation)
@@ -129,7 +132,8 @@ namespace build
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 				DotnetGenericHelper.RestoreNetCoreCommand(Solution);
 				InstallSonarTool();
-				SonarBegin(NoUnitTest,NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),"starskytest/coverage-merge-sonarqube.xml");
+				SonarBegin(NoUnitTest,NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),
+					"starskytest/coverage-merge-sonarqube.xml");
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
 				MergeCoverageFiles.Merge(NoUnitTest);
@@ -147,6 +151,7 @@ namespace build
 					return;
 				}
 				
+				DotnetRuntimeSpecificHelper.Clean(GetRuntimesWithoutGeneric());
 				DotnetRuntimeSpecificHelper.RestoreNetCoreCommand(Solution,
 					GetRuntimesWithoutGeneric());
 				DotnetRuntimeSpecificHelper.BuildNetCoreCommand(Solution,
@@ -173,28 +178,25 @@ namespace build
 			.DependsOn(ShowSettingsInformation)
 			.Executes(() =>
 			{
-				// todo!
+				DocsGenerateHelper.Docs(GetRuntimesWithoutGeneric());
 			});
 		
 		Target Zip => _ => _
 			.DependsOn(ShowSettingsInformation)
 			.Executes(() =>
 			{
-				// todo!
-			});
-		
-		Target Clean => _ => _
-			.DependsOn(ShowSettingsInformation)
-			.Executes(() =>
-			{
-				
+				ZipperHelper.ZipGeneric();
+				ZipperHelper.ZipRuntimes(GetRuntimesWithoutGeneric());
 			});
 			
+		/// <summary>
+		/// Generates html coverage report
+		/// </summary>
 		Target CoverageReport => _ => _
 			.DependsOn(ShowSettingsInformation)
 			.Executes(() =>
 			{
-				// todo:
+				CoverageReportHelper.GenerateHtml(IsUnitTestDisabled());
 			});
 	}
 }

@@ -97,12 +97,15 @@
             "type": "string",
             "enum": [
               "BuildNetCore",
+              "BuildNetCoreRuntimeSpecific",
               "Client",
               "Compile",
-              "DotnetGenericBuildAndTest",
-              "DotnetRuntimeSpecific",
+              "CoverageReport",
+              "DocsGenerate",
               "ShowSettingsInformation",
-              "TestNetCore"
+              "SonarBuildTest",
+              "TestNetCore",
+              "Zip"
             ]
           }
         },
@@ -117,12 +120,15 @@
             "type": "string",
             "enum": [
               "BuildNetCore",
+              "BuildNetCoreRuntimeSpecific",
               "Client",
               "Compile",
-              "DotnetGenericBuildAndTest",
-              "DotnetRuntimeSpecific",
+              "CoverageReport",
+              "DocsGenerate",
               "ShowSettingsInformation",
-              "TestNetCore"
+              "SonarBuildTest",
+              "TestNetCore",
+              "Zip"
             ]
           }
         },

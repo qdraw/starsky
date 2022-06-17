@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace></RootNamespace>
+    <RootNamespace />
     <NoWarn>CS0649;CS0169</NoWarn>
     <NukeRootDirectory>..</NukeRootDirectory>
     <NukeScriptDirectory>..</NukeScriptDirectory>
@@ -16,5 +16,5 @@
     <PackageReference Include="ReportGenerator.Core" Version="5.1.9" />
     <PackageReference Include="SimpleExec" Version="10.0.0" />
   </ItemGroup>
-
+    
 </Project>

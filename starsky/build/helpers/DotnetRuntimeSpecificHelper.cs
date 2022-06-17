@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using build;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
@@ -9,6 +11,30 @@ namespace helpers;
 
 public static class DotnetRuntimeSpecificHelper
 {
+	public static void Clean(List<string> runtimesWithoutGeneric)
+	{
+		foreach(var runtime in runtimesWithoutGeneric)
+		{
+			var runtimeZip = $"{ZipperHelper.ZipPrefix}{runtime}.zip";
+			Console.WriteLine("runtimeZip: " + runtimeZip + " exists:" + File.Exists(runtimeZip));
+
+			if (File.Exists(runtimeZip))
+			{
+				File.Delete(runtimeZip);
+			}
+					
+			if (Directory.Exists($"./{runtime}"))
+			{
+				Directory.Delete($"./{runtime}");
+			}
+
+			// todo!
+			if (Directory.Exists($"obj/Release/net6.0/{runtime}"))
+			{
+				Directory.Delete($"obj/Release/net6.0/{runtime}");
+			}
+		}
+	}
 	
 	public static void RestoreNetCoreCommand(Solution solution,
 		List<string> runtimesWithoutGeneric)
