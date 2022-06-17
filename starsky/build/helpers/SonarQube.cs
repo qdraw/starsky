@@ -3,22 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using helpers;
-using Nuke.Common;
-using Nuke.Common.CI;
-using Nuke.Common.Execution;
-using Nuke.Common.Git;
-using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static SimpleExec.Command;
-using static helpers.GetSolutionAllProjects;
 
 namespace helpers;
 
@@ -40,9 +28,19 @@ public static class SonarQube
 		var envs =
 			Environment.GetEnvironmentVariables() as
 				IReadOnlyDictionary<string, string>;
-		
+
+		var toolList = DotNet($"tool list", rootDirectory, envs, null, true);
+		if ( toolList.Any(p => p.Text.Contains(SonarQubePackageName) 
+				&& toolList.Any(p => p.Text.Contains(SonarQubePackageVersion)) ))
+		{
+			Console.WriteLine("Skip tool install, it already exists");
+			return;
+		}
+
+		Console.WriteLine("Next: Create new manifest file");
 		DotNet($"new tool-manifest --force", rootDirectory, envs, null, true);
 
+		Console.WriteLine("Next: Install Sonar tool");
 		DotNetToolInstall(_ => _
 			.SetPackageName(SonarQubePackageName)
 			//.SetProcessArgumentConfigurator(_ => _.Add("-d"))
