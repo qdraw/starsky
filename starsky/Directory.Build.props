@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <RuntimeIdentifier>$(OverwriteRuntimeIdentifier)</RuntimeIdentifier>
+  </PropertyGroup>
+</Project>
