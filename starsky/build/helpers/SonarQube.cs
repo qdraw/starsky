@@ -27,6 +27,7 @@ public static class SonarQube
 	public const string SonarQubePackageName = "dotnet-sonarscanner";
 	public const string SonarQubePackageVersion = "5.6.0";
 	public const string GitCommand = "git";
+	public const string DefaultBranchName = "master";
 
 	public static void InstallSonarTool()
 	{
@@ -105,12 +106,12 @@ public static class SonarQube
         }
 
         // replace default value to master
-        if (branchName == "(no branch)" || branchName == "") {
-          branchName = "master";
+        if (branchName == "(no branch)" || string.IsNullOrEmpty(branchName)) {
+          branchName = DefaultBranchName;
         }
+        
         /* this should fix No inputs were found in config file 'tsconfig.json'.  */
-        var tsconfig = System.IO.Path.Combine(clientAppProject,"tsconfig.json");
-
+        var tsconfig = Path.Combine(clientAppProject,"tsconfig.json");
 
         // For Pull Requests  
         var isPrBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && EnvironmentVariable("GITHUB_JOB") != null && EnvironmentVariable("GITHUB_BASE_REF") != null;
