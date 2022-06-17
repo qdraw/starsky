@@ -11,22 +11,33 @@ public class ZipperHelper
 {
 
 	public const string ZipPrefix = "starsky-";
+
+	static string BasePath()
+	{
+		return Directory.GetParent(AppDomain.CurrentDomain
+			.BaseDirectory).Parent.Parent.Parent.FullName;
+	}
 	
 	public static void ZipGeneric()
 	{
-		if ( !Directory.Exists(Build.GenericRuntimeName) )
+		var fromFolder = Path.Join(BasePath(), Build.GenericRuntimeName);
+		
+		if ( !Directory.Exists(fromFolder) )
 		{
-			throw new Exception($"dir {Build.GenericRuntimeName} not found");
+			throw new Exception($"dir {Build.GenericRuntimeName} not found {fromFolder}");
 		}
 
-		if ( File.Exists(ZipPrefix + Build.GenericRuntimeName + ".zip") )
+		var zipPath = Path.Join(BasePath(),
+			ZipPrefix + Build.GenericRuntimeName + ".zip");
+
+		if ( File.Exists(zipPath) )
 		{
-			File.Delete(ZipPrefix + Build.GenericRuntimeName + ".zip");
+			File.Delete(zipPath);
 		}
 		
-		Console.WriteLine($"next: {Build.GenericRuntimeName} zip");
-		ZipFile.CreateFromDirectory(Build.GenericRuntimeName, 
-			ZipPrefix + Build.GenericRuntimeName + ".zip");
+		Console.WriteLine($"next: {Build.GenericRuntimeName} zip  ~ {fromFolder} -> {zipPath}");
+		ZipFile.CreateFromDirectory(fromFolder, 
+			zipPath);
 	}
 	
 	public static void ZipRuntimes(List<string> getRuntimesWithoutGeneric)
@@ -39,19 +50,23 @@ public class ZipperHelper
 
 		foreach ( var runtime in getRuntimesWithoutGeneric )
 		{
-			if ( !Directory.Exists(Build.GenericRuntimeName) )
+			var runtimeFullPath = Path.Join(BasePath(), runtime);
+
+			if ( !Directory.Exists(runtimeFullPath) )
 			{
-				throw new Exception($"dir {Build.GenericRuntimeName} not found");
+				throw new Exception($"dir {Build.GenericRuntimeName} not found ~ {runtimeFullPath}");
 			}
 
-			if ( File.Exists(ZipPrefix + Build.GenericRuntimeName + ".zip") )
+			var zipPath = Path.Join(BasePath(),
+				ZipPrefix + runtime + ".zip");
+			
+			if ( File.Exists(zipPath) )
 			{
-				File.Delete(ZipPrefix + Build.GenericRuntimeName + ".zip");
+				File.Delete(zipPath);
 			}
 
-			Console.WriteLine($"next: {runtime} zip");
-			ZipFile.CreateFromDirectory(runtime, 
-				ZipPrefix + Build.GenericRuntimeName + ".zip");
+			Console.WriteLine($"next: {runtime} zip ~ {runtimeFullPath} -> {zipPath}");
+			ZipFile.CreateFromDirectory(runtimeFullPath, zipPath);
 		}
 	}
 }
