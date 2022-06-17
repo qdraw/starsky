@@ -91,27 +91,32 @@ namespace build
 				ClientHelper.ClientBuildCommand();
 				ClientHelper.ClientTestCommand();
 			});
+
+		void ShowSettingsInfo()
+		{
+			Console.WriteLine("---");
+			Console.WriteLine(IsUnitTestDisabled()
+				? "Unit test disabled"
+				: "Unit test enabled");
+				
+			Console.WriteLine(NoSonar
+				? "Sonar disabled"
+				: "Sonar enabled");
+
+			Console.WriteLine("Branch:");
+			Console.WriteLine(GetBranchName());
+
+			Console.WriteLine("Runtime:");
+			foreach ( var runtime in GetRuntimesWithoutGeneric() )
+			{
+				Console.WriteLine(runtime);
+			}
+
+			Console.WriteLine("---");
+		}
 		
 		Target ShowSettingsInformation => _ => _
-			.Executes(() =>
-			{
-				Console.WriteLine(IsUnitTestDisabled()
-					? "Unit test disabled"
-					: "Unit test enabled");
-				
-				Console.WriteLine(NoSonar
-					? "Sonar disabled"
-					: "Sonar enabled");
-
-				Console.WriteLine("Branch:");
-				Console.WriteLine(GetBranchName());
-
-				Console.WriteLine("Runtime:");
-				foreach ( var runtime in GetRuntimesWithoutGeneric() )
-				{
-					Console.WriteLine(runtime);
-				}
-			});
+			.Executes(ShowSettingsInfo);
 
 		/// <summary>
 		/// Default Target
@@ -126,10 +131,10 @@ namespace build
 			.DependsOn(Zip);
 		
 		Target SonarBuildTest => _ => _
-			.DependsOn(ShowSettingsInformation)
 			.DependsOn(Client)
 			.Executes(() =>
 			{
+				ShowSettingsInfo();
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 				DotnetGenericHelper.RestoreNetCoreCommand(Solution);
 				InstallSonarTool();
@@ -144,7 +149,6 @@ namespace build
 			});
 		
 		Target BuildNetCoreRuntimeSpecific => _ => _
-			.DependsOn(ShowSettingsInformation)
 			.DependsOn(SonarBuildTest)
 			.Executes(() =>
 			{
@@ -154,6 +158,7 @@ namespace build
 					return;
 				}
 				
+				ShowSettingsInfo();
 				DotnetRuntimeSpecificHelper.Clean(GetRuntimesWithoutGeneric());
 				DotnetRuntimeSpecificHelper.RestoreNetCoreCommand(Solution,
 					GetRuntimesWithoutGeneric());
@@ -166,6 +171,7 @@ namespace build
 		Target BuildNetCore => _ => _
 			.Executes(() =>
 			{
+				ShowSettingsInfo();
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 				DotnetGenericHelper.RestoreNetCoreCommand(Solution);
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
@@ -174,24 +180,25 @@ namespace build
 		Target TestNetCore => _ => _
 			.Executes(() =>
 			{
+				ShowSettingsInfo();
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
 			});
 		
 		Target DocsGenerate => _ => _
-			.DependsOn(ShowSettingsInformation)
 			.DependsOn(SonarBuildTest)
 			.Executes(() =>
 			{
+				ShowSettingsInfo();
 				DocsGenerateHelper.Docs(GetRuntimesWithoutGeneric());
 			});
 		
 		Target Zip => _ => _
 			.DependsOn(Client)
 			.DependsOn(SonarBuildTest)
-			.DependsOn(ShowSettingsInformation)
 			.DependsOn(BuildNetCoreRuntimeSpecific)
 			.Executes(() =>
 			{
+				ShowSettingsInfo();
 				ZipperHelper.ZipGeneric();
 				ZipperHelper.ZipRuntimes(GetRuntimesWithoutGeneric());
 			});
@@ -200,11 +207,11 @@ namespace build
 		/// Generates html coverage report
 		/// </summary>
 		Target CoverageReport => _ => _
-			.DependsOn(ShowSettingsInformation)
 			.DependsOn(Client)
 			.DependsOn(SonarBuildTest)
 			.Executes(() =>
 			{
+				ShowSettingsInfo();
 				CoverageReportHelper.GenerateHtml(IsUnitTestDisabled());
 			});
 	}
