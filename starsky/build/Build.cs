@@ -122,11 +122,12 @@ namespace build
 			.DependsOn(SonarBuildTest)
 			.DependsOn(BuildNetCoreRuntimeSpecific)
 			.DependsOn(DocsGenerate)
-			.DependsOn(Zip)
-			.DependsOn(CoverageReport);
+			.DependsOn(CoverageReport)
+			.DependsOn(Zip);
 		
 		Target SonarBuildTest => _ => _
 			.DependsOn(ShowSettingsInformation)
+			.DependsOn(Client)
 			.Executes(() =>
 			{
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
@@ -136,6 +137,7 @@ namespace build
 					"starskytest/coverage-merge-sonarqube.xml");
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
+				// wait for
 				MergeCoverageFiles.Merge(NoUnitTest);
 				SonarEnd(NoUnitTest,NoSonar);
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
@@ -143,6 +145,7 @@ namespace build
 		
 		Target BuildNetCoreRuntimeSpecific => _ => _
 			.DependsOn(ShowSettingsInformation)
+			.DependsOn(SonarBuildTest)
 			.Executes(() =>
 			{
 				if ( !GetRuntimesWithoutGeneric().Any() )
@@ -176,13 +179,17 @@ namespace build
 		
 		Target DocsGenerate => _ => _
 			.DependsOn(ShowSettingsInformation)
+			.DependsOn(SonarBuildTest)
 			.Executes(() =>
 			{
 				DocsGenerateHelper.Docs(GetRuntimesWithoutGeneric());
 			});
 		
 		Target Zip => _ => _
+			.DependsOn(Client)
+			.DependsOn(SonarBuildTest)
 			.DependsOn(ShowSettingsInformation)
+			.DependsOn(BuildNetCoreRuntimeSpecific)
 			.Executes(() =>
 			{
 				ZipperHelper.ZipGeneric();
@@ -194,6 +201,8 @@ namespace build
 		/// </summary>
 		Target CoverageReport => _ => _
 			.DependsOn(ShowSettingsInformation)
+			.DependsOn(Client)
+			.DependsOn(SonarBuildTest)
 			.Executes(() =>
 			{
 				CoverageReportHelper.GenerateHtml(IsUnitTestDisabled());

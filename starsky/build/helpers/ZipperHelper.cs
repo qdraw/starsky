@@ -10,7 +10,7 @@ namespace helpers;
 public class ZipperHelper
 {
 
-	public const string ZipPrefix = "starksy-";
+	public const string ZipPrefix = "starsky-";
 	
 	public static void ZipGeneric()
 	{
