@@ -49,7 +49,7 @@ public static class MergeCoverageFiles
 			throw new Exception($"Missing .NET Core coverage file ./starskytest/netcore-coverage.opencover.xml");
 		}
 
-		var outputCoverageFile = Path.Combine(rootDirectory,"./starskytest/coverage-merge-cobertura.xml");
+		var outputCoverageFile = Path.Combine(rootDirectory,"starskytest/coverage-merge-cobertura.xml");
 
 		if (FileExists(outputCoverageFile)) {
 			DeleteFile(outputCoverageFile);
