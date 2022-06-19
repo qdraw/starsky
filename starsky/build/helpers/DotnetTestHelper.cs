@@ -37,7 +37,7 @@ public static class DotnetTestHelper
 
 	public static void TestNetCoreGenericCommand(Configuration configuration, bool noUnitTest)
     {
-	    Information(">>> next: test");
+	    Information(">> next: TestNetCoreGenericCommand");
 	    
 	    if(noUnitTest)
         {

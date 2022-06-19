@@ -17,9 +17,18 @@ public static class SonarQube
 	public const string GitCommand = "git";
 	public const string DefaultBranchName = "master";
 
-	public static void InstallSonarTool()
+	public static void InstallSonarTool(bool noUnitTest, bool noSonar)
 	{
-
+		if(noUnitTest)
+		{
+			Information($">> SonarBegin is disable due the --no-unit-test flag");
+			return;
+		}
+		if( noSonar ) {
+			Information($">> SonarBegin is disable due the --no-sonar flag");
+			return;
+		}
+		
 		var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
 			.BaseDirectory).Parent.Parent.Parent.FullName;
 			
@@ -62,7 +71,7 @@ public static class SonarQube
 		Console.WriteLine(input);
 	}
 	
-	public static void SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
+	public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
 	{
 		var key = EnvironmentVariable("STARSKY_SONAR_KEY");
         var login = EnvironmentVariable("STARSKY_SONAR_LOGIN");
@@ -75,18 +84,18 @@ public static class SonarQube
 
         if( string.IsNullOrEmpty(key) || string.IsNullOrEmpty(login) || string.IsNullOrEmpty(organisation) ) {
             Information($">> SonarQube is disabled $ key={key}|login={login}|organisation={organisation}");
-            return;
+            return false;
         }
 
         if(noUnitTest)
         {
           Information($">> SonarBegin is disable due the --no-unit-test flag");
-          return;
+          return false;
         }
 
         if( noSonar ) {
           Information($">> SonarBegin is disable due the --no-sonar flag");
-          return;
+          return false;
         }
 
         // // get first test project
@@ -157,7 +166,7 @@ public static class SonarQube
         }
 
         DotNet(sonarArguments.ToString());
-
+        return true;
 	}
 
 	public static void SonarEnd(bool noUnitTest, bool noSonar)

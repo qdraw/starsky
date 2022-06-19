@@ -137,14 +137,14 @@ namespace build
 				ShowSettingsInfo();
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 				DotnetGenericHelper.RestoreNetCoreCommand(Solution);
-				InstallSonarTool();
-				SonarBegin(NoUnitTest,NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),
+				InstallSonarTool(IsUnitTestDisabled(), NoSonar);
+				SonarBegin(IsUnitTestDisabled(),NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),
 					"starskytest/coverage-merge-sonarqube.xml");
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
 				// wait for
-				MergeCoverageFiles.Merge(NoUnitTest);
-				SonarEnd(NoUnitTest,NoSonar);
+				MergeCoverageFiles.Merge(IsUnitTestDisabled());
+				SonarEnd(IsUnitTestDisabled(),NoSonar);
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
 			});
 		
