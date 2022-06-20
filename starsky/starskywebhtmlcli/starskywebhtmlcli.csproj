@@ -3,7 +3,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ProjectGuid>{76d7bf62-9f1d-48f1-9035-dceb01de55c3}</ProjectGuid>
-        <RuntimeFrameworkVersion>6.0.5</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>6.0.6</RuntimeFrameworkVersion>
         <LangVersion>8.0</LangVersion>
         <PreserveCompilationContext>true</PreserveCompilationContext>
         <DebugType>Full</DebugType>
