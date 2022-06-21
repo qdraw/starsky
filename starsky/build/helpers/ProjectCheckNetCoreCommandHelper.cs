@@ -7,6 +7,8 @@ public static class ProjectCheckNetCoreCommandHelper
 {
 	public static void ProjectCheckNetCoreCommand()
 	{
+		ClientHelper.NpmPreflight();
+
 		// check branch names on CI
 		Run(NpmBaseCommand, "run release-version-check", BuildToolsPath());
 		

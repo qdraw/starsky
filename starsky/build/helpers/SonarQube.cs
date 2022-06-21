@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using build;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -70,6 +71,12 @@ public static class SonarQube
 	{
 		Console.WriteLine(input);
 	}
+
+	private static void IsJavaInstalled()
+	{
+		Console.WriteLine("Checking if Java is installed, will fail if not on this step");
+		Run(Build.JavaBaseCommand, "-version");
+	}
 	
 	public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
 	{
@@ -97,6 +104,8 @@ public static class SonarQube
           Information($">> SonarBegin is disable due the --no-sonar flag");
           return false;
         }
+
+        IsJavaInstalled();
 
         // // get first test project
         // var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();

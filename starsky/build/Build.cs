@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using helpers;
 using Nuke.Common;
 using Nuke.Common.CI;
-using Nuke.Common.Git;
 using Nuke.Common.ProjectModel;
 using static helpers.SonarQube;
 
@@ -79,14 +77,24 @@ namespace build
 			"starsky"
 		};
     
+		/// <summary>
+		/// Npm and node are required for preflight checks and building frontend code
+		/// </summary>
 		public const string NpmBaseCommand = "npm";
 		public const string ClientAppFolder = "starsky/clientapp";
+		
+		/// <summary>
+		/// Java is only needed for SonarQube, skip sonarCube with the --no-sonar flag
+		/// </summary>
+		public const string JavaBaseCommand = "java";
 
 		Target Client => _ => _
 			.Executes(() =>
 			{
 				Console.WriteLine("> client");
+				ShowSettingsInfo();
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
+				ClientHelper.NpmPreflight();
 				ClientHelper.ClientCiCommand();
 				ClientHelper.ClientBuildCommand();
 				ClientHelper.ClientTestCommand();
