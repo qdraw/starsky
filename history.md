@@ -43,7 +43,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Back-end_ Upgrade Swashbuckle, Test.Sdk, TestFramework to latest version (PR #749)
 - [x]   (Fixed) _Back-end_ retry: InvalidOperationException: Can't replace active reader (PR #745)
 - [x]   (Fixed) _Front-end_ Cmd or Ctrl + A in Search/Trash is selecting all items (PR #755)
-- [x]   (Changed) _Tools_ Change build to from Cake to Nuke (PR #801, PR #791, PR #805)
+- [x]   (Changed) _Tools_ Change build tool to from Cake to Nuke (PR #801, PR #791, PR #805)
 - todo fix https://github.com/qdraw/starsky/issues/771
 
 # version 0.5.0-beta.5 - 2022-05-11
