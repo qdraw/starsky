@@ -86,7 +86,11 @@ public static class DotnetRuntimeSpecificHelper
 				.EnableNoRestore()
 				.EnableNoLogo()
 				.SetConfiguration(configuration)
-				.SetProcessArgumentConfigurator(args => args.Add($"/p:OverwriteRuntimeIdentifier={runtime}")));
+				.SetProcessArgumentConfigurator(args => 
+					args
+						.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
+						.Add("/p:noSonar=true")
+				));
 			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(runtime, solution);
 		}
 	}
