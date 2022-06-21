@@ -76,7 +76,7 @@ public static class SonarQube
 	{
 		
 		var result = ReadAsync(Build.JavaBaseCommand, "-version").Result;
-
+		return true;
 	}
 	
 	public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
