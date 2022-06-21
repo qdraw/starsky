@@ -46,7 +46,7 @@ node starsky-tools/build-tools/app-version-update.js
 
 
 # version 0.5.0-beta.5 - 2022-05-11
-- [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4) (PR #720)
+- [x]   (Changed) _Back-end_ Upgraded in same release ~ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4)   (PR #720)
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (except createRoot change) (PR #724)
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 5.0.1 (2022-04-12))_ (PR #724)
 - [x]   (Added) _Back-end_ Fixed locale issue with Notification API _(CultureInfo.CurrentCulture)_ (PR #730)
@@ -56,9 +56,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Front-end_ Upgrade npm packages tools and ClientApp (PR #732)
 - [x]   (Change) _Back-end_ Changed SHA1CryptoServiceProvider to SHA1.Create (PR #733)
 - [x]   (Change) _Back-end_ For Development change http port to 4000 instead of 5000 (PR #738)
-- [x]   (Changed) Back-end [Upgrade to .NET 6 - SDK 6.0.300 (Runtime: 6.0.5)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.5/6.0.5.md) (PR #746)
+- [x]   (Changed) Back-end Upgraded in same release ~ Upgrade to .NET 6 - SDK 6.0.300 (Runtime: 6.0.5) (PR #746)
 - [x]   (Fixed) _App_ In the StarskyApp click with the middle mouse button on item gives a blank page (Issue #743 / PR #743) 
 - [x]   (Fixed) _App_ In the StarskyApp Reload waiting to go to app keeps hanging (Issue #737 / PR #743)
+- [x]   (Changed) Back-end [Upgrade to .NET 6 - SDK 6.0.301 (Runtime: 6.0.6)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.6/6.0.6.md) (PR #796)
 
 # version 0.5.0-beta.4 - 2022-04-15
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.201 (Runtime: 6.0.3) (PR #674)
