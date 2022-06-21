@@ -47,6 +47,12 @@ describe('Upload to folder', () => {
     uploadFileName1(config.url, fileName1)
   })
 
+  function setToHeaderAgain (): void {
+    cy.intercept('starsky/api/upload', (req) => {
+      req.headers.to = '/starsky-end2end-test'
+    })
+  }
+
   it('Upload more content and check if the name exist', {
     retries: { runMode: 2, openMode: 2 }
   }, () => {
@@ -60,6 +66,7 @@ describe('Upload to folder', () => {
     const fileType = 'image/jpeg'
     const fileInput = '.menu-option--input input[type=file]'
 
+    setToHeaderAgain()
     cy.intercept('/starsky/api/upload').as('upload2')
     cy.uploadFile(fileName2, fileType, fileInput)
     cy.wait('@upload2')
@@ -69,6 +76,7 @@ describe('Upload to folder', () => {
       expect($lis.eq(0)).to.contain(fileName2)
     })
 
+    setToHeaderAgain()
     cy.intercept('/starsky/api/upload').as('upload3')
     cy.uploadFile(fileName3, fileType, fileInput)
     cy.wait('@upload3')
@@ -78,6 +86,7 @@ describe('Upload to folder', () => {
       expect($lis.eq(0)).to.contain(fileName3)
     })
 
+    setToHeaderAgain()
     cy.intercept('/starsky/api/upload').as('upload4')
     cy.uploadFile(fileName4, fileType, fileInput)
     cy.wait('@upload4')

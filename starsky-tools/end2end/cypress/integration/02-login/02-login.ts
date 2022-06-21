@@ -26,6 +26,10 @@ describe('Login', () => {
 
     cy.intercept('/starsky/api/account/status').as('status')
 
+    cy.intercept('starsky/api/account/login', (req) => {
+      req.headers['Content-type'] = 'application/x-www-form-urlencoded'
+    })
+
     /* Start flow (connection header prevents script from
         occassionaly throwing ESOCKETTIMEDOUT errors in CI) */
     cy.visit(config.url, {

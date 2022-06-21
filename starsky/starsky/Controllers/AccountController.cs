@@ -22,7 +22,8 @@ namespace starsky.Controllers
         private readonly IAntiforgery _antiForgery;
         private readonly IStorage _storageHostFullPathFilesystem;
 
-        public AccountController(IUserManager userManager, AppSettings appSettings, IAntiforgery antiForgery, ISelectorStorage selectorStorage)
+        public AccountController(IUserManager userManager, AppSettings appSettings, 
+	        IAntiforgery antiForgery, ISelectorStorage selectorStorage)
         {
             _userManager = userManager;
             _appSettings = appSettings;
@@ -51,7 +52,7 @@ namespace starsky.Controllers
 				return Json("There are no accounts, you must create an account first");
 			}
 			
-			if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
+			if ( User.Identity?.IsAuthenticated == false ) return Unauthorized("false");
 
 			// use model to avoid circular references
 			var currentUser = _userManager.GetCurrentUser(HttpContext);
@@ -125,7 +126,7 @@ namespace starsky.Controllers
             } 
             
             await _userManager.SignIn(HttpContext, validateResult.User, model.RememberMe);
-            if ( User.Identity.IsAuthenticated)
+            if ( User.Identity?.IsAuthenticated == true)
             {
 	            return Json("Login Success");
             }
@@ -178,7 +179,7 @@ namespace starsky.Controllers
         [Authorize]
         public async Task<IActionResult> ChangeSecret(ChangePasswordViewModel model)
         {
-	        if ( !User.Identity.IsAuthenticated ) return Unauthorized("please login first");
+	        if ( User.Identity?.IsAuthenticated == false ) return Unauthorized("please login first");
 
 	        if ( !ModelState.IsValid || model.ChangedPassword != model.ChangedConfirmPassword )
 		        return BadRequest("Model is not correct");
@@ -222,7 +223,7 @@ namespace starsky.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-	        if ( await IsAccountRegisterClosed(User.Identity.IsAuthenticated) )
+	        if ( await IsAccountRegisterClosed(User.Identity?.IsAuthenticated) )
 	        {
 		        Response.StatusCode = 403;
 		        return Json("Account Register page is closed");
@@ -236,7 +237,7 @@ namespace starsky.Controllers
 
             // If we got this far, something failed, redisplay form
             Response.StatusCode = 400;
-            return Json("Model is not correct");
+            return Json("Register model is not correct");
         }
 
         /// <summary>
@@ -244,9 +245,9 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="userIdentityIsAuthenticated"></param>
         /// <returns></returns>
-        private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
+        private async Task<bool> IsAccountRegisterClosed(bool? userIdentityIsAuthenticated)
         {
-	        if ( userIdentityIsAuthenticated ) return false;
+	        if ( userIdentityIsAuthenticated == true ) return false;
 	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsersAsync()).Any();
         }
         
@@ -264,7 +265,7 @@ namespace starsky.Controllers
         public async Task<IActionResult> RegisterStatus()
         {
 	        if ( !(await _userManager.AllUsersAsync()).Any() ) Response.StatusCode = 202;
-	        if ( !await IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
+	        if ( !await IsAccountRegisterClosed(User.Identity?.IsAuthenticated) ) return Json("RegisterStatus open");
 	        Response.StatusCode = 403;
 	        return Json("Account Register page is closed");
         }

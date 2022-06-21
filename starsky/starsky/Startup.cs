@@ -233,6 +233,7 @@ namespace starsky
 	        new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 			
 			app.UseContentSecurityPolicy();
+			app.UseAntiForgeryCookieHeader();
 
 			void PrepareResponse(StaticFileResponseContext ctx)
 			{
@@ -293,7 +294,7 @@ namespace starsky
 			
 			app.UseWebSockets();
 			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings?.UseRealtime);
-
+			
 	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
 
 	        if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings

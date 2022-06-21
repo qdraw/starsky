@@ -1,4 +1,5 @@
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
+import { getCookie } from "./get-cookie";
 
 const FetchPost = async (
   url: string,
@@ -6,22 +7,20 @@ const FetchPost = async (
   method: "post" | "delete" = "post",
   headers: object = {}
 ): Promise<IConnectionDefault> => {
-  function getCookie(name: string): string {
-    var match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-    if (match) return match[2];
-    return "X-XSRF-TOKEN";
-  }
-
   const settings: RequestInit = {
     method: method,
     body,
     credentials: "include" as RequestCredentials,
     headers: {
-      "X-XSRF-TOKEN": getCookie("X-XSRF-TOKEN"),
       Accept: "application/json",
       ...headers
     }
   };
+
+  const xsrfToken = getCookie("X-XSRF-TOKEN");
+  if (xsrfToken) {
+    ((settings.headers as any)["X-XSRF-TOKEN"] as string) = xsrfToken;
+  }
 
   if (typeof body === "string") {
     (settings.headers as any)["Content-type"] =

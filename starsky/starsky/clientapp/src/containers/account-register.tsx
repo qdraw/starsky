@@ -5,6 +5,8 @@ import useLocation from "../hooks/use-location";
 import DocumentTitle from "../shared/document-title";
 import FetchGet from "../shared/fetch-get";
 import FetchPost from "../shared/fetch-post";
+import { getCookie } from "../shared/get-cookie";
+import isDev from "../shared/is-dev";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url-query";
 import { validateLoginForm } from "../shared/validate-login-form";
@@ -108,9 +110,16 @@ const AccountRegister: FunctionComponent = () => {
 
     setLoading(true);
 
+    if (isDev() && !getCookie("X-XSRF-TOKEN")) {
+      const currentUrl = window.location.href.replace(":3000", ":4000");
+      await FetchGet(currentUrl);
+    }
+
     const response = await FetchPost(
       new UrlQuery().UrlAccountRegisterApi(),
-      `Email=${userEmail}&Password=${userPassword}&ConfirmPassword=${userConfirmPassword}`
+      `Email=${userEmail}&Password=${userPassword}&ConfirmPassword=${userConfirmPassword}`,
+      "post",
+      { "Content-Type": "application/x-www-form-urlencoded" }
     );
 
     if (response.statusCode === 400 || response.statusCode === 403) {

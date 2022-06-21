@@ -29,6 +29,10 @@ describe('Create Account', () => {
     if (!config.isEnabled) return false
     cy.checkStatusCode(config.urlStatusApi, [200, 202])
 
+    cy.intercept('starsky/api/account/register', (req) => {
+      req.headers['Content-type'] = 'application/x-www-form-urlencoded'
+    })
+
     /* Start flow (connection header prevents script from
         occassionaly throwing ESOCKETTIMEDOUT errors in CI) */
     cy.visit(config.url, {
