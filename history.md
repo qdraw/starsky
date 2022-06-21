@@ -35,15 +35,16 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
-# version 0.5.0-beta.6 _(Unreleased)_ - 2022-05-??
+
+# version 0.5.0-beta.6 _(Unreleased)_ - 2022-06-??
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (Part 2) CreateRoot change (PR #748)
 - [x]   (Fixed) _Front-end_ Also allow realtime updates on home page (PR #748)
 - [x]   (Security) _Back-end_ Upgrade HealthChecks-packages, RazorLight, MetadataExtractor, System.Text.Json to latest version (PR #749)
 - [x]   (Security) _Back-end_ Upgrade Swashbuckle, Test.Sdk, TestFramework to latest version (PR #749)
 - [x]   (Fixed) _Back-end_ retry: InvalidOperationException: Can't replace active reader (PR #745)
 - [x]   (Fixed) _Front-end_ Cmd or Ctrl + A in Search/Trash is selecting all items (PR #755)
+- [x]   (Changed) _Tools_ Change build to from Cake to Nuke (PR #801, PR #791, PR #805)
 - todo fix https://github.com/qdraw/starsky/issues/771
-
 
 # version 0.5.0-beta.5 - 2022-05-11
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4) (PR #720)
