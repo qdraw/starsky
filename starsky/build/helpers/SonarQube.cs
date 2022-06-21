@@ -72,11 +72,9 @@ public static class SonarQube
 		Console.WriteLine(input);
 	}
 
-	private static bool IsJavaInstalled()
+	private static void IsJavaInstalled()
 	{
-		
-		var result = ReadAsync(Build.JavaBaseCommand, "-version").Result;
-		return true;
+		Run(Build.JavaBaseCommand, "-version");
 	}
 	
 	public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
