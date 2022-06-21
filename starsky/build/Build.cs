@@ -88,6 +88,7 @@ namespace build
 			{
 				Console.WriteLine("> client");
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
+				ClientHelper.NpmPreflight();
 				ClientHelper.ClientCiCommand();
 				ClientHelper.ClientBuildCommand();
 				ClientHelper.ClientTestCommand();

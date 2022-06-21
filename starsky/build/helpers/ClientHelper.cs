@@ -19,6 +19,11 @@ public static class ClientHelper
 		return Path.Combine(rootDirectory, ClientAppFolder);
 	}
 	
+	public static void NpmPreflight()
+	{
+		Run(NpmBaseCommand, "-v");
+	}	
+	
 	public static void ClientCiCommand()
 	{
 		Run(NpmBaseCommand, "ci --legacy-peer-deps --prefer-offline --no-audit", ClientAppFolder, 
