@@ -74,6 +74,7 @@ public static class SonarQube
 
 	private static void IsJavaInstalled()
 	{
+		Console.WriteLine("Checking if Java is installed, will fail if not on this step");
 		Run(Build.JavaBaseCommand, "-version");
 	}
 	

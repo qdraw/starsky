@@ -21,6 +21,7 @@ public static class ClientHelper
 	
 	public static void NpmPreflight()
 	{
+		Console.WriteLine("Checking if Npm (and implicit: Node) is installed, will fail if not on this step");
 		Run(NpmBaseCommand, "-v");
 	}	
 	
