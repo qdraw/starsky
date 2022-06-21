@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using build;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -69,6 +70,13 @@ public static class SonarQube
 	private static void Information(string input)
 	{
 		Console.WriteLine(input);
+	}
+
+	private static bool IsJavaInstalled()
+	{
+		
+		var result = ReadAsync(Build.JavaBaseCommand, "-version").Result;
+
 	}
 	
 	public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)

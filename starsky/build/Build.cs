@@ -81,6 +81,7 @@ namespace build
     
 		public const string NpmBaseCommand = "npm";
 		public const string ClientAppFolder = "starsky/clientapp";
+		public const string JavaBaseCommand = "java";
 
 		Target Client => _ => _
 			.Executes(() =>
