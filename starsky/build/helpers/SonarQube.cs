@@ -106,6 +106,8 @@ public static class SonarQube
           return false;
         }
 
+        IsJavaInstalled();
+
         // // get first test project
         // var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();
         // string coverageFile = System.IO.Path.Combine(firstTestProject, "coverage-merge-sonarqube.xml");
