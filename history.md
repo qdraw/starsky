@@ -42,6 +42,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Back-end_ Upgrade Swashbuckle, Test.Sdk, TestFramework to latest version (PR #749)
 - [x]   (Fixed) _Back-end_ retry: InvalidOperationException: Can't replace active reader (PR #745)
 - [x]   (Fixed) _Front-end_ Cmd or Ctrl + A in Search/Trash is selecting all items (PR #755)
+- [x]   (Changed) Back-end [Upgrade to .NET 6 - SDK 6.0.301 (Runtime: 6.0.6)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.6/6.0.6.md) (PR #796)
 - todo fix https://github.com/qdraw/starsky/issues/771
 
 
@@ -56,10 +57,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Front-end_ Upgrade npm packages tools and ClientApp (PR #732)
 - [x]   (Change) _Back-end_ Changed SHA1CryptoServiceProvider to SHA1.Create (PR #733)
 - [x]   (Change) _Back-end_ For Development change http port to 4000 instead of 5000 (PR #738)
-- [x]   (Changed) Back-end Upgraded in same release ~ Upgrade to .NET 6 - SDK 6.0.300 (Runtime: 6.0.5) (PR #746)
+- [x]   (Changed) Back-end Upgrade to .NET 6 - SDK 6.0.300 (Runtime: 6.0.5) (PR #746)
 - [x]   (Fixed) _App_ In the StarskyApp click with the middle mouse button on item gives a blank page (Issue #743 / PR #743) 
 - [x]   (Fixed) _App_ In the StarskyApp Reload waiting to go to app keeps hanging (Issue #737 / PR #743)
-- [x]   (Changed) Back-end [Upgrade to .NET 6 - SDK 6.0.301 (Runtime: 6.0.6)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.6/6.0.6.md) (PR #796)
 
 # version 0.5.0-beta.4 - 2022-04-15
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.201 (Runtime: 6.0.3) (PR #674)
