@@ -17,15 +17,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup .NET Core 3.1
+      - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.300
+          dotnet-version: 6.0.301
 
       - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --runtime "linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64" --no-unit-test    
+        run: bash build.sh --runtime "linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test    
    
       - name: Upload linux-arm as build artifact
         uses: actions/upload-artifact@v2
@@ -56,6 +56,12 @@ jobs:
         with:
           name: osx-x64
           path: ./starsky/starsky-osx-x64.zip      
+ 
+      - name: Upload osx-arm64 as build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: osx-arm64
+          path: ./starsky/starsky-osx-arm64.zip      
  
       - name: Upload slack-notification as build artifact
         uses: actions/upload-artifact@v2
@@ -180,6 +186,7 @@ jobs:
             - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
             - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's 
             - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *10.15* or newer
+            - starsky-osx-arm64.zip - Starsky as Web Application (start from command line) only for Apple Silicon (newer then end of 2020) Mac OS *12* or newer
             - starsky-win7-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 (Intel 64 bits)
 
             ## Changelog
@@ -194,7 +201,7 @@ jobs:
           path: ./starsky
            
       - name: Upload Release Asset osx-x64
-        id: upload-osx
+        id: upload-osx-x64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -202,6 +209,23 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./starsky/starsky-osx-x64.zip
           asset_name: starsky-osx-x64.zip
+          asset_content_type: application/zip      
+
+      - name: Download osx-arm64 as build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: osx-arm64
+          path: ./starsky
+           
+      - name: Upload Release Asset osx-arm64
+        id: upload-osx-arm64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./starsky/starsky-osx-arm64.zip
+          asset_name: starsky-osx-arm64.zip
           asset_content_type: application/zip      
 
       - name: Download win7-x64 as build artifact

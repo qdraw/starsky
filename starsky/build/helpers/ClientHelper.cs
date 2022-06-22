@@ -19,6 +19,12 @@ public static class ClientHelper
 		return Path.Combine(rootDirectory, ClientAppFolder);
 	}
 	
+	public static void NpmPreflight()
+	{
+		Console.WriteLine("Checking if Npm (and implicit: Node) is installed, will fail if not on this step");
+		Run(NpmBaseCommand, "-v");
+	}	
+	
 	public static void ClientCiCommand()
 	{
 		Run(NpmBaseCommand, "ci --legacy-peer-deps --prefer-offline --no-audit", ClientAppFolder, 

@@ -5,7 +5,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{dcf1f6cb-1c65-4394-bef7-cccc2967b56c}</ProjectGuid>
-        <RuntimeFrameworkVersion>6.0.5</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>6.0.6</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <Version>0.5.0-beta.6</Version>
     </PropertyGroup>
