@@ -47,6 +47,10 @@
             "VSCode"
           ]
         },
+        "NoClient": {
+          "type": "boolean",
+          "description": "Skip clientside code"
+        },
         "NoLogo": {
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"

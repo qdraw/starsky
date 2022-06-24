@@ -34,7 +34,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 					// Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
 					// are case-insensitive.
 					if (destinationPath.StartsWith(storeZipFolderFullPath, StringComparison.Ordinal))
-						entry.ExtractToFile(destinationPath);
+						entry.ExtractToFile(destinationPath,true);
 				}
 			}
 

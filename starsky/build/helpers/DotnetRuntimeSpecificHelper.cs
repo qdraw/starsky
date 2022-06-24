@@ -23,15 +23,20 @@ public static class DotnetRuntimeSpecificHelper
 				File.Delete(runtimeZip);
 			}
 					
-			if (Directory.Exists($"./{runtime}"))
+			if (Directory.Exists(Path.Combine(BasePath(), runtime)))
 			{
-				Directory.Delete($"./{runtime}");
+				Console.WriteLine($"next rm folder - {Path.Combine(BasePath(), runtime)}");
+				Directory.Delete(Path.Combine(BasePath(), runtime),true);
+			}
+			else
+			{
+				Console.WriteLine($"folder is not removed - {Path.Combine(BasePath(), runtime)}");
 			}
 
 			// todo!
 			if (Directory.Exists($"obj/Release/net6.0/{runtime}"))
 			{
-				Directory.Delete($"obj/Release/net6.0/{runtime}");
+				Directory.Delete($"obj/Release/net6.0/{runtime}",true);
 			}
 		}
 	}
@@ -94,5 +99,9 @@ public static class DotnetRuntimeSpecificHelper
 			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(runtime, solution);
 		}
 	}
-
+	static string BasePath()
+	{
+		return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
+			?.Parent?.Parent?.Parent?.FullName;
+	}
 }

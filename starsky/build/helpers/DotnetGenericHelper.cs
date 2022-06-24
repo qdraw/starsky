@@ -1,5 +1,7 @@
+using System;
 using build;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static build.Build;
@@ -26,6 +28,27 @@ public static class DotnetGenericHelper
 			.EnableNoRestore()
 			.EnableNoLogo()
 			.SetProjectFile(solution));
+
+		CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
+	}
+
+	public static void DownloadDependencies(Solution solution,
+		Configuration configuration, string geoCliCsproj)
+	{
+		CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
+
+		try
+		{
+			DotNetRun(_ =>  _
+				.SetConfiguration(configuration)
+				.EnableNoRestore()
+				.EnableNoBuild()
+				.SetProjectFile(geoCliCsproj));
+		}
+		catch ( Exception exception)
+		{
+			Console.WriteLine(exception.Message);
+		}
 
 		CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
 	}

@@ -40,6 +40,9 @@ namespace build
 		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)")] 
 		readonly bool NoTest;
 	
+		[Parameter("Skip clientside code")] 
+		readonly bool NoClient;
+		
 		bool IsUnitTestDisabled()
 		{
 			return NoUnitTest || NoUnitTests || NoTest;
@@ -91,6 +94,11 @@ namespace build
 		Target Client => _ => _
 			.Executes(() =>
 			{
+				if ( NoClient )
+				{
+					Console.WriteLine("--no-client flag is used");
+					return;
+				}
 				Console.WriteLine("> client");
 				ShowSettingsInfo();
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
@@ -150,7 +158,7 @@ namespace build
 					"starskytest/coverage-merge-sonarqube.xml");
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
-				// wait for
+				DotnetGenericHelper.DownloadDependencies(Solution,Configuration, "starskygeocli/starskygeocli.csproj");
 				MergeCoverageFiles.Merge(IsUnitTestDisabled());
 				SonarEnd(IsUnitTestDisabled(),NoSonar);
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
