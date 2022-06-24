@@ -32,9 +32,22 @@ public static class DotnetGenericHelper
 		CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
 	}
 
+	/// <summary>
+	/// Download Exiftool and geo deps
+	/// </summary>
+	/// <param name="solution">where</param>
+	/// <param name="configuration">is Release</param>
+	/// <param name="geoCliCsproj">geo.csproj file</param>
+	/// <param name="noDependencies">skip this step if true</param>
 	public static void DownloadDependencies(Solution solution,
-		Configuration configuration, string geoCliCsproj)
+		Configuration configuration, string geoCliCsproj, bool noDependencies)
 	{
+		if ( noDependencies )
+		{
+			Console.WriteLine("skip --no-dependencies");
+			return;
+		}
+		
 		CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
 
 		try
@@ -47,7 +60,9 @@ public static class DotnetGenericHelper
 		}
 		catch ( Exception exception)
 		{
+			Console.WriteLine("--");
 			Console.WriteLine(exception.Message);
+			Console.WriteLine("-- continue");
 		}
 
 		CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);

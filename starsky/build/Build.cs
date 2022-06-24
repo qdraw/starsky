@@ -43,6 +43,9 @@ namespace build
 		[Parameter("Skip clientside code")] 
 		readonly bool NoClient;
 		
+		[Parameter("Skip Dependencies download e.g. exiftool / geo data, nuget/npm deps are always installed")] 
+		readonly bool NoDependencies;
+		
 		bool IsUnitTestDisabled()
 		{
 			return NoUnitTest || NoUnitTests || NoTest;
@@ -158,7 +161,8 @@ namespace build
 					"starskytest/coverage-merge-sonarqube.xml");
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
-				DotnetGenericHelper.DownloadDependencies(Solution,Configuration, "starskygeocli/starskygeocli.csproj");
+				DotnetGenericHelper.DownloadDependencies(Solution,Configuration, 
+					"starskygeocli/starskygeocli.csproj",NoDependencies);
 				MergeCoverageFiles.Merge(IsUnitTestDisabled());
 				SonarEnd(IsUnitTestDisabled(),NoSonar);
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
