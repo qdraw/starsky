@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using build;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
@@ -39,8 +40,10 @@ public static class DotnetGenericHelper
 	/// <param name="configuration">is Release</param>
 	/// <param name="geoCliCsproj">geo.csproj file</param>
 	/// <param name="noDependencies">skip this step if true</param>
+	/// <param name="genericNetcoreFolder">genericNetcoreFolder</param>
 	public static void DownloadDependencies(Solution solution,
-		Configuration configuration, string geoCliCsproj, bool noDependencies)
+		Configuration configuration, string geoCliCsproj, bool noDependencies,
+		string genericNetcoreFolder)
 	{
 		if ( noDependencies )
 		{
@@ -52,6 +55,7 @@ public static class DotnetGenericHelper
 
 		try
 		{
+			Environment.SetEnvironmentVariable("app__TempFolder",Path.Combine(BasePath(), genericNetcoreFolder));
 			DotNetRun(_ =>  _
 				.SetConfiguration(configuration)
 				.EnableNoRestore()
@@ -65,6 +69,7 @@ public static class DotnetGenericHelper
 			Console.WriteLine("-- continue");
 		}
 
+		Environment.SetEnvironmentVariable("app__TempFolder", string.Empty);
 		CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
 	}
 
@@ -86,5 +91,11 @@ public static class DotnetGenericHelper
 				.EnableNoLogo());
 		}
 		CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
+	}
+	
+	static string BasePath()
+	{
+		return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
+			?.Parent?.Parent?.Parent?.FullName;
 	}
 }

@@ -40,7 +40,17 @@ public static class DotnetRuntimeSpecificHelper
 			}
 		}
 	}
-	
+
+	public static void CopyTempFiles(bool noDependencies)
+	{
+		if ( noDependencies )
+		{
+			return;
+		}
+		
+		
+	}
+
 	public static void RestoreNetCoreCommand(Solution solution,
 		List<string> runtimesWithoutGeneric)
 	{
