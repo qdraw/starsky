@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using build;
+using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
@@ -41,14 +42,23 @@ public static class DotnetRuntimeSpecificHelper
 		}
 	}
 
-	public static void CopyTempFiles(bool noDependencies)
+	public static void CopyDependenciesTempFiles(bool noDependencies,
+		string genericNetcoreFolder, List<string> getRuntimesWithoutGeneric)
 	{
-		if ( noDependencies )
+		if ( noDependencies || string.IsNullOrWhiteSpace(genericNetcoreFolder) )
 		{
 			return;
 		}
-		
-		
+
+		var genericTempFolderFullPath =
+			Path.Combine(BasePath(), genericNetcoreFolder, "temp");
+		foreach ( var runtime in getRuntimesWithoutGeneric )
+		{
+			var runtimeTempFolder = Path.Combine(BasePath(), runtime, "temp");
+			FileSystemTasks.CopyDirectoryRecursively(genericTempFolderFullPath, 
+				runtimeTempFolder, DirectoryExistsPolicy.Merge, FileExistsPolicy.Overwrite);
+		}
+
 	}
 
 	public static void RestoreNetCoreCommand(Solution solution,

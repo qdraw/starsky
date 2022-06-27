@@ -51,6 +51,10 @@
           "type": "boolean",
           "description": "Skip clientside code"
         },
+        "NoDependencies": {
+          "type": "boolean",
+          "description": "Skip Dependencies download e.g. exiftool / geo data, nuget/npm deps are always installed"
+        },
         "NoLogo": {
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
@@ -106,6 +110,7 @@
               "Compile",
               "CoverageReport",
               "DocsGenerate",
+              "DownloadDependencies",
               "ShowSettingsInformation",
               "SonarBuildTest",
               "TestNetCore",
@@ -129,6 +134,7 @@
               "Compile",
               "CoverageReport",
               "DocsGenerate",
+              "DownloadDependencies",
               "ShowSettingsInformation",
               "SonarBuildTest",
               "TestNetCore",

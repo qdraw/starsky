@@ -151,6 +151,11 @@ namespace starsky.foundation.writemeta.Services
 			if ( imageExifToolVersionFolder != null )
 			{
 				var exifToolUnixFolderFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool-unix");
+				if ( _hostFileSystemStorage.ExistFolder(exifToolUnixFolderFullFilePath) )
+				{
+					_hostFileSystemStorage.FolderDelete(
+						exifToolUnixFolderFullFilePath);
+				}
 				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,exifToolUnixFolderFullFilePath);
 			}
 			else

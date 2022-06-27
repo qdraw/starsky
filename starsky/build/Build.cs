@@ -168,7 +168,18 @@ namespace build
 				SonarEnd(IsUnitTestDisabled(),NoSonar);
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
 			});
-		
+
+		Target DownloadDependencies => _ => _
+			.Executes(() =>
+			{
+				DotnetGenericHelper.DownloadDependencies(Solution,Configuration, 
+					"starskygeocli/starskygeocli.csproj",NoDependencies, 
+					"generic-netcore");
+				DotnetRuntimeSpecificHelper.CopyDependenciesTempFiles(NoDependencies,
+					"generic-netcore",GetRuntimesWithoutGeneric());
+				
+			});
+
 		Target BuildNetCoreRuntimeSpecific => _ => _
 			.DependsOn(SonarBuildTest)
 			.Executes(() =>
@@ -187,7 +198,9 @@ namespace build
 					GetRuntimesWithoutGeneric(),Configuration);
 				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Solution,
 					GetRuntimesWithoutGeneric(),Configuration);
-				DotnetRuntimeSpecificHelper.CopyTempFiles(NoDependencies);
+				DotnetRuntimeSpecificHelper.CopyDependenciesTempFiles(NoDependencies,
+					"generic-netcore",GetRuntimesWithoutGeneric());
+				
 			});
 		
 		Target BuildNetCore => _ => _
