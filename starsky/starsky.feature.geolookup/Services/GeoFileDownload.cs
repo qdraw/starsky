@@ -31,7 +31,8 @@ namespace starsky.feature.geolookup.Services
 		public async Task Download()
 		{
 			RemoveFailedDownload();
-	        
+			CreateTempFolder();
+			
 			if(!new StorageHostFullPathFilesystem().ExistFile(
 				Path.Combine(_appSettings.TempFolder,CountryName + ".txt")) )
 			{
@@ -61,7 +62,15 @@ namespace starsky.feature.geolookup.Services
 				}
 			}
 		}
-		
+
+		private void CreateTempFolder()
+		{
+			if ( !new StorageHostFullPathFilesystem().ExistFolder(_appSettings.TempFolder) )
+			{
+				new StorageHostFullPathFilesystem().CreateDirectory(_appSettings.TempFolder);
+			}
+		}
+
 		/// <summary>
 		/// Check if the .zip file exist and if its larger then MinimumSizeInBytes
 		/// </summary>
