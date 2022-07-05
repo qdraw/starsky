@@ -116,7 +116,7 @@ namespace starsky.foundation.writemeta.Services
 
 		private string ExeExifToolUnixFullFilePath()
 		{
-			var path = Path.Combine(_appSettings.TempFolder, 
+			var path = Path.Combine(_appSettings.DependenciesFolder, 
 					"exiftool-unix",
 					"exiftool");
 			return path;
@@ -129,7 +129,7 @@ namespace starsky.foundation.writemeta.Services
 			if ( _hostFileSystemStorage.ExistFile(
 				ExeExifToolUnixFullFilePath()) ) return true;
 			
-			var tarGzArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.tar.gz");
+			var tarGzArchiveFullFilePath = Path.Combine(_appSettings.DependenciesFolder, "exiftool.tar.gz");
 
 			var url = $"{ExiftoolDownloadBasePath}{matchExifToolForUnixName}";
 			if ( downloadFromMirror ) url = $"{ExiftoolDownloadBasePathMirror}{matchExifToolForUnixName}";
@@ -144,13 +144,14 @@ namespace starsky.foundation.writemeta.Services
 				throw new HttpRequestException($"checksum for {tarGzArchiveFullFilePath} is not valid");
 			}
 			
-			new TarBal(_hostFileSystemStorage).ExtractTarGz(_hostFileSystemStorage.ReadStream(tarGzArchiveFullFilePath), _appSettings.TempFolder);
+			new TarBal(_hostFileSystemStorage).ExtractTarGz(
+				_hostFileSystemStorage.ReadStream(tarGzArchiveFullFilePath), _appSettings.DependenciesFolder);
 			
-			var imageExifToolVersionFolder = _hostFileSystemStorage.GetDirectories(_appSettings.TempFolder)
-				.FirstOrDefault(p => p.StartsWith(Path.Combine(_appSettings.TempFolder, "Image-ExifTool-")));
+			var imageExifToolVersionFolder = _hostFileSystemStorage.GetDirectories(_appSettings.DependenciesFolder)
+				.FirstOrDefault(p => p.StartsWith(Path.Combine(_appSettings.DependenciesFolder, "Image-ExifTool-")));
 			if ( imageExifToolVersionFolder != null )
 			{
-				var exifToolUnixFolderFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool-unix");
+				var exifToolUnixFolderFullFilePath = Path.Combine(_appSettings.DependenciesFolder, "exiftool-unix");
 				if ( _hostFileSystemStorage.ExistFolder(exifToolUnixFolderFullFilePath) )
 				{
 					_hostFileSystemStorage.FolderDelete(
@@ -164,7 +165,7 @@ namespace starsky.foundation.writemeta.Services
 				return false;
 			}
 			
-			var exifToolExePath = Path.Combine(_appSettings.TempFolder, "exiftool-unix","exiftool");
+			var exifToolExePath = Path.Combine(_appSettings.DependenciesFolder, "exiftool-unix","exiftool");
 			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {exifToolExePath}");
 			return await RunChmodOnExifToolUnixExe();
 		}
@@ -196,7 +197,8 @@ namespace starsky.foundation.writemeta.Services
 			if ( checksums == null ) return false;
 			
 			var matchExifToolForWindowsName = GetWindowsZipFromChecksum(checksums.Value.Value);
-			return await DownloadForWindows(matchExifToolForWindowsName,GetChecksumsFromTextFile(checksums.Value.Value), !checksums.Value.Key);
+			return await DownloadForWindows(matchExifToolForWindowsName,
+				GetChecksumsFromTextFile(checksums.Value.Value), !checksums.Value.Key);
 		}
 
 		internal static string GetWindowsZipFromChecksum(string checksumsValue)
@@ -243,7 +245,7 @@ namespace starsky.foundation.writemeta.Services
 
 		private string ExeExifToolWindowsFullFilePath()
 		{
-			return Path.Combine(Path.Combine(_appSettings.TempFolder,"exiftool-windows"), "exiftool.exe");
+			return Path.Combine(Path.Combine(_appSettings.DependenciesFolder,"exiftool-windows"), "exiftool.exe");
 		}
 
 		internal async Task<bool> DownloadForWindows(string matchExifToolForWindowsName,
@@ -252,8 +254,8 @@ namespace starsky.foundation.writemeta.Services
 			if ( _hostFileSystemStorage.ExistFile(
 				ExeExifToolWindowsFullFilePath()) ) return true;
 
-			var zipArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.zip");
-			var windowsExifToolFolder = Path.Combine(_appSettings.TempFolder, "exiftool-windows");
+			var zipArchiveFullFilePath = Path.Combine(_appSettings.DependenciesFolder, "exiftool.zip");
+			var windowsExifToolFolder = Path.Combine(_appSettings.DependenciesFolder, "exiftool-windows");
 			
 			var url = $"{ExiftoolDownloadBasePath}{matchExifToolForWindowsName}";
 			if ( downloadFromMirror ) url = $"{ExiftoolDownloadBasePathMirror}{matchExifToolForWindowsName}";
