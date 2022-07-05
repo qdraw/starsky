@@ -57,7 +57,6 @@ for ((i = 1; i <= $#; i++ )); do
       echo "     (or:) --runtime win7-x64"
       echo "     (or as fallback:) --runtime "$RUNTIME
       echo "(optional) --id BUILD_ID"
-      echo "(optional) --pipeline PIPELINE (definitionId from companyname/projectname/_build?definitionId=21)"
 
       exit 0
   fi
@@ -83,24 +82,11 @@ for ((i = 1; i <= $#; i++ )); do
     if [[ ${ARGUMENTS[PREV]} == "--id" ]];
     then
         BUILD_ID_DEF="${ARGUMENTS[CURRENT]}"
-    fi
-    if [[ ${ARGUMENTS[PREV]} == "--pipeline" ]];
-    then
-        DEFINITION_ID_OVERWRITE="${ARGUMENTS[CURRENT]}"
-        DEVOPSDEFIDS=($DEFINITION_ID_OVERWRITE)
+        DEVOPSDEFIDS=( -1 )
     fi
   fi
 done
 
-if [[ ! -z $BUILD_ID_DEF ]]; then
-  if [[ -z $DEFINITION_ID_OVERWRITE ]]; then
-    echo "When specifying a build id, you must also specify a pipeline"
-    echo " --pipeline"
-    echo " select any of those: ""${DEVOPSDEFIDS[*]}"
-    echo " (definitionId from companyname/projectname/_build?definitionId=21)"
-    exit 1
-  fi
-fi
 
 if [[ -z $STARSKY_DEVOPS_PAT ]]; then
   echo "enter your PAT: and press enter"
@@ -114,7 +100,13 @@ cd "$(dirname "$0")"
 
 GET_DATA () {
   LOCALDEVOPSDEFID=$1
-  echo "try: get artifact for Id: "$LOCALDEVOPSDEFID
+
+  if [[ "$LOCALDEVOPSDEFID" != -1 ]]; then
+    echo "try: get artifact for Id: "$LOCALDEVOPSDEFID
+  else  
+    echo "try: get artifact"
+  fi
+  
   URLBUILDS="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds?api-version=5.1&\$top=1&statusFilter=completed&definitions="$LOCALDEVOPSDEFID"&branchName=refs%2Fheads%2F"$BRANCH
   RESULTBUILDS=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLBUILDS)
   
@@ -153,7 +145,7 @@ GET_DATA () {
   DOWNLOADJSONURL="${DOWNLOADJSONURL%\"}"
 
   if [[ -z $DOWNLOADJSONURL ]]; then
-    echo "> for buildId: "$LOCALDEVOPSDEFID" there is no artifact"
+    echo "> for buildId: "$BUILDID" there is no artifact"
     return 1
   fi
 
@@ -188,21 +180,17 @@ if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
     exit 1
 fi
 
-## count ok
-#COUNT_OK=0
-#for i in "${RESULTS_GET_DATA[@]}"
-#do
-#     if [ $i -eq "0" ]; then
-#         COUNT_OK=$((COUNT_OK+1))
-#     fi
-#done
-#echo "COUNT_OK: "$COUNT_OK
-## end count ok
-
 if [ -f "starsky-"$RUNTIME".zip" ]; then
     echo "YEAH > download for "$RUNTIME" looks ok"
     echo "get pm2-new-instance.sh installer file"
     unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./__pm2-new-instance.sh
+    
+    if [ -s ./__pm2-new-instance.sh ]; then
+       mv __pm2-new-instance.sh pm2-new-instance.sh
+    else 
+        rm ./__pm2-new-instance.sh
+    fi
+    
 fi
 
 if [ -f pm2-new-instance.sh ]; then
