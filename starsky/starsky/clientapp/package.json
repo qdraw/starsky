@@ -18,7 +18,7 @@
     "abortcontroller-polyfill": "^1.7.3",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "intersection-observer": "^0.12.0",
+    "intersection-observer": "^0.12.2",
     "leaflet": "^1.8.0",
     "prettier": "^2.6.2",
     "react": "^18.0.0",
