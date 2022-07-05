@@ -53,11 +53,12 @@ public static class DotnetGenericHelper
 		
 		CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
 
-		var genericTempFullPath = Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
-		Console.WriteLine($"GenericTempFullPath: {genericTempFullPath}");
+		var genericDepsFullPath = Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
+		Console.WriteLine($"genericDepsFullPath: {genericDepsFullPath}");
+		
 		try
 		{
-			Environment.SetEnvironmentVariable("app__DependenciesFolder",genericTempFullPath);
+			Environment.SetEnvironmentVariable("app__DependenciesFolder",genericDepsFullPath);
 			Console.WriteLine("Next: DownloadDependencies");
 
 			DotNetRun(_ =>  _
@@ -75,6 +76,8 @@ public static class DotnetGenericHelper
 
 		Environment.SetEnvironmentVariable("app__DependenciesFolder", string.Empty);
 		CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
+
+		Console.WriteLine($"   genericDepsFullPath: {genericDepsFullPath}");
 		Console.WriteLine("DownloadDependencies done");
 	}
 
