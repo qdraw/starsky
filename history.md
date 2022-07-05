@@ -44,7 +44,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ retry: InvalidOperationException: Can't replace active reader (PR #745)
 - [x]   (Fixed) _Front-end_ Cmd or Ctrl + A in Search/Trash is selecting all items (PR #755)
 - [x]   (Changed) _Tools_ Change build tool to from Cake to Nuke (PR #801, PR #791, PR #805, PR #806)
-- [x]   (Changed) Back-end [Upgrade to .NET 6 - SDK 6.0.301 (Runtime: 6.0.6)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.6/6.0.6.md) (PR #796)
+- [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.301 (Runtime: 6.0.6)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.6/6.0.6.md) (PR #796)
+- [x]   (Changed) _Back-end_ Include exiftool, admin1CodesASCII and cities1000 in build script (PR #815)
+- [x]   (Changed) _Back-end_ Change exiftool, admin1CodesASCII and cities1000 location to dependencies folder instead of temp (PR #815)
+- [x]   (Added) _Back-end_ Add 'osx-arm64' target to download and build scripts (PR #815)
 
 - todo fix https://github.com/qdraw/starsky/issues/771
 
