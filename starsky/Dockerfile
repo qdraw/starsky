@@ -67,6 +67,9 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
 
 WORKDIR /app
 
+# TODO FIX
+
+
 RUN if [ "$ISDEMO" != "" ]; then \
         chmod +x docker_demo_setup.sh ;\
         ./docker_demo_setup.sh ;\

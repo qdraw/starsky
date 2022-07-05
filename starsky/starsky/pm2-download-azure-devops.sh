@@ -87,9 +87,20 @@ for ((i = 1; i <= $#; i++ )); do
     if [[ ${ARGUMENTS[PREV]} == "--pipeline" ]];
     then
         DEFINITION_ID_OVERWRITE="${ARGUMENTS[CURRENT]}"
+        DEVOPSDEFIDS=($DEFINITION_ID_OVERWRITE)
     fi
   fi
 done
+
+if [[ ! -z $BUILD_ID_DEF ]]; then
+  if [[ -z $DEFINITION_ID_OVERWRITE ]]; then
+    echo "When specifying a build id, you must also specify a pipeline"
+    echo " --pipeline"
+    echo " select any of those: ""${DEVOPSDEFIDS[*]}"
+    echo " (definitionId from companyname/projectname/_build?definitionId=21)"
+    exit 1
+  fi
+fi
 
 if [[ -z $STARSKY_DEVOPS_PAT ]]; then
   echo "enter your PAT: and press enter"
@@ -177,21 +188,21 @@ if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
     exit 1
 fi
 
-# count ok
-COUNT_OK=0
-for i in "${RESULTS_GET_DATA[@]}"
-do
-     if [ $i -eq "0" ]; then
-         COUNT_OK=$((COUNT_OK+1))
-     fi
-done
-echo "COUNT_OK: "$COUNT_OK
-# end count ok
+## count ok
+#COUNT_OK=0
+#for i in "${RESULTS_GET_DATA[@]}"
+#do
+#     if [ $i -eq "0" ]; then
+#         COUNT_OK=$((COUNT_OK+1))
+#     fi
+#done
+#echo "COUNT_OK: "$COUNT_OK
+## end count ok
 
 if [ -f "starsky-"$RUNTIME".zip" ]; then
     echo "YEAH > download for "$RUNTIME" looks ok"
     echo "get pm2-new-instance.sh installer file"
-    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./pm2-new-instance.sh
+    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./__pm2-new-instance.sh
 fi
 
 if [ -f pm2-new-instance.sh ]; then

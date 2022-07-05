@@ -175,7 +175,7 @@ namespace build
 				DotnetGenericHelper.DownloadDependencies(Solution,Configuration, 
 					"starskygeocli/starskygeocli.csproj",NoDependencies, 
 					"generic-netcore");
-				DotnetRuntimeSpecificHelper.CopyDependenciesTempFiles(NoDependencies,
+				DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
 					"generic-netcore",GetRuntimesWithoutGeneric());
 				
 			});
@@ -198,7 +198,7 @@ namespace build
 					GetRuntimesWithoutGeneric(),Configuration);
 				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Solution,
 					GetRuntimesWithoutGeneric(),Configuration);
-				DotnetRuntimeSpecificHelper.CopyDependenciesTempFiles(NoDependencies,
+				DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
 					"generic-netcore",GetRuntimesWithoutGeneric());
 				
 			});

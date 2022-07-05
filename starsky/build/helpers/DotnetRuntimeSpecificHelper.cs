@@ -42,7 +42,7 @@ public static class DotnetRuntimeSpecificHelper
 		}
 	}
 
-	public static void CopyDependenciesTempFiles(bool noDependencies,
+	public static void CopyDependenciesFiles(bool noDependencies,
 		string genericNetcoreFolder, List<string> getRuntimesWithoutGeneric)
 	{
 		if ( noDependencies || string.IsNullOrWhiteSpace(genericNetcoreFolder) )
@@ -51,10 +51,10 @@ public static class DotnetRuntimeSpecificHelper
 		}
 
 		var genericTempFolderFullPath =
-			Path.Combine(BasePath(), genericNetcoreFolder, "temp");
+			Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
 		foreach ( var runtime in getRuntimesWithoutGeneric )
 		{
-			var runtimeTempFolder = Path.Combine(BasePath(), runtime, "temp");
+			var runtimeTempFolder = Path.Combine(BasePath(), runtime, "dependencies");
 			FileSystemTasks.CopyDirectoryRecursively(genericTempFolderFullPath, 
 				runtimeTempFolder, DirectoryExistsPolicy.Merge, FileExistsPolicy.Overwrite);
 		}
