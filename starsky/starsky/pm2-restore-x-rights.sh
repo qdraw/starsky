@@ -56,8 +56,8 @@ if [ -f pm2-download-azure-devops.sh ]; then
     chmod +rwx ./pm2-download-azure-devops.sh
 fi
 
-if [ -f temp/exiftool-unix/exiftool ]; then
-    chmod +rwx temp/exiftool-unix/exiftool
+if [ -f dependencies/exiftool-unix/exiftool ]; then
+    chmod +rwx dependencies/exiftool-unix/exiftool
 fi
 
 if [ -f pm2-restore-x-rights.sh ]; then
