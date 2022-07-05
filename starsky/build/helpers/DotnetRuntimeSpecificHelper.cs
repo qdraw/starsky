@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using build;
+using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
@@ -16,26 +17,67 @@ public static class DotnetRuntimeSpecificHelper
 		foreach(var runtime in runtimesWithoutGeneric)
 		{
 			var runtimeZip = $"{ZipperHelper.ZipPrefix}{runtime}.zip";
+			
 			Console.WriteLine("runtimeZip: " + runtimeZip + " exists:" + File.Exists(runtimeZip));
-
 			if (File.Exists(runtimeZip))
 			{
 				File.Delete(runtimeZip);
 			}
-					
-			if (Directory.Exists($"./{runtime}"))
+
+			if (Directory.Exists(Path.Combine(BasePath(), runtime)))
 			{
-				Directory.Delete($"./{runtime}");
+				Console.WriteLine($"next rm folder - {Path.Combine(BasePath(), runtime)}");
+				Directory.Delete(Path.Combine(BasePath(), runtime),true);
+			}
+			else
+			{
+				Console.WriteLine($"folder is not removed - {Path.Combine(BasePath(), runtime)}");
 			}
 
 			// todo!
 			if (Directory.Exists($"obj/Release/net6.0/{runtime}"))
 			{
-				Directory.Delete($"obj/Release/net6.0/{runtime}");
+				Directory.Delete($"obj/Release/net6.0/{runtime}",true);
+			}
+			else
+			{
+				Console.WriteLine($"folder is not removed - obj/Release/net6.0/{runtime}");
 			}
 		}
 	}
-	
+
+	public static void CopyDependenciesFiles(bool noDependencies,
+		string genericNetcoreFolder, List<string> getRuntimesWithoutGeneric)
+	{
+		if ( noDependencies || string.IsNullOrWhiteSpace(genericNetcoreFolder) )
+		{
+			return;
+		}
+
+		var genericTempFolderFullPath =
+			Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
+		foreach ( var runtime in getRuntimesWithoutGeneric )
+		{
+			var runtimeTempFolder = Path.Combine(BasePath(), runtime, "dependencies");
+			FileSystemTasks.CopyDirectoryRecursively(genericTempFolderFullPath, 
+				runtimeTempFolder, DirectoryExistsPolicy.Merge, FileExistsPolicy.Overwrite);
+			
+			// For Windows its not needed to copy unix dependencies 
+			if ( runtime.StartsWith("win") && Directory.Exists(Path.Combine(runtimeTempFolder, "exiftool-unix")) )
+			{
+				Directory.Delete(Path.Combine(runtimeTempFolder, "exiftool-unix"), true);
+				Console.WriteLine("removed exiftool-unix for windows");
+			}
+			// ReSharper disable once InvertIf
+			if ( runtime.StartsWith("win") && File.Exists(Path.Combine(runtimeTempFolder, "exiftool.tar.gz")) )
+			{
+				File.Delete(Path.Combine(runtimeTempFolder, "exiftool.tar.gz"));
+				Console.WriteLine("removed exiftool.tar.gz for windows");
+			}
+		}
+
+	}
+
 	public static void RestoreNetCoreCommand(Solution solution,
 		List<string> runtimesWithoutGeneric)
 	{
@@ -49,7 +91,6 @@ public static class DotnetRuntimeSpecificHelper
 			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(runtime, solution);
 		}
 	}
-	
 	
 	public static void PublishNetCoreGenericCommand(Solution solution,
 		List<string> runtimesWithoutGeneric, Configuration configuration)
@@ -94,5 +135,9 @@ public static class DotnetRuntimeSpecificHelper
 			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(runtime, solution);
 		}
 	}
-
+	static string BasePath()
+	{
+		return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
+			?.Parent?.Parent?.Parent?.FullName;
+	}
 }

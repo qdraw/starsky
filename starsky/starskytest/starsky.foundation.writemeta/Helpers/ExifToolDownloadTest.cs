@@ -36,10 +36,10 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			"MD5 (exiftool-11.99.zip) = 19b53eede582e809c115b69e83dbac5e\n" +
 			"MD5 (ExifTool-11.99.dmg) = d063809eb7ac35e0d6c6cea6e829f75a";
 		
-		private string ExifToolUnixTempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp",
+		private string ExifToolUnixTempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dependencies",
 			"exiftool-unix");
 		
-		private string ExifToolWindowsTempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp",
+		private string ExifToolWindowsTempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dependencies",
 			"exiftool-windows");
 		
 		public ExifToolDownloadTest()
@@ -51,12 +51,12 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_appSettings = new AppSettings
 			{
-				TempFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp"),
+				DependenciesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dependencies"),
 				Verbose = true
 			};
 
 			_hostFileSystem  = new StorageHostFullPathFilesystem();
-			_hostFileSystem.CreateDirectory(_appSettings.TempFolder);
+			_hostFileSystem.CreateDirectory(_appSettings.DependenciesFolder);
 		}
 
 		[TestMethod]
@@ -147,14 +147,14 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 		private static async Task<AppSettings> CreateTempFolderWithExifTool(string name = "test temp")
 		{
-			var appSettings = new AppSettings{TempFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,name)};
-			Directory.CreateDirectory(appSettings.TempFolder);
-			Directory.CreateDirectory(Path.Combine(appSettings.TempFolder,"exiftool-unix"));
+			var appSettings = new AppSettings{DependenciesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,name)};
+			Directory.CreateDirectory(appSettings.DependenciesFolder);
+			Directory.CreateDirectory(Path.Combine(appSettings.DependenciesFolder,"exiftool-unix"));
 			var stream = new PlainTextFileHelper().StringToStream("#!/bin/bash");
 			try
 			{
 				await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
-					Path.Combine(appSettings.TempFolder, "exiftool-unix", "exiftool"));
+					Path.Combine(appSettings.DependenciesFolder, "exiftool-unix", "exiftool"));
 			}
 			catch ( ArgumentOutOfRangeException e )
 			{
@@ -183,18 +183,18 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 			var appSettings = await CreateTempFolderWithExifTool();
 			
-			Console.WriteLine(appSettings.TempFolder);
+			Console.WriteLine(appSettings.DependenciesFolder);
 			var exifToolDownload = new ExifToolDownload(httpClientHelper, appSettings, new FakeIWebLogger());
 			var result = await exifToolDownload.RunChmodOnExifToolUnixExe();
 			Assert.IsTrue(result);
 
 			var lsLah = await Command.Run("ls", "-lah",
-				Path.Combine(appSettings.TempFolder, "exiftool-unix", "exiftool")).Task;
+				Path.Combine(appSettings.DependenciesFolder, "exiftool-unix", "exiftool")).Task;
 			
 			Console.WriteLine(lsLah.StandardOutput);
 			
 			Assert.IsTrue(lsLah.StandardOutput.StartsWith("-rwxr-xr-x"));
-			Directory.Delete(appSettings.TempFolder,true);
+			Directory.Delete(appSettings.DependenciesFolder,true);
 		}
 		
 		[TestMethod]
@@ -213,18 +213,18 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
-			await CreateTempFolderWithExifTool("temp");
+			await CreateTempFolderWithExifTool("dependencies");
 			
 			// make NOT executable 644 
 			await Command.Run("chmod", "644",
-				Path.Combine(_appSettings.TempFolder, "exiftool-unix", "exiftool")).Task;
+				Path.Combine(_appSettings.DependenciesFolder, "exiftool-unix", "exiftool")).Task;
 
 			var exifToolDownload = new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger());
 			var result = await exifToolDownload.RunChmodOnExifToolUnixExe();
 			Assert.IsTrue(result);
 
 
-			Directory.Delete(_appSettings.TempFolder,true);
+			Directory.Delete(_appSettings.DependenciesFolder,true);
 		}
 		
 		[TestMethod]
@@ -256,8 +256,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		public async Task DownloadExifTool_Unix()
 		{
 			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
-			Directory.Delete(_appSettings.TempFolder,true);
-			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).DownloadExifTool(false);
+			Directory.Delete(_appSettings.DependenciesFolder,true);
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+				.DownloadExifTool(false);
 			Assert.IsFalse(result);
 		}
 		
@@ -265,15 +266,15 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		public async Task DownloadExifTool_Windows_existVerbose()
 		{
 			var appSettings = new AppSettings{
-				TempFolder = AppDomain.CurrentDomain.BaseDirectory,
+				DependenciesFolder = AppDomain.CurrentDomain.BaseDirectory,
 				Verbose = true
 			};
-			Directory.CreateDirectory(appSettings.TempFolder);
-			Directory.CreateDirectory(Path.Combine(appSettings.TempFolder,"exiftool-windows"));
+			Directory.CreateDirectory(appSettings.DependenciesFolder);
+			Directory.CreateDirectory(Path.Combine(appSettings.DependenciesFolder,"exiftool-windows"));
 			
 			var stream = new PlainTextFileHelper().StringToStream("#!/bin/bash");
 			await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
-				Path.Combine(appSettings.TempFolder, "exiftool-windows", "exiftool.exe"));
+				Path.Combine(appSettings.DependenciesFolder, "exiftool-windows", "exiftool.exe"));
 			
 			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
 			var logger = new FakeIWebLogger();
@@ -282,9 +283,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			
 			Assert.IsTrue(result);
 			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2
-				.Contains("[DownloadExifTool] " + appSettings.TempFolder));
+				.Contains("[DownloadExifTool] " + appSettings.DependenciesFolder));
 			
-			Directory.Delete(Path.Combine(appSettings.TempFolder,"exiftool-windows"),true);
+			Directory.Delete(Path.Combine(appSettings.DependenciesFolder,"exiftool-windows"),true);
 		}
 		
 				
@@ -305,9 +306,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			
 			Assert.IsTrue(result);
 			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2
-				.Contains("[DownloadExifTool] " + appSettings.TempFolder));
+				.Contains("[DownloadExifTool] " + appSettings.DependenciesFolder));
 			
-			Directory.Delete(appSettings.TempFolder,true);
+			Directory.Delete(appSettings.DependenciesFolder,true);
 		}
 		
 		
@@ -463,7 +464,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			try
 			{
 				await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
-					.DownloadForUnix("Image-ExifTool-11.99.tar.gz", new List<string>().ToArray(), true);
+					.DownloadForUnix("Image-ExifTool-11.99.tar.gz", 
+						new List<string>().ToArray(), true);
 			}
 			catch ( HttpRequestException httpRequestException )
 			{

@@ -27,6 +27,9 @@ namespace starsky.foundation.platform.Models
 
 			// Temp folder, should be cleaned
 			TempFolder = Path.Combine(BaseDirectoryProject, "temp");
+
+			DependenciesFolder = Path.Combine(BaseDirectoryProject, "dependencies");
+
 			ExifToolPathDefaultPrivate = GetDefaultExifToolPath();
 			
 			try
@@ -61,6 +64,8 @@ namespace starsky.foundation.platform.Models
 
 			// may be cleaned after restart (not implemented)
 			if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
+			
+			if(!Directory.Exists(DependenciesFolder)) Directory.CreateDirectory(DependenciesFolder);
 		}
 
 		/// <summary>
@@ -394,6 +399,24 @@ namespace starsky.foundation.platform.Models
 				_tempFolder = PathHelper.AddBackslash(tempFolder);
 			}
 		}
+		
+		/// <summary>
+		/// Private: Location of dependencies folder
+		/// </summary>
+		private string _dependenciesFolder;
+
+		/// <summary>
+		/// Location of dependencies folder
+		/// </summary>
+		public string DependenciesFolder
+		{
+			get => AssemblyDirectoryReplacer(_dependenciesFolder);
+			set
+			{
+				var dependenciesFolder = ReplaceEnvironmentVariable(value);
+				_dependenciesFolder = PathHelper.AddBackslash(dependenciesFolder);
+			}
+		}
 
 		/// <summary>
 		/// Private: Location of AppSettings Path
@@ -429,8 +452,8 @@ namespace starsky.foundation.platform.Models
 		private string GetDefaultExifToolPath()
 		{
 			return IsWindows
-				? Path.Combine(TempFolder, "exiftool-windows", "exiftool.exe")
-				: Path.Combine(TempFolder, "exiftool-unix", "exiftool");
+				? Path.Combine(DependenciesFolder, "exiftool-windows", "exiftool.exe")
+				: Path.Combine(DependenciesFolder, "exiftool-unix", "exiftool");
 		}
 		
 		/// <summary>

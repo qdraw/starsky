@@ -19,6 +19,12 @@ case $(uname -m) in
     RUNTIME="linux-arm"
     ;;
 
+  "arm64")
+    if [ $(uname) = "Darwin" ]; then
+        RUNTIME="osx-arm64"
+    fi
+    ;;
+
   "x86_64")
     if [ $(uname) = "Darwin" ]; then
         RUNTIME="osx-x64"
@@ -49,7 +55,9 @@ for ((i = 1; i <= $#; i++ )); do
       echo "     (or:) --runtime linux-arm64"
       echo "     (or:) --runtime osx-x64"
       echo "     (or:) --runtime win7-x64"
+      echo "     (or as fallback:) --runtime "$RUNTIME
       echo "(optional) --id BUILD_ID"
+
       exit 0
   fi
   
@@ -74,9 +82,11 @@ for ((i = 1; i <= $#; i++ )); do
     if [[ ${ARGUMENTS[PREV]} == "--id" ]];
     then
         BUILD_ID_DEF="${ARGUMENTS[CURRENT]}"
+        DEVOPSDEFIDS=( -1 )
     fi
   fi
 done
+
 
 if [[ -z $STARSKY_DEVOPS_PAT ]]; then
   echo "enter your PAT: and press enter"
@@ -90,7 +100,13 @@ cd "$(dirname "$0")"
 
 GET_DATA () {
   LOCALDEVOPSDEFID=$1
-  echo "try: get artifact for Id: "$LOCALDEVOPSDEFID
+
+  if [[ "$LOCALDEVOPSDEFID" != -1 ]]; then
+    echo "try: get artifact for Id: "$LOCALDEVOPSDEFID
+  else  
+    echo "try: get artifact"
+  fi
+  
   URLBUILDS="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds?api-version=5.1&\$top=1&statusFilter=completed&definitions="$LOCALDEVOPSDEFID"&branchName=refs%2Fheads%2F"$BRANCH
   RESULTBUILDS=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLBUILDS)
   
@@ -129,7 +145,7 @@ GET_DATA () {
   DOWNLOADJSONURL="${DOWNLOADJSONURL%\"}"
 
   if [[ -z $DOWNLOADJSONURL ]]; then
-    echo "> for buildId: "$LOCALDEVOPSDEFID" there is no artifact"
+    echo "> for buildId: "$BUILDID" there is no artifact"
     return 1
   fi
 
@@ -150,15 +166,31 @@ GET_DATA () {
   exit 1
 }
 
+RESULTS_GET_DATA=()
 for i in "${DEVOPSDEFIDS[@]}"
 do
-    GET_DATA $i
+     echo "_______________________ "
+     GET_DATA $i
+     RESULTS_GET_DATA+=($?) 
 done
+
+if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
+    # whatever you want to do when array doesn't contain value
+    echo "> Download failed, there is no artifact for any definitionId"
+    exit 1
+fi
 
 if [ -f "starsky-"$RUNTIME".zip" ]; then
     echo "YEAH > download for "$RUNTIME" looks ok"
     echo "get pm2-new-instance.sh installer file"
-    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./pm2-new-instance.sh
+    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./__pm2-new-instance.sh
+    
+    if [ -s ./__pm2-new-instance.sh ]; then
+       mv __pm2-new-instance.sh pm2-new-instance.sh
+    else 
+        rm ./__pm2-new-instance.sh
+    fi
+    
 fi
 
 if [ -f pm2-new-instance.sh ]; then
