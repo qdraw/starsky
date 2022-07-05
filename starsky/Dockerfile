@@ -74,7 +74,7 @@ RUN if [ "$ISDEMO" != "" ]; then \
         # it should cache faster
         GEO_CLI_PATH="/app/starskygeocli/starskygeocli.csproj" ;\
         DEPS_FOLDER="/app/out/dependencies" ;\
-        mkdir -p $TEMP_FOLDER ;\
+        mkdir -p $DEPS_FOLDER ;\
         dotnet run --project $GEO_CLI_PATH --configuration Release -- --dependencies $DEPS_FOLDER -h -v ;\
     fi
 
