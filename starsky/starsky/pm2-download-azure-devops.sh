@@ -19,6 +19,12 @@ case $(uname -m) in
     RUNTIME="linux-arm"
     ;;
 
+  "arm64")
+    if [ $(uname) = "Darwin" ]; then
+        RUNTIME="osx-arm64"
+    fi
+    ;;
+
   "x86_64")
     if [ $(uname) = "Darwin" ]; then
         RUNTIME="osx-x64"
@@ -49,7 +55,10 @@ for ((i = 1; i <= $#; i++ )); do
       echo "     (or:) --runtime linux-arm64"
       echo "     (or:) --runtime osx-x64"
       echo "     (or:) --runtime win7-x64"
+      echo "     (or as fallback:) --runtime "$RUNTIME
       echo "(optional) --id BUILD_ID"
+      echo "(optional) --pipeline PIPELINE (definitionId from companyname/projectname/_build?definitionId=21)"
+
       exit 0
   fi
   
@@ -74,6 +83,10 @@ for ((i = 1; i <= $#; i++ )); do
     if [[ ${ARGUMENTS[PREV]} == "--id" ]];
     then
         BUILD_ID_DEF="${ARGUMENTS[CURRENT]}"
+    fi
+    if [[ ${ARGUMENTS[PREV]} == "--pipeline" ]];
+    then
+        DEFINITION_ID_OVERWRITE="${ARGUMENTS[CURRENT]}"
     fi
   fi
 done
@@ -150,10 +163,30 @@ GET_DATA () {
   exit 1
 }
 
+RESULTS_GET_DATA=()
 for i in "${DEVOPSDEFIDS[@]}"
 do
-    GET_DATA $i
+     echo "_______________________ "
+     GET_DATA $i
+     RESULTS_GET_DATA+=($?) 
 done
+
+if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
+    # whatever you want to do when array doesn't contain value
+    echo "> Download failed, there is no artifact for any definitionId"
+    exit 1
+fi
+
+# count ok
+COUNT_OK=0
+for i in "${RESULTS_GET_DATA[@]}"
+do
+     if [ $i -eq "0" ]; then
+         COUNT_OK=$((COUNT_OK+1))
+     fi
+done
+echo "COUNT_OK: "$COUNT_OK
+# end count ok
 
 if [ -f "starsky-"$RUNTIME".zip" ]; then
     echo "YEAH > download for "$RUNTIME" looks ok"

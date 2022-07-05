@@ -22,6 +22,12 @@ case $(uname -m) in
     RUNTIME="linux-arm"
     ;;
 
+  "arm64")
+    if [ $(uname) = "Darwin" ]; then
+        RUNTIME="starsky-mac-desktop"
+    fi
+    ;;
+
   "x86_64")
     if [ $(uname) = "Darwin" ]; then
         # server: RUNTIME="osx-x64"
@@ -44,6 +50,7 @@ for ((i = 1; i <= $#; i++ )); do
   if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
   then
     echo "--runtime linux-arm OR --runtime osx-x64 OR --runtime win-x64"
+    echo "     (or as fallback:) --runtime "$RUNTIME
     echo "--branch master"
     echo "--token anything"
     echo "--output output_dir default folder_of_this_file"
