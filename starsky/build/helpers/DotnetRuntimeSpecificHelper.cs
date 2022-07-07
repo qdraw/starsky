@@ -112,6 +112,14 @@ public static class DotnetRuntimeSpecificHelper
 					.SetRuntime(runtime)
 					.EnableNoLogo());
 			}
+
+			// to check if the right runtime is published
+			var runtimeDebugFile = Path.Combine(runtime, "_runtime_" + runtime + ".debug");
+			if ( !File.Exists(runtimeDebugFile) )
+			{
+				File.Create(runtimeDebugFile).Close();
+			}
+			
 			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(runtime, solution);
 		}
 	}
