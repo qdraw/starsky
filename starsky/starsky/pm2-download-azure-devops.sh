@@ -174,6 +174,9 @@ do
      RESULTS_GET_DATA+=($?) 
 done
 
+echo "RESULTS_GET_DATA"
+echo  "${RESULTS_GET_DATA[*]}"
+
 if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
     # whatever you want to do when array doesn't contain value
     echo "> Download failed, there is no artifact for any definitionId"
