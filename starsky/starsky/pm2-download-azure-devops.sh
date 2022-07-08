@@ -9,6 +9,8 @@
 # Download binaries with zip folder from Azure Devops
 # Get pm2-new-instance.sh ready to run (but not run)
 
+# Filename: pm2-download-azure-devops.sh
+
 RUNTIME="linux-arm"
 case $(uname -m) in
   "aarch64")
