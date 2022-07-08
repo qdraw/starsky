@@ -187,16 +187,11 @@ echo  "${RESULTS_GET_DATA[*]}"
 
 
 if UNIQUE_VALUES "${RESULTS_GET_DATA[@]}"; then
-  echo "OK"
-else
-  echo "not OK"
-fi
-
-if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
     # whatever you want to do when array doesn't contain value
     echo "> Download failed, there is no artifact for any definitionId"
     exit 1
 fi
+
 
 if [ -f "starsky-"$RUNTIME".zip" ]; then
     echo "YEAH > download for "$RUNTIME" looks ok"
