@@ -168,6 +168,14 @@ GET_DATA () {
   exit 1
 }
 
+UNIQUE_VALUES() {
+  typeset i
+  for i do
+    [ "$1" = "$i" ] || return 1
+  done
+  return 0
+}
+
 RESULTS_GET_DATA=()
 for i in "${DEVOPSDEFIDS[@]}"
 do
@@ -176,10 +184,14 @@ do
      RESULTS_GET_DATA+=($?) 
 done
 
-if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
-    # whatever you want to do when array doesn't contain value
-    echo "> Download failed, there is no artifact for any definitionId"
-    exit 1
+if UNIQUE_VALUES "${RESULTS_GET_DATA[@]}"; then
+    if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
+        # whatever you want to do when array doesn't contain value
+        echo "> Download FAILED, there is no artifact for any definitionId"
+        exit 1    
+    else 
+        echo "WARNING: there are duplicate runtime values over multiple pipelines"
+    fi
 fi
 
 if [ -f "starsky-"$RUNTIME".zip" ]; then
