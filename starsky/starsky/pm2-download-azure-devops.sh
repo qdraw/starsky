@@ -166,6 +166,14 @@ GET_DATA () {
   exit 1
 }
 
+UNIQUE_VALUES() {
+  typeset i
+  for i do
+    [ "$1" = "$i" ] || return 1
+  done
+  return 0
+}
+
 RESULTS_GET_DATA=()
 for i in "${DEVOPSDEFIDS[@]}"
 do
@@ -176,6 +184,13 @@ done
 
 echo "RESULTS_GET_DATA"
 echo  "${RESULTS_GET_DATA[*]}"
+
+
+if UNIQUE_VALUES "${RESULTS_GET_DATA[@]}"; then
+  echo "OK"
+else
+  echo "not OK"
+fi
 
 if [[ "${RESULTS_GET_DATA[*]}" =~ "1" ]]; then
     # whatever you want to do when array doesn't contain value
