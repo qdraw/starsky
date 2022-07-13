@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{240fbcdb-4379-4bbe-b154-eb4f87504d9e}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.5.0-beta.6</Version>
+        <Version>0.5.0-beta.7</Version>
         <RootNamespace>starsky.foundation.worker</RootNamespace>
     </PropertyGroup>
     
