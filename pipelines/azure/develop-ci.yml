@@ -19,7 +19,7 @@ trigger:
     - release/*
     - feature/auto_dotnet_sdk_version_upgrade*
     exclude:
-    - feature/*
+    - test/*
   paths:
       include:
       - starsky/*
