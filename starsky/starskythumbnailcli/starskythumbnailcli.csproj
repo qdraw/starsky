@@ -5,7 +5,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{67e3fb34-1ca8-4a28-a0e0-00ff61821002}</ProjectGuid>
-        <RuntimeFrameworkVersion>6.0.6</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>6.0.7</RuntimeFrameworkVersion>
         <RootNamespace>starskythumbnailcli</RootNamespace>
         <Version>0.5.0-beta.7</Version>
     </PropertyGroup>

@@ -20,10 +20,9 @@ schedules:
 trigger:
   branches:
     include:
-    - nothing_yet
+    - feature/auto_dotnet_sdk_version_upgrade*
     exclude:
     - release/*
-    - feature/*
   paths:
     include:
     - starsky/*
