@@ -32,17 +32,18 @@ namespace starsky.feature.geolookup.Services
         /// <summary>
         /// Getting GeoData
         /// </summary>
-        /// <param name="appSettings">to know where to store the temp files</param>
+        /// <param name="appSettings">to know where to store the deps files</param>
         /// <param name="geoFileDownload">Abstraction to download Geo Data</param>
         /// <param name="memoryCache">for keeping status</param>
         public GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload, IMemoryCache memoryCache = null, IWebLogger logger = null)
         {
 	        // Needed when not having this, application will fail
-	        geoFileDownload.Download().ConfigureAwait(false);
+	        geoFileDownload.Download().ConfigureAwait(false).GetAwaiter();
+	        
 	        _appSettings = appSettings;
 	        _logger = logger;
             _admin1CodesAscii = GeoFileReader.ReadAdmin1Codes(
-                Path.Combine(appSettings.TempFolder, "admin1CodesASCII.txt"));
+                Path.Combine(appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
             
             // Create our ReverseGeoCode class and supply it with data
             InitReverseGeoCode();
@@ -57,7 +58,7 @@ namespace starsky.feature.geolookup.Services
 	        {
 		        _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
 			        GeoFileReader.ReadExtendedGeoNames(
-				        Path.Combine(_appSettings.TempFolder, GeoFileDownload.CountryName + ".txt")));
+				        Path.Combine(_appSettings.DependenciesFolder, GeoFileDownload.CountryName + ".txt")));
 	        }
 	        catch ( ParserException e )
 	        {

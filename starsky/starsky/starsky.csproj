@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <RuntimeFrameworkVersion>6.0.5</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>6.0.7</RuntimeFrameworkVersion>
         <Description>An attempt to create a database driven photo library</Description>
         <!-- use node script to update version -->
-        <Version>0.5.0-beta.6</Version>
+        <Version>0.5.0-beta.7</Version>
         <!-- SonarQube needs this -->
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
@@ -46,7 +46,7 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.7" />
         <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
     </ItemGroup>

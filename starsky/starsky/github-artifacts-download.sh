@@ -11,6 +11,8 @@
 
 # source: /opt/starsky/starsky/github-artifacts-download.sh
 
+WORKFLOW_ID="release-on-tag-netcore-desktop-electron.yml"
+
 # default will be overwritten
 RUNTIME="linux-arm"
 case $(uname -m) in
@@ -20,6 +22,12 @@ case $(uname -m) in
 
   "armv7l")
     RUNTIME="linux-arm"
+    ;;
+
+  "arm64")
+    if [ $(uname) = "Darwin" ]; then
+        RUNTIME="starsky-mac-desktop"
+    fi
     ;;
 
   "x86_64")
@@ -44,6 +52,7 @@ for ((i = 1; i <= $#; i++ )); do
   if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
   then
     echo "--runtime linux-arm OR --runtime osx-x64 OR --runtime win-x64"
+    echo "     (or as fallback:) --runtime "$RUNTIME
     echo "--branch master"
     echo "--token anything"
     echo "--output output_dir default folder_of_this_file"
@@ -92,8 +101,7 @@ fi
 
 echo ""
 
-WORKFLOW_ID="release-on-tag-netcore-desktop-electron.yml"
-ACTIONS_WORKFLOW_URL="https://api.github.com/repos/qdraw/starsky/actions/workflows/"$WORKFLOW_ID"/runs"
+ACTIONS_WORKFLOW_URL="https://api.github.com/repos/qdraw/starsky/actions/workflows/"$WORKFLOW_ID"/runs?status=completed&per_page=1&exclude_pull_requests=true"
 
 echo "V: "$VERSION " zip: " $VERSION_ZIP
 echo "OUT" $OUTPUT_DIR
@@ -116,6 +124,9 @@ fi
 
 echo ">: "$ARTIFACTS_URL
 
+CREATED_AT=$(grep -E -o "\"created_at\": \"(\d|-|T|:)+" <<< $RESULT_ACTIONS_WORKFLOW)
+echo ">: "$CREATED_AT "UTC"
+
 RESULT_ARTIFACTS=$(curl --user :$STARSKY_GITHUB_PAT -sS $ARTIFACTS_URL)
 # RESULT_ARTIFACTS='{ "total_count": 8, "artifacts": [ { "id": 134130455, "node_id": "MDg6QXJ0aWZhY3QxMzQxMzA0NTU=", "name": "linux-arm", "size_in_bytes": 59554261, "url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130455", "archive_download_url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130455/zip", "expired": false, "created_at": "2021-12-30T09:54:52Z", "updated_at": "2021-12-30T09:54:53Z", "expires_at": "2022-03-30T09:50:13Z" }, { "id": 134130456, "node_id": "MDg6QXJ0aWZhY3QxMzQxMzA0NTY=", "name": "linux-arm64", "size_in_bytes": 57566841, "url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130456", "archive_download_url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130456/zip", "expired": false, "created_at": "2021-12-30T09:54:52Z", "updated_at": "2021-12-30T09:54:53Z", "expires_at": "2022-03-30T09:50:20Z" }, { "id": 134130457, "node_id": "MDg6QXJ0aWZhY3QxMzQxMzA0NTc=", "name": "linux-x64", "size_in_bytes": 57625720, "url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130457", "archive_download_url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130457/zip", "expired": false, "created_at": "2021-12-30T09:54:52Z", "updated_at": "2021-12-30T09:54:53Z", "expires_at": "2022-03-30T09:50:32Z" }, { "id": 134130458, "node_id": "MDg6QXJ0aWZhY3QxMzQxMzA0NTg=", "name": "osx-x64", "size_in_bytes": 57167629, "url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130458", "archive_download_url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130458/zip", "expired": false, "created_at": "2021-12-30T09:54:52Z", "updated_at": "2021-12-30T09:54:53Z", "expires_at": "2022-03-30T09:50:39Z" }, { "id": 134130459, "node_id": "MDg6QXJ0aWZhY3QxMzQxMzA0NTk=", "name": "starsky-mac-desktop", "size_in_bytes": 135746768, "url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130459", "archive_download_url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130459/zip", "expired": false, "created_at": "2021-12-30T09:54:52Z", "updated_at": "2021-12-30T09:54:53Z", "expires_at": "2022-03-30T09:54:31Z" }, { "id": 134130460, "node_id": "MDg6QXJ0aWZhY3QxMzQxMzA0NjA=", "name": "starsky-tools-slack-notification", "size_in_bytes": 3190, "url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130460", "archive_download_url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130460/zip", "expired": false, "created_at": "2021-12-30T09:54:52Z", "updated_at": "2021-12-30T09:54:53Z", "expires_at": "2022-03-30T09:50:44Z" }, { "id": 134130461, "node_id": "MDg6QXJ0aWZhY3QxMzQxMzA0NjE=", "name": "starsky-win-desktop", "size_in_bytes": 139103431, "url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130461", "archive_download_url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130461/zip", "expired": false, "created_at": "2021-12-30T09:54:52Z", "updated_at": "2021-12-30T09:54:53Z", "expires_at": "2022-03-30T09:53:47Z" }, { "id": 134130462, "node_id": "MDg6QXJ0aWZhY3QxMzQxMzA0NjI=", "name": "win7-x64", "size_in_bytes": 58232697, "url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130462", "archive_download_url": "https://api.github.com/repos/qdraw/starsky/actions/artifacts/134130462/zip", "expired": false, "created_at": "2021-12-30T09:54:52Z", "updated_at": "2021-12-30T09:54:53Z", "expires_at": "2022-03-30T09:50:26Z" } ] }'
 
@@ -137,7 +148,7 @@ then
   exit 1
 fi
 
-echo ">: "$DOWNLOAD_URL
+echo ">: $DOWNLOAD_URL"
 
 mkdir -p $OUTPUT_DIR
 
@@ -150,7 +161,9 @@ if [ ! -f "${OUTPUT_ZIP_PATH}_tmp.zip" ]; then
     exit 1
 fi
 
-rm ${OUTPUT_ZIP_PATH}
+if [ -f "$OUTPUT_ZIP_PATH" ]; then
+    rm ${OUTPUT_ZIP_PATH}
+fi
 
 # contains an zip in a zip
 unzip -q -o -j "${OUTPUT_ZIP_PATH}_tmp.zip" -d "${OUTPUT_DIR}temp"
@@ -174,9 +187,16 @@ if [[ $VERSION != *desktop ]]
 then
     echo "YEAH > download for "$RUNTIME" looks ok"
     echo "get pm2-new-instance.sh installer file" "${OUTPUT_DIR}pm2-new-instance.sh"
-    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > "${OUTPUT_DIR}pm2-new-instance.sh"
+    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > "${OUTPUT_DIR}__pm2-new-instance.sh"
     
-    if [ -f "${OUTPUT_DIR}pm2-new-instance.sh" ]; then
+    if [ -f "${OUTPUT_DIR}__pm2-new-instance.sh" ]; then
+        # check if file contains something
+        if [ -s "${OUTPUT_DIR}__pm2-new-instance.sh" ]; then
+           mv "${OUTPUT_DIR}__pm2-new-instance.sh" "${OUTPUT_DIR}pm2-new-instance.sh"
+        else 
+            rm "${OUTPUT_DIR}__pm2-new-instance.sh"
+        fi
+        
         chmod +rwx "${OUTPUT_DIR}pm2-new-instance.sh"
         echo "run for the setup:"
         echo "./pm2-new-instance.sh"

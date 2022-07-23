@@ -29,12 +29,12 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.300
+        dotnet-version: 6.0.302
     - name: BuildNetCore
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target=BuildNetCore --no-sonar
+      run: pwsh build.ps1 --Target BuildNetCore --no-sonar --no-dependencies --skip 
     - name: TestNetCore
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target=TestNetCore --no-sonar
+      run: pwsh build.ps1 --Target TestNetCore --no-sonar --no-dependencies --skip
