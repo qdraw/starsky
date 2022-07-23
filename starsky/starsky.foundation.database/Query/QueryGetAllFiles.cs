@@ -34,7 +34,7 @@ namespace starsky.foundation.database.Query
 			}
 		}
 		
-		private static List<FileIndexItem> FormatOk(IReadOnlyCollection<FileIndexItem?>? input)
+		internal static List<FileIndexItem> FormatOk(IReadOnlyCollection<FileIndexItem?>? input)
 		{
 			if ( input == null ) return new List<FileIndexItem>();
 			return input.Where(p => p != null).Select(p =>
