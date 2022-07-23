@@ -760,10 +760,11 @@ namespace starsky.foundation.database.Query
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
-		    catch ( ObjectDisposedException )
+		    catch ( InvalidOperationException e) // or ObjectDisposedException
 		    {
-			    var context = new InjectServiceScope(_scopeFactory).Context();
-			    return await LocalQuery(context);
+			    _logger?.LogInformation(e, $"catch-ed InvalidOperationException going to retry 2 times {fileIndexItem.FilePath}");
+			    return await RetryHelper.DoAsync(
+				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
 	    }
 

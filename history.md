@@ -39,6 +39,8 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.5.0-beta.7 _(Unreleased)_ - 2022-07-??
 - [x]   (Issue) **TODO:** Need to be fixed issue: #771
 - [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.7/6.0.7.md) (PR #838)
+- [x]   (Fixed) _Back-end_ Null reference exceptions on mysql (PR #789 & Issue #787)
+- [x]   (Fixed) _Back-end_ Retry for InvalidOperationException when Add Item (PR #789 & Issue #802)
 
 # version 0.5.0-beta.6 - 2022-07-13
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (Part 2) CreateRoot change (PR #748)
