@@ -250,6 +250,13 @@ namespace starskytest.starsky.foundation.platform.Models
 			var slug = new AppSettings().GenerateSlug("   abc   ");
 			Assert.AreEqual("abc", slug);
 		}
+
+		[TestMethod]
+		public void GenerateSlugTest_DashDashDash()
+		{
+			var slug = new AppSettings().GenerateSlug("test - test en test - test");
+			Assert.AreEqual("test-test-en-test-test", slug);
+		}
 		
 		[TestMethod]
 		public void GenerateSlug_AllowUnderscore()
