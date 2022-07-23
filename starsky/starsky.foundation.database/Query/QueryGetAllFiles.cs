@@ -34,24 +34,16 @@ namespace starsky.foundation.database.Query
 			}
 		}
 		
-		private static List<FileIndexItem> FormatOk(List<FileIndexItem?>? input)
+		private static List<FileIndexItem> FormatOk(IReadOnlyCollection<FileIndexItem?>? input)
 		{
 			if ( input == null ) return new List<FileIndexItem>();
-			return input.Select(p =>
+			return input.Where(p => p != null).Select(p =>
 			{
 				// status check for some referenced based code
-				if ( p != null && p.Status == FileIndexItem.ExifStatus.Default )
+				if (p!.Status == FileIndexItem.ExifStatus.Default )
 				{
 					p.Status = FileIndexItem.ExifStatus.Ok;
 				}
-
-				if ( p == null )
-					return new FileIndexItem
-					{
-						Status = FileIndexItem.ExifStatus
-							.OperationNotSupported,
-						Description = "null error format"
-					};
 				return p;
 			}).ToList();
 		}
