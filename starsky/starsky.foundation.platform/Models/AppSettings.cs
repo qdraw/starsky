@@ -245,6 +245,7 @@ namespace starsky.foundation.platform.Models
 			text = Regex.Replace(text, @"\s+", " ").Trim();                       // single space
 			text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim();      // cut and trim
 			text = Regex.Replace(text, @"\s", "-");                               // insert hyphens
+			text = text.Replace("---", "-"); // for example: "test[space]-[space]test"
 			return text;
 		}
         
