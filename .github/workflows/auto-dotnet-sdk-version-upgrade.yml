@@ -17,6 +17,7 @@ jobs:
 
     - shell: bash
       run: |
+        git checkout master
         git pull
 
     - name: 'Update .NET Versions'
