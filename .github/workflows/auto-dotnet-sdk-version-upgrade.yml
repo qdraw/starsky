@@ -22,7 +22,18 @@ jobs:
       working-directory: ./starsky-tools/build-tools
       run: npm run nuget-package-list
       
-    - name: Create Pull Request
+    - shell: bash
+      id: files_changed
+      run: |
+        if [[ `git status --porcelain` ]]; then
+          echo "There are files not committed yet"
+          echo "::set-output name=CHANGED::true"
+        else 
+          echo "not changed"
+          echo "::set-output name=CHANGED::false"
+        fi
+      
+    - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
       uses: peter-evans/create-pull-request@v4
       with:
