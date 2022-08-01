@@ -16,9 +16,12 @@ jobs:
         ref: master
 
     - shell: bash
+      working-directory: ./starsky
       run: |
         git checkout master
         git pull
+        DATE_TIME=$(date +'%Y-%m-%d-%H-%M-%S') 
+        echo $DATE_TIME > test
 
     - name: 'Update .NET Versions'
       id: dotnet_sdk_version_update
