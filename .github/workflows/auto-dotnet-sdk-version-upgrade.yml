@@ -15,7 +15,6 @@ jobs:
       with:
         ref: master
 
-
     - name: 'Update .NET Versions'
       id: dotnet_sdk_version_update
       working-directory: ./starsky-tools/build-tools
@@ -30,7 +29,6 @@ jobs:
       id: files_changed
       run: |
         git status
-      
         git status --porcelain
       
         if [[ `git status --porcelain` ]]; then
