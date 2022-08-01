@@ -48,11 +48,12 @@ jobs:
         labels: |
           dependencies
         draft: false
-
+        
     - name: Merge current branch into -> auto_dotnet_sdk_version_upgrade
-      uses: devmasx/merge-branch@master
+      uses: everlytic/branch-merge@1.1.2
       if: github.event_name == 'workflow_dispatch'
       with:
-        type: now
+        github_token: ${{ secrets.WORKFLOW_GITHUB }}
+        source_ref: 'master'
         target_branch: feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
-        github_token: ${{ github.token }}
+        commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'
