@@ -15,13 +15,6 @@ jobs:
       with:
         ref: master
 
-    - shell: bash
-      working-directory: ./starsky
-      run: |
-        git checkout master
-        git pull
-        DATE_TIME=$(date +'%Y-%m-%d-%H-%M-%S') 
-        echo $DATE_TIME > test
 
     - name: 'Update .NET Versions'
       id: dotnet_sdk_version_update
@@ -79,7 +72,7 @@ jobs:
         
     - name: Merge current branch into -> auto_dotnet_sdk_version_upgrade
       uses: everlytic/branch-merge@1.1.2
-      if: github.event_name == 'workflow_dispatch'
+      if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
       with:
         github_token: ${{ secrets.WORKFLOW_GITHUB }}
         source_ref: 'master'
