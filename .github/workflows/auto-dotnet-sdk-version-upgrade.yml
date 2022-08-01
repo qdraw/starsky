@@ -15,6 +15,10 @@ jobs:
       with:
         ref: master
 
+    - shell: bash
+      run: |
+        git pull
+
     - name: 'Update .NET Versions'
       id: dotnet_sdk_version_update
       working-directory: ./starsky-tools/build-tools
