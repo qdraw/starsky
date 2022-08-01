@@ -31,6 +31,8 @@ jobs:
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
+        add-paths: |
+          *
         branch: feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
         delete-branch: true
         title: '.NET SDK Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
