@@ -25,6 +25,8 @@ jobs:
     - shell: bash
       id: files_changed
       run: |
+        git status --porcelain
+      
         if [[ `git status --porcelain` ]]; then
           echo "There are files not committed yet"
           echo "::set-output name=CHANGED::true"
