@@ -6,7 +6,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{7f7fe502-31a8-409b-bd0b-92d7d1bfeb31}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.5.0-beta.6</Version>
+        <Version>0.5.0-beta.7</Version>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -16,9 +16,9 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <PackageReference Include="RazorLight" Version="2.0.0" />
-      <PackageReference Include="SixLabors.ImageSharp" Version="2.1.1" />
-      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
+      <PackageReference Include="RazorLight" Version="2.1.0" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
     </ItemGroup>
     
     <ItemGroup>

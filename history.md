@@ -36,7 +36,15 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 
-# version 0.5.0-beta.6 _(Unreleased)_ - 2022-06-??
+# version 0.5.0-beta.7 _(Unreleased)_ - 2022-07-??
+- [x]   (Issue) **TODO:** Need to be fixed issue: #771
+- [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.7/6.0.7.md) (PR #838)
+- [x]   (Fixed) _Back-end_ Null reference exceptions on mysql (PR #789 & Issue #787)
+- [x]   (Fixed) _Back-end_ Retry for InvalidOperationException when Add Item (PR #789 & Issue #802)
+- [x]   (Fixed) _Back-end_  Slug should not be --- (PR #789 & Issue #797)
+- [x]   (Security) _Back-end_ Upgrade nuget packages (PR #845)
+
+# version 0.5.0-beta.6 - 2022-07-13
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (Part 2) CreateRoot change (PR #748)
 - [x]   (Fixed) _Front-end_ Also allow realtime updates on home page (PR #748)
 - [x]   (Security) _Back-end_ Upgrade HealthChecks-packages, RazorLight, MetadataExtractor, System.Text.Json to latest version (PR #749)
@@ -44,9 +52,11 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ retry: InvalidOperationException: Can't replace active reader (PR #745)
 - [x]   (Fixed) _Front-end_ Cmd or Ctrl + A in Search/Trash is selecting all items (PR #755)
 - [x]   (Changed) _Tools_ Change build tool to from Cake to Nuke (PR #801, PR #791, PR #805, PR #806)
-- [x]   (Changed) Back-end [Upgrade to .NET 6 - SDK 6.0.301 (Runtime: 6.0.6)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.6/6.0.6.md) (PR #796)
-
-- todo fix https://github.com/qdraw/starsky/issues/771
+- [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.301 (Runtime: 6.0.6)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.6/6.0.6.md) (PR #796)
+- [x]   (Changed) _Back-end_ Include exiftool, admin1CodesASCII and cities1000 in build script (PR #815)
+- [x]   (Changed) _Back-end_ Change exiftool, admin1CodesASCII and cities1000 location to dependencies folder instead of temp (PR #815)
+- [x]   (Added) _Back-end_ Add 'osx-arm64' target to download and build scripts (PR #815)
+- [x]   (Issue) Need to be fixed issue: #771
 
 # version 0.5.0-beta.5 - 2022-05-11
 - [x]   (Changed) _Back-end_ Upgraded in same release ~ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4)   (PR #720)

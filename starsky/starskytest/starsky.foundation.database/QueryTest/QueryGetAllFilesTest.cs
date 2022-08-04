@@ -162,5 +162,35 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual("/GetAllFilesAsync/test.jpg", items[0].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[0].Status);
 		}
+
+		[TestMethod]
+		public void FormatOkTest_Null()
+		{
+			var result = Query.FormatOk((( List<FileIndexItem> )null)!);
+			Assert.AreEqual(0, result.Count);
+		}
+		
+		[TestMethod]
+		public void FormatOkTest_NullValue()
+		{
+			var result = Query.FormatOk(new List<FileIndexItem>{null});
+			Assert.AreEqual(0, result.Count);
+		}
+		
+				
+		[TestMethod]
+		public void FormatOkTest_ShouldPassContent()
+		{
+			var result = Query.FormatOk(new List<FileIndexItem>{new FileIndexItem{ Status = FileIndexItem.ExifStatus.Unauthorized}});
+			Assert.AreEqual(1, result.Count);
+		}
+		
+		[TestMethod]
+		public void FormatOkTest_ShouldFormatDefaultToOk()
+		{
+			var result = Query.FormatOk(new List<FileIndexItem>{new FileIndexItem{ Status = FileIndexItem.ExifStatus.Default}});
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
+		}
 	}
 }

@@ -40,7 +40,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 			new StorageHostFullPathFilesystem().WriteStream(
 				new PlainTextFileHelper().StringToStream(mockCities1000),
-				Path.Combine(_appSettings.TempFolder, "cities1000.txt"));
+				Path.Combine(_appSettings.DependenciesFolder, "cities1000.txt"));
 			
 			// Mockup data to:
 			// map the state and country
@@ -53,7 +53,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 			new StorageHostFullPathFilesystem().WriteStream(
 				new PlainTextFileHelper().StringToStream(admin1CodesASCII),
-				Path.Combine(_appSettings.TempFolder, "admin1CodesASCII.txt"));
+				Path.Combine(_appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
 		}
 
 		[TestMethod]
@@ -83,7 +83,8 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 			Console.WriteLine(NGeoNames.GeoFileDownloader.DEFAULTGEOFILEBASEURI);
 		        
-			new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload()).LoopFolderLookup(folderOfPhotos,false);
+			new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				null, new FakeIWebLogger()).LoopFolderLookup(folderOfPhotos,false);
 
 			Assert.AreEqual("Argentina", buenosAires.LocationCountry);
 			Assert.AreEqual(string.Empty, northSea.LocationCountry);
@@ -104,7 +105,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			};
 			var folderOfPhotos = new List<FileIndexItem> {vaticanCity};
 
-			new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload()).LoopFolderLookup(folderOfPhotos,false);
+			new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),null, new FakeIWebLogger()).LoopFolderLookup(folderOfPhotos,false);
 			Assert.AreEqual("Vatican City", vaticanCity.LocationCity);
 		}
 
@@ -116,7 +117,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 				new FileIndexItem(),
 				new FileIndexItem{ Latitude = 50, Longitude = 50}
 			};
-			var result = new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload())
+			var result = new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),null, new FakeIWebLogger())
 				.RemoveNoUpdateItems(list,true);
 			Assert.AreEqual(1, result.Count);
 		}
@@ -132,7 +133,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		    
 			// ignore city
 			var result = new GeoReverseLookup(_appSettings, 
-				new FakeIGeoFileDownload()).RemoveNoUpdateItems(list,false);
+				new FakeIGeoFileDownload(),null, new FakeIWebLogger()).RemoveNoUpdateItems(list,false);
 			Assert.AreEqual(0, result.Count);
 
 		}

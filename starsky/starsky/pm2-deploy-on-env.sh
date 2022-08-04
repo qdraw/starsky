@@ -152,8 +152,8 @@ if [ -f pm2-warmup.sh ]; then
     chmod +rwx ./pm2-warmup.sh
 fi
 
-if [ -f temp/exiftool-unix/exiftool ]; then
-    chmod +rwx temp/exiftool-unix/exiftool
+if [ -f dependencies/exiftool-unix/exiftool ]; then
+    chmod +rwx dependencies/exiftool-unix/exiftool
 fi
 
 pm2 start $PM2NAME

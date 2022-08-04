@@ -33,7 +33,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.301
+        dotnet-version: 6.0.302
 
     - name: Cache nuget packages (*nix)
       uses: actions/cache@v2
@@ -47,7 +47,7 @@ jobs:
     - name: BuildNetCore
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target BuildNetCore --no-sonar --skip
+      run: bash build.sh --Target BuildNetCore --no-sonar --no-dependencies --skip
 
     - name: TestNetCore
       shell: bash
@@ -66,7 +66,7 @@ jobs:
       working-directory: ./starsky
       run: |
           export LANG="nl_NL.UTF-8"
-          bash build.sh --Target TestNetCore --skip
+          bash build.sh --Target TestNetCore --skip --no-dependencies 
 
   trigger_pipe_release_desktop:
     runs-on: ubuntu-latest

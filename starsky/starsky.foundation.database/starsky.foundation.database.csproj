@@ -6,17 +6,17 @@
         <ProjectGuid>{46588bf9-d745-460d-a22d-d8fdfc698809}</ProjectGuid>
         <DebugType>Full</DebugType>
         <DefineConstants>T</DefineConstants>
-        <Version>0.5.0-beta.6</Version>
+        <Version>0.5.0-beta.7</Version>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.6" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.6" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.6" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.6" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.6" />
-      <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="6.0.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.7" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.7" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.7" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.7" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.7" />
+      <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="6.0.7" />
       <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
       <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     </ItemGroup>

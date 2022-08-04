@@ -1,20 +1,19 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
 	// QueryGetAllFiles
-	public partial class Query : IQuery
+	public partial class Query
 	{
 		
 		/// <summary>
@@ -27,20 +26,21 @@ namespace starsky.foundation.database.Query
 		{
 			try
 			{
-				return GetAllFilesQuery(_context,new List<string>{subPath}).ToList();
+				return GetAllFilesQuery(_context,new List<string>{subPath}).ToList()!;
 			}
 			catch ( ObjectDisposedException )
 			{
-				return  GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),new List<string>{subPath}).ToList();
+				return  GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),new List<string>{subPath}).ToList()!;
 			}
 		}
 		
-		private static List<FileIndexItem> FormatOk(List<FileIndexItem> input)
+		internal static List<FileIndexItem> FormatOk(IReadOnlyCollection<FileIndexItem?>? input)
 		{
-			return input.Select(p =>
+			if ( input == null ) return new List<FileIndexItem>();
+			return input.Where(p => p != null).Select(p =>
 			{
 				// status check for some referenced based code
-				if ( p != null && p.Status == FileIndexItem.ExifStatus.Default )
+				if (p!.Status == FileIndexItem.ExifStatus.Default )
 				{
 					p.Status = FileIndexItem.ExifStatus.Ok;
 				}
@@ -82,7 +82,7 @@ namespace starsky.foundation.database.Query
 			}
 		}
 
-		private static IOrderedQueryable<FileIndexItem> GetAllFilesQuery(ApplicationDbContext context, List<string> filePathList)
+		private static IOrderedQueryable<FileIndexItem?> GetAllFilesQuery(ApplicationDbContext context, List<string> filePathList)
 		{
 			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
 
@@ -98,7 +98,6 @@ namespace starsky.foundation.database.Query
 					
 			return context.FileIndex.Where(predicate).OrderBy(r => r.FileName);
 		}
-
 
 	}
 }

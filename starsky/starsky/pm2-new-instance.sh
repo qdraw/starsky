@@ -275,8 +275,8 @@ if [ -f starskygeocli ]; then
     ./starskygeocli -h > /dev/null 2>&1
 fi
 
-if [ -f temp/exiftool-unix/exiftool ]; then
-    chmod +rwx temp/exiftool-unix/exiftool
+if [ -f dependencies/exiftool-unix/exiftool ]; then
+    chmod +rwx dependencies/exiftool-unix/exiftool
 fi
 
 ISIMPORTEROK=999

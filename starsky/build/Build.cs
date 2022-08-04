@@ -40,6 +40,12 @@ namespace build
 		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)")] 
 		readonly bool NoTest;
 	
+		[Parameter("Skip clientside code")] 
+		readonly bool NoClient;
+		
+		[Parameter("Skip Dependencies download e.g. exiftool / geo data, nuget/npm deps are always installed")] 
+		readonly bool NoDependencies;
+		
 		bool IsUnitTestDisabled()
 		{
 			return NoUnitTest || NoUnitTests || NoTest;
@@ -91,6 +97,11 @@ namespace build
 		Target Client => _ => _
 			.Executes(() =>
 			{
+				if ( NoClient )
+				{
+					Console.WriteLine("--no-client flag is used");
+					return;
+				}
 				Console.WriteLine("> client");
 				ShowSettingsInfo();
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
@@ -150,12 +161,25 @@ namespace build
 					"starskytest/coverage-merge-sonarqube.xml");
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
-				// wait for
+				DotnetGenericHelper.DownloadDependencies(Solution,Configuration, 
+					"starskygeocli/starskygeocli.csproj",NoDependencies, 
+					"generic-netcore");
 				MergeCoverageFiles.Merge(IsUnitTestDisabled());
 				SonarEnd(IsUnitTestDisabled(),NoSonar);
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
 			});
-		
+
+		Target DownloadDependencies => _ => _
+			.Executes(() =>
+			{
+				DotnetGenericHelper.DownloadDependencies(Solution,Configuration, 
+					"starskygeocli/starskygeocli.csproj",NoDependencies, 
+					"generic-netcore");
+				DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
+					"generic-netcore",GetRuntimesWithoutGeneric());
+				
+			});
+
 		Target BuildNetCoreRuntimeSpecific => _ => _
 			.DependsOn(SonarBuildTest)
 			.Executes(() =>
@@ -174,6 +198,9 @@ namespace build
 					GetRuntimesWithoutGeneric(),Configuration);
 				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Solution,
 					GetRuntimesWithoutGeneric(),Configuration);
+				DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
+					"generic-netcore",GetRuntimesWithoutGeneric());
+				
 			});
 		
 		Target BuildNetCore => _ => _
