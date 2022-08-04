@@ -16,6 +16,12 @@ case $(uname -m) in
     RUNTIME="linux-arm"
     ;;
 
+  "arm64")
+    if [ $(uname) = "Darwin" ]; then
+        RUNTIME="osx-arm64"
+    fi
+    ;;
+
   "x86_64")
     if [ $(uname) = "Darwin" ]; then
         RUNTIME="osx-x64"
@@ -35,6 +41,7 @@ for ((i = 1; i <= $#; i++ )); do
       echo "     (or:) --runtime linux-arm64"
       echo "     (or:) --runtime osx-x64"
       echo "     (or:) --runtime win7-x64"
+      echo "     (or as fallback:) --runtime "$RUNTIME
       exit 0
   fi
       

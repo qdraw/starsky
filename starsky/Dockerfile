@@ -22,7 +22,7 @@ ENV INLINE_RUNTIME_CHUNK=false
 ENV IMAGE_INLINE_SIZE_LIMIT=1
 ENV DISABLE_ESLINT_PLUGIN=true
 COPY starsky/clientapp/. ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps --prefer-offline --no-audit
 RUN npm run build
 RUN echo "react done"
 
@@ -73,9 +73,9 @@ RUN if [ "$ISDEMO" != "" ]; then \
     else \
         # it should cache faster
         GEO_CLI_PATH="/app/starskygeocli/starskygeocli.csproj" ;\
-        TEMP_FOLDER="/app/out/temp" ;\
-        mkdir -p $TEMP_FOLDER ;\
-        dotnet run --project $GEO_CLI_PATH --configuration Release -- --tempfolder $TEMP_FOLDER -h -v ;\
+        DEPS_FOLDER="/app/out/dependencies" ;\
+        mkdir -p $DEPS_FOLDER ;\
+        dotnet run --project $GEO_CLI_PATH --configuration Release -- --dependencies $DEPS_FOLDER -h -v ;\
     fi
 
 # no alpine build since there is no support for multi-arch

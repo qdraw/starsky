@@ -24,6 +24,7 @@ jobs:
    
     - name: Build and deploy the Docker image
       env: 
+        # see: https://dashboard.heroku.com/account and scroll to API Key
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         APP_NAME: ${{ 'demostarsky' }}
       run: |

@@ -25,7 +25,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 14.x, 12.x]
+        node-version: [18.x, 16.x, 14.x, 12.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
 
     - name: Install Dependencies
       working-directory: ./starsky/starsky/clientapp
-      run: npm ci --no-progress --prefer-offline
+      run: npm ci --no-progress --prefer-offline --legacy-peer-deps
       
     - name: NpmBuild
       working-directory: ./starsky/starsky/clientapp

@@ -11,7 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        ref: master
 
     - name: 'Update .NET Versions'
       id: dotnet_sdk_version_update
@@ -22,15 +24,32 @@ jobs:
       working-directory: ./starsky-tools/build-tools
       run: npm run nuget-package-list
       
-    - name: Create Pull Request
+    - shell: bash
+      working-directory: ./starsky
+      id: files_changed
+      run: |
+        git status
+        git status --porcelain
+      
+        if [[ `git status --porcelain` ]]; then
+          echo "There are files not committed yet"
+          echo "::set-output name=CHANGED::true"
+        else 
+          echo "not changed"
+          echo "::set-output name=CHANGED::false"
+        fi
+      
+    - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
-      uses: peter-evans/create-pull-request@v3
+      uses: peter-evans/create-pull-request@v4
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: 'Auto .NET SDK version Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
+        add-paths: |
+          *
         branch: feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
         delete-branch: true
         title: '.NET SDK Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
@@ -48,11 +67,12 @@ jobs:
         labels: |
           dependencies
         draft: false
-
+        
     - name: Merge current branch into -> auto_dotnet_sdk_version_upgrade
-      uses: devmasx/merge-branch@master
-      if: github.event_name == 'workflow_dispatch'
+      uses: everlytic/branch-merge@1.1.2
+      if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
       with:
-        type: now
+        github_token: ${{ secrets.WORKFLOW_GITHUB }}
+        source_ref: 'master'
         target_branch: feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
-        github_token: ${{ github.token }}
+        commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'

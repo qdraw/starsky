@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <!--         Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " -->
-        <RuntimeFrameworkVersion>6.0.5</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>6.0.7</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <!-- SonarQube needs this -->
         <ProjectGuid>{b3342a3e-64e1-442f-b4f7-f7a718508aac}</ProjectGuid>
@@ -20,9 +20,9 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
     <ItemGroup>
-        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.20.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.5" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
+        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
         <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />

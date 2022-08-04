@@ -277,12 +277,12 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException e )
 	        {
-		        await RetrySaveChangesAsync(updateStatusContent, e);
+		        await RetrySaveChangesAsync(updateStatusContent, e,"UpdateItemAsync ObjectDisposedException");
 	        }
 	        catch ( InvalidOperationException e)
 	        {
 		        // System.InvalidOperationException: Can't replace active reader.
-		        await RetrySaveChangesAsync(updateStatusContent, e);
+		        await RetrySaveChangesAsync(updateStatusContent, e, "UpdateItemAsync InvalidOperationException");
 	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {
@@ -369,9 +369,10 @@ namespace starsky.foundation.database.Query
         /// </summary>
         /// <param name="updateStatusContent"></param>
         /// <param name="e">Exception</param>
-        private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e)
+        /// <param name="source">Where from is this called, this helps to debug the code better</param>
+        private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source)
         {
-	        _logger?.LogInformation(e,"[RetrySaveChangesAsync] retry catch-ed exception ");
+	        _logger?.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source}");
 	        _logger?.LogInformation("[RetrySaveChangesAsync] next retry ~>");
 	        
 	        async Task LocalRetrySaveChangesAsyncQuery()
@@ -392,7 +393,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( MySqlException mySqlException)
 	        {
-		        _logger?.LogError(mySqlException,"[RetrySaveChangesAsync] MySqlException catch-ed and retry again");
+		        _logger?.LogInformation(mySqlException,$"[RetrySaveChangesAsync] MySqlException catch-ed and retry again, from {source}");
 		        await LocalRetrySaveChangesAsyncQuery();
 	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
@@ -406,7 +407,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( DbUpdateConcurrencyException retry2Exception)
 		        {
-			        _logger?.LogInformation(retry2Exception, 
+			        _logger?.LogError(retry2Exception, 
 				        "[RetrySaveChangesAsync] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
@@ -760,10 +761,11 @@ namespace starsky.foundation.database.Query
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
-		    catch ( ObjectDisposedException )
+		    catch ( InvalidOperationException e) // or ObjectDisposedException
 		    {
-			    var context = new InjectServiceScope(_scopeFactory).Context();
-			    return await LocalQuery(context);
+			    _logger?.LogInformation(e, $"catch-ed InvalidOperationException going to retry 2 times {fileIndexItem.FilePath}");
+			    return await RetryHelper.DoAsync(
+				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
 	    }
 

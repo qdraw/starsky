@@ -62,12 +62,12 @@ stages:
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: false
-        runtimeArg: '--runtime="win7-x64,win7-x86,osx-x64"'
+        runtimeArg: '--runtime "win7-x64,win7-x86,osx-x64,osx-arm64"'
         nugetPackages: $(NUGET_PACKAGES)
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
       parameters:
-        runtimeArg: '--runtime="win7-x64,win7-x86,osx-x64"'
+        runtimeArg: '--runtime "win7-x64,win7-x86,osx-x64,osx-arm64"'
 
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
@@ -80,6 +80,8 @@ stages:
             value: '/starsky/starsky-win7-x86.zip'
           - key: win7-x64
             value: '/starsky/starsky-win7-x64.zip'
+          - key: osx-arm64
+            value: '/starsky/starsky-osx-arm64.zip'
 
 - stage: buildelectron
   displayName: 'Build Electron'
@@ -102,6 +104,13 @@ stages:
         buildType: 'current'
         downloadType: 'single'
         artifactName: 'osx-x64'
+        downloadPath: '$(Build.SourcesDirectory)'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'osx-arm64'
         downloadPath: '$(Build.SourcesDirectory)'
 
     - template: /pipelines/azure/steps/electron_build.yml

@@ -313,7 +313,7 @@ xcuserdata/
 *.xccheckout
 
 ## compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
-build/
+#build/
 DerivedData/
 *.moved-aside
 *.pbxuser
@@ -353,12 +353,14 @@ starsky-tools/docs/*/*/*.jpg
 starsky-tools/docs/*/*/*/*.jpg
 
 **/osx-x64/*
-**/osx.10.12-x64/*
+**/osx-arm64/*
 **/linux-arm/*
 **/linux-arm64/*
+**/linux-x64/*
 **/win7-x86/*
 **/win7-x64/*
 **/win-x64/*
+**/win-arm64/*
 **/generic-netcore/*
 **/generic-netcore-starskyonly/*
 **/netframework-msbuild/*
@@ -367,6 +369,7 @@ starsky-linux-arm.zip
 starsky-linux-arm64.zip
 
 starsky-osx-x64.zip
+starsky-osx-arm64.zip
 starsky-osx.10.12-x64.zip
 starsky-win7-x86.zip
 starsky-win7-x64.zip
