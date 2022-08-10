@@ -1,8 +1,8 @@
 steps:
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk 6.0.302'
+    displayName: 'Use .NET Core sdk 6.0.400'
     enabled: true
     inputs:
       packageType: sdk
-      version: 6.0.302
+      version: 6.0.400
       installationPath: $(Agent.ToolsDirectory)/dotnet
