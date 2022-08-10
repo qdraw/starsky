@@ -20,7 +20,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.302
+          dotnet-version: 6.0.400
 
       - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64
         shell: bash
