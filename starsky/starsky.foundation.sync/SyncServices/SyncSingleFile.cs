@@ -88,12 +88,21 @@ namespace starsky.foundation.sync.SyncServices
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			var dbItemList = await _query.GetAllObjectsAsync(filePathList);
-			return await SingleFileList(dbItemList, updateDelegate);
+			
+			
+			return await SingleFileList(filePathList, dbItemList, updateDelegate);
 		}
 		
-		internal async Task<List<FileIndexItem>> SingleFileList(List<FileIndexItem> dbItemList,
+		internal async Task<List<FileIndexItem>> SingleFileList(List<string> filePathList, List<FileIndexItem> dbItemList,
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
+			foreach ( var subPath in filePathList )
+			{
+				if ( dbItemList.Any(p => p.FilePath == subPath) ) continue;
+				var statusItem = CheckForStatusNotOk(subPath); // includes check if exists
+				dbItemList.Add(statusItem);
+			}
+			
 			var items = new List<FileIndexItem>();
 			foreach ( var dbItem in dbItemList )
 			{
