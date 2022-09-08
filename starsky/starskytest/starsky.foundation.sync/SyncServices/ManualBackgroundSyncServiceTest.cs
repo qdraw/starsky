@@ -85,6 +85,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FileIndexItem("/test999.jpg")
 			};
 			memoryCache.Set(cacheDbName, cachedContent);
+			if ( query == null )
+			{
+				throw new NullReferenceException("ManualSync_test query is null");
+			}
+			
 			await query.AddItemAsync(new FileIndexItem("/test999.jpg"));
 
 			var item = new FakeSelectorStorage(

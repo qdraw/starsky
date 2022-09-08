@@ -12,6 +12,8 @@
 # source: /opt/starsky/starsky/github-artifacts-download.sh
 
 WORKFLOW_ID="release-on-tag-netcore-desktop-electron.yml"
+# https://github.com/qdraw/starsky/actions/workflows/release-on-tag-netcore-desktop-electron.yml
+
 
 # default will be overwritten
 RUNTIME="linux-arm"
@@ -35,6 +37,9 @@ case $(uname -m) in
         # server: RUNTIME="osx-x64"
         RUNTIME="starsky-mac-desktop"
     fi
+    if [ $(uname) = "Linux" ]; then
+        RUNTIME="linux-x64"
+    fi
     ;;
 esac
 
@@ -44,7 +49,7 @@ OUTPUT_DIR=$CURRENT_DIR
 # get arguments
 ARGUMENTS=("$@")
 
-    echo ${ARGUMENTS}
+echo ${ARGUMENTS}
 
 
 for ((i = 1; i <= $#; i++ )); do
