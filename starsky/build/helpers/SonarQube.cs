@@ -14,7 +14,10 @@ namespace helpers;
 public static class SonarQube
 {
 	public const string SonarQubePackageName = "dotnet-sonarscanner";
-	public const string SonarQubePackageVersion = "5.7.2";
+	/// <summary>
+	/// @see: https://www.nuget.org/packages/dotnet-sonarscanner
+	/// </summary>
+	public const string SonarQubePackageVersion = "5.8.0";
 	public const string GitCommand = "git";
 	public const string DefaultBranchName = "master";
 
