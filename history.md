@@ -43,7 +43,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Retry for InvalidOperationException when Add Item (PR #789 & Issue #802)
 - [x]   (Fixed) _Back-end_  Slug should not be --- (PR #789 & Issue #797)
 - [x]   (Security) _Back-end_ Upgrade nuget packages (PR #845)
-- [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.400 (Runtime: 6.0.8)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.8/6.0.8.md) (PR #855)
+- [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.400 (Runtime: 6.0.8) (PR #855)
+- [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.401 (Runtime: 6.0.9)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.9/6.0.9.md) (PR #870)
 
 # version 0.5.0-beta.6 - 2022-07-13
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (Part 2) CreateRoot change (PR #748)

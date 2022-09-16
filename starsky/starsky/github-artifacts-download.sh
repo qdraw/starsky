@@ -152,8 +152,36 @@ then
   echo "url "$DOWNLOAD_URL" should end with zip";
   exit 1
 fi
-
 echo ">: $DOWNLOAD_URL"
+
+# check if hash is already downloaded
+GITHUB_HEAD_SHA=$(echo $RESULT_ARTIFACTS|tr -d '\n')
+GITHUB_HEAD_SHA=$(grep -E -o "\"head_sha\": \"(\d|\.|\w|\:|\/)+" <<< $GITHUB_HEAD_SHA)
+GITHUB_HEAD_SHA=$(echo "$GITHUB_HEAD_SHA" | sed "s/\"head_sha\": \"//")
+GITHUB_HEAD_SHA=($GITHUB_HEAD_SHA) # make array
+GITHUB_HEAD_SHA="${GITHUB_HEAD_SHA[0]}" # first of array
+
+GITHUB_HEAD_SHA_CACHE_FILE="${OUTPUT_DIR}${VERSION_ZIP}.sha-cache.txt"
+echo "check for GITHUB_HEAD_SHA_CACHE_FILE $GITHUB_HEAD_SHA_CACHE_FILE"
+
+LAST_GITHUB_HEAD_SHA=0
+if [[ -f "$GITHUB_HEAD_SHA_CACHE_FILE" ]]; then
+    LAST_GITHUB_HEAD_SHA="$(cat $GITHUB_HEAD_SHA_CACHE_FILE)"
+    LAST_GITHUB_HEAD_SHA=`echo $LAST_GITHUB_HEAD_SHA | sed -e 's/^[[:space:]]*//'`
+fi 
+
+if [[ $LAST_GITHUB_HEAD_SHA == $GITHUB_HEAD_SHA ]]; then
+    echo "$GITHUB_HEAD_SHA exists."
+    echo ">>      Skips download of file"
+    exit 0;
+else 
+    echo $GITHUB_HEAD_SHA" does not exists"
+fi
+    
+# set the new hash
+echo $GITHUB_HEAD_SHA > $GITHUB_HEAD_SHA_CACHE_FILE
+# END check if hash is already downloaded
+
 
 mkdir -p $OUTPUT_DIR
 
