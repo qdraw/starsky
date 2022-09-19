@@ -15,6 +15,10 @@ cd $SCRIPT_DIR
 mkdir -p ~/.config/systemd/user/
 
 SYSTEMD_SERVICE_PATH="~/.config/systemd/user/"$SERVICE_NAME".service"
+if [ ! -f $SYSTEMD_SERVICE_PATH ]
+then
+    touch $SYSTEMD_SERVICE_PATH
+fi
 
 echo "[Unit]" > $SYSTEMD_SERVICE_PATH
 echo -e "\nDescription=S" >> $SYSTEMD_SERVICE_PATH
