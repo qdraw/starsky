@@ -35,6 +35,10 @@ case $(uname -m) in
         # server: RUNTIME="osx-x64"
         RUNTIME="starsky-mac-desktop"
     fi
+    # there is no linux desktop
+    if [ $(uname) = "Linux" ]; then
+        RUNTIME="linux-x64"
+    fi
     ;;
 esac
 
