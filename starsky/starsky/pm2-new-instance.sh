@@ -130,7 +130,9 @@ if [ -f starsky.dll ]; then
     LSOUTPUT=$(ls)
     for ENTRY in $LSOUTPUT
     do
-        if [[ $ENTRY != "appsettings"* && $ENTRY != "pm2-"*
+        if [[ $ENTRY != "appsettings"* 
+        && $ENTRY != "pm2-"*
+        && $ENTRY != "service-"*
         && $ENTRY != "thumbnailTempFolder"
         && $ENTRY != "temp"
         && $ENTRY != "UserViews"* # Keep UserViews
