@@ -72,6 +72,14 @@ else
 fi
 
 
+# settings
+echo "run with the following parameters "
+
+if [ "$ANYWHERE" = true ] ; then
+    ANYWHERESTATUSTEXT="--anywhere $ANYWHERE"
+fi
+echo "--port" $PORT $ANYWHERESTATUSTEXT
+
 
 mkdir -p $HOME"/.config/systemd/user/"
 
