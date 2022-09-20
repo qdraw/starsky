@@ -28,13 +28,11 @@ jobs:
 
       - name: Test service
         shell: bash
+        working-directory: ./starsky/starsky
         run:  |
+          cp service-deploy-systemd.sh "${{ steps.create_temp_folder.outputs.folder_path }}/service-deploy-systemd1.sh"
           cd ${{ steps.create_temp_folder.outputs.folder_path }}
           echo ${{ steps.create_temp_folder.outputs.folder_path }}
-          ls
-          bash service-deploy-systemd.sh
-          
-      - name: service-deploy-systemd
-        shell: bash
-        working-directory: ${{ steps.create_temp_folder.outputs.folder_path }}
-        run: bash service-deploy-systemd.sh
+          ls -lah | grep service-
+          bash service-deploy-systemd1.sh
+
