@@ -11,17 +11,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.401
-
-      - name: Build  --no-unit-test  linux-x64
+      - name: Create temp folder
         shell: bash
-        working-directory: ./starsky
-        run: bash build.sh --runtime "linux-x64" --no-unit-test    
+        run: mkdir starsky-run && cd starsky-run && pwd
+
+      - name: github-artifacts-download
+        shell: bash
+        working-directory: ./starsky/starsky
+        run: bash github-artifacts-download.sh --output /starsky-run
 
       - name: Test service
         shell: bash
-        working-directory: ./starsky/linux-x64/
+        working-directory: ./starsky-run/
         run: bash service-deploy-systemd.sh
