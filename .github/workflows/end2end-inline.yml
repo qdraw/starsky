@@ -23,5 +23,8 @@ jobs:
 
       - name: Test service
         shell: bash
-        working-directory: ${{ steps.create_temp_folder.outputs.folder_path }}
-        run: bash service-deploy-systemd.sh
+        run:  |
+          cd ${{ steps.create_temp_folder.outputs.folder_path }}
+          echo ${{ steps.create_temp_folder.outputs.folder_path }}
+          ls
+          bash service-deploy-systemd.sh
