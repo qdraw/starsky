@@ -95,7 +95,7 @@ Included with .NET dependency
 _See `./.github/workflows` for details_
 
 ### End2End tests on public heroku demo environment
-![end2end on heroku-demo](https://github.com/qdraw/starsky/workflows/end2end%20on%20heroku-demo/badge.svg?branch=master)
+![end2end on heroku-demo](https://github.com/qdraw/starsky/workflows/end2end-ubuntu-ci/badge.svg?branch=master)
 
 _See `./starsky-tools/end2end` for details_
 
