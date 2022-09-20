@@ -1,0 +1,27 @@
+on:
+  workflow_dispatch:
+
+name: End2End test
+
+jobs:
+  build_core:
+    name: Build Net Core
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.401
+
+      - name: Build  --no-unit-test  linux-x64
+        shell: bash
+        working-directory: ./starsky
+        run: bash build.sh --runtime "linux-x64" --no-unit-test    
+
+      - name: Test service
+        shell: bash
+        working-directory: ./starsky/linux-x64/
+        run: bash service-deploy-systemd.sh
