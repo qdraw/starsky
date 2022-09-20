@@ -12,6 +12,7 @@ fi
 # realpath is not support using os x
 OUTPUT_DIR="$(dirname "$(realpath "$0")")"
 
+ANYWHERE=false
 PORT=5000
 # Port 4823 an example port number
 
@@ -19,6 +20,15 @@ PORT=5000
 ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
+    
+  # When true, allow access from anywhere not only localhost
+  # defaults to false
+  # only used on creation, when enabled you need to manual remove a systemd instance
+  if [[ ${ARGUMENTS[CURRENT]} == "--anywhere" ]];
+  then
+      ANYWHERE=true
+  fi  
+  
   if [ $i -gt 1 ]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
@@ -38,17 +48,9 @@ for ((i = 1; i <= $#; i++ )); do
     then
         OUTPUT_DIR="${ARGUMENTS[CURRENT]}"
     fi
-    
-    # When true, allow access from anywhere not only localhost
-    # defaults to false
-    # only used on creation, when enabled you need to manual remove a pm2 instance
-    if [[ ${ARGUMENTS[CURRENT]} == "--anywhere" ]];
-    then
-        ANYWHERE=true
-    fi
-        
   fi
 done
+
 
 # add slash if not exists
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
