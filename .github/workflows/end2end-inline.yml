@@ -30,13 +30,13 @@ jobs:
         shell: bash
         working-directory: ./starsky/starsky
         run:  |
-          cp service-deploy-systemd.sh "${{ steps.create_temp_folder.outputs.folder_path }}/service-deploy-systemd1.sh"
+          cp service-deploy-systemd.sh "${{ steps.create_temp_folder.outputs.folder_path }}/service-deploy-systemd_temp.sh"
           cd ${{ steps.create_temp_folder.outputs.folder_path }}
           echo ${{ steps.create_temp_folder.outputs.folder_path }}
           ls -lah | grep service-
-          bash service-deploy-systemd1.sh
+          bash service-deploy-systemd_temp.sh
 
       - name: pm2-warmup
         shell: bash
         working-directory: ./starsky/starsky
-        run: bash pm2-warmup.sh
+        run: bash pm2-warmup.sh --port 4823
