@@ -63,6 +63,7 @@ systemctl --user daemon-reload
 
 systemctl --user enable $SERVICE_NAME".service"
 
+echo "start"
 systemctl --user start $SERVICE_NAME".service"
 
 echo "end"

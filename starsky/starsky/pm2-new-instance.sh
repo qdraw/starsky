@@ -292,11 +292,6 @@ if [ -f starsky ]; then
     chmod +rwx ./starsky
 fi
 
-if [ -f starskyimportercli ]; then
-    echo "run starskyimportercli to auto download dependencies"
-    ./starskyimportercli -h > /dev/null 2>&1
-fi
-
 if [ -f starskygeocli ]; then
     echo "run starskygeocli to auto download dependencies"
     ./starskygeocli -h > /dev/null 2>&1
