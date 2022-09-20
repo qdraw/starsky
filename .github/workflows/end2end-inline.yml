@@ -21,6 +21,16 @@ jobs:
         working-directory: ./starsky/starsky
         run: bash github-artifacts-download.sh --output ${{ steps.create_temp_folder.outputs.folder_path }} --token ${{ secrets.GITHUB_TOKEN }}
 
+      - name: pm2-new-instance
+        shell: bash
+        working-directory: ./starsky/starsky
+        run: bash pm2-new-instance.sh --output ${{ steps.create_temp_folder.outputs.folder_path }}
+
+      - name: service-deploy-systemd
+        shell: bash
+        working-directory: ${{ steps.create_temp_folder.outputs.folder_path }}
+        run: bash service-deploy-systemd.sh
+
       - name: Test service
         shell: bash
         run:  |
