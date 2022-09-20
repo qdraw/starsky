@@ -9,10 +9,14 @@ then
     exit 1
 fi
 
+# realpath is not support using os x
 OUTPUT_DIR="$(dirname "$(realpath "$0")")"
 
 PORT=5000
 # Port 4823 an example port number
+
+# command line args
+ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
   if [ $i -gt 1 ]; then
@@ -38,6 +42,8 @@ for ((i = 1; i <= $#; i++ )); do
   fi
 done
 
+echo $PORT
+
 # add slash if not exists
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
 [[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
@@ -56,6 +62,8 @@ else
     echo "do nothing"
     exit 1
 fi
+
+
 
 mkdir -p $HOME"/.config/systemd/user/"
 
