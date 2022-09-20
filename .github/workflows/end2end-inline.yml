@@ -39,7 +39,7 @@ jobs:
       - name: logging
         shell: bash
         run:  |
-          systemctl -l status starsky
+          systemctl --user -l status starsky
 
       - name: pm2-warmup
         shell: bash
@@ -49,4 +49,4 @@ jobs:
       - name: logging
         shell: bash
         run:  |
-          systemctl -l status starsky
+          systemctl --user -l status starsky
