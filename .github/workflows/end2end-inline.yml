@@ -4,8 +4,8 @@ on:
 name: End2End test
 
 jobs:
-  build_core:
-    name: Build Net Core
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
