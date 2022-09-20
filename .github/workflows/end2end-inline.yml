@@ -13,14 +13,15 @@ jobs:
 
       - name: Create temp folder
         shell: bash
-        run: mkdir starsky-run && cd starsky-run && pwd
+        id: create_temp_folder
+        run: mkdir starsky-run && cd starsky-run && echo "::set-output name=folder_path::$(pwd)"
 
       - name: github-artifacts-download
         shell: bash
         working-directory: ./starsky/starsky
-        run: bash github-artifacts-download.sh --output /starsky-run
+        run: bash github-artifacts-download.sh --output ${{ steps.create_temp_folder.outputs.folder_path }}
 
       - name: Test service
         shell: bash
-        working-directory: ./starsky-run/
+        working-directory: ${{ steps.create_temp_folder.outputs.folder_path }}
         run: bash service-deploy-systemd.sh
