@@ -48,8 +48,7 @@ OUTPUT_DIR=$CURRENT_DIR
 # get arguments
 ARGUMENTS=("$@")
 
-    echo ${ARGUMENTS}
-
+echo ${ARGUMENTS}
 
 for ((i = 1; i <= $#; i++ )); do
   CURRENT=$(($i-1))
@@ -97,6 +96,13 @@ else
    VERSION_ZIP=$RUNTIME".zip"
 fi 
 
+# output dir should have slash at end
+if [ -f $OUTPUT_DIR"Startup.cs" ]; then
+    echo "FAIL: You should not run this folder from the source folder"
+    echo "copy this file to the location to run it from"
+    echo "end script due failure"
+    exit 1
+fi
 
 if [[ -z $STARSKY_GITHUB_PAT ]]; then
   echo "enter your PAT: and press enter"
@@ -231,7 +237,8 @@ then
         
         chmod +rwx "${OUTPUT_DIR}pm2-new-instance.sh"
         echo "run for the setup:"
-        echo "./pm2-new-instance.sh"
+        # output dir should have slash at end
+        echo $OUTPUT_DIR"pm2-new-instance.sh"
     else 
         echo " pm2-new-instance.sh is missing, please download it yourself and run it"
         exit 1
