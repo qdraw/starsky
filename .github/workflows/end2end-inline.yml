@@ -1,7 +1,9 @@
 on:
   workflow_dispatch:
-
-name: End2End test
+  schedule:
+    - cron:  '45 0 * * *'
+    
+name: end2end on ubuntu-ci
 
 jobs:
   test:
@@ -35,7 +37,6 @@ jobs:
           echo ${{ steps.create_temp_folder.outputs.folder_path }}
           ls -lah | grep service-
           bash service-deploy-systemd_temp.sh --anywhere --port 4000 
-
 
       - name: pm2-warmup
         shell: bash
