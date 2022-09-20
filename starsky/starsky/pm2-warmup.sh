@@ -6,6 +6,7 @@
 ARGUMENTS=("$@")
 
 PORT=5000
+# Port 4823 an example port number
 
 for ((i = 1; i <= $#; i++ )); do
   if [ $i -gt 1 ]; then
@@ -30,9 +31,8 @@ URL="http://localhost:$PORT"
 # no slash
 URL=${URL%/}
 
-echo "bash pm2-warmup.sh --port 4823"
-echo "Running on:"
-echo $URL
+echo "EXAMPLE: bash pm2-warmup.sh --port $PORT"
+echo "Running on: "$URL
 
 COUNTER=0
 MAXCOUNTER=30
