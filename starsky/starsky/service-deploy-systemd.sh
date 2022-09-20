@@ -21,6 +21,16 @@ ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
     
+  CURRENT=$(($i-1))
+  
+  if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
+  then
+      echo "(optional) --port 4823"
+      echo "(optional) --output "$OUTPUT_DIR
+      echo "(optional) --anywhere (to allow access from anywhere, defaults to false)"
+      exit 0
+  fi
+      
   # When true, allow access from anywhere not only localhost
   # defaults to false
   # only used on creation, when enabled you need to manual remove a systemd instance
@@ -31,13 +41,6 @@ for ((i = 1; i <= $#; i++ )); do
   
   if [ $i -gt 1 ]; then
     PREV=$(($i-2))
-    CURRENT=$(($i-1))
-
-    if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
-    then
-        echo "--port 4823"
-        exit 0
-    fi
 
     if [[ ${ARGUMENTS[PREV]} == "--port" ]];
     then
