@@ -36,7 +36,17 @@ jobs:
           ls -lah | grep service-
           bash service-deploy-systemd_temp.sh --anywhere --port 4000 
 
+      - name: logging
+        shell: bash
+        run:  |
+          systemctl -l status starsky
+
       - name: pm2-warmup
         shell: bash
         working-directory: ./starsky/starsky
-        run: bash pm2-warmup.sh --port 4000
+        run: bash pm2-warmup.sh --port 4000 || true
+
+      - name: logging
+        shell: bash
+        run:  |
+          systemctl -l status starsky
