@@ -19,7 +19,7 @@ jobs:
       - name: github-artifacts-download
         shell: bash
         working-directory: ./starsky/starsky
-        run: bash github-artifacts-download.sh --output ${{ steps.create_temp_folder.outputs.folder_path }}
+        run: bash github-artifacts-download.sh --output ${{ steps.create_temp_folder.outputs.folder_path }} --token ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test service
         shell: bash
