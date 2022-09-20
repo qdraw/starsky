@@ -26,11 +26,6 @@ jobs:
         working-directory: ./starsky/starsky
         run: bash pm2-new-instance.sh --output ${{ steps.create_temp_folder.outputs.folder_path }} || true
 
-      - name: service-deploy-systemd
-        shell: bash
-        working-directory: ${{ steps.create_temp_folder.outputs.folder_path }}
-        run: bash service-deploy-systemd.sh
-
       - name: Test service
         shell: bash
         run:  |
@@ -38,3 +33,8 @@ jobs:
           echo ${{ steps.create_temp_folder.outputs.folder_path }}
           ls
           bash service-deploy-systemd.sh
+          
+      - name: service-deploy-systemd
+        shell: bash
+        working-directory: ${{ steps.create_temp_folder.outputs.folder_path }}
+        run: bash service-deploy-systemd.sh
