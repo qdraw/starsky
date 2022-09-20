@@ -36,3 +36,7 @@ jobs:
           ls -lah | grep service-
           bash service-deploy-systemd1.sh
 
+      - name: pm2-warmup
+        shell: bash
+        working-directory: ./starsky/starsky
+        run: bash pm2-warmup.sh
