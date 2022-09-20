@@ -104,11 +104,11 @@ systemctl --user enable $SERVICE_NAME".service"
 echo "next: start"
 systemctl --user start $SERVICE_NAME".service"
 
-echo "next: is active"
-systemctl --user is-active $SERVICE_NAME".service"
-
 echo "next: is failed"
 systemctl --user is-failed $SERVICE_NAME".service"
+
+echo "next: cat"
+systemctl --user cat $SERVICE_NAME".service"
 
 echo "end"
 # credits to https://amelspahic.com/deploy-net-6-application-with-github-actions-to-self-hosted-linux-machine-virtual-private-server-raspberry-pi
