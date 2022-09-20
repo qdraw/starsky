@@ -39,12 +39,45 @@ jobs:
 
       - name: pm2-warmup
         shell: bash
-        continue-on-error: true        
         working-directory: ./starsky/starsky
         run: bash pm2-warmup.sh --port 4000
 
       - name: logging
         shell: bash
-        continue-on-error: true
+        if: ${{ always() }}
+        run:  |
+          systemctl --user -l status starsky
+
+      - name: Run Cypress in Electron 
+        uses: cypress-io/github-action@v4
+        env:
+          CYPRESS_BASE_URL: http://localhost:4000
+          cypress_name: local
+          cypress_AUTH_USER: demo@qdraw.nl
+          cypress_AUTH_PASS:  demo@qdraw.nl
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        with:
+          install-command: npm ci --legacy-peer-deps
+          command: npm run e2e:env:record -- --tag "ubuntu-ci"
+          working-directory: starsky-tools/end2end  
+
+      - name: Upload screenshots (always)
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: cypress-screenshots
+          path: starsky-tools/end2end/cypress/screenshots
+
+      - name: Upload videos (always)
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: cypress-videos
+          path: starsky-tools/end2end/cypress/videos 
+
+      - name: logging2
+        shell: bash
+        if: ${{ always() }}
         run:  |
           systemctl --user -l status starsky
