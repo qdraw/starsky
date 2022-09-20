@@ -82,30 +82,25 @@ if systemctl --user --type service | grep -q "$SERVICE_NAME";then
     systemctl --user disable $SERVICE_NAME".service"
 fi
 
-echo "[Unit]" > $SYSTEMD_SERVICE_PATH
-echo -e "\nDescription=${EXE_NAME}" >> $SYSTEMD_SERVICE_PATH
+echo "[Unit]" > $SYSTEMD_SERVICE_PATH # overwrite!
+echo -e "Description=${EXE_NAME}" >> $SYSTEMD_SERVICE_PATH
 # This is the directory where our published files are
-echo -e "[Service]" >> $SYSTEMD_SERVICE_PATH
+echo -e "\n[Service]" >> $SYSTEMD_SERVICE_PATH
 echo -e "Description=${EXE_NAME}" >> $SYSTEMD_SERVICE_PATH
 echo -e "WorkingDirectory=${OUTPUT_DIR}" >> $SYSTEMD_SERVICE_PATH
 # We set up `dotnet` PATH in Step 1. The second one is path of our executable
-echo -e "\nExecStart=${OUTPUT_DIR}${EXE_NAME} --urls \"http://0.0.0.0:${PORT}\"" >> $SYSTEMD_SERVICE_PATH
-echo -e "\nRestart=always" >> $SYSTEMD_SERVICE_PATH
+echo -e "ExecStart=${OUTPUT_DIR}${EXE_NAME} --urls \"http://localhost:${PORT},http://0.0.0.0:${PORT}\"" >> $SYSTEMD_SERVICE_PATH
+echo -e "Restart=always" >> $SYSTEMD_SERVICE_PATH
 # Restart service after 10 seconds if the dotnet service crashes
-echo -e "\nRestartSec=10" >> $SYSTEMD_SERVICE_PATH
-echo -e "\nKillSignal=SIGINT" >> $SYSTEMD_SERVICE_PATH
-echo -e "\nSyslogIdentifier=${OUTPUT_DIR}" >> $SYSTEMD_SERVICE_PATH
+echo -e "RestartSec=10" >> $SYSTEMD_SERVICE_PATH
+echo -e "KillSignal=SIGINT" >> $SYSTEMD_SERVICE_PATH
+echo -e "SyslogIdentifier=${OUTPUT_DIR}" >> $SYSTEMD_SERVICE_PATH
 # We can even set environment variables
-echo -e "\nEnvironment=ASPNETCORE_ENVIRONMENT=Production" >> $SYSTEMD_SERVICE_PATH
-echo -e "\nEnvironment=DOTNET_PRINT_TELEMETRY_MESSAGE=false" >> $SYSTEMD_SERVICE_PATH
-echo -e "\n" >> $SYSTEMD_SERVICE_PATH
+echo -e "Environment=ASPNETCORE_ENVIRONMENT=Production" >> $SYSTEMD_SERVICE_PATH
+echo -e "Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false" >> $SYSTEMD_SERVICE_PATH
 echo -e "\n[Install]" >> $SYSTEMD_SERVICE_PATH
 # When a systemd user instance starts, it brings up the per user target default.target
-echo -e "\nWantedBy=default.target" >> $SYSTEMD_SERVICE_PATH
-
-# for debug
-echo -e "\nExecStart=${OUTPUT_DIR}${EXE_NAME} --urls \"http://0.0.0.0:${PORT}\""
-
+echo -e "WantedBy=default.target" >> $SYSTEMD_SERVICE_PATH
 
 echo "next: create $SERVICE_NAME "
 systemctl --user daemon-reload
