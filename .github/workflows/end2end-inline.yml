@@ -24,7 +24,7 @@ jobs:
       - name: pm2-new-instance
         shell: bash
         working-directory: ./starsky/starsky
-        run: bash pm2-new-instance.sh --output ${{ steps.create_temp_folder.outputs.folder_path }}
+        run: bash pm2-new-instance.sh --output ${{ steps.create_temp_folder.outputs.folder_path }} || true
 
       - name: service-deploy-systemd
         shell: bash
