@@ -38,11 +38,17 @@ for ((i = 1; i <= $#; i++ )); do
     then
         OUTPUT_DIR="${ARGUMENTS[CURRENT]}"
     fi
+    
+    # When true, allow access from anywhere not only localhost
+    # defaults to false
+    # only used on creation, when enabled you need to manual remove a pm2 instance
+    if [[ ${ARGUMENTS[CURRENT]} == "--anywhere" ]];
+    then
+        ANYWHERE=true
+    fi
         
   fi
 done
-
-echo $PORT
 
 # add slash if not exists
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
@@ -82,6 +88,12 @@ if systemctl --user --type service | grep -q "$SERVICE_NAME";then
     systemctl --user disable $SERVICE_NAME".service"
 fi
 
+# anywhere port
+HOSTNAME="localhost"
+if [ "$ANYWHERE" = true ] ; then
+    HOSTNAME="*"
+fi
+
 echo "[Unit]" > $SYSTEMD_SERVICE_PATH # overwrite!
 echo -e "Description=${EXE_NAME}" >> $SYSTEMD_SERVICE_PATH
 # This is the directory where our published files are
@@ -89,7 +101,7 @@ echo -e "\n[Service]" >> $SYSTEMD_SERVICE_PATH
 echo -e "Description=${EXE_NAME}" >> $SYSTEMD_SERVICE_PATH
 echo -e "WorkingDirectory=${OUTPUT_DIR}" >> $SYSTEMD_SERVICE_PATH
 # We set up `dotnet` PATH in Step 1. The second one is path of our executable
-echo -e "ExecStart=${OUTPUT_DIR}${EXE_NAME} --urls \"http://localhost:${PORT}\"" >> $SYSTEMD_SERVICE_PATH
+echo -e "ExecStart=${OUTPUT_DIR}${EXE_NAME} --urls \"http://${HOSTNAME}:${PORT}\"" >> $SYSTEMD_SERVICE_PATH
 echo -e "Restart=always" >> $SYSTEMD_SERVICE_PATH
 # Restart service after 10 seconds if the dotnet service crashes
 echo -e "RestartSec=10" >> $SYSTEMD_SERVICE_PATH

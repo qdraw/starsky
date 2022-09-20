@@ -112,6 +112,7 @@ echo "run with the following parameters "
 if [ "$ANYWHERE" = true ] ; then
     ANYWHERESTATUSTEXT="--anywhere $ANYWHERE"
 fi
+
 if [ "$USEAPPINSIGHTS" = true ] ; then
     USEAPPINSIGHTSSTATUSTEXT="--appinsights $USEAPPINSIGHTS"
 fi

@@ -51,6 +51,8 @@ while [ $COUNTER -lt $MAXCOUNTER ]; do
 done
 
 if [[ $COUNTER == $MAXCOUNTER  ]]; then
+ echo "for debug:"
+ curl -X GET -IL "$URL"/api/account/status   
  echo "!> FAIL Tried more than "$MAXCOUNTER" Times"
  exit 1
 fi
