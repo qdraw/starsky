@@ -89,7 +89,7 @@ echo -e "\n[Service]" >> $SYSTEMD_SERVICE_PATH
 echo -e "Description=${EXE_NAME}" >> $SYSTEMD_SERVICE_PATH
 echo -e "WorkingDirectory=${OUTPUT_DIR}" >> $SYSTEMD_SERVICE_PATH
 # We set up `dotnet` PATH in Step 1. The second one is path of our executable
-echo -e "ExecStart=${OUTPUT_DIR}${EXE_NAME} --urls \"http://localhost:${PORT},http://0.0.0.0:${PORT}\"" >> $SYSTEMD_SERVICE_PATH
+echo -e "ExecStart=${OUTPUT_DIR}${EXE_NAME} --urls \"http://localhost:${PORT}\"" >> $SYSTEMD_SERVICE_PATH
 echo -e "Restart=always" >> $SYSTEMD_SERVICE_PATH
 # Restart service after 10 seconds if the dotnet service crashes
 echo -e "RestartSec=10" >> $SYSTEMD_SERVICE_PATH
