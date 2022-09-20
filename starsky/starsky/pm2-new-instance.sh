@@ -21,9 +21,13 @@ case $(uname -m) in
     if [ $(uname) = "Darwin" ]; then
         RUNTIME="osx-x64"
     fi
+    if [ $(uname) = "Linux" ]; then
+        RUNTIME="linux-x64"
+    fi
     ;;
 esac
 
+# command line args
 ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
@@ -126,7 +130,9 @@ if [ -f starsky.dll ]; then
     LSOUTPUT=$(ls)
     for ENTRY in $LSOUTPUT
     do
-        if [[ $ENTRY != "appsettings"* && $ENTRY != "pm2-"*
+        if [[ $ENTRY != "appsettings"* 
+        && $ENTRY != "pm2-"*
+        && $ENTRY != "service-"*
         && $ENTRY != "thumbnailTempFolder"
         && $ENTRY != "temp"
         && $ENTRY != "UserViews"* # Keep UserViews

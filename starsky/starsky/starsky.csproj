@@ -89,6 +89,14 @@
         <Content Include="github-artifacts-download.sh">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="service-cron-restart.sh" />
+        <Content Include="service-cron-restart.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="service-deploy-systemd.sh" />
+        <Content Include="service-deploy-systemd.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>        
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">

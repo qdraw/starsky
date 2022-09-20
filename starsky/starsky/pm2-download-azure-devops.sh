@@ -31,6 +31,9 @@ case $(uname -m) in
     if [ $(uname) = "Darwin" ]; then
         RUNTIME="osx-x64"
     fi
+    if [ $(uname) = "Linux" ]; then
+        RUNTIME="linux-x64"
+    fi
     ;;
 esac
 
