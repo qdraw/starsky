@@ -96,6 +96,11 @@ else
    VERSION_ZIP=$RUNTIME".zip"
 fi 
 
+if [ ! -d $OUTPUT_DIR ]; then
+    echo "FAIL "$OUTPUT_DIR" does not exist "
+    exit 1
+fi
+
 # output dir should have slash at end
 if [ -f $OUTPUT_DIR"Startup.cs" ]; then
     echo "FAIL: You should not run this folder from the source folder"

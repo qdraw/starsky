@@ -27,6 +27,9 @@ case $(uname -m) in
     ;;
 esac
 
+CURRENT_DIR=$(dirname "$0")
+OUTPUT_DIR=$CURRENT_DIR
+
 # command line args
 ARGUMENTS=("$@")
 
@@ -60,28 +63,47 @@ for ((i = 1; i <= $#; i++ )); do
         USEAPPINSIGHTS=true
     fi
 
-  if [ $i -gt 1 ]; then
-    PREV=$(($i-2))
-    CURRENT=$(($i-1))
-
-    if [[ ${ARGUMENTS[PREV]} == "--name" ]];
-    then
-        PM2NAME="${ARGUMENTS[CURRENT]}"
+    if [ $i -gt 1 ]; then
+        PREV=$(($i-2))
+        CURRENT=$(($i-1))
+        
+        if [[ ${ARGUMENTS[PREV]} == "--name" ]];
+        then
+            PM2NAME="${ARGUMENTS[CURRENT]}"
+        fi
+        
+        if [[ ${ARGUMENTS[PREV]} == "--runtime" ]];
+        then
+            RUNTIME="${ARGUMENTS[CURRENT]}"
+        fi
+        
+        if [[ ${ARGUMENTS[PREV]} == "--port" ]];
+        then
+            PORT="${ARGUMENTS[CURRENT]}"
+        fi
+        
+        if [[ ${ARGUMENTS[PREV]} == "--output" ]];
+        then
+            OUTPUT_DIR="${ARGUMENTS[CURRENT]}"
+        fi
     fi
-
-    if [[ ${ARGUMENTS[PREV]} == "--runtime" ]];
-    then
-        RUNTIME="${ARGUMENTS[CURRENT]}"
-    fi
-
-    if [[ ${ARGUMENTS[PREV]} == "--port" ]];
-    then
-        PORT="${ARGUMENTS[CURRENT]}"
-    fi
-
-  fi
 done
 
+# add slash if not exists
+LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
+[[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
+
+if [ ! -d $OUTPUT_DIR ]; then
+    echo "FAIL "$OUTPUT_DIR" does not exist "
+    exit 1
+fi
+
+if [ -f $OUTPUT_DIR"Startup.cs" ]; then # output dir should have slash at end
+    echo "FAIL: You should not run this folder from the source folder"
+    echo "copy this file to the location to run it from"
+    echo "end script due failure"
+    exit 1
+fi
 
 
 # settings
@@ -96,8 +118,7 @@ fi
 
 echo "--name" $PM2NAME " --runtime" $RUNTIME "--port" $PORT $USEAPPINSIGHTSSTATUSTEXT $ANYWHERESTATUSTEXT
 
-
-cd "$(dirname "$0")"
+cd $OUTPUT_DIR
 
 if ! command -v pm2 &> /dev/null
 then
@@ -317,7 +338,7 @@ then
     echo "and run it again to add it to pm2"
     echo ""
     echo "!> to warmup, you need to run:"
-    echo "./pm2-warmup.sh --port "$PORT
+    echo $OUTPUT_DIR"pm2-warmup.sh --port "$PORT
     exit 1
 fi
 

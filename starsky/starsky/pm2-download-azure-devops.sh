@@ -197,14 +197,18 @@ UNIQUE_VALUES() {
   return 0
 }
 
-cd $OUTPUT_DIR
-
+if [ ! -d $OUTPUT_DIR ]; then
+    echo "FAIL "$OUTPUT_DIR" does not exist "
+    exit 1
+fi
 if [ -f $OUTPUT_DIR"/Startup.cs" ]; then
     echo "FAIL: You should not run this folder from the source folder"
     echo "copy this file to the location to run it from"
     echo "end script due failure"
     exit 1
 fi
+
+cd $OUTPUT_DIR
 
 RESULTS_GET_DATA=()
 for i in "${DEVOPSDEFIDS[@]}"
