@@ -34,9 +34,9 @@ jobs:
           cd ${{ steps.create_temp_folder.outputs.folder_path }}
           echo ${{ steps.create_temp_folder.outputs.folder_path }}
           ls -lah | grep service-
-          bash service-deploy-systemd_temp.sh
+          bash service-deploy-systemd_temp.sh --port 4000
 
       - name: pm2-warmup
         shell: bash
         working-directory: ./starsky/starsky
-        run: bash pm2-warmup.sh --port 4823
+        run: bash pm2-warmup.sh --port 4000
