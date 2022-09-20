@@ -38,11 +38,11 @@ COUNTER=0
 MAXCOUNTER=30
 while [ $COUNTER -lt $MAXCOUNTER ]; do
 	CURLOUTPUT=`curl -X GET -IL "$URL"/api/account/status -o /dev/null -w '%{http_code}\n' -s`
-	if [ $CURLOUTPUT != "401" ]; then
+	if [ $CURLOUTPUT != "401" ] && [ $CURLOUTPUT != "406" ]; then
 		if ! (($COUNTER % 2)); then
 			echo "$COUNTER - $CURLOUTPUT - retry"
 		fi
-		sleep 3s
+		sleep 3
 		let COUNTER=COUNTER+1
 	else
 		echo "$COUNTER - $CURLOUTPUT - done"
@@ -51,8 +51,6 @@ while [ $COUNTER -lt $MAXCOUNTER ]; do
 done
 
 if [[ $COUNTER == $MAXCOUNTER  ]]; then
- echo "for debug:"
- curl -X GET -IL "$URL"/api/account/status   
  echo "!> FAIL Tried more than "$MAXCOUNTER" Times"
  exit 1
 fi
