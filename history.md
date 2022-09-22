@@ -36,7 +36,7 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 # version 0.5.0-beta.7 _(Unreleased)_ - 2022-09-??
-- nothing yet
+- [x]   (Security) _Back-end_ Upgrade Nuget packages (PR #878)
 
 # version 0.5.0-beta.7 - 2022-09-20
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) _overwritten_ (PR #838)
