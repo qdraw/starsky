@@ -39,10 +39,10 @@ namespace starsky.foundation.platform.Middleware
 				}
 
 				var cspHeader =
-					$"default-src 'none'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' " +
+					"default-src 'none'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' " +
 					$"https://js.monitor.azure.com/scripts/b/ai.2.min.js https://az416426.vo.msecnd.net \'nonce-{nonce}\'; " +
 					$"connect-src 'self' {socketUrl} {socketUrlWithPort} " +
-					$"https://*.in.applicationinsights.azure.com https://dc.services.visualstudio.com/v2/track; " +
+					"https://*.in.applicationinsights.azure.com https://dc.services.visualstudio.com/v2/track; " +
 					"style-src 'self'; " +
 					"font-src 'self'; " +
 					"frame-ancestors 'none'; " +
