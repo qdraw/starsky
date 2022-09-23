@@ -132,5 +132,24 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			var contentTypeOptions = httpContext.Response.Headers["X-Content-Type-Options"].ToString();
 			Assert.AreEqual( "nosniff",contentTypeOptions);
 		}
+
+
+		[TestMethod]
+		public async Task
+			ContentSecurityPolicyMiddlewareTest_invoke_Chrome()
+		{
+			// Arrange
+			var httpContext = new DefaultHttpContext();
+			httpContext.Request.Scheme = "http";
+			httpContext.Request.Headers.Add("User-Agent","Chrome");
+			var authMiddleware = new ContentSecurityPolicyMiddleware((innerHttpContext) => Task.FromResult(0));
+			
+			// Act
+			await authMiddleware.Invoke(httpContext);
+			
+			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
+			
+			Assert.AreEqual(true,csp.Contains("require-trusted-types-for"));
+		}
 	}
 }
