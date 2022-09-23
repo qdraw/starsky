@@ -53,7 +53,7 @@ namespace starsky.foundation.platform.Middleware
 					"block-all-mixed-content; ";
 
 				// Currently not supported in Firefox and Safari (Edge user agent also includes the word Chrome)
-				if (httpContext.Request.Headers.UserAgent.Contains("Chrome"))
+				if (httpContext.Request.Headers.UserAgent.Contains("Chrome") || httpContext.Request.Headers.UserAgent.Contains("csp-evaluator"))
 				{
 					cspHeader += "require-trusted-types-for 'script'; ";
 				}
