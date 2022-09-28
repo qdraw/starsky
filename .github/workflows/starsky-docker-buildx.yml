@@ -14,10 +14,20 @@ name: Docker buildx multi-arch CI (push is false)
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     steps:
     
       - name: Check Out Repo 
         uses: actions/checkout@v2
+        
+      - name: Log in to Github Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}        
 
       - name: Set up Docker Buildx
         id: buildx
@@ -37,6 +47,6 @@ jobs:
         with:
           context: ./starsky
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          push: false
+          push: true
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:latest
+            ghcr.io/${{ github.repository }}/latest
