@@ -82,6 +82,9 @@ _See `./pipelines/azure` for details_
 ![Starsky .NET Core (Ubuntu)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Ubuntu)/badge.svg)
 [![ClientApp React Linux CI](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml)
 
+#### Docker
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starsky-docker-buildx.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starsky-docker-buildx.yml)
+
 #### App on Windows and Mac OS
 
 Without running .NET dependency. Without .NET the app can't run
