@@ -116,6 +116,14 @@ fi
 
 echo ""
 
+API_GATEWAY_STATUS_CODE=$(curl --write-out %{http_code} \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer "$STARSKY_GITHUB_PAT --silent --output /dev/null https://api.github.com/user)
+if [[ "$API_GATEWAY_STATUS_CODE" -ne 200 ]] ; then
+  echo "FAIL: Github token is invalid \$STARSKY_GITHUB_PAT"
+  exit 1
+fi
+
 ACTIONS_WORKFLOW_URL="https://api.github.com/repos/qdraw/starsky/actions/workflows/"$WORKFLOW_ID"/runs?status=completed&per_page=1&exclude_pull_requests=true"
 
 echo "V: "$VERSION " zip: " $VERSION_ZIP
