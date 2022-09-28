@@ -9,7 +9,7 @@ on:
     - 'starsky/docker_demo_setup.sh'
   workflow_dispatch:
   
-name: Docker buildx multi-arch CI (push is false)
+name: Docker buildx multi-arch CI unstable master
 
 jobs:
   deploy:
@@ -56,4 +56,6 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: | 
+            ${{ steps.meta.outputs.labels }}
+            org.opencontainers.image.description="Unstable build, check https://hub.docker.com/r/qdraw/starsky for stable releases"
