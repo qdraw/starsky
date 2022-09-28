@@ -56,6 +56,4 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: | 
-            ${{ steps.meta.outputs.labels }}
-            org.opencontainers.image.description="Unstable build, check https://hub.docker.com/r/qdraw/starsky for stable releases"
+          labels: ${{ steps.meta.outputs.labels }}
