@@ -13,6 +13,12 @@ case $(uname -m) in
     RUNTIME="linux-arm64"
     ;;
 
+  "arm64")
+    if [ $(uname) = "Darwin" ]; then
+        RUNTIME="osx-arm64"
+    fi
+    ;;
+
   "armv7l")
     RUNTIME="linux-arm"
     ;;
@@ -324,7 +330,7 @@ if [[ $ISIMPORTEROK -eq 0 ]]; then
   ln -sfn $DIRNAME"/starskyadmincli" ~/bin/starskyadmincli
   ln -sfn $DIRNAME"/starsky" ~/bin/starsky
 else
-  echo "> skip symlink creation due wrong architecture"
+  echo "> SKIP symlink creation due wrong architecture"
 fi
 
 if ! command -v pm2 &> /dev/null

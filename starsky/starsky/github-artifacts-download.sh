@@ -26,7 +26,7 @@ case $(uname -m) in
 
   "arm64")
     if [ $(uname) = "Darwin" ]; then
-        RUNTIME="starsky-mac-desktop"
+        RUNTIME="starsky-mac-desktop" #for now only intel, but this changes
     fi
     ;;
 
@@ -211,7 +211,7 @@ fi
 mkdir -p $OUTPUT_DIR
 
 OUTPUT_ZIP_PATH="${OUTPUT_DIR}${VERSION_ZIP}"
-echo "Output file: "$OUTPUT_ZIP_PATH
+echo "Next: download output file: "$OUTPUT_ZIP_PATH
  
 curl -sS -L --user :$STARSKY_GITHUB_PAT $DOWNLOAD_URL -o "${OUTPUT_ZIP_PATH}_tmp.zip"
 if [ ! -f "${OUTPUT_ZIP_PATH}_tmp.zip" ]; then
@@ -228,7 +228,7 @@ fi
 unzip -q -o -j "${OUTPUT_ZIP_PATH}_tmp.zip" -d "${OUTPUT_DIR}temp"
 
 if [ ! -f "${OUTPUT_DIR}temp/${VERSION_ZIP}" ]; then
-    echo "${OUTPUT_DIR}temp/${VERSION_ZIP}" " is NOT unpacked"
+    echo "FAIL: ${OUTPUT_DIR}temp/${VERSION_ZIP}" " is NOT unpacked"
 
     rm -rf "${OUTPUT_DIR}temp"
     rm $GITHUB_HEAD_SHA_CACHE_FILE || true
@@ -241,26 +241,38 @@ mv "${OUTPUT_DIR}temp/${VERSION_ZIP}" $OUTPUT_ZIP_PATH
 rm -rf "${OUTPUT_DIR}temp"
 rm "${OUTPUT_ZIP_PATH}_tmp.zip"
 
-echo "zip is downloaded"
+echo "zip is downloaded "$OUTPUT_ZIP_PATH
 
 if [[ $VERSION != *desktop ]]
 then
     echo "YEAH > download for "$RUNTIME" looks ok"
-    echo "get pm2-new-instance.sh installer file" "${OUTPUT_DIR}pm2-new-instance.sh"
-    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > "${OUTPUT_DIR}__pm2-new-instance.sh"
-    
+    echo "Next: get pm2-new-instance.sh installer file from zip"
     if [ -f "${OUTPUT_DIR}__pm2-new-instance.sh" ]; then
+        rm "${OUTPUT_DIR}__pm2-new-instance.sh"
+    fi
+    
+    NEW_INSTANCE_TEMP_FILE="${OUTPUT_DIR}__pm2-new-instance.sh"
+    NEW_INSTANCE_OUTPUT_FILE="${OUTPUT_DIR}pm2-new-instance.sh"
+
+    unzip -p $OUTPUT_ZIP_PATH "pm2-new-instance.sh" > $NEW_INSTANCE_TEMP_FILE
+    
+    if [ -f $NEW_INSTANCE_TEMP_FILE ]; then
         # check if file contains something
-        if [ -s "${OUTPUT_DIR}__pm2-new-instance.sh" ]; then
-           mv "${OUTPUT_DIR}__pm2-new-instance.sh" "${OUTPUT_DIR}pm2-new-instance.sh"
+        if [ -s $NEW_INSTANCE_TEMP_FILE ]; then
+           mv $NEW_INSTANCE_TEMP_FILE $NEW_INSTANCE_OUTPUT_FILE
         else 
-            rm "${OUTPUT_DIR}__pm2-new-instance.sh"
+            rm $NEW_INSTANCE_TEMP_FILE
         fi
         
-        chmod +rwx "${OUTPUT_DIR}pm2-new-instance.sh"
-        echo "run for the setup:"
-        # output dir should have slash at end
-        echo $OUTPUT_DIR"pm2-new-instance.sh"
+        if [ -s $NEW_INSTANCE_OUTPUT_FILE ]; then
+            chmod +rwx $NEW_INSTANCE_OUTPUT_FILE
+            echo "run for the setup:"
+            # output dir should have slash at end
+            echo $OUTPUT_DIR"pm2-new-instance.sh"
+        else 
+            ls $OUTPUT_DIR
+        fi
+
     else 
         echo " pm2-new-instance.sh is missing, please download it yourself and run it"
         exit 1
