@@ -44,6 +44,7 @@ esac
 
 CURRENT_DIR=$(dirname "$0")
 OUTPUT_DIR=$CURRENT_DIR
+FORCE=false
 
 # get arguments
 ARGUMENTS=("$@")
@@ -60,6 +61,11 @@ for ((i = 1; i <= $#; i++ )); do
     echo "--token anything"
     echo "--output output_dir default folder_of_this_file"
     exit 0
+  fi
+  
+  if [[ ${ARGUMENTS[CURRENT]} == "--force" ]];
+  then
+      FORCE=true
   fi
   
   if [ $i -gt 1 ]; then
@@ -116,15 +122,19 @@ fi
 
 echo ""
 
+ACTIONS_WORKFLOW_URL="https://api.github.com/repos/qdraw/starsky/actions/workflows/"$WORKFLOW_ID"/runs?status=completed&per_page=1&exclude_pull_requests=true"
+
+# First check if output is not an 401 or 404
 API_GATEWAY_STATUS_CODE=$(curl --write-out %{http_code} \
     -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer "$STARSKY_GITHUB_PAT --silent --output /dev/null https://api.github.com/user)
-if [[ "$API_GATEWAY_STATUS_CODE" -ne 200 ]] ; then
+    -H "Authorization: Bearer "$STARSKY_GITHUB_PAT --silent --output /dev/null $ACTIONS_WORKFLOW_URL)
+if [[ "$API_GATEWAY_STATUS_CODE" -ne 200 ]] && [[ "$API_GATEWAY_STATUS_CODE" -ne 404 ]] ; then
   echo "FAIL: Github token is invalid \$STARSKY_GITHUB_PAT"
   exit 1
+elif [[ "$API_GATEWAY_STATUS_CODE" -eq 404 ]] ; then
+  echo "FAIL: WORKFLOW_ID='"$WORKFLOW_ID"' is not found"
+  exit 1
 fi
-
-ACTIONS_WORKFLOW_URL="https://api.github.com/repos/qdraw/starsky/actions/workflows/"$WORKFLOW_ID"/runs?status=completed&per_page=1&exclude_pull_requests=true"
 
 echo "V: "$VERSION " zip: " $VERSION_ZIP
 echo "OUT" $OUTPUT_DIR
@@ -176,35 +186,37 @@ GITHUB_HEAD_SHA=($GITHUB_HEAD_SHA) # make array
 GITHUB_HEAD_SHA="${GITHUB_HEAD_SHA[0]}" # first of array
 
 GITHUB_HEAD_SHA_CACHE_FILE="${OUTPUT_DIR}${VERSION_ZIP}.sha-cache.txt"
-echo "check for GITHUB_HEAD_SHA_CACHE_FILE $GITHUB_HEAD_SHA_CACHE_FILE"
 
-LAST_GITHUB_HEAD_SHA=0
-if [[ -f "$GITHUB_HEAD_SHA_CACHE_FILE" ]]; then
-    LAST_GITHUB_HEAD_SHA="$(cat $GITHUB_HEAD_SHA_CACHE_FILE)"
-    LAST_GITHUB_HEAD_SHA=`echo $LAST_GITHUB_HEAD_SHA | sed -e 's/^[[:space:]]*//'`
-fi 
+if [ "$FORCE" = false ] ; then
 
-if [[ $LAST_GITHUB_HEAD_SHA == $GITHUB_HEAD_SHA ]]; then
-    echo "$GITHUB_HEAD_SHA exists."
-    echo ">>      Skips download of file"
-    exit 0;
-else 
-    echo $GITHUB_HEAD_SHA" does not exists"
+    LAST_GITHUB_HEAD_SHA=0
+    if [[ -f "$GITHUB_HEAD_SHA_CACHE_FILE" ]]; then
+        LAST_GITHUB_HEAD_SHA="$(cat $GITHUB_HEAD_SHA_CACHE_FILE)"
+        LAST_GITHUB_HEAD_SHA=`echo $LAST_GITHUB_HEAD_SHA | sed -e 's/^[[:space:]]*//'`
+    fi 
+
+    if [[ $LAST_GITHUB_HEAD_SHA == $GITHUB_HEAD_SHA ]]; then
+        echo "SKIP: for github file check '"$GITHUB_HEAD_SHA"' exists in "$GITHUB_HEAD_SHA_CACHE_FILE
+        echo "SKIP: not downloaded again"
+        exit 0;
+    else 
+        echo "CONTINUE: '" $GITHUB_HEAD_SHA"' does not exists in "$GITHUB_HEAD_SHA_CACHE_FILE
+    fi
+      
+    # set the new hash
+    echo $GITHUB_HEAD_SHA > $GITHUB_HEAD_SHA_CACHE_FILE
+    # END check if hash is already downloaded
 fi
-    
-# set the new hash
-echo $GITHUB_HEAD_SHA > $GITHUB_HEAD_SHA_CACHE_FILE
-# END check if hash is already downloaded
-
 
 mkdir -p $OUTPUT_DIR
 
 OUTPUT_ZIP_PATH="${OUTPUT_DIR}${VERSION_ZIP}"
-echo "output file: "$OUTPUT_ZIP_PATH
+echo "Output file: "$OUTPUT_ZIP_PATH
  
 curl -sS -L --user :$STARSKY_GITHUB_PAT $DOWNLOAD_URL -o "${OUTPUT_ZIP_PATH}_tmp.zip"
 if [ ! -f "${OUTPUT_ZIP_PATH}_tmp.zip" ]; then
-    echo "${OUTPUT_ZIP_PATH}_tmp.zip" " is NOT downloaded"
+    echo "FAIL: ${OUTPUT_ZIP_PATH}_tmp.zip" " is NOT downloaded"
+    rm $GITHUB_HEAD_SHA_CACHE_FILE || true
     exit 1
 fi
 
@@ -219,6 +231,7 @@ if [ ! -f "${OUTPUT_DIR}temp/${VERSION_ZIP}" ]; then
     echo "${OUTPUT_DIR}temp/${VERSION_ZIP}" " is NOT unpacked"
 
     rm -rf "${OUTPUT_DIR}temp"
+    rm $GITHUB_HEAD_SHA_CACHE_FILE || true
 
     exit 1
 fi
