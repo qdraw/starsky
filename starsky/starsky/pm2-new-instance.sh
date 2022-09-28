@@ -204,7 +204,7 @@ if [ -f starsky-$RUNTIME.zip ]; then
     unzip -q -o starsky-$RUNTIME.zip -x "pm2-new-instance.sh"
 else
    echo "continue > starsky-$RUNTIME.zip File not found"
-   echo "try to download latest release"
+   echo "next: try to download latest release"
 
    # Get latest stable from Github Releases
    # check also 'install-latest-release'
