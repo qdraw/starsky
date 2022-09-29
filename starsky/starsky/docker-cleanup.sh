@@ -22,6 +22,11 @@ if command -v dotnet &> /dev/null
 then
     echo "clean dotnet nuget"
     dotnet nuget locals all --clear
+    
+    CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+    cd $CURRENT_DIR
+    cd ..
+    dotnet clean starsky.sln
 fi
 
 if ! command -v docker &> /dev/null
