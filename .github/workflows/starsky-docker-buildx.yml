@@ -9,15 +9,25 @@ on:
     - 'starsky/docker_demo_setup.sh'
   workflow_dispatch:
   
-name: Docker buildx multi-arch CI (push is false)
+name: Docker buildx multi-arch CI unstable master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     steps:
     
       - name: Check Out Repo 
         uses: actions/checkout@v2
+        
+      - name: Log in to Github Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}        
 
       - name: Set up Docker Buildx
         id: buildx
@@ -31,12 +41,19 @@ jobs:
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+
       - name: Build and push master
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: ./starsky
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          push: false
-          tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:latest
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

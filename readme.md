@@ -82,6 +82,9 @@ _See `./pipelines/azure` for details_
 ![Starsky .NET Core (Ubuntu)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Ubuntu)/badge.svg)
 [![ClientApp React Linux CI](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml)
 
+#### Docker
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starsky-docker-buildx.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starsky-docker-buildx.yml)
+
 #### App on Windows and Mac OS
 
 Without running .NET dependency. Without .NET the app can't run
@@ -94,8 +97,8 @@ Included with .NET dependency
 
 _See `./.github/workflows` for details_
 
-### End2End tests on public heroku demo environment
-![end2end on heroku-demo](https://github.com/qdraw/starsky/workflows/end2end%20on%20heroku-demo/badge.svg?branch=master)
+### End2End tests on ubuntu github actions ci environment
+![end2end on ubuntu-ci](https://github.com/qdraw/starsky/actions/workflows/end2end-ubuntu-ci.yml/badge.svg)
 
 _See `./starsky-tools/end2end` for details_
 

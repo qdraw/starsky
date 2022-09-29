@@ -20,6 +20,7 @@ for ((i = 1; i <= $#; i++ )); do
       echo "--runtime linux-arm"
       echo "     (or:) --runtime linux-arm64"
       echo "     (or:) --runtime osx-x64"
+      echo "     (or:) --runtime osx-arm64"
       echo "     (or:) --runtime win7-x64"
       exit 0
   fi
@@ -63,7 +64,9 @@ if [ -f starsky.dll ]; then
     LSOUTPUT=$(ls)
     for ENTRY in $LSOUTPUT
     do
-        if [[ $ENTRY != "appsettings"* && $ENTRY != "pm2-"*
+        if [[ $ENTRY != "appsettings"* 
+        && $ENTRY != "pm2-"*
+        && $ENTRY != "service-"*
         && $ENTRY != "thumbnailTempFolder"
         && $ENTRY != "temp"
         && $ENTRY != "UserViews"* # Keep UserViews

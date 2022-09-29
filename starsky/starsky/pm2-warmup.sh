@@ -6,6 +6,7 @@
 ARGUMENTS=("$@")
 
 PORT=5000
+# Port 4823 an example port number
 
 for ((i = 1; i <= $#; i++ )); do
   if [ $i -gt 1 ]; then
@@ -30,19 +31,18 @@ URL="http://localhost:$PORT"
 # no slash
 URL=${URL%/}
 
-echo "bash pm2-warmup.sh --port 4823"
-echo "Running on:"
-echo $URL
+echo "EXAMPLE: bash pm2-warmup.sh --port $PORT"
+echo "Running on: "$URL
 
 COUNTER=0
 MAXCOUNTER=30
 while [ $COUNTER -lt $MAXCOUNTER ]; do
 	CURLOUTPUT=`curl -X GET -IL "$URL"/api/account/status -o /dev/null -w '%{http_code}\n' -s`
-	if [ $CURLOUTPUT != "401" ]; then
+	if [ $CURLOUTPUT != "401" ] && [ $CURLOUTPUT != "406" ]; then
 		if ! (($COUNTER % 2)); then
 			echo "$COUNTER - $CURLOUTPUT - retry"
 		fi
-		sleep 3s
+		sleep 3
 		let COUNTER=COUNTER+1
 	else
 		echo "$COUNTER - $CURLOUTPUT - done"

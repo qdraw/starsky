@@ -3,6 +3,9 @@ import { BrowserWindow } from "electron";
 export function onHeaderReceived(newWindow: BrowserWindow) {
   newWindow.webContents.session.webRequest.onHeadersReceived(
     (res, callback) => {
+      
+      // @TODO: re-enable
+
       // var currentSettings = appConfig.get("remote_settings_" + isPackaged());
       // var localhost = "http://localhost:9609 "; // with space on end
       // ${appPort}
@@ -15,7 +18,7 @@ export function onHeaderReceived(newWindow: BrowserWindow) {
       // // When change also check if CSPMiddleware needs to be updated
       // var csp = "default-src 'none'; img-src 'self' file://* https://www.openstreetmap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org "
       //  + whitelistDomain + "; " +      "style-src file://* unsafe-inline https://www.openstreetmap.org " + whitelistDomain
-      //   + "; script-src 'self' file://* https://az416426.vo.msecnd.net; " +
+      //   + "; script-src 'self' https://js.monitor.azure.com/scripts/b/ai.2.min.js file://* https://az416426.vo.msecnd.net; " +
       //   "connect-src 'self' https://dc.services.visualstudio.com/v2/track https://*.in.applicationinsights.azure.com//v2/track " + whitelistDomain + "; " +
       //   "font-src file://* " + whitelistDomain + "; media-src " + whitelistDomain + ";";
 

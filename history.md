@@ -35,9 +35,11 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
+# version 0.5.0-beta.7 _(Unreleased)_ - 2022-09-??
+- [x]   (Security) _Back-end_ Upgrade Nuget packages (PR #878)
+- [x]   (Security) _Back-end_ Update Security Headers e.g. CSP, Permissions Policy (PR #880)
 
-# version 0.5.0-beta.7 _(Unreleased)_ - 2022-08-??
-- [x]   (Issue) **TODO:** Need to be fixed issue: #771
+# version 0.5.0-beta.7 - 2022-09-20
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) _overwritten_ (PR #838)
 - [x]   (Fixed) _Back-end_ Null reference exceptions on mysql (PR #789 & Issue #787)
 - [x]   (Fixed) _Back-end_ Retry for InvalidOperationException when Add Item (PR #789 & Issue #802)
@@ -45,6 +47,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Back-end_ Upgrade nuget packages (PR #845)
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.400 (Runtime: 6.0.8) (PR #855)
 - [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.401 (Runtime: 6.0.9)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.9/6.0.9.md) (PR #870)
+- [x]   (Issue) _Tools_ Re-enable end2end test in CI (2022-09-20)
 
 # version 0.5.0-beta.6 - 2022-07-13
 - [x]   (Changed) _Front-end_ Upgrade React 17.x to React 18.x (Part 2) CreateRoot change (PR #748)

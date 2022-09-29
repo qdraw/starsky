@@ -46,7 +46,7 @@ jobs:
         env:
           NOTE_READ_THIS_NOW: "Need a github token that has more rights otherwise it will be ignored"
         run: |
-          curl \
+          # curl \
           -H"authorization: Bearer ${{ secrets.WORKFLOW_GITHUB }}" \
           -X POST \
           -H "Accept: application/vnd.github.v3+json" \

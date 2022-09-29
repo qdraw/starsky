@@ -31,6 +31,9 @@ case $(uname -m) in
     if [ $(uname) = "Darwin" ]; then
         RUNTIME="osx-x64"
     fi
+    if [ $(uname) = "Linux" ]; then
+        RUNTIME="linux-x64"
+    fi
     ;;
 esac
 
@@ -43,6 +46,9 @@ DEVOPSDEFIDS=( 17 20 )
 BUILD_ID_DEF=""
 # STARSKY_DEVOPS_PAT <= use this one
 # export STARSKY_DEVOPS_PAT=""
+
+CURRENT_DIR=$(dirname "$0")
+OUTPUT_DIR=$CURRENT_DIR
 
 # get arguments
 ARGUMENTS=("$@")
@@ -86,9 +92,24 @@ for ((i = 1; i <= $#; i++ )); do
         BUILD_ID_DEF="${ARGUMENTS[CURRENT]}"
         DEVOPSDEFIDS=( -1 )
     fi
+    
+    if [[ ${ARGUMENTS[PREV]} == "--output" ]];
+    then
+        OUTPUT_DIR="${ARGUMENTS[CURRENT]}"
+    fi
   fi
 done
 
+# add slash if not exists
+LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
+[[ $LAST_CHAR_OUTPUT_DIR != "/" ]] && OUTPUT_DIR="$OUTPUT_DIR/"; :
+
+if [ -f $OUTPUT_DIR"Startup.cs" ]; then # output dir should have slash at end
+    echo "FAIL: You should not run this folder from the source folder"
+    echo "copy this file to the location to run it from"
+    echo "end script due failure"
+    exit 1
+fi
 
 if [[ -z $STARSKY_DEVOPS_PAT ]]; then
   echo "enter your PAT: and press enter"
@@ -98,7 +119,7 @@ fi
 BRANCH="${BRANCH/refs\/heads\//}"
 echo $BRANCH
 
-cd "$(dirname "$0")"
+
 
 GET_DATA () {
   LOCALDEVOPSDEFID=$1
@@ -176,6 +197,19 @@ UNIQUE_VALUES() {
   return 0
 }
 
+if [ ! -d $OUTPUT_DIR ]; then
+    echo "FAIL "$OUTPUT_DIR" does not exist "
+    exit 1
+fi
+if [ -f $OUTPUT_DIR"/Startup.cs" ]; then
+    echo "FAIL: You should not run this folder from the source folder"
+    echo "copy this file to the location to run it from"
+    echo "end script due failure"
+    exit 1
+fi
+
+cd $OUTPUT_DIR
+
 RESULTS_GET_DATA=()
 for i in "${DEVOPSDEFIDS[@]}"
 do
@@ -210,7 +244,8 @@ fi
 if [ -f pm2-new-instance.sh ]; then
     chmod +rwx ./pm2-new-instance.sh
     echo "run for the setup:"
-    echo "./pm2-new-instance.sh"
+    # output dir should have slash at end
+    echo $OUTPUT_DIR"pm2-new-instance.sh"
 else 
     echo " pm2-new-instance.sh is missing, please download it yourself and run it"
     exit 1

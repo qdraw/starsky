@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -21,7 +22,7 @@ namespace starsky.foundation.platform.Middleware
 			// so Adding a Header that already exist give an Error 500			
 			if (string.IsNullOrEmpty(httpContext.Response.Headers["Content-Security-Policy"]) )
 			{
-				// CSP 2.0 nonce
+				// CSP 2.0 nonce // used in ApplicationInsightsJsHelper
 				var nonce = Guid.NewGuid().ToString("N");
 				httpContext.Items["csp-nonce"] = nonce;
 
@@ -37,16 +38,43 @@ namespace starsky.foundation.platform.Middleware
 						$"{socketUrl}:{httpContext.Request.Host.Port}";
 				}
 
+				var cspHeader =
+					"default-src 'none'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' " +
+					$"https://js.monitor.azure.com/scripts/b/ai.2.min.js https://az416426.vo.msecnd.net \'nonce-{nonce}\'; " +
+					$"connect-src 'self' {socketUrl} {socketUrlWithPort} " +
+					"https://*.in.applicationinsights.azure.com https://dc.services.visualstudio.com/v2/track; " +
+					"style-src 'self'; " +
+					"font-src 'self'; " +
+					"frame-ancestors 'none'; " +
+					"base-uri 'none'; " +
+					"form-action 'self'; " +
+					"object-src 'none'; " +
+					"manifest-src 'self'; " +
+					"block-all-mixed-content; ";
+
+				// Currently not supported in Firefox and Safari (Edge user agent also includes the word Chrome)
+				if (httpContext.Request.Headers.UserAgent.Contains("Chrome") || httpContext.Request.Headers.UserAgent.Contains("csp-evaluator"))
+				{
+					cspHeader += "require-trusted-types-for 'script'; ";
+				}
+								                
 				// When change also update in Electron
 				httpContext.Response.Headers
-					.Add("Content-Security-Policy",
-						$"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' " +
-						$"https://az416426.vo.msecnd.net \'nonce-{nonce}\'; " +
-						$"connect-src 'self' {socketUrl} {socketUrlWithPort} " +
-						$"https://*.in.applicationinsights.azure.com https://dc.services.visualstudio.com/v2/track; " +
-						$"style-src 'self'; " +
-						$"font-src 'self'; frame-ancestors 'none'; base-uri 'none'; " +
-						$"form-action 'self'; object-src 'none' ");
+					.Add("Content-Security-Policy",cspHeader);
+			}
+
+			// @see: https://www.permissionspolicy.com/
+			if ( string.IsNullOrEmpty(
+				    httpContext.Response.Headers["Permissions-Policy"]) )
+			{
+				httpContext.Response.Headers
+					.Add("Permissions-Policy", "autoplay=(self), " +
+					                           "fullscreen=(self), " +
+					                           "geolocation=(self), " +
+					                           "picture-in-picture=(self), " +
+					                           "clipboard-read=(self), " +
+					                           "clipboard-write=(self), " +
+					                           "window-placement=(self)");
 			}
 
 			if (string.IsNullOrEmpty(httpContext.Response.Headers["Referrer-Policy"]) )

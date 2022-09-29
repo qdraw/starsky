@@ -1,6 +1,6 @@
 {
   "name": "dropbox-import",
-  "version": "0.5.0-beta.7",
+  "version": "0.5.0-beta.8",
   "description": "",
   "main": "dropbox-import.js",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.2"
   },
   "author": "",
   "license": "ISC"
