@@ -3,6 +3,7 @@
 # when force everything
 # docker system prune -a -f
 
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
 if [ -d $HOME"/.sonar" ] 
 then
@@ -10,6 +11,15 @@ then
     rm -rf $HOME"/.sonar"
 else
     echo "Skip: remove sonar cache. -> "$HOME"/.sonar"
+fi
+
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+if [ -d $PARENT_DIR"/.sonarqube" ] 
+then
+    echo "Remove sonar cache -> "$PARENT_DIR"/.sonarqube"
+    rm -rf $PARENT_DIR"/.sonarqube"
+else
+    echo "Skip: remove sonar cache. -> "$PARENT_DIR"/.sonarqube"
 fi
 
 if command -v npm &> /dev/null
@@ -23,10 +33,8 @@ then
     echo "clean dotnet nuget"
     dotnet nuget locals all --clear
     
-    CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-    cd $CURRENT_DIR
-    cd ..
-    dotnet clean starsky.sln
+    cd $PARENT_DIR
+    dotnet clean starsky.sln || true
 fi
 
 if ! command -v docker &> /dev/null
