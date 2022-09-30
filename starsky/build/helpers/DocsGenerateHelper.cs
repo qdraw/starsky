@@ -10,7 +10,7 @@ public static class DocsGenerateHelper
 {
 	public static void Docs(List<string> runtimes)
 	{
-		if (!Directory.Exists(DocsPath()))
+		if (!Directory.Exists(DocsPath))
 		{
 			Console.WriteLine($"Docs generation disabled (folder does not exist)");
 			return;
@@ -18,7 +18,7 @@ public static class DocsGenerateHelper
 
 		Console.WriteLine("next: call docs build script");
 		// in build npm command ci is called
-		Run(NpmBaseCommand, "run build", DocsPath());
+		Run(NpmBaseCommand, "run build", DocsPath);
 
 		// copy to build directory
 		foreach(var runtime in runtimes)
@@ -31,13 +31,9 @@ public static class DocsGenerateHelper
 			var docsDistDirectory = System.IO.Path.Combine(Environment.CurrentDirectory, runtime, "docs");
 			Console.WriteLine("copy to: " + docsDistDirectory);
 			
-			Run(NpmBaseCommand, $"run copy {docsDistDirectory}", DocsPath());
+			Run(NpmBaseCommand, $"run copy {docsDistDirectory}", DocsPath);
 		}
-		
 	}
 
-	static string  DocsPath()
-	{
-		return "../starsky-tools/docs/";
-	}
+	const string DocsPath = "../starsky-tools/docs/";
 }
