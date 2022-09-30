@@ -232,5 +232,48 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.AreEqual(0,result.Count);
 		}
+
+		[TestMethod]
+		public async Task BackgroundTaskExceptionWrapper()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache();
+			
+			var buildServiceProvider = provider.BuildServiceProvider();
+			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
+			
+			var service = new ManualBackgroundSyncService(
+				new FakeISynchronize(new List<FileIndexItem>()),
+				null,
+				new FakeIWebSocketConnectionsService(),
+				memoryCache,
+				new FakeIWebLogger(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				GetScope());
+
+			service.CreateSyncLock("test");
+			var hasCache1 = memoryCache.Get(
+				ManualBackgroundSyncService.ManualSyncCacheName + "test");
+			Assert.IsNotNull(hasCache1);
+
+			var isException = false;
+			try
+			{
+				// Should crash on null reference exception on query
+				await service.BackgroundTaskExceptionWrapper("test", "1");
+			}
+			catch ( NullReferenceException )
+			{
+				isException = true;
+
+				var hasCache = memoryCache.Get(
+					ManualBackgroundSyncService.ManualSyncCacheName + "test");
+				
+				Assert.IsNull(hasCache);
+			}
+			
+			Assert.IsTrue(isException);
+			
+		}
 	}
 }
