@@ -70,7 +70,16 @@ namespace starsky.foundation.sync.SyncServices
 			
 			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
 			{
-				await BackgroundTask(fileIndexItem.FilePath, operationId);
+				try
+				{
+					await BackgroundTask(fileIndexItem.FilePath, operationId);
+				}
+				catch ( Exception exception)
+				{
+					_logger.LogError(exception,"ManualBackgroundSyncService [ManualSync] catch-ed exception");
+					CleanManualSyncLock(fileIndexItem.FilePath);
+					throw;
+				}
 			});
 
 			return FileIndexItem.ExifStatus.Ok;
@@ -81,6 +90,11 @@ namespace starsky.foundation.sync.SyncServices
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(updatedList, ApiNotificationType.ManualBackgroundSync);
 			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
+		}
+
+		public void CleanManualSyncLock(string subPath)
+		{
+			_cache.Remove(ManualSyncCacheName + subPath);
 		}
 
 		internal async Task BackgroundTask(string subPath, string operationId)
@@ -96,7 +110,7 @@ namespace starsky.foundation.sync.SyncServices
 			_query.CacheUpdateItem(updatedList.Where(p => p.ParentDirectory == subPath).ToList());
 			
 			// so you can click on the button again
-			_cache.Remove(ManualSyncCacheName + subPath);
+			CleanManualSyncLock(subPath);
 			_logger.LogInformation($"[ManualBackgroundSyncService] done {subPath} " +
 			                       $"{DateTime.Now.ToShortTimeString()}");
 			_logger.LogInformation($"[ManualBackgroundSyncService] Ok: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)}" +
