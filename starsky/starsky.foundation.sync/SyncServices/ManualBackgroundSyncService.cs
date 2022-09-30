@@ -86,7 +86,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal void CreateSyncLock(string subPath)
 		{
 			_cache.Set(ManualSyncCacheName + subPath, true, 
-				new TimeSpan(0,1,0));
+				new TimeSpan(0,2,0));
 		}
 
 		private void RemoveSyncLock(string subPath)
