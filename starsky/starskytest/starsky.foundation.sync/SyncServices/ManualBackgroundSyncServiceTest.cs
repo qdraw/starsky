@@ -262,7 +262,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				// Should crash on null reference exception on query
 				await service.BackgroundTaskExceptionWrapper("test", "1");
 			}
-			catch ( NullReferenceException e )
+			catch ( NullReferenceException )
 			{
 				isException = true;
 
