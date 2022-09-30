@@ -110,15 +110,8 @@ public static class SonarQube
 
         IsJavaInstalled();
 
-        // // get first test project
-        // var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();
-        // string coverageFile = System.IO.Path.Combine(firstTestProject, "coverage-merge-sonarqube.xml");
-
-        // var clientAppProject = GetDirectories("./starsky/clientapp/").FirstOrDefault().ToString();
-
         // Current branch name
         var parent = Directory.GetParent(".")?.FullName;
-
         
 		var (gitBranchName,_) = ReadAsync(GitCommand, " branch --show-current", parent).Result;
 		
@@ -136,7 +129,10 @@ public static class SonarQube
         var tsconfig = Path.Combine(clientAppProject,"tsconfig.json");
 
         // For Pull Requests  
-        var isPrBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && EnvironmentVariable("GITHUB_JOB") != null && EnvironmentVariable("GITHUB_BASE_REF") != null;
+        var isPrBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && 
+                        EnvironmentVariable("GITHUB_JOB") != null && 
+                        EnvironmentVariable("GITHUB_BASE_REF") != null;
+        
         var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
         var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF"); 
         var githubRepoSlug = EnvironmentVariable("GITHUB_REPOSITORY"); 
@@ -154,8 +150,14 @@ public static class SonarQube
            .Append($"/o:" + organisation +" ")
            .Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
            .Append($"/d:sonar.coverageReportPaths={coverageFile} ")
-           .Append($"/d:sonar.exclusions=\"**/build/*,**/build/helpers/*,**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\" ")
-           .Append($"/d:sonar.coverage.exclusions=\"**/build/*,**/build/helpers/*,**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\" ");
+           .Append($"/d:sonar.exclusions=\"**/build/*,**/build/helpers/*," +
+                   $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
+                   $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
+                   $"**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\" ")
+           .Append($"/d:sonar.coverage.exclusions=\"**/build/*,**/build/helpers/*," +
+                   $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
+                   $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
+                   $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\" ");
         
         // Normal build
         if (!isPrBuild) {
@@ -166,7 +168,8 @@ public static class SonarQube
         
         // Pull Request Build
         if (isPrBuild) {
-           Information($">> PR Build isPRBuild={isPrBuild}  githubPrNumber {githubPrNumber} githubBaseBranch {githubBaseBranch} githubRepoSlug {githubRepoSlug}");
+           Information($">> PR Build isPRBuild={isPrBuild}  githubPrNumber " +
+                       $"{githubPrNumber} githubBaseBranch {githubBaseBranch} githubRepoSlug {githubRepoSlug}");
 
            sonarArguments
                    .Append($"/d:sonar.pullrequest.key=\"{githubPrNumber}\" ")
@@ -205,6 +208,5 @@ public static class SonarQube
 			.Append($"/d:sonar.login=\"{login}\" ");
 
 		 DotNet(sonarArguments.ToString());
-		
 	}
 }

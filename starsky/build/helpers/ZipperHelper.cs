@@ -24,7 +24,7 @@ public class ZipperHelper
 		
 		if ( !Directory.Exists(fromFolder) )
 		{
-			throw new Exception($"dir {Build.GenericRuntimeName} not found {fromFolder}");
+			throw new DirectoryNotFoundException($"dir {Build.GenericRuntimeName} not found {fromFolder}");
 		}
 
 		var zipPath = Path.Join(BasePath(),

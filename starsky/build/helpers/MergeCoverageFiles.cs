@@ -42,11 +42,11 @@ public static class MergeCoverageFiles
 		}
 
 		if (! FileExists(Path.Combine(rootDirectory, $"starsky/clientapp/coverage/cobertura-coverage.xml"))) {
-			throw new Exception($"Missing jest coverage file ./starsky/clientapp/coverage/cobertura-coverage.xml");
+			throw new FileNotFoundException($"Missing jest coverage file ./starsky/clientapp/coverage/cobertura-coverage.xml");
 		}
 
 		if (! FileExists(Path.Combine(rootDirectory, "starskytest/netcore-coverage.opencover.xml"))) {
-			throw new Exception($"Missing .NET Core coverage file ./starskytest/netcore-coverage.opencover.xml");
+			throw new FileNotFoundException($"Missing .NET Core coverage file ./starskytest/netcore-coverage.opencover.xml");
 		}
 
 		var outputCoverageFile = Path.Combine(rootDirectory,"starskytest/coverage-merge-cobertura.xml");
@@ -73,6 +73,7 @@ public static class MergeCoverageFiles
 				$"-targetdir:{rootDirectory}/starskytest/",
 				$"-reporttypes:Cobertura;SonarQube"
 			};
+		
 		Palmmedia.ReportGenerator.Core.Program.Main(args);
 
 		// And rename it

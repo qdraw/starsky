@@ -7,6 +7,7 @@ using Nuke.Common.CI;
 using Nuke.Common.ProjectModel;
 using static helpers.SonarQube;
 
+// ReSharper disable once CheckNamespace
 namespace build
 {
 	[ShutdownDotNetAfterServerBuild]
@@ -169,6 +170,8 @@ namespace build
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
 			});
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
+		// ReSharper disable once UnusedMember.Local
 		Target DownloadDependencies => _ => _
 			.Executes(() =>
 			{
@@ -203,6 +206,8 @@ namespace build
 				
 			});
 		
+		// ReSharper disable once UnusedMember.Local
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
 		Target BuildNetCore => _ => _
 			.Executes(() =>
 			{
@@ -212,6 +217,8 @@ namespace build
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 			});
 		
+		// ReSharper disable once UnusedMember.Local
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
 		Target TestNetCore => _ => _
 			.Executes(() =>
 			{
