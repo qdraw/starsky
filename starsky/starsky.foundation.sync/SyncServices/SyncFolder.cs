@@ -116,8 +116,10 @@ namespace starsky.foundation.sync.SyncServices
 					var queryService = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
 
 					var subPathInFilesList = subPathInFiles.ToList();
-					var dbItemList = await new SyncSingleFile(
-						_appSettings, queryService, _subPathStorage, _logger)
+					var syncSingleFileService = new SyncSingleFile(
+						_appSettings, queryService, _subPathStorage, _logger);
+					
+					var dbItemList = await syncSingleFileService
 						.SingleFileList(subPathInFilesList, updateDelegate);
 
 					await new SyncRemove(_appSettings, _setupDatabaseTypes,
