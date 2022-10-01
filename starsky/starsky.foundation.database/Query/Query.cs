@@ -282,7 +282,7 @@ namespace starsky.foundation.database.Query
 	        catch ( InvalidOperationException e)
 	        {
 		        // System.InvalidOperationException: Can't replace active reader.
-		        await RetrySaveChangesAsync(updateStatusContent, e, "UpdateItemAsync InvalidOperationException");
+		        await RetrySaveChangesAsync(updateStatusContent, e, "UpdateItemAsync InvalidOperationException",2000);
 	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {
@@ -370,7 +370,8 @@ namespace starsky.foundation.database.Query
         /// <param name="updateStatusContent"></param>
         /// <param name="e">Exception</param>
         /// <param name="source">Where from is this called, this helps to debug the code better</param>
-        private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source)
+        /// <param name="delay">retry delay in milliseconds, 1000 = 1 second</param>
+        private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
         {
 	        _logger?.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source}");
 	        _logger?.LogInformation("[RetrySaveChangesAsync] next retry ~>");
@@ -379,7 +380,7 @@ namespace starsky.foundation.database.Query
 	        {
 		        // InvalidOperationException: A second operation started on this context before a previous operation completed.
 		        // https://go.microsoft.com/fwlink/?linkid=2097913
-		        await Task.Delay(5);
+		        await Task.Delay(delay);
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
@@ -489,8 +490,9 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
 	        }
-	        catch (InvalidOperationException)
+	        catch (InvalidOperationException invalidOperationException)
 	        {
+		        _logger?.LogError(invalidOperationException, "[List<>UpdateItem] InvalidOperationException");
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
 	        }
@@ -579,8 +581,6 @@ namespace starsky.foundation.database.Query
 
 			    // make it a list to avoid enum errors
 			    displayFileFolders = displayFileFolders.ToList();
-
-
 				
 			    var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
 			    if ( obj != null )
@@ -625,7 +625,6 @@ namespace starsky.foundation.database.Query
 		        RemoveCacheItem(item);
 	        }
         }
-        
         
         /// <summary>
         /// Cache Only! Private api within Query to remove cached items

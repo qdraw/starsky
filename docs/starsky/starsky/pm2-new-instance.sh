@@ -13,6 +13,12 @@ case $(uname -m) in
     RUNTIME="linux-arm64"
     ;;
 
+  "arm64")
+    if [ $(uname) = "Darwin" ]; then
+        RUNTIME="osx-arm64"
+    fi
+    ;;
+
   "armv7l")
     RUNTIME="linux-arm"
     ;;
@@ -198,7 +204,7 @@ if [ -f starsky-$RUNTIME.zip ]; then
     unzip -q -o starsky-$RUNTIME.zip -x "pm2-new-instance.sh"
 else
    echo "continue > starsky-$RUNTIME.zip File not found"
-   echo "try to download latest release"
+   echo "next: try to download latest release"
 
    # Get latest stable from Github Releases
    # check also 'install-latest-release'
@@ -324,7 +330,7 @@ if [[ $ISIMPORTEROK -eq 0 ]]; then
   ln -sfn $DIRNAME"/starskyadmincli" ~/bin/starskyadmincli
   ln -sfn $DIRNAME"/starsky" ~/bin/starsky
 else
-  echo "> skip symlink creation due wrong architecture"
+  echo "> SKIP symlink creation due wrong architecture"
 fi
 
 if ! command -v pm2 &> /dev/null

@@ -123,7 +123,7 @@ namespace starsky.foundation.sync.SyncServices
 			// route with database check
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
-				_logger.LogInformation($"[SingleFile/db] {subPath} " + Synchronize.DateTimeDebug());
+				_logger.LogInformation($"[SingleFile/db] info {subPath} " + Synchronize.DateTimeDebug());
 			}
 
 			// Sidecar files are updated but ignored by the process

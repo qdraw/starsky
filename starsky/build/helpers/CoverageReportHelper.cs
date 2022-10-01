@@ -27,10 +27,9 @@ public static class CoverageReportHelper
 		var reportFolder =
 			outputCoverageFile.Replace("merge-cobertura.xml", "report");
 
-
 		if ( !File.Exists(outputCoverageFile) )
 		{
-			throw new Exception(
+			throw new FileNotFoundException(
 				$"Missing .NET Core coverage file {outputCoverageFile}");
 		}
 

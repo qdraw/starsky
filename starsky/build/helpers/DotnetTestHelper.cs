@@ -50,7 +50,7 @@ public static class DotnetTestHelper
         {
             Information("Testing project " + project);
 
-            var testParentPath = System.IO.Directory.GetParent(project.ToString()).FullName;
+            var testParentPath = Directory.GetParent(project)?.FullName;
 
             /* clean test results */
             var testResultsFolder = System.IO.Path.Combine(testParentPath, "TestResults");
@@ -59,16 +59,6 @@ public static class DotnetTestHelper
                 Information(">> Removing folder => " + testResultsFolder);
                 Directory.Delete(testResultsFolder,true);
             }
-
-            var testArgs = new StringBuilder()
-	            .Append("--no-restore ")
-	            .Append("--no-build ")
-	            .Append("--nologo ")
-	            .Append("--blame ") // for debug
-	            .Append("-v=normal ") // v=normal is to show test names
-	            .Append("--logger \"trx;LogFileName=test_results.trx\" ")
-	            .Append("--collect:\"XPlat Code Coverage\" ")
-	            .Append("--settings build.vstest.runsettings ");
 
             DotNetTest(_ => _
 	            .SetConfiguration(configuration)
@@ -93,7 +83,7 @@ public static class DotnetTestHelper
             Information("CoverageFile " + coverageFilePath);
 
             if (!FileExists(coverageFilePath)) {
-                throw new Exception("CoverageFile missing " + coverageFilePath);
+                throw new FileNotFoundException("CoverageFile missing " + coverageFilePath);
             }
         }
     }
