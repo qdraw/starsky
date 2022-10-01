@@ -7,6 +7,7 @@ using build;
 
 namespace helpers;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1118:Add a 'protected' constructor or the 'static' keyword to the class declaration", Justification = "Not production code.")]
 public class ZipperHelper
 {
 
@@ -54,7 +55,7 @@ public class ZipperHelper
 
 			if ( !Directory.Exists(runtimeFullPath) )
 			{
-				throw new Exception($"dir {Build.GenericRuntimeName} not found ~ {runtimeFullPath}");
+				throw new DirectoryNotFoundException($"dir {Build.GenericRuntimeName} not found ~ {runtimeFullPath}");
 			}
 
 			var zipPath = Path.Join(BasePath(),
@@ -84,7 +85,7 @@ public class ZipperHelper
 		
 		if ( !Directory.Exists(fromFolder) )
 		{
-			throw new Exception($"dir {fromFolder} not found");
+			throw new DirectoryNotFoundException($"dir {fromFolder} not found");
 		}
 
 		var zipPath = Path.Join(BasePath(), "starskytest", CoverageReportZip);
