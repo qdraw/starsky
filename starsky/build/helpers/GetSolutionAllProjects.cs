@@ -6,9 +6,10 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 namespace helpers;
 
+[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
+[SuppressMessage("Usage", "S3267:Loop should be simplified by calling Select", Justification = "Not production code.")]
 public static class GetSolutionAllProjects
 {
-	[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 	public static List<string> GetSolutionAllProjectsList(Solution solution)
 	{
 		var slnListOutput =  
