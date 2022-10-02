@@ -799,6 +799,7 @@ namespace starsky.foundation.database.Query
 	    /// </summary>
 	    /// <param name="subPath">subPath as input</param>
 	    /// <returns>void</returns>
+	    [SuppressMessage("ReSharper", "ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator")]
 	    public async Task AddParentItemsAsync(string subPath)
 	    {
 		    var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
@@ -807,7 +808,6 @@ namespace starsky.foundation.database.Query
 		    var indexItems = await GetParentItems(pathListShouldExist);
 
 		    var toAddList = new List<FileIndexItem>();
-		    // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 		    foreach ( var pathShouldExist in pathListShouldExist )
 		    {
 			    if ( !indexItems.Select(p => p.FilePath).Contains(pathShouldExist) )
@@ -815,6 +815,7 @@ namespace starsky.foundation.database.Query
 				    toAddList.Add(new FileIndexItem(pathShouldExist)
 				    {
 					    IsDirectory = true,
+					    ImageFormat = ExtensionRolesHelper.ImageFormat.unknown,
 					    AddToDatabase = DateTime.UtcNow,
 					    ColorClass = ColorClassParser.Color.None,
 					    Software = pathShouldExist == "/" ? "Root object" : string.Empty

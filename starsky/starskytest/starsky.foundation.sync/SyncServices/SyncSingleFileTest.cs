@@ -362,7 +362,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, new FakeIWebLogger());
-			var result= await sync.SingleFile("/test.jpg",null);  // % % % % Null value here % % % % % 
+			var result= await sync.SingleFile("/test.jpg",null, false);  // % % % % Null value here % % % % % 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
 			
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");

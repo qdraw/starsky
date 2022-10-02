@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
@@ -18,7 +19,15 @@ namespace starsky.foundation.database.Query
 		{
 			async Task LocalQuery(ApplicationDbContext context)
 			{
+				var tmp = context.FileIndex.ToList();
+				
+				foreach ( var item in fileIndexItemList )
+				{
+					item.Id = 0;
+					context.Entry(item).State = EntityState.Added;
+				}
 				await context.FileIndex.AddRangeAsync(fileIndexItemList);
+
 				await context.SaveChangesAsync();
 			}
 

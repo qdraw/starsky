@@ -40,10 +40,11 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="subPath">path</param>
 		/// <param name="dbItem">current item, can be null</param>
 		/// <param name="updateDelegate">push updates realtime to the user and avoid waiting</param>
+		/// <param name="addParentItem">Add parent item auto (default true)</param>
 		/// <returns>updated item with status</returns>
 		internal async Task<FileIndexItem> SingleFile(string subPath,
 			FileIndexItem dbItem,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+			ISynchronize.SocketUpdateDelegate updateDelegate = null, bool addParentItem = true)
 		{
 			// when item does not exist in db
 			if ( dbItem == null )
@@ -74,7 +75,7 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
 				}
-				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath, addParentItem);
 			}
 
 			// to avoid reSync
@@ -88,7 +89,6 @@ namespace starsky.foundation.sync.SyncServices
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			var dbItemList = await _query.GetAllObjectsAsync(filePathList);
-			
 			
 			return await SingleFileList(filePathList, dbItemList, updateDelegate);
 		}
@@ -106,8 +106,21 @@ namespace starsky.foundation.sync.SyncServices
 			var items = new List<FileIndexItem>();
 			foreach ( var dbItem in dbItemList )
 			{
-				items.Add(await SingleFile(dbItem.FilePath, dbItem, updateDelegate));
+				// no update on single item, do it at once on the end
+				items.Add(await SingleFile(dbItem.FilePath, dbItem, null, false));
 			}
+			
+			var parentDirectories = items.Where(p => p.Status == FileIndexItem.ExifStatus.Ok)
+				.Select(p => p.ParentDirectory).Distinct().ToList();
+
+			var tmp = await _query.GetAllRecursiveAsync();
+			
+			foreach ( var parentDirectory in parentDirectories )
+			{
+				// TODO FIX!!!!!! STUOPID THING
+				// await _query.AddParentItemsAsync(parentDirectory);
+			}	
+
 			return items;
 		}
 
@@ -116,9 +129,10 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="subPath">path</param>
 		/// <param name="updateDelegate">realtime updates, can be null to ignore</param>
+		/// <param name="addParentItem">add the parent item of this item auto</param>
 		/// <returns>updated item with status</returns>
 		internal async Task<FileIndexItem> SingleFile(string subPath,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+			ISynchronize.SocketUpdateDelegate updateDelegate = null, bool addParentItem = true)
 		{
 			// route with database check
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
@@ -158,7 +172,7 @@ namespace starsky.foundation.sync.SyncServices
 			if ( !isSame )
 			{
 				if ( updateDelegate != null ) await updateDelegate(new List<FileIndexItem> {dbItem});
-				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath, addParentItem);
 			}
 
 			// to avoid reSync
@@ -238,8 +252,9 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="statusItem">contains the status</param>
 		/// <param name="subPath">relative path</param>
+		/// <param name="addParentItem">add the parent items for this new item</param>
 		/// <returns>database item</returns>
-		private async Task<FileIndexItem> NewItem(FileIndexItem statusItem, string subPath)
+		private async Task<FileIndexItem> NewItem(FileIndexItem statusItem, string subPath, bool addParentItem = true)
 		{
 			// Add a new Item
 			var dbItem = await _newItem.NewFileItem(statusItem);
@@ -248,7 +263,10 @@ namespace starsky.foundation.sync.SyncServices
 			if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
 				
 			await _query.AddItemAsync(dbItem);
-			await _query.AddParentItemsAsync(subPath);
+			if ( addParentItem )
+			{
+				await _query.AddParentItemsAsync(subPath);
+			}
 			AddDeleteStatus(dbItem);
 			return dbItem;
 		}
@@ -259,8 +277,9 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="dbItem">item to update</param>
 		/// <param name="size">byte size</param>
 		/// <param name="subPath">relative path</param>
+		/// <param name="addParentItem">add parent item async</param>
 		/// <returns>same item</returns>
-		private async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
+		private async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath, bool addParentItem)
 		{
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
@@ -269,7 +288,10 @@ namespace starsky.foundation.sync.SyncServices
 			
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
-			await _query.AddParentItemsAsync(subPath);
+			if ( addParentItem )
+			{
+				await _query.AddParentItemsAsync(subPath);
+			}
 			AddDeleteStatus(dbItem);
 			return updateItem;
 		}
