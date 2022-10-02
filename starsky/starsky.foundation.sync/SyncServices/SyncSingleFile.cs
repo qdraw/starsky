@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -130,7 +129,10 @@ namespace starsky.foundation.sync.SyncServices
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
 			if ( !isSame )
 			{
-				if ( updateDelegate != null ) await updateDelegate(new List<FileIndexItem> {dbItem});
+				if ( updateDelegate != null )
+				{
+					await updateDelegate(new List<FileIndexItem> {dbItem});
+				}
 				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
 			}
 
@@ -178,7 +180,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="subPath">relative path</param>
 		/// <returns>item with status</returns>
-		private FileIndexItem CheckForStatusNotOk(string subPath)
+		internal FileIndexItem CheckForStatusNotOk(string subPath)
 		{
 			var statusItem = new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.Ok};
 
@@ -233,7 +235,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="size">byte size</param>
 		/// <param name="subPath">relative path</param>
 		/// <returns>same item</returns>
-		private async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
+		internal async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
 		{
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
