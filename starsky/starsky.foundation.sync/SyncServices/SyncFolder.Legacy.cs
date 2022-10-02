@@ -18,7 +18,7 @@ using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
 {
-	public class SyncFolder
+	public class SyncFolderLegacy
 	{
 		private readonly AppSettings _appSettings;
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;
@@ -30,7 +30,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IMemoryCache _memoryCache;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
-		public SyncFolder(AppSettings appSettings, IQuery query, 
+		public SyncFolderLegacy(AppSettings appSettings, IQuery query, 
 			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger, IMemoryCache memoryCache)
 		{
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
