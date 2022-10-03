@@ -78,7 +78,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			// to avoid reSync
 			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
 			
 			return updatedDbItem;
 		}
@@ -138,7 +138,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			// to avoid reSync
 			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
 			_logger.LogInformation($"[SingleFile/db] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
 			return updatedDbItem;
 		}

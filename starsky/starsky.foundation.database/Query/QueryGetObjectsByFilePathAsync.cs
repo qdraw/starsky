@@ -14,7 +14,7 @@ namespace starsky.foundation.database.Query
 	public partial class Query : IQuery
 	{
 		/// <summary>
-		/// Uses Cache
+		/// Query
 		/// </summary>
 		/// <param name="inputFilePaths">list of paths</param>
 		/// <param name="collections">uses collections </param>
@@ -83,6 +83,8 @@ namespace starsky.foundation.database.Query
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{
+				var tmp = context.FileIndex.ToList();
+				
 				var result = await context.FileIndex.TagWith("GetObjectsByFilePathQueryAsync").Where(p =>
 					filePathList.Contains(p.FilePath)).ToListAsync();
 				return FormatOk(result);

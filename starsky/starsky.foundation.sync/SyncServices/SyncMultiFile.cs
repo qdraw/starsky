@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
@@ -40,7 +41,7 @@ public class SyncMultiFile
 	/// <param name="dbItems">current items</param>
 	/// <param name="updateDelegate">push updates realtime to the user and avoid waiting</param>
 	/// <returns>updated item with status</returns>
-	internal async Task<FileIndexItem> MultiFile(List<FileIndexItem> dbItems,
+	internal async Task<List<FileIndexItem>> MultiFile(List<FileIndexItem> dbItems,
 		ISynchronize.SocketUpdateDelegate updateDelegate = null)
 	{
 		var updatedDbItems = new List<FileIndexItem>();
@@ -60,15 +61,41 @@ public class SyncMultiFile
 			if ( !isSame )
 			{
 				updatedDbItems.Add(await _syncSingleFile.UpdateItem(dbItem, updatedDbItem.Size, dbItem.FilePath));
+				continue;
 			}
-			updatedDbItems.Add(dbItem);
+			
+			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+			_syncSingleFile.AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			
+			updatedDbItems.Add(updatedDbItem);
 		}
 
-		// if ( updateDelegate != null )
-		// {
-		// 	await updateDelegate(new List<FileIndexItem> {dbItem});
-		// }
+		if ( updateDelegate != null )
+		{
+			await updateDelegate(updatedDbItems);
+		}
+		
+		return updatedDbItems;
+
 	}
 
+	public async Task<List<FileIndexItem>> MultiFile(List<string> subPathInFiles)
+	{
+		var databaseItems = await _query.GetObjectsByFilePathQueryAsync(subPathInFiles);
 
+		var resultDatabaseItems = new List<FileIndexItem>();
+		foreach ( var path in subPathInFiles )
+		{
+			var item = databaseItems.FirstOrDefault(p => p.FilePath == path);
+			if (item == null )
+			{
+				resultDatabaseItems.Add(new FileIndexItem(path));
+				continue;
+			}
+			resultDatabaseItems.Add(item);
+		}
+		
+
+		return await MultiFile(resultDatabaseItems);
+	}
 }

@@ -144,37 +144,43 @@ public class SyncFolder
 		if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
 
 
-		var result = pathsToUpdateInDatabase.ChunkyEnumerable(20).ToList().ForEachAsync(
+		var resultChunkList = await pathsToUpdateInDatabase.Chunk(20).ToList().ForEachAsync(
 			async chunks =>
 			{
 				var subPathInFiles = chunks.ToList();
 				
 				var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
-
-				var dbItem = new FileIndexItem();
-				// var dbItem = await new SyncSingleFile(_appSettings, query, 
-				// 	_subPathStorage, _logger).SingleFile(subPathInFiles, 
-				// 	fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles), updateDelegate);
-
-				if ( dbItem.Status ==
-				     FileIndexItem.ExifStatus.NotFoundSourceMissing )
+				if ( query == null )
 				{
-					await new SyncRemove(_appSettings, _setupDatabaseTypes,
-							query, _memoryCache, _logger)
-						.Remove(subPathInFiles);
+					throw new NullReferenceException("query should not be null");
 				}
 
-				_console.Write(dbItem.Status == FileIndexItem.ExifStatus
-					.NotFoundSourceMissing
-					? "≠"
-					: "•");
+				var databaseItems = await new SyncMultiFile(_appSettings, query, _subPathStorage,
+					_logger).MultiFile(subPathInFiles);
 				
+				await new SyncRemove(_appSettings, _setupDatabaseTypes,
+						query, _memoryCache, _logger)
+					.Remove(databaseItems);
+
+				foreach ( var item in databaseItems )
+				{
+					_console.Write(item.Status == FileIndexItem.ExifStatus
+						.NotFoundSourceMissing
+						? "≠"
+						: "•");
+				}
 				
-				return subPathInFiles;
+				return databaseItems;
 			}, _appSettings.MaxDegreesOfParallelism);
+
+
+		var results = new List<FileIndexItem>();
+		foreach ( var resultChunk in resultChunkList )
+		{
+			results.AddRange(resultChunk);
+		}
 		
-		
-		return null;
+		return results;
 	}
 	
 	internal static List<string> PathsToUpdateInDatabase(IEnumerable<FileIndexItem> fileIndexItems, 
