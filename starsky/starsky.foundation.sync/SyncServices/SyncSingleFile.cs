@@ -214,7 +214,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="statusItem">contains the status</param>
 		/// <param name="subPath">relative path</param>
 		/// <returns>database item</returns>
-		private async Task<FileIndexItem> NewItem(FileIndexItem statusItem, string subPath)
+		internal async Task<FileIndexItem> NewItem(FileIndexItem statusItem, string subPath)
 		{
 			// Add a new Item
 			var dbItem = await _newItem.NewFileItem(statusItem);

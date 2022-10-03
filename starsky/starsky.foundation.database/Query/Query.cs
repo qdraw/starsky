@@ -268,6 +268,9 @@ namespace starsky.foundation.database.Query
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;
 		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+		        Console.WriteLine(context.ChangeTracker.DebugView.LongView);
+
+		        // object cache path is used to avoid updates
 		        SetGetObjectByFilePathCache(fileIndexItem.FilePath, updateStatusContent, TimeSpan.FromMinutes(1));
 	        }
 
