@@ -40,6 +40,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Back-end_ Update Security Headers e.g. CSP, Permissions Policy (PR #880, #881)
 - [x]   (Security) _Back-end_ Update dependencies for typescript, jpeg-js, typings, dotenv (PR #888, #884, #883, #879)
 - [x]   (Fixed) _Back-end_ Manual sync exception should not keep lock activated (PR #889)
+- [x]   (Changed) _Back-end_ Use node 18.x in Dockerfile (PR #895)
+- [x]   (Changed) _Tools_ Allow other projects as argument in dotnet-sdk-version-update.js (PR #895)
 
 # version 0.5.0-beta.7 - 2022-09-20
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) _overwritten_ (PR #838)
