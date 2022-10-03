@@ -737,6 +737,7 @@ namespace starsky.foundation.platform.Models
 		/// Duplicate this item in memory. AND remove _databaseConnection 
 		/// </summary>
 		/// <returns>AppSettings duplicated></returns>
+		[SuppressMessage("ReSharper", "InvertIf")]
 		public AppSettings CloneToDisplay()
 		{
 			var userProfileFolder = Environment.GetFolderPath(
