@@ -51,33 +51,40 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 
 ### Optional settings
 1. `Structure` - The structure that will be used when you import files, _has a default fallback_.
-2. `ReadOnlyFolders` - Accepts a list of folders that never may be edited, _defaults a empty list_
-3. `AddMemoryCache` - Enable caching _(default true)_
+2. `DependenciesFolder` - where store the data of external dependencies used _default folder in project_
+3. `ReadOnlyFolders` - Accepts a list of folders that never may be edited, _defaults a empty list_
+4. `AddMemoryCache` - Enable caching _(default true)_
      The only 2 build-in exceptions are when there are no accounts or you already logged in _(default false)_
-4. `AddSwagger` - To show a user interface to show al REST-services _(default false)_
-5. `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
-6. `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
-7. `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
-8. `Verbose` - show more console logging  _(default false)_
-9. `WebFtp` - ftp path, this is used by starskyWebFtpCli
-10. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish button
-11. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
-12. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
-13. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User or Administrator _(default User)_
-14. `applicationInsightsInstrumentationKey` - Track Telemetry with Microsoft Application Insights _(default disabled)_
-15. `ApplicationInsightsDatabaseTracking` - Track database dependencies (need to have InstrumentationKey) _(default disabled)_
-16. `ApplicationInsightsLog` - Add WebLogger output to Application Insights (need to have InstrumentationKey) _(default enabled, when key is provided)_
-17. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.
+5. `AddSwagger` - To show a user interface to show al REST-services _(default false)_
+6. `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
+7. `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
+8. `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
+9. `Verbose` - show more console logging  _(default false)_
+10. `WebFtp` - ftp path, this is used by starskyWebFtpCli
+11. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish button
+12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
+13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
+14. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User or Administrator _(default User)_
+15. `applicationInsightsInstrumentationKey` - Track Telemetry with Microsoft Application Insights _(default disabled)_
+16. `ApplicationInsightsDatabaseTracking` - Track database dependencies (need to have InstrumentationKey) _(default disabled)_
+17. `ApplicationInsightsLog` - Add WebLogger output to Application Insights (need to have InstrumentationKey) _(default enabled, when key is provided)_
+18. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.
      This toggle is always disabled in debug/develop mode _(default false)_
-18. `Name` Name of the application, does not have much effect _(default Starsky)_
-19. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
-20. `UseRealtime` Update the user interface realtime _default true_
-21. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
-22. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
-23. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
-24. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
-25. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
-26. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
+19. `httpsOn` Set all cookies in https Mode. You should enable before going to production. _(default false)_
+20. `Name` Name of the application, does not have much effect _(default Starsky)_
+21. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
+22. `UseRealtime` Update the user interface realtime _default true_
+23. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
+24. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
+25. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
+26. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
+27. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
+28. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
+29. `EnablePackageTelemetry` Telemetry is send for service improvement _default true_
+30. `EnablePackageTelemetryDebug` Debug Telemetry _default false_
+31. `AddSwaggerExportExitAfter` Quit application after exporting swagger files, should have `AddSwagger` and `AddSwaggerExport` enabled _default false_
+32. `NoAccountLocalhost` No login needed when on localhost, used in Desktop App
+33. `VideoUseLocalTime` Use localtime by Camera make and model instead of UTC
 
 ### Appsettings.json example
 ```json

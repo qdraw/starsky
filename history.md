@@ -42,6 +42,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Manual sync exception should not keep lock activated (PR #889)
 - [x]   (Changed) _Back-end_ Use node 18.x in Dockerfile (PR #895)
 - [x]   (Changed) _Tools_ Allow other projects as argument in dotnet-sdk-version-update.js (PR #895)
+- [x]   (Security) _Back-end_ Add option for secure cookies App Settings: `HttpsOn` (PR #896)
 
 # version 0.5.0-beta.7 - 2022-09-20
 - [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) _overwritten_ (PR #838)
