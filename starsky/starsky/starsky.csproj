@@ -81,8 +81,8 @@
         <Content Include="pm2-download-azure-devops.sh">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="docker-cleanup.sh" />
-        <Content Include="docker-cleanup.sh">
+        <None Remove="cleanup-build-tools.sh" />
+        <Content Include="cleanup-build-tools.sh">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <None Remove="github-artifacts-download.sh" />
