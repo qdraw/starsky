@@ -45,12 +45,12 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Back-end_ Add option for secure cookies App Settings: `HttpsOn` (PR #896)
 
 # version 0.5.0-beta.7 - 2022-09-20
-- [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) _overwritten_ (PR #838)
+- [x]   (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) (PR #838)
 - [x]   (Fixed) _Back-end_ Null reference exceptions on mysql (PR #789 & Issue #787)
 - [x]   (Fixed) _Back-end_ Retry for InvalidOperationException when Add Item (PR #789 & Issue #802)
 - [x]   (Fixed) _Back-end_  Slug should not be --- (PR #789 & Issue #797)
 - [x]   (Security) _Back-end_ Upgrade nuget packages (PR #845)
-- [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.400 (Runtime: 6.0.8) (PR #855)
+- [x]   (Changed) _Back-end_ _Change is overwritten in same release_  Upgrade to .NET 6 - SDK 6.0.400 (Runtime: 6.0.8) (PR #855)
 - [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.401 (Runtime: 6.0.9)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.9/6.0.9.md) (PR #870)
 - [x]   (Issue) _Tools_ Re-enable end2end test in CI (2022-09-20)
 
