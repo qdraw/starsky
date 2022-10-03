@@ -86,7 +86,10 @@ namespace starsky
                         options.Cookie.HttpOnly = true;
                         options.Cookie.IsEssential = true;
                         options.Cookie.Path = "/";
-                        options.Cookie.SameSite = SameSiteMode.Lax; // allow links from non-domain sites
+                        options.Cookie.SecurePolicy = _appSettings.HttpsOn == true
+	                        ? CookieSecurePolicy.Always
+	                        : CookieSecurePolicy.SameAsRequest;
+                        options.Cookie.SameSite = SameSiteMode.Strict; 
                         options.LoginPath = "/account/login";
                         options.LogoutPath = "/account/logout";
                         options.Events.OnRedirectToLogin = ReplaceReDirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
@@ -99,8 +102,10 @@ namespace starsky
                 {
                     options.Cookie.Name = "_af";
                     options.Cookie.HttpOnly = true; // only used by .NET, there is a separate method to generate a X-XSRF-TOKEN cookie
-                    options.Cookie.SameSite = SameSiteMode.Lax;
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                    options.Cookie.SecurePolicy = _appSettings.HttpsOn == true
+	                    ? CookieSecurePolicy.Always
+	                    : CookieSecurePolicy.SameAsRequest;
                     options.Cookie.Path = "/";
                     options.Cookie.IsEssential = true;
                     options.HeaderName = "X-XSRF-TOKEN";
@@ -125,8 +130,6 @@ namespace starsky
 					builder => builder
 						.AllowCredentials() );
 			});
-			
-
 			
 			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
 
@@ -209,7 +212,6 @@ namespace starsky
         /// <param name="applicationLifetime">application Lifetime</param>
         public void Configure(IApplicationBuilder app, IHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
-	        
 	        app.UseResponseCompression();
 
 	        if ( env.IsDevelopment()) app.UseDeveloperExceptionPage();
@@ -306,8 +308,11 @@ namespace starsky
 		        var onStoppedSync = new FlushApplicationInsights(app);
 		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
+	        
+	        IsDevelopment = env.IsDevelopment();
         }
 
+        private bool IsDevelopment { get; set; }
 
         /// <summary>
         /// Run the latest migration on the database. 

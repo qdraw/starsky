@@ -631,6 +631,14 @@ namespace starsky.foundation.platform.Models
 		public bool? UseHttpsRedirection { get; set; } = false;
 
 		/// <summary>
+		/// Set to false when running on http-only service.
+		/// You should enable this when going to production
+		/// Ignored in Debug/Develop mode
+		/// </summary>
+		[PackageTelemetry]
+		public bool? HttpsOn { get; set; } = false;
+		
+		/// <summary>
 		/// Use WebSockets to update the UI realtime
 		/// </summary>
 		[PackageTelemetry]
