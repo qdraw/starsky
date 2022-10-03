@@ -69,15 +69,16 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 16. `ApplicationInsightsLog` - Add WebLogger output to Application Insights (need to have InstrumentationKey) _(default enabled, when key is provided)_
 17. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.
      This toggle is always disabled in debug/develop mode _(default false)_
-18. `Name` Name of the application, does not have much effect _(default Starsky)_
-19. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
-20. `UseRealtime` Update the user interface realtime _default true_
-21. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
-22. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
-23. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
-24. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
-25. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
-26. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
+18. `httpsOn` Set all cookies in https Mode. You should enable before going to production. _(default false)_
+19. `Name` Name of the application, does not have much effect _(default Starsky)_
+20. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
+21. `UseRealtime` Update the user interface realtime _default true_
+22. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
+23. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
+24. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
+25. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
+26. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
+27. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
 
 ### Appsettings.json example
 ```json
