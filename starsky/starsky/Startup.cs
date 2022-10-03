@@ -308,12 +308,8 @@ namespace starsky
 		        var onStoppedSync = new FlushApplicationInsights(app);
 		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
-	        
-	        IsDevelopment = env.IsDevelopment();
         }
-
-        private bool IsDevelopment { get; set; }
-
+        
         /// <summary>
         /// Run the latest migration on the database. 
         /// To start over with a SQLite database please remove it and
