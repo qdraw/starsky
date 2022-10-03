@@ -4,7 +4,7 @@
 
 const { join, dirname } = require("path");
 const { readFile, writeFile } = require("fs").promises;
-const { readFileSync } = require("fs");
+const { readFileSync, existsSync } = require("fs");
 const { getFiles } = require("./lib/get-files-directory");
 const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
@@ -22,8 +22,20 @@ const aspNetCorePackages = [
 
 // allow version as single argument
 const argv = process.argv.slice(2);
-if (argv && argv.length === 1) {
-	newRunTimeVersion = argv[0];
+
+let searchPath = join(__dirname, prefixPath);
+
+if (argv) {
+	// regex: ^(\d+\.)?(\d+\.)?(\*|x|\d+)$
+	for (const argItem of argv) {
+		if (argItem.match(new RegExp("^(\\d+\\.)?(\\d+\\.)?(\\*|x|\\d+)$", "i"))) {
+			newRunTimeVersion = argItem;
+		}
+		else if (existsSync(argItem)) {
+			searchPath = argItem;
+			console.log(`use: path: ${argItem}`)
+		}
+	}
 }
 
 async function getLatestDotnetRelease() {
@@ -44,7 +56,7 @@ async function getLatestDotnetRelease() {
 console.log(`\nUpgrade version in csproj-files to ${newRunTimeVersion}\n`);
 
 getLatestDotnetRelease().then((newTargetVersion) => {
-	getFiles(join(__dirname, prefixPath)) // add "starsky" back when netframework is removed
+	getFiles(searchPath) // add "starsky" back when netframework is removed
 		.then(async (filePathList) => {
 			const sortedFilterPathList = sortFilterOnExeCSproj(filePathList);
 
@@ -68,7 +80,7 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 			console.log(err);
 		});
 
-	getFiles(join(__dirname, prefixPath))
+	getFiles(searchPath)
 		.then(async (filePathList) => {
 			const sdkVersion = await getSdkVersionByTarget();
 			process.env["SDK_VERSION"] = sdkVersion;
