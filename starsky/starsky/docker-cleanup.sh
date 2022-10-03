@@ -28,6 +28,11 @@ then
     npm cache clean --force
 fi
 
+
+echo "remove obj folder"
+find $PARENT_DIR -name "obj" -type d -exec rm -r "{}" \;
+echo "end rm obj"
+
 if command -v dotnet &> /dev/null
 then
     echo "clean dotnet nuget"
@@ -42,6 +47,7 @@ then
     echo "FAIL; docker could not be found"
     exit
 fi
+
 
 docker builder prune --filter 'until=8h' -f
 docker image prune --filter 'until=8h' -f
