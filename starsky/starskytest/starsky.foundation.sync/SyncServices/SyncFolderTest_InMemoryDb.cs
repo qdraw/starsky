@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -123,11 +122,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			
 			Assert.AreEqual("/Folder_InDbButNotOnDisk2/test.jpg", 
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test.jpg").FilePath);
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test.jpg")?.FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk2/test_dir",
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test_dir").FilePath);
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test_dir")?.FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk2",
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2").FilePath);
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2")?.FilePath);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[0].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[1].Status);
@@ -166,18 +165,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				.Where(p => p.FilePath != "/").ToList();
 			
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4/test.jpg", 
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg").FilePath);
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg")?.FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4",
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4").FilePath);
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4")?.FilePath);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg").Status);
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg")?.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/test.jpg").Status);
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/test.jpg")?.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/child").Status);
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/child")?.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4").Status);
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4")?.Status);
 
 			var data = await _query.GetAllRecursiveAsync("/Folder_InDbButNotOnDisk4");
 			Assert.AreEqual(1, data.Count);
