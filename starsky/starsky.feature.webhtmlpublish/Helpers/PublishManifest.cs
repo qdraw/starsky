@@ -10,15 +10,13 @@ namespace starsky.feature.webhtmlpublish.Helpers
 {
 	public class PublishManifest
 	{
-		private readonly PlainTextFileHelper _plainTextFileHelper;
 		private readonly IStorage _storage;
 
 		private const string ManifestName = "_settings.json";
 
-		public PublishManifest(IStorage storage, PlainTextFileHelper plainTextFileHelper)
+		public PublishManifest(IStorage storage)
 		{
 			_storage = storage;
-			_plainTextFileHelper = plainTextFileHelper;
 		}
 
 		/// <summary>

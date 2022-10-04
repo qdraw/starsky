@@ -14,11 +14,10 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 		[TestMethod]
 		public void ExportManifestTest_Export()
 		{
-			var plainTextFileHelper = new FakePlainTextFileHelper();
 			var appSettings = new AppSettings();
 
 			var storage = new FakeIStorage();
-			new PublishManifest(storage, plainTextFileHelper)
+			new PublishManifest(storage)
 				.ExportManifest(appSettings.StorageFolder, "Test", 
 					new Dictionary<string, bool>());
 

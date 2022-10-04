@@ -218,7 +218,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.IsTrue(isCalled);
 
 			var items = result.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
-			Assert.AreEqual(1, items.Count());
+			Assert.AreEqual(1, items.Count);
 			Assert.AreEqual("/", items[0].FilePath);
 		}
 		
@@ -430,7 +430,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
 					CreateAnImageNoExif.Bytes,
-					new byte[0]});
+					Array.Empty<byte>()});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.jpg");
 
@@ -458,7 +458,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
 					CreateAnImageNoExif.Bytes,
-					new byte[0]});
+					Array.Empty<byte>()});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.jpg");
 
