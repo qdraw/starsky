@@ -287,5 +287,25 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			Assert.AreEqual(0, processor.Data.Count);
 		}
+		
+		[TestMethod]
+		public void OnRenamed_Should_Not_HitQueueProcessor_ToTmp2()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+
+			// TO temp
+			// /folder/20211222_112808_DSC00998.jpg  OnRenamed to: /folder/tmp.{guid}.test.jpg
+			var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, 
+				"t", Path.DirectorySeparatorChar + "tmp.{guid}.test.jpg","test2.jpg" );
+
+			var processor = new FakeIQueueProcessor();
+			// ReSharper disable once ExpressionIsAlwaysNull
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
+			
+			Assert.AreEqual(0, processor.Data.Count);
+		}
 	}
 }
