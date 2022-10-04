@@ -409,7 +409,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncMultiFile(new AppSettings {Verbose = true}, fakeQuery,
 				_iStorageFake, new FakeIWebLogger());
-			await sync.MultiFile(new List<FileIndexItem>{item});
+			await sync.MultiFile(new List<string>{"/test.xmp"});
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
 			
