@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -17,6 +18,7 @@ namespace starsky.foundation.sync.WatcherServices
 	/// @see: http://web.archive.org/web/20210415105229/https://petermeinl.wordpress.com/2015/05/18/tamed-filesystemwatcher/
 	/// </summary>
 	[Service(typeof(IFileSystemWatcherWrapper), InjectionLifetime = InjectionLifetime.Singleton)]
+	[SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
 	public class BufferingFileSystemWatcher : Component, IFileSystemWatcherWrapper
     {
         private readonly FileSystemWatcher _containedFsw = null;
@@ -346,6 +348,10 @@ namespace starsky.foundation.sync.WatcherServices
                                       select fi;
                 foreach (var fi in sortedFileInfos)
                 {
+	                if ( fi.DirectoryName == null )
+	                {
+		                continue;
+	                }
                     InvokeHandler(_onExistedHandler, new FileSystemEventArgs(WatcherChangeTypes.All, fi.DirectoryName, fi.Name));
                     InvokeHandler(_onAllChangesHandler, new FileSystemEventArgs(WatcherChangeTypes.All,fi.DirectoryName, fi.Name));
                 }
@@ -354,8 +360,14 @@ namespace starsky.foundation.sync.WatcherServices
             {
                 foreach (var fsi in new DirectoryInfo(Path).EnumerateFileSystemInfos(Filter, searchSubDirectoriesOption))
                 {
-                    InvokeHandler(_onExistedHandler, new FileSystemEventArgs(WatcherChangeTypes.All, System.IO.Path.GetDirectoryName(fsi.FullName), fsi.Name ));
-                    InvokeHandler(_onAllChangesHandler, new FileSystemEventArgs(WatcherChangeTypes.All, System.IO.Path.GetDirectoryName(fsi.FullName), fsi.Name));
+	                var directoryName =
+		                System.IO.Path.GetDirectoryName(fsi.FullName);
+	                if ( directoryName == null )
+	                {
+		                continue;
+	                }
+                    InvokeHandler(_onExistedHandler, new FileSystemEventArgs(WatcherChangeTypes.All, directoryName, fsi.Name ));
+                    InvokeHandler(_onAllChangesHandler, new FileSystemEventArgs(WatcherChangeTypes.All, directoryName, fsi.Name));
                 }
             }
         }

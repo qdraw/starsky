@@ -66,7 +66,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			_storage.CreateDirectory("/test_GetAllFilesInDirectoryRecursive");
 			_storage.CreateDirectory("/test_GetAllFilesInDirectoryRecursive/test");
 			var fileAlreadyExistSubPath = "/test_GetAllFilesInDirectoryRecursive/test/already_09010.tmp";
-			_storage.WriteStream(new PlainTextFileHelper().StringToStream("test"),
+			_storage.WriteStream(PlainTextFileHelper.StringToStream("test"),
 				fileAlreadyExistSubPath);
 			
 			var filesInFolder = _storage.GetAllFilesInDirectoryRecursive(
@@ -85,7 +85,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			const string from = "/test_file_copy.tmp";
 			const string to = "/test_file_copy_2.tmp";
 
-			_storage.WriteStream(new PlainTextFileHelper().StringToStream("test"),
+			_storage.WriteStream(PlainTextFileHelper.StringToStream("test"),
 				from);
 			_storage.FileCopy(from,to);
 

@@ -29,7 +29,7 @@ namespace starsky.foundation.writemeta.JsonService
 			});
 			var jsonSubPath = JsonSidecarLocation.JsonLocation(fileIndexItem.ParentDirectory, fileIndexItem.FileName);
 			await _iStorage.WriteStreamAsync(
-				new PlainTextFileHelper().StringToStream(jsonOutput), jsonSubPath);
+				PlainTextFileHelper.StringToStream(jsonOutput), jsonSubPath);
 		}
 
 		/// <summary>

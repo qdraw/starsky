@@ -25,7 +25,7 @@ namespace starsky.foundation.storage.Helpers
 	    /// <param name="stream">stream</param>
 	    /// <param name="dispose">dispose afterwards = default true</param>
 	    /// <returns>content of the file as string</returns>
-	    public async Task<string> StreamToStringAsync(Stream stream, bool dispose = true)
+	    public static async Task<string> StreamToStringAsync(Stream stream, bool dispose = true)
 	    {
 		    var reader = new StreamReader(stream, Encoding.UTF8);
 		    var result = await reader.ReadToEndAsync();
@@ -38,7 +38,7 @@ namespace starsky.foundation.storage.Helpers
 	    /// </summary>
 	    /// <param name="input"></param>
 	    /// <returns></returns>
-	    public Stream StringToStream(string input)
+	    public static Stream StringToStream(string input)
 	    {
 		    byte[] byteArray = Encoding.UTF8.GetBytes(input);
 		    MemoryStream stream = new MemoryStream(byteArray);

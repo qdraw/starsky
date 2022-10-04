@@ -88,7 +88,7 @@ namespace starskytest.Services
 			
 			Assert.AreEqual(true,storage.ExistFile("/test.xmp"));
 			var xmpContentReadStream = storage.ReadStream("/test.xmp");
-			var xmpContent = await new PlainTextFileHelper().StreamToStringAsync(xmpContentReadStream);
+			var xmpContent = await PlainTextFileHelper.StreamToStringAsync(xmpContentReadStream);
 			
 			// Those values are injected by fakeExifTool
 			Assert.AreEqual(true,xmpContent.Contains("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));

@@ -29,11 +29,11 @@ public class SyncFolder
 	private readonly IConsole _console;
 	private readonly Duplicate _duplicate;
 	private readonly IWebLogger _logger;
-	private readonly IMemoryCache _memoryCache;
+	private readonly IMemoryCache? _memoryCache;
 	private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
 	public SyncFolder(AppSettings appSettings, IQuery query, 
-		ISelectorStorage selectorStorage, IConsole console, IWebLogger logger, IMemoryCache memoryCache)
+		ISelectorStorage selectorStorage, IConsole console, IWebLogger logger, IMemoryCache? memoryCache)
 	{
 		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_appSettings = appSettings;
@@ -154,17 +154,12 @@ public class SyncFolder
 		var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
 		if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
 
-		var resultChunkList = await pathsToUpdateInDatabase.Chunk(20).ToList().ForEachAsync(
+		var resultChunkList = await pathsToUpdateInDatabase.Chunk(20).ForEachAsync(
 			async chunks =>
 			{
 				var subPathInFiles = chunks.ToList();
 				
 				var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
-				if ( query == null )
-				{
-					throw new NullReferenceException("query should not be null");
-				}
-
 				var databaseItems = await new SyncMultiFile(_appSettings, query, _subPathStorage,
 					_logger).MultiFile(subPathInFiles,updateDelegate);
 				
@@ -224,11 +219,7 @@ public class SyncFolder
 					return null;
 				}
 				var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
-				if ( query == null )
-				{
-					throw new NullReferenceException("SyncFolder query should not be null");
-				}
-				return await RemoveChildItems(query, item);
+				return await RemoveChildItems(query!, item);
 			}, _appSettings.MaxDegreesOfParallelism)).ToList();
 	}
 	

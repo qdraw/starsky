@@ -58,7 +58,7 @@ namespace starsky.foundation.writemeta.Helpers
 			// Need to Dispose for Windows
 			inputStream.Close();
 
-			if ( stream.Length <= 15 && (await new PlainTextFileHelper().StreamToStringAsync(stream))
+			if ( stream.Length <= 15 && (await PlainTextFileHelper.StreamToStringAsync(stream))
 			    .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase))
 			{
 				_logger.LogError($"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");

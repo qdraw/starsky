@@ -75,6 +75,33 @@ public class SyncMultiFile
 		return await PushToSocket(updatedDbItems, updateDelegate);
 	}
 
+	/// <summary>
+	/// Sync List of Files
+	/// </summary>
+	/// <param name="subPathInFiles">subPaths style</param>
+	/// <param name="updateDelegate">callback when done</param>
+	/// <returns>items that are changed</returns>
+	internal async Task<List<FileIndexItem>> MultiFile(List<string> subPathInFiles,
+		ISynchronize.SocketUpdateDelegate updateDelegate = null)
+	{
+		var databaseItems = await _query.GetObjectsByFilePathQueryAsync(subPathInFiles);
+
+		var resultDatabaseItems = new List<FileIndexItem>();
+		foreach ( var path in subPathInFiles )
+		{
+			var item = databaseItems.FirstOrDefault(p => p.FilePath == path);
+			if (item == null )
+			{
+				// Status is used by MultiFile
+				resultDatabaseItems.Add(new FileIndexItem(path){Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+				continue;
+			}
+			resultDatabaseItems.Add(item);
+		}
+
+		return await MultiFile(resultDatabaseItems, updateDelegate);
+	}
+	
 	private static async Task<List<FileIndexItem>> PushToSocket(List<FileIndexItem> updatedDbItems,
 		ISynchronize.SocketUpdateDelegate updateDelegate)
 	{
@@ -102,30 +129,4 @@ public class SyncMultiFile
 		return updatedDbItems;
 	}
 
-	/// <summary>
-	/// Sync List of Files
-	/// </summary>
-	/// <param name="subPathInFiles">subPaths style</param>
-	/// <param name="updateDelegate">callback when done</param>
-	/// <returns>items that are changed</returns>
-	internal async Task<List<FileIndexItem>> MultiFile(List<string> subPathInFiles,
-		ISynchronize.SocketUpdateDelegate updateDelegate = null)
-	{
-		var databaseItems = await _query.GetObjectsByFilePathQueryAsync(subPathInFiles);
-
-		var resultDatabaseItems = new List<FileIndexItem>();
-		foreach ( var path in subPathInFiles )
-		{
-			var item = databaseItems.FirstOrDefault(p => p.FilePath == path);
-			if (item == null )
-			{
-				// Status is used by MultiFile
-				resultDatabaseItems.Add(new FileIndexItem(path){Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
-				continue;
-			}
-			resultDatabaseItems.Add(item);
-		}
-
-		return await MultiFile(resultDatabaseItems, updateDelegate);
-	}
 }

@@ -67,7 +67,7 @@ namespace starsky.foundation.sync.SyncServices
 				.ForEachAsync(async item =>
 				{
 					var query = new QueryFactory(_setupDatabaseTypes, _query, _memoryCache, _appSettings, _logger).Query();
-					await query.RemoveItemAsync(item);
+					await query!.RemoveItemAsync(item);
 					item.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
 					// only dispose inside parallelism loop
 					await query.DisposeAsync();

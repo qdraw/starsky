@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.storage.Helpers
 				"true}";
 			var fakeStorage = new FakeIStorage();
 			fakeStorage.WriteStream(
-				new PlainTextFileHelper().StringToStream(input), "/test.json");
+				PlainTextFileHelper.StringToStream(input), "/test.json");
 			
 			var itemJsonParser = new DeserializeJson(fakeStorage);
 

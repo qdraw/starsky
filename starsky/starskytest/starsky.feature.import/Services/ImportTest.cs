@@ -509,7 +509,7 @@ namespace starskytest.starsky.feature.import.Services
 			var xmpReadStream = storage.ReadStream(xmpExpectedFilePath);
 
 			var xmpStreamLength = xmpReadStream.Length;
-			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(xmpReadStream);
+			var toStringAsync = await PlainTextFileHelper.StreamToStringAsync(xmpReadStream);
 			
 			Assert.AreEqual(CreateAnXmp.Bytes.Length,xmpStreamLength);
 			Assert.IsTrue(toStringAsync.Contains("<tiff:Make>Apple</tiff:Make>"));
@@ -539,7 +539,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsTrue(storage.ExistFile(expectedFilePath));
 			
 			var stream = storage.ReadStream(expectedFilePath);
-			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(stream);
+			var toStringAsync = await PlainTextFileHelper.StreamToStringAsync(stream);
 
 			Assert.AreEqual(FakeExifTool.XmpInjection,toStringAsync);
 		}

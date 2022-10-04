@@ -44,7 +44,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			var outputLocation = Path.Combine(parentFullFilePath, ManifestName);
 			
 			_storage.FileDelete(outputLocation);
-			_storage.WriteStream(_plainTextFileHelper.StringToStream(output), outputLocation);
+			_storage.WriteStream(PlainTextFileHelper.StringToStream(output), outputLocation);
 		}
 	}
 }

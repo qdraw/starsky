@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace starsky.foundation.sync.WatcherHelpers
@@ -6,6 +7,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 	[Serializable]
     public class EventQueueOverflowException : Exception
     {
+        [SuppressMessage("ReSharper", "RedundantBaseConstructorCall")]
         public EventQueueOverflowException()
             : base() { }
 

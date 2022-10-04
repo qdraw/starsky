@@ -110,7 +110,7 @@ namespace starsky.foundation.writemeta.Services
 		{
 			var checksums = await DownloadCheckSums();
 			if ( checksums == null ) return false;
-			var matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums?.Value);
+			var matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums.Value.Value);
 			return await DownloadForUnix(matchExifToolForUnixName, 
 				GetChecksumsFromTextFile(checksums.Value.Value), !checksums.Value.Key);
 		}
