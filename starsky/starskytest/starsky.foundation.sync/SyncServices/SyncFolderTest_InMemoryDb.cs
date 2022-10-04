@@ -130,10 +130,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test_dir")?.FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk2",
 				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2")?.FilePath);
-
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[0].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[1].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[2].Status);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test.jpg")?.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test_dir")?.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2")?.Status);
 			
 			var data = await _query.GetAllRecursiveAsync("/Folder_InDbButNotOnDisk2");
 			Assert.AreEqual(0, data.Count);
