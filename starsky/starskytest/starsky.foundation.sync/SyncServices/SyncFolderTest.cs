@@ -263,7 +263,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new List<FileIndexItem>
 				{
 					new FileIndexItem("/test.jpg")
-				}, new string[0]);
+				}, Array.Empty<string>());
 
 			Assert.AreEqual(1, results.Count);
 			Assert.AreEqual("/test.jpg", results[0]);
