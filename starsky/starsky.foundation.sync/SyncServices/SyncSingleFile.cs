@@ -73,7 +73,7 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
 				}
-				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath, true);
 			}
 
 			// to avoid reSync
@@ -132,7 +132,7 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					await updateDelegate(new List<FileIndexItem> {dbItem});
 				}
-				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath, true);
 			}
 
 			// to avoid reSync
@@ -233,8 +233,9 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="dbItem">item to update</param>
 		/// <param name="size">byte size</param>
 		/// <param name="subPath">relative path</param>
+		/// <param name="addParentItems">auto add parent items</param>
 		/// <returns>same item</returns>
-		internal async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
+		internal async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath, bool addParentItems)
 		{
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
@@ -243,7 +244,10 @@ namespace starsky.foundation.sync.SyncServices
 			
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
-			await _query.AddParentItemsAsync(subPath);
+			if ( addParentItems )
+			{
+				await _query.AddParentItemsAsync(subPath);
+			}
 			AddDeleteStatus(dbItem);
 			return updateItem;
 		}

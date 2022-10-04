@@ -804,8 +804,8 @@ namespace starsky.foundation.database.Query
 	    /// this class does add those parent folders
 	    /// </summary>
 	    /// <param name="subPath">subPath as input</param>
-	    /// <returns>void</returns>
-	    public async Task AddParentItemsAsync(string subPath)
+	    /// <returns>List</returns>
+	    public async Task<List<FileIndexItem>> AddParentItemsAsync(string subPath)
 	    {
 		    var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
 		    var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
@@ -823,12 +823,14 @@ namespace starsky.foundation.database.Query
 					    IsDirectory = true,
 					    AddToDatabase = DateTime.UtcNow,
 					    ColorClass = ColorClassParser.Color.None,
-					    Software = pathShouldExist == "/" ? "Root object" : string.Empty
+					    Software = pathShouldExist == "/" ? "Root object" : string.Empty,
+					    Status = FileIndexItem.ExifStatus.Ok
 				    });
 			    }
 		    }
 
 		    await AddRangeAsync(toAddList);
+		    return toAddList;
 	    }
 
 	    /// <summary>

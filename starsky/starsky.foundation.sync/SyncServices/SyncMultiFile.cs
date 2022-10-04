@@ -6,9 +6,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices;
@@ -30,7 +28,6 @@ public class SyncMultiFile
 	/// <summary>
 	/// For Checking single items without querying the database
 	/// </summary>
-	/// <param name="subPaths">paths</param>
 	/// <param name="dbItems">current items</param>
 	/// <param name="updateDelegate">push updates realtime to the user and avoid waiting</param>
 	/// <returns>updated item with status</returns>
@@ -60,7 +57,7 @@ public class SyncMultiFile
 			var (isSame, updatedDbItem) = await _syncSingleFile.SizeFileHashIsTheSame(dbItem);
 			if ( !isSame )
 			{
-				updatedDbItems.Add(await _syncSingleFile.UpdateItem(dbItem, updatedDbItem.Size, dbItem.FilePath));
+				updatedDbItems.Add(await _syncSingleFile.UpdateItem(dbItem, updatedDbItem.Size, dbItem.FilePath, false));
 				continue;
 			}
 			
@@ -71,18 +68,42 @@ public class SyncMultiFile
 		}
 
 		if ( updateDelegate == null ) return updatedDbItems;
-		
+
+		updatedDbItems = await AddParentItems(updatedDbItems);
+		await PushToSocket(updatedDbItems, updateDelegate);
+
+		return updatedDbItems;
+	}
+
+	private static async Task PushToSocket(List<FileIndexItem> updatedDbItems,
+		ISynchronize.SocketUpdateDelegate updateDelegate)
+	{
 		var notOkayAndSame = updatedDbItems.Where(p =>
 			p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
 		if ( notOkayAndSame.Any() )
 		{
 			await updateDelegate(notOkayAndSame);
 		}
-
-		return updatedDbItems;
-
 	}
 
+	private async Task<List<FileIndexItem>> AddParentItems(List<FileIndexItem> updatedDbItems)
+	{
+		// give parent folders back
+		var addedParentItems = new List<FileIndexItem>();
+		foreach ( var subPath in updatedDbItems.Select(p => p.ParentDirectory).Distinct())
+		{
+			addedParentItems.AddRange(await _query.AddParentItemsAsync(subPath));
+		}
+		updatedDbItems.AddRange(addedParentItems);
+		return updatedDbItems;
+	}
+
+	/// <summary>
+	/// Sync List of Files
+	/// </summary>
+	/// <param name="subPathInFiles">subPaths style</param>
+	/// <param name="updateDelegate">callback when done</param>
+	/// <returns>items that are changed</returns>
 	internal async Task<List<FileIndexItem>> MultiFile(List<string> subPathInFiles,
 		ISynchronize.SocketUpdateDelegate updateDelegate = null)
 	{
@@ -94,6 +115,7 @@ public class SyncMultiFile
 			var item = databaseItems.FirstOrDefault(p => p.FilePath == path);
 			if (item == null )
 			{
+				// Status is used by MultiFile
 				resultDatabaseItems.Add(new FileIndexItem(path){Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
 				continue;
 			}

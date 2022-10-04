@@ -16,8 +16,20 @@ namespace starskytest.FakeMocks
 		
 		public void LogDebug(string message, params object[] args)
 		{
+			if ( string.IsNullOrWhiteSpace(message) )
+			{
+				return;
+			}
+
+			try
+			{
+				Console.WriteLine(message, args);
+			}
+			catch ( FormatException e )
+			{
+				Console.WriteLine(e);
+			}
 			TrackedDebug.Add((null, message));
-			Console.WriteLine(message, args);
 		}
 
 		public void LogInformation(string message, params object[] args)

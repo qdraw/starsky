@@ -166,6 +166,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 			{
+				new FileIndexItem("/"),
 				new FileIndexItem("/test.jpg")
 				{
 					FileHash = fileHash
@@ -187,6 +188,39 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.IsFalse(isCalled);
 		}
 		
+		
+		[TestMethod]
+		public async Task MultiFile_FileAlreadyExist_WithSameFileHash_ParentDirNotExistSoTrigger()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+			
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				// no parent folder in database
+				new FileIndexItem("/test.jpg")
+				{
+					FileHash = fileHash
+				}
+			});
+			
+			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
+				_iStorageFake, new FakeIWebLogger());
+
+			var isCalled = false;
+			Task TestTask(List<FileIndexItem> _)
+			{
+				isCalled = true;
+				return Task.CompletedTask;
+			}
+			
+			var result = await sync.MultiFile(new List<string>{"/test.jpg"},TestTask);
+
+			Assert.IsTrue(isCalled);
+
+			var items = result.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+			Assert.AreEqual(1, items.Count());
+			Assert.AreEqual("/", items[0].FilePath);
+		}
 		
 		[TestMethod]
 		public async Task MultiFile_FileAlreadyExist_With_Same_ByteSize()
