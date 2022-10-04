@@ -188,9 +188,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/child")?.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
 				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4")?.Status);
-
-			var data = await _query.GetAllRecursiveAsync("/Folder_InDbButNotOnDisk4");
-			Assert.AreEqual(1, data.Count);
 			
 			// Check for database
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4", 
