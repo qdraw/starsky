@@ -118,12 +118,11 @@ public class SyncMultiFile
 	{
 		// give parent folders back
 		var addedParentItems = new List<FileIndexItem>();
-		foreach ( var subPath in updatedDbItems.Select(p => p.ParentDirectory).Distinct())
+		foreach ( var subPath in updatedDbItems
+			         .Select(p => p.ParentDirectory).Distinct()
+			         .Where(p => _subPathStorage.ExistFolder(p)))
 		{
-			if ( _subPathStorage.ExistFolder(subPath) )
-			{
-				addedParentItems.AddRange(await _query.AddParentItemsAsync(subPath));
-			}
+			addedParentItems.AddRange(await _query.AddParentItemsAsync(subPath));
 		}
 		updatedDbItems.AddRange(addedParentItems);
 		return updatedDbItems;

@@ -170,7 +170,7 @@ namespace starsky.foundation.sync.WatcherServices
 			// Specify what is done when a file is changed, created, or deleted.
 		}
 
-		private FileAttributes? GetFileAttributes(string fullPath)
+		private static FileAttributes? GetFileAttributes(string fullPath)
 		{
 			try
 			{

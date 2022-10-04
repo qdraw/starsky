@@ -88,7 +88,16 @@ namespace starsky.foundation.sync.SyncServices
 			
 			return toDeleteList.OrderBy(p => p.FilePath).ToList();
 		}
-
+		
+		public Task<Task<List<FileIndexItem>>> Remove(List<FileIndexItem> databaseItems)
+		{
+			var deleted = databaseItems
+				.Where(p =>
+					p.Status == FileIndexItem.ExifStatus
+						.NotFoundSourceMissing).Select(p => p.FilePath).ToList();
+			return Task.FromResult(Remove(deleted));
+		}
+		
 		private async Task LoopOverSidecarFiles(List<string> subPaths)
 		{
 			var parentDirectories = new HashSet<string>();
@@ -121,15 +130,6 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			Console.WriteLine();
-		}
-
-		public Task<Task<List<FileIndexItem>>> Remove(List<FileIndexItem> databaseItems)
-		{
-			var deleted = databaseItems
-				.Where(p =>
-					p.Status == FileIndexItem.ExifStatus
-						.NotFoundSourceMissing).Select(p => p.FilePath).ToList();
-			return Task.FromResult(Remove(deleted));
 		}
 	}
 }
