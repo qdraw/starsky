@@ -143,7 +143,6 @@ public class SyncFolder
 		var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
 		if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
 
-
 		var resultChunkList = await pathsToUpdateInDatabase.Chunk(20).ToList().ForEachAsync(
 			async chunks =>
 			{
@@ -156,7 +155,7 @@ public class SyncFolder
 				}
 
 				var databaseItems = await new SyncMultiFile(_appSettings, query, _subPathStorage,
-					_logger).MultiFile(subPathInFiles);
+					_logger).MultiFile(subPathInFiles,updateDelegate);
 				
 				await new SyncRemove(_appSettings, _setupDatabaseTypes,
 						query, _memoryCache, _logger)

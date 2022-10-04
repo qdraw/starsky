@@ -163,6 +163,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 
 			// update users who are active right now
+			_logger.LogInformation("[SyncWatcherConnector/Socket] "+ string.Join(", ", filtered.Select(p => p.FilePath).ToArray()));
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(filtered, ApiNotificationType.SyncWatcherConnector);
 			await _connectionsService!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,

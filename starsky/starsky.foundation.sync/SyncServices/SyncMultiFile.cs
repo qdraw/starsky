@@ -67,15 +67,13 @@ public class SyncMultiFile
 			updatedDbItems.Add(updatedDbItem);
 		}
 
-		if ( updateDelegate == null ) return updatedDbItems;
-
 		updatedDbItems = await AddParentItems(updatedDbItems);
-		await PushToSocket(updatedDbItems, updateDelegate);
-
-		return updatedDbItems;
+		
+		if ( updateDelegate == null ) return updatedDbItems;
+		return await PushToSocket(updatedDbItems, updateDelegate);
 	}
 
-	private static async Task PushToSocket(List<FileIndexItem> updatedDbItems,
+	private static async Task<List<FileIndexItem>> PushToSocket(List<FileIndexItem> updatedDbItems,
 		ISynchronize.SocketUpdateDelegate updateDelegate)
 	{
 		var notOkayAndSame = updatedDbItems.Where(p =>
@@ -84,6 +82,7 @@ public class SyncMultiFile
 		{
 			await updateDelegate(notOkayAndSame);
 		}
+		return updatedDbItems;
 	}
 
 	private async Task<List<FileIndexItem>> AddParentItems(List<FileIndexItem> updatedDbItems)
