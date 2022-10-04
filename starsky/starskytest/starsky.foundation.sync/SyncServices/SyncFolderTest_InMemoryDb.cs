@@ -16,6 +16,9 @@ using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
+	/// <summary>
+	/// SyncFolderTest_InMemoryDb.cs
+	/// </summary>
 	[TestClass]
 	public class SyncFolderTestInMemoryDb
 	{
