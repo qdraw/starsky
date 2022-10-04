@@ -49,7 +49,13 @@ namespace starsky.foundation.writemeta.Services
 			_logger = logger;
 		}
 
-		public async Task<bool> DownloadExifTool(bool isWindows)
+		/// <summary>
+		/// Auto Download Exiftool
+		/// </summary>
+		/// <param name="isWindows">download windows version if true</param>
+		/// <param name="minimumSize">check for min file size in bytes (Default = 30 bytes)</param>
+		/// <returns></returns>
+		public async Task<bool> DownloadExifTool(bool isWindows, int minimumSize = 30)
 		{
 			if ( _appSettings.AddSwaggerExport == true && _appSettings.AddSwaggerExportExitAfter == true )
 			{
@@ -58,13 +64,15 @@ namespace starsky.foundation.writemeta.Services
 			}
 			
 			if ( isWindows &&
-			     !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath ()) )
+			     (!_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath ()) ||
+			     _hostFileSystemStorage.Info(ExeExifToolWindowsFullFilePath()).Size <= minimumSize))
 			{
 				return await StartDownloadForWindows();
 			}
 
 			if ( !isWindows &&
-			     !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()))
+			     (!_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath() ) ||
+			      _hostFileSystemStorage.Info(ExeExifToolUnixFullFilePath()).Size <= minimumSize))
 			{
 				return await StartDownloadForUnix();
 			}

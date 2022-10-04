@@ -186,7 +186,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var query = new FakeIQuery();
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
-			var result = await syncFolder.AddParentFolder(folderPath);
+			var result = await syncFolder.AddParentFolder(folderPath, null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
@@ -207,7 +207,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
-			var result = await syncFolder.AddParentFolder(folderPath);
+			var result = await syncFolder.AddParentFolder(folderPath,null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
 			Assert.AreEqual(folderPath, result.FilePath);
@@ -230,10 +230,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
-			var result = await syncFolder.AddParentFolder(folderPath);
+			var result = await syncFolder.AddParentFolder(folderPath, null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-			Assert.AreEqual(folderPath, result.FilePath);
+			Assert.AreEqual(folderPath, result!.FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.Status);
 
 			// should not add content

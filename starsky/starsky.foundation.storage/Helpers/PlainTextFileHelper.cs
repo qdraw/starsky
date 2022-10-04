@@ -23,12 +23,13 @@ namespace starsky.foundation.storage.Helpers
 	    /// Stream to string (UTF8) But Async
 	    /// </summary>
 	    /// <param name="stream">stream</param>
+	    /// <param name="dispose">dispose afterwards = default true</param>
 	    /// <returns>content of the file as string</returns>
-	    public async Task<string> StreamToStringAsync(Stream stream)
+	    public async Task<string> StreamToStringAsync(Stream stream, bool dispose = true)
 	    {
 		    var reader = new StreamReader(stream, Encoding.UTF8);
 		    var result = await reader.ReadToEndAsync();
-		    stream.Dispose();
+		    if ( dispose ) await stream.DisposeAsync();
 		    return result;  
 	    }
 

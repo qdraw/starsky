@@ -1,5 +1,7 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -44,8 +46,9 @@ public class SyncFolder
 		_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, console);
 	}
 
+	[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 	public async Task<List<FileIndexItem>> Folder(string inputSubPath,
-		ISynchronize.SocketUpdateDelegate updateDelegate = null)
+		ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 	{
 		var subPaths = new List<string> {inputSubPath};	
 		subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath));
@@ -65,11 +68,10 @@ public class SyncFolder
 			var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate);
 			allResults.AddRange(indexItems);
 
-			var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems))
-				.Where( p => p != null).ToList();
+			var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems)).Where(p => p != null).ToList();
 			if ( dirItems.Any() )
 			{
-				allResults.AddRange(dirItems);
+				allResults.AddRange(dirItems!);
 			}
 		}
 
@@ -78,8 +80,12 @@ public class SyncFolder
 		folderList = await _duplicate.RemoveDuplicateAsync(folderList);
 
 		await CompareFolderListAndFixMissingFolders(subPaths, folderList);
-				
-		allResults.Add(await AddParentFolder(inputSubPath));
+
+		var parentItems = await AddParentFolder(inputSubPath,allResults);
+		if ( parentItems != null )
+		{
+			allResults.Add(parentItems);
+		}
 		return allResults;
 	}
 	
@@ -99,8 +105,13 @@ public class SyncFolder
 		}
 	}
 	
-	internal async Task<FileIndexItem> AddParentFolder(string subPath)
+	internal async Task<FileIndexItem?> AddParentFolder(string subPath, List<FileIndexItem>? allResults)
 	{
+		if ( allResults != null && allResults.Any(p => p.FilePath == subPath) )
+		{
+			return null;
+		}
+		
 		var item = await _query.GetObjectByFilePathAsync(subPath);
 			
 		// Current item exist
@@ -135,7 +146,7 @@ public class SyncFolder
 	private async Task<List<FileIndexItem>> LoopOverFolder(
 		IReadOnlyCollection<FileIndexItem> fileIndexItems,
 		IReadOnlyCollection<string> pathsOnDisk,
-		ISynchronize.SocketUpdateDelegate updateDelegate)
+		ISynchronize.SocketUpdateDelegate? updateDelegate)
 	{
 		var fileIndexItemsOnlyFiles = fileIndexItems
 			.Where(p => p.IsDirectory == false).ToList();
@@ -197,13 +208,13 @@ public class SyncFolder
 		return new HashSet<string>(pathsToScan).OrderBy(p => p).ToList();
 	}
 	
-	private async Task<List<FileIndexItem>> CheckIfFolderExistOnDisk(List<FileIndexItem> fileIndexItems)
+	private async Task<List<FileIndexItem?>> CheckIfFolderExistOnDisk(List<FileIndexItem> fileIndexItems)
 	{
 		var fileIndexItemsOnlyFolders = fileIndexItems
 			.Where(p => p.IsDirectory == true).ToList();
 			
-		if ( !fileIndexItemsOnlyFolders.Any() ) return new List<FileIndexItem>();
-
+		if ( !fileIndexItemsOnlyFolders.Any() ) return new List<FileIndexItem?>();
+		
 		return (await fileIndexItemsOnlyFolders
 			.ForEachAsync(async item =>
 			{
@@ -213,6 +224,10 @@ public class SyncFolder
 					return null;
 				}
 				var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
+				if ( query == null )
+				{
+					throw new NullReferenceException("SyncFolder query should not be null");
+				}
 				return await RemoveChildItems(query, item);
 			}, _appSettings.MaxDegreesOfParallelism)).ToList();
 	}

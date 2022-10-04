@@ -16,12 +16,14 @@ public class SyncMultiFile
 	private readonly IQuery _query;
 	private readonly IWebLogger _logger;
 	private readonly SyncSingleFile _syncSingleFile;
+	private readonly IStorage _subPathStorage;
 
 	public SyncMultiFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IWebLogger logger)
 	{
 		_query = query;
 		_syncSingleFile =
 			new SyncSingleFile(appSettings, query, subPathStorage, logger);
+		_subPathStorage = subPathStorage;
 		_logger = logger;
 	}
 
@@ -91,7 +93,10 @@ public class SyncMultiFile
 		var addedParentItems = new List<FileIndexItem>();
 		foreach ( var subPath in updatedDbItems.Select(p => p.ParentDirectory).Distinct())
 		{
-			addedParentItems.AddRange(await _query.AddParentItemsAsync(subPath));
+			if ( _subPathStorage.ExistFolder(subPath) )
+			{
+				addedParentItems.AddRange(await _query.AddParentItemsAsync(subPath));
+			}
 		}
 		updatedDbItems.AddRange(addedParentItems);
 		return updatedDbItems;

@@ -271,8 +271,10 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			};
 			Directory.CreateDirectory(appSettings.DependenciesFolder);
 			Directory.CreateDirectory(Path.Combine(appSettings.DependenciesFolder,"exiftool-windows"));
-			
-			var stream = new PlainTextFileHelper().StringToStream("#!/bin/bash");
+
+			var debugString = "\n\necho \"Fake ExifTool\"\n\n\n\necho 'test'";
+			var stream = new PlainTextFileHelper().StringToStream("#!/bin/bash\n"+ debugString+ debugString
+				+debugString+debugString+debugString);
 			await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
 				Path.Combine(appSettings.DependenciesFolder, "exiftool-windows", "exiftool.exe"));
 			
@@ -302,7 +304,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			appSettings.Verbose = true;
 			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
 			var logger = new FakeIWebLogger();
-			var result = await new ExifToolDownload(httpClientHelper,appSettings,logger).DownloadExifTool(false);
+			var result = await new ExifToolDownload(httpClientHelper,appSettings,logger).DownloadExifTool(false,3);
 			
 			Assert.IsTrue(result);
 			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2

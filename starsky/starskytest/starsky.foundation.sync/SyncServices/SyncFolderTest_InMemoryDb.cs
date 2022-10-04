@@ -162,17 +162,23 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
-			var result = await syncFolder.Folder("/Folder_InDbButNotOnDisk4");
+			var result = (await syncFolder.Folder("/Folder_InDbButNotOnDisk4"))
+				.Where(p => p.FilePath != "/").ToList();
 			
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4/test.jpg", 
 				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg").FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4",
 				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4").FilePath);
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[0].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[1].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[2].Status);
-			
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg").Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/test.jpg").Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/child").Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
+				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4").Status);
+
 			var data = await _query.GetAllRecursiveAsync("/Folder_InDbButNotOnDisk4");
 			Assert.AreEqual(1, data.Count);
 			
