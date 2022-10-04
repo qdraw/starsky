@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
@@ -268,7 +267,11 @@ namespace starsky.foundation.database.Query
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;
 		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
-		        Console.WriteLine(context.ChangeTracker.DebugView.LongView);
+		        if ( _appSettings.Verbose == true )
+		        {
+			        // Ef core changes debug
+			        _logger.LogDebug(context.ChangeTracker.DebugView.LongView);
+		        }
 
 		        // object cache path is used to avoid updates
 		        SetGetObjectByFilePathCache(fileIndexItem.FilePath, updateStatusContent, TimeSpan.FromMinutes(1));

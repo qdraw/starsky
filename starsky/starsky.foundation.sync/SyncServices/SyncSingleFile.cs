@@ -110,7 +110,6 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 
-			// temp disable caching  TimeSpan.FromSeconds(1)
 			var dbItem =  await _query.GetObjectByFilePathAsync(subPath);
 						
 			// // // when item does not exist in Database

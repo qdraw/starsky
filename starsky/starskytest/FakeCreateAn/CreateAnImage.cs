@@ -30,7 +30,7 @@ namespace starskytest.FakeCreateAn
 		/// The FullFile Path of the Directory of the Assemblies
 		/// </summary>
 		public readonly string BasePath =
-			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location).Replace("./",string.Empty) + Path.DirectorySeparatorChar;
 
 		/// <summary>
 		/// @see: https://superuser.com/a/1467266 and 80 chars

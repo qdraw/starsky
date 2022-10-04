@@ -14,6 +14,7 @@ using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherInterfaces;
 using starsky.foundation.sync.WatcherServices;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.WatcherServices
@@ -22,6 +23,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 	public class DiskWatcherTest
 	{
 		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly CreateAnImage _createAnImage;
 
 		public DiskWatcherTest()
 		{
@@ -36,6 +38,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			var serviceProvider = services.BuildServiceProvider();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_createAnImage = new CreateAnImage();
+
 		}
 		
 		[TestMethod]
@@ -106,22 +110,25 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		public void Watcher_Renamed()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+
 			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Watcher("/test");
 
 			using var scope = _scopeFactory.CreateScope();
 			// ISynchronize is a scoped service
 			var synchronize = scope.ServiceProvider.GetRequiredService<ISynchronize>() as FakeISynchronize;
 			if ( synchronize == null )
+			{
 				throw new NullReferenceException("FakeISynchronize should not be null ");
+			}
 
 			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
 
-			
 			fakeIFileSystemWatcher.TriggerOnRename(new RenamedEventArgs(WatcherChangeTypes.Renamed, 
-				"/","test","test"));
+				"/",_createAnImage.FileName,"test"));
 			
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("/test"));
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains(_createAnImage.FileName));
 			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("OnRenamed to"));
+			
 		}
 
 		[TestMethod]
@@ -241,6 +248,27 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 		
 		[TestMethod]
+		public void OnRenamed_Should_Not_HitQueueProcessor_FromTmp2()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+
+			// /folder/tmp.{guid}.test.jpg OnRenamed to: /folder/20211222_112808_DSC00998.jpg
+			var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, 
+				_createAnImage.BasePath, _createAnImage.FileName, Path.DirectorySeparatorChar + "tmp.{guid}.test.jpg" );
+
+			var processor = new FakeIQueueProcessor();
+			// ReSharper disable once ExpressionIsAlwaysNull
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
+			
+			Assert.AreEqual(1, processor.Data.Count);
+			Assert.AreEqual(_createAnImage.FullFilePath, processor.Data[0].Item1);
+			Assert.AreEqual(null, processor.Data[0].Item2);
+		}
+		
+		[TestMethod]
 		public void OnRenamed_Should_Not_HitQueueProcessor_ToTmp()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
@@ -257,9 +285,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			// ReSharper disable once ExpressionIsAlwaysNull
 			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
 			
-			Assert.AreEqual(1, processor.Data.Count);
-			Assert.AreEqual($"t{Path.DirectorySeparatorChar}test2.jpg", processor.Data[0].Item1);
-			Assert.AreEqual(null, processor.Data[0].Item2);
+			Assert.AreEqual(0, processor.Data.Count);
 		}
 	}
 }

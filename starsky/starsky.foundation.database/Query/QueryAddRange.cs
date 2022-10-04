@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 
@@ -37,7 +35,11 @@ namespace starsky.foundation.database.Query
 				}
 				catch ( DbUpdateConcurrencyException e)
 				{
-					_logger?.LogInformation(_context.ChangeTracker.DebugView.LongView);
+					if ( _appSettings.Verbose == true )
+					{
+						_context.ChangeTracker.DetectChanges();
+						_logger?.LogDebug(_context.ChangeTracker.DebugView.LongView);
+					}
 					_logger?.LogError(e, "[AddRangeAsync] save failed after DbUpdateConcurrencyException");
 				}
 			}
