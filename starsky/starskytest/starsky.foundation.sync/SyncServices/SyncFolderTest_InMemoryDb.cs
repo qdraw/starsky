@@ -190,10 +190,20 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
 				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4")?.Status);
 
+			// for debugging pipelines
+			Console.WriteLine("--result---");
+			foreach ( var item in result )
+			{
+				Console.WriteLine("$~ " + item.FilePath + "~ " +item.Status);
+			}
+			
 			var data = await _query.GetAllRecursiveAsync("/Folder_InDbButNotOnDisk4");
+			
+			// for debugging pipelines
+			Console.WriteLine("--GetAllRecursiveAsync---");
 			foreach ( var item in data )
 			{
-				Console.WriteLine(">~ " + item.FilePath + "~ " );
+				Console.WriteLine(">~ " + item.FilePath + "~ " +item.Status);
 			}
 			
 			// Check for database

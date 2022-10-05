@@ -161,7 +161,7 @@ public class SyncFolder
 				
 				var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
 				var databaseItems = await new SyncMultiFile(_appSettings, query, _subPathStorage,
-					_logger).MultiFile(subPathInFiles,updateDelegate);
+					_logger).MultiFile(subPathInFiles, updateDelegate);
 				
 				await new SyncRemove(_appSettings, _setupDatabaseTypes,
 						query, _memoryCache, _logger)
