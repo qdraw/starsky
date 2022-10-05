@@ -90,7 +90,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// Default on so testing off
 			var args = new List<string> {"-i","false"}.ToArray();
-			Assert.IsFalse(new ArgsHelper(_appSettings).GetIndexMode(args));
+			Assert.IsFalse(ArgsHelper.GetIndexMode(args));
 		}
         
         

@@ -402,15 +402,17 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">args input</param>
 		/// <returns>bool, true if --index</returns>
-		public bool GetIndexMode(IReadOnlyList<string> args)
+		public static bool GetIndexMode(IReadOnlyList<string> args)
 		{
 			var isIndexMode = true;
 			
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--index" || args[arg].ToLower() == "-i") && (arg + 1) != args.Count)
+				if ((args[arg].ToLower() == "--index" || args[arg].ToLower() == "-i") 
+				    && (arg + 1) != args.Count 
+				    && bool.TryParse(args[arg + 1], out var isIndexMode2))
 				{
-					bool.TryParse(args[arg + 1], out isIndexMode);
+					isIndexMode = isIndexMode2;
 				}
 			}
 		
@@ -575,21 +577,23 @@ namespace starsky.foundation.platform.Helpers
 		public int? GetRelativeValue(IReadOnlyList<string> args)
 		{
 			if (_appSettings == null) throw new FieldAccessException("use with _appSettings");
-			string subpathRelative = string.Empty;
+			var subPathRelative = string.Empty;
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--subpathrelative" || 
-					args[arg].ToLower() == "-g") && (arg + 1) != args.Count)
+				if ((args[arg].ToLowerInvariant() == "--subpathrelative" || 
+					args[arg].ToLowerInvariant() == "-g") && (arg + 1) != args.Count)
 				{
-					subpathRelative = args[arg + 1];
+					subPathRelative = args[arg + 1];
 				}
 			}
 			
-			if (string.IsNullOrWhiteSpace(subpathRelative)) return null; // null
-			
-			int.TryParse(subpathRelative, out var subPathInt);
-			if(subPathInt >= 1) subPathInt = subPathInt * -1; //always in the past
+			if (string.IsNullOrWhiteSpace(subPathRelative)) return null; // null
+
+			if ( int.TryParse(subPathRelative, out var subPathInt) )
+			{
+				if(subPathInt >= 1) subPathInt *= -1; //always in the past
+			}
 			
 			// Fallback for dates older than 24-11-1854 to avoid a exception.
 			if ( subPathInt < -60000 ) return null;
@@ -642,9 +646,10 @@ namespace starsky.foundation.platform.Helpers
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--thumbnail" || args[arg].ToLower() == "-t") && (arg + 1) != args.Count)
+				if ((args[arg].ToLower() == "--thumbnail" || args[arg].ToLower() == "-t") 
+				    && (arg + 1) != args.Count && bool.TryParse(args[arg + 1], out var isThumbnail2))
 				{
-					bool.TryParse(args[arg + 1], out isThumbnail);
+					isThumbnail = isThumbnail2;
 				}
 			}
 			
@@ -663,9 +668,10 @@ namespace starsky.foundation.platform.Helpers
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--orphanfolder" || args[arg].ToLower() == "-o") && (arg + 1) != args.Count)
+				if ((args[arg].ToLower() == "--orphanfolder" || args[arg].ToLower() == "-o") 
+				    && (arg + 1) != args.Count && bool.TryParse(args[arg + 1], out var isOrphanFolderCheck2))
 				{
-					bool.TryParse(args[arg + 1], out isOrphanFolderCheck);
+					isOrphanFolderCheck = isOrphanFolderCheck2;
 				}
 			}
 			

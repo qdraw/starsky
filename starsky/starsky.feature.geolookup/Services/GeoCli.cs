@@ -115,7 +115,7 @@ namespace starsky.feature.geolookup.Services
 			var fileIndexList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
     
 			var toMetaFilesUpdate = new List<FileIndexItem>();
-			if ( new ArgsHelper().GetIndexMode(args) )
+			if ( ArgsHelper.GetIndexMode(args) )
 			{
 				_console.WriteLine($"CameraTimeZone: {_appSettings.CameraTimeZone}");
 				_console.WriteLine($"Folder: {inputPath}");

@@ -48,7 +48,7 @@ namespace starsky.foundation.sync.Helpers
 					.ParseSubfolders(getSubPathRelative);
 			}
 
-			if (new ArgsHelper().GetIndexMode(args))
+			if (ArgsHelper.GetIndexMode(args))
 			{
 				var stopWatch = Stopwatch.StartNew();
 				_console.WriteLine($"Start indexing {subPath}");
