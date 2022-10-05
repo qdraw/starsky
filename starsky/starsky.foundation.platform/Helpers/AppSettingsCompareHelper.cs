@@ -145,8 +145,14 @@ namespace starsky.foundation.platform.Helpers
         private static void CompareBool(string propertyName, AppSettings sourceIndexItem, bool? oldBoolValue, 
 		    bool? newBoolValue, List<string> differenceList)
         {
-	        if ( newBoolValue == null ) return;
-            if (oldBoolValue == newBoolValue) return;
+	        if ( newBoolValue == null )
+	        {
+		        return;
+	        }
+	        if ( oldBoolValue == newBoolValue )
+	        {
+		        return;
+	        }
             sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newBoolValue, null);
             differenceList.Add(propertyName.ToLowerInvariant());
         }
@@ -166,10 +172,16 @@ namespace starsky.foundation.platform.Helpers
 	        var newAppSettings = new AppSettings();
 
 	        var defaultValue = GetPropertyValue(newAppSettings, propertyName) as string;
-	        if ( newStringValue == defaultValue ) return;
-	        
-            if (oldStringValue == newStringValue ||
-                (string.IsNullOrEmpty(newStringValue) )) return;
+	        if ( newStringValue == defaultValue )
+	        {
+		        return;
+	        }
+
+	        if ( oldStringValue == newStringValue ||
+	             ( string.IsNullOrEmpty(newStringValue) ) )
+	        {
+		        return;
+	        }
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
             

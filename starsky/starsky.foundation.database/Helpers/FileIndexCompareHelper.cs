@@ -382,13 +382,18 @@ namespace starsky.foundation.database.Helpers
 	        // ignore capitals
             if (string.IsNullOrEmpty(newStringValue) || 
                 string.Equals(oldStringValue, newStringValue, StringComparison.InvariantCultureIgnoreCase)) return;
-            
-            if (propertyName == nameof(FileIndexItem.FileName) || 
-                propertyName == nameof(FileIndexItem.FilePath) ) return;
+
+            if ( propertyName is nameof(FileIndexItem.FileName) or nameof(FileIndexItem.FilePath) )
+            {
+	            return;
+            }
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
-                        
-	        if(propertyObject == null || !propertyObject.CanWrite) return;
+
+            if ( propertyObject == null || !propertyObject.CanWrite )
+            {
+	            return;
+            }
 	        
             if (!append)
             {

@@ -199,7 +199,9 @@ namespace starsky.foundation.database.Query
         public RelativeObjects GetNextPrevInFolder(string currentFolder)
         {
 	        if ( currentFolder != "/" )
+	        {
 		        PathHelper.RemoveLatestSlash(currentFolder);
+	        }
 
             // We use breadcrumbs to get the parent folder
             var parentFolderPath = FilenamesHelper.GetParentPath(currentFolder);

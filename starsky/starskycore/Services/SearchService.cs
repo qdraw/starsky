@@ -55,16 +55,21 @@ namespace starskycore.Services
 		    
 		    if ( query == "!delete!" ) enableCache = false;
 
-            if(!enableCache || 
-               _cache == null || _appSettings?.AddMemoryCache == false) 
-                return SkipSearchItems(SearchDirect(query),pageNumber);
+		    if ( !enableCache ||
+		         _cache == null || _appSettings?.AddMemoryCache == false )
+		    {
+			    return SkipSearchItems(SearchDirect(query),pageNumber);
+		    }
 
             // Return values from IMemoryCache
             var querySearchCacheName = "search-" + query;
             
             // Return Cached object if it exist
-            if (_cache.TryGetValue(querySearchCacheName, out var objectSearchModel))
-                return SkipSearchItems(objectSearchModel, pageNumber);
+            if ( _cache.TryGetValue(querySearchCacheName,
+	                out var objectSearchModel) )
+            {
+	            return SkipSearchItems(objectSearchModel, pageNumber);
+            }
             
             // Try to catch a new object
             objectSearchModel = SearchDirect(query);
@@ -307,7 +312,10 @@ namespace starskycore.Services
         public SearchViewModel MatchSearch(SearchViewModel model)
         {
 	        // return nulls to avoid errors
-			if ( string.IsNullOrWhiteSpace(model.SearchQuery) ) return model;
+	        if ( string.IsNullOrWhiteSpace(model.SearchQuery) )
+	        {
+		        return model;
+	        }
 
 	        _defaultQuery = model.SearchQuery;
 
