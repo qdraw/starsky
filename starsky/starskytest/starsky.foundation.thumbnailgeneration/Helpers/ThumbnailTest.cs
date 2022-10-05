@@ -197,9 +197,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string> {"test"}, 
 				new List<byte[]> {new byte[0]});
 
-			await new Thumbnail(storage, 
-				storage, new FakeIWebLogger()).
-				SaveThumbnailImageFormat(null,ExtensionRolesHelper.ImageFormat.bmp, null);
+			await  Thumbnail.SaveThumbnailImageFormat(null,
+				ExtensionRolesHelper.ImageFormat.bmp, null);
 			// ArgumentNullException
 		}
 		
