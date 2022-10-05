@@ -15,7 +15,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	{
 
 		[TestMethod]
-		[ExpectedException(typeof(System.ArgumentException))]
+		[ExpectedException(typeof(ArgumentException))]
 		public async Task ExifTool_NotFound_Exception()
 		{
 			var appSettings = new AppSettings
@@ -32,7 +32,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		}
 		
 		[TestMethod]
-		[ExpectedException(typeof(System.ArgumentException))]
+		[ExpectedException(typeof(ArgumentException))]
 		public async Task ExifTool_WriteTagsThumbnailAsync_NotFound_Exception()
 		{
 			var appSettings = new AppSettings
@@ -83,5 +83,34 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			Assert.AreEqual(0,result.Length);
 		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void StreamToStreamRunner_ArgumentNullException()
+		{
+			var _ = new StreamToStreamRunner(new AppSettings(), null,
+				new FakeIWebLogger());
+		}
+
+		[TestMethod]
+		public async Task RunProcessAsync_RunChildObject_UnixOnly()
+		{
+			// Unix only
+			var appSettings = new AppSettings
+			{
+				Verbose = true, 
+				ExifToolPath = "/bin/ls"
+			};
+			if ( appSettings.IsWindows && File.Exists("/bin/ls") )
+			{
+				Assert.Inconclusive("This test if for Unix Only");
+				return;
+			}
+			var runner = new StreamToStreamRunner(appSettings,
+				new MemoryStream(Array.Empty<byte>()), new FakeIWebLogger());
+			var result = await runner.RunProcessAsync(string.Empty);
+			Assert.AreEqual(0, result.Length);
+		}
+
 	}
 }
