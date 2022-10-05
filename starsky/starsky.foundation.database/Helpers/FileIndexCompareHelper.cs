@@ -139,7 +139,7 @@ namespace starsky.foundation.database.Helpers
 			    string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
 		    
 		    var fieldType = fieldContent.GetType();
-		    var fileIndexType = property.PropertyType;
+		    var fileIndexType = property?.PropertyType;
 		    if ( fileIndexType == fieldType )
 		    {
 			    property.SetValue(sourceIndexItem, fieldContent, null);
@@ -159,7 +159,7 @@ namespace starsky.foundation.database.Helpers
 			    PropertyInfo[] propertiesA = new FileIndexItem().GetType()
 				    .GetProperties(BindingFlags.Public | BindingFlags.Instance);
 			    return propertiesA.FirstOrDefault(p => 
-				    string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase))
+				    string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase))?
 				    .GetValue(sourceIndexItem, null);
 		    }
 		    return null;
