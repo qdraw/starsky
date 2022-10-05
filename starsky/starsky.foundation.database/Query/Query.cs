@@ -49,7 +49,10 @@ namespace starsky.foundation.database.Query
 		/// <returns>FileIndex-objects with database data</returns>
         public FileIndexItem GetObjectByFilePath(string filePath)
 		{
-			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
+			if ( filePath != "/" )
+			{
+				filePath = PathHelper.RemoveLatestSlash(filePath);
+			}
 			
             FileIndexItem LocalQuery(ApplicationDbContext context)
             {
