@@ -101,7 +101,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				Verbose = true, 
 				ExifToolPath = "/bin/ls"
 			};
-			if ( appSettings.IsWindows && File.Exists("/bin/ls") )
+			if ( appSettings.IsWindows || !File.Exists("/bin/ls") )
 			{
 				Assert.Inconclusive("This test if for Unix Only");
 				return;
