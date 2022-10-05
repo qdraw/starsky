@@ -180,7 +180,7 @@ namespace starsky.foundation.database.Models
 
 	        // For the situation that the image has no exif date and there is an appendix
 	        // used in the source filename AND the config
-	        if ( fileName.Length >= structuredFileName.Length )
+	        if ( !string.IsNullOrEmpty(fileName) &&  fileName.Length >= structuredFileName.Length )
 	        {
 		        structuredFileName = RemoveEscapedCharacters(structuredFileName);
 		        

@@ -49,7 +49,7 @@ namespace starsky.foundation.readmeta.Helpers
 	    public static double ConvertDegreeMinutesToDouble(string point, string refGps)
 	    {
 		    // "5,55.840E"
-		    var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west
+		    var multiplier = (refGps.Contains('S') || refGps.Contains('W')) ? -1 : 1; // handle south and west
 
 		    point = point.Replace(",", " ");
 		    point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant); //remove the characters
