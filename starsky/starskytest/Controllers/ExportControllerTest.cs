@@ -174,10 +174,10 @@ namespace starskytest.Controllers
 			var actionResult = controller.CreateZip(_createAnImage.DbPath,
 				true,false) as JsonResult;
 			
-			Assert.AreNotEqual(actionResult, null);
-			var zipHash = actionResult.Value as string;
+			Assert.AreNotEqual(null,actionResult);
+			var zipHash = actionResult!.Value as string;
 
-			Assert.AreEqual(true,zipHash.Contains("SR"));
+			Assert.AreEqual(true,zipHash!.Contains("SR"));
 
 			await Task.Delay(150);
 

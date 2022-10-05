@@ -45,7 +45,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
 			}
 			
-			Assert.AreEqual(directories.Count(),0);
+			Assert.AreEqual(0,directories.Count());
 		}
 		
 		[TestMethod]
@@ -88,8 +88,8 @@ namespace starskytest.starsky.foundation.storage.Storage
 				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
 			}
 			
-			Assert.AreEqual(directories.Item1.Length,0);
-			Assert.AreEqual(directories.Item2.Length,0);
+			Assert.AreEqual(0,directories.Item1.Length);
+			Assert.AreEqual(0,directories.Item2.Length);
 		}
 
 	}
