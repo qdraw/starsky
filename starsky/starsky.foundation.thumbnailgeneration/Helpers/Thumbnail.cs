@@ -303,7 +303,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		internal Task SaveThumbnailImageFormat(Image image,
+		internal static Task SaveThumbnailImageFormat(Image image,
 			ExtensionRolesHelper.ImageFormat imageFormat,
 			MemoryStream outputStream)
 		{

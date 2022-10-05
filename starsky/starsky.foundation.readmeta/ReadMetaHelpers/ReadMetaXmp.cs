@@ -208,7 +208,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <param name="xmp"></param>
 	    /// <param name="item"></param>
 	    /// <returns></returns>
-	    private FileIndexItem GetDataContentNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
+	    private static FileIndexItem GetDataContentNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
 	    {
      
             GpsAltitudeRef(xmp, item);
