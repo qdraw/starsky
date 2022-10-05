@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -129,7 +130,8 @@ namespace starsky.foundation.sync.SyncServices
 			operationHolder.SetData(_scopeFactory, updatedList);
 		}
 		
-		internal static List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
+		[SuppressMessage("Performance", "CA1822:Mark members as static")]
+		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
 		{
 			return syncData.Where(p => (
 				p.Status == FileIndexItem.ExifStatus.Ok ||

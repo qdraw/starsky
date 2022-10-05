@@ -181,7 +181,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void GetIndexFilePathFromSearch_Notfound()
 		{
-			var result = new SearchController(_search).GetIndexFilePathFromSearch(new SearchViewModel(),"test");
+			var result = SearchController.GetIndexFilePathFromSearch(new SearchViewModel(),"test");
 			Assert.AreEqual(-1, result);
 		}
         
