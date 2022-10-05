@@ -41,7 +41,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return databaseItem;
         }
         
-        public FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem databaseItem = null)
+        public static FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem databaseItem = null)
         {
             // Does not require appSettings
             
