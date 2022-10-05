@@ -15,7 +15,7 @@ namespace starskycore.Helpers
 		public static byte[] TryParse(string inputString)
 		{
 			if ( inputString?.Length % 4 != 0 || !Base64Regex.IsMatch(inputString) )
-				return new byte[0];
+				return Array.Empty<byte>();
 			return Convert.FromBase64String(inputString);
 		}
 

@@ -92,7 +92,7 @@ namespace starsky.foundation.storage.Storage
 			catch ( UnauthorizedAccessException e )
 			{
 				_logger?.LogError(e, "[GetAllFilesInDirectory] catch-ed UnauthorizedAccessException");
-				return new string[]{};
+				return Array.Empty<string>();
 			}
 
 			var imageFilesList = new List<string>();

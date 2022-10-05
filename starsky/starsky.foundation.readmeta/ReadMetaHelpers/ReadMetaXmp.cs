@@ -88,7 +88,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// <param name="property">IXmpPropertyInfo read from string</param>
         /// <param name="xmpName">xmpName, for example dc:subject[1]</param>
         /// <returns>value or null</returns>
-        private string GetContentNameSpace(IXmpPropertyInfo property, string xmpName)
+        private static string GetContentNameSpace(IXmpPropertyInfo property, string xmpName)
         {
             if (property.Path == xmpName && !string.IsNullOrEmpty(property.Value) 
                                          && !string.IsNullOrEmpty(property.Namespace) )
@@ -99,7 +99,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return null;
         }
 
-        private double GpsPreParseAndConvertDegreeAngleToDouble(string gpsLatOrLong)
+        private static double GpsPreParseAndConvertDegreeAngleToDouble(string gpsLatOrLong)
         {
             // get ref North, South, East West
             var refGps = gpsLatOrLong.Substring(gpsLatOrLong.Length-1, 1);
@@ -189,7 +189,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                 }
             }
             if(gpsAltitude == null || gpsAltitudeRef == null) return;
-            if(!gpsAltitude.Contains("/")) return;
+            if(!gpsAltitude.Contains('/')) return;
 
 			var locationAltitude = MathFraction.Fraction(gpsAltitude);
 	        if(Math.Abs(locationAltitude) < 0) return;

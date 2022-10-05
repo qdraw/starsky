@@ -492,7 +492,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
 				_iStorageFake, new FakeIWebLogger());
 
-			var result = sync.AddDeleteStatus(null);
+			var result = SyncSingleFile.AddDeleteStatus(null);
 			Assert.IsNull(result);
 		}
 		
@@ -504,7 +504,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
 				_iStorageFake, new FakeIWebLogger());
 
-			var result = sync.AddDeleteStatus(item);
+			var result = SyncSingleFile.AddDeleteStatus(item);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result.Status);
 		}
 		
@@ -516,7 +516,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
 				_iStorageFake, new FakeIWebLogger());
 
-			var result = sync.AddDeleteStatus(item);
+			var result = SyncSingleFile.AddDeleteStatus(item);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
 		}
 

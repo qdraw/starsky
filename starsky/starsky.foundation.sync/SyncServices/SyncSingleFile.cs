@@ -163,7 +163,7 @@ namespace starsky.foundation.sync.SyncServices
 			return new Tuple<bool, FileIndexItem>(fileHashTheSame,dbItem);
 		}
 
-		internal FileIndexItem AddDeleteStatus(FileIndexItem dbItem, 
+		internal static FileIndexItem AddDeleteStatus(FileIndexItem dbItem, 
 			FileIndexItem.ExifStatus exifStatus = FileIndexItem.ExifStatus.Deleted)
 		{
 			if ( dbItem == null ) return null;

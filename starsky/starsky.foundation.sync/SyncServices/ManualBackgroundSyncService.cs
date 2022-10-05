@@ -129,7 +129,7 @@ namespace starsky.foundation.sync.SyncServices
 			operationHolder.SetData(_scopeFactory, updatedList);
 		}
 		
-		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
+		internal static List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
 		{
 			return syncData.Where(p => (
 				p.Status == FileIndexItem.ExifStatus.Ok ||

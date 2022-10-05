@@ -183,7 +183,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			return syncData;
 		}
 
-		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
+		internal static List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
 		{
 			// also remove duplicates from output list
 			return syncData.GroupBy(x => x.FilePath).

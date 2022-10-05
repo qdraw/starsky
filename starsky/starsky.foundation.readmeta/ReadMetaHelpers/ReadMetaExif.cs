@@ -373,12 +373,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			    return string.Empty;
 		    
 		    var tagsList = new HashSet<string>();
-		    foreach (var property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value)))
+		    foreach (var property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value) 
+			             && p.Path.StartsWith("dc:subject[")))
 		    {
-			    if ( property.Path.StartsWith("dc:subject[") )
-			    {
-				    tagsList.Add(property.Value);
-			    }
+			    tagsList.Add(property.Value);
 		    }
 		    return HashSetHelper.HashSetToString(tagsList);
 	    }
@@ -645,9 +643,9 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             var altitudeString = string.Empty;
             var altitudeRef = string.Empty;
             
-            foreach (var exifItem in allExifItems)
+            foreach (var exifItemTags in allExifItems.Select(p => p.Tags))
             {
-                var longitudeRefLocal = exifItem.Tags.FirstOrDefault(
+                var longitudeRefLocal = exifItemTags.FirstOrDefault(
                     p => p.DirectoryName == "GPS" 
                          && p.Name == "GPS Altitude Ref")?.Description;
                 
@@ -656,7 +654,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                     altitudeRef = longitudeRefLocal;
                 }
                 
-                var altitudeLocal = exifItem.Tags.FirstOrDefault(
+                var altitudeLocal = exifItemTags.FirstOrDefault(
                     p => p.DirectoryName == "GPS" 
                          && p.Name == "GPS Altitude")?.Description;
 
@@ -729,9 +727,9 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             var longitudeString = string.Empty;
             var longitudeRef = string.Empty;
             
-            foreach (var exifItem in allExifItems)
+            foreach (var exifItemTags in allExifItems.Select(p => p.Tags))
             {
-                var longitudeRefLocal = exifItem.Tags.FirstOrDefault(
+                var longitudeRefLocal = exifItemTags.FirstOrDefault(
                     p => p.DirectoryName == "GPS" 
                          && p.Name == "GPS Longitude Ref")?.Description;
                 
@@ -740,7 +738,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                     longitudeRef = longitudeRefLocal;
                 }
                 
-                var longitudeLocal = exifItem.Tags.FirstOrDefault(
+                var longitudeLocal = exifItemTags.FirstOrDefault(
                     p => p.DirectoryName == "GPS" 
                          && p.Name == "GPS Longitude")?.Description;
 
@@ -750,7 +748,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                     continue;
                 }
 
-                var locationQuickTime = exifItem.Tags.FirstOrDefault(
+                var locationQuickTime = exifItemTags.FirstOrDefault(
 	                p => p.DirectoryName == "QuickTime Metadata Header" 
 	                     && p.Name == "GPS Location")?.Description;
                 if ( locationQuickTime != null)
@@ -824,8 +822,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			                             && p.Name.Contains(typeName) && p.Description != "0")
 			        ?.Description;
 		        widthTag = widthTag?.Replace(" pixels", string.Empty);
-		        int.TryParse(widthTag, out var widthInt);
-		        return widthInt >= 1 ? widthInt : 0; // (widthInt >= 1) return widthInt)
+		        if ( int.TryParse(widthTag, out var widthInt) )
+		        {
+			        return widthInt >= 1 ? widthInt : 0; // (widthInt >= 1) return widthInt)
+		        }
 	        }
 	        return 0;
         }

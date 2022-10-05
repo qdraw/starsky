@@ -19,7 +19,7 @@ namespace starsky.foundation.readmeta.Helpers
 		    //Example: 17.21.18S
 		    // DD°MM’SS.s” usage
             
-		    var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west
+		    var multiplier = (refGps.Contains('S') || refGps.Contains('W') ) ? -1 : 1; //handle south and west
 
 		    point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant); //remove the characters
 

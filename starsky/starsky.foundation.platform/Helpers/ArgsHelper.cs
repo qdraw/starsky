@@ -692,9 +692,9 @@ namespace starsky.foundation.platform.Helpers
 			{
 				if ((args[arg].ToLower() == "--move" 
 					|| args[arg].ToLower() == "-m") 
-					&& (arg + 1) != args.Count)
+					&& (arg + 1) != args.Count && bool.TryParse(args[arg + 1], out var getMove2))
 				{
-					bool.TryParse(args[arg + 1], out getMove);
+					getMove = getMove2;
 				}
 				
 				if ((args[arg].ToLower() == "--move" || args[arg].ToLower() == "-m"))
@@ -754,7 +754,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns>bool</returns>
-		public bool NeedCleanup(IReadOnlyList<string> args)
+		public static bool NeedCleanup(IReadOnlyList<string> args)
 		{
 			// -x --clean
 			bool needCacheCleanup = false;

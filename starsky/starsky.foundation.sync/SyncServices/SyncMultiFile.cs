@@ -92,7 +92,7 @@ namespace starsky.foundation.sync.SyncServices
 				}
 			
 				updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-				_syncSingleFile.AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
+				SyncSingleFile.AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
 			
 				updatedDbItems.Add(updatedDbItem);
 			}

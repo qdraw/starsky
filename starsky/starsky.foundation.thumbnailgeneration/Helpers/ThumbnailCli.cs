@@ -75,7 +75,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				_console.WriteLine("Thumbnail Done!");
 			}
             
-			if ( new ArgsHelper(_appSettings).NeedCleanup(args) )
+			if ( ArgsHelper.NeedCleanup(args) )
 			{
 				_console.WriteLine(">>>>> Heavy CPU Feature => NeedCacheCleanup <<<<< ");
 				await _thumbnailCleaner.CleanAllUnusedFilesAsync();
