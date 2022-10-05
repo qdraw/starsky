@@ -154,7 +154,7 @@ public class SyncFolder
 		var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
 		if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
 
-		var resultChunkList = await pathsToUpdateInDatabase.Chunk(20).ForEachAsync(
+		var resultChunkList = await pathsToUpdateInDatabase.Chunk(200).ForEachAsync(
 			async chunks =>
 			{
 				var subPathInFiles = chunks.ToList();
