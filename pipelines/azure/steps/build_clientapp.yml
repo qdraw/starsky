@@ -10,10 +10,10 @@ steps:
     inputs:
       targetType: "inline"
       script: |
-        dotnet tool restore --tool-manifest starsky/.config/dotnet-tools.json --no-logo
+        dotnet tool restore --tool-manifest starsky/.config/dotnet-tools.json
         if ($LASTEXITCODE -ne 0) {
           write-host "retry:"
-          dotnet tool restore --tool-manifest starsky/.config/dotnet-tools.json --no-logo
+          dotnet tool restore --tool-manifest starsky/.config/dotnet-tools.json
           exit 0
         }
 
