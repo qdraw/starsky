@@ -106,7 +106,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return GeoParser.ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
         }
                 
-        private FileIndexItem GetDataNullNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
+        private static FileIndexItem GetDataNullNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
         {
 	        
             foreach (var property in xmp.Properties)
@@ -168,7 +168,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return item;
         }
 
-        private void GpsAltitudeRef(IXmpMeta xmp, FileIndexItem item)
+        private static void GpsAltitudeRef(IXmpMeta xmp, FileIndexItem item)
         {
             string gpsAltitude = null;
             string gpsAltitudeRef = null;

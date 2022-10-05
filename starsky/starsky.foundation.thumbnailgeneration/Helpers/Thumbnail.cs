@@ -308,7 +308,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			MemoryStream outputStream)
 		{
 			if ( outputStream == null )
+			{
 				throw new ArgumentNullException(nameof(outputStream));
+			}
 
 			return SaveThumbnailImageFormatInternal(image, imageFormat, outputStream);
 		}

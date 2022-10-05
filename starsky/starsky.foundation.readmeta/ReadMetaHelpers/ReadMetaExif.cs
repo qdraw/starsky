@@ -93,7 +93,9 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        // Update imageFormat based on Exif data
 	        var imageFormat = GetFileSpecificTags(allExifItems);
 	        if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown )
+	        {
 		        item.ImageFormat = imageFormat;
+	        }
             
             foreach (var exifItem in allExifItems)
             {
@@ -345,7 +347,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 	    private void DisplayAllExif(List<Directory> allExifItems)
         {
-	        if(_appSettings == null || !_appSettings.IsVerbose()) return;
+	        if ( _appSettings == null || !_appSettings.IsVerbose() )
+	        {
+		        return;
+	        }
 	        
             foreach (var exifItem in allExifItems) {
                 foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
@@ -800,7 +805,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                 
                 for (var i = 0; i < maxCount; i++)
                 {
-	                if(i >= allExifItems.Count) continue;
+	                if ( i >= allExifItems.Count )
+	                {
+		                continue;
+	                }
                     var exifItem = allExifItems[i];
                     var value = GetImageSizeInsideLoop(exifItem, dirName, typeName);
                     if ( value != 0 ) return value;

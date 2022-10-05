@@ -118,7 +118,7 @@ namespace starsky.foundation.storage.Services
 		/// <param name="currentChildFolderBuilder">the current folder name with asterisk </param>
 		/// <param name="p">other child folder items (item in loop of childDirectories)</param>
 		/// <returns>is match</returns>
-		private bool MatchChildFolderSearch(StringBuilder parentFolderBuilder, StringBuilder currentChildFolderBuilder, string p )
+		private static bool MatchChildFolderSearch(StringBuilder parentFolderBuilder, StringBuilder currentChildFolderBuilder, string p )
 		{
 			var matchDirectFolderName = RemoveAsteriskFromString(currentChildFolderBuilder);
 			if ( matchDirectFolderName != "/" && p == parentFolderBuilder + matchDirectFolderName ) return true;
@@ -200,7 +200,7 @@ namespace starsky.foundation.storage.Services
 		/// <param name="fileNameBase">source name, can be used in the options</param>
 		/// <param name="extensionWithoutDot">fileExtension without dot</param>
 		/// <returns>Object with Structure Range output</returns>
-		private List<List<StructureRange>> ParseStructure(string structure, DateTime dateTime,
+		private static List<List<StructureRange>> ParseStructure(string structure, DateTime dateTime,
 			string fileNameBase = "", string extensionWithoutDot = "")
 		{
 			var structureList = structure.Split('/');

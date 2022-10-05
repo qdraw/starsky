@@ -592,9 +592,9 @@ namespace starsky.foundation.platform.Helpers
 			
 			if (string.IsNullOrWhiteSpace(subPathRelative)) return null; // null
 
-			if ( int.TryParse(subPathRelative, out var subPathInt) )
+			if ( int.TryParse(subPathRelative, out var subPathInt) && subPathInt >= 1 )
 			{
-				if(subPathInt >= 1) subPathInt *= -1; //always in the past
+				subPathInt *= -1; // always in the past
 			}
 			
 			// Fallback for dates older than 24-11-1854 to avoid a exception.

@@ -98,7 +98,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="comparedNames">list of fields that are changed, other fields are ignored</param>
 		/// <param name="includeSoftware">to include the original software name</param>
 		/// <returns>command line args</returns>
-		internal string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
+		internal static string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
 		{
 			var command = "-json -overwrite_original";
 			var initCommand = command; // to check if nothing
