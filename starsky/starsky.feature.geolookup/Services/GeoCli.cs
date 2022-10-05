@@ -103,8 +103,8 @@ namespace starsky.feature.geolookup.Services
     
 			if ( inputPath == null || _iStorage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
-				_console.WriteLine(
-					$"Folder location is not found \nPlease try the `-h` command to get help \nDid search for: {inputPath}");
+				_console.WriteLine("Folder location is not found \n" +
+				                   $"Please try the `-h` command to get help \nDid search for: {inputPath}");
 				return;
 			}
     

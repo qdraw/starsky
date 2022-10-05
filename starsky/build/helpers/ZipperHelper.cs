@@ -78,8 +78,8 @@ public class ZipperHelper
 	{
 		if ( noUnitTest )
 		{
-			Console.WriteLine(
-				$">> ZipHtmlCoverageReport is disable due the --no-unit-test flag");
+			Console.WriteLine(">> ZipHtmlCoverageReport " +
+			                  "is disable due the --no-unit-test flag");
 			return;
 		}
 		
