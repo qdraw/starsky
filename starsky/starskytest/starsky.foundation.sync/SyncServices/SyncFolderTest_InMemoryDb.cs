@@ -191,20 +191,21 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4")?.Status);
 
 			// for debugging pipelines
-			Console.WriteLine("--result---");
+			Console.WriteLine("\n--result---");
 			foreach ( var item in result )
 			{
-				Console.WriteLine("$~ " + item.FilePath + "~ " +item.Status);
+				Console.WriteLine("$>~ " + item.FilePath + " ~ " +item.Status);
 			}
 			
 			var data = await _query.GetAllRecursiveAsync("/Folder_InDbButNotOnDisk4");
 			
 			// for debugging pipelines
-			Console.WriteLine("--GetAllRecursiveAsync---");
+			Console.WriteLine("\n--GetAllRecursiveAsync---");
 			foreach ( var item in data )
 			{
-				Console.WriteLine(">~ " + item.FilePath + "~ " +item.Status);
+				Console.WriteLine("%>~ " + item.FilePath + " ~ " +item.Status);
 			}
+			Console.WriteLine("\n");
 			
 			// Check for database
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4", 
