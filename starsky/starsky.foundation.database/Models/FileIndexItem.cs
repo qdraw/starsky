@@ -244,11 +244,11 @@ namespace starsky.foundation.database.Models
 			/// </summary>
 			ExifWriteNotSupported,
 			/// <summary>
-			/// This file is not in the database
+			/// This file is not in the database (should be added)
 			/// </summary>
 			NotFoundNotInIndex,
 			/// <summary>
-			/// Source is missing on disk
+			/// Source is missing on disk (should be removed from index)
 			/// </summary>
 			NotFoundSourceMissing,
 			/// <summary>

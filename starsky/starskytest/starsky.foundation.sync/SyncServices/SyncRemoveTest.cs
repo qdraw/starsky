@@ -61,6 +61,45 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
 		}
+		
+		[TestMethod]
+		public async Task FileNotOnDrive_Object()
+		{
+			var remove = new SyncRemove(_appSettings, _query, null, null);
+			await _query.AddItemAsync(new FileIndexItem("/FileNotOnDrive_Object.jpg"));
+			var item = await 
+				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object.jpg");
+			item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+			var result= await remove.Remove(new List<FileIndexItem>{item});
+			
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);
+
+			var allRecursive = await _query.GetAllRecursiveAsync();
+			var item2 = allRecursive.FirstOrDefault(p =>
+				p.FilePath == "/FileNotOnDrive_Object.jpg" && p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing);
+
+			Assert.IsNull(item2);
+		}
+		
+		[TestMethod]
+		public async Task FileNotOnDrive_Object_Ignore_wrongStatus()
+		{
+			var remove = new SyncRemove(_appSettings, _query, null, null);
+			await _query.AddItemAsync(new FileIndexItem("/FileNotOnDrive_Object_Ignore_wrongStatus.jpg"));
+			var item = await 
+				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object_Ignore_wrongStatus.jpg");
+			item.Status = FileIndexItem.ExifStatus.Ok;
+			var result= await remove.Remove(new List<FileIndexItem>{item});
+			
+			Assert.AreEqual(0, result.Count);
+
+			var allRecursive = await _query.GetAllRecursiveAsync();
+			var queryResult = allRecursive.FirstOrDefault(p =>
+				p.FilePath == "/FileNotOnDrive_Object_Ignore_wrongStatus.jpg");
+
+			Assert.AreEqual(item,queryResult);
+		}
 
 		[TestMethod]
 		public async Task SingleItem_Folder_Remove()

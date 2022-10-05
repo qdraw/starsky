@@ -68,7 +68,7 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					var query = new QueryFactory(_setupDatabaseTypes, _query, _memoryCache, _appSettings, _logger).Query();
 					await query!.RemoveItemAsync(item);
-					item.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
+					item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
 					// only dispose inside parallelism loop
 					await query.DisposeAsync();
 					return item;
@@ -89,13 +89,17 @@ namespace starsky.foundation.sync.SyncServices
 			return toDeleteList.OrderBy(p => p.FilePath).ToList();
 		}
 		
+		/// <summary>
+		/// Remove from database and Gives only back the files that are deleted
+		/// </summary>
+		/// <param name="databaseItems">input of files with deleted status (NotFoundSourceMissing)</param>
+		/// <returns>Gives only back the files that are deleted</returns>
 		public async Task<List<FileIndexItem>> Remove(IEnumerable<FileIndexItem> databaseItems)
 		{
 			var deleted = databaseItems
 				.Where(p =>
 					p.Status is FileIndexItem.ExifStatus
-						.NotFoundSourceMissing or FileIndexItem.ExifStatus
-						.NotFoundNotInIndex).Select(p => p.FilePath).ToList();
+						.NotFoundSourceMissing).Select(p => p.FilePath).ToList();
 			
 			return await Remove(deleted);
 		}
