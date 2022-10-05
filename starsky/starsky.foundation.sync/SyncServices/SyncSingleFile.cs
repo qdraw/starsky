@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -74,12 +73,12 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
 				}
-				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath, true);
 			}
 
 			// to avoid reSync
 			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
 			
 			return updatedDbItem;
 		}
@@ -111,7 +110,6 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 
-			// temp disable caching  TimeSpan.FromSeconds(1)
 			var dbItem =  await _query.GetObjectByFilePathAsync(subPath);
 						
 			// // // when item does not exist in Database
@@ -130,13 +128,16 @@ namespace starsky.foundation.sync.SyncServices
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
 			if ( !isSame )
 			{
-				if ( updateDelegate != null ) await updateDelegate(new List<FileIndexItem> {dbItem});
-				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+				if ( updateDelegate != null )
+				{
+					await updateDelegate(new List<FileIndexItem> {dbItem});
+				}
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath, true);
 			}
 
 			// to avoid reSync
 			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
 			_logger.LogInformation($"[SingleFile/db] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
 			return updatedDbItem;
 		}
@@ -178,7 +179,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="subPath">relative path</param>
 		/// <returns>item with status</returns>
-		private FileIndexItem CheckForStatusNotOk(string subPath)
+		internal FileIndexItem CheckForStatusNotOk(string subPath)
 		{
 			var statusItem = new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.Ok};
 
@@ -212,7 +213,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="statusItem">contains the status</param>
 		/// <param name="subPath">relative path</param>
 		/// <returns>database item</returns>
-		private async Task<FileIndexItem> NewItem(FileIndexItem statusItem, string subPath)
+		internal async Task<FileIndexItem> NewItem(FileIndexItem statusItem, string subPath)
 		{
 			// Add a new Item
 			var dbItem = await _newItem.NewFileItem(statusItem);
@@ -232,8 +233,9 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="dbItem">item to update</param>
 		/// <param name="size">byte size</param>
 		/// <param name="subPath">relative path</param>
+		/// <param name="addParentItems">auto add parent items</param>
 		/// <returns>same item</returns>
-		private async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
+		internal async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath, bool addParentItems)
 		{
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
@@ -242,7 +244,10 @@ namespace starsky.foundation.sync.SyncServices
 			
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
-			await _query.AddParentItemsAsync(subPath);
+			if ( addParentItems )
+			{
+				await _query.AddParentItemsAsync(subPath);
+			}
 			AddDeleteStatus(dbItem);
 			return updateItem;
 		}

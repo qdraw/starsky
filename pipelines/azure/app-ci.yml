@@ -44,7 +44,7 @@ stages:
   - job: buildnetcore
     displayName: 'Build .NET Core'
     pool:
-      vmImage: 'ubuntu-20.04'
+      vmImage: 'ubuntu-22.04'
 
     steps:
     - checkout: self
@@ -89,7 +89,7 @@ stages:
   - job: build
     displayName: 'Build Electron'
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-22.04'
     container: electronuserland/builder:wine
     steps:
     - task: DownloadBuildArtifacts@0

@@ -190,7 +190,7 @@ namespace starsky.foundation.database.Interfaces
         /// </summary>
         /// <param name="subPath">subPath as input</param>
         /// <returns>void</returns>
-        Task AddParentItemsAsync(string subPath);
+        Task<List<FileIndexItem>> AddParentItemsAsync(string subPath);
         IQuery Clone( ApplicationDbContext applicationDbContext);
         void Invoke(ApplicationDbContext applicationDbContext);
 

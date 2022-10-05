@@ -14,7 +14,7 @@ namespace starsky.foundation.database.Query
 	public partial class Query : IQuery
 	{
 		/// <summary>
-		/// Uses Cache
+		/// Query
 		/// </summary>
 		/// <param name="inputFilePaths">list of paths</param>
 		/// <param name="collections">uses collections </param>

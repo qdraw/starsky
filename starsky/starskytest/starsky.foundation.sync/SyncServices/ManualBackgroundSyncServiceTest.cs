@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -78,14 +77,14 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var query = buildServiceProvider.GetService<IQuery>();
 				
 			var cacheDbName = new Query(null,null, null, null).CachingDbName(nameof(FileIndexItem), "/");
-			memoryCache.Remove(cacheDbName);
+			memoryCache!.Remove(cacheDbName);
 			
 			var cachedContent = new List<FileIndexItem>
 			{
 				new FileIndexItem("/test999.jpg")
 			};
 			memoryCache.Set(cacheDbName, cachedContent);
-			await query.AddItemAsync(new FileIndexItem("/test999.jpg"));
+			await query!.AddItemAsync(new FileIndexItem("/test999.jpg"));
 
 			var item = new FakeSelectorStorage(
 					new FakeIStorage(new List<string> { "/" }, 

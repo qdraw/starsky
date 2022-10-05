@@ -111,6 +111,7 @@ namespace starsky.foundation.platform.Helpers
 			get
 			{
 				var extensionList = new List<string>();
+				extensionList.AddRange(ExtensionPng);
 				extensionList.AddRange(ExtensionJpg);
 				extensionList.AddRange(ExtensionTiff);
 				extensionList.AddRange(ExtensionBmp);
@@ -334,6 +335,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="stream">stream</param>
 		/// <returns>ImageFormat enum</returns>
+		[SuppressMessage("ReSharper", "MustUseReturnValue")]
 		public static ImageFormat GetImageFormat(Stream stream)
 		{
 			if ( stream == Stream.Null ) return ImageFormat.notfound;

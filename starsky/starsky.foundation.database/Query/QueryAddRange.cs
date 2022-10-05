@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
@@ -16,6 +17,8 @@ namespace starsky.foundation.database.Query
 		/// <returns>items with id</returns>
 		public virtual async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
 		{
+			if ( !fileIndexItemList.Any() ) return new List<FileIndexItem>();
+
 			async Task LocalQuery(ApplicationDbContext context)
 			{
 				await context.FileIndex.AddRangeAsync(fileIndexItemList);
@@ -35,6 +38,11 @@ namespace starsky.foundation.database.Query
 				}
 				catch ( DbUpdateConcurrencyException e)
 				{
+					if ( _appSettings.Verbose == true )
+					{
+						_context.ChangeTracker.DetectChanges();
+						_logger?.LogDebug(_context.ChangeTracker.DebugView.LongView);
+					}
 					_logger?.LogError(e, "[AddRangeAsync] save failed after DbUpdateConcurrencyException");
 				}
 			}

@@ -32,7 +32,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			            "true,\n    \"_settings.json\": false\n  },\n" +
 			            "  \"Slug\": \"test\",\n  \"Export\": \"20200808121411\",\n" +
 			            "  \"Version\": \"0.3.0.0\"\n}";
-			var stream = new PlainTextFileHelper().StringToStream(input) as MemoryStream;
+			var stream = PlainTextFileHelper.StringToStream(input) as MemoryStream;
 			return stream.ToArray();
 		}
 		

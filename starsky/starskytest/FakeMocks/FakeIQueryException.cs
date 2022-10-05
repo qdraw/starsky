@@ -221,7 +221,7 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
-		public Task AddParentItemsAsync(string subPath)
+		public Task<List<FileIndexItem>> AddParentItemsAsync(string subPath)
 		{
 			throw _exception;
 		}

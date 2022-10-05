@@ -366,7 +366,7 @@ namespace starskytest.FakeMocks
 			return new Tuple<bool, List<FileIndexItem>>(res.Any(), res);
 		}
 
-		public async Task AddParentItemsAsync(string subPath)
+		public async Task<List<FileIndexItem>> AddParentItemsAsync(string subPath)
 		{
 			var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
 			var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
@@ -385,12 +385,14 @@ namespace starskytest.FakeMocks
 					{
 						IsDirectory = true,
 						AddToDatabase = DateTime.UtcNow,
-						ColorClass = ColorClassParser.Color.None
+						ColorClass = ColorClassParser.Color.None,
+						Status = FileIndexItem.ExifStatus.Ok
 					});
 				}
 			}
 
 			await AddRangeAsync(toAddList);
+			return toAddList;
 		}
 
 		public IQuery Clone(ApplicationDbContext applicationDbContext)

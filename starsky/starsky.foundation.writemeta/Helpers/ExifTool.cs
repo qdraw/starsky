@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
@@ -38,6 +40,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="subPath">the location</param>
 		/// <param name="command">exifTool command line args</param>
 		/// <returns>true=success</returns>
+		[SuppressMessage("ReSharper", "InvertIf")]
 		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, string command)
 		{
 			var inputStream = _iStorage.ReadStream(subPath);
@@ -51,9 +54,17 @@ namespace starsky.foundation.writemeta.Helpers
 			
 			// Set stream to begin for use afterwards
 			stream.Seek(0, SeekOrigin.Begin);
-
+			
 			// Need to Dispose for Windows
 			inputStream.Close();
+
+			if ( stream.Length <= 15 && (await PlainTextFileHelper.StreamToStringAsync(stream))
+			    .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase))
+			{
+				_logger.LogError($"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
+				return new KeyValuePair<bool, string>(false, oldFileHashCodeKeyPair.Key);
+			}
+			
 			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
 		}
 		

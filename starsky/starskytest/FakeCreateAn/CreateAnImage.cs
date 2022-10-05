@@ -25,12 +25,12 @@ namespace starskytest.FakeCreateAn
 		/// Full path of the image
 		/// </summary>
 		public readonly string FullFilePath = 
-			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + _fileName;
+			(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar).Replace("./",string.Empty) + _fileName;
 		/// <summary>
 		/// The FullFile Path of the Directory of the Assemblies
 		/// </summary>
 		public readonly string BasePath =
-			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+			(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar).Replace("./",string.Empty);
 
 		/// <summary>
 		/// @see: https://superuser.com/a/1467266 and 80 chars

@@ -56,9 +56,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FakeMemoryCache(), new FakeIWebLogger()).Remove("/Folder_With_ChildItems");
 			
 			Assert.AreEqual(3, result.Count);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[1].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[2].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[1].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[2].Status);
 			Assert.AreEqual("/Folder_With_ChildItems", result[0].FilePath);
 			Assert.AreEqual("/Folder_With_ChildItems/test.jpg", result[1].FilePath);
 			Assert.AreEqual("/Folder_With_ChildItems/test2.jpg", result[2].FilePath);

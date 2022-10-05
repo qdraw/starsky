@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
@@ -50,7 +49,10 @@ namespace starsky.foundation.database.Query
 		/// <returns>FileIndex-objects with database data</returns>
         public FileIndexItem GetObjectByFilePath(string filePath)
 		{
-			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
+			if ( filePath != "/" )
+			{
+				filePath = PathHelper.RemoveLatestSlash(filePath);
+			}
 			
             FileIndexItem LocalQuery(ApplicationDbContext context)
             {
@@ -268,6 +270,13 @@ namespace starsky.foundation.database.Query
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;
 		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+		        if ( _appSettings.Verbose == true )
+		        {
+			        // Ef core changes debug
+			        _logger.LogDebug(context.ChangeTracker.DebugView.LongView);
+		        }
+
+		        // object cache path is used to avoid updates
 		        SetGetObjectByFilePathCache(fileIndexItem.FilePath, updateStatusContent, TimeSpan.FromMinutes(1));
 	        }
 
@@ -798,8 +807,8 @@ namespace starsky.foundation.database.Query
 	    /// this class does add those parent folders
 	    /// </summary>
 	    /// <param name="subPath">subPath as input</param>
-	    /// <returns>void</returns>
-	    public async Task AddParentItemsAsync(string subPath)
+	    /// <returns>List</returns>
+	    public async Task<List<FileIndexItem>> AddParentItemsAsync(string subPath)
 	    {
 		    var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
 		    var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
@@ -817,12 +826,14 @@ namespace starsky.foundation.database.Query
 					    IsDirectory = true,
 					    AddToDatabase = DateTime.UtcNow,
 					    ColorClass = ColorClassParser.Color.None,
-					    Software = pathShouldExist == "/" ? "Root object" : string.Empty
+					    Software = pathShouldExist == "/" ? "Root object" : string.Empty,
+					    Status = FileIndexItem.ExifStatus.Ok
 				    });
 			    }
 		    }
 
 		    await AddRangeAsync(toAddList);
+		    return toAddList;
 	    }
 
 	    /// <summary>

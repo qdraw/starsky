@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherInterfaces;
 
@@ -54,7 +53,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_memoryCache?.Set(CacheName( filepath,  toPath), 1, _expirationTime);
 			// ends of avoid lots of events
 			
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
 			{
 				await _processFile.Invoke(new Tuple<string, string, WatcherChangeTypes>(filepath,toPath,changeTypes));
 			});

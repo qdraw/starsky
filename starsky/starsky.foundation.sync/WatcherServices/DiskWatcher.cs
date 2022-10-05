@@ -170,6 +170,18 @@ namespace starsky.foundation.sync.WatcherServices
 			// Specify what is done when a file is changed, created, or deleted.
 		}
 
+		private static FileAttributes? GetFileAttributes(string fullPath)
+		{
+			try
+			{
+				return File.GetAttributes(fullPath);
+			}
+			catch ( Exception )
+			{
+				return null;
+			}
+		}
+
 		/// <summary>
 		/// Specify what is done when a file is renamed. e.OldFullPath to e.FullPath
 		/// </summary>
@@ -179,16 +191,22 @@ namespace starsky.foundation.sync.WatcherServices
 		{
 			_webLogger.LogInformation($"DiskWatcher {e.OldFullPath} OnRenamed to: {e.FullPath}" +
 			                          DateTimeDebug());
-			
-			if ( e.OldFullPath.EndsWith(".tmp") || !ExtensionRolesHelper.IsExtensionSyncSupported(e.OldFullPath) )
+
+			var fileAttributes = GetFileAttributes(e.FullPath);
+			var isDirectory = fileAttributes == FileAttributes.Directory;
+
+			var isOldFullPathTempFile = e.OldFullPath.Contains(Path.DirectorySeparatorChar + "tmp.{")
+			                || e.OldFullPath.EndsWith(".tmp");
+			var isNewFullPathTempFile = e.FullPath.Contains(Path.DirectorySeparatorChar + "tmp.{")
+			                            || e.FullPath.EndsWith(".tmp");
+			if ( !isDirectory && isOldFullPathTempFile )
 			{
 				_queueProcessor.QueueInput(e.FullPath, null, WatcherChangeTypes.Created);
 				return;
 			}
 			
-			if ( e.FullPath.EndsWith(".tmp") || !ExtensionRolesHelper.IsExtensionSyncSupported(e.FullPath) )
+			if ( !isDirectory && isNewFullPathTempFile )
 			{
-				_queueProcessor.QueueInput(e.OldFullPath, null, WatcherChangeTypes.Deleted);
 				return;
 			}
 
