@@ -89,13 +89,15 @@ namespace starsky.foundation.sync.SyncServices
 			return toDeleteList.OrderBy(p => p.FilePath).ToList();
 		}
 		
-		public Task<Task<List<FileIndexItem>>> Remove(List<FileIndexItem> databaseItems)
+		public async Task<List<FileIndexItem>> Remove(IEnumerable<FileIndexItem> databaseItems)
 		{
 			var deleted = databaseItems
 				.Where(p =>
-					p.Status == FileIndexItem.ExifStatus
-						.NotFoundSourceMissing).Select(p => p.FilePath).ToList();
-			return Task.FromResult(Remove(deleted));
+					p.Status is FileIndexItem.ExifStatus
+						.NotFoundSourceMissing or FileIndexItem.ExifStatus
+						.NotFoundNotInIndex).Select(p => p.FilePath).ToList();
+			
+			return await Remove(deleted);
 		}
 		
 		private async Task LoopOverSidecarFiles(List<string> subPaths)
