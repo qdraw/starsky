@@ -103,7 +103,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var content= query.DisplayFileFolders().Where(p => p.FilePath != "/").ToList();
 			foreach ( var itemContent in content )
 			{
-				Console.WriteLine(itemContent.FilePath);
+				Console.WriteLine("Manual sync " + itemContent.FilePath);
 			}
 			
 			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test2__1234.jpg"));
