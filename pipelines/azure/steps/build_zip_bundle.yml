@@ -7,6 +7,6 @@ steps:
     displayName: 'Cake Zip'
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} --target Zip  --skip'
+      arguments: '${{ parameters.runtimeArg }} --target Zip  --skip --no-logo'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
