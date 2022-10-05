@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.storage.ArchiveFormats
 {
+	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public class Zipper
 	{
 
@@ -40,6 +42,21 @@ namespace starsky.foundation.storage.ArchiveFormats
 
 			return true;
 		}
+		
+		public static byte[] ExtractZip(byte[] zipped)
+		{
+			using var memoryStream = new MemoryStream(zipped);
+			using var archive = new ZipArchive(memoryStream);
+			foreach (var entry in archive.Entries)
+			{
+				// only the first item
+				using var entryStream = entry.Open();
+				using var reader = new BinaryReader(entryStream);
+				return reader.ReadBytes((int)entry.Length);
+			}
+			return null; // To quiet my compiler
+		}
+
 
 		/// <summary>
 		/// To Create the zip file in the storeZipFolderFullPath folder

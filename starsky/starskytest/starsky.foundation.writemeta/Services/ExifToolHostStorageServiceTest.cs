@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -61,7 +62,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 		}
 		
 		[TestMethod]
-		public async Task WriteTagsAndRenameThumbnailAsync_Unix_FakeExifToolBashTest()
+		public async Task WriteTagsAndRenameThumbnailAsync_FakeExifToolBashTest_UnixOnly()
 		{
 			if ( new AppSettings().IsWindows )
 			{
@@ -97,6 +98,51 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				new List<string>{"/test.jpg"}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
+			var fakeLogger = new FakeIWebLogger();
+			var renameThumbnailAsync = await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, fakeLogger)
+				.WriteTagsAndRenameThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
+			
+			if ( hostFileSystemStorage.ExistFolder(outputPath) )
+			{
+				hostFileSystemStorage.FolderDelete(outputPath);
+			}
+			
+			Assert.IsFalse(renameThumbnailAsync.Key);
+			Assert.IsTrue(fakeLogger.TrackedExceptions.Any(p => p.Item2.Contains("Fake Exiftool detected")));
+		}
+		
+		[TestMethod]
+		public async Task WriteTagsAndRenameThumbnailAsync_FakeExifToolBashTest_WindowsOnly()
+		{
+			if ( !new AppSettings().IsWindows )
+			{
+				return;
+			}
+
+			var hostFileSystemStorage = new StorageHostFullPathFilesystem();
+			var outputPath =
+				Path.Combine(_createAnImage.BasePath, "tmp-979056548");
+
+			Console.WriteLine(outputPath);
+			if ( hostFileSystemStorage.ExistFolder(outputPath) )
+			{
+				hostFileSystemStorage.FolderDelete(outputPath);
+			}
+			hostFileSystemStorage.CreateDirectory(outputPath);
+
+			var result = Zipper.ExtractZip(CreateAnExifToolWindows.Bytes);
+			await hostFileSystemStorage.WriteStreamAsync(new MemoryStream(result), 
+				Path.Combine(outputPath, "exiftool.exe"));
+			
+			var appSettings = new AppSettings
+			{
+				ExifToolPath = Path.Combine(outputPath, "exiftool.exe"),
+			};
+			
+			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test.jpg"}, 
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+			
 			var fakeLogger = new FakeIWebLogger();
 			var renameThumbnailAsync = await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, fakeLogger)
 				.WriteTagsAndRenameThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
