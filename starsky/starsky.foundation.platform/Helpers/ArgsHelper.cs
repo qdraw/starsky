@@ -192,9 +192,10 @@ namespace starsky.foundation.platform.Helpers
 			var needHelp = false;
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--help" || args[arg].ToLower() == "-h") && (arg + 1) != args.Count)
+				if ((args[arg].ToLower() == "--help" || args[arg].ToLower() == "-h") && (arg + 1) != args.Count 
+				    && bool.TryParse(args[arg + 1], out var needHelp2) && needHelp2)
 				{
-					bool.TryParse(args[arg + 1], out needHelp);
+					needHelp = true;
 				}
 				if ((args[arg].ToLower() == "--help" || args[arg].ToLower() == "-h"))
 				{

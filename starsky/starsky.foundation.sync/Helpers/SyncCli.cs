@@ -32,7 +32,7 @@ namespace starsky.foundation.sync.Helpers
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
 
-			if (new ArgsHelper().NeedHelp(args))
+			if (ArgsHelper.NeedHelp(args))
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;

@@ -34,7 +34,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Thumbnail;
 
-			if (new ArgsHelper().NeedHelp(args))
+			if (ArgsHelper.NeedHelp(args))
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;

@@ -99,11 +99,11 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_NeedHelpTest()
 		{
 			var args = new List<string> {"-h"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedHelp(args));
+			Assert.IsTrue(ArgsHelper.NeedHelp(args));
 
 			// Bool parse cheArgsHelper_GetPath_CurrentDirectory_Testck
 			args = new List<string> {"-h","true"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedHelp(args));
+			Assert.IsTrue(ArgsHelper.NeedHelp(args));
 		}
         
 		[TestMethod]

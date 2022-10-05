@@ -63,7 +63,7 @@ namespace starsky.feature.geolookup.Services
 			await _geoFileDownload.Download();
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
 			
-			if ( new ArgsHelper().NeedHelp(args) ||
+			if ( ArgsHelper.NeedHelp(args) ||
 			     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1
 			       && ArgsHelper.GetSubPathFormArgs(args).Length <= 1
 			       && new ArgsHelper(_appSettings).GetRelativeValue(args) == null ) )

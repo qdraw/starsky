@@ -41,7 +41,7 @@ namespace starsky.feature.import.Services
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
 
-			if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(_appSettings)
+			if (ArgsHelper.NeedHelp(args) || new ArgsHelper(_appSettings)
 				.GetPathFormArgs(args,false).Length <= 1)
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
