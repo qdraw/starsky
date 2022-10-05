@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,9 +18,9 @@ namespace starskytest.starsky.foundation.storage.Storage
 		[TestMethod]
 		public void Files_GetFilesRecursiveTest()
 		{            
-			var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+			var path = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + Path.DirectorySeparatorChar;
 
-			var content = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(path);
+			var content = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(path).ToList();
 
 			Console.WriteLine("count => "+ content.Count());
 
@@ -28,6 +29,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		}
 		
 		[TestMethod]
+		[SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
 		public void GetAllFilesInDirectoryRecursive_NotFound()
 		{
 			var logger = new FakeIWebLogger();
@@ -70,6 +72,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		}
 
 		[TestMethod]
+		[SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
 		public void GetFilesAndDirectories_Exception_NotFound()
 		{
 			var logger = new FakeIWebLogger();

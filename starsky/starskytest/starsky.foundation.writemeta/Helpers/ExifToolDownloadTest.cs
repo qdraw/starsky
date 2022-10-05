@@ -174,7 +174,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			if ( _appSettings.IsWindows )
 			{
-				Console.WriteLine("This test is for unix only");
+				Assert.Inconclusive("This test if for Unix Only");
 				return;
 			}
 			
@@ -207,6 +207,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			if ( _appSettings.IsWindows )
 			{
 				Console.WriteLine("This test is for unix only");
+				Assert.Inconclusive("This test if for Unix Only");
 				return;
 			}
 			
@@ -302,6 +303,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			if ( _appSettings.IsWindows )
 			{
 				Console.WriteLine("This test is for unix only");
+				Assert.Inconclusive("This test if for Unix Only");
 				return;
 			}
 			
