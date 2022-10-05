@@ -54,7 +54,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       "Only the files that are present are updated. Run a manual sync"
   );
 
-  var history = useLocation();
+  const history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
 
   // state without any context

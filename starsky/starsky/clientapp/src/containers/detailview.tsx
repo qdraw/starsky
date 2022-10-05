@@ -24,7 +24,7 @@ import { UrlQuery } from "../shared/url-query";
 import MenuDetailViewContainer from "./menu-detailview-container/menu-detailview-container";
 
 const DetailView: React.FC<IDetailView> = () => {
-  var history = useLocation();
+  const history = useLocation();
 
   let { state, dispatch } = React.useContext(DetailViewContext);
 

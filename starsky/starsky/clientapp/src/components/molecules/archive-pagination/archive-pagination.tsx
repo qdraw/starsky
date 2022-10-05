@@ -22,7 +22,7 @@ const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo(
     const MessageNext = language.text("Volgende", "Next");
 
     // used for reading current location
-    var history = useLocation();
+    const history = useLocation();
 
     let { relativeObjects } = props;
 

@@ -77,7 +77,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
       "The labels have been overwritten"
     );
 
-    var history = useLocation();
+    const history = useLocation();
 
     const [fileIndexItem, setFileIndexItem] = React.useState(
       state

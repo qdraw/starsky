@@ -45,7 +45,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     "Something went wrong with the update. Please try again"
   );
 
-  var history = useLocation();
+  const history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
 
   // state without any context

@@ -147,7 +147,7 @@ namespace starsky
         /// <summary>
         /// Respect ForwardedHeaders
         /// </summary>
-        private void ConfigureForwardedHeaders(IServiceCollection services)
+        private static void ConfigureForwardedHeaders(IServiceCollection services)
         {
 	        // Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 	        services.Configure<ForwardedHeadersOptions>(options =>
@@ -315,7 +315,7 @@ namespace starsky
         /// To start over with a SQLite database please remove it and
         /// it will add a new one
         /// </summary>
-        private async Task EfCoreMigrationsOnProject(IApplicationBuilder app)
+        private static async Task EfCoreMigrationsOnProject(IApplicationBuilder app)
         {
 	        using var serviceScope = app.ApplicationServices
 		        .GetRequiredService<IServiceScopeFactory>()

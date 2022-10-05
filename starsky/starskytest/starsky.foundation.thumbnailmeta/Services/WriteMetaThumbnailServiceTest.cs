@@ -66,7 +66,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
 				new FakeIWebLogger(), new AppSettings());
 
-			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.Horizontal);
+			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Horizontal);
 			Assert.AreEqual(0,result,0.00001);
 		}
 		
@@ -76,7 +76,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
 				new FakeIWebLogger(), new AppSettings());
 
-			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.DoNotChange);
+			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.DoNotChange);
 			Assert.AreEqual(0,result,0.00001);
 		}
 
@@ -86,7 +86,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
 				new FakeIWebLogger(), new AppSettings());
 
-			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate180);
+			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate180);
 			Assert.AreEqual(180,result,0.00001);
 		}
 		
@@ -96,7 +96,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
 				new FakeIWebLogger(), new AppSettings());
 
-			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate90Cw);
+			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate90Cw);
 			Assert.AreEqual(90,result,0.00001);
 		}
 		
@@ -106,7 +106,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
 				new FakeIWebLogger(), new AppSettings());
 
-			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate270Cw);
+			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate270Cw);
 			Assert.AreEqual(270,result,0.00001);
 		}
 	}

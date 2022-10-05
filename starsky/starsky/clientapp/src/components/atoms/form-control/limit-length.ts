@@ -57,7 +57,7 @@ export class LimitLength {
       return;
     }
 
-    var elementLength = element.currentTarget.textContent.trim().length;
+    const elementLength = element.currentTarget.textContent.trim().length;
 
     if (
       elementLength < this.maxlength ||

@@ -10,7 +10,7 @@ import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { URLPath } from "../shared/url-path";
 
 function Archive(archive: IArchiveProps) {
-  var history = useLocation();
+  const history = useLocation();
 
   const [iconList] = React.useState(
     !new URLPath().StringToIUrl(history.location.search).list

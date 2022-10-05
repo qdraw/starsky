@@ -169,7 +169,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			await _iStorage.WriteStreamAsync(stream, GetErrorLogItemFullPath(subPath));
 		}
 		
-		private string GetErrorLogItemFullPath(string subPath)
+		private static string GetErrorLogItemFullPath(string subPath)
 		{
 			return Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault()
 			       + "/"
@@ -270,7 +270,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return (null, true, "Ok but written to disk");
 		}
 
-		internal void ImageSharpImageResize(Image image, int width, bool removeExif)
+		private static void ImageSharpImageResize(Image image, int width, bool removeExif)
 		{
 			// Add original rotation to the image as json
 			if (image.Metadata.ExifProfile != null && !removeExif)
@@ -320,7 +320,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		private async Task SaveThumbnailImageFormatInternal(Image image, ExtensionRolesHelper.ImageFormat imageFormat, 
+		private static async Task SaveThumbnailImageFormatInternal(Image image, ExtensionRolesHelper.ImageFormat imageFormat, 
 			MemoryStream outputStream)
 		{
 			if (imageFormat == ExtensionRolesHelper.ImageFormat.png)

@@ -30,7 +30,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   var usesFileList = useFileList("?f=" + currentFolderPath, true);
 
   // only for navigation in this file
-  var history = useLocation();
+  const history = useLocation();
 
   // to show errors
   const useErrorHandler = (initialState: string | null) => initialState;

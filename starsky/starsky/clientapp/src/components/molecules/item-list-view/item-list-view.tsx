@@ -24,7 +24,7 @@ interface ItemListProps {
  */
 const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   // feature that saves the scroll height
-  var history = useLocation();
+  const history = useLocation();
   const folderRef = React.useRef<HTMLDivElement>(null);
 
   // Content

@@ -18,7 +18,7 @@ interface IListImageProps {
  */
 const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   const target = useRef<HTMLDivElement>(null);
-  var alt = props.alt ? props.alt : "afbeelding";
+  const alt = props.alt ? props.alt : "afbeelding";
 
   const [src, setSrc] = useState(props.fileHash);
 
@@ -36,7 +36,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     setIsLoading(true);
   }, [props.fileHash]);
 
-  var intersected = useIntersection(target, {
+  const intersected = useIntersection(target, {
     rootMargin: "250px",
     once: true,
     threshold: 0.3
@@ -44,7 +44,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   // threshold = indicate at what percentage of the target's visibility the callback is executed. (default = 0)
 
   // to stop loading images after a url change
-  var history = useLocation();
+  const history = useLocation();
   const [historyLocation] = useState(history.location.search);
   useEffect(() => {
     // use ?f only to support details

@@ -58,7 +58,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
 
-  var history = useLocation();
+  const history = useLocation();
   let { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
