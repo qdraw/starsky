@@ -77,7 +77,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       | React.ChangeEvent<HTMLDivElement>
       | React.KeyboardEvent<HTMLDivElement>
   ) {
-    var sideBarUpdate = new SidebarUpdate().Change(event, update);
+    const sideBarUpdate = new SidebarUpdate().Change(event, update);
     if (!sideBarUpdate) return;
     setUpdate(sideBarUpdate);
     setInputEnabled(new SidebarUpdate().IsFormUsed(update));
