@@ -187,7 +187,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">args input</param>
 		/// <returns>bool, true if --help</returns>
-		public bool NeedHelp(IReadOnlyList<string> args)
+		public static bool NeedHelp(IReadOnlyList<string> args)
 		{
 			var needHelp = false;
 			for (int arg = 0; arg < args.Count; arg++)
