@@ -131,7 +131,9 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			hostFileSystemStorage.CreateDirectory(outputPath);
 
 			var result = Zipper.ExtractZip(CreateAnExifToolWindows.Bytes);
-			await hostFileSystemStorage.WriteStreamAsync(new MemoryStream(result), 
+			var (_,item) = result.FirstOrDefault(p => p.Key.Contains("exiftool"));
+			
+			await hostFileSystemStorage.WriteStreamAsync(new MemoryStream(item), 
 				Path.Combine(outputPath, "exiftool.exe"));
 			
 			var appSettings = new AppSettings

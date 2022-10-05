@@ -43,18 +43,19 @@ namespace starsky.foundation.storage.ArchiveFormats
 			return true;
 		}
 		
-		public static byte[] ExtractZip(byte[] zipped)
+		public static Dictionary<string,byte[]> ExtractZip(byte[] zipped)
 		{
 			using var memoryStream = new MemoryStream(zipped);
 			using var archive = new ZipArchive(memoryStream);
+			var result = new Dictionary<string, byte[]>();
 			foreach (var entry in archive.Entries)
 			{
 				// only the first item
 				using var entryStream = entry.Open();
 				using var reader = new BinaryReader(entryStream);
-				return reader.ReadBytes((int)entry.Length);
+				result.Add(entry.FullName, reader.ReadBytes((int)entry.Length));
 			}
-			return null; // To quiet my compiler
+			return result;
 		}
 
 
