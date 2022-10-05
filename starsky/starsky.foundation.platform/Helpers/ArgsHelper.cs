@@ -328,6 +328,7 @@ namespace starsky.foundation.platform.Helpers
 				_console.WriteLine($"ApplicationInsightsDatabaseTracking {_appSettings.ApplicationInsightsDatabaseTracking} \n" +
 				                   $"ApplicationInsightsLog {_appSettings.ApplicationInsightsLog} ");
 			}
+			_console.WriteLine($"MaxDegreesOfParallelism {_appSettings.MaxDegreesOfParallelism} ");
 
 			_console.Write("SyncIgnore ");
 			foreach ( var rule in _appSettings.SyncIgnore ) _console.Write($"{rule}, ");
@@ -336,7 +337,7 @@ namespace starsky.foundation.platform.Helpers
 			_console.Write("ImportIgnore ");
 			foreach ( var rule in _appSettings.ImportIgnore ) _console.Write($"{rule}, ");
 			_console.Write("\n");
-
+			
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Importer)
 				_console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " + _appSettings.ExifToolImportXmpCreate);
 			
