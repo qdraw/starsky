@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -100,6 +101,7 @@ namespace starsky.feature.webftppublish.Services
 		/// <param name="slug"></param>
 		/// <param name="copyContent"></param>
 		/// <returns></returns>
+		[SuppressMessage("Usage", "S3267:Loops should be simplified with LINQ expressions ")]
 		internal IEnumerable<string> CreateListOfRemoteDirectories(string parentDirectory, 
 			string slug, Dictionary<string, bool> copyContent)
 		{
