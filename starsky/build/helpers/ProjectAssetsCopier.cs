@@ -2,39 +2,40 @@ using System.IO;
 using Nuke.Common.ProjectModel;
 using static helpers.GetSolutionAllProjects;
 
-namespace helpers;
-
-public static class ProjectAssetsCopier
+namespace helpers
 {
-	public static void CopyAssetFileToCurrentRuntime(string runtime,
-		Solution solution)
+	public static class ProjectAssetsCopier
 	{
-		// Restore Asset runtime file
-		foreach ( var path in GetSolutionAllProjectsList(solution) )
+		public static void CopyAssetFileToCurrentRuntime(string runtime,
+			Solution solution)
 		{
-			var parent = Directory.GetParent(path)?.FullName;
-			var assetFile = $"{parent}/obj/project.assets.json";
-			var assetRuntimeFile = $"{parent}/obj/project.assets_{runtime}.json";
-
-			if ( File.Exists(assetRuntimeFile) )
+			// Restore Asset runtime file
+			foreach ( var path in GetSolutionAllProjectsList(solution) )
 			{
-				File.Copy(assetRuntimeFile,assetFile,true);
+				var parent = Directory.GetParent(path)?.FullName;
+				var assetFile = $"{parent}/obj/project.assets.json";
+				var assetRuntimeFile = $"{parent}/obj/project.assets_{runtime}.json";
+
+				if ( File.Exists(assetRuntimeFile) )
+				{
+					File.Copy(assetRuntimeFile,assetFile,true);
+				}
 			}
 		}
-	}
 	
-	public static void CopyNewAssetFileByRuntimeId(string runtime,
-		Solution solution)
-	{
-		// Create a new one
-		foreach ( var path in GetSolutionAllProjectsList(solution) )
+		public static void CopyNewAssetFileByRuntimeId(string runtime,
+			Solution solution)
 		{
-			var parent = Directory.GetParent(path)?.FullName;
-			var assetFile = $"{parent}/obj/project.assets.json";
-			var assetRuntimeFile = $"{parent}/obj/project.assets_{runtime}.json";
-			if ( File.Exists(assetFile) )
+			// Create a new one
+			foreach ( var path in GetSolutionAllProjectsList(solution) )
 			{
-				File.Copy(assetFile,assetRuntimeFile,true);
+				var parent = Directory.GetParent(path)?.FullName;
+				var assetFile = $"{parent}/obj/project.assets.json";
+				var assetRuntimeFile = $"{parent}/obj/project.assets_{runtime}.json";
+				if ( File.Exists(assetFile) )
+				{
+					File.Copy(assetFile,assetRuntimeFile,true);
+				}
 			}
 		}
 	}

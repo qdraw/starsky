@@ -5,7 +5,6 @@ using helpers;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.ProjectModel;
-using static helpers.SonarQube;
 
 // ReSharper disable once CheckNamespace
 namespace build
@@ -159,8 +158,8 @@ namespace build
 				ShowSettingsInfo();
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 				DotnetGenericHelper.RestoreNetCoreCommand(Solution);
-				InstallSonarTool(IsUnitTestDisabled(), NoSonar);
-				SonarBegin(IsUnitTestDisabled(),NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),
+				SonarQube.InstallSonarTool(IsUnitTestDisabled(), NoSonar);
+				SonarQube.SonarBegin(IsUnitTestDisabled(),NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),
 					"starskytest/coverage-merge-sonarqube.xml");
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
@@ -168,7 +167,7 @@ namespace build
 					"starskygeocli/starskygeocli.csproj",NoDependencies, 
 					"generic-netcore");
 				MergeCoverageFiles.Merge(IsUnitTestDisabled());
-				SonarEnd(IsUnitTestDisabled(),NoSonar);
+				SonarQube.SonarEnd(IsUnitTestDisabled(),NoSonar);
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
 			});
 

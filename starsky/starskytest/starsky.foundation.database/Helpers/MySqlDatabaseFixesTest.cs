@@ -6,230 +6,233 @@ using MySqlConnector;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.platform.Models;
 
-namespace starskytest.starsky.foundation.database.Helpers;
-
-[TestClass]
-public class MySqlDatabaseFixesTest
+namespace starskytest.starsky.foundation.database.Helpers
 {
+	
+	[TestClass]
+	public class MySqlDatabaseFixesTest
+	{
 
-	[TestMethod]
-	public async Task FixUtf8Encoding_Null()
-	{
-		var result = await new MySqlDatabaseFixes(null,new AppSettings
+		[TestMethod]
+		public async Task FixUtf8Encoding_Null()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-		}).FixUtf8Encoding(new List<string>());
-		Assert.IsNull(result);
-	}
+			var result = await new MySqlDatabaseFixes(null,new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			}).FixUtf8Encoding(new List<string>());
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	[ExpectedException(typeof(InvalidOperationException))]
-	public async Task FixUtf8Encoding_InvalidOperationException()
-	{
-		var fakeConnectionString =
-			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
-		var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public async Task FixUtf8Encoding_InvalidOperationException()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).FixUtf8Encoding(new List<string>{""});
-		Assert.IsNull(result);
-	}
+			var fakeConnectionString =
+				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
+			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql
+			}).FixUtf8Encoding(new List<string>{""});
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	public async Task SetTableToUtf8_Null()
-	{
-		var result = await new MySqlDatabaseFixes(null,new AppSettings
+		[TestMethod]
+		public async Task SetTableToUtf8_Null()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-		}).SetTableToUtf8("");
-		Assert.IsNull(result);
-	}
+			var result = await new MySqlDatabaseFixes(null,new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			}).SetTableToUtf8("");
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	[ExpectedException(typeof(InvalidOperationException))]
-	public async Task SetTableToUtf8_InvalidOperationException()
-	{
-		var fakeConnectionString =
-			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
-		var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public async Task SetTableToUtf8_InvalidOperationException()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).SetTableToUtf8("");
-		Assert.IsNull(result);
-	}
+			var fakeConnectionString =
+				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
+			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql
+			}).SetTableToUtf8("");
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	public async Task SetDatabaseSettingToUtf8_Null()
-	{
-		var result = await new MySqlDatabaseFixes(null,new AppSettings
+		[TestMethod]
+		public async Task SetDatabaseSettingToUtf8_Null()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-		}).SetDatabaseSettingToUtf8();
-		Assert.IsNull(result);
-	}
+			var result = await new MySqlDatabaseFixes(null,new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			}).SetDatabaseSettingToUtf8();
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	[ExpectedException(typeof(InvalidOperationException))]
-	public async Task SetDatabaseSettingToUtf8_InvalidOperationException()
-	{
-		var fakeConnectionString =
-			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
-		var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public async Task SetDatabaseSettingToUtf8_InvalidOperationException()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).SetDatabaseSettingToUtf8();
-		Assert.IsNull(result);
-	}
+			var fakeConnectionString =
+				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
+			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql
+			}).SetDatabaseSettingToUtf8();
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	[ExpectedException(typeof(InvalidOperationException))]
-	public async Task ExecuteNonQueryAsync_InvalidOperationException()
-	{
-		var fakeConnectionString =
-			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
-		await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public async Task ExecuteNonQueryAsync_InvalidOperationException()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).ExecuteNonQueryAsync("");
-	}
+			var fakeConnectionString =
+				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
+			await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql
+			}).ExecuteNonQueryAsync("");
+		}
 	
-	[TestMethod]
-	public async Task IsUtf8_Null()
-	{
-		var result = await new MySqlDatabaseFixes(null,new AppSettings
+		[TestMethod]
+		public async Task IsUtf8_Null()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-		}).IsUtf8();
-		Assert.IsNull(result);
-	}
+			var result = await new MySqlDatabaseFixes(null,new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			}).IsUtf8();
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	[ExpectedException(typeof(InvalidOperationException))]
-	public async Task IsUtf8_InvalidOperationException()
-	{
-		var fakeConnectionString =
-			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
-		var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public async Task IsUtf8_InvalidOperationException()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).IsUtf8();
-		Assert.IsNull(result);
-	}
+			var fakeConnectionString =
+				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
+			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql
+			}).IsUtf8();
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	public async Task OpenConnection_Null()
-	{
-		MySqlConnection connection = null;
-		await new MySqlDatabaseFixes(connection,new AppSettings
+		[TestMethod]
+		public async Task OpenConnection_Null()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-		}).OpenConnection();
-		Assert.IsNull(connection);
-	}
+			MySqlConnection connection = null;
+			await new MySqlDatabaseFixes(connection,new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			}).OpenConnection();
+			Assert.IsNull(connection);
+		}
 	
-	[TestMethod]
-	[ExpectedException(typeof(MySqlException))]
-	public async Task OpenConnection_MySqlConnector_MySqlException()
-	{
-		var fakeConnectionString =
-			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
-		await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+		[TestMethod]
+		[ExpectedException(typeof(MySqlException))]
+		public async Task OpenConnection_MySqlConnector_MySqlException()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).OpenConnection();
-	}
+			var fakeConnectionString =
+				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
+			await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql
+			}).OpenConnection();
+		}
 	
-	[TestMethod]
-	public async Task FixAutoIncrement_NotUsed()
-	{
-		var result = await new MySqlDatabaseFixes(null,new AppSettings
+		[TestMethod]
+		public async Task FixAutoIncrement_NotUsed()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-		}).FixAutoIncrement("test");
-		Assert.IsNull(result);
-	}
+			var result = await new MySqlDatabaseFixes(null,new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			}).FixAutoIncrement("test");
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	public async Task FixAutoIncrement_NotUsed1()
-	{
-		var result = await new MySqlDatabaseFixes(new MySqlConnection(),new AppSettings
+		[TestMethod]
+		public async Task FixAutoIncrement_NotUsed1()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-		}).FixAutoIncrement("test");
-		Assert.IsNull(result);
-	}
+			var result = await new MySqlDatabaseFixes(new MySqlConnection(),new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			}).FixAutoIncrement("test");
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	[ExpectedException(typeof(InvalidOperationException))]
-	public async Task FixAutoIncrement_InvalidOperationException()
-	{
-		var fakeConnectionString =
-			"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
-		var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public async Task FixAutoIncrement_InvalidOperationException()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).FixAutoIncrement("test");
-		Assert.IsNull(result);
-	}
+			var fakeConnectionString =
+				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
+			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql
+			}).FixAutoIncrement("test");
+			Assert.IsNull(result);
+		}
 		
-	[TestMethod]
-	public async Task FixAutoIncrement_ConnectionNullIgnore()
-	{
-		var result = await new MySqlDatabaseFixes(null,new AppSettings
+		[TestMethod]
+		public async Task FixAutoIncrement_ConnectionNullIgnore()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql
-		}).FixAutoIncrement("test");
-		Assert.IsNull(result);
-	}
+			var result = await new MySqlDatabaseFixes(null,new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql
+			}).FixAutoIncrement("test");
+			Assert.IsNull(result);
+		}
 	
 		
-	[TestMethod]
-	[ExpectedException(typeof(InvalidOperationException))]
-	public async Task CheckAutoIncrementExist_True()
-	{
-		var appSettings = new AppSettings
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public async Task CheckAutoIncrementExist_True()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql,
-			DatabaseConnection = "Server=localhost;port=4785;database=TEST;uid=starsky;pwd=TEST;maximumpoolsize=30;"
-		};
-		var mysqlConnection = new MySqlConnection(appSettings.DatabaseConnection);
-		var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings).CheckAutoIncrementExist("test");
-		Assert.IsTrue(result);
-	}
+			var appSettings = new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
+				DatabaseConnection = "Server=localhost;port=4785;database=TEST;uid=starsky;pwd=TEST;maximumpoolsize=30;"
+			};
+			var mysqlConnection = new MySqlConnection(appSettings.DatabaseConnection);
+			var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings).CheckAutoIncrementExist("test");
+			Assert.IsTrue(result);
+		}
 	
-	[TestMethod]
-	public async Task CheckAutoIncrementExist_Null()
-	{
-		var appSettings = new AppSettings
+		[TestMethod]
+		public async Task CheckAutoIncrementExist_Null()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql,
-		};
-		var result = await new MySqlDatabaseFixes(null,appSettings).CheckAutoIncrementExist("test");
-		Assert.IsNull(result);
-	}
+			var appSettings = new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
+			};
+			var result = await new MySqlDatabaseFixes(null,appSettings).CheckAutoIncrementExist("test");
+			Assert.IsNull(result);
+		}
 			
-	[TestMethod]
-	[ExpectedException(typeof(InvalidOperationException))]
-	public async Task AlterTable_NoConnection()
-	{
-		var appSettings = new AppSettings
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public async Task AlterTable_NoConnection()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql,
-			DatabaseConnection = "Server=localhost;port=4785;database=TEST;uid=starsky;pwd=TEST;maximumpoolsize=30;"
-		};
-		var mysqlConnection = new MySqlConnection(appSettings.DatabaseConnection);
-		var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings).AlterTableAutoIncrement("test");
-		Assert.IsNull(result);
-	}
+			var appSettings = new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
+				DatabaseConnection = "Server=localhost;port=4785;database=TEST;uid=starsky;pwd=TEST;maximumpoolsize=30;"
+			};
+			var mysqlConnection = new MySqlConnection(appSettings.DatabaseConnection);
+			var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings).AlterTableAutoIncrement("test");
+			Assert.IsNull(result);
+		}
 	
-	[TestMethod]
-	public async Task AlterTable_Null()
-	{
-		var appSettings = new AppSettings
+		[TestMethod]
+		public async Task AlterTable_Null()
 		{
-			DatabaseType = AppSettings.DatabaseTypeList.Mysql,
-		};
-		var result = await new MySqlDatabaseFixes(null,appSettings).AlterTableAutoIncrement("test");
-		Assert.IsNull(result);
+			var appSettings = new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
+			};
+			var result = await new MySqlDatabaseFixes(null,appSettings).AlterTableAutoIncrement("test");
+			Assert.IsNull(result);
+		}
 	}
+
 }
