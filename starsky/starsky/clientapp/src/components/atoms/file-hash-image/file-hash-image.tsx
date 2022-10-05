@@ -31,7 +31,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
       if (isAutomaticRotated) {
         return;
       }
-			const result = await FetchGet(
+      const result = await FetchGet(
         new UrlQuery().UrlThumbnailJsonApi(props.fileHash)
       );
 

@@ -36,7 +36,7 @@ const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo(
       false,
       true
     );
-		const nextUrl = new UrlQuery().updateFilePathHash(
+    const nextUrl = new UrlQuery().updateFilePathHash(
       history.location.search,
       relativeObjects.nextFilePath,
       false,
