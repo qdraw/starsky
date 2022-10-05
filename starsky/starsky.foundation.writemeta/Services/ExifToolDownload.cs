@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -21,6 +22,8 @@ using starsky.foundation.writemeta.Interfaces;
 namespace starsky.foundation.writemeta.Services
 {
 	[Service(typeof(IExifToolDownload), InjectionLifetime = InjectionLifetime.Singleton)]
+	[SuppressMessage("Usage", "S1075:Refactor your code not to use hardcoded absolute paths or URIs", Justification = "Source of files")]
+	[SuppressMessage("Usage", "S4790:Make sure this weak hash algorithm is not used in a sensitive context here.", Justification = "Safe")]
 	public class ExifToolDownload : IExifToolDownload
 	{
 		private readonly IHttpClientHelper _httpClientHelper;

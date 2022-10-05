@@ -299,7 +299,7 @@ namespace starskytest.starsky.feature.import.Services
 
 			foreach ( var item in importIndexItems )
 			{
-				Console.WriteLine(item.FilePath);
+				Console.WriteLine("import ~ " + item.FilePath);
 			}
 			
 			Assert.AreEqual(3,importIndexItems.Count);

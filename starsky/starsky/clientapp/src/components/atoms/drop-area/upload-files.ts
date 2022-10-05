@@ -39,7 +39,7 @@ export class UploadFiles {
       new CustomEvent(MoreMenuEventCloseConst, { bubbles: false })
     );
 
-    var filesList = Array.from(files);
+    const filesList = Array.from(files);
 
     const { length } = filesList;
     if (length === 0) {

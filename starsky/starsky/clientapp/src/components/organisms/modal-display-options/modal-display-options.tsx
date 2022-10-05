@@ -49,7 +49,7 @@ const ModalDisplayOptions: React.FunctionComponent<
     "Refresh yourself"
   );
 
-  var history = useLocation();
+  const history = useLocation();
 
   // the default is true
   const [collections, setCollections] = React.useState(

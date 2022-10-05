@@ -72,7 +72,7 @@ const AccountRegister: FunctionComponent = () => {
    <a href="/legal/privacy-policy.en.html#cookie">Cookies Notice </a>   `
   );
 
-  var history = useLocation();
+  const history = useLocation();
 
   const [userEmail, setUserEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");

@@ -34,7 +34,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Thumbnail;
 
-			if (new ArgsHelper().NeedHelp(args))
+			if (ArgsHelper.NeedHelp(args))
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
@@ -75,7 +75,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				_console.WriteLine("Thumbnail Done!");
 			}
             
-			if ( new ArgsHelper(_appSettings).NeedCleanup(args) )
+			if ( ArgsHelper.NeedCleanup(args) )
 			{
 				_console.WriteLine(">>>>> Heavy CPU Feature => NeedCacheCleanup <<<<< ");
 				await _thumbnailCleaner.CleanAllUnusedFilesAsync();

@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace starsky.foundation.storage.Helpers
 {
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public class PlainTextFileHelper
     {
 	    /// <summary>

@@ -18,7 +18,7 @@ import { Language } from "../shared/language";
 import Login from "./login";
 
 const MediaContent: React.FC = () => {
-  var history = useLocation();
+  const history = useLocation();
   var usesFileList = useFileList(history.location.search, false);
 
   const pageType = usesFileList ? usesFileList.pageType : PageType.Loading;

@@ -1,47 +1,49 @@
 using System;
 using System.IO;
 
-namespace helpers;
-
-public static class CoverageReportHelper
+namespace helpers
 {
-	static void Information(string value)
+
+	public static class CoverageReportHelper
 	{
-		Console.WriteLine(value);
-	}
-
-	public static string GenerateHtml(bool noUnitTest)
-	{
-		if ( noUnitTest )
+		static void Information(string value)
 		{
-			Information(
-				$">> MergeCoverageFiles is disable due the --no-unit-test flag");
-			return null;
-		}
-		
-		var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
-			.BaseDirectory).Parent.Parent.Parent.FullName;
-		var outputCoverageFile = Path.Combine(rootDirectory,
-			"./starskytest/coverage-merge-cobertura.xml");
-
-		var reportFolder =
-			outputCoverageFile.Replace("merge-cobertura.xml", "report");
-
-		if ( !File.Exists(outputCoverageFile) )
-		{
-			throw new FileNotFoundException(
-				$"Missing .NET Core coverage file {outputCoverageFile}");
+			Console.WriteLine(value);
 		}
 
-		var args = new[]
+		public static string GenerateHtml(bool noUnitTest)
 		{
-			$"-reports:{outputCoverageFile}", 
-			$"-targetdir:{reportFolder}",
-			$"-reporttypes:HtmlInline"
-		};
-		Palmmedia.ReportGenerator.Core.Program.Main(args);
+			if ( noUnitTest )
+			{
+				Information(
+					$">> MergeCoverageFiles is disable due the --no-unit-test flag");
+				return null;
+			}
 		
-		return reportFolder;
-	}
+			var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
+				.BaseDirectory).Parent.Parent.Parent.FullName;
+			var outputCoverageFile = Path.Combine(rootDirectory,
+				"./starskytest/coverage-merge-cobertura.xml");
 
+			var reportFolder =
+				outputCoverageFile.Replace("merge-cobertura.xml", "report");
+
+			if ( !File.Exists(outputCoverageFile) )
+			{
+				throw new FileNotFoundException(
+					$"Missing .NET Core coverage file {outputCoverageFile}");
+			}
+
+			var args = new[]
+			{
+				$"-reports:{outputCoverageFile}", 
+				$"-targetdir:{reportFolder}",
+				$"-reporttypes:HtmlInline"
+			};
+			Palmmedia.ReportGenerator.Core.Program.Main(args);
+		
+			return reportFolder;
+		}
+
+	}
 }

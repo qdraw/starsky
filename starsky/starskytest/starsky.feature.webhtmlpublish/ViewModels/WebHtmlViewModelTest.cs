@@ -5,27 +5,29 @@ using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 
-namespace starskytest.starsky.feature.webhtmlpublish.ViewModels;
-
-[TestClass]
-public class WebHtmlViewModelTest
+namespace starskytest.starsky.feature.webhtmlpublish.ViewModels
 {
-	[TestMethod]
-	public void WebHtmlViewModel1()
+	[TestClass]
+	public class WebHtmlViewModelTest
 	{
-		var model = new WebHtmlViewModel
+		[TestMethod]
+		public void WebHtmlViewModel1()
 		{
-			AppSettings = new AppSettings(),
-			CurrentProfile = new AppSettingsPublishProfiles(),
-			Profiles = new List<AppSettingsPublishProfiles>(),
-			Base64ImageArray = Array.Empty<string>(),
-			FileIndexItems=	new List<FileIndexItem>()
-		};
+			var model = new WebHtmlViewModel
+			{
+				AppSettings = new AppSettings(),
+				CurrentProfile = new AppSettingsPublishProfiles(),
+				Profiles = new List<AppSettingsPublishProfiles>(),
+				Base64ImageArray = Array.Empty<string>(),
+				FileIndexItems=	new List<FileIndexItem>()
+			};
 		
-		Assert.IsNotNull(model.AppSettings);
-		Assert.IsNotNull(model.CurrentProfile);
-		Assert.IsNotNull(model.Profiles);
-		Assert.IsNotNull(model.Base64ImageArray);
-		Assert.IsNotNull(model.FileIndexItems);
+			Assert.IsNotNull(model.AppSettings);
+			Assert.IsNotNull(model.CurrentProfile);
+			Assert.IsNotNull(model.Profiles);
+			Assert.IsNotNull(model.Base64ImageArray);
+			Assert.IsNotNull(model.FileIndexItems);
+		}
 	}
 }
+

@@ -134,8 +134,6 @@ namespace starsky.foundation.sync.SyncServices
 					}
 				}
 			}
-
-			Console.WriteLine();
 		}
 	}
 }

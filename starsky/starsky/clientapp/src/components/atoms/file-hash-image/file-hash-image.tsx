@@ -26,12 +26,12 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   useEffect(() => {
     (async () => {
       if (!props.orientation) return;
-      var isAutomaticRotated = await DetectAutomaticRotation();
+      const isAutomaticRotated = await DetectAutomaticRotation();
 
       if (isAutomaticRotated) {
         return;
       }
-      var result = await FetchGet(
+      const result = await FetchGet(
         new UrlQuery().UrlThumbnailJsonApi(props.fileHash)
       );
 

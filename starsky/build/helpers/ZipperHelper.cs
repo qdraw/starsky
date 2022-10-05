@@ -5,98 +5,100 @@ using System.IO.Compression;
 using System.Linq;
 using build;
 
-namespace helpers;
-
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1118:Add a 'protected' constructor or the 'static' keyword to the class declaration", Justification = "Not production code.")]
-public class ZipperHelper
+namespace helpers
 {
-
-	public const string ZipPrefix = "starsky-";
-
-	static string BasePath()
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1118:Add a 'protected' constructor or the 'static' keyword to the class declaration", Justification = "Not production code.")]
+	public class ZipperHelper
 	{
-		return Directory.GetParent(AppDomain.CurrentDomain
-			.BaseDirectory).Parent.Parent.Parent.FullName;
-	}
+
+		public const string ZipPrefix = "starsky-";
+
+		static string BasePath()
+		{
+			return Directory.GetParent(AppDomain.CurrentDomain
+				.BaseDirectory).Parent.Parent.Parent.FullName;
+		}
 	
-	public static void ZipGeneric()
-	{
-		var fromFolder = Path.Join(BasePath(), Build.GenericRuntimeName);
+		public static void ZipGeneric()
+		{
+			var fromFolder = Path.Join(BasePath(), Build.GenericRuntimeName);
 		
-		if ( !Directory.Exists(fromFolder) )
-		{
-			throw new DirectoryNotFoundException($"dir {Build.GenericRuntimeName} not found {fromFolder}");
-		}
-
-		var zipPath = Path.Join(BasePath(),
-			ZipPrefix + Build.GenericRuntimeName + ".zip");
-
-		if ( File.Exists(zipPath) )
-		{
-			File.Delete(zipPath);
-		}
-		
-		Console.WriteLine($"next: {Build.GenericRuntimeName} zip  ~ {fromFolder} -> {zipPath}");
-		ZipFile.CreateFromDirectory(fromFolder, 
-			zipPath);
-	}
-	
-	public static void ZipRuntimes(List<string> getRuntimesWithoutGeneric)
-	{
-		if ( !getRuntimesWithoutGeneric.Any() )
-		{
-			Console.WriteLine("There are no runtime specific items selected");
-			return;
-		}
-
-		foreach ( var runtime in getRuntimesWithoutGeneric )
-		{
-			var runtimeFullPath = Path.Join(BasePath(), runtime);
-
-			if ( !Directory.Exists(runtimeFullPath) )
+			if ( !Directory.Exists(fromFolder) )
 			{
-				throw new DirectoryNotFoundException($"dir {Build.GenericRuntimeName} not found ~ {runtimeFullPath}");
+				throw new DirectoryNotFoundException($"dir {Build.GenericRuntimeName} not found {fromFolder}");
 			}
 
 			var zipPath = Path.Join(BasePath(),
-				ZipPrefix + runtime + ".zip");
-			
+				ZipPrefix + Build.GenericRuntimeName + ".zip");
+
 			if ( File.Exists(zipPath) )
 			{
 				File.Delete(zipPath);
 			}
-
-			Console.WriteLine($"next: {runtime} zip ~ {runtimeFullPath} -> {zipPath}");
-			ZipFile.CreateFromDirectory(runtimeFullPath, zipPath);
+		
+			Console.WriteLine($"next: {Build.GenericRuntimeName} zip  ~ {fromFolder} -> {zipPath}");
+			ZipFile.CreateFromDirectory(fromFolder, 
+				zipPath);
 		}
-	}
-
-	const string CoverageReportZip = "coverage-report.zip";
 	
-	public static void ZipHtmlCoverageReport(string fromFolder,
-		bool noUnitTest)
-	{
-		if ( noUnitTest )
+		public static void ZipRuntimes(List<string> getRuntimesWithoutGeneric)
 		{
-			Console.WriteLine(
-				$">> ZipHtmlCoverageReport is disable due the --no-unit-test flag");
-			return;
-		}
-		
-		if ( !Directory.Exists(fromFolder) )
-		{
-			throw new DirectoryNotFoundException($"dir {fromFolder} not found");
+			if ( !getRuntimesWithoutGeneric.Any() )
+			{
+				Console.WriteLine("There are no runtime specific items selected");
+				return;
+			}
+
+			foreach ( var runtime in getRuntimesWithoutGeneric )
+			{
+				var runtimeFullPath = Path.Join(BasePath(), runtime);
+
+				if ( !Directory.Exists(runtimeFullPath) )
+				{
+					throw new DirectoryNotFoundException($"dir {Build.GenericRuntimeName} not found ~ {runtimeFullPath}");
+				}
+
+				var zipPath = Path.Join(BasePath(),
+					ZipPrefix + runtime + ".zip");
+			
+				if ( File.Exists(zipPath) )
+				{
+					File.Delete(zipPath);
+				}
+
+				Console.WriteLine($"next: {runtime} zip ~ {runtimeFullPath} -> {zipPath}");
+				ZipFile.CreateFromDirectory(runtimeFullPath, zipPath);
+			}
 		}
 
-		var zipPath = Path.Join(BasePath(), "starskytest", CoverageReportZip);
-
-		if ( File.Exists(zipPath) )
+		const string CoverageReportZip = "coverage-report.zip";
+	
+		public static void ZipHtmlCoverageReport(string fromFolder,
+			bool noUnitTest)
 		{
-			File.Delete(zipPath);
-		}
+			if ( noUnitTest )
+			{
+				Console.WriteLine(">> ZipHtmlCoverageReport " +
+				                  "is disable due the --no-unit-test flag");
+				return;
+			}
 		
-		Console.WriteLine($"next: zip {fromFolder} -> {zipPath}");
-		ZipFile.CreateFromDirectory(fromFolder, 
-			zipPath);
+			if ( !Directory.Exists(fromFolder) )
+			{
+				throw new DirectoryNotFoundException($"dir {fromFolder} not found");
+			}
+
+			var zipPath = Path.Join(BasePath(), "starskytest", CoverageReportZip);
+
+			if ( File.Exists(zipPath) )
+			{
+				File.Delete(zipPath);
+			}
+		
+			Console.WriteLine($"next: zip {fromFolder} -> {zipPath}");
+			ZipFile.CreateFromDirectory(fromFolder, 
+				zipPath);
+		}
 	}
+	
 }

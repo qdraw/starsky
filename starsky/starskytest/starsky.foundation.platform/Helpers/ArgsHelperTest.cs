@@ -75,11 +75,11 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_NeedCacheCleanupTest()
 		{
 			var args = new List<string> {"-x"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedCleanup(args));
+			Assert.IsTrue(ArgsHelper.NeedCleanup(args));
             
 			// Bool parse check
 			args = new List<string> {"-x","true"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedCleanup(args));
+			Assert.IsTrue( ArgsHelper.NeedCleanup(args));
 		}
 	    
 	    
@@ -90,7 +90,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// Default on so testing off
 			var args = new List<string> {"-i","false"}.ToArray();
-			Assert.IsFalse(new ArgsHelper(_appSettings).GetIndexMode(args));
+			Assert.IsFalse(ArgsHelper.GetIndexMode(args));
 		}
         
         
@@ -99,11 +99,11 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_NeedHelpTest()
 		{
 			var args = new List<string> {"-h"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedHelp(args));
+			Assert.IsTrue(ArgsHelper.NeedHelp(args));
 
 			// Bool parse cheArgsHelper_GetPath_CurrentDirectory_Testck
 			args = new List<string> {"-h","true"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).NeedHelp(args));
+			Assert.IsTrue(ArgsHelper.NeedHelp(args));
 		}
         
 		[TestMethod]

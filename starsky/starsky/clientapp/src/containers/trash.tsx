@@ -24,7 +24,7 @@ function Trash(archive: IArchiveProps) {
   const MessageNumberOfResults = language.text("resultaten", "results");
   const MessageNoResult = language.text("Geen resultaat", "No result");
 
-  var history = useLocation();
+  const history = useLocation();
 
   // The sidebar
   const [sidebar, setSidebar] = React.useState(

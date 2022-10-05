@@ -42,7 +42,7 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
     "Verwijder onmiddellijk",
     "Delete immediately"
   );
-  var history = useLocation();
+  const history = useLocation();
 
   const undoSelection = () =>
     new Select(select, setSelect, state, history).undoSelection();

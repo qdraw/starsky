@@ -4,33 +4,36 @@ using System.IO;
 using Nuke.Common.ProjectModel;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-namespace helpers;
-
-[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
-[SuppressMessage("Usage", "S3267:Loop should be simplified by calling Select", Justification = "Not production code.")]
-public static class GetSolutionAllProjects
+namespace helpers
 {
-	public static List<string> GetSolutionAllProjectsList(Solution solution)
+
+	[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
+	[SuppressMessage("Usage", "S3267:Loop should be simplified by calling Select", Justification = "Not production code.")]
+	public static class GetSolutionAllProjects
 	{
-		var slnListOutput =  
-			DotNet($"sln {solution} list", null, 
-				null, null, false);
-
-		var result = new List<string>();
-		foreach ( var slnListOutputItem in slnListOutput )
+		public static List<string> GetSolutionAllProjectsList(Solution solution)
 		{
-			if ( slnListOutputItem.Text.Contains("---") || 
-			     slnListOutputItem.Text.Contains("Project") || 
-			     slnListOutputItem.Text.Contains("_build"))
-			{
-				continue;
-			}
+			var slnListOutput =  
+				DotNet($"sln {solution} list", null, 
+					null, null, false);
 
-			if ( File.Exists(slnListOutputItem.Text) )
+			var result = new List<string>();
+			foreach ( var slnListOutputItem in slnListOutput )
 			{
-				result.Add(slnListOutputItem.Text);
+				if ( slnListOutputItem.Text.Contains("---") || 
+				     slnListOutputItem.Text.Contains("Project") || 
+				     slnListOutputItem.Text.Contains("_build"))
+				{
+					continue;
+				}
+
+				if ( File.Exists(slnListOutputItem.Text) )
+				{
+					result.Add(slnListOutputItem.Text);
+				}
 			}
+			return result;
 		}
-		return result;
 	}
+	
 }

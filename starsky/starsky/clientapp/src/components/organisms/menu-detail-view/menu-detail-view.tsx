@@ -71,7 +71,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     "Go to parent folder"
   );
 
-  var history = useLocation();
+  const history = useLocation();
 
   const [isDetails, setDetails] = React.useState(
     new URLPath().StringToIUrl(history.location.search).details

@@ -64,19 +64,19 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		private async Task LoopThoughChunk(IEnumerable<string> itemsInChunk , List<string> deletedFileHashes)
 		{
 			var fileIndexItems = await _query.GetObjectsByFileHashAsync(itemsInChunk.ToList());
-			foreach ( var result in fileIndexItems.Where(result => 
+			foreach ( var resultFileHash in fileIndexItems.Where(result => 
 				result.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex
-				))
+				).Select(p => p.FileHash))
 			{
 				var fileHashesToDelete = new List<string>
 				{
-					ThumbnailNameHelper.Combine(result.FileHash,
+					ThumbnailNameHelper.Combine(resultFileHash,
 						ThumbnailSize.TinyMeta),
-					ThumbnailNameHelper.Combine(result.FileHash,
+					ThumbnailNameHelper.Combine(resultFileHash,
 						ThumbnailSize.ExtraLarge),
-					ThumbnailNameHelper.Combine(result.FileHash,
+					ThumbnailNameHelper.Combine(resultFileHash,
 						ThumbnailSize.TinyMeta),
-					ThumbnailNameHelper.Combine(result.FileHash,
+					ThumbnailNameHelper.Combine(resultFileHash,
 						ThumbnailSize.Large)
 				};
 				foreach ( var fileHash in fileHashesToDelete )
@@ -85,7 +85,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 				}
 				
 				_logger.LogInformation("$");
-				deletedFileHashes.Add(result.FileHash);
+				deletedFileHashes.Add(resultFileHash);
 			}
 		}
 

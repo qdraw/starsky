@@ -83,7 +83,7 @@ namespace starsky.Controllers
 		/// <param name="searchViewModel">search results model</param>
 		/// <param name="f">subPath to search for</param>
 		/// <returns>int as index, fallback == -1</returns>
-		internal int GetIndexFilePathFromSearch(SearchViewModel searchViewModel, string f)
+		internal static int GetIndexFilePathFromSearch(SearchViewModel searchViewModel, string f)
 		{
 			var result = searchViewModel.FileIndexItems.FirstOrDefault(p => p.FilePath == f);
 			var photoIndexOfQuery = searchViewModel.FileIndexItems.IndexOf(result);

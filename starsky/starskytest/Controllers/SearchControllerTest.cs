@@ -44,10 +44,10 @@ namespace starskytest.Controllers
 		public void SearchControllerTest_ZeroItems_Index()
 		{
 			var controller = new SearchController(_search);
-			var jsonResult = controller.Index("98765456789987",0) as JsonResult;
-			var searchViewResult = jsonResult.Value as SearchViewModel;
+			var jsonResult = controller.Index("98765456789987") as JsonResult;
+			var searchViewResult = jsonResult!.Value as SearchViewModel;
 	        
-			Assert.AreEqual(0,searchViewResult.FileIndexItems.Count());
+			Assert.AreEqual(0,searchViewResult!.FileIndexItems.Count());
 			Assert.AreEqual("Search",searchViewResult.PageType);
 
 		}
@@ -62,11 +62,11 @@ namespace starskytest.Controllers
 				Tags = "test"
 			});
 			var controller = new SearchController(_search);
-			var jsonResult = controller.Index("test",0) as JsonResult;
-			var searchViewResult = jsonResult.Value as SearchViewModel;
+			var jsonResult = controller.Index("test") as JsonResult;
+			var searchViewResult = jsonResult!.Value as SearchViewModel;
 		    
 			// some values
-			Assert.AreEqual(1,searchViewResult.SearchCount);
+			Assert.AreEqual(1,searchViewResult!.SearchCount);
 			Assert.AreEqual(1,searchViewResult.FileIndexItems.Count);
 			Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal,searchViewResult.SearchForOptions[0]);
 			Assert.AreEqual("test",searchViewResult.SearchQuery);
@@ -79,9 +79,9 @@ namespace starskytest.Controllers
 		public void SearchControllerTest_TrashZeroItems()
 		{
 			var controller = new SearchController(_search);
-			var jsonResult = controller.Trash(0) as JsonResult;
-			var searchViewResult = jsonResult.Value as SearchViewModel;
-			Assert.AreEqual(0,searchViewResult.FileIndexItems.Count());
+			var jsonResult = controller.Trash() as JsonResult;
+			var searchViewResult = jsonResult!.Value as SearchViewModel;
+			Assert.AreEqual(0,searchViewResult!.FileIndexItems.Count());
 		}
         
 		[TestMethod]
@@ -101,11 +101,11 @@ namespace starskytest.Controllers
 				Tags = "test"
 			});
 			var controller = new SearchController(_search);
-			var jsonResult = controller.SearchRelative("/test1.jpg","test", 0) as JsonResult;
-			var relativeObjects = jsonResult.Value as RelativeObjects;
+			var jsonResult = controller.SearchRelative("/test1.jpg","test") as JsonResult;
+			var relativeObjects = jsonResult!.Value as RelativeObjects;
 		    
 			// some values
-			Assert.AreEqual("/test.jpg",relativeObjects.PrevFilePath);
+			Assert.AreEqual("/test.jpg",relativeObjects!.PrevFilePath);
 			Assert.AreEqual("FileHash1",relativeObjects.PrevHash);
 
 			_query.RemoveItem(item0);
@@ -130,11 +130,11 @@ namespace starskytest.Controllers
 				FileHash = "FileHash2"
 			});
 			var controller = new SearchController(_search);
-			var jsonResult = controller.SearchRelative("/test.jpg","test", 0) as JsonResult;
-			var relativeObjects = jsonResult.Value as RelativeObjects;
+			var jsonResult = controller.SearchRelative("/test.jpg","test") as JsonResult;
+			var relativeObjects = jsonResult!.Value as RelativeObjects;
 		    
 			// some values
-			Assert.AreEqual("/test1.jpg",relativeObjects.NextFilePath);
+			Assert.AreEqual("/test1.jpg",relativeObjects!.NextFilePath);
 			Assert.AreEqual("FileHash2",relativeObjects.NextHash);
 
 			_query.RemoveItem(item0);
@@ -145,9 +145,9 @@ namespace starskytest.Controllers
 		public void SearchRelative_NotFound()
 		{
 			var controller = new SearchController(_search);
-			var notFoundObjectResult = controller.SearchRelative("/not-found.jpg","test", 0) as NotFoundObjectResult;
+			var notFoundObjectResult = controller.SearchRelative("/not-found.jpg","test") as NotFoundObjectResult;
 
-			Assert.AreEqual(404, notFoundObjectResult.StatusCode);
+			Assert.AreEqual(404, notFoundObjectResult!.StatusCode);
 		}
 
 		[TestMethod]
@@ -168,10 +168,10 @@ namespace starskytest.Controllers
 				FileHash = "FileHash2"
 			});
 			var controller = new SearchController(_search);
-			var jsonResult = controller.SearchRelative("/test1.jpg","test", 0) as JsonResult;
-			var relativeObjects = jsonResult.Value as RelativeObjects;
+			var jsonResult = controller.SearchRelative("/test1.jpg","test") as JsonResult;
+			var relativeObjects = jsonResult!.Value as RelativeObjects;
 		    
-			Assert.IsNull(relativeObjects.NextFilePath);
+			Assert.IsNull(relativeObjects!.NextFilePath);
 			Assert.IsNull(relativeObjects.NextHash);
 
 			_query.RemoveItem(item0);
@@ -181,7 +181,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void GetIndexFilePathFromSearch_Notfound()
 		{
-			var result = new SearchController(_search).GetIndexFilePathFromSearch(new SearchViewModel(),"test");
+			var result = SearchController.GetIndexFilePathFromSearch(new SearchViewModel(),"test");
 			Assert.AreEqual(-1, result);
 		}
         
@@ -192,7 +192,7 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;
-			var resultValue = jsonResult.Value as string;
+			var resultValue = jsonResult!.Value as string;
 			Assert.AreEqual( "there is no cached item", resultValue);
 		}
         
@@ -203,7 +203,7 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;
-			var resultValue = jsonResult.Value as string;
+			var resultValue = jsonResult!.Value as string;
 			Assert.AreEqual( "cache disabled in config", resultValue);
 		}
         
@@ -216,7 +216,7 @@ namespace starskytest.Controllers
 			_search.Search("1234567890987654");
 	        
 			var jsonResult = controller.RemoveCache("1234567890987654") as JsonResult;
-			var resultValue = jsonResult.Value as string;
+			var resultValue = jsonResult!.Value as string;
 			Assert.AreEqual( "cache cleared", resultValue);
 		}
 	}

@@ -22,7 +22,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
     );
     const MessageAllName = language.text("Alles", "All");
 
-    var history = useLocation();
+    const history = useLocation();
     const [select, setSelect] = React.useState(
       new URLPath().StringToIUrl(history.location.search).select
     );

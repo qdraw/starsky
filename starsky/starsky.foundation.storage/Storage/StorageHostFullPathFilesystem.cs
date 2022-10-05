@@ -92,7 +92,7 @@ namespace starsky.foundation.storage.Storage
 			catch ( UnauthorizedAccessException e )
 			{
 				_logger?.LogError(e, "[GetAllFilesInDirectory] catch-ed UnauthorizedAccessException");
-				return new string[]{};
+				return Array.Empty<string>();
 			}
 
 			var imageFilesList = new List<string>();
@@ -383,7 +383,10 @@ namespace starsky.foundation.storage.Storage
 		private void RecurseFind( string path, List<string> list )
 		{
 			var (filesArray, directoriesArray) = GetFilesAndDirectories(path);
-			if ( filesArray.Length <= 0 && directoriesArray.Length <= 0 ) return;
+			if ( filesArray.Length <= 0 && directoriesArray.Length <= 0 )
+			{
+				return;
+			}
             //I begin with the files, and store all of them in the list
             list.AddRange(filesArray);
             // I then add the directory and recurse that directory,

@@ -29,7 +29,7 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo(
     );
 
     // Update view based on url parameters
-    var history = useLocation();
+    const history = useLocation();
     const [isSidebar, setIsSidebar] = React.useState(
       new URLPath().StringToIUrl(history.location.search).sidebar
     );

@@ -51,7 +51,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  var history = useLocation();
+  const history = useLocation();
 
   // Selection
   const [select, setSelect] = React.useState(

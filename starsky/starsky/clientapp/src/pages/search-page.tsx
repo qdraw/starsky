@@ -9,7 +9,7 @@ import { PageType } from "../interfaces/IDetailView";
 import { URLPath } from "../shared/url-path";
 
 const SearchPage: FunctionComponent<RouteComponentProps<any>> = () => {
-  var history = useLocation();
+  const history = useLocation();
 
   var urlObject = new URLPath().StringToIUrl(history.location.search);
   var searchList = useSearchList(urlObject.t, urlObject.p, true);

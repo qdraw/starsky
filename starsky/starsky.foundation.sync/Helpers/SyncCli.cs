@@ -32,7 +32,7 @@ namespace starsky.foundation.sync.Helpers
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
 
-			if (new ArgsHelper().NeedHelp(args))
+			if (ArgsHelper.NeedHelp(args))
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
@@ -48,7 +48,7 @@ namespace starsky.foundation.sync.Helpers
 					.ParseSubfolders(getSubPathRelative);
 			}
 
-			if (new ArgsHelper().GetIndexMode(args))
+			if (ArgsHelper.GetIndexMode(args))
 			{
 				var stopWatch = Stopwatch.StartNew();
 				_console.WriteLine($"Start indexing {subPath}");

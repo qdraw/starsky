@@ -134,7 +134,7 @@ namespace starsky.Controllers
 			return Json(health);
 		}
 
-		private HealthView CreateHealthEntryLog(HealthReport result)
+		private static HealthView CreateHealthEntryLog(HealthReport result)
 		{
 			var health = new HealthView
 			{

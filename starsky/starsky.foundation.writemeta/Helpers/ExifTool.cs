@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -68,12 +69,13 @@ namespace starsky.foundation.writemeta.Helpers
 			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
 		}
 		
+		[SuppressMessage("ReSharper", "MustUseReturnValue")]
 		internal async Task<string> RenameThumbnailByStream(
 			KeyValuePair<string, bool> oldFileHashCodeKeyPair, Stream stream)
 		{
 			if ( !oldFileHashCodeKeyPair.Value ) return string.Empty;
 			byte[] buffer = new byte[FileHash.MaxReadSize];
-			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize);
+			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize, CancellationToken.None);
 			
 			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer));
 			if ( string.IsNullOrEmpty(newHashCode)) return string.Empty;

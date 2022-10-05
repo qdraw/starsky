@@ -36,7 +36,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       "Move to Trash"
     );
 
-    var history = useLocation();
+    const history = useLocation();
 
     async function moveToTrashSelection() {
       if (!select || isReadOnly) return;

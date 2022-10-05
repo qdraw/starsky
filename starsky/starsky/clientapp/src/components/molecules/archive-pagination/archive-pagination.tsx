@@ -22,7 +22,7 @@ const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo(
     const MessageNext = language.text("Volgende", "Next");
 
     // used for reading current location
-    var history = useLocation();
+    const history = useLocation();
 
     let { relativeObjects } = props;
 
@@ -30,13 +30,13 @@ const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo(
 
     // to the next/prev relative object
     // when in select mode and navigate next to the select mode is still on but there are no items selected
-    var prevUrl = new UrlQuery().updateFilePathHash(
+    const prevUrl = new UrlQuery().updateFilePathHash(
       history.location.search,
       relativeObjects.prevFilePath,
       false,
       true
     );
-    var nextUrl = new UrlQuery().updateFilePathHash(
+    const nextUrl = new UrlQuery().updateFilePathHash(
       history.location.search,
       relativeObjects.nextFilePath,
       false,

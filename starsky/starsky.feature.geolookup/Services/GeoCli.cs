@@ -63,7 +63,7 @@ namespace starsky.feature.geolookup.Services
 			await _geoFileDownload.Download();
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
 			
-			if ( new ArgsHelper().NeedHelp(args) ||
+			if ( ArgsHelper.NeedHelp(args) ||
 			     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1
 			       && ArgsHelper.GetSubPathFormArgs(args).Length <= 1
 			       && new ArgsHelper(_appSettings).GetRelativeValue(args) == null ) )
@@ -103,8 +103,8 @@ namespace starsky.feature.geolookup.Services
     
 			if ( inputPath == null || _iStorage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
-				_console.WriteLine(
-					$"Folder location is not found \nPlease try the `-h` command to get help \nDid search for: {inputPath}");
+				_console.WriteLine("Folder location is not found \n" +
+				                   $"Please try the `-h` command to get help \nDid search for: {inputPath}");
 				return;
 			}
     
@@ -115,7 +115,7 @@ namespace starsky.feature.geolookup.Services
 			var fileIndexList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
     
 			var toMetaFilesUpdate = new List<FileIndexItem>();
-			if ( new ArgsHelper().GetIndexMode(args) )
+			if ( ArgsHelper.GetIndexMode(args) )
 			{
 				_console.WriteLine($"CameraTimeZone: {_appSettings.CameraTimeZone}");
 				_console.WriteLine($"Folder: {inputPath}");

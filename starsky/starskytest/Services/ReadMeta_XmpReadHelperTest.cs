@@ -55,7 +55,7 @@ namespace starskytest.Services
 		public void XmpReadHelperTest_GetData_usingStringExample()
 		{
 			var iStorage = new FakeIStorage();
-			var data = new ReadMetaXmp(iStorage).GetDataFromString(Input);
+			var data = ReadMetaXmp.GetDataFromString(Input);
             
 			Assert.AreEqual(52.3451333333,data.Latitude,0.001);
 			Assert.AreEqual(5.930,data.Longitude,0.001);
@@ -176,7 +176,7 @@ namespace starskytest.Services
 		{
 			var xmpStart = "<?xpacket begin=\' \' id=\'W5M0MpCehiHzreSzNTczkc9d\'?>\n<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Image::ExifTool 10.40\'>\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n</rdf:RDF>\n</x:xmpmeta>\n<?xpacket end=\'w\'?>";
 		    
-			var data = new ReadMetaXmp(null).GetDataFromString(xmpStart);
+			var data =  ReadMetaXmp.GetDataFromString(xmpStart);
 		    
 			Assert.AreEqual(string.Empty,data.Tags);
 
@@ -187,7 +187,7 @@ namespace starskytest.Services
 		{
 			var xmpStart =
 				"<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Qdraw\'>\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n</rdf:RDF>\n</x:xmpmeta>";
-			var data = new ReadMetaXmp(null).GetDataFromString(xmpStart);
+			var data = ReadMetaXmp.GetDataFromString(xmpStart);
 			Assert.AreEqual(string.Empty,data.Tags);
 
 		}

@@ -31,7 +31,7 @@ namespace starsky.Helpers
 						{
 							Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "basic" }
 						},
-						new string[] {}
+						System.Array.Empty<string>()
 					}
 				});
 				// DescribeAllEnumsAsStrings are not working

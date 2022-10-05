@@ -82,7 +82,7 @@ namespace starsky.foundation.metathumbnail.Services
 			
 		}
 		
-		internal float RotateEnumToDegrees(FileIndexItem.Rotation rotation)
+		internal static float RotateEnumToDegrees(FileIndexItem.Rotation rotation)
 		{
 			// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 			switch ( rotation )

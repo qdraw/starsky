@@ -7,7 +7,7 @@ import {
 import FetchPost from "../../../shared/fetch-post";
 
 const CastFileIndexItem = (element: any): IFileIndexItem => {
-  var uploadFileObject = newIFileIndexItem();
+  const uploadFileObject = newIFileIndexItem();
   uploadFileObject.fileHash = element.fileHash;
   uploadFileObject.filePath = element.filePath;
   uploadFileObject.isDirectory = false;
@@ -26,7 +26,7 @@ export function PostSingleFormData(
   callBackWhenReady: (result: IFileIndexItem[]) => void,
   setNotificationStatus: React.Dispatch<React.SetStateAction<string>>
 ) {
-  var formData = new FormData();
+  const formData = new FormData();
 
   if (inputFilesList.length === index) {
     setNotificationStatus("");

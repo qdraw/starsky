@@ -46,7 +46,7 @@ namespace starsky.feature.geolookup.Services
 				catch ( FileNotFoundException e )
 				{
 					console.WriteLine("> Not allowed to write to disk:");
-					console.WriteLine(e.ToString());
+					console.WriteLine("> " + e);
 				}
 			}
 		}

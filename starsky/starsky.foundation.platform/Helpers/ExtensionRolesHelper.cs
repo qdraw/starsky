@@ -93,10 +93,10 @@ namespace starsky.foundation.platform.Helpers
 			if ( matchCollection.Count == 0 ) return ImageFormat.unknown;
 			
 			// ReSharper disable once LoopCanBeConvertedToQuery
-			foreach ( Match match in matchCollection )
+			foreach ( var matchValue in matchCollection.Select(p => p.Value) )
 			{
-				if ( match.Value.Length < 2 ) continue;
-				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
+				if ( matchValue.Length < 2 ) continue;
+				var ext = matchValue.Remove(0, 1).ToLowerInvariant();
 
 				return MapFileTypesToExtensionDictionary.FirstOrDefault(p => p.Value.Contains(ext)).Key;
 			}
@@ -267,10 +267,10 @@ namespace starsky.foundation.platform.Helpers
 			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
 			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);
 			if ( matchCollection.Count == 0 ) return false;
-			foreach ( Match match in matchCollection )
+			foreach ( var matchValue in matchCollection.Select(p => p.Value) )
 			{
-				if ( match.Value.Length < 2 ) continue;
-				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
+				if ( matchValue.Length < 2 ) continue;
+				var ext = matchValue.Remove(0, 1).ToLowerInvariant();
 				if ( checkThisList.Contains(ext) ) return true;
 			}
 			return false;

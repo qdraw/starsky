@@ -235,8 +235,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new FileIndexItem() { FilePath = "/4.jpg", Status = FileIndexItem.ExifStatus.NotFoundSourceMissing}
 			};
 
-			var result = new SyncWatcherConnector(null,null,
-				null,null, new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration())).FilterBefore(fileIndexItems);
+			var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
 			Assert.AreEqual(4,result.Count);
 		}
 		
@@ -249,8 +248,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new FileIndexItem() { FilePath = "/1.jpg",Status = FileIndexItem.ExifStatus.Ok},
 
 			};
-			var result = new SyncWatcherConnector(null,null,
-				null,null, new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration())).FilterBefore(fileIndexItems);
+			var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
 			Assert.AreEqual(1,result.Count);
 		}
 		
