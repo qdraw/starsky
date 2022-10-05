@@ -46,7 +46,10 @@ namespace starsky.foundation.injection
 
         public static void Add(this IServiceCollection serviceCollection, InjectionLifetime ioCLifetime, params Type[] types)
         {
-	        if(types == null) throw new ArgumentNullException(types + nameof(types));
+	        if ( types == null )
+	        {
+		        throw new ArgumentNullException(types + nameof(types));
+	        }
 
             foreach (var type in types)
             {

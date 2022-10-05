@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,9 +10,10 @@ namespace starsky.foundation.platform.Extensions
 {
 	public static class MemoryCacheExtensions
 	{
+		[SuppressMessage("Usage", "S3011:Make sure that this accessibility bypass is safe here", Justification = "Safe")]
 		private static readonly Func<MemoryCache, object> GetEntriesCollection = Delegate.CreateDelegate(
 			typeof(Func<MemoryCache, object>),
-			typeof(MemoryCache).GetProperty("EntriesCollection", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true),
+			typeof(MemoryCache).GetProperty("EntriesCollection", BindingFlags.NonPublic | BindingFlags.Instance)?.GetGetMethod(true)!,
 			throwOnBindFailure: true) as Func<MemoryCache, object>;
 
 		private static IEnumerable GetKeys(this IMemoryCache memoryCache) =>
