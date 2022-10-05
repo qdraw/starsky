@@ -361,19 +361,19 @@ namespace starsky.feature.webhtmlpublish.Services
 	    {
 		    _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
 		    
-		    foreach (var item in fileIndexItemsList)
+		    foreach (var subPath in fileIndexItemsList.Select(p => p.FilePath))
 		    {
 			    // input: item.FilePath
 			    var outputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder,
-				    item.FilePath, profile);
+				    subPath, profile);
 
-			    await _hostFileSystemStorage.WriteStreamAsync(_subPathStorage.ReadStream(item.FilePath),
+			    await _hostFileSystemStorage.WriteStreamAsync(_subPathStorage.ReadStream(subPath),
 				    outputPath);
                 
 			    // only delete when using in cli mode
 			    if ( moveSourceFiles )
 			    {
-				    _subPathStorage.FileDelete(item.FilePath);
+				    _subPathStorage.FileDelete(subPath);
 			    }
 		    }
 		    return fileIndexItemsList.ToDictionary(item =>
