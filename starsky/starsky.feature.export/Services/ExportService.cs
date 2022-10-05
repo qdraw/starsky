@@ -210,7 +210,7 @@ namespace starsky.feature.export.Services
 		/// </summary>
 		/// <param name="fileIndexResultsList">list of objects with fileHashes</param>
 		/// <returns>unique 'get hashcode' string</returns>
-		private string GetName(List<FileIndexItem> fileIndexResultsList)
+		private static string GetName(IEnumerable<FileIndexItem> fileIndexResultsList)
 		{
 			var tempFileNameStringBuilder = new StringBuilder();
 			foreach ( var item in fileIndexResultsList )
