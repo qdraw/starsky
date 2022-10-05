@@ -82,7 +82,7 @@ namespace starskytest.Controllers
 			var actionResult = controller.Index("/homecontrollertest",null,true) as JsonResult;
 			Assert.AreNotEqual(actionResult,null);
 			var jsonCollection = actionResult.Value as ArchiveViewModel;
-			Assert.AreEqual(jsonCollection.FileIndexItems.FirstOrDefault().FileHash,"home0012304590");
+			Assert.AreEqual("home0012304590",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
 		}
 		
 		[TestMethod]
