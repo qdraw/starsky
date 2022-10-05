@@ -8,7 +8,7 @@ steps:
     condition: and(succeeded(), eq('${{ parameters.unitTest }}', true) )
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} --target CoverageReport --skip'
+      arguments: '${{ parameters.runtimeArg }} --target CoverageReport --skip --no-logo'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 

@@ -210,9 +210,13 @@ namespace starsky.foundation.platform.Helpers
 		/// Show Help dialog
 		/// </summary>
 		/// <exception cref="FieldAccessException">use appsettings</exception>
+		[SuppressMessage("Usage", "S2068:password detected here, make sure this is not a hard-coded credential")]
 		public void NeedHelpShowDialog()
 		{
-			if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
+			if ( _appSettings == null )
+			{
+				throw new FieldAccessException("use with _appsettings");
+			}
 			
 			_console.WriteLine("Starksy " + _appSettings.ApplicationType + " Cli ~ Help:");
 			_console.WriteLine("--help or -h == help (this window)");
