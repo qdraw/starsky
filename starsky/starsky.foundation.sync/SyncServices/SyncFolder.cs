@@ -90,6 +90,7 @@ namespace starsky.foundation.sync.SyncServices
 				allResults.AddRange(resultChunk);
 			}
 			
+			// query.DisposeAsync is called to avoid memory usage
 			_query = new QueryFactory(_setupDatabaseTypes, _query, _memoryCache, _appSettings, _logger).Query()!;
 			
 			// // remove the duplicates from a large list of folders
