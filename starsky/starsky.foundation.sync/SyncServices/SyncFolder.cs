@@ -66,7 +66,9 @@ namespace starsky.foundation.sync.SyncServices
 				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate);
+				_console.Write("⁘");
+				
+				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate, false);
 				allResults.AddRange(indexItems);
 
 				var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems)).Where(p => p != null).ToList();
@@ -147,7 +149,7 @@ namespace starsky.foundation.sync.SyncServices
 		private async Task<List<FileIndexItem>> LoopOverFolder(
 			IReadOnlyCollection<FileIndexItem> fileIndexItems,
 			IReadOnlyCollection<string> pathsOnDisk,
-			ISynchronize.SocketUpdateDelegate? updateDelegate)
+			ISynchronize.SocketUpdateDelegate? updateDelegate, bool addParentFolder)
 		{
 			var fileIndexItemsOnlyFiles = fileIndexItems
 				.Where(p => p.IsDirectory == false).ToList();
@@ -164,7 +166,7 @@ namespace starsky.foundation.sync.SyncServices
 					var syncMultiFile = new SyncMultiFile(_appSettings, query,
 						_subPathStorage,
 						_logger);
-					var databaseItems = await syncMultiFile.MultiFile(subPathInFiles, updateDelegate);
+					var databaseItems = await syncMultiFile.MultiFile(subPathInFiles, updateDelegate, addParentFolder);
 				
 					await new SyncRemove(_appSettings, _setupDatabaseTypes,
 							query, _memoryCache, _logger)
@@ -190,20 +192,24 @@ namespace starsky.foundation.sync.SyncServices
 		
 			return results;
 		}
-	
-		internal static List<string> PathsToUpdateInDatabase(IEnumerable<FileIndexItem> fileIndexItems, 
+
+		internal static List<FileIndexItem> PathsToUpdateInDatabase(
+			List<FileIndexItem> databaseItems, 
 			IReadOnlyCollection<string> pathsOnDisk)
 		{
-			var pathFormFileIndexItems = fileIndexItems.Select(p => p.FilePath).ToList();
-
-			// files that still lives in the db but not on disk
-			var pathsToRemovedFromDb = pathFormFileIndexItems.Except(pathsOnDisk).ToList();
-
-			// and combine all items
-			var pathsToScan = new List<string>(pathsToRemovedFromDb);
-			pathsToScan.AddRange(pathsOnDisk);
-			// and order by alphabet and remove duplicates
-			return new HashSet<string>(pathsToScan).OrderBy(p => p).ToList();
+			var resultDatabaseItems = new List<FileIndexItem>(databaseItems);
+			foreach ( var path in pathsOnDisk )
+			{
+				var item = databaseItems.FirstOrDefault(p => string.Equals(p.FilePath, path, StringComparison.InvariantCultureIgnoreCase));
+				if (item == null ) // when the file should be added to the index
+				{
+					// Status is used by MultiFile
+					resultDatabaseItems.Add(new FileIndexItem(path){Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+					continue;
+				}
+				resultDatabaseItems.Add(item);
+			}
+			return resultDatabaseItems.DistinctBy(p => p.FilePath).ToList();;
 		}
 	
 		private async Task<List<FileIndexItem?>> CheckIfFolderExistOnDisk(List<FileIndexItem> fileIndexItems)

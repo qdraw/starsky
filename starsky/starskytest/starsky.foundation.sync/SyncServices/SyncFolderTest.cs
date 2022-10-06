@@ -257,7 +257,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				});
 
 			Assert.AreEqual(1, results.Count);
-			Assert.AreEqual("/test.jpg", results[0]);
+			Assert.AreEqual("/test.jpg", results[0].FilePath);
 		}
 		
 		[TestMethod]
@@ -270,7 +270,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				}, Array.Empty<string>());
 
 			Assert.AreEqual(1, results.Count);
-			Assert.AreEqual("/test.jpg", results[0]);
+			Assert.AreEqual("/test.jpg", results[0].FilePath);
 		}
 		
 		[TestMethod]
@@ -286,8 +286,23 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				});
 
 			Assert.AreEqual(1, results.Count);
-			Assert.AreEqual("/test.jpg", results[0]);
+			Assert.AreEqual("/test.jpg", results[0].FilePath);
 		}
+		
+		[TestMethod]
+		public void PathsToUpdateInDatabase_Duplicates()
+		{
+			var results = SyncFolder.PathsToUpdateInDatabase(
+				new List<FileIndexItem>(), new List<string>
+				{
+					"/test.jpg",
+					"/test.jpg"
+				});
+
+			Assert.AreEqual(1, results.Count);
+			Assert.AreEqual("/test.jpg", results[0].FilePath);
+		}
+
 		
 				
 		[TestMethod]

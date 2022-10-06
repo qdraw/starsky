@@ -43,6 +43,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task<List<FileIndexItem>> MultiFile(List<string> subPathInFiles,
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
+			_logger.LogInformation("MultiFileQuery: " + string.Join(",", subPathInFiles));
 			var databaseItems = await _query.GetObjectsByFilePathQueryAsync(subPathInFiles);
 
 			var resultDatabaseItems = new List<FileIndexItem>();
@@ -60,22 +61,27 @@ namespace starsky.foundation.sync.SyncServices
 
 			return await MultiFile(resultDatabaseItems, updateDelegate);
 		}
-	
+
 		/// <summary>
 		/// For Checking single items without querying the database
 		/// </summary>
 		/// <param name="dbItems">current items</param>
 		/// <param name="updateDelegate">push updates realtime to the user and avoid waiting</param>
+		/// <param name="addParentFolder"></param>
 		/// <returns>updated item with status</returns>
-		internal async Task<List<FileIndexItem>> MultiFile(List<FileIndexItem> dbItems,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+		internal async Task<List<FileIndexItem>> MultiFile(
+			List<FileIndexItem> dbItems,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			bool addParentFolder = true)
 		{
 			if ( dbItems == null ) return new List<FileIndexItem>();
 						
 			SyncSingleFile.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
 
-			foreach ( var xmpOrSidecarFiles in dbItems.Where(p => ExtensionRolesHelper.IsExtensionSidecar(p.FileName)) )
+			// Update XMP files, does an extra query to the database. in the future this needs to be refactored
+			foreach ( var xmpOrSidecarFiles in dbItems.Where(p => ExtensionRolesHelper.IsExtensionSidecar(p.FilePath)) )
 			{
+				// Query!
 				await _syncSingleFile.UpdateSidecarFile(xmpOrSidecarFiles.FilePath);
 			}
 			
@@ -99,6 +105,7 @@ namespace starsky.foundation.sync.SyncServices
 				}
 			}
 		
+			// Multi thread check for file hash
 			var isSameUpdatedItemList = await dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame).ForEachAsync(
 				async dbItem => await _syncSingleFile.SizeFileHashIsTheSame(dbItem), _appSettings.MaxDegreesOfParallelism);
 			if ( isSameUpdatedItemList != null )
@@ -125,8 +132,12 @@ namespace starsky.foundation.sync.SyncServices
 				SyncSingleFile.AddDeleteStatus(newItem);
 				dbItems[newItemIndex] = newItem;
 			}
-			
-			dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
+
+			if ( addParentFolder )
+			{
+				_logger.LogInformation("Add Parent Folder For: " + string.Join(",", dbItems.Select(p => p.FilePath)));
+				dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
+			}
 		
 			if ( updateDelegate == null ) return dbItems;
 			return await PushToSocket(dbItems, updateDelegate);
