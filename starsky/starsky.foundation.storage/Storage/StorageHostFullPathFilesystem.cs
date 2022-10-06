@@ -135,6 +135,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>list of paths</returns>
 		public IEnumerable<string> GetDirectoryRecursive(string path, bool orderByAlphabet)
 		{
+			// Tuple > FilePath,Directory.GetLastWriteTime
 			var folders = new Queue<Tuple<string,DateTime>>();
 			folders.Enqueue(new Tuple<string, DateTime>(path, Directory.GetLastWriteTime(path)));
 			var folderList = new List<Tuple<string,DateTime>>();
