@@ -76,20 +76,21 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
 			var query = buildServiceProvider.GetService<IQuery>();
 				
-			var cacheDbName = new Query(null,null, null, null).CachingDbName(nameof(FileIndexItem), "/");
+			var cacheDbName = new Query(null,null, 
+				null, null).CachingDbName(nameof(FileIndexItem), "/");
 			memoryCache!.Remove(cacheDbName);
 			
 			var cachedContent = new List<FileIndexItem>
 			{
-				new FileIndexItem("/test999.jpg")
+				new FileIndexItem("/999_not_found.jpg")
 			};
 			memoryCache.Set(cacheDbName, cachedContent);
-			await query!.AddItemAsync(new FileIndexItem("/test999.jpg"));
+			await query!.AddItemAsync(new FileIndexItem("/999_not_found.jpg"));
 
 			var item = new FakeSelectorStorage(
 					new FakeIStorage(new List<string> { "/" }, 
 						new List<string>{"/test2__1234.jpg","/test3__1234.jpg"}, 
-						new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes, FakeCreateAn.CreateAnImage.Bytes}));
+						new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes, FakeCreateAn.CreateAnImageNoExif.Bytes}));
 			
 			await new ManualBackgroundSyncService(
 					new Synchronize(appSettings, query, item, new FakeIWebLogger(), memoryCache),

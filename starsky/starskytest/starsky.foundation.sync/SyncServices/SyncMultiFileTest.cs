@@ -94,7 +94,12 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task MultiFile_AddNewFile_WithParentFolders()
 		{
-			var iStorageFake = new FakeIStorage(new List<string>{"/level/deep/"},
+			var iStorageFake = new FakeIStorage(new List<string>
+				{
+					"/",
+					"/level",
+					"/level/deep"
+				},
 				new List<string>{"/level/deep/test.jpg"},
 				new List<byte[]>{CreateAnImageNoExif.Bytes});
 			
@@ -449,6 +454,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			Assert.AreEqual(1,fileIndexItem.SidecarExtensionsList.Count);
 			Assert.AreEqual("xmp",fileIndexItem.SidecarExtensionsList.ToList()[0]);
+			
+			var fileIndexItem2 = fakeQuery.SingleItem("/test.xmp")?.FileIndexItem;
+			Assert.IsNull(fileIndexItem2);
 		}
 		
 		[TestMethod]

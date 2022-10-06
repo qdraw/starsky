@@ -147,9 +147,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await _query.AddItemAsync(new FileIndexItem("/Folder_Duplicate/test.jpg"));
 			await _query.AddItemAsync(new FileIndexItem("/Folder_Duplicate/test.jpg")); // yes this is duplicate!
 			
+			var queryResultBefore = await _query.GetAllFilesAsync("/Folder_Duplicate");
+			Assert.AreEqual(2, queryResultBefore.Count);
+
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
-			var result = await syncFolder.Folder("/Folder_Duplicate");
+			var result = 
+				(await syncFolder.Folder("/Folder_Duplicate")).Where(p => p.FilePath != "/").ToList();
 
 			Assert.AreEqual(2, result.Count);
 			var queryResult = await _query.GetAllFilesAsync("/Folder_Duplicate");

@@ -19,15 +19,15 @@ namespace starsky.foundation.database.Query
 		{
 			if ( !fileIndexItemList.Any() ) return new List<FileIndexItem>();
 
-			async Task LocalQuery(ApplicationDbContext context)
+			async Task LocalQuery(ApplicationDbContext context, IEnumerable<FileIndexItem> items)
 			{
-				await context.FileIndex.AddRangeAsync(fileIndexItemList);
+				await context.FileIndex.AddRangeAsync(items);
 				await context.SaveChangesAsync();
 			}
 
 			try
 			{
-				await LocalQuery(_context);
+				await LocalQuery(_context, fileIndexItemList);
 			}
 			catch ( DbUpdateConcurrencyException concurrencyException)
 			{
@@ -48,9 +48,11 @@ namespace starsky.foundation.database.Query
 			}
 			catch (ObjectDisposedException)
 			{
-				await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(), fileIndexItemList);
 			}
 
+			fileIndexItemList = FormatOk(fileIndexItemList, FileIndexItem.ExifStatus.NotFoundNotInIndex);
+			
 			foreach ( var fileIndexItem in fileIndexItemList )
 			{
 				AddCacheItem(fileIndexItem);

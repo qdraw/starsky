@@ -121,7 +121,7 @@ namespace starsky.foundation.sync.SyncServices
 			// Cached values are not checked for performance reasons 
 			if ( dbItem.Status == FileIndexItem.ExifStatus.OkAndSame )
 			{
-				_logger.LogDebug($"[SingleFile/db] OkAndSame {subPath} {Synchronize.DateTimeDebug()}");
+				_logger.LogDebug($"[SingleFile/db] OkAndSame {subPath} ~ {Synchronize.DateTimeDebug()}");
 				return dbItem;
 			}
 
@@ -174,6 +174,18 @@ namespace starsky.foundation.sync.SyncServices
 			return dbItem;
 		}
 
+		internal static List<FileIndexItem> AddDeleteStatus(IEnumerable<FileIndexItem> dbItems,
+			FileIndexItem.ExifStatus exifStatus =
+				FileIndexItem.ExifStatus.Deleted)
+		{
+			return dbItems.Select(item => AddDeleteStatus(item, exifStatus)).ToList();
+		}
+
+		internal IEnumerable<FileIndexItem> CheckForStatusNotOk(IEnumerable<string> subPaths)
+		{
+			return subPaths.Select(CheckForStatusNotOk);
+		}
+
 		/// <summary>
 		/// When the file is not supported or does not exist return status
 		/// </summary>
@@ -190,6 +202,12 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 
+			if ( !_subPathStorage.ExistFile(subPath) )
+			{
+				statusItem.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+				return statusItem;
+			}
+			
 			// File check if jpg #not corrupt
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath,160));
 			if ( imageFormat == ExtensionRolesHelper.ImageFormat.notfound )
@@ -226,25 +244,29 @@ namespace starsky.foundation.sync.SyncServices
 			AddDeleteStatus(dbItem);
 			return dbItem;
 		}
-		
+
 		/// <summary>
 		/// Create an new item in the database
 		/// </summary>
 		/// <param name="statusItems">contains the status</param>
+		/// <param name="addParentItem"></param>
 		/// <returns>database item</returns>
-		internal async Task<FileIndexItem> NewItem(List<FileIndexItem> statusItems)
+		internal async Task<List<FileIndexItem>> NewItem(List<FileIndexItem> statusItems, bool addParentItem)
 		{
 			// Add a new Item
 			var dbItems = await _newItem.NewFileItem(statusItems);
 
-			var okDbItems = dbItems.Where(p => p.)
 			// When not OK do not Add (fileHash issues)
-			if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
-				
-			await _query.AddItemAsync(dbItem);
-			await _query.AddParentItemsAsync(subPath);
-			AddDeleteStatus(dbItem);
-			return dbItem;
+			var okDbItems =
+				dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+			await _query.AddRangeAsync(okDbItems);
+
+			if ( addParentItem )
+			{
+				await new AddParentList(_subPathStorage, _query)
+					.AddParentItems(okDbItems);
+			}
+			return dbItems;
 		}
 
 		/// <summary>

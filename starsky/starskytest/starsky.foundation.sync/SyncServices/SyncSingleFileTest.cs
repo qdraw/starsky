@@ -492,7 +492,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
 				_iStorageFake, new FakeIWebLogger());
 
-			var result = SyncSingleFile.AddDeleteStatus(null);
+			var result = SyncSingleFile.AddDeleteStatus(null as FileIndexItem);
 			Assert.IsNull(result);
 		}
 		

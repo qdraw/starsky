@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
@@ -68,49 +71,72 @@ namespace starsky.foundation.sync.SyncServices
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			if ( dbItems == null ) return new List<FileIndexItem>();
-			
-			// // TODO: BATCH add
-			// if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex )
-			// {
-			// 	updatedDbItems.Add(await _syncSingleFile.NewItem(statusItem, dbItem.FilePath));
-			// 	return updatedDbItems;
-			// }
-			List<FileIndexItem> updatedDbItems = await _syncSingleFile.NewItem(statusItem, dbItem.FilePath));
-			
-			updatedDbItems.AddRange(await dbItems.Where( p => p.Status != FileIndexItem.ExifStatus.NotFoundNotInIndex).ForEachAsync(
-				async dbItem =>
-				{
-					// await _syncSingleFile.UpdateSidecarFile(dbItem.FilePath);
-			
-					var statusItem =  _syncSingleFile.CheckForStatusNotOk(dbItem.FilePath);
-					if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
-					{
-						_logger.LogDebug($"[MultiFile/db] status {statusItem.Status} for {dbItem.FilePath} {Synchronize.DateTimeDebug()}");
-						return statusItem;
-					}
-			
-					var (isSame, updatedDbItem) = await _syncSingleFile.SizeFileHashIsTheSame(dbItem);
-					if ( !isSame )
-					{
-						return await _syncSingleFile.UpdateItem(dbItem, updatedDbItem.Size, dbItem.FilePath, false);
-					}
-			
-					updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-					SyncSingleFile.AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
-			
-					return updatedDbItem;
-				}, _appSettings.MaxDegreesOfParallelism));
+						
+			SyncSingleFile.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
 
-			updatedDbItems = await AddParentItems(updatedDbItems);
+			foreach ( var xmpOrSidecarFiles in dbItems.Where(p => ExtensionRolesHelper.IsExtensionSidecar(p.FileName)) )
+			{
+				await _syncSingleFile.UpdateSidecarFile(xmpOrSidecarFiles.FilePath);
+			}
+			
+			var statusItems =  _syncSingleFile.CheckForStatusNotOk(dbItems.Select(p => p.FilePath)).ToList();
+			foreach ( var statusItem in statusItems )
+			{
+				var dbItemSearched = dbItems.FirstOrDefault(p =>
+					p.FilePath == statusItem.FilePath);
+				if ( dbItemSearched == null || (dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex 
+				                                && statusItem.Status == FileIndexItem.ExifStatus.Ok))
+				{
+					continue;
+				}
+				
+				dbItemSearched.Status = statusItem.Status;
+				
+				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok } )
+				{
+					// there is still a check if the file is not changed see: SizeFileHashIsTheSame
+					dbItemSearched.Status = FileIndexItem.ExifStatus.OkAndSame;
+				}
+			}
 		
-			if ( updateDelegate == null ) return updatedDbItems;
-			return await PushToSocket(updatedDbItems, updateDelegate);
+			var isSameUpdatedItemList = await dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame).ForEachAsync(
+				async dbItem => await _syncSingleFile.SizeFileHashIsTheSame(dbItem), _appSettings.MaxDegreesOfParallelism);
+			if ( isSameUpdatedItemList != null )
+			{
+				foreach ( var (_,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> !p.Item1) )
+				{
+					await _syncSingleFile.UpdateItem(isSameUpdatedItem,
+						isSameUpdatedItem.Size,
+						isSameUpdatedItem.FilePath, false);
+				}
+			}
+
+			// add new items
+			var newItemsList = await _syncSingleFile.NewItem(
+				dbItems.Where(p =>
+					p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex
+				).ToList(), false);
+			foreach ( var newItem in newItemsList )
+			{
+				var newItemIndex = dbItems.FindIndex(
+					p => p.FilePath == newItem.FilePath);
+				if ( newItemIndex < 0 ) continue;
+				newItem.Status = FileIndexItem.ExifStatus.Ok;
+				SyncSingleFile.AddDeleteStatus(newItem);
+				dbItems[newItemIndex] = newItem;
+			}
+			
+			dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
+		
+			if ( updateDelegate == null ) return dbItems;
+			return await PushToSocket(dbItems, updateDelegate);
 		}
 	
 		private static async Task<List<FileIndexItem>> PushToSocket(List<FileIndexItem> updatedDbItems,
 			ISynchronize.SocketUpdateDelegate updateDelegate)
 		{
 			var notOkayAndSame = updatedDbItems.Where(p =>
+				p != null && 
 				p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
 			if ( notOkayAndSame.Any() )
 			{
@@ -119,19 +145,7 @@ namespace starsky.foundation.sync.SyncServices
 			return updatedDbItems;
 		}
 
-		private async Task<List<FileIndexItem>> AddParentItems(List<FileIndexItem> updatedDbItems)
-		{
-			// give parent folders back
-			var addedParentItems = new List<FileIndexItem>();
-			foreach ( var subPath in updatedDbItems
-				         .Select(p => p.ParentDirectory).Distinct()
-				         .Where(p => _subPathStorage.ExistFolder(p)))
-			{
-				addedParentItems.AddRange(await _query.AddParentItemsAsync(subPath));
-			}
-			updatedDbItems.AddRange(addedParentItems);
-			return updatedDbItems;
-		}
+
 
 	}
 
