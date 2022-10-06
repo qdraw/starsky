@@ -127,23 +127,30 @@ namespace starsky.foundation.storage.Storage
 			return Directory.GetDirectories(path).OrderBy(p => p);
 		}
 
-		public IEnumerable<string> GetDirectoryRecursive(string path)
+		/// <summary>
+		/// Returns a list of directories // Get list of child folders
+		/// </summary>
+		/// <param name="path">path</param>
+		/// <param name="orderByAlphabet">order by alphabet or last edited, newest first</param>
+		/// <returns>list of paths</returns>
+		public IEnumerable<string> GetDirectoryRecursive(string path, bool orderByAlphabet)
 		{
-			var folders = new Queue<string>();
-			folders.Enqueue(path);
-			var folderList = new List<string>();
+			var folders = new Queue<Tuple<string,DateTime>>();
+			folders.Enqueue(new Tuple<string, DateTime>(path, Directory.GetLastWriteTime(path)));
+			var folderList = new List<Tuple<string,DateTime>>();
 			while (folders.Count != 0) {
-				var currentFolder = folders.Dequeue();
+				var (currentFolder,_) = folders.Dequeue();
 				try
 				{
 					var foldersInCurrent = Directory.GetDirectories(currentFolder,
 						"*.*", SearchOption.TopDirectoryOnly);
 					foreach ( var current in foldersInCurrent )
 					{
-						folders.Enqueue(current);
+						var lastEditDate = orderByAlphabet ? DateTime.MaxValue : Directory.GetLastWriteTime(current);
+						folders.Enqueue(new Tuple<string, DateTime>(current, lastEditDate));
 						if ( Directory.GetLastAccessTime(current).Year != 1 )
 						{
-							folderList.Add(current);
+							folderList.Add(new Tuple<string, DateTime>(current, lastEditDate));
 						}
 					}
 				}
@@ -152,7 +159,10 @@ namespace starsky.foundation.storage.Storage
 					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed UnauthorizedAccessException => " + e.Message);
 				}
 			}
-			return folderList.OrderBy(p => p);
+
+			return orderByAlphabet ? 
+				folderList.OrderBy(p => p.Item1).AsEnumerable().Select(p => p.Item1) : 
+				folderList.OrderBy(p => p.Item2).AsEnumerable().Select(p => p.Item1);
 		}
 
 		public Stream ReadStream(string path, int maxRead = -1)

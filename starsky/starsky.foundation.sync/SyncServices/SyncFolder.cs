@@ -52,7 +52,7 @@ namespace starsky.foundation.sync.SyncServices
 			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			var subPaths = new List<string> {inputSubPath};	
-			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath));
+			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath, false));
 			
 			// Loop trough all folders recursive
 			var resultChunkList = await subPaths.ForEachAsync(
