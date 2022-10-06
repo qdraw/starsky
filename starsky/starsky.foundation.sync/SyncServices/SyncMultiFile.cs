@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -18,6 +19,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IWebLogger _logger;
 		private readonly SyncSingleFile _syncSingleFile;
 		private readonly IStorage _subPathStorage;
+		private readonly AppSettings _appSettings;
 
 		public SyncMultiFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IWebLogger logger)
 		{
@@ -26,6 +28,7 @@ namespace starsky.foundation.sync.SyncServices
 				new SyncSingleFile(appSettings, query, subPathStorage, logger);
 			_subPathStorage = subPathStorage;
 			_logger = logger;
+			_appSettings = appSettings;
 		}
 
 		/// <summary>
@@ -64,38 +67,39 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task<List<FileIndexItem>> MultiFile(List<FileIndexItem> dbItems,
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
-			var updatedDbItems = new List<FileIndexItem>();
-			if ( dbItems == null ) return updatedDbItems;
-			foreach ( var dbItem in dbItems )
-			{
-				await _syncSingleFile.UpdateSidecarFile(dbItem.FilePath);
+			if ( dbItems == null ) return new List<FileIndexItem>();
 			
-				var statusItem =  _syncSingleFile.CheckForStatusNotOk(dbItem.FilePath);
-				if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
+			// // TODO: BATCH add
+			// if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex )
+			// {
+			// 	updatedDbItems.Add(await _syncSingleFile.NewItem(statusItem, dbItem.FilePath));
+			// 	return updatedDbItems;
+			// }
+			List<FileIndexItem> updatedDbItems = await _syncSingleFile.NewItem(statusItem, dbItem.FilePath));
+			
+			updatedDbItems.AddRange(await dbItems.Where( p => p.Status != FileIndexItem.ExifStatus.NotFoundNotInIndex).ForEachAsync(
+				async dbItem =>
 				{
-					_logger.LogDebug($"[MultiFile/db] status {statusItem.Status} for {dbItem.FilePath} {Synchronize.DateTimeDebug()}");
-					updatedDbItems.Add(statusItem);
-					continue;
-				}
-
-				if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex )
-				{
-					updatedDbItems.Add(await _syncSingleFile.NewItem(statusItem, dbItem.FilePath));
-					continue;
-				}
+					// await _syncSingleFile.UpdateSidecarFile(dbItem.FilePath);
 			
-				var (isSame, updatedDbItem) = await _syncSingleFile.SizeFileHashIsTheSame(dbItem);
-				if ( !isSame )
-				{
-					updatedDbItems.Add(await _syncSingleFile.UpdateItem(dbItem, updatedDbItem.Size, dbItem.FilePath, false));
-					continue;
-				}
+					var statusItem =  _syncSingleFile.CheckForStatusNotOk(dbItem.FilePath);
+					if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
+					{
+						_logger.LogDebug($"[MultiFile/db] status {statusItem.Status} for {dbItem.FilePath} {Synchronize.DateTimeDebug()}");
+						return statusItem;
+					}
 			
-				updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-				SyncSingleFile.AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
+					var (isSame, updatedDbItem) = await _syncSingleFile.SizeFileHashIsTheSame(dbItem);
+					if ( !isSame )
+					{
+						return await _syncSingleFile.UpdateItem(dbItem, updatedDbItem.Size, dbItem.FilePath, false);
+					}
 			
-				updatedDbItems.Add(updatedDbItem);
-			}
+					updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+					SyncSingleFile.AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			
+					return updatedDbItem;
+				}, _appSettings.MaxDegreesOfParallelism));
 
 			updatedDbItems = await AddParentItems(updatedDbItems);
 		
@@ -120,8 +124,8 @@ namespace starsky.foundation.sync.SyncServices
 			// give parent folders back
 			var addedParentItems = new List<FileIndexItem>();
 			foreach ( var subPath in updatedDbItems
-				.Select(p => p.ParentDirectory).Distinct()
-				.Where(p => _subPathStorage.ExistFolder(p)))
+				         .Select(p => p.ParentDirectory).Distinct()
+				         .Where(p => _subPathStorage.ExistFolder(p)))
 			{
 				addedParentItems.AddRange(await _query.AddParentItemsAsync(subPath));
 			}

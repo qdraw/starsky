@@ -161,8 +161,10 @@ namespace starsky.foundation.sync.SyncServices
 					var subPathInFiles = chunks.ToList();
 				
 					var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
-					var databaseItems = await new SyncMultiFile(_appSettings, query, _subPathStorage,
-						_logger).MultiFile(subPathInFiles, updateDelegate);
+					var syncMultiFile = new SyncMultiFile(_appSettings, query,
+						_subPathStorage,
+						_logger);
+					var databaseItems = await syncMultiFile.MultiFile(subPathInFiles, updateDelegate);
 				
 					await new SyncRemove(_appSettings, _setupDatabaseTypes,
 							query, _memoryCache, _logger)

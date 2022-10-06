@@ -226,6 +226,26 @@ namespace starsky.foundation.sync.SyncServices
 			AddDeleteStatus(dbItem);
 			return dbItem;
 		}
+		
+		/// <summary>
+		/// Create an new item in the database
+		/// </summary>
+		/// <param name="statusItems">contains the status</param>
+		/// <returns>database item</returns>
+		internal async Task<FileIndexItem> NewItem(List<FileIndexItem> statusItems)
+		{
+			// Add a new Item
+			var dbItems = await _newItem.NewFileItem(statusItems);
+
+			var okDbItems = dbItems.Where(p => p.)
+			// When not OK do not Add (fileHash issues)
+			if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
+				
+			await _query.AddItemAsync(dbItem);
+			await _query.AddParentItemsAsync(subPath);
+			AddDeleteStatus(dbItem);
+			return dbItem;
+		}
 
 		/// <summary>
 		/// Update item to database
