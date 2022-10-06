@@ -25,7 +25,7 @@ namespace starsky.foundation.sync.SyncServices
 	{
 		private readonly AppSettings _appSettings;
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;
-		private readonly IQuery _query;
+		private IQuery _query;
 		private readonly IStorage _subPathStorage;
 		private readonly IConsole _console;
 		private readonly Duplicate _duplicate;
@@ -54,30 +54,44 @@ namespace starsky.foundation.sync.SyncServices
 			var subPaths = new List<string> {inputSubPath};	
 			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath));
 			
-			var allResults = new List<FileIndexItem>();
 			// Loop trough all folders recursive
-			foreach ( var subPath in subPaths )
-			{
-				// get only direct child files and folders and NOT recursive
-				var fileIndexItems = await _query.GetAllObjectsAsync(subPath);
-				fileIndexItems = await _duplicate.RemoveDuplicateAsync(fileIndexItems);
-				
-				// And check files within this folder
-				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
-					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
-
-				_console.Write("⁘");
-				
-				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate, false);
-				allResults.AddRange(indexItems);
-
-				var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems)).Where(p => p != null).ToList();
-				if ( dirItems.Any() )
+			var resultChunkList = await subPaths.ForEachAsync(
+				async subPath =>
 				{
-					allResults.AddRange(dirItems!);
-				}
-			}
+					var allResults = new List<FileIndexItem>();
+					var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
+					// get only direct child files and folders and NOT recursive
+					var fileIndexItems = await query!.GetAllObjectsAsync(subPath);
+					fileIndexItems = await new Duplicate(query).RemoveDuplicateAsync(fileIndexItems);
+				
+					// And check files within this folder
+					var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
+						.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
+					_console.Write("⁘");
+				
+					var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate, false);
+					allResults.AddRange(indexItems);
+
+					var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems)).Where(p => p != null).ToList();
+					if ( dirItems.Any() )
+					{
+						allResults.AddRange(dirItems!);
+					}
+
+					await query.DisposeAsync();
+					return allResults;
+				}, _appSettings.MaxDegreesOfParallelism);
+			
+			// Convert chunks into one list
+			var allResults = new List<FileIndexItem>();
+			foreach ( var resultChunk in resultChunkList )
+			{
+				allResults.AddRange(resultChunk);
+			}
+			
+			_query = new QueryFactory(_setupDatabaseTypes, _query, _memoryCache, _appSettings, _logger).Query()!;
+			
 			// // remove the duplicates from a large list of folders
 			var folderList = await _query.GetObjectsByFilePathQueryAsync(subPaths);
 			folderList = await _duplicate.RemoveDuplicateAsync(folderList);
@@ -157,7 +171,7 @@ namespace starsky.foundation.sync.SyncServices
 			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
 			if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
 
-			var resultChunkList = await pathsToUpdateInDatabase.Chunk(200).ForEachAsync(
+			var resultChunkList = await pathsToUpdateInDatabase.Chunk(50).ForEachAsync(
 				async chunks =>
 				{
 					var subPathInFiles = chunks.ToList();
