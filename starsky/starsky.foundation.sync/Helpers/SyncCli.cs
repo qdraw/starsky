@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -57,9 +58,23 @@ namespace starsky.foundation.sync.Helpers
 				{
 					_console.WriteLine($"Not Found: {subPath}");
 				}
-				_console.WriteLine($"\nDone SyncFiles! (in sec: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)})");
+				
+				stopWatch.Stop();
+				_console.WriteLine($"\nDone SyncFiles! {GetStopWatchText(stopWatch)}");
 			}
 			_console.WriteLine("Done!");
+		}
+
+		private static string GetStopWatchText(Stopwatch stopWatch)
+		{
+			var timeText = new StringBuilder(
+				$"(in sec: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)}");
+			if ( stopWatch.Elapsed.TotalMinutes >= 3 )
+			{
+				timeText.Append($" or {stopWatch.Elapsed.TotalMinutes} min");
+			}
+			timeText.Append(' '+')');
+			return timeText.ToString();
 		}
 	}
 }
