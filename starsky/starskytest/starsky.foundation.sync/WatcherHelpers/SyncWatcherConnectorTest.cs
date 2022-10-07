@@ -308,7 +308,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			new CloudRoleNameInitializer($"{new AppSettings().ApplicationType}").Initialize(expected);
 			Assert.AreEqual(expected.Context.Cloud.RoleName, operationHolder.Telemetry.Context.Cloud.RoleName);
 			Assert.AreEqual(expected.Context.Cloud.RoleInstance, operationHolder.Telemetry.Context.Cloud.RoleInstance);
-			connector.EndRequestOperation(operationHolder);
+			connector.EndRequestOperation(operationHolder, "OK");
 		}
 		
 		[TestMethod]
@@ -326,7 +326,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			Assert.AreEqual(expected.Context.Cloud.RoleInstance, operationHolder.Telemetry.Context.Cloud.RoleInstance);
 			// check url
 			Assert.AreEqual(expected.Url, operationHolder.Telemetry.Url);
-			connector.EndRequestOperation(operationHolder);
+			connector.EndRequestOperation(operationHolder, "OK");
 		}
 		
 		[TestMethod]
@@ -349,7 +349,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
 				new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
 
-			var result = connector.EndRequestOperation(new EmptyOperationHolder<RequestTelemetry>());
+			var result = connector.EndRequestOperation(new EmptyOperationHolder<RequestTelemetry>(), "OK");
 			Assert.IsFalse(result);
 		}
 		
@@ -362,7 +362,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 
 			var operationHolder = connector.CreateNewRequestTelemetry();
 
-			var result = connector.EndRequestOperation(operationHolder);
+			var result = connector.EndRequestOperation(operationHolder, "OK");
 
 			Assert.IsTrue(result);
 		}
@@ -377,7 +377,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 
 			var operationHolder = connector.CreateNewRequestTelemetry();
 
-			var result = connector.EndRequestOperation(operationHolder);
+			var result = connector.EndRequestOperation(operationHolder, "OK");
 
 			Assert.IsFalse(result);
 		}

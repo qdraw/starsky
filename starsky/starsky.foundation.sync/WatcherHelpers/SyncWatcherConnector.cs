@@ -91,7 +91,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			return operation;
 		}
 
-		internal bool EndRequestOperation(IOperationHolder<RequestTelemetry> operation)
+		internal bool EndRequestOperation(IOperationHolder<RequestTelemetry> operation, string statusCode)
 		{
 			if ( _telemetryClient == null || string.IsNullOrEmpty(_appSettings!
 				    .ApplicationInsightsInstrumentationKey) )
@@ -102,7 +102,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			// end operation
 			operation.Telemetry.Success = true;
 			operation.Telemetry.Duration = DateTimeOffset.UtcNow - operation.Telemetry.Timestamp;
-			operation.Telemetry.ResponseCode = "200";
+			operation.Telemetry.ResponseCode = statusCode;
 			_telemetryClient.StopOperation(operation);
 			return true;
 		}
@@ -158,7 +158,10 @@ namespace starsky.foundation.sync.WatcherHelpers
 			var filtered = FilterBefore(syncData);
 			if ( !filtered.Any() )
 			{
-				EndRequestOperation(operation);
+				_logger.LogInformation($"[SyncWatcherConnector/EndOperation] {filtered.Count} ~ "+ 
+	                       string.Join(", ", filtered.Select(p => p.FilePath).ToArray() + " ~ " +
+	                       string.Join(", ", filtered.Select(p => p.Status).ToArray())));
+				EndRequestOperation(operation, string.Join(", ", filtered.Select(p => p.Status).ToArray()));
 				return syncData;
 			}
 
@@ -178,7 +181,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList());
 
 			if ( _serviceScope != null ) await _query.DisposeAsync();
-			EndRequestOperation(operation);
+			EndRequestOperation(operation, "OK");
 			
 			return syncData;
 		}
