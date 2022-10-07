@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualBasic;
 using starsky.Attributes;
 using starsky.feature.import.Interfaces;
 using starsky.feature.import.Services;
@@ -79,10 +80,10 @@ namespace starsky.Controllers
 			var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
 
 			// Import files >
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await ImportPostBackgroundTask(tempImportPaths, importSettings, _appSettings.IsVerbose());
-			});
+			}, string.Join(",", tempImportPaths));
             
 			// When all items are already imported
 			if ( importSettings.IndexMode &&

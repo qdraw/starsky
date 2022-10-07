@@ -16,47 +16,31 @@ namespace starsky.foundation.sync.WatcherHelpers
 	{
 		private readonly IDiskWatcherBackgroundTaskQueue _bgTaskQueue;
 		private readonly SynchronizeDelegate _processFile;
-		private readonly IMemoryCache _memoryCache;
-		private readonly TimeSpan _expirationTime = TimeSpan.FromSeconds(1);
 
 		public QueueProcessor(IServiceScopeFactory serviceProvider,
-			SynchronizeDelegate processFile, IMemoryCache memoryCache)
+			SynchronizeDelegate processFile)
 		{
 			_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider.GetService<IDiskWatcherBackgroundTaskQueue>();
 			_processFile = processFile;
-			_memoryCache = memoryCache;
 		}
 
 		internal QueueProcessor(IDiskWatcherBackgroundTaskQueue diskWatcherBackgroundTaskQueue,
-			SynchronizeDelegate processFile, IMemoryCache memoryCache, TimeSpan expirationTime)
+			SynchronizeDelegate processFile)
 		{
 			_bgTaskQueue = diskWatcherBackgroundTaskQueue;
 			_processFile = processFile;
-			_memoryCache = memoryCache;
-			_expirationTime = expirationTime;
 		}
 
 		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, string, WatcherChangeTypes> value);
 
-		private static string CacheName(string filepath, string toPath)
-		{
-			return $"QueueProcessor{filepath}{toPath}";
-		}
 
-		public void QueueInput(string filepath, string toPath,  WatcherChangeTypes changeTypes)
+		public async Task QueueInput(string filepath, string toPath,
+			WatcherChangeTypes changeTypes)
 		{
-			// to avoid lots of events
-			if (_memoryCache != null && _memoryCache.TryGetValue(CacheName( filepath,  toPath), out _))
-			{
-				return;
-			}
-			_memoryCache?.Set(CacheName( filepath,  toPath), 1, _expirationTime);
-			// ends of avoid lots of events
-			
-			_bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await _processFile.Invoke(new Tuple<string, string, WatcherChangeTypes>(filepath,toPath,changeTypes));
-			});
+			}, $"f:{filepath}t:{toPath}type:{changeTypes}");
 		}
 	}
 

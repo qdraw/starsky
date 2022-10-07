@@ -72,7 +72,7 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				await BackgroundTaskExceptionWrapper(fileIndexItem.FilePath,
 					operationId);
-			});
+			}, fileIndexItem.FilePath);
 
 			return FileIndexItem.ExifStatus.Ok;
 		}

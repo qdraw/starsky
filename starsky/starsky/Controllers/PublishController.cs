@@ -91,14 +91,14 @@ namespace starsky.Controllers
 			// todo: check if overlay image path: WebHtmlPublish/EmbeddedViews/default.png or something else exists
 
 			// Creating Publish is a background task
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				var renderCopyResult = await _publishService.RenderCopy(info, 
 					publishProfileName, itemName, location);
 				await _publishService.GenerateZip(_appSettings.TempFolder, itemName, 
 					renderCopyResult,true );	
 				_webLogger.LogInformation($"[/api/publish/create] done: {itemName} {DateTime.UtcNow}");
-			});
+			},publishProfileName + "_" + itemName);
 			
 			// Get the zip 	by	[HttpGet("/export/zip/{f}.zip")]
 			return Json(slugItemName);

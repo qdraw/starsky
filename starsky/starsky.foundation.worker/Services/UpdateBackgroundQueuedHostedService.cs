@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -25,35 +26,13 @@ namespace starsky.foundation.worker.Services
 
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			return ProcessTaskQueueAsync(stoppingToken);
-		}
-
-		private async Task ProcessTaskQueueAsync(CancellationToken stoppingToken)
-		{
-			while (!stoppingToken.IsCancellationRequested)
-			{
-				try
-				{
-					var workItem =
-						await _taskQueue.DequeueAsync(stoppingToken);
-
-					await workItem(stoppingToken);
-				}
-				catch (OperationCanceledException)
-				{
-					// Prevent throwing if stoppingToken was signaled
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Error occurred executing task work item.");
-				}
-			}
+			return ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger, stoppingToken);
 		}
 
 		public override async Task StopAsync(CancellationToken stoppingToken)
 		{
 			_logger.LogInformation(
-				$"QueuedHostedService is stopping.");
+				$"QueuedHostedService {_taskQueue.GetType().Name} is stopping.");
 			await base.StopAsync(stoppingToken);
 		}
 	}

@@ -55,10 +55,10 @@ namespace starsky.Controllers
 			// NOT covered: when try to export for example image thumbnails of xml file
 				
 			// Creating a zip is a background task
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await _export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName);
-			});
+			}, zipOutputName);
 			
 			// for the rest api
 			return Json(zipOutputName);

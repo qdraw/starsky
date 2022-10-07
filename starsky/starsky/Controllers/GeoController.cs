@@ -82,7 +82,7 @@ namespace starsky.Controllers
 			
 			var operationId = HttpContext.GetOperationId();
 
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				_logger.LogInformation($"{nameof(GeoSyncFolder)} started {f} {DateTime.UtcNow.ToShortTimeString()}");
 				var operationHolder = RequestTelemetryHelper.GetOperationHolder(_serviceScopeFactory,
@@ -96,7 +96,7 @@ namespace starsky.Controllers
 				operationHolder.SetData(_serviceScopeFactory, result);
 				
 				_logger.LogInformation($"{nameof(GeoSyncFolder)} end {f} {operationHolder.Telemetry?.Duration}");
-			});
+			}, f);
 			
 			return Json("job started");
 		}

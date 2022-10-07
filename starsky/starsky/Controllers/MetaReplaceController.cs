@@ -76,7 +76,7 @@ namespace starsky.Controllers
 				await metaUpdateService
 					.UpdateAsync(changedFileIndexItemName, resultsOkOrDeleteList,
 						null, collections, false, 0);
-			});
+			}, string.Empty);
 			
 			// before sending not founds
 			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f,collections, stopwatch);

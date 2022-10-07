@@ -19,7 +19,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 #pragma warning restore CS1998
 			{
 				
-			});
+			}, string.Empty);
 			var token = new CancellationToken();
 			queue.DequeueAsync(token);
 			Assert.IsNotNull(token);

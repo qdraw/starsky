@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.sync.WatcherBackgroundService;
+using starsky.foundation.worker.Interfaces;
 
 namespace starskytest.FakeMocks
 {
@@ -14,16 +15,29 @@ namespace starskytest.FakeMocks
 		public bool QueueBackgroundWorkItemCalled { get; set; }
 		public int QueueBackgroundWorkItemCalledCounter { get; set; } = 0;
 		
-		public ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem)
+		public int Count()
+		{
+			return 0;
+		}
+
+		public ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string metaData)
 		{
 			QueueBackgroundWorkItemCalled = true;
 			QueueBackgroundWorkItemCalledCounter++;
 			return ValueTask.CompletedTask;
 		}
 
-		public ValueTask<Func<CancellationToken, ValueTask>> DequeueAsync(CancellationToken cancellationToken)
+		public ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
+			Func<CancellationToken, ValueTask> sayHello = GetMessage;
+			var res =
+				new Tuple<Func<CancellationToken, ValueTask>, string>(
+					sayHello, "");
+			return ValueTask.FromResult(res);
+		}
+		private ValueTask GetMessage(CancellationToken arg)
+		{
+			return ValueTask.CompletedTask;
 		}
 	}
 

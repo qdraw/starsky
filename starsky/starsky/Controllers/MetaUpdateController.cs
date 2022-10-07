@@ -86,7 +86,7 @@ namespace starsky.Controllers
 					changedFileIndexItemName, fileIndexResultsList, null,
 						collections, append, rotateClock);
 				operationHolder.SetData(_scopeFactory, data);
-			});
+			}, string.Empty);
 
 			// before sending not founds
 			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f,collections, stopwatch);

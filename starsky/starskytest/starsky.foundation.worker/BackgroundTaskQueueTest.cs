@@ -65,7 +65,7 @@ namespace starskytest.starsky.foundation.worker
 					// Cancel request > not tested very good
 					await _bgTaskQueue.DequeueAsync(token);
 				}
-			});
+			}, string.Empty);
 			Assert.IsNotNull(_bgTaskQueue);
 		}
 
@@ -91,9 +91,9 @@ namespace starskytest.starsky.foundation.worker
 			await service.StartAsync(CancellationToken.None);
 
 			var isExecuted = false;
-			await backgroundQueue.QueueBackgroundWorkItemAsync(async token => {
+			await backgroundQueue.QueueBackgroundWorkItemAsync(async _ => {
 				isExecuted = true;
-			});
+			}, string.Empty);
 
 			await Task.Delay(1000);
 			Assert.IsTrue(isExecuted);
@@ -107,7 +107,7 @@ namespace starskytest.starsky.foundation.worker
 		{
 			Func<CancellationToken, ValueTask> func = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func);
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func, string.Empty);
 			Assert.IsNull(func);
 		}
 
@@ -135,7 +135,7 @@ namespace starskytest.starsky.foundation.worker
 				isExecuted = true;
 				throw new Exception();
 				// EXCEPTION IS IGNORED
-			});
+			}, string.Empty);
 
 			await Task.Delay(1000);
 			Assert.IsTrue(isExecuted);

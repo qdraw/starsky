@@ -7,19 +7,32 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 	{
-		
-		public ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem)
+
+		public int Count()
+		{
+			return 0;
+		}
+
+		public ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string metaData)
 		{
 			workItem.Invoke(CancellationToken.None);
+			QueueBackgroundWorkItemCalled = true;
+			QueueBackgroundWorkItemCalledCounter++;
 			return ValueTask.CompletedTask;
 		}
 
-		public ValueTask<Func<CancellationToken, ValueTask>> DequeueAsync(CancellationToken cancellationToken)
+		public int QueueBackgroundWorkItemCalledCounter { get; set; }
+
+		public bool QueueBackgroundWorkItemCalled { get; set; }
+
+		public ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(CancellationToken cancellationToken)
 		{
 			Func<CancellationToken, ValueTask> sayHello = GetMessage;
-			return ValueTask.FromResult(sayHello);
+			var res =
+				new Tuple<Func<CancellationToken, ValueTask>, string>(
+					sayHello, "");
+			return ValueTask.FromResult(res);
 		}
-
 
 		private ValueTask GetMessage(CancellationToken arg)
 		{

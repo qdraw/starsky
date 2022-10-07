@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starskytest.FakeMocks;
 
@@ -18,7 +19,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			var logger = new FakeIWebLogger();
 			var service = new DiskWatcherQueuedHostedService(
 				new FakeDiskWatcherUpdateBackgroundTaskQueue(),
-				logger);
+				logger, new AppSettings());
 			
 			CancellationTokenSource source = new CancellationTokenSource();
 			CancellationToken token = source.Token;
@@ -32,7 +33,10 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			{
 				token
 			});
+			
 			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Queued Hosted Service"));
 		}
+
+
 	}
 }

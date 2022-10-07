@@ -15,7 +15,7 @@ namespace starsky.foundation.worker.Services
     [Service(typeof(IUpdateBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
     public sealed class UpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
     {
-	    private readonly Channel<Func<CancellationToken, ValueTask>> _queue;
+	    private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string>> _queue;
 
 	    public UpdateBackgroundTaskQueue()
 	    {
@@ -23,25 +23,28 @@ namespace starsky.foundation.worker.Services
 		    {
 			    FullMode = BoundedChannelFullMode.Wait
 		    };
-		    _queue = Channel.CreateBounded<Func<CancellationToken, ValueTask>>(options);
+		    _queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(options);
 	    }
-
+	    
+	    public int Count()
+	    {
+		    return _queue.Reader.Count;
+	    }
+	    
 	    public async ValueTask QueueBackgroundWorkItemAsync(
-		    Func<CancellationToken, ValueTask> workItem)
+		    Func<CancellationToken, ValueTask> workItem, string metaData)
 	    {
 		    if (workItem is null)
 		    {
 			    throw new ArgumentNullException(nameof(workItem));
 		    }
-		    await _queue.Writer.WriteAsync(workItem);
+		    await _queue.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem, "update"));
 	    }
 
-	    public async ValueTask<Func<CancellationToken, ValueTask>> DequeueAsync(
+	    public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 		    CancellationToken cancellationToken)
 	    {
-		    var workItem =
-			    await _queue.Reader.ReadAsync(cancellationToken);
-		    return workItem;
+		    return await _queue.Reader.ReadAsync(cancellationToken);
 	    }
     }
 }
