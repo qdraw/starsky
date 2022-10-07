@@ -65,13 +65,13 @@ namespace starsky.foundation.sync.Helpers
 			_console.WriteLine("Done!");
 		}
 
-		private static string GetStopWatchText(Stopwatch stopWatch)
+		internal static string GetStopWatchText(Stopwatch stopWatch, int minMinutes = 3)
 		{
 			var timeText = new StringBuilder(
 				$"(in sec: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)}");
-			if ( stopWatch.Elapsed.TotalMinutes >= 3 )
+			if ( stopWatch.Elapsed.TotalMinutes >= minMinutes )
 			{
-				timeText.Append($" or {stopWatch.Elapsed.TotalMinutes} min");
+				timeText.Append($" or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min");
 			}
 			timeText.Append(' '+')');
 			return timeText.ToString();
