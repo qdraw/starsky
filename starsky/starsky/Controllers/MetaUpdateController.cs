@@ -74,7 +74,7 @@ namespace starsky.Controllers
 			var operationId = HttpContext.GetOperationId();
 			
 			// Update >
-			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				var operationHolder = RequestTelemetryHelper.GetOperationHolder(_scopeFactory,
 					nameof(UpdateAsync), operationId);

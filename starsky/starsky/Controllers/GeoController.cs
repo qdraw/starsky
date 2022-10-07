@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -68,7 +69,7 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(string),404)] // event is fired
 		[ProducesResponseType(typeof(string),200)] // "Not found"
-		public IActionResult GeoSyncFolder(
+		public async Task<IActionResult> GeoSyncFolder(
 			string f = "/",
 			bool index = true,
 			bool overwriteLocationNames = false
@@ -81,7 +82,7 @@ namespace starsky.Controllers
 			
 			var operationId = HttpContext.GetOperationId();
 
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
 			{
 				_logger.LogInformation($"{nameof(GeoSyncFolder)} started {f} {DateTime.UtcNow.ToShortTimeString()}");
 				var operationHolder = RequestTelemetryHelper.GetOperationHolder(_serviceScopeFactory,

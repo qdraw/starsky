@@ -14,9 +14,9 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		public void Test01()
 		{
 			var queue = new DiskWatcherBackgroundTaskQueue();
-#pragma warning disable 1998
-			queue.QueueBackgroundWorkItem(async token =>
-#pragma warning restore 1998
+#pragma warning disable CS1998
+			queue.QueueBackgroundWorkItemAsync(async _ =>
+#pragma warning restore CS1998
 			{
 				
 			});
@@ -26,21 +26,21 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 
 		}
 
-		[TestMethod]
-		public void AppInsights_InjectClient()
-		{
-			var taskQueue = new DiskWatcherBackgroundTaskQueue(
-				new TelemetryClient(new TelemetryConfiguration()));
-			var result = taskQueue.TrackQueue();
-			Assert.IsTrue(result);
-		}
-		
-		[TestMethod]
-		public void AppInsights_DoNotInjectClient()
-		{
-			var taskQueue = new DiskWatcherBackgroundTaskQueue();
-			var result = taskQueue.TrackQueue();
-			Assert.IsFalse(result);
-		}
+		// [TestMethod]
+		// public void AppInsights_InjectClient()
+		// {
+		// 	var taskQueue = new DiskWatcherBackgroundTaskQueue(
+		// 		new TelemetryClient(new TelemetryConfiguration()));
+		// 	var result = taskQueue.TrackQueue();
+		// 	Assert.IsTrue(result);
+		// }
+		//
+		// [TestMethod]
+		// public void AppInsights_DoNotInjectClient()
+		// {
+		// 	var taskQueue = new DiskWatcherBackgroundTaskQueue();
+		// 	var result = taskQueue.TrackQueue();
+		// 	Assert.IsFalse(result);
+		// }
 	}
 }

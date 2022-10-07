@@ -54,9 +54,9 @@ namespace starskytest.starsky.foundation.worker
 		}
         
 		[TestMethod]
-		public void BackgroundTaskQueueTest_DequeueAsync()
+		public async Task BackgroundTaskQueueTest_DequeueAsync()
 		{
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
 			{
 				for (int delayLoop = 0; delayLoop < 3; delayLoop++)
 				{
@@ -91,7 +91,7 @@ namespace starskytest.starsky.foundation.worker
 			await service.StartAsync(CancellationToken.None);
 
 			var isExecuted = false;
-			backgroundQueue.QueueBackgroundWorkItem(async token => {
+			await backgroundQueue.QueueBackgroundWorkItemAsync(async token => {
 				isExecuted = true;
 			});
 
@@ -105,9 +105,9 @@ namespace starskytest.starsky.foundation.worker
 		[TestMethod]
 		public async Task BackgroundTaskQueueTest_ArgumentNullExceptionFail()
 		{
-			Func<CancellationToken, Task> func = null;
+			Func<CancellationToken, ValueTask> func = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			_bgTaskQueue.QueueBackgroundWorkItem(func);
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func);
 			Assert.IsNull(func);
 		}
 
@@ -130,7 +130,7 @@ namespace starskytest.starsky.foundation.worker
 			await service.StartAsync(CancellationToken.None);
 
 			var isExecuted = false;
-			backgroundQueue.QueueBackgroundWorkItem(async token =>
+			await backgroundQueue.QueueBackgroundWorkItemAsync(async token =>
 			{
 				isExecuted = true;
 				throw new Exception();

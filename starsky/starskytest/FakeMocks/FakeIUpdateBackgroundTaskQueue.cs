@@ -7,20 +7,23 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 	{
-		public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem)
+		
+		public ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem)
 		{
 			workItem.Invoke(CancellationToken.None);
+			return ValueTask.CompletedTask;
 		}
 
-		public Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
+		public ValueTask<Func<CancellationToken, ValueTask>> DequeueAsync(CancellationToken cancellationToken)
 		{
-			Func<CancellationToken, Task> sayHello = GetMessage;
-			return Task.FromResult(sayHello);
+			Func<CancellationToken, ValueTask> sayHello = GetMessage;
+			return ValueTask.FromResult(sayHello);
 		}
 
-		private Task GetMessage(CancellationToken arg)
+
+		private ValueTask GetMessage(CancellationToken arg)
 		{
-			return Task.CompletedTask;
+			return ValueTask.CompletedTask;
 		}
 	}
 }

@@ -69,7 +69,7 @@ namespace starsky.Controllers
 				ToDictionary(item => item.FilePath, item => new List<string> {fieldName});
 
 			// Update >
-			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				var metaUpdateService = _scopeFactory.CreateScope()
 					.ServiceProvider.GetRequiredService<IMetaUpdateService>();

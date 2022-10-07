@@ -70,7 +70,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(void), 401)]
 		[HttpPost("/api/publish/create")]
 		[Produces("application/json")]
-		public IActionResult PublishCreate(string f, string itemName, 
+		public async Task<IActionResult> PublishCreate(string f, string itemName, 
 			string publishProfileName, bool force = false)
 		{
 			_webLogger.LogInformation($"[/api/publish/create] Press publish: {itemName} {f} {DateTime.UtcNow}");
@@ -91,7 +91,7 @@ namespace starsky.Controllers
 			// todo: check if overlay image path: WebHtmlPublish/EmbeddedViews/default.png or something else exists
 
 			// Creating Publish is a background task
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
 			{
 				var renderCopyResult = await _publishService.RenderCopy(info, 
 					publishProfileName, itemName, location);

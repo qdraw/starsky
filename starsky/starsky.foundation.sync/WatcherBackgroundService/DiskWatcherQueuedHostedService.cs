@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,21 +15,46 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 		InjectionLifetime = InjectionLifetime.Singleton)]
 	public class DiskWatcherQueuedHostedService : BackgroundService
 	{
+		private readonly IDiskWatcherBackgroundTaskQueue _taskQueue;
 		private readonly IWebLogger _logger;
-		
-		// ReSharper disable once SuggestBaseTypeForParameterInConstructor
-		public DiskWatcherQueuedHostedService(IDiskWatcherBackgroundTaskQueue taskQueue,
-			IWebLogger logger)
-		{
-			TaskQueue = taskQueue;
-			_logger = logger;
-		}
 
-		private IBaseBackgroundTaskQueue TaskQueue { get; }
+		public DiskWatcherQueuedHostedService(
+			IDiskWatcherBackgroundTaskQueue taskQueue,
+			IWebLogger logger) =>
+			(_taskQueue, _logger) = (taskQueue, logger);
 
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			return ProcessTaskQueue.ProcessTaskQueueAsync(TaskQueue, _logger, stoppingToken);
+			return ProcessTaskQueueAsync(stoppingToken);
+		}
+
+		private async Task ProcessTaskQueueAsync(CancellationToken stoppingToken)
+		{
+			while (!stoppingToken.IsCancellationRequested)
+			{
+				try
+				{
+					var workItem =
+						await _taskQueue.DequeueAsync(stoppingToken);
+
+					await workItem(stoppingToken);
+				}
+				catch (OperationCanceledException)
+				{
+					// do nothing! Prevent throwing if stoppingToken was signaled
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Error occurred executing task work item.");
+				}
+			}
+		}
+
+		public override async Task StopAsync(CancellationToken stoppingToken)
+		{
+			_logger.LogInformation(
+				$"QueuedHostedService is stopping.");
+			await base.StopAsync(stoppingToken);
 		}
 	}
 }

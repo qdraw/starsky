@@ -13,14 +13,15 @@ namespace starskytest.FakeMocks
 	{
 		public bool QueueBackgroundWorkItemCalled { get; set; }
 		public int QueueBackgroundWorkItemCalledCounter { get; set; } = 0;
-
-		public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem)
+		
+		public ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem)
 		{
 			QueueBackgroundWorkItemCalled = true;
 			QueueBackgroundWorkItemCalledCounter++;
+			return ValueTask.CompletedTask;
 		}
 
-		public Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
+		public ValueTask<Func<CancellationToken, ValueTask>> DequeueAsync(CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
 		}

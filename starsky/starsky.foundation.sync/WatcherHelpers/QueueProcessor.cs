@@ -53,7 +53,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_memoryCache?.Set(CacheName( filepath,  toPath), 1, _expirationTime);
 			// ends of avoid lots of events
 			
-			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
+			_bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await _processFile.Invoke(new Tuple<string, string, WatcherChangeTypes>(filepath,toPath,changeTypes));
 			});

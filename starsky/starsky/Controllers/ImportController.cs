@@ -79,7 +79,7 @@ namespace starsky.Controllers
 			var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
 
 			// Import files >
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
 			{
 				await ImportPostBackgroundTask(tempImportPaths, importSettings, _appSettings.IsVerbose());
 			});

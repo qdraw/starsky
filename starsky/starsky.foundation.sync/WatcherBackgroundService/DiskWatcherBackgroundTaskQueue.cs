@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -10,49 +11,37 @@ using starsky.foundation.worker.Helpers;
 namespace starsky.foundation.sync.WatcherBackgroundService
 {
 	/// <summary>
-	/// @see: https://www.c-sharpcorner.com/article/how-to-call-background-service-from-net-core-web-api/
+	/// @see: microsoft docs
 	/// </summary>
 	[Service(typeof(IDiskWatcherBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class DiskWatcherBackgroundTaskQueue : IDiskWatcherBackgroundTaskQueue
 	{
-		private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItems = 
-			new ConcurrentQueue<Func<CancellationToken, Task>>();
-		private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
-		private readonly TelemetryClient _telemetryClient;
+		private readonly Channel<Func<CancellationToken, ValueTask>> _queue;
 
-		public DiskWatcherBackgroundTaskQueue(TelemetryClient telemetryClient = null)
+		public DiskWatcherBackgroundTaskQueue()
 		{
-			_telemetryClient = telemetryClient;
-		}
-		
-		public void QueueBackgroundWorkItem(
-			Func<CancellationToken, Task> workItem)
-		{
-			BaseBackgroundTaskQueue.QueueBackgroundWorkItem(workItem, _workItems, _signal);
-		}
-
-		internal bool TrackQueue()
-		{
-			if ( _telemetryClient == null ) return false;
-			var sample = new MetricTelemetry {
-				Sum = _workItems.Count, 
-				Min = 0,
-				Name = nameof(DiskWatcherBackgroundTaskQueue), 
-				Timestamp = DateTimeOffset.UtcNow,
-				MetricNamespace = "Queue"
+			BoundedChannelOptions options = new(int.MaxValue)
+			{
+				FullMode = BoundedChannelFullMode.Wait
 			};
-			_telemetryClient.TrackMetric(sample);
-			_telemetryClient.TrackTrace($"[{nameof(DiskWatcherBackgroundTaskQueue)}] contains {_workItems.Count} items", SeverityLevel.Verbose);
-			return true;
+			_queue = Channel.CreateBounded<Func<CancellationToken, ValueTask>>(options);
 		}
 
-		public async Task<Func<CancellationToken, Task>> DequeueAsync(
+		public async ValueTask QueueBackgroundWorkItemAsync(
+			Func<CancellationToken, ValueTask> workItem)
+		{
+			if (workItem is null)
+			{
+				throw new ArgumentNullException(nameof(workItem));
+			}
+			await _queue.Writer.WriteAsync(workItem);
+		}
+
+		public async ValueTask<Func<CancellationToken, ValueTask>> DequeueAsync(
 			CancellationToken cancellationToken)
 		{
-			var workItem = await BaseBackgroundTaskQueue.DequeueAsync(
-				cancellationToken,
-				_workItems, _signal);
-			TrackQueue();
+			var workItem =
+				await _queue.Reader.ReadAsync(cancellationToken);
 			return workItem;
 		}
 	}
