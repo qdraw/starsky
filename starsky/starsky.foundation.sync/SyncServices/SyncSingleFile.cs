@@ -211,11 +211,6 @@ namespace starsky.foundation.sync.SyncServices
 			
 			// File check if jpg #not corrupt
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath,160));
-			if ( imageFormat == ExtensionRolesHelper.ImageFormat.notfound )
-			{
-				statusItem.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
-				return statusItem;
-			}
 			
 			// ReSharper disable once InvertIf
 			if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(imageFormat.ToString()) )

@@ -657,5 +657,53 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await sync.SingleFile("/from-cache.jpg");
 			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2.Contains("OkAndSame"));
 		}
+
+		[TestMethod]
+		public void CheckForStatusNotOk_CorruptCheck()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+				new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.jpg"}, 
+					new List<byte[]> { Array.Empty<byte>() }),null, new FakeIWebLogger());
+			
+			var item = sync.CheckForStatusNotOk("/test.jpg");
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);
+		}
+		
+		[TestMethod]
+		public void CheckForStatusNotOk_ValidImage()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+				new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.jpg"}, 
+					new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
+			
+			var item = sync.CheckForStatusNotOk("/test.jpg");
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, item.Status);
+		}
+				
+		[TestMethod]
+		public void CheckForStatusNotOk_DifferentTypeNotSupported()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+				new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.43758"}, 
+					new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
+			
+			var item = sync.CheckForStatusNotOk("/test.43758");
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);
+		}
+		
+		[TestMethod]
+		public void CheckForStatusNotOk_NotFound()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+				new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.jpg"}, 
+					new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
+			
+			var item = sync.CheckForStatusNotOk("/not-found.jpg");
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, item.Status);
+		}
 	}
 }
