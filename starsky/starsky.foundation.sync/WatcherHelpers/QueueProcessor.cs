@@ -40,7 +40,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await _processFile.Invoke(new Tuple<string, string, WatcherChangeTypes>(filepath,toPath,changeTypes));
-			}, $"f:{filepath}t:{toPath}type:{changeTypes}");
+			}, $"from:{filepath}" + (string.IsNullOrEmpty(toPath) ? "" : "_to:" + toPath));
 		}
 	}
 
