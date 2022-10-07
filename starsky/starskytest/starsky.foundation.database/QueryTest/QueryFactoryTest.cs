@@ -33,6 +33,16 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(1, resultFakeIQuery?.GetAllRecursive().Count);
 			Assert.AreEqual("/test.jpg", resultFakeIQuery?.GetAllRecursive()[0].FilePath);
 		}
+		
+		[TestMethod]
+		public void QueryFactoryTest_FakeIQuery_IgnoreNoItemsInList()
+		{
+			var fakeIQuery = new FakeIQuery(new List<FileIndexItem>());
+			var query = new QueryFactory(null,fakeIQuery,null,null,null).Query();
+			
+			var resultFakeIQuery = query as FakeIQuery;
+			Assert.AreEqual(0, resultFakeIQuery?.GetAllRecursive().Count);
+		}
 	}
 
 }
