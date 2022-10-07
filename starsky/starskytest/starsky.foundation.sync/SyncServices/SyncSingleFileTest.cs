@@ -487,9 +487,100 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
+		public async Task NewItem_Single_WrongStatus()
+		{
+			var fakeQuery = new FakeIQuery();
+			var sync =  new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, null, new FakeIWebLogger());
+			var syncResult = await sync.NewItem(new FileIndexItem(), "/sub/test8495.jpg");
+
+			Assert.IsNotNull(syncResult);
+			var dbResult = await fakeQuery.GetAllRecursiveAsync();
+			Assert.AreEqual(0, dbResult.Count);
+		}
+		
+		[TestMethod]
+		public async Task NewItem_Single_Ok_AddParentItem()
+		{
+			var fakeQuery = new FakeIQuery();
+			var sync =  new SyncSingleFile(new AppSettings(), fakeQuery,
+				new FakeIStorage(new List<string>{"/", "/sub"}, new List<string>{"/sub/test8495.jpg"}, new List<byte[]>
+				{
+					CreateAnImageNoExif.Bytes
+				}), null, new FakeIWebLogger());
+			var syncResult = await sync.NewItem(new FileIndexItem("/sub/test8495.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.Ok
+			}, "/sub/test8495.jpg");
+
+			Assert.IsNotNull(syncResult);
+			var dbResult = await fakeQuery.GetAllRecursiveAsync();
+			var itemItSelf =
+				dbResult.Any(p => p.FilePath == "/sub/test8495.jpg");
+			var parentItem =
+				dbResult.Any(p => p.FilePath == "/sub");
+			Assert.AreEqual(2, dbResult.Count);
+			
+			Assert.IsTrue(itemItSelf);
+			Assert.IsTrue(parentItem);
+		}
+		
+		[TestMethod]
+		public async Task NewItem_List_Ok_AddParentItem()
+		{
+			var fakeQuery = new FakeIQuery();
+			var sync =  new SyncSingleFile(new AppSettings(), fakeQuery,
+				new FakeIStorage(new List<string>{"/", "/sub"}, new List<string>{"/sub/test8495.jpg"}, new List<byte[]>
+				{
+					CreateAnImageNoExif.Bytes
+				}), null, new FakeIWebLogger());
+			var syncResult = await sync.NewItem(new List<FileIndexItem>{new FileIndexItem("/sub/test8495.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.Ok
+			}}, true);// <- - - - add parent item is True
+
+			Assert.IsNotNull(syncResult);
+			var dbResult = await fakeQuery.GetAllRecursiveAsync();
+			var itemItSelf =
+				dbResult.Any(p => p.FilePath == "/sub/test8495.jpg");
+			var parentItem =
+				dbResult.Any(p => p.FilePath == "/sub");
+			Assert.AreEqual(2, dbResult.Count);
+			
+			Assert.IsTrue(itemItSelf);
+			Assert.IsTrue(parentItem);
+		}
+		
+		[TestMethod]
+		public async Task NewItem_List_Ok_Ignore_AddParentItem()
+		{
+			var fakeQuery = new FakeIQuery();
+			var sync =  new SyncSingleFile(new AppSettings(), fakeQuery,
+				new FakeIStorage(new List<string>{"/", "/sub"}, new List<string>{"/sub/test8495.jpg"}, new List<byte[]>
+				{
+					CreateAnImageNoExif.Bytes
+				}), null, new FakeIWebLogger());
+			var syncResult = await sync.NewItem(new List<FileIndexItem>{new FileIndexItem("/sub/test8495.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.Ok
+			}}, false); // <- - - - add parent item is FALSE
+
+			Assert.IsNotNull(syncResult);
+			var dbResult = await fakeQuery.GetAllRecursiveAsync();
+			var itemItSelf =
+				dbResult.Any(p => p.FilePath == "/sub/test8495.jpg");
+			var parentItem =
+				dbResult.Any(p => p.FilePath == "/sub");
+			Assert.AreEqual(1, dbResult.Count); // 1
+			
+			Assert.IsTrue(itemItSelf);
+			Assert.IsFalse(parentItem); // FALSE
+		}
+		
+		[TestMethod]
 		public void AddDeleteStatus_Null()
 		{
-			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
+			var _ =  new SyncSingleFile(new AppSettings(), new FakeIQuery(),
 				_iStorageFake, null, new FakeIWebLogger());
 
 			var result = SyncSingleFile.AddDeleteStatus(null as FileIndexItem);
