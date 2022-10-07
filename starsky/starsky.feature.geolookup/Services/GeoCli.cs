@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -14,9 +14,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
-using starsky.foundation.writemeta.Services;
 
 namespace starsky.feature.geolookup.Services
 {
@@ -32,6 +30,7 @@ namespace starsky.feature.geolookup.Services
 		private readonly IGeoFileDownload _geoFileDownload;
 		private readonly IExifToolDownload _exifToolDownload;
 
+		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 		public GeoCli(IGeoReverseLookup geoReverseLookup, 
 			IGeoLocationWrite geoLocationWrite, ISelectorStorage selectorStorage, AppSettings appSettings, IConsole console, 
 			IGeoFileDownload geoFileDownload, IExifToolDownload exifToolDownload, IWebLogger logger)

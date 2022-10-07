@@ -225,7 +225,7 @@ namespace starsky.foundation.sync.SyncServices
 				}
 				resultDatabaseItems.Add(item);
 			}
-			return resultDatabaseItems.DistinctBy(p => p.FilePath).ToList();;
+			return resultDatabaseItems.DistinctBy(p => p.FilePath).ToList();
 		}
 	
 		private async Task<List<FileIndexItem?>> CheckIfFolderExistOnDisk(List<FileIndexItem> fileIndexItems)
