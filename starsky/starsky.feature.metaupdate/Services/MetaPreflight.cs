@@ -78,7 +78,7 @@ namespace starsky.feature.metaupdate.Services
 					fileIndexItem, inputModel, append, rotateClock);
 						
 				// this one is good :)
-				if ( fileIndexItem.Status == FileIndexItem.ExifStatus.Default || fileIndexItem.Status == FileIndexItem.ExifStatus.OkAndSame)
+				if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default or FileIndexItem.ExifStatus.OkAndSame)
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 				}
@@ -119,12 +119,14 @@ namespace starsky.feature.metaupdate.Services
 				throw new MissingFieldException(nameof(changedFileIndexItemName));
 			
 			// compare and add changes to collectionsDetailView
-			var comparedNamesList = FileIndexCompareHelper
-				.Compare(collectionsFileIndexItem, statusModel, append);
-					
+			var comparedNamesList = FileIndexCompareHelper.Compare(collectionsFileIndexItem, 
+				statusModel, append);
+
 			// if requested, add changes to rotation
 			collectionsFileIndexItem = 
 				RotationCompare(rotateClock, collectionsFileIndexItem, comparedNamesList);
+
+			collectionsFileIndexItem.LastChanged = comparedNamesList;
 
 			if ( ! changedFileIndexItemName.ContainsKey(collectionsFileIndexItem.FilePath) )
 			{
@@ -132,7 +134,7 @@ namespace starsky.feature.metaupdate.Services
 				changedFileIndexItemName.Add(collectionsFileIndexItem.FilePath,comparedNamesList);
 				return;
 			}
-			
+
 			// overwrite list if already exist
 			changedFileIndexItemName[collectionsFileIndexItem.FilePath] = comparedNamesList;
 		}

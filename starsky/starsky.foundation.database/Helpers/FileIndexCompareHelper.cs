@@ -114,6 +114,12 @@ namespace starsky.foundation.database.Helpers
 		        differenceList.Remove(nameof(FileIndexItem.LastEdited).ToLowerInvariant());
 	        }
 	        
+	        // Last Changed is a generated list
+	        if ( differenceList.Any(p => p == nameof(FileIndexItem.LastChanged).ToLowerInvariant()) )
+	        {
+		        differenceList.Remove(nameof(FileIndexItem.LastChanged).ToLowerInvariant());
+	        }
+	        
             return differenceList;
         }
 
