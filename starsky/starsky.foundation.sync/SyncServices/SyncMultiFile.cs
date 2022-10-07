@@ -148,7 +148,6 @@ namespace starsky.foundation.sync.SyncServices
 			ISynchronize.SocketUpdateDelegate updateDelegate)
 		{
 			var notOkayAndSame = updatedDbItems.Where(p =>
-				p != null && 
 				p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
 			if ( notOkayAndSame.Any() )
 			{
