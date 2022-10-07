@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.ReadMetaHelpers;
@@ -27,12 +28,13 @@ namespace starsky.foundation.readmeta.Services
 		/// <param name="iStorage"></param>
 		/// <param name="appSettings"></param>
 		/// <param name="memoryCache"></param>
-		public ReadMeta(IStorage iStorage, AppSettings appSettings = null, IMemoryCache memoryCache = null)
+		/// <param name="logger"></param>
+		public ReadMeta(IStorage iStorage, AppSettings appSettings, IMemoryCache memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_cache = memoryCache;
 			_iStorage = iStorage;
-			_readExif = new ReadMetaExif(_iStorage, appSettings);
+			_readExif = new ReadMetaExif(_iStorage, appSettings,logger);
 			_readXmp = new ReadMetaXmp(_iStorage, memoryCache);
 		}
 

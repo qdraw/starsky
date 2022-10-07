@@ -102,7 +102,7 @@ namespace starskytest.Services
 			dir2.Set(ExifDirectoryBase.TagDateTime, "2010:12:12 12:41:35");
 			container.Add(dir2);
 			
-			var result = new ReadMetaExif(null).GetExifDateTime(container);
+			var result = new ReadMetaExif(null,null, new FakeIWebLogger()).GetExifDateTime(container);
 			var expectedExifDateTime = new DateTime(2010, 12, 12, 12, 41, 35);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
@@ -118,7 +118,7 @@ namespace starskytest.Services
 			dir2.Set(ExifDirectoryBase.TagDateTimeOriginal, "2010:12:12 12:41:35");
 			container.Add(dir2);
 			
-			var result = new ReadMetaExif(null).GetExifDateTime(container);
+			var result = new ReadMetaExif(null,null, new FakeIWebLogger()).GetExifDateTime(container);
 			var expectedExifDateTime = new DateTime(2010, 12, 12, 12, 41, 35);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
@@ -142,7 +142,7 @@ namespace starskytest.Services
 				new CameraMakeModel("test","test")
 			},
 				CameraTimeZone = "Europe/London"
-			}).GetExifDateTime(container, new CameraMakeModel("test","test"));
+			},null).GetExifDateTime(container, new CameraMakeModel("test","test"));
 			
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
 			
@@ -170,7 +170,7 @@ namespace starskytest.Services
 					new CameraMakeModel("test", string.Empty)
 				},
 				CameraTimeZone = "Europe/London"
-			}).GetExifDateTime(container, new CameraMakeModel("test","test"));
+			}, new FakeIWebLogger()).GetExifDateTime(container, new CameraMakeModel("test","test"));
 			
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
 			
@@ -197,7 +197,7 @@ namespace starskytest.Services
 					new CameraMakeModel("Apple", string.Empty)
 				},
 				CameraTimeZone = "Europe/London"
-			}).GetExifDateTime(container);
+			}, new FakeIWebLogger()).GetExifDateTime(container);
 			
 			CultureInfo.CurrentCulture = new CultureInfo(orgCulture);
 
@@ -222,7 +222,7 @@ namespace starskytest.Services
 			dir2.XmpMeta.SetProperty("http://ns.adobe.com/photoshop/1.0/", "photoshop:DateCreated","2020-03-14T14:00:51" );
 			container.Add(dir2);
 			
-			var result = new ReadMetaExif(null).GetExifDateTime(container);
+			var result = new ReadMetaExif(null,null, new FakeIWebLogger()).GetExifDateTime(container);
 			var expectedExifDateTime = new DateTime(2020, 3, 14, 14, 0, 51);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
@@ -300,7 +300,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 		     
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
 		     
 			Assert.AreEqual(ColorClassParser.Color.None, item.ColorClass);
 			Assert.AreEqual("caption", item.Description );
@@ -333,7 +333,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 			 
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
 			Assert.AreEqual( ImageStabilisationType.On, item.ImageStabilisation);
 		}
 		
@@ -344,7 +344,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 			 
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
 			Assert.AreEqual( ImageStabilisationType.Off, item.ImageStabilisation);
 		}
 				
@@ -355,7 +355,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 			 
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
 			Assert.AreEqual( "Tamron or Sigma Lens", item.LensModel);
 		}
 
@@ -366,7 +366,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 		     
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
 			Assert.AreEqual("!delete!", item.Tags);
 		}
 
@@ -377,7 +377,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.png"},new List<byte[]>{newImage});
 		     
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.png");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.png");
 
 			Assert.AreEqual(ColorClassParser.Color.SuperiorAlt, item.ColorClass);
 			Assert.AreEqual("Description", item.Description );
@@ -419,7 +419,7 @@ namespace starskytest.Services
 			var item = new ReadMetaExif(fakeStorage, new AppSettings{VideoUseLocalTime = new List<CameraMakeModel>
 			{
 				new CameraMakeModel("Apple","MacbookPro15,1")
-			}}).ReadExifFromFile("/test.mp4");
+			}}, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
 
 			var date = new DateTime(2020, 03, 29, 13, 10, 07);
 			Assert.AreEqual(date, item.DateTime);
@@ -441,7 +441,7 @@ namespace starskytest.Services
 			var item = new ReadMetaExif(fakeStorage, new AppSettings{VideoUseLocalTime = new List<CameraMakeModel>
 			{
 				new CameraMakeModel("Apple","MacbookPro15,1")
-			}}).ReadExifFromFile("/test.mp4");
+			}}, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
 
 			var date = new DateTime(2020, 03, 29, 13, 10, 07);
 			Assert.AreEqual(date, item.DateTime);
@@ -462,7 +462,7 @@ namespace starskytest.Services
 
 			var fakeStorage = new FakeIStorage();
 			
-			var item = new ReadMetaExif(fakeStorage);
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger());
 
 			var dir = new QuickTimeMovieHeaderDirectory();
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
@@ -487,7 +487,7 @@ namespace starskytest.Services
 			{
 				VideoUseLocalTime = new List<CameraMakeModel>{new CameraMakeModel("test","test")},
 				CameraTimeZone = "Europe/London"
-			});
+			}, new FakeIWebLogger());
 
 			var dir = new QuickTimeMovieHeaderDirectory();
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
@@ -512,7 +512,7 @@ namespace starskytest.Services
 			{
 				VideoUseLocalTime = new List<CameraMakeModel>{},
 				CameraTimeZone = "Europe/London"
-			});
+			}, new FakeIWebLogger());
 
 			var dir = new QuickTimeMovieHeaderDirectory();
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
@@ -538,7 +538,7 @@ namespace starskytest.Services
 			{
 				VideoUseLocalTime = new List<CameraMakeModel>{},
 				CameraTimeZone = ""
-			});
+			}, new FakeIWebLogger());
 
 			var dir = new QuickTimeMovieHeaderDirectory();
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
@@ -563,7 +563,7 @@ namespace starskytest.Services
 			{
 				VideoUseLocalTime = null,
 				CameraTimeZone = ""
-			});
+			}, new FakeIWebLogger());
 
 			var dir = new QuickTimeMovieHeaderDirectory();
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
@@ -587,7 +587,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
 
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
 
 			var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Local).ToLocalTime();
 			Assert.AreEqual(date, item.DateTime);
@@ -609,7 +609,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
 
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
 
 			var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Local).ToLocalTime();
 			Assert.AreEqual(date, item.DateTime);
@@ -629,7 +629,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.png"},new List<byte[]>{newImage});
 		     
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.png");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.png");
 			 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, item.ImageFormat);
@@ -640,7 +640,7 @@ namespace starskytest.Services
 		{
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.png"},new List<byte[]>{null});
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.png");
+			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.png");
 			// streamNull
 			 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);

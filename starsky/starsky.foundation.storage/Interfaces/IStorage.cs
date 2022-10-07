@@ -35,23 +35,25 @@ namespace starsky.foundation.storage.Interfaces
 		///	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 		/// </summary>
 		/// <param name="path">subPath, path relative to the database</param>
+		/// <param name="orderByAlphabet">true to order on alphabet else by last edited</param>
 		/// <returns>list of files</returns>
 		IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
-
+		
 		/// <summary>
 		/// Returns a NON-Recursive list of child directories
 		/// </summary>
 		/// <param name="path">filePath</param>
 		/// <returns>list of NON-Recursive child directories</returns>
 		IEnumerable<string> GetDirectories(string path);
-		
+
 		/// <summary>
 		/// Returns a list of directories // Get list of child folders
 		/// old name: GetFilesRecursive
 		/// </summary>
 		/// <param name="path">directory</param>
+		/// <param name="orderByAlphabet">order by alphabet or last edited</param>
 		/// <returns>list</returns>
-		IEnumerable<string> GetDirectoryRecursive(string path);
+		IEnumerable<string> GetDirectoryRecursive(string path, bool orderByAlphabet);
 
 		Stream ReadStream(string path, int maxRead = -1);
 		

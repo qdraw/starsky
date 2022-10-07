@@ -72,13 +72,23 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
 			var result = await syncFolder.Folder("/Folder_FilesOnDiskButNotInTheDb");
-			
-			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test1.jpg",result[0].FilePath);
-			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test2.jpg",result[1].FilePath);
-			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test3.jpg",result[2].FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[1].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[2].Status);
+
+			var test1 = result.FirstOrDefault(p =>
+				p.FilePath == "/Folder_FilesOnDiskButNotInTheDb/test1.jpg");
+			Assert.IsNotNull(test1);
+			var test2 = result.FirstOrDefault(p =>
+				p.FilePath == "/Folder_FilesOnDiskButNotInTheDb/test2.jpg");
+			Assert.IsNotNull(test2);
+			var test3 = result.FirstOrDefault(p =>
+				p.FilePath == "/Folder_FilesOnDiskButNotInTheDb/test3.jpg");
+			Assert.IsNotNull(test3);
+
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test1.jpg",test1!.FilePath);
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test2.jpg",test2!.FilePath);
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test3.jpg",test3!.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test1.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test2.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test3.Status);
 
 			var files = await _query.GetAllFilesAsync("/Folder_FilesOnDiskButNotInTheDb");
 

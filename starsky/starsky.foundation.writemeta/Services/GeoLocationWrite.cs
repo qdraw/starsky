@@ -22,14 +22,16 @@ namespace starsky.foundation.writemeta.Services
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IConsole _console;
+		private readonly IWebLogger _logger;
 
-		public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, ISelectorStorage selectorStorage, IConsole console)
+		public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, ISelectorStorage selectorStorage, IConsole console, IWebLogger logger)
 		{
 			_exifTool = exifTool;
 			_appSettings = appSettings;
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_console = console;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -61,7 +63,7 @@ namespace starsky.foundation.writemeta.Services
 				await new ExifToolCmdHelper(_exifTool, 
 					_iStorage, 
 					_thumbnailStorage, 
-					new ReadMeta(_iStorage)).UpdateAsync(metaFileItem, comparedNamesList);
+					new ReadMeta(_iStorage, _appSettings, null, _logger)).UpdateAsync(metaFileItem, comparedNamesList);
 
 				// Rocket man!
 				_console.Write(_appSettings.IsVerbose()

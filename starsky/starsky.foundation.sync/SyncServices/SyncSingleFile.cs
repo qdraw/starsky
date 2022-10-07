@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -24,12 +25,12 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
 
-		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IWebLogger logger)
+		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IMemoryCache memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_subPathStorage = subPathStorage;
 			_query = query;
-			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings));
+			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings, memoryCache, logger));
 			_logger = logger;
 		}
 
@@ -121,7 +122,7 @@ namespace starsky.foundation.sync.SyncServices
 			// Cached values are not checked for performance reasons 
 			if ( dbItem.Status == FileIndexItem.ExifStatus.OkAndSame )
 			{
-				_logger.LogDebug($"[SingleFile/db] OkAndSame {subPath} {Synchronize.DateTimeDebug()}");
+				_logger.LogDebug($"[SingleFile/db] OkAndSame {subPath} ~ {Synchronize.DateTimeDebug()}");
 				return dbItem;
 			}
 
@@ -174,6 +175,18 @@ namespace starsky.foundation.sync.SyncServices
 			return dbItem;
 		}
 
+		internal static List<FileIndexItem> AddDeleteStatus(IEnumerable<FileIndexItem> dbItems,
+			FileIndexItem.ExifStatus exifStatus =
+				FileIndexItem.ExifStatus.Deleted)
+		{
+			return dbItems.Select(item => AddDeleteStatus(item, exifStatus)).ToList();
+		}
+
+		internal IEnumerable<FileIndexItem> CheckForStatusNotOk(IEnumerable<string> subPaths)
+		{
+			return subPaths.Select(CheckForStatusNotOk);
+		}
+
 		/// <summary>
 		/// When the file is not supported or does not exist return status
 		/// </summary>
@@ -190,13 +203,14 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 
-			// File check if jpg #not corrupt
-			var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath,160));
-			if ( imageFormat == ExtensionRolesHelper.ImageFormat.notfound )
+			if ( !_subPathStorage.ExistFile(subPath) )
 			{
 				statusItem.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
 				return statusItem;
 			}
+			
+			// File check if jpg #not corrupt
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath,160));
 			
 			// ReSharper disable once InvertIf
 			if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(imageFormat.ToString()) )
@@ -225,6 +239,30 @@ namespace starsky.foundation.sync.SyncServices
 			await _query.AddParentItemsAsync(subPath);
 			AddDeleteStatus(dbItem);
 			return dbItem;
+		}
+
+		/// <summary>
+		/// Create an new item in the database
+		/// </summary>
+		/// <param name="statusItems">contains the status</param>
+		/// <param name="addParentItem"></param>
+		/// <returns>database item</returns>
+		internal async Task<List<FileIndexItem>> NewItem(List<FileIndexItem> statusItems, bool addParentItem)
+		{
+			// Add a new Item
+			var dbItems = await _newItem.NewFileItem(statusItems);
+
+			// When not OK do not Add (fileHash issues)
+			var okDbItems =
+				dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+			await _query.AddRangeAsync(okDbItems);
+
+			if ( addParentItem )
+			{
+				await new AddParentList(_subPathStorage, _query)
+					.AddParentItems(okDbItems);
+			}
+			return dbItems;
 		}
 
 		/// <summary>

@@ -2,11 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
@@ -18,14 +23,16 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IWebLogger _logger;
 		private readonly SyncSingleFile _syncSingleFile;
 		private readonly IStorage _subPathStorage;
+		private readonly AppSettings _appSettings;
 
-		public SyncMultiFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IWebLogger logger)
+		public SyncMultiFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IMemoryCache cache, IWebLogger logger)
 		{
 			_query = query;
 			_syncSingleFile =
-				new SyncSingleFile(appSettings, query, subPathStorage, logger);
+				new SyncSingleFile(appSettings, query, subPathStorage, cache, logger);
 			_subPathStorage = subPathStorage;
 			_logger = logger;
+			_appSettings = appSettings;
 		}
 
 		/// <summary>
@@ -37,6 +44,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task<List<FileIndexItem>> MultiFile(List<string> subPathInFiles,
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
+			_logger.LogInformation("MultiFileQuery: " + string.Join(",", subPathInFiles));
 			var databaseItems = await _query.GetObjectsByFilePathQueryAsync(subPathInFiles);
 
 			var resultDatabaseItems = new List<FileIndexItem>();
@@ -54,53 +62,86 @@ namespace starsky.foundation.sync.SyncServices
 
 			return await MultiFile(resultDatabaseItems, updateDelegate);
 		}
-	
+
 		/// <summary>
 		/// For Checking single items without querying the database
 		/// </summary>
 		/// <param name="dbItems">current items</param>
 		/// <param name="updateDelegate">push updates realtime to the user and avoid waiting</param>
+		/// <param name="addParentFolder"></param>
 		/// <returns>updated item with status</returns>
-		internal async Task<List<FileIndexItem>> MultiFile(List<FileIndexItem> dbItems,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+		internal async Task<List<FileIndexItem>> MultiFile(
+			List<FileIndexItem> dbItems,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			bool addParentFolder = true)
 		{
-			var updatedDbItems = new List<FileIndexItem>();
-			if ( dbItems == null ) return updatedDbItems;
-			foreach ( var dbItem in dbItems )
-			{
-				await _syncSingleFile.UpdateSidecarFile(dbItem.FilePath);
-			
-				var statusItem =  _syncSingleFile.CheckForStatusNotOk(dbItem.FilePath);
-				if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
-				{
-					_logger.LogDebug($"[MultiFile/db] status {statusItem.Status} for {dbItem.FilePath} {Synchronize.DateTimeDebug()}");
-					updatedDbItems.Add(statusItem);
-					continue;
-				}
+			if ( dbItems == null ) return new List<FileIndexItem>();
+						
+			SyncSingleFile.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
 
-				if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex )
+			// Update XMP files, does an extra query to the database. in the future this needs to be refactored
+			foreach ( var xmpOrSidecarFiles in dbItems.Where(p => ExtensionRolesHelper.IsExtensionSidecar(p.FilePath)) )
+			{
+				// Query!
+				await _syncSingleFile.UpdateSidecarFile(xmpOrSidecarFiles.FilePath);
+			}
+			
+			var statusItems =  _syncSingleFile.CheckForStatusNotOk(dbItems.Select(p => p.FilePath)).ToList();
+			foreach ( var statusItem in statusItems )
+			{
+				var dbItemSearched = dbItems.FirstOrDefault(p =>
+					p.FilePath == statusItem.FilePath);
+				if ( dbItemSearched == null || (dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex 
+				                                && statusItem.Status == FileIndexItem.ExifStatus.Ok))
 				{
-					updatedDbItems.Add(await _syncSingleFile.NewItem(statusItem, dbItem.FilePath));
 					continue;
 				}
-			
-				var (isSame, updatedDbItem) = await _syncSingleFile.SizeFileHashIsTheSame(dbItem);
-				if ( !isSame )
+				
+				dbItemSearched.Status = statusItem.Status;
+				
+				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok } )
 				{
-					updatedDbItems.Add(await _syncSingleFile.UpdateItem(dbItem, updatedDbItem.Size, dbItem.FilePath, false));
-					continue;
+					// there is still a check if the file is not changed see: SizeFileHashIsTheSame
+					dbItemSearched.Status = FileIndexItem.ExifStatus.OkAndSame;
 				}
-			
-				updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-				SyncSingleFile.AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
-			
-				updatedDbItems.Add(updatedDbItem);
+			}
+		
+			// Multi thread check for file hash
+			var isSameUpdatedItemList = await dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame).ForEachAsync(
+				async dbItem => await _syncSingleFile.SizeFileHashIsTheSame(dbItem), _appSettings.MaxDegreesOfParallelism);
+			if ( isSameUpdatedItemList != null )
+			{
+				foreach ( var (_,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> !p.Item1) )
+				{
+					await _syncSingleFile.UpdateItem(isSameUpdatedItem,
+						isSameUpdatedItem.Size,
+						isSameUpdatedItem.FilePath, false);
+				}
 			}
 
-			updatedDbItems = await AddParentItems(updatedDbItems);
+			// add new items
+			var newItemsList = await _syncSingleFile.NewItem(
+				dbItems.Where(p =>
+					p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex
+				).ToList(), false);
+			foreach ( var newItem in newItemsList )
+			{
+				var newItemIndex = dbItems.FindIndex(
+					p => p.FilePath == newItem.FilePath);
+				if ( newItemIndex < 0 ) continue;
+				newItem.Status = FileIndexItem.ExifStatus.Ok;
+				SyncSingleFile.AddDeleteStatus(newItem);
+				dbItems[newItemIndex] = newItem;
+			}
+
+			if ( addParentFolder )
+			{
+				_logger.LogInformation("Add Parent Folder For: " + string.Join(",", dbItems.Select(p => p.FilePath)));
+				dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
+			}
 		
-			if ( updateDelegate == null ) return updatedDbItems;
-			return await PushToSocket(updatedDbItems, updateDelegate);
+			if ( updateDelegate == null ) return dbItems;
+			return await PushToSocket(dbItems, updateDelegate);
 		}
 	
 		private static async Task<List<FileIndexItem>> PushToSocket(List<FileIndexItem> updatedDbItems,
@@ -115,19 +156,7 @@ namespace starsky.foundation.sync.SyncServices
 			return updatedDbItems;
 		}
 
-		private async Task<List<FileIndexItem>> AddParentItems(List<FileIndexItem> updatedDbItems)
-		{
-			// give parent folders back
-			var addedParentItems = new List<FileIndexItem>();
-			foreach ( var subPath in updatedDbItems
-				.Select(p => p.ParentDirectory).Distinct()
-				.Where(p => _subPathStorage.ExistFolder(p)))
-			{
-				addedParentItems.AddRange(await _query.AddParentItemsAsync(subPath));
-			}
-			updatedDbItems.AddRange(addedParentItems);
-			return updatedDbItems;
-		}
+
 
 	}
 

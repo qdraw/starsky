@@ -35,7 +35,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			var result = await sync.MultiFile(new List<string>{"/non_exist.ext"});
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result[0].Status);
@@ -51,7 +51,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new List<byte[]>{new byte[5]});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				storage, new FakeIWebLogger());
+				storage, null, new FakeIWebLogger());
 			var result = await sync.MultiFile(new List<string>{"/corrupt.jpg"} );
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result[0].Status);
@@ -62,7 +62,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			
 			var result = await sync.MultiFile(new List<string>{"/test.jpg"});
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
@@ -83,7 +83,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			
 			var result = await sync.MultiFile(new List<string>{"/status_deleted.jpg"});
 			
@@ -94,13 +94,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task MultiFile_AddNewFile_WithParentFolders()
 		{
-			var iStorageFake = new FakeIStorage(new List<string>{"/level/deep/"},
+			var iStorageFake = new FakeIStorage(new List<string>
+				{
+					"/",
+					"/level",
+					"/level/deep"
+				},
 				new List<string>{"/level/deep/test.jpg"},
 				new List<byte[]>{CreateAnImageNoExif.Bytes});
 			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				iStorageFake, new FakeIWebLogger());
+				iStorageFake, null, new FakeIWebLogger());
 			await sync.MultiFile(new List<string>{"/level/deep/test.jpg"});
 
 			var detailView = fakeQuery.SingleItem("/level/deep/test.jpg");
@@ -145,7 +150,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			var result = await sync.MultiFile(new List<string>{"/test.jpg"});
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result[0].Status);
@@ -174,7 +179,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 
 			var isCalled = false;
 			Task TestTask(List<FileIndexItem> _)
@@ -204,7 +209,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 
 			var isCalled = false;
 			Task TestTask(List<FileIndexItem> _)
@@ -238,7 +243,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			
 			var result = await sync.MultiFile(new List<string>{"/test.jpg"});
 
@@ -265,7 +270,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			var result = await sync.MultiFile(new List<string>{"/test.jpg"});
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
@@ -307,7 +312,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			}
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			await sync.MultiFile(new List<string>{"/test.jpg"},TestTask);
 			
 			Assert.IsTrue(isCalled);
@@ -325,7 +330,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			
 			var result = await sync.MultiFile(new List<FileIndexItem>{item});  // % % % % Enter item here % % % % % 
 			
@@ -353,7 +358,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			
 			var isCalled = false;
 			Task TestTask(List<FileIndexItem> _)
@@ -376,7 +381,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			var result = await sync.MultiFile(new List<FileIndexItem>{item});  // % % % % Enter item here % % % % % 
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result[0].Status);
@@ -394,7 +399,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			var result= await sync.MultiFile(null as List<FileIndexItem>);  // % % % % Null value here % % % % % 
 			
 			Assert.AreEqual(0, result.Count);
@@ -414,7 +419,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncMultiFile(new AppSettings {Verbose = true}, fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			await sync.MultiFile(new List<FileIndexItem>{item}); // % % % % Enter item here % % % % % 
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
@@ -442,13 +447,16 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncMultiFile(new AppSettings {Verbose = true}, fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null,new FakeIWebLogger());
 			await sync.MultiFile(new List<string>{"/test.xmp"});
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
 			
 			Assert.AreEqual(1,fileIndexItem.SidecarExtensionsList.Count);
 			Assert.AreEqual("xmp",fileIndexItem.SidecarExtensionsList.ToList()[0]);
+			
+			var fileIndexItem2 = fakeQuery.SingleItem("/test.xmp")?.FileIndexItem;
+			Assert.IsNull(fileIndexItem2);
 		}
 		
 		[TestMethod]
@@ -471,7 +479,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncMultiFile(new AppSettings {Verbose = true}, fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			await sync.MultiFile(new List<FileIndexItem>{item});
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
@@ -495,7 +503,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new FakeIWebLogger());
+				_iStorageFake, null, new FakeIWebLogger());
 			
 			await sync.MultiFile(new List<string>{"/color_class_test.jpg"});
 			

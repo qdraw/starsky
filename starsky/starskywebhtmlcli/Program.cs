@@ -30,9 +30,10 @@ namespace starskywebhtmlcli
 	        var publishService = serviceProvider.GetService<IWebHtmlPublishService>();
 	        var storageSelector = serviceProvider.GetService<ISelectorStorage>();
 	        var console = serviceProvider.GetRequiredService<IConsole>();
+	        var logger = serviceProvider.GetRequiredService<IWebLogger>();
 
 	        // Help and args selectors are defined in the PublishCli
-	        await new PublishCli(storageSelector, publishPreflight, publishService, appSettings, console).Publisher(args);
+	        await new PublishCli(storageSelector, publishPreflight, publishService, appSettings, console, logger).Publisher(args);
 		}
         
     }

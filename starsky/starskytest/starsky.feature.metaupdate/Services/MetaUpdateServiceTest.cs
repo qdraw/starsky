@@ -58,7 +58,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
 
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
-			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache);
+			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache, new FakeIWebLogger());
 		}
 
 		
@@ -107,7 +107,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			var readMeta = new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(_iStorageFake), _appSettings,
-				_memoryCache);
+				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 				new FakeIWebLogger(), readMeta);
@@ -211,7 +211,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			var readMeta = new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(_iStorageFake), _appSettings,
-				_memoryCache);
+				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 				new FakeIWebLogger(), readMeta);
@@ -270,7 +270,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var readMeta = new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(_iStorageFake), _appSettings,
-				_memoryCache);
+				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 				new FakeIWebLogger(), readMeta);
@@ -325,7 +325,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			var readMeta = new ReadMetaSubPathStorage(
 				new FakeSelectorStorage(_iStorageFake), _appSettings,
-				_memoryCache);
+				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
 				new FakeIWebLogger(), readMeta);

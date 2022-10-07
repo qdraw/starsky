@@ -759,19 +759,19 @@ namespace starsky.foundation.database.Query
 		    }
 		    catch ( Microsoft.Data.Sqlite.SqliteException e)
 		    {
-			    _logger?.LogInformation(e, $"catch-ed SqliteException going to retry 2 times {fileIndexItem.FilePath}");
+			    _logger?.LogInformation(e, $"[AddItemAsync] catch-ed SqliteException going to retry 2 times {fileIndexItem.FilePath}");
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
 		    catch ( DbUpdateException e)
 		    {
-			    _logger?.LogInformation(e, $"catch-ed DbUpdateException going to retry 2 times {fileIndexItem.FilePath}");
+			    _logger?.LogInformation(e, $"[AddItemAsync] catch-ed DbUpdateException going to retry 2 times {fileIndexItem.FilePath}");
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
 		    catch ( InvalidOperationException e) // or ObjectDisposedException
 		    {
-			    _logger?.LogInformation(e, $"catch-ed InvalidOperationException going to retry 2 times {fileIndexItem.FilePath}");
+			    _logger?.LogInformation(e, $"[AddItemAsync] catch-ed InvalidOperationException going to retry 2 times {fileIndexItem.FilePath}");
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }

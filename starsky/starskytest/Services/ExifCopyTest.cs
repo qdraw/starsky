@@ -30,7 +30,7 @@ namespace starskytest.Services
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 	        
-			var fakeReadMeta = new ReadMeta(storage);
+			var fakeReadMeta = new ReadMeta(storage, _appSettings, null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 			var helperResult = await new ExifCopy(storage, storage, fakeExifTool, 
 				fakeReadMeta).CopyExifPublish("/test.jpg", "/test2");
@@ -46,9 +46,11 @@ namespace starskytest.Services
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
-			var fakeReadMeta = new ReadMeta(storage);
+			var fakeReadMeta = new ReadMeta(storage, _appSettings, 
+				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
-			var helperResult = await new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).XmpSync("/test.dng");
+			var helperResult = await new ExifCopy(storage, 
+				storage, fakeExifTool, fakeReadMeta).XmpSync("/test.dng");
 			Assert.AreEqual("/test.xmp",helperResult);
 
 		}
@@ -62,7 +64,8 @@ namespace starskytest.Services
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
-			var fakeReadMeta = new ReadMeta(storage);
+			var fakeReadMeta = new ReadMeta(storage, _appSettings,
+				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 			
 			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).XmpCreate("/test.xmp");
@@ -81,7 +84,8 @@ namespace starskytest.Services
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			var readMeta =  new ReadMeta(storage);
+			var readMeta = new ReadMeta(storage, _appSettings,
+				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 
 			await new ExifCopy(storage, storage, fakeExifTool, readMeta).XmpSync("/test.dng");

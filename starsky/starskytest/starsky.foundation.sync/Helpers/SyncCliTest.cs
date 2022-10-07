@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -111,6 +113,26 @@ namespace starskytest.starsky.foundation.sync.Helpers
 				.ParseSubfolders(0);
 			
 			Assert.AreEqual(subPathRelative, fakeSync.Inputs[0].Item1);
+		}
+
+		[TestMethod]
+		public void GetStopWatchTextMinMinutes_WithMinutes()
+		{
+			var stopWatch = Stopwatch.StartNew();
+			stopWatch.Stop();
+			var text = SyncCli.GetStopWatchText(stopWatch, 0);
+			Assert.IsTrue(text.Contains("(in sec:"));
+			Assert.IsTrue(text.Contains("min")); // TRUE
+		}
+		
+		[TestMethod]
+		public void GetStopWatchTextMinMinutes_WithoutMinutes()
+		{
+			var stopWatch = Stopwatch.StartNew();
+			stopWatch.Stop();
+			var text = SyncCli.GetStopWatchText(stopWatch, 999);
+			Assert.IsTrue(text.Contains("(in sec:"));
+			Assert.IsFalse(text.Contains("min")); // FALSE
 		}
 	}
 }

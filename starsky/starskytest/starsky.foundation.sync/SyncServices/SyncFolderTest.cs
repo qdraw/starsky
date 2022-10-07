@@ -147,9 +147,14 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await _query.AddItemAsync(new FileIndexItem("/Folder_Duplicate/test.jpg"));
 			await _query.AddItemAsync(new FileIndexItem("/Folder_Duplicate/test.jpg")); // yes this is duplicate!
 			
+			var queryResultBefore = await _query.GetAllFilesAsync("/Folder_Duplicate");
+			Assert.AreEqual(2, queryResultBefore.Count);
+
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
-			var result = await syncFolder.Folder("/Folder_Duplicate");
+			
+			var result = (await syncFolder.Folder(
+				"/Folder_Duplicate")).Where(p => p.FilePath != "/").ToList();
 
 			Assert.AreEqual(2, result.Count);
 			var queryResult = await _query.GetAllFilesAsync("/Folder_Duplicate");
@@ -244,6 +249,17 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
+		public async Task AddParentFolder_InListSoSkip()
+		{
+			var query = new FakeIQuery();
+			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(GetStorage()),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+			var result = await syncFolder.AddParentFolder("/test", 
+				new List<FileIndexItem>{new FileIndexItem("/test")});
+			Assert.IsNull(result);
+		}
+
+		[TestMethod]
 		public void PathsToUpdateInDatabase_FilesOnDiskButNotInTheDb()
 		{
 			var results = SyncFolder.PathsToUpdateInDatabase(
@@ -253,7 +269,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				});
 
 			Assert.AreEqual(1, results.Count);
-			Assert.AreEqual("/test.jpg", results[0]);
+			Assert.AreEqual("/test.jpg", results[0].FilePath);
 		}
 		
 		[TestMethod]
@@ -266,7 +282,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				}, Array.Empty<string>());
 
 			Assert.AreEqual(1, results.Count);
-			Assert.AreEqual("/test.jpg", results[0]);
+			Assert.AreEqual("/test.jpg", results[0].FilePath);
 		}
 		
 		[TestMethod]
@@ -282,8 +298,23 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				});
 
 			Assert.AreEqual(1, results.Count);
-			Assert.AreEqual("/test.jpg", results[0]);
+			Assert.AreEqual("/test.jpg", results[0].FilePath);
 		}
+		
+		[TestMethod]
+		public void PathsToUpdateInDatabase_Duplicates()
+		{
+			var results = SyncFolder.PathsToUpdateInDatabase(
+				new List<FileIndexItem>(), new List<string>
+				{
+					"/test.jpg",
+					"/test.jpg"
+				});
+
+			Assert.AreEqual(1, results.Count);
+			Assert.AreEqual("/test.jpg", results[0].FilePath);
+		}
+
 		
 				
 		[TestMethod]

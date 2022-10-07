@@ -25,7 +25,7 @@ namespace starsky.foundation.sync.SyncServices
 	{
 		private readonly AppSettings _appSettings;
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;
-		private readonly IQuery _query;
+		private IQuery _query;
 		private readonly IStorage _subPathStorage;
 		private readonly IConsole _console;
 		private readonly Duplicate _duplicate;
@@ -52,37 +52,54 @@ namespace starsky.foundation.sync.SyncServices
 			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			var subPaths = new List<string> {inputSubPath};	
-			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath));
+			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath, false));
 			
-			var allResults = new List<FileIndexItem>();
 			// Loop trough all folders recursive
-			foreach ( var subPath in subPaths )
-			{
-				// get only direct child files and folders and NOT recursive
-				var fileIndexItems = await _query.GetAllObjectsAsync(subPath);
-				fileIndexItems = await _duplicate.RemoveDuplicateAsync(fileIndexItems);
-				
-				// And check files within this folder
-				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
-					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
-
-				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate);
-				allResults.AddRange(indexItems);
-
-				var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems)).Where(p => p != null).ToList();
-				if ( dirItems.Any() )
+			var resultChunkList = await subPaths.ForEachAsync(
+				async subPath =>
 				{
-					allResults.AddRange(dirItems!);
-				}
-			}
+					var allResults = new List<FileIndexItem>();
+					var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
+					// get only direct child files and folders and NOT recursive
+					var fileIndexItems = await query!.GetAllObjectsAsync(subPath);
+					fileIndexItems = await new Duplicate(query).RemoveDuplicateAsync(fileIndexItems);
+				
+					// And check files within this folder
+					var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
+						.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
+					if ( fileIndexItems.Any() ) _console.Write("⁘");
+				
+					var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate, false);
+					allResults.AddRange(indexItems);
+
+					var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems)).Where(p => p != null).ToList();
+					if ( dirItems.Any() )
+					{
+						allResults.AddRange(dirItems!);
+					}
+
+					await query.DisposeAsync();
+					return allResults;
+				}, _appSettings.MaxDegreesOfParallelism);
+			
+			// Convert chunks into one list
+			var allResults = new List<FileIndexItem>();
+			foreach ( var resultChunk in resultChunkList )
+			{
+				allResults.AddRange(resultChunk);
+			}
+			
+			// query.DisposeAsync is called to avoid memory usage
+			_query = new QueryFactory(_setupDatabaseTypes, _query, _memoryCache, _appSettings, _logger).Query()!;
+			
 			// // remove the duplicates from a large list of folders
 			var folderList = await _query.GetObjectsByFilePathQueryAsync(subPaths);
 			folderList = await _duplicate.RemoveDuplicateAsync(folderList);
 
 			await CompareFolderListAndFixMissingFolders(subPaths, folderList);
 
-			var parentItems = await AddParentFolder(inputSubPath,allResults);
+			var parentItems = await AddParentFolder(inputSubPath, allResults);
 			if ( parentItems != null )
 			{
 				allResults.Add(parentItems);
@@ -108,6 +125,7 @@ namespace starsky.foundation.sync.SyncServices
 	
 		internal async Task<FileIndexItem?> AddParentFolder(string subPath, List<FileIndexItem>? allResults)
 		{
+			// Skip when parent Item is already in the result list
 			if ( allResults != null && allResults.Any(p => p.FilePath == subPath) )
 			{
 				return null;
@@ -147,7 +165,7 @@ namespace starsky.foundation.sync.SyncServices
 		private async Task<List<FileIndexItem>> LoopOverFolder(
 			IReadOnlyCollection<FileIndexItem> fileIndexItems,
 			IReadOnlyCollection<string> pathsOnDisk,
-			ISynchronize.SocketUpdateDelegate? updateDelegate)
+			ISynchronize.SocketUpdateDelegate? updateDelegate, bool addParentFolder)
 		{
 			var fileIndexItemsOnlyFiles = fileIndexItems
 				.Where(p => p.IsDirectory == false).ToList();
@@ -155,14 +173,17 @@ namespace starsky.foundation.sync.SyncServices
 			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
 			if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
 
-			var resultChunkList = await pathsToUpdateInDatabase.Chunk(200).ForEachAsync(
+			var resultChunkList = await pathsToUpdateInDatabase.Chunk(50).ForEachAsync(
 				async chunks =>
 				{
 					var subPathInFiles = chunks.ToList();
 				
 					var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
-					var databaseItems = await new SyncMultiFile(_appSettings, query, _subPathStorage,
-						_logger).MultiFile(subPathInFiles, updateDelegate);
+					var syncMultiFile = new SyncMultiFile(_appSettings, query,
+						_subPathStorage,
+						null,
+						_logger);
+					var databaseItems = await syncMultiFile.MultiFile(subPathInFiles, updateDelegate, addParentFolder);
 				
 					await new SyncRemove(_appSettings, _setupDatabaseTypes,
 							query, _memoryCache, _logger)
@@ -188,20 +209,24 @@ namespace starsky.foundation.sync.SyncServices
 		
 			return results;
 		}
-	
-		internal static List<string> PathsToUpdateInDatabase(IEnumerable<FileIndexItem> fileIndexItems, 
+
+		internal static List<FileIndexItem> PathsToUpdateInDatabase(
+			List<FileIndexItem> databaseItems, 
 			IReadOnlyCollection<string> pathsOnDisk)
 		{
-			var pathFormFileIndexItems = fileIndexItems.Select(p => p.FilePath).ToList();
-
-			// files that still lives in the db but not on disk
-			var pathsToRemovedFromDb = pathFormFileIndexItems.Except(pathsOnDisk).ToList();
-
-			// and combine all items
-			var pathsToScan = new List<string>(pathsToRemovedFromDb);
-			pathsToScan.AddRange(pathsOnDisk);
-			// and order by alphabet and remove duplicates
-			return new HashSet<string>(pathsToScan).OrderBy(p => p).ToList();
+			var resultDatabaseItems = new List<FileIndexItem>(databaseItems);
+			foreach ( var path in pathsOnDisk )
+			{
+				var item = databaseItems.FirstOrDefault(p => string.Equals(p.FilePath, path, StringComparison.InvariantCultureIgnoreCase));
+				if (item == null ) // when the file should be added to the index
+				{
+					// Status is used by MultiFile
+					resultDatabaseItems.Add(new FileIndexItem(path){Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+					continue;
+				}
+				resultDatabaseItems.Add(item);
+			}
+			return resultDatabaseItems.DistinctBy(p => p.FilePath).ToList();
 		}
 	
 		private async Task<List<FileIndexItem?>> CheckIfFolderExistOnDisk(List<FileIndexItem> fileIndexItems)

@@ -31,7 +31,8 @@ namespace starskytest.starskyGeoCore.Services
 				CameraTimeZone = "Europe/Minsk"
 			};
 			var fakeIStorage = new FakeIStorage();
-			_readMeta = new ReadMeta(fakeIStorage,_appSettings);
+			_readMeta = new ReadMeta(fakeIStorage,_appSettings, 
+				null, new FakeIWebLogger());
 
 			_metaFilesDirectory = new List<FileIndexItem>
 			{

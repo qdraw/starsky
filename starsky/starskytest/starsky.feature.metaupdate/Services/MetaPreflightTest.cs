@@ -52,13 +52,13 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			_appSettings = new AppSettings();
 
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.jpg", _exampleHash},
-				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes});
+				new List<string>{"/test.jpg"},
+				new List<byte[]>{CreateAnImageNoExif.Bytes});
 			
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
 
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
-			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache);
+			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache, new FakeIWebLogger());
 		}
 		
 				

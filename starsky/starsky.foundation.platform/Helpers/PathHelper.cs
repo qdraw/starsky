@@ -41,7 +41,7 @@ namespace starsky.foundation.platform.Helpers
         }
 
 		/// <summary>
-		/// Removes the latest slash. (/)
+		/// Removes the latest slash. (/) always unix style
 		/// </summary>
 		/// <param name="basePath">The base path.</param>
 		/// <returns></returns>

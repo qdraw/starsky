@@ -38,12 +38,13 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.5.0-beta.8 _(Unreleased)_ - 2022-09-??
 - [x]   (Security) _Back-end_ Upgrade Nuget packages (PR #878)
 - [x]   (Security) _Back-end_ Update Security Headers e.g. CSP, Permissions Policy (PR #880, #881)
-- [x]   (Security) _Back-end_ Update dependencies for typescript, jpeg-js, typings, dotenv (PR #888, #884, #883, #879)
+- [x]   (Security) _Back-end_ Update dependencies for typescript, jpeg-js, typings, dotenv, jimp (PR #888, #884, #883, #879, #898, #901, #902)
 - [x]   (Fixed) _Back-end_ Manual sync exception should not keep lock activated (PR #889)
 - [x]   (Changed) _Back-end_ Use node 18.x in Dockerfile (PR #895)
 - [x]   (Changed) _Tools_ Allow other projects as argument in dotnet-sdk-version-update.js (PR #895)
 - [x]   (Security) _Back-end_ Add option for secure cookies App Settings: `HttpsOn` (PR #896)
 - [x]   (Changed) _Back-end_ Refactor: MultiFile directory sync to avoid database calls (PR #894)
+- [x]   (Changed) _Back-end_ Performance update for SyncService to avoid database calls and multithreading (PR #900)
 
 # version 0.5.0-beta.7 - 2022-09-20
 - [x]   (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) (PR #838)
