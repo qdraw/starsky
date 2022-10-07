@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
 using starsky.foundation.injection;
 using starsky.foundation.worker.Helpers;
 
 namespace starsky.foundation.sync.WatcherBackgroundService
 {
 	/// <summary>
-	/// @see: microsoft docs
+	/// @see: https://learn.microsoft.com/en-us/dotnet/core/extensions/queue-service
 	/// </summary>
 	[Service(typeof(IDiskWatcherBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class DiskWatcherBackgroundTaskQueue : IDiskWatcherBackgroundTaskQueue
@@ -20,11 +17,7 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 
 		public DiskWatcherBackgroundTaskQueue()
 		{
-			BoundedChannelOptions options = new(int.MaxValue)
-			{
-				FullMode = BoundedChannelFullMode.Wait
-			};
-			_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(options);
+			_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(ProcessTaskQueue.DefaultBoundedChannelOptions);
 		}
 
 		public int Count()
@@ -40,13 +33,7 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 				throw new ArgumentNullException(nameof(workItem));
 			}
 
-			return QueueBackgroundWorkItemInternalAsync(workItem, metaData);
-		}
-
-		private async ValueTask QueueBackgroundWorkItemInternalAsync(
-			Func<CancellationToken, ValueTask> workItem, string metaData)
-		{
-			await _queue.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
+			return ProcessTaskQueue.QueueBackgroundWorkItemInternalAsync(_queue, workItem, metaData);
 		}
 
 		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(

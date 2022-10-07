@@ -19,11 +19,7 @@ namespace starsky.foundation.worker.Services
 
 	    public UpdateBackgroundTaskQueue()
 	    {
-		    BoundedChannelOptions options = new(int.MaxValue)
-		    {
-			    FullMode = BoundedChannelFullMode.Wait
-		    };
-		    _queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(options);
+		    _queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(ProcessTaskQueue.DefaultBoundedChannelOptions);
 	    }
 	    
 	    public int Count()
@@ -39,13 +35,7 @@ namespace starsky.foundation.worker.Services
 			    throw new ArgumentNullException(nameof(workItem));
 		    }
 
-		    return QueueBackgroundWorkItemInternalAsync(workItem, metaData);
-	    }
-
-	    private async ValueTask QueueBackgroundWorkItemInternalAsync(
-		    Func<CancellationToken, ValueTask> workItem, string metaData)
-	    {
-		    await _queue.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
+		    return ProcessTaskQueue.QueueBackgroundWorkItemInternalAsync(_queue, workItem, metaData);
 	    }
 
 	    public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(

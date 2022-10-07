@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -94,5 +95,16 @@ namespace starsky.foundation.worker.Helpers
 				await ExecuteTask(null!, logger, taskQueue, cancellationToken);
 			}
 		}
+
+		public static readonly BoundedChannelOptions DefaultBoundedChannelOptions =
+			new(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait };
+
+		public static async ValueTask QueueBackgroundWorkItemInternalAsync(
+			Channel<Tuple<Func<CancellationToken, ValueTask>, string>> channel,
+			Func<CancellationToken, ValueTask> workItem, string metaData)
+		{
+			await channel.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
+		}
+		
 	}
 }
