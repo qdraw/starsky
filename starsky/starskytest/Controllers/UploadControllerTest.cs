@@ -74,8 +74,6 @@ namespace starskytest.Controllers
 				new List<string>{createAnImage.DbPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 			
-			var readMeta = new ReadMeta(_iStorage,_appSettings);
-                        
 			var selectorStorage = new FakeSelectorStorage(_iStorage);
 
 			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(),

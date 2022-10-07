@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -14,10 +15,10 @@ namespace starsky.foundation.readmeta.Services
 	{
 		private readonly ReadMeta _readMeta;
 
-		public ReadMetaSubPathStorage(ISelectorStorage selectorStorage, AppSettings appSettings, IMemoryCache memoryCache)
+		public ReadMetaSubPathStorage(ISelectorStorage selectorStorage, AppSettings appSettings, IMemoryCache memoryCache, IWebLogger logger)
 		{
 			var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_readMeta = new ReadMeta(storage, appSettings, memoryCache);
+			_readMeta = new ReadMeta(storage, appSettings, memoryCache,logger);
 		}
 		
 		public FileIndexItem ReadExifAndXmpFromFile(string subPath)

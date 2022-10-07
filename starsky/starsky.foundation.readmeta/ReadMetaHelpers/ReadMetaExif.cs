@@ -10,8 +10,10 @@ using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Exif.Makernotes;
 using MetadataExtractor.Formats.QuickTime;
 using MetadataExtractor.Formats.Xmp;
+using Microsoft.Extensions.Logging;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -25,11 +27,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	{
 		private readonly IStorage _iStorage;
 		private readonly AppSettings _appSettings;
+		private readonly IWebLogger _logger;
 
-		public ReadMetaExif(IStorage iStorage, AppSettings appSettings = null)
+		public ReadMetaExif(IStorage iStorage, AppSettings appSettings, IWebLogger logger)
 		{
 			_iStorage = iStorage;
 			_appSettings = appSettings;
+			_logger = logger;
 		}
 		public FileIndexItem ReadExifFromFile(string subPath, 
 			FileIndexItem existingFileIndexItem = null) // use null to create an object
@@ -70,7 +74,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return ParseExifDirectory(allExifItems, existingFileIndexItem);
         }
 
-        private FileIndexItem ParseExifDirectory(List<MetadataExtractor.Directory> allExifItems, FileIndexItem item)
+        private FileIndexItem ParseExifDirectory(List<Directory> allExifItems, FileIndexItem item)
         {
             // Used to overwrite feature
             if (item == null)
@@ -345,7 +349,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    }
 
 
-	    private void DisplayAllExif(List<Directory> allExifItems)
+	    private void DisplayAllExif(IEnumerable<Directory> allExifItems)
         {
 	        if ( _appSettings == null || !_appSettings.IsVerbose() )
 	        {
@@ -355,13 +359,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             foreach (var exifItem in allExifItems) {
                 foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
                 // for xmp notes
-                if (exifItem is XmpDirectory xmpDirectory && xmpDirectory.XmpMeta != null)
+                if ( exifItem is not XmpDirectory xmpDirectory ||
+                     xmpDirectory.XmpMeta == null ) continue;
+                
+                foreach (var property in xmpDirectory.XmpMeta.Properties.Where(
+	                         p => !string.IsNullOrEmpty(p.Path)))
                 {
-	                foreach (var property in xmpDirectory.XmpMeta.Properties.Where(
-		                p => !string.IsNullOrEmpty(p.Path)))
-	                {
-		                Console.WriteLine($"{exifItem.Name},{property.Namespace},{property.Path},{property.Value}");
-	                }
+	                _logger.LogDebug($"{exifItem.Name},{property.Namespace},{property.Path},{property.Value}");
                 }
             }
         }

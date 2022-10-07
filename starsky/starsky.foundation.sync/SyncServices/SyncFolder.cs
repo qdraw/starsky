@@ -68,7 +68,7 @@ namespace starsky.foundation.sync.SyncServices
 					var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 						.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-					_console.Write("⁘");
+					if ( fileIndexItems.Any() ) _console.Write("⁘");
 				
 					var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate, false);
 					allResults.AddRange(indexItems);
@@ -180,6 +180,7 @@ namespace starsky.foundation.sync.SyncServices
 					var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
 					var syncMultiFile = new SyncMultiFile(_appSettings, query,
 						_subPathStorage,
+						null,
 						_logger);
 					var databaseItems = await syncMultiFile.MultiFile(subPathInFiles, updateDelegate, addParentFolder);
 				

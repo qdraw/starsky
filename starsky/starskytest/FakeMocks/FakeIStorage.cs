@@ -216,15 +216,21 @@ namespace starskytest.FakeMocks
 			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}" + "(\\/|\\\\)\\w+.[a-z]{1,4}$").Success;
 		}
 
-		public IEnumerable<string> GetDirectoryRecursive(string subPath)
+		/// <summary>
+		/// Returns a list of directories // Get list of child folders
+		/// </summary>
+		/// <param name="path">subPath</param>
+		/// <param name="orderByAlphabet">order by alphabet or last edited, newest first</param>
+		/// <returns>list of paths</returns>
+		public IEnumerable<string> GetDirectoryRecursive(string path, bool orderByAlphabet)
 		{
-			if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
+			if ( path != "/" ) path = PathHelper.RemoveLatestSlash(path);
 			
-			if ( !ExistFolder(subPath) )
+			if ( !ExistFolder(path) )
 			{
 				return new List<string>();
 			}
-			return _outputSubPathFolders.Where(p => p.StartsWith(subPath) && p != subPath ).AsEnumerable();
+			return _outputSubPathFolders.Where(p => p.StartsWith(path) && p != path ).AsEnumerable();
 
 		}
 

@@ -47,7 +47,8 @@ namespace starskytest.Services
 			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
 				new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{CreateAnImage.Bytes,xmpByteArray}  );
 		    
-			var data = new ReadMeta(fakeIStorage).ReadExifAndXmpFromFile("/test.arw");
+			var data = new ReadMeta(fakeIStorage, new AppSettings(),
+				null, new FakeIWebLogger()).ReadExifAndXmpFromFile("/test.arw");
 		    
 			// Is in source file
 			Assert.AreEqual(200,data.IsoSpeed);
@@ -75,7 +76,7 @@ namespace starskytest.Services
 				.AddMemoryCache()
 				.BuildServiceProvider();
 			var memoryCache = provider.GetService<IMemoryCache>();
-			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings(), memoryCache);
+			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings(), memoryCache, new FakeIWebLogger());
 		    
 			readMeta.UpdateReadMetaCache(new List<FileIndexItem>
 			{
@@ -96,7 +97,7 @@ namespace starskytest.Services
 				.AddMemoryCache()
 				.BuildServiceProvider();
 			var memoryCache = provider.GetService<IMemoryCache>();
-			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings(), memoryCache);
+			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings(), memoryCache, new FakeIWebLogger());
 		    
 			readMeta.UpdateReadMetaCache("/test.jpg",
 				new FileIndexItem("/test.jpg")

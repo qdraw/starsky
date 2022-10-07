@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -24,11 +25,11 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IStorage _subPathStorage;
 		private readonly AppSettings _appSettings;
 
-		public SyncMultiFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IWebLogger logger)
+		public SyncMultiFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IMemoryCache cache, IWebLogger logger)
 		{
 			_query = query;
 			_syncSingleFile =
-				new SyncSingleFile(appSettings, query, subPathStorage, logger);
+				new SyncSingleFile(appSettings, query, subPathStorage, cache, logger);
 			_subPathStorage = subPathStorage;
 			_logger = logger;
 			_appSettings = appSettings;

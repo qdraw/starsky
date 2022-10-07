@@ -45,10 +45,11 @@ namespace starskyGeoCli
 
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
+			var logger = serviceProvider.GetRequiredService<IWebLogger>();
 
 			// Help and other Command Line Tools args are included in the Geo tools 
 			await new GeoCli(geoReverseLookup, geoLocationWrite, selectorStorage,
-				appSettings, console, geoFileDownload, exifToolDownload).CommandLineAsync(args);
+				appSettings, console, geoFileDownload, exifToolDownload,logger).CommandLineAsync(args);
 
 			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}

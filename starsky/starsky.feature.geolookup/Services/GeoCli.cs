@@ -34,13 +34,13 @@ namespace starsky.feature.geolookup.Services
 
 		public GeoCli(IGeoReverseLookup geoReverseLookup, 
 			IGeoLocationWrite geoLocationWrite, ISelectorStorage selectorStorage, AppSettings appSettings, IConsole console, 
-			IGeoFileDownload geoFileDownload, IExifToolDownload exifToolDownload)
+			IGeoFileDownload geoFileDownload, IExifToolDownload exifToolDownload, IWebLogger logger)
 		{
 			_geoReverseLookup = geoReverseLookup;
 			_geoLocationWrite = geoLocationWrite;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_readMeta = new ReadMeta(_iStorage, appSettings);
+			_readMeta = new ReadMeta(_iStorage, appSettings, null, logger);
 			_appSettings = appSettings;
 			_console = console;
 			_exifToolDownload = exifToolDownload;

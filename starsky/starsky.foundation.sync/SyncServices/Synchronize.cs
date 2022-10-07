@@ -32,7 +32,7 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, logger);
+			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, null, logger);
 			_syncRemove = new SyncRemove(appSettings, query, memoryCache, logger);
 			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger,memoryCache);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);

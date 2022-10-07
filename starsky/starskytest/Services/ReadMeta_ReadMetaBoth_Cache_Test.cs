@@ -30,7 +30,7 @@ namespace starskytest.Services
 			var listofFiles = new List<string>{ new CreateAnImage().DbPath};
 			var fakeCache =
 				new FakeMemoryCache(new Dictionary<string, object>());
-			var listOfMetas = new ReadMeta(iStorage,appsettings,fakeCache)
+			var listOfMetas = new ReadMeta(iStorage,appsettings,fakeCache, new FakeIWebLogger())
 				.ReadExifAndXmpFromFileAddFilePathHash(listofFiles);
 			Assert.AreEqual(new CreateAnImage().DbPath.Remove(0,1), 
 				listOfMetas.FirstOrDefault().FileName);
@@ -43,7 +43,7 @@ namespace starskytest.Services
 			var iStorage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 			var fakeCache =
 				new FakeMemoryCache(new Dictionary<string, object>());
-			new ReadMeta(iStorage,appSettings, fakeCache)
+			new ReadMeta(iStorage,appSettings, fakeCache, new FakeIWebLogger())
 				.RemoveReadMetaCache("fakeString");
 			Assert.IsNotNull(appSettings);
 		}
@@ -54,7 +54,7 @@ namespace starskytest.Services
 			var iStorage = new FakeIStorage();
 			var fakeCache =
 				new FakeMemoryCache(new Dictionary<string, object>{{"info_test",new FileIndexItem(){Tags = "test"}}});
-			Assert.AreEqual("test",new ReadMeta(iStorage,null, fakeCache).ReadExifAndXmpFromFile("test").Tags);
+			Assert.AreEqual("test",new ReadMeta(iStorage,null, fakeCache, new FakeIWebLogger()).ReadExifAndXmpFromFile("test").Tags);
 		}
 	}
 }

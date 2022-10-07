@@ -80,7 +80,7 @@ namespace starsky.feature.import.Services
             _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
             _appSettings = appSettings;
-            _readMetaHost = new ReadMeta(_filesystemStorage, appSettings);
+            _readMetaHost = new ReadMeta(_filesystemStorage, appSettings, null, logger);
             _exifTool = exifTool;
             _query = query;
             _console = console;
@@ -517,7 +517,9 @@ namespace starsky.feature.import.Services
 		{
 			if ( _appSettings.ExifToolImportXmpCreate && !xmpExistForThisFileType)
 			{
-				var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, _appSettings));
+				var exifCopy = new ExifCopy(_subPathStorage, 
+					_thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, 
+					_appSettings, null, _logger));
 				await exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
 			}
 		}

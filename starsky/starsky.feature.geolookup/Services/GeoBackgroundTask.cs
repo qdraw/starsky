@@ -37,7 +37,7 @@ namespace starsky.feature.geolookup.Services
 			_appSettings = appSettings;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_readMeta = new ReadMeta(_iStorage);
+			_readMeta = new ReadMeta(_iStorage, appSettings, memoryCache, logger);
 			_geoLocationWrite = geoLocationWrite;
 			_logger = logger;
 			_geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, memoryCache);

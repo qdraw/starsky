@@ -65,7 +65,7 @@ namespace starsky.feature.import.Helpers
 			if ( !comparedNamesList.Any() ) return fileIndexItem;
 			
 			await new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
-				new ReadMeta(_subPathStorage, _appSettings)).UpdateAsync(fileIndexItem, comparedNamesList);
+				new ReadMeta(_subPathStorage, _appSettings, null, _logger)).UpdateAsync(fileIndexItem, comparedNamesList);
 
 			// Only update database when indexMode is true
 			if ( !indexMode || queryUpdateDelegate == null) return fileIndexItem;

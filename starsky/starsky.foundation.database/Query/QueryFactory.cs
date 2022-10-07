@@ -1,8 +1,11 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
@@ -33,6 +36,15 @@ namespace starsky.foundation.database.Query
 			{
 				return new Query(context, _appSettings, null, _logger, _cache);
 			}
+
+			// FakeIQuery should skip creation
+			var isAnyContentIncluded = _query.GetReflectionFieldValue<List<FileIndexItem>?>("_content")?.Any();
+			if ( isAnyContentIncluded == true )
+			{
+				_logger?.LogInformation("FakeIQuery _content detected");
+				return _query;
+			}
+		
 			// ApplicationDbContext context, 
 			// 	AppSettings appSettings,
 			// IServiceScopeFactory scopeFactory, 

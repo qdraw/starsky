@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -24,12 +25,12 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
 
-		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IWebLogger logger)
+		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IMemoryCache memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_subPathStorage = subPathStorage;
 			_query = query;
-			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings));
+			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings, memoryCache, logger));
 			_logger = logger;
 		}
 
