@@ -99,7 +99,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			await CompareFolderListAndFixMissingFolders(subPaths, folderList);
 
-			var parentItems = await AddParentFolder(inputSubPath,allResults);
+			var parentItems = await AddParentFolder(inputSubPath, allResults);
 			if ( parentItems != null )
 			{
 				allResults.Add(parentItems);
@@ -125,6 +125,7 @@ namespace starsky.foundation.sync.SyncServices
 	
 		internal async Task<FileIndexItem?> AddParentFolder(string subPath, List<FileIndexItem>? allResults)
 		{
+			// Skip when parent Item is already in the result list
 			if ( allResults != null && allResults.Any(p => p.FilePath == subPath) )
 			{
 				return null;

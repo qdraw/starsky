@@ -249,6 +249,17 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
+		public async Task AddParentFolder_InListSoSkip()
+		{
+			var query = new FakeIQuery();
+			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(GetStorage()),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+			var result = await syncFolder.AddParentFolder("/test", 
+				new List<FileIndexItem>{new FileIndexItem("/test")});
+			Assert.IsNull(result);
+		}
+
+		[TestMethod]
 		public void PathsToUpdateInDatabase_FilesOnDiskButNotInTheDb()
 		{
 			var results = SyncFolder.PathsToUpdateInDatabase(
