@@ -31,14 +31,21 @@ namespace starsky.foundation.worker.Services
 		    return _queue.Reader.Count;
 	    }
 	    
-	    public async ValueTask QueueBackgroundWorkItemAsync(
+	    public ValueTask QueueBackgroundWorkItemAsync(
 		    Func<CancellationToken, ValueTask> workItem, string metaData)
 	    {
 		    if (workItem is null)
 		    {
 			    throw new ArgumentNullException(nameof(workItem));
 		    }
-		    await _queue.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem, "update"));
+
+		    return QueueBackgroundWorkItemInternalAsync(workItem, metaData);
+	    }
+
+	    private async ValueTask QueueBackgroundWorkItemInternalAsync(
+		    Func<CancellationToken, ValueTask> workItem, string metaData)
+	    {
+		    await _queue.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
 	    }
 
 	    public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(

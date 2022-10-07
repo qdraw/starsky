@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,13 +27,13 @@ namespace starsky.foundation.worker.Helpers
 		
 		public static async Task ProcessBatchedLoopAsync(
 			IBaseBackgroundTaskQueue taskQueue, IWebLogger logger, AppSettings appSettings,
-			CancellationToken stoppingToken)
+			CancellationToken cancellationToken)
 		{
 			await Task.Yield();
 			
-			while (stoppingToken.IsCancellationRequested == false)
+			while (!cancellationToken.IsCancellationRequested)
 			{
-				await Task.Delay(RoundUp(appSettings).Item1, stoppingToken);
+				await Task.Delay(RoundUp(appSettings).Item1, cancellationToken);
 
 				var taskQueueCount = taskQueue.Count();
 				if ( taskQueueCount <= 0 )
@@ -45,7 +46,7 @@ namespace starsky.foundation.worker.Helpers
 
 				for ( var i = 0; i < taskQueueCount; i++ )
 				{
-					var (workItem,metaData) = await taskQueue.DequeueAsync(stoppingToken);
+					var (workItem,metaData) = await taskQueue.DequeueAsync(cancellationToken);
 					toDoItems.Add(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
 				}
 
@@ -54,22 +55,21 @@ namespace starsky.foundation.worker.Helpers
 				foreach ( var (task, meta) in afterDistinct )
 				{
 					logger.LogInformation($"[{nameof(taskQueue)}] next task: " + meta);
-					await ExecuteTask(task, stoppingToken, logger);
+					await ExecuteTask(task, logger, null, cancellationToken);
 				}
 			}
 		}
 
 		private static async Task ExecuteTask(
 			Func<CancellationToken, ValueTask> workItem,
-			CancellationToken cancellationToken, IWebLogger logger,
-			IBaseBackgroundTaskQueue taskQueue = null)
+			IWebLogger logger,
+			IBaseBackgroundTaskQueue? taskQueue, CancellationToken cancellationToken)
 		{
 			try
 			{
 				if ( taskQueue != null )
 				{
-					(workItem, _ )=
-						await taskQueue.DequeueAsync(cancellationToken);
+					(workItem, _ ) = await taskQueue.DequeueAsync(cancellationToken);
 				}
 				await workItem(cancellationToken);
 			}
@@ -83,14 +83,15 @@ namespace starsky.foundation.worker.Helpers
 			}
 		}
 
-		public static async Task ProcessTaskQueueAsync(IBaseBackgroundTaskQueue taskQueue, IWebLogger logger, CancellationToken stoppingToken)
+		public static async Task ProcessTaskQueueAsync(IBaseBackgroundTaskQueue taskQueue, 
+			IWebLogger logger, CancellationToken cancellationToken)
 		{
 			logger.LogInformation($"Queued Hosted Service {taskQueue.GetType().Name} is " +
 			                       $"starting on {Environment.MachineName}");
 		
-			while (!stoppingToken.IsCancellationRequested)
+			while (!cancellationToken.IsCancellationRequested)
 			{
-				await ExecuteTask(null, stoppingToken, logger, taskQueue);
+				await ExecuteTask(null!, logger, taskQueue, cancellationToken);
 			}
 		}
 	}

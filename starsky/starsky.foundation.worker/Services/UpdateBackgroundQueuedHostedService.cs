@@ -24,9 +24,9 @@ namespace starsky.foundation.worker.Services
 			IWebLogger logger) =>
 			(_taskQueue, _logger) = (taskQueue, logger);
 
-		protected override Task ExecuteAsync(CancellationToken stoppingToken)
+		protected override Task ExecuteAsync(CancellationToken cancellationToken)
 		{
-			return ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger, stoppingToken);
+			return ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger, cancellationToken);
 		}
 
 		public override async Task StopAsync(CancellationToken stoppingToken)

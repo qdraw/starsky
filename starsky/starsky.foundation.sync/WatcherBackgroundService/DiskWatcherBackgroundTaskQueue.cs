@@ -32,13 +32,20 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 			return _queue.Reader.Count;
 		}
 
-		public async ValueTask QueueBackgroundWorkItemAsync(
+		public ValueTask QueueBackgroundWorkItemAsync(
 			Func<CancellationToken, ValueTask> workItem, string metaData)
 		{
 			if (workItem is null)
 			{
 				throw new ArgumentNullException(nameof(workItem));
 			}
+
+			return QueueBackgroundWorkItemInternalAsync(workItem, metaData);
+		}
+
+		private async ValueTask QueueBackgroundWorkItemInternalAsync(
+			Func<CancellationToken, ValueTask> workItem, string metaData)
+		{
 			await _queue.Writer.WriteAsync(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
 		}
 
