@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -30,12 +29,7 @@ namespace starsky.foundation.worker.Services
 	    public ValueTask QueueBackgroundWorkItemAsync(
 		    Func<CancellationToken, ValueTask> workItem, string metaData)
 	    {
-		    if (workItem is null)
-		    {
-			    throw new ArgumentNullException(nameof(workItem));
-		    }
-
-		    return ProcessTaskQueue.QueueBackgroundWorkItemInternalAsync(_queue, workItem, metaData);
+		    return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue, workItem, metaData);
 	    }
 
 	    public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(

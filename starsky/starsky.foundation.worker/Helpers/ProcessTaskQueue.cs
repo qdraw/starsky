@@ -100,7 +100,7 @@ namespace starsky.foundation.worker.Helpers
 			IWebLogger logger, CancellationToken cancellationToken)
 		{
 			logger.LogInformation($"Queued Hosted Service {taskQueue.GetType().Name} is " +
-			                       $"starting on {Environment.MachineName}");
+			                      $"starting on {Environment.MachineName}");
 		
 			while (!cancellationToken.IsCancellationRequested)
 			{
@@ -111,7 +111,17 @@ namespace starsky.foundation.worker.Helpers
 		public static readonly BoundedChannelOptions DefaultBoundedChannelOptions =
 			new(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait };
 
-		public static async ValueTask QueueBackgroundWorkItemInternalAsync(
+		public static ValueTask QueueBackgroundWorkItemAsync(Channel<Tuple<Func<CancellationToken, ValueTask>, string>> channel,
+			Func<CancellationToken, ValueTask> workItem, string metaData)
+		{
+			if (workItem is null)
+			{
+				throw new ArgumentNullException(nameof(workItem));
+			}
+			return QueueBackgroundWorkItemInternalAsync(channel, workItem, metaData);
+		}
+		
+		private static async ValueTask QueueBackgroundWorkItemInternalAsync(
 			Channel<Tuple<Func<CancellationToken, ValueTask>, string>> channel,
 			Func<CancellationToken, ValueTask> workItem, string metaData)
 		{
