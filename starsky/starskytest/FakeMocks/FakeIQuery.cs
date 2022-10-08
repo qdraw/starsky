@@ -38,9 +38,10 @@ namespace starskytest.FakeMocks
 		private readonly List<FileIndexItem> _content = new List<FileIndexItem>();
 		private List<FileIndexItem> _fakeCachedContent = new List<FileIndexItem>();
 
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public List<FileIndexItem> GetAllFiles(string subPath)
 		{
-			return _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
+			return _content == null ? new List<FileIndexItem>() : _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
 		}
 
 		public Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths, int timeout = 1000)

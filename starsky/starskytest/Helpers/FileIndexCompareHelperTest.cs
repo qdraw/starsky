@@ -248,19 +248,7 @@ namespace starskytest.Helpers
 			var result = FileIndexCompareHelper.Get(null, nameof(FileIndexItem.Tags));
 			Assert.AreEqual(null,result);
 		}
-
 		
-		[TestMethod]
-		public void CompareListString_NotFound()
-		{
-			var list = new List<string>();
-			FileIndexCompareHelper.CompareListString("t",
-				new FileIndexItem(),
-				new List<string>{"1"},
-				new List<string>{"1"}, list);
-			Assert.IsNotNull(list);
-		}
-
 		[TestMethod]
 		public void CompareRotation_NotFound()
 		{
@@ -325,6 +313,18 @@ namespace starskytest.Helpers
 				new FileIndexItem(),
 				ColorClassParser.Color.Winner,
 				ColorClassParser.Color.Winner, list);
+			Assert.IsNotNull(list);
+		}
+		
+				
+		[TestMethod]
+		public void CompareListString_NotFound()
+		{
+			var list = new List<string>();
+			FileIndexCompareHelper.CompareListString("t",
+				new FileIndexItem(),
+				new List<string>{"1"},
+				new List<string>{"1"}, list);
 			Assert.IsNotNull(list);
 		}
 		
