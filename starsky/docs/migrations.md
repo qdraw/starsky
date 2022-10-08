@@ -15,7 +15,8 @@ dotnet tool update --global dotnet-ef
 ## Set constance for EF Core
 Define constance in `starsky.foundation.database.csproj`
 ```xml
-        <DefineConstants>SYSTEM_TEXT_ENABLED;ENABLE_DEFAULT_DATABASE</DefineConstants>
+        <DefineConstants>ENABLE_DEFAULT_DATABASE</DefineConstants>
+        <!-- split by dot comma ; -->
 ```
 or mysql:
 ```xml
@@ -28,9 +29,14 @@ cd starsky/starsky.foundation.database
 dotnet ef --startup-project ../starsky/starsky.csproj --project starsky.foundation.database.csproj migrations add test
 ```
 
+The migration should be ready :)
+You should test both with MySQL and SQLite
+
 ## Instead of setting constance (is replaced by defined constance)
 
-(Optional) : Copy code : SetupDatabaseTypes.cs
+This is not needed anymore but kept here for explaining what is done in the code
+
+(Optional) : See code : SetupDatabaseTypes.cs
 
 ```c#
 			// dirty hack

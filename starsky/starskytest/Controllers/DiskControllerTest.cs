@@ -43,7 +43,6 @@ namespace starskytest.Controllers
 		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private IStorage _iStorage;
-		private readonly ISync _isync;
 
 		public DiskControllerTest()
 		{
@@ -63,9 +62,6 @@ namespace starskytest.Controllers
 
 			// Fake the readmeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
-
-			// Fake ISync
-			services.AddSingleton<ISync, FakeISync>();
 
 
 			// Inject Config helper
@@ -102,8 +98,6 @@ namespace starskytest.Controllers
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_query = new Query(_context, new AppSettings(), _scopeFactory, new FakeIWebLogger(), memoryCache);
-
-			_isync = serviceProvider.GetRequiredService<ISync>();
 
 			// get the background helper
 			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();

@@ -132,6 +132,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2F68B3F8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_build", "build\_build.csproj", "{BC9677D6-CF4B-4446-8CD2-38A79B2C5346}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.syncbackground", "starsky.feature.syncbackground\starsky.feature.syncbackground.csproj", "{F760AAA0-5404-407C-81F9-E3CB438794B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -298,6 +300,10 @@ Global
 		{BC9677D6-CF4B-4446-8CD2-38A79B2C5346}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC9677D6-CF4B-4446-8CD2-38A79B2C5346}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC9677D6-CF4B-4446-8CD2-38A79B2C5346}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F760AAA0-5404-407C-81F9-E3CB438794B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F760AAA0-5404-407C-81F9-E3CB438794B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F760AAA0-5404-407C-81F9-E3CB438794B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F760AAA0-5404-407C-81F9-E3CB438794B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -346,5 +352,6 @@ Global
 		{7AB42607-88DF-427C-823B-033A224A73A6} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{6630A2A7-FB58-40FA-B27B-013FDA1F74AA} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{BC9677D6-CF4B-4446-8CD2-38A79B2C5346} = {2F68B3F8-5277-45CF-A820-50F93E7BF7D9}
+		{F760AAA0-5404-407C-81F9-E3CB438794B1} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 	EndGlobalSection
 EndGlobal
