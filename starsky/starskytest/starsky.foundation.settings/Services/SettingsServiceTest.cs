@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.settings.Services;
 [TestClass]
 public class SettingsServiceTest
 {
-	public ApplicationDbContext SetScope()
+	private ApplicationDbContext SetScope()
 	{
 		// var provider = new ServiceCollection()
 		// 	.AddMemoryCache()
@@ -27,6 +27,16 @@ public class SettingsServiceTest
 		builderDb.UseInMemoryDatabase("test1234");
 		var options = builderDb.Options;
 		return new ApplicationDbContext(options);
+	}
+
+	private async Task RemoveAsync(ApplicationDbContext dbContext, SettingsType key )
+	{
+		var item =await dbContext.Settings.FirstOrDefaultAsync(p => p.Key == Enum.GetName(key));
+		if ( item != null )
+		{
+			dbContext.Remove(item);
+			await dbContext.SaveChangesAsync();
+		}
 	}
 
 	[TestMethod]
@@ -48,6 +58,9 @@ public class SettingsServiceTest
 			.LastSyncBackgroundDateTime);
 		
 		Assert.AreEqual(value, item?.Value);
+
+		await RemoveAsync(dbContext, SettingsType
+			.LastSyncBackgroundDateTime);
 	}
 	
 	[TestMethod]
@@ -69,6 +82,8 @@ public class SettingsServiceTest
 			.LastSyncBackgroundDateTime);
 		
 		Assert.AreEqual(datetime.ToString(CultureInfo.InvariantCulture), item.ToUniversalTime().ToString(CultureInfo.InvariantCulture));
+		await RemoveAsync(dbContext, SettingsType
+			.LastSyncBackgroundDateTime);
 	}
 	
 	[TestMethod]
@@ -86,6 +101,8 @@ public class SettingsServiceTest
 			.LastSyncBackgroundDateTime);
 		
 		Assert.AreEqual("test", item);
+		await RemoveAsync(dbContext, SettingsType
+			.LastSyncBackgroundDateTime);
 	}
 	
 	[TestMethod]
@@ -104,6 +121,8 @@ public class SettingsServiceTest
 
 		DateTime defaultDatetime = default;
 		Assert.AreEqual(defaultDatetime.ToString(CultureInfo.InvariantCulture), item.ToUniversalTime().ToString(CultureInfo.InvariantCulture));
+		await RemoveAsync(dbContext, SettingsType
+			.LastSyncBackgroundDateTime);
 	}
 	
 	[TestMethod]
@@ -122,6 +141,8 @@ public class SettingsServiceTest
 
 		DateTime defaultDatetime = default;
 		Assert.AreEqual(defaultDatetime.ToString(CultureInfo.InvariantCulture), item.ToUniversalTime().ToString(CultureInfo.InvariantCulture));
+		await RemoveAsync(dbContext, SettingsType
+			.LastSyncBackgroundDateTime);
 	}
 
 	[TestMethod]
@@ -157,6 +178,8 @@ public class SettingsServiceTest
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
 			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime));
 		Assert.AreEqual("test", dbResult?.Value);
+		await RemoveAsync(dbContext, SettingsType
+			.LastSyncBackgroundDateTime);
 	}
 	
 	[TestMethod]
@@ -183,5 +206,7 @@ public class SettingsServiceTest
 		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
 			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime));
 		Assert.AreEqual("test", dbResult?.Value);
+		await RemoveAsync(dbContext, SettingsType
+			.LastSyncBackgroundDateTime);
 	}
 }
