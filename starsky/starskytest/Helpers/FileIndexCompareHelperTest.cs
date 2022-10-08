@@ -4,8 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
-using starskycore.Models;
 
 namespace starskytest.Helpers
 {
@@ -20,7 +18,7 @@ namespace starskytest.Helpers
 			FileIndexCompareHelper.Compare(source, update);
 			Assert.AreEqual("update",source.Tags);
 		}
-
+		
 		[TestMethod]
 		public void FileIndexCompareHelperTest_StringList_Compare()
 		{
@@ -74,7 +72,7 @@ namespace starskytest.Helpers
 			FileIndexCompareHelper.Compare(source, update);
 			Assert.AreNotEqual(update.DateTime,source.DateTime); 
 		}
-        
+		
 		[TestMethod]
 		public void FileIndexCompareHelperTest_DateTime_Compare()
 		{

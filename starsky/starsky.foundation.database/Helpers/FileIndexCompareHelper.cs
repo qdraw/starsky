@@ -35,13 +35,6 @@ namespace starsky.foundation.database.Helpers
                     var newStringValue = (string)propertiesB[i].GetValue(updateObject, null)!;
                     CompareString(propertiesB[i].Name, sourceIndexItem, oldStringValue, newStringValue, differenceList, append);
                 }
-
-                if (propertiesA [i].PropertyType == typeof(bool))
-                {
-                    var oldBoolValue = (bool)propertiesA [i].GetValue(sourceIndexItem, null)!;
-                    var newBoolValue = (bool)propertiesB [i].GetValue(updateObject, null)!;
-                    CompareBool(propertiesB[i].Name, sourceIndexItem, oldBoolValue, newBoolValue, differenceList);
-                }
                 
                 if (propertiesA [i].PropertyType == typeof(bool?))
                 {
