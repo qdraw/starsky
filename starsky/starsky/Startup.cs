@@ -90,7 +90,7 @@ namespace starsky
                         options.Cookie.SecurePolicy = _appSettings.HttpsOn == true
 	                        ? CookieSecurePolicy.Always
 	                        : CookieSecurePolicy.SameAsRequest;
-                        options.Cookie.SameSite = SameSiteMode.Strict; 
+                        options.Cookie.SameSite = SameSiteMode.Lax; // when on strict and visiting the page again its logged out
                         options.LoginPath = "/account/login";
                         options.LogoutPath = "/account/logout";
                         options.Events.OnRedirectToLogin = ReplaceReDirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
