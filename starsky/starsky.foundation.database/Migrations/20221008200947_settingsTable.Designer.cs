@@ -12,8 +12,8 @@ using starsky.foundation.database.Data;
 namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221008085429_SettingsTable")]
-    partial class SettingsTable
+    [Migration("20221008200947_settingsTable")]
+    partial class settingsTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -388,7 +388,8 @@ namespace starsky.foundation.database.Migrations
             modelBuilder.Entity("starsky.foundation.database.Models.SettingsItem", b =>
                 {
                     b.Property<string>("Key")
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
 
                     b.Property<bool>("IsUserEditable")
                         .HasColumnType("INTEGER");
@@ -397,11 +398,15 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(4096)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Key");
 
-                    b.ToTable("Settings");
+                    b.ToTable("Settings", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>

@@ -176,6 +176,16 @@ namespace starsky.foundation.database.Data
 				}
 			);
 			
+			modelBuilder.Entity<SettingsItem>(etb =>
+				{
+					etb.Property(e => e.Key).IsRequired().HasMaxLength(150);
+					etb.HasKey(e => e.Key);
+					
+					etb.ToTable("Settings");
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+				}
+			);
+			
 		}
 	}
 }

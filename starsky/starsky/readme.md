@@ -85,6 +85,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 31. `AddSwaggerExportExitAfter` Quit application after exporting swagger files, should have `AddSwagger` and `AddSwaggerExport` enabled _default false_
 32. `NoAccountLocalhost` No login needed when on localhost, used in Desktop App
 33. `VideoUseLocalTime` Use localtime by Camera make and model instead of UTC
+34. `SyncOnStartup` Sync Database on changes since latest start _default true_
 
 ### Appsettings.json example
 ```json

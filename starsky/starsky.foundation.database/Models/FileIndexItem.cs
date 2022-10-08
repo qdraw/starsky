@@ -140,7 +140,7 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		/// <example>filenameWithoutExtension</example>
 		[NotMapped]
-		public string FileCollectionName => Path.GetFileNameWithoutExtension(FileName);
+		public string? FileCollectionName => Path.GetFileNameWithoutExtension(FileName);
 
 		/// <summary>
 		/// Internal API: Do not save null in database for Parent Directory
@@ -190,7 +190,7 @@ namespace starsky.foundation.database.Models
 		[NotMapped]
 		[JsonIgnore] // <== gives conversion errors with jsonParser
 		internal HashSet<string>? Keywords {
-			get => HashSetHelper.StringToHashSet(Tags.Trim());
+			get => HashSetHelper.StringToHashSet(Tags?.Trim());
 			set
 			{
 				if (value == null) return;
@@ -796,7 +796,7 @@ namespace starsky.foundation.database.Models
 			set
 			{
 				if ( string.IsNullOrEmpty(_shutterSpeed) ) _shutterSpeed = string.Empty;
-				if ( value.Length <= 20 ) _shutterSpeed = value;
+				if ( value?.Length <= 20 ) _shutterSpeed = value;
 			}
 		}
 	    
@@ -880,8 +880,8 @@ namespace starsky.foundation.database.Models
 			get
 			{
 				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
-				var makeModelList = MakeModel.Split("|".ToCharArray());
-				if ( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
+				var makeModelList = MakeModel?.Split("|".ToCharArray());
+				if ( makeModelList?.Length != MakeModelFixedLength ) return string.Empty;
 				return makeModelList[0];
 			}
 		}
@@ -895,8 +895,8 @@ namespace starsky.foundation.database.Models
 			get
 			{
 				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
-				var makeModelList = MakeModel.Split("|".ToCharArray());
-				return makeModelList.Length != MakeModelFixedLength ? string.Empty : makeModelList[1];
+				var makeModelList = MakeModel?.Split("|".ToCharArray());
+				return makeModelList?.Length != MakeModelFixedLength ? string.Empty : makeModelList[1];
 			}
 		}
 	    
@@ -909,8 +909,8 @@ namespace starsky.foundation.database.Models
 			get
 			{
 				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
-				var makeModelList = MakeModel.Split("|".ToCharArray());
-				if( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
+				var makeModelList = MakeModel?.Split("|".ToCharArray());
+				if( makeModelList?.Length != MakeModelFixedLength ) return string.Empty;
 				// ReSharper disable once ConvertIfStatementToReturnStatement
 				if ( string.IsNullOrEmpty(Model) ) return makeModelList[2];
 				// It replaces the Camera Model in the lens
@@ -968,8 +968,8 @@ namespace starsky.foundation.database.Models
 
 			var titleValue = addedValue.Replace("|", string.Empty);
 
-			var makeModelList = _makeModel.Split("|".ToCharArray()).ToList();
-			if ( makeModelList.Count != MakeModelFixedLength )
+			var makeModelList = _makeModel?.Split("|".ToCharArray()).ToList();
+			if ( makeModelList?.Count != MakeModelFixedLength )
 			{
 				makeModelList = new List<string>();
 				for ( var i = 0; i < MakeModelFixedLength; i++ )
