@@ -993,7 +993,7 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		/// <param name="listKeywords">list</param>
 		/// <returns>string with fixed length</returns>
-		private static string FixedListToString(IReadOnlyList<string>? listKeywords)
+		internal static string FixedListToString(IReadOnlyList<string>? listKeywords)
 		{
 			if ( listKeywords == null )
 			{
