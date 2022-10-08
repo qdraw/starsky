@@ -29,6 +29,8 @@ namespace starsky.foundation.database.Data
 
 		public DbSet<NotificationItem> Notifications { get; set; }
 
+		public DbSet<SettingsItem> Settings { get; set; }
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			// Do nothing because of that in debug mode this only triggered

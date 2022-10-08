@@ -79,6 +79,12 @@
       <Folder Include="Migrations" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\docs\migrations.md">
+        <Link>migrations.md</Link>
+      </Content>
+    </ItemGroup>
+
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>
