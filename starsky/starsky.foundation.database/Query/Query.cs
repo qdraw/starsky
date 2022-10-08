@@ -26,14 +26,14 @@ namespace starsky.foundation.database.Query
     {
         private ApplicationDbContext _context;
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly IMemoryCache _cache;
+        private readonly IMemoryCache? _cache;
         private readonly AppSettings _appSettings;
         private readonly IWebLogger _logger;
 
         public Query(ApplicationDbContext context, 
             AppSettings appSettings,
             IServiceScopeFactory scopeFactory, 
-            IWebLogger logger, IMemoryCache memoryCache = null)
+            IWebLogger logger, IMemoryCache? memoryCache = null)
         {
 	        _context = context;
             _cache = memoryCache;
@@ -47,14 +47,14 @@ namespace starsky.foundation.database.Query
 		/// </summary>
 		/// <param name="filePath">relative database path</param>
 		/// <returns>FileIndex-objects with database data</returns>
-        public FileIndexItem GetObjectByFilePath(string filePath)
+        public FileIndexItem? GetObjectByFilePath(string filePath)
 		{
 			if ( filePath != "/" )
 			{
 				filePath = PathHelper.RemoveLatestSlash(filePath);
 			}
 			
-            FileIndexItem LocalQuery(ApplicationDbContext context)
+            FileIndexItem? LocalQuery(ApplicationDbContext context)
             {
 	            var item = context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
 	            if ( item != null ) item.Status = FileIndexItem.ExifStatus.Ok;
@@ -67,8 +67,8 @@ namespace starsky.foundation.database.Query
             }
             catch (ObjectDisposedException e)
             {
-	            _logger?.LogInformation("[GetObjectByFilePath] catch-ed ObjectDisposedException", e);
-	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+	            _logger.LogInformation("[GetObjectByFilePath] catch-ed ObjectDisposedException", e);
+	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context()!);
             }
         }
 		
@@ -84,7 +84,7 @@ namespace starsky.foundation.database.Query
 		/// <param name="filePath">relative database path</param>
 		/// <param name="cacheTime">time to have the cache present</param>
 		/// <returns>FileIndex-objects with database data</returns>
-		public async Task<FileIndexItem> GetObjectByFilePathAsync(
+		public async Task<FileIndexItem?> GetObjectByFilePathAsync(
 			string filePath, TimeSpan? cacheTime = null)
 		{
 			// cache code:
@@ -125,7 +125,7 @@ namespace starsky.foundation.database.Query
 				result, cacheTime.Value );
 		}
 
-		private async Task<FileIndexItem> GetObjectByFilePathQueryAsync(
+		private async Task<FileIndexItem?> GetObjectByFilePathQueryAsync(
 			string filePath)
 		{
 			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
@@ -139,10 +139,10 @@ namespace starsky.foundation.database.Query
 		/// </summary>
 		/// <param name="fileHash">base32 hash</param>
 		/// <returns>subPath (relative to database)</returns>
-	    public string GetSubPathByHash(string fileHash)
+	    public string? GetSubPathByHash(string fileHash)
 	    {
 		    // The CLI programs uses no cache
-		    if( !IsCacheEnabled() ) return QueryGetItemByHash(fileHash);
+		    if( !IsCacheEnabled() || _cache == null ) return QueryGetItemByHash(fileHash);
             
 		    // Return values from IMemoryCache
 		    var queryHashListCacheName = CachingDbName("hashList", fileHash);
@@ -154,13 +154,13 @@ namespace starsky.foundation.database.Query
 		    cachedSubPath = QueryGetItemByHash(fileHash);
 		    
 		    _cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48,0,0));
-		    return (string) cachedSubPath;
+		    return (string?) cachedSubPath;
 		}
 
-		public async Task<string> GetSubPathByHashAsync(string fileHash)
+		public async Task<string?> GetSubPathByHashAsync(string fileHash)
 		{
 			// The CLI programs uses no cache
-			if( !IsCacheEnabled() ) return await QueryGetItemByHashAsync(fileHash);
+			if( !IsCacheEnabled() || _cache == null) return await QueryGetItemByHashAsync(fileHash);
             
 			// Return values from IMemoryCache
 			var queryHashListCacheName = CachingDbName("hashList", fileHash);
@@ -172,7 +172,7 @@ namespace starsky.foundation.database.Query
 			cachedSubPath = await QueryGetItemByHashAsync(fileHash);
 		    
 			_cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48,0,0));
-			return (string) cachedSubPath;
+			return (string?) cachedSubPath;
 		}
 
 		/// <summary>
@@ -193,9 +193,9 @@ namespace starsky.foundation.database.Query
 
 	    // Return a File Item By it Hash value
         // New added, directory hash now also hashes
-        private string QueryGetItemByHash(string fileHash)
+        private string? QueryGetItemByHash(string fileHash)
         {   
-	        string LocalQueryGetItemByHash(ApplicationDbContext context)
+	        string? LocalQueryGetItemByHash(ApplicationDbContext context)
 	        {
 		        return context.FileIndex.TagWith("QueryGetItemByHash").FirstOrDefault(
 			        p => p.FileHash == fileHash 
@@ -210,13 +210,13 @@ namespace starsky.foundation.database.Query
 	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        return LocalQueryGetItemByHash(context);
+		        return LocalQueryGetItemByHash(context!);
 	        }
         }
         
-        private async Task<string> QueryGetItemByHashAsync(string fileHash)
+        private async Task<string?> QueryGetItemByHashAsync(string fileHash)
         {
-	        async Task<string> LocalQueryGetItemByHashAsync(ApplicationDbContext context)
+	        async Task<string?> LocalQueryGetItemByHashAsync(ApplicationDbContext context)
 	        {
 		        return (await context.FileIndex.TagWith("QueryGetItemByHashAsync").FirstOrDefaultAsync(
 			        p => p.FileHash == fileHash 
@@ -231,7 +231,7 @@ namespace starsky.foundation.database.Query
 	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        return await LocalQueryGetItemByHashAsync(context);
+		        return await LocalQueryGetItemByHashAsync(context!);
 	        }
         }
         
@@ -344,7 +344,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException )
 	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        var context = new InjectServiceScope(_scopeFactory).Context()!;
 		        try
 		        {
 			        return await LocalQuery(context, updateStatusContentList);
@@ -390,7 +390,7 @@ namespace starsky.foundation.database.Query
 		        // InvalidOperationException: A second operation started on this context before a previous operation completed.
 		        // https://go.microsoft.com/fwlink/?linkid=2097913
 		        await Task.Delay(delay);
-		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        var context = new InjectServiceScope(_scopeFactory).Context()!;
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
 		        context.Attach(updateStatusContent).State = EntityState.Detached;
@@ -412,7 +412,7 @@ namespace starsky.foundation.database.Query
 		        try
 		        {
 			        _logger?.LogInformation("[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop disposed item");
-			        var context = new InjectServiceScope(_scopeFactory).Context();
+			        var context = new InjectServiceScope(_scopeFactory).Context()!;
 			        await context.SaveChangesAsync();
 		        }
 		        catch ( DbUpdateConcurrencyException retry2Exception)

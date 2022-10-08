@@ -19,18 +19,18 @@ namespace starsky.foundation.database.Models.Account
         /// <summary>
         /// Email address
         /// </summary>
-        public string Identifier { get; set; } 
+        public string? Identifier { get; set; } 
         
         /// <summary>
         /// Password
         /// </summary>
-        public string Secret { get; set; }
+        public string? Secret { get; set; }
         
         /// <summary>
         /// Some hash
         /// </summary>
-        public string Extra { get; set; }
-        public User User { get; set; }
-        public CredentialType CredentialType { get; set; }
+        public string? Extra { get; set; }
+        public User? User { get; set; }
+        public CredentialType? CredentialType { get; set; }
     }
 }

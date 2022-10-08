@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace starsky.foundation.database.Models
 	
     public class ImportIndexItem
     {
-        private readonly AppSettings _appSettings;
+        private readonly AppSettings _appSettings = new();
 
         /// <summary>
         /// In order to create an instance of 'ImportIndexItem'
@@ -57,7 +58,7 @@ namespace starsky.foundation.database.Models
         /// FileHash before importing
         /// When using a -ColorClass=1 overwrite the fileHash changes during the import process
         /// </summary>
-        public string FileHash { get; set; }
+        public string FileHash { get; set; } = string.Empty;
 
         public string GetFileHashWithUpdate()
         {
@@ -72,7 +73,7 @@ namespace starsky.foundation.database.Models
         /// The location where the image should be stored.
         /// When the user move an item this field is NOT updated
         /// </summary>
-        public string FilePath { get; set; }
+        public string FilePath { get; set; } = string.Empty;
 
         /// <summary>
         /// UTC DateTime when the file is imported
@@ -89,20 +90,20 @@ namespace starsky.foundation.database.Models
 	    public ImportStatus Status { get; set; }
 	    
 	    [NotMapped]
-		public FileIndexItem FileIndexItem { get; set; }
+		public FileIndexItem? FileIndexItem { get; set; }
         
         [NotMapped]
         [JsonIgnore]
-        public string SourceFullFilePath { get; set; }
+        public string SourceFullFilePath { get; set; } = string.Empty;
 
         // Defaults to _appSettings.Structure
         // Feature to overwrite system structure by request
-        [NotMapped] 
+        [NotMapped]
         [JsonIgnore]
-        public string Structure { get; set; }
+        public string Structure { get; set; } = string.Empty;
 
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public string MakeModel { get; set; }
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")] 
+        public string MakeModel { get; set; } = string.Empty;
 
         /// <summary>
         /// Is the Exif DateTime parsed from the fileName

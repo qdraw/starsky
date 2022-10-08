@@ -13,7 +13,7 @@ namespace starsky.foundation.database.Models.Account
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
-		public string Name { get; set; }
+		public string? Name { get; set; }
 		public DateTime Created { get; set; }
 
 		public DateTime LockoutEnd { get; set; }
@@ -24,6 +24,6 @@ namespace starsky.foundation.database.Models.Account
 
 		// menu settings in the future
 		
-		public virtual ICollection<Credential> Credentials { get; set; }
+		public virtual ICollection<Credential>? Credentials { get; set; }
 	}
 }

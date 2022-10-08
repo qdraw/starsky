@@ -29,7 +29,7 @@ namespace starsky.foundation.database.Query
 				
 				var (success, cachedResult) = CacheGetParentFolder(parentPath);
 
-				List<FileIndexItem> item = null;
+				List<FileIndexItem>? item = null;
 				switch ( collections )
 				{
 					case false:
@@ -46,7 +46,7 @@ namespace starsky.foundation.database.Query
 						break;
 				}
 
-				if ( !success || !item.Any())
+				if ( !success || item == null || !item.Any())
 				{
 					toQueryPaths.Add(path);
 					continue;

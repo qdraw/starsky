@@ -7,6 +7,7 @@
         <DebugType>Full</DebugType>
         <DefineConstants>T</DefineConstants>
         <Version>0.5.0-beta.8</Version>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

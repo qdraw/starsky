@@ -35,7 +35,7 @@ namespace starsky.foundation.database.Query
         // This is the query part
         public IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
-            List<ColorClassParser.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color>? colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
@@ -53,7 +53,7 @@ namespace starsky.foundation.database.Query
         // without any query in this method
         public IEnumerable<FileIndexItem> DisplayFileFolders(
             List<FileIndexItem> fileIndexItems,
-            List<ColorClassParser.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color>? colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
@@ -89,11 +89,12 @@ namespace starsky.foundation.database.Query
 	        var queryCacheName = CachingDbName(nameof(FileIndexItem), 
 		        subPath);
 
-	        // ReSharper disable once ConvertIfStatementToReturnStatement
-	        if (_cache.TryGetValue(queryCacheName, out var objectFileFolders))
-		        return new Tuple<bool, List<FileIndexItem>>(true,objectFileFolders as List<FileIndexItem>);
+	        if ( !_cache.TryGetValue(queryCacheName,
+		            out var objectFileFolders) ) return fallbackResult;
 	        
-	        return fallbackResult;
+	        var result = objectFileFolders as List<FileIndexItem> ??
+	                     new List<FileIndexItem>();
+	        return new Tuple<bool, List<FileIndexItem>>(true,result);
         }
         
         private List<FileIndexItem> CacheQueryDisplayFileFolders(string subPath)
@@ -153,7 +154,7 @@ namespace starsky.foundation.database.Query
             var displayItems = new List<FileIndexItem>();
                 foreach (var item in queryItems)
             {
-                if (!item.Tags.Contains("!delete!"))
+                if (item.Tags != null && !item.Tags.Contains("!delete!"))
                 {
                     displayItems.Add(item);
                 }
@@ -214,14 +215,14 @@ namespace starsky.foundation.database.Query
             if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1 && currentFolder != "/")
             {
                 // currentFolder != "/" >= on the home folder you will automatically go to a subfolder
-                relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
-                relativeObject.NextHash = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FileHash;
+                relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1].FilePath;
+                relativeObject.NextHash = itemsInSubFolder[photoIndexOfSubFolder + 1].FileHash;
             }
 
             if (photoIndexOfSubFolder >= 1)
             {
-                relativeObject.PrevFilePath = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FilePath;
-                relativeObject.PrevHash = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FileHash;
+                relativeObject.PrevFilePath = itemsInSubFolder[photoIndexOfSubFolder - 1].FilePath;
+                relativeObject.PrevHash = itemsInSubFolder[photoIndexOfSubFolder - 1].FileHash;
             }
 
             return relativeObject;

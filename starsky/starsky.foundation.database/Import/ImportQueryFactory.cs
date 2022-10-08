@@ -20,7 +20,7 @@ namespace starsky.foundation.database.Import
 			_logger = logger;
 		}
 		
-		public IImportQuery ImportQuery()
+		public IImportQuery? ImportQuery()
 		{
 			var context = _setupDatabaseTypes.BuilderDbFactory();
 			if ( _importQuery.GetType() == typeof(ImportQuery) )

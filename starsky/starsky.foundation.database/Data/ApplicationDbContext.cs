@@ -12,7 +12,9 @@ namespace starsky.foundation.database.Data
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 	public class ApplicationDbContext : DbContext
 	{
+#pragma warning disable CS8618
 		public ApplicationDbContext(DbContextOptions options) : base(options)
+#pragma warning restore CS8618
 		{
 		}
 

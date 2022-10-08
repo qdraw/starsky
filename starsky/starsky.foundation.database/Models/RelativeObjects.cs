@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using starsky.foundation.platform.Helpers;
+#pragma warning disable CS8618
 
 namespace starsky.foundation.database.Models
 {
@@ -9,6 +10,41 @@ namespace starsky.foundation.database.Models
 	/// </summary>
     public class RelativeObjects
     {
+	    /// <summary>
+	    /// Set Args based on Collections and ColorClass Settings
+	    /// </summary>
+	    /// <param name="collections"></param>
+	    /// <param name="colorClassActiveList"></param>
+	    public RelativeObjects(bool collections, List<ColorClassParser.Color>? colorClassActiveList)
+	    {
+		    if ( !collections )
+		    {
+			    Args?.Add(nameof(collections).ToLowerInvariant(),"false");
+		    }
+			    
+		    if (colorClassActiveList is { Count: >= 1 } )
+		    {
+			    var colorClassArg = new StringBuilder();
+			    for ( int i = 0; i < colorClassActiveList.Count; i++ )
+			    {
+				    var colorClass = colorClassActiveList[i];
+				    if (i ==  colorClassActiveList.Count-1)
+				    {
+					    colorClassArg.Append(colorClass.GetHashCode());
+				    }
+				    else
+				    {
+					    colorClassArg.Append(colorClass.GetHashCode()+ ",");
+				    }
+			    }
+			    Args?.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant(),colorClassArg.ToString());
+		    }
+	    }
+	    
+	    public RelativeObjects()
+	    {
+	    }
+	    
         public string NextFilePath { get; set; }
         public string PrevFilePath { get; set; }
 
@@ -24,7 +60,7 @@ namespace starsky.foundation.database.Models
         /// <summary>
         /// Prevent overwrites with null args
         /// </summary>
-	    public Dictionary<string,string>  Args
+	    public Dictionary<string,string>?  Args
 	    {
 		    get { return ArgsPrivate; }
 		    set
@@ -34,39 +70,6 @@ namespace starsky.foundation.database.Models
 		    }
 	    }
 	    
-	    public RelativeObjects()
-	    {
-	    }
 
-	    /// <summary>
-	    /// Set Args based on Collections and ColorClass Settings
-	    /// </summary>
-	    /// <param name="collections"></param>
-	    /// <param name="colorClassActiveList"></param>
-	    public RelativeObjects(bool collections, List<ColorClassParser.Color> colorClassActiveList)
-	    {
-		    	if ( !collections )
-			    {
-				    Args.Add(nameof(collections).ToLowerInvariant(),"false");
-			    }
-			    
-			    if (colorClassActiveList != null && colorClassActiveList.Count >= 1 )
-			    {
-				    var colorClassArg = new StringBuilder();
-				    for ( int i = 0; i < colorClassActiveList.Count; i++ )
-				    {
-					    var colorClass = colorClassActiveList[i];
-					    if (i ==  colorClassActiveList.Count-1)
-					    {
-						    colorClassArg.Append(colorClass.GetHashCode());
-					    }
-					    else
-					    {
-						    colorClassArg.Append(colorClass.GetHashCode()+ ",");
-					    }
-				    }
-				    Args.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant(),colorClassArg.ToString());
-			    }
-	    }
     }
 }

@@ -44,40 +44,57 @@ namespace starsky.foundation.database.Interfaces
         /// <returns></returns>
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
-            List<ColorClassParser.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color>? colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 
         // To make an object without any query
         IEnumerable<FileIndexItem> DisplayFileFolders(
             List<FileIndexItem> fileIndexItems,
-            List<ColorClassParser.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color>? colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 
-        // to do the query and return object
-        DetailView SingleItem(
+        /// <summary>
+        /// to do the query and return object
+        /// </summary>
+        /// <param name="singleItemDbPath"></param>
+        /// <param name="colorClassActiveList"></param>
+        /// <param name="enableCollections"></param>
+        /// <param name="hideDeleted"></param>
+        /// <param name="sort"></param>
+        /// <returns></returns>
+        DetailView? SingleItem(
             string singleItemDbPath, 
-            List<ColorClassParser.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color>? colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true, 
-            SortType sort = SortType.FileName);
+            SortType? sort = SortType.FileName);
 
-        // To make an object without any query
-        DetailView SingleItem(
+        /// <summary>
+        /// To make an object without any query
+        /// </summary>
+        /// <param name="fileIndexItemsList"></param>
+        /// <param name="singleItemDbPath"></param>
+        /// <param name="colorClassActiveList"></param>
+        /// <param name="enableCollections"></param>
+        /// <param name="hideDeleted"></param>
+        /// <param name="sort"></param>
+        /// <returns></returns>
+        DetailView? SingleItem(
             List<FileIndexItem> fileIndexItemsList, 
             string singleItemDbPath, 
-            List<ColorClassParser.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color>? colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true, 
-            SortType sort = SortType.FileName);
+            SortType? sort = SortType.FileName);
         
         /// <summary>
         /// Get FirstOrDefault for that filePath
         /// </summary>
         /// <param name="filePath">subPath style</param>
         /// <returns>item</returns>
-        FileIndexItem GetObjectByFilePath(string filePath);
+        FileIndexItem? GetObjectByFilePath(string filePath);
         
         /// <summary>
         /// Get FirstOrDefault for that filePath
@@ -85,7 +102,7 @@ namespace starsky.foundation.database.Interfaces
         /// <param name="filePath">subPath style</param>
         /// <param name="cacheTime">time of cache </param>
         /// <returns>item</returns>
-        Task<FileIndexItem> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null);
+        Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null);
 
         /// <summary>
         /// Cached result that contain values
@@ -113,8 +130,8 @@ namespace starsky.foundation.database.Interfaces
         /// <param name="directoryName">the path of the directory (there is no parent generation)</param>
         bool RemoveCacheParentItem(string directoryName);
 
-        string GetSubPathByHash(string fileHash);
-        Task<string> GetSubPathByHashAsync(string fileHash);
+        string? GetSubPathByHash(string fileHash);
+        Task<string?> GetSubPathByHashAsync(string fileHash);
 
         Task<List<FileIndexItem>> GetObjectsByFileHashAsync(
 	        List<string> fileHashesList);
@@ -199,7 +216,7 @@ namespace starsky.foundation.database.Interfaces
 	        TimeSpan? cacheTime);
 
         Task DisposeAsync();
-        Task<int> CountAsync(Expression<Func<FileIndexItem, bool>> expression = null);
+        Task<int> CountAsync(Expression<Func<FileIndexItem, bool>>? expression = null);
     }
 }
 
