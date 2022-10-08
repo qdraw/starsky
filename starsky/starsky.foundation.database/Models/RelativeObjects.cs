@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using starsky.foundation.platform.Helpers;
 #pragma warning disable CS8618
@@ -19,7 +20,7 @@ namespace starsky.foundation.database.Models
 	    {
 		    if ( !collections )
 		    {
-			    Args?.Add(nameof(collections).ToLowerInvariant(),"false");
+			    Args.Add(nameof(collections).ToLowerInvariant(),"false");
 		    }
 			    
 		    if (colorClassActiveList is { Count: >= 1 } )
@@ -37,7 +38,7 @@ namespace starsky.foundation.database.Models
 					    colorClassArg.Append(colorClass.GetHashCode()+ ",");
 				    }
 			    }
-			    Args?.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant(),colorClassArg.ToString());
+			    Args.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant(),colorClassArg.ToString());
 		    }
 	    }
 	    
@@ -60,7 +61,8 @@ namespace starsky.foundation.database.Models
         /// <summary>
         /// Prevent overwrites with null args
         /// </summary>
-	    public Dictionary<string,string>?  Args
+	    [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
+        public Dictionary<string,string>  Args
 	    {
 		    get { return ArgsPrivate; }
 		    set
