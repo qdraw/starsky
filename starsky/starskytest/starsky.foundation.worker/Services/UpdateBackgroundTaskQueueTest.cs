@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -166,6 +167,22 @@ namespace starskytest.starsky.foundation.worker.Services
 			Assert.IsNotNull(method);
 			method.Invoke(service, new object[]{cancelTokenSource.Token});
 			// should stop and not hit timeout
+		}
+		
+		[TestMethod]
+		[Timeout(300)]
+		public async Task Update_End_StopAsync_Test()
+		{
+			var logger = new FakeIWebLogger();
+			var service = new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(), logger);
+			
+			CancellationTokenSource source = new CancellationTokenSource();
+			CancellationToken token = source.Token;
+			source.Cancel(); // <- cancel before start
+
+			await service.StopAsync(token);
+			
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("is stopping"));
 		}
 
 	}

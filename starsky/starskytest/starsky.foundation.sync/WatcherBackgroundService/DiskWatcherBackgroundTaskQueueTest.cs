@@ -22,7 +22,9 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 				
 			}, string.Empty);
 			var token = new CancellationToken();
+#pragma warning disable CS4014
 			queue!.DequeueAsync(token);
+#pragma warning restore CS4014
 			Assert.IsNotNull(token);
 
 		}
@@ -35,6 +37,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(1,count);
 		}
+		
 
 		// [TestMethod]
 		// public void AppInsights_InjectClient()
