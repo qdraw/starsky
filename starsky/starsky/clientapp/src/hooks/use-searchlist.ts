@@ -44,6 +44,13 @@ const setErrorPageType = (
   return false;
 };
 
+/**
+ * Search Query
+ * @param query - where to search for
+ * @param pageNumber - pagenumber starts with 1
+ * @param resetPageTypeBeforeLoading - add loading icon on startup
+ * @returns - promise with void
+ */
 const useSearchList = (
   query: string | undefined,
   pageNumber: number | undefined,
@@ -58,6 +65,12 @@ const useSearchList = (
     ? new UrlQuery().UrlQuerySearchApi(query, pageNumber)
     : undefined;
 
+  /**
+   * From SearchList to fetch trash and search content
+   * @param locationScoped - url
+   * @param abortController - how to cancel
+   * @returns emthy promise
+   */
   const fetchContent = async (
     locationScoped: string | undefined,
     abortController: AbortController

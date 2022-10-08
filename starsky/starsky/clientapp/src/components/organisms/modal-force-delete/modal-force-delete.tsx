@@ -3,6 +3,7 @@ import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import FetchGet from "../../../shared/fetch-get";
 import FetchPost from "../../../shared/fetch-post";
 import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
@@ -76,6 +77,13 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
     ).then((result) => {
       if (result.statusCode === 200 || result.statusCode === 404) {
         dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
+
+        if (state.pageNumber === 1) {
+          const url = new UrlQuery().UrlSearchTrashApi(state.pageNumber);
+          FetchGet(url).then((result) => {
+            console.log(result);
+          });
+        }
       }
 
       ClearSearchCache(history.location.search);
