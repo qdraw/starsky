@@ -51,7 +51,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   );
 
   // Selection
-  var history = useLocation();
+  const history = useLocation();
   const [select, setSelect] = React.useState(
     new URLPath().StringToIUrl(history.location.search).select
   );

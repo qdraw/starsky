@@ -14,10 +14,6 @@ namespace starsky.foundation.database.Helpers
             _appSettings = appSettings;
         }
 
-	    public StatusCodesHelper()
-	    {
-	    }
-
 	    public FileIndexItem.ExifStatus IsReadOnlyStatus(FileIndexItem fileIndexItem)
 	    {
 		    if (fileIndexItem.IsDirectory == true && _appSettings.IsReadOnly(fileIndexItem.FilePath))
@@ -33,7 +29,7 @@ namespace starsky.foundation.database.Helpers
 		    return FileIndexItem.ExifStatus.Default;
 	    }
 
-	    public FileIndexItem.ExifStatus IsReadOnlyStatus(DetailView detailView)
+	    public FileIndexItem.ExifStatus IsReadOnlyStatus(DetailView? detailView)
 	    {
 		    if(_appSettings == null) throw new DllNotFoundException("add app settings to ctor");
 
@@ -47,7 +43,7 @@ namespace starsky.foundation.database.Helpers
 			    return FileIndexItem.ExifStatus.DirReadOnly;
 		    }
 
-		    if ( _appSettings.IsReadOnly(detailView.FileIndexItem.ParentDirectory) )
+		    if ( _appSettings.IsReadOnly(detailView.FileIndexItem?.ParentDirectory) )
 		    {
 			    return  FileIndexItem.ExifStatus.ReadOnly;
 		    }
@@ -55,15 +51,15 @@ namespace starsky.foundation.database.Helpers
 		    return FileIndexItem.ExifStatus.Default;
 	    }
 
-	    public static FileIndexItem.ExifStatus IsDeletedStatus(FileIndexItem fileIndexItem)
+	    public static FileIndexItem.ExifStatus IsDeletedStatus(FileIndexItem? fileIndexItem)
 	    {
-		    return fileIndexItem != null && fileIndexItem.Tags.Contains("!delete!") ? 
+		    return fileIndexItem?.Tags != null && fileIndexItem.Tags.Contains("!delete!") ? 
 			    FileIndexItem.ExifStatus.Deleted : FileIndexItem.ExifStatus.Default;
 	    }
 	    
-	    public static FileIndexItem.ExifStatus IsDeletedStatus(DetailView detailView)
+	    public static FileIndexItem.ExifStatus IsDeletedStatus(DetailView? detailView)
 	    {
-		    if (detailView != null && detailView.FileIndexItem.Tags.Contains("!delete!"))
+		    if (detailView?.FileIndexItem?.Tags != null && detailView.FileIndexItem.Tags.Contains("!delete!"))
 		    {
 			    return FileIndexItem.ExifStatus.Deleted;
 		    }

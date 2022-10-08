@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -21,6 +22,8 @@ using starsky.foundation.writemeta.Interfaces;
 namespace starsky.foundation.writemeta.Services
 {
 	[Service(typeof(IExifToolDownload), InjectionLifetime = InjectionLifetime.Singleton)]
+	[SuppressMessage("Usage", "S1075:Refactor your code not to use hardcoded absolute paths or URIs", Justification = "Source of files")]
+	[SuppressMessage("Usage", "S4790:Make sure this weak hash algorithm is not used in a sensitive context here.", Justification = "Safe")]
 	public class ExifToolDownload : IExifToolDownload
 	{
 		private readonly IHttpClientHelper _httpClientHelper;
@@ -49,7 +52,13 @@ namespace starsky.foundation.writemeta.Services
 			_logger = logger;
 		}
 
-		public async Task<bool> DownloadExifTool(bool isWindows)
+		/// <summary>
+		/// Auto Download Exiftool
+		/// </summary>
+		/// <param name="isWindows">download windows version if true</param>
+		/// <param name="minimumSize">check for min file size in bytes (Default = 30 bytes)</param>
+		/// <returns></returns>
+		public async Task<bool> DownloadExifTool(bool isWindows, int minimumSize = 30)
 		{
 			if ( _appSettings.AddSwaggerExport == true && _appSettings.AddSwaggerExportExitAfter == true )
 			{
@@ -58,13 +67,15 @@ namespace starsky.foundation.writemeta.Services
 			}
 			
 			if ( isWindows &&
-			     !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath ()) )
+			     (!_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath ()) ||
+			     _hostFileSystemStorage.Info(ExeExifToolWindowsFullFilePath()).Size <= minimumSize))
 			{
 				return await StartDownloadForWindows();
 			}
 
 			if ( !isWindows &&
-			     !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()))
+			     (!_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath() ) ||
+			      _hostFileSystemStorage.Info(ExeExifToolUnixFullFilePath()).Size <= minimumSize))
 			{
 				return await StartDownloadForUnix();
 			}
@@ -102,7 +113,7 @@ namespace starsky.foundation.writemeta.Services
 		{
 			var checksums = await DownloadCheckSums();
 			if ( checksums == null ) return false;
-			var matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums?.Value);
+			var matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums.Value.Value);
 			return await DownloadForUnix(matchExifToolForUnixName, 
 				GetChecksumsFromTextFile(checksums.Value.Value), !checksums.Value.Key);
 		}

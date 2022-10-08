@@ -15,7 +15,7 @@ import CurrentLocationButton from "../../atoms/current-location-button/current-l
 import Preloader from "../../atoms/preloader/preloader";
 
 const DetailViewGpx: React.FC = () => {
-  var history = useLocation();
+  const history = useLocation();
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);

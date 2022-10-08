@@ -98,7 +98,7 @@ namespace starskytest.Controllers
 			var controller = new IndexController(fakeQuery,new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Index("/") as JsonResult;
-			Assert.AreNotEqual(actionResult,null);
+			Assert.AreNotEqual(null,actionResult);
 			var jsonCollection = actionResult.Value as ArchiveViewModel;
 			Assert.AreEqual("test",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
 		}
@@ -116,7 +116,7 @@ namespace starskytest.Controllers
 			var controller = new IndexController(fakeQuery,new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Index(string.Empty) as JsonResult;
-			Assert.AreNotEqual(actionResult,null);
+			Assert.AreNotEqual(null,actionResult);
 			var jsonCollection = actionResult.Value as ArchiveViewModel;
 			Assert.AreEqual("test",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
 		}

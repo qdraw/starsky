@@ -57,7 +57,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// </summary>
 		/// <param name="inputSubPaths">list of files to update</param>
 		/// <returns>list of files, where needed for raw-files there are .xmp used</returns>
-		private List<string> PathsListTagsFromFile(List<string> inputSubPaths)
+		private static IEnumerable<string> PathsListTagsFromFile(List<string> inputSubPaths)
 		{
 			var pathsList = new List<string>();
 			foreach (var subPath in inputSubPaths)
@@ -98,7 +98,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="comparedNames">list of fields that are changed, other fields are ignored</param>
 		/// <param name="includeSoftware">to include the original software name</param>
 		/// <returns>command line args</returns>
-		internal string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
+		internal static string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
 		{
 			var command = "-json -overwrite_original";
 			var initCommand = command; // to check if nothing
@@ -218,7 +218,7 @@ namespace starsky.foundation.writemeta.Helpers
 			return new ValueTuple<string,List<string>>(command, fileHashes);
 		}
 
-		private string UpdateLocationAltitudeCommand(
+		private static string UpdateLocationAltitudeCommand(
 			string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
 			// -GPSAltitude="+160" -GPSAltitudeRef=above
@@ -239,7 +239,7 @@ namespace starsky.foundation.writemeta.Helpers
 			return command;
 		}
 
-		private string UpdateGpsLatitudeCommand(
+		private static string UpdateGpsLatitudeCommand(
 			string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
 			// To Reset Image:
@@ -257,7 +257,7 @@ namespace starsky.foundation.writemeta.Helpers
 			return command;
 		}
         
-		private string UpdateGpsLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+		private static string UpdateGpsLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
 			if (comparedNames.Contains( nameof(FileIndexItem.Longitude).ToLowerInvariant()))
 			{
@@ -508,7 +508,7 @@ namespace starsky.foundation.writemeta.Helpers
 			return command;
 		}
 
-		private string UpdateFocalLengthCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+		private static string UpdateFocalLengthCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.FocalLength).ToLowerInvariant()) ) return command;
 

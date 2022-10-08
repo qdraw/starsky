@@ -56,6 +56,11 @@ namespace starsky.foundation.platform.Enums
 		/// Uses List&lt;FileIndexItem&gt; as payload
 		/// </summary>
 		Replace,
+		
+		/// <summary>
+		/// On Startup Sync
+		/// </summary>
+		OnStartupSyncBackgroundSync
 	}
 }
 

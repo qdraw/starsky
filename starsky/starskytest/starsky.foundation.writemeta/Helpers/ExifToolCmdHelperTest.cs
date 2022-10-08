@@ -208,7 +208,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 	        var exifToolCmdHelper = new ExifToolCmdHelper(null, null, null, null);
 
-	        var result = exifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+	        var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
 		        comparedNames, true);
 	        
 	        Assert.AreEqual("-json -overwrite_original -ImageStabilization=\"On\"",result);
@@ -227,7 +227,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 	        var exifToolCmdHelper = new ExifToolCmdHelper(null, null, null, null);
 
-	        var result = exifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+	        var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
 		        comparedNames, true);
 	        
 	        Assert.AreEqual(string.Empty,result);

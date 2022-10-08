@@ -22,7 +22,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo(
     const MessageNext = language.text("Volgende", "Next");
 
     // used for reading current location
-    var history = useLocation();
+    const history = useLocation();
 
     const [lastPageNumber, setLastPageNumber] = React.useState(-1);
     const [urlObject, setUrlObject] = React.useState(

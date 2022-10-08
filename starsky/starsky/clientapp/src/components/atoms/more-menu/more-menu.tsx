@@ -23,7 +23,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
     setEnabledMenu(!enabledMenu);
   }
 
-  var offMoreMenu = () => setEnabledMenu(false);
+  const offMoreMenu = () => setEnabledMenu(false);
 
   useEffect(() => {
     // Bind the event listener

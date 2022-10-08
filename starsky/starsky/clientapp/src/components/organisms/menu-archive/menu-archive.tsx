@@ -59,7 +59,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   let { state, dispatch } = React.useContext(ArchiveContext);
   state = defaultStateFallback(state);
 
-  var history = useLocation();
+  const history = useLocation();
 
   var allSelection = () =>
     new Select(select, setSelect, state, history).allSelection();

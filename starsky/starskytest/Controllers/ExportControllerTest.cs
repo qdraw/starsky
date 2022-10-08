@@ -106,7 +106,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void ExportController_CreateZipNotFound()
+		public async Task ExportController_CreateZipNotFound()
 		{
 			var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var storageSelector = new FakeSelectorStorage(iStorage);
@@ -114,7 +114,7 @@ namespace starskytest.Controllers
 			var controller = new ExportController( _bgTaskQueue, storageSelector, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
+			var actionResult = await controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
 			Assert.AreEqual(404,actionResult.StatusCode);
 		}
 
@@ -171,13 +171,13 @@ namespace starskytest.Controllers
 			};
 
 
-			var actionResult = controller.CreateZip(_createAnImage.DbPath,
+			var actionResult = await controller.CreateZip(_createAnImage.DbPath,
 				true,false) as JsonResult;
 			
-			Assert.AreNotEqual(actionResult, null);
-			var zipHash = actionResult.Value as string;
+			Assert.AreNotEqual(null,actionResult);
+			var zipHash = actionResult!.Value as string;
 
-			Assert.AreEqual(true,zipHash.Contains("SR"));
+			Assert.AreEqual(true,zipHash!.Contains("SR"));
 
 			await Task.Delay(150);
 

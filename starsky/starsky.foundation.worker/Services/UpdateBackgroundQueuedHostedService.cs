@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -15,21 +16,24 @@ namespace starsky.foundation.worker.Services
 		InjectionLifetime = InjectionLifetime.Singleton)]
 	public class UpdateBackgroundQueuedHostedService : BackgroundService
 	{
+		private readonly IUpdateBackgroundTaskQueue _taskQueue;
 		private readonly IWebLogger _logger;
-		
-		// ReSharper disable once SuggestBaseTypeForParameterInConstructor
-		public UpdateBackgroundQueuedHostedService(IUpdateBackgroundTaskQueue taskQueue,
-			IWebLogger logger)
+
+		public UpdateBackgroundQueuedHostedService(
+			IUpdateBackgroundTaskQueue taskQueue,
+			IWebLogger logger) =>
+			(_taskQueue, _logger) = (taskQueue, logger);
+
+		protected override Task ExecuteAsync(CancellationToken cancellationToken)
 		{
-			TaskQueue = taskQueue;
-			_logger = logger;
+			return ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger, cancellationToken);
 		}
 
-		private IBaseBackgroundTaskQueue TaskQueue { get; }
-
-		protected override Task ExecuteAsync(CancellationToken stoppingToken)
+		public override async Task StopAsync(CancellationToken stoppingToken)
 		{
-			return ProcessTaskQueue.ProcessTaskQueueAsync(TaskQueue, _logger, stoppingToken);
+			_logger.LogInformation(
+				$"QueuedHostedService {_taskQueue.GetType().Name} is stopping.");
+			await base.StopAsync(stoppingToken);
 		}
 	}
 }

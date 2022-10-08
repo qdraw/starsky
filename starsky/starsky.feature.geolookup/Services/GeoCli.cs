@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -14,9 +14,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
-using starsky.foundation.writemeta.Services;
 
 namespace starsky.feature.geolookup.Services
 {
@@ -32,15 +30,16 @@ namespace starsky.feature.geolookup.Services
 		private readonly IGeoFileDownload _geoFileDownload;
 		private readonly IExifToolDownload _exifToolDownload;
 
+		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 		public GeoCli(IGeoReverseLookup geoReverseLookup, 
 			IGeoLocationWrite geoLocationWrite, ISelectorStorage selectorStorage, AppSettings appSettings, IConsole console, 
-			IGeoFileDownload geoFileDownload, IExifToolDownload exifToolDownload)
+			IGeoFileDownload geoFileDownload, IExifToolDownload exifToolDownload, IWebLogger logger)
 		{
 			_geoReverseLookup = geoReverseLookup;
 			_geoLocationWrite = geoLocationWrite;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_readMeta = new ReadMeta(_iStorage, appSettings);
+			_readMeta = new ReadMeta(_iStorage, appSettings, null, logger);
 			_appSettings = appSettings;
 			_console = console;
 			_exifToolDownload = exifToolDownload;
@@ -63,7 +62,7 @@ namespace starsky.feature.geolookup.Services
 			await _geoFileDownload.Download();
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
 			
-			if ( new ArgsHelper().NeedHelp(args) ||
+			if ( ArgsHelper.NeedHelp(args) ||
 			     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1
 			       && ArgsHelper.GetSubPathFormArgs(args).Length <= 1
 			       && new ArgsHelper(_appSettings).GetRelativeValue(args) == null ) )
@@ -103,8 +102,8 @@ namespace starsky.feature.geolookup.Services
     
 			if ( inputPath == null || _iStorage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
-				_console.WriteLine(
-					$"Folder location is not found \nPlease try the `-h` command to get help \nDid search for: {inputPath}");
+				_console.WriteLine("Folder location is not found \n" +
+				                   $"Please try the `-h` command to get help \nDid search for: {inputPath}");
 				return;
 			}
     
@@ -115,7 +114,7 @@ namespace starsky.feature.geolookup.Services
 			var fileIndexList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
     
 			var toMetaFilesUpdate = new List<FileIndexItem>();
-			if ( new ArgsHelper().GetIndexMode(args) )
+			if ( ArgsHelper.GetIndexMode(args) )
 			{
 				_console.WriteLine($"CameraTimeZone: {_appSettings.CameraTimeZone}");
 				_console.WriteLine($"Folder: {inputPath}");

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using starsky.foundation.platform.Interfaces;
@@ -8,6 +9,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 {
 	public static class SetupLogging
 	{
+		[SuppressMessage("Usage", "S4792:Make sure that this logger's configuration is safe.")]
 		public static void AddApplicationInsightsLogging(this IServiceCollection services, AppSettings appSettings)
 		{
 			services.AddLogging(logging =>

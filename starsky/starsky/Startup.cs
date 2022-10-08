@@ -20,6 +20,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.health.HealthCheck;
 using starsky.feature.packagetelemetry.Services;
+using starsky.feature.syncbackground.Services;
 using starsky.foundation.accountmanagement.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
@@ -86,7 +87,10 @@ namespace starsky
                         options.Cookie.HttpOnly = true;
                         options.Cookie.IsEssential = true;
                         options.Cookie.Path = "/";
-                        options.Cookie.SameSite = SameSiteMode.Lax; // allow links from non-domain sites
+                        options.Cookie.SecurePolicy = _appSettings.HttpsOn == true
+	                        ? CookieSecurePolicy.Always
+	                        : CookieSecurePolicy.SameAsRequest;
+                        options.Cookie.SameSite = SameSiteMode.Strict; 
                         options.LoginPath = "/account/login";
                         options.LogoutPath = "/account/logout";
                         options.Events.OnRedirectToLogin = ReplaceReDirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
@@ -99,8 +103,10 @@ namespace starsky
                 {
                     options.Cookie.Name = "_af";
                     options.Cookie.HttpOnly = true; // only used by .NET, there is a separate method to generate a X-XSRF-TOKEN cookie
-                    options.Cookie.SameSite = SameSiteMode.Lax;
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                    options.Cookie.SecurePolicy = _appSettings.HttpsOn == true
+	                    ? CookieSecurePolicy.Always
+	                    : CookieSecurePolicy.SameAsRequest;
                     options.Cookie.Path = "/";
                     options.Cookie.IsEssential = true;
                     options.HeaderName = "X-XSRF-TOKEN";
@@ -126,8 +132,6 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
-
-			
 			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
 
 	        ConfigureForwardedHeaders(services);
@@ -139,12 +143,13 @@ namespace starsky
 			
 			// Reference due missing links between services
 			services.AddSingleton<PackageTelemetryBackgroundService>();
+			services.AddSingleton<OnStartupSyncBackgroundService>();
         }
 
         /// <summary>
         /// Respect ForwardedHeaders
         /// </summary>
-        private void ConfigureForwardedHeaders(IServiceCollection services)
+        private static void ConfigureForwardedHeaders(IServiceCollection services)
         {
 	        // Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 	        services.Configure<ForwardedHeadersOptions>(options =>
@@ -209,7 +214,6 @@ namespace starsky
         /// <param name="applicationLifetime">application Lifetime</param>
         public void Configure(IApplicationBuilder app, IHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
-	        
 	        app.UseResponseCompression();
 
 	        if ( env.IsDevelopment()) app.UseDeveloperExceptionPage();
@@ -307,14 +311,13 @@ namespace starsky
 		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
         }
-
-
+        
         /// <summary>
         /// Run the latest migration on the database. 
         /// To start over with a SQLite database please remove it and
         /// it will add a new one
         /// </summary>
-        private async Task EfCoreMigrationsOnProject(IApplicationBuilder app)
+        private static async Task EfCoreMigrationsOnProject(IApplicationBuilder app)
         {
 	        using var serviceScope = app.ApplicationServices
 		        .GetRequiredService<IServiceScopeFactory>()

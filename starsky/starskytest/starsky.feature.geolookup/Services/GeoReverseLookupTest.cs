@@ -39,7 +39,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 
 			new StorageHostFullPathFilesystem().WriteStream(
-				new PlainTextFileHelper().StringToStream(mockCities1000),
+				PlainTextFileHelper.StringToStream(mockCities1000),
 				Path.Combine(_appSettings.DependenciesFolder, "cities1000.txt"));
 			
 			// Mockup data to:
@@ -52,7 +52,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			                       "AR.07\tBuenos Aires F.D.\tBuenos Aires F.D.\t3433955\r\n";
 
 			new StorageHostFullPathFilesystem().WriteStream(
-				new PlainTextFileHelper().StringToStream(admin1CodesASCII),
+				PlainTextFileHelper.StringToStream(admin1CodesASCII),
 				Path.Combine(_appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
 		}
 

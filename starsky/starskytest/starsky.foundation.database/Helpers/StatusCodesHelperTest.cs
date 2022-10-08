@@ -21,6 +21,30 @@ namespace starskytest.starsky.foundation.database.Helpers
 			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
 		}
 		
+		[TestMethod] 
+		public void IsDeletedStatus_TagsNull_Default1()
+		{
+			var detailView = new DetailView{ FileIndexItem = new FileIndexItem
+			{
+				Tags = null!
+			}};
+			
+			var status = StatusCodesHelper.IsDeletedStatus(detailView);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
+		}
+		
+		[TestMethod]
+		public void IsReadOnlyStatus_ParentDirectory_Null_Default()
+		{
+			var detailView = new DetailView{ FileIndexItem = new FileIndexItem
+			{
+				ParentDirectory = null!
+			}};
+			var appSettings = new AppSettings();
+			var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(detailView);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
+		}
+		
 		[TestMethod]
 		public void IsReadOnlyStatus_Null_Default()
 		{

@@ -34,7 +34,7 @@ namespace starsky.feature.webftppublish.Helpers
 		{
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			
-			if (_argsHelper.NeedHelp(args))
+			if ( ArgsHelper.NeedHelp(args))
 			{
 				_appSettings.ApplicationType = AppSettings.StarskyAppType.WebFtp;
 				_argsHelper.NeedHelpShowDialog();

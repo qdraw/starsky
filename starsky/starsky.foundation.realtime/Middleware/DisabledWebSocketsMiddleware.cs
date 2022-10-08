@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace starsky.foundation.realtime.Middleware
 {
+	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public class DisabledWebSocketsMiddleware
 	{
 		public DisabledWebSocketsMiddleware(RequestDelegate next)

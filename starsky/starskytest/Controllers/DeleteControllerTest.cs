@@ -140,7 +140,7 @@ namespace starskytest.Controllers
 			var controller = new DeleteController(deleteItem);
 
 			Console.WriteLine("createAnImage.FilePath");
-			Console.WriteLine(createAnImage.FilePath);
+			Console.WriteLine("@#~ "+ createAnImage.FilePath);
 
 			new CreateAnImage();
 			

@@ -20,13 +20,14 @@ namespace starsky.foundation.database.Query
         /// <param name="colorClassActiveList">list of colorclasses to show, default show all</param>
         /// <param name="enableCollections">enable collections feature > default true</param>
         /// <param name="hideDeleted">do not show deleted files > default true</param>
+        /// <param name="sort">how to sort</param>
         /// <returns>view object to show on the page</returns>
-        public DetailView SingleItem(
+        public DetailView? SingleItem(
             string singleItemDbPath,
-            List<ColorClassParser.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color>? colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true, 
-            SortType sort = SortType.FileName)
+            SortType? sort = SortType.FileName)
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
             var parentFolder = FilenamesHelper.GetParentPath(singleItemDbPath);
@@ -50,14 +51,15 @@ namespace starsky.foundation.database.Query
         /// <param name="colorClassActiveList">list of colorClasses to show, default show all</param>
         /// <param name="enableCollections">enable collections feature > default true</param>
         /// <param name="hideDeleted">do not show deleted files > default true</param>
+        /// <param name="sort">how to sort</param>
         /// <returns>view object to show on the page</returns>
-        public DetailView SingleItem(
+        public DetailView? SingleItem(
             List<FileIndexItem> fileIndexItemsList, 
             string singleItemDbPath,
-            List<ColorClassParser.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color>? colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true, 
-            SortType sort = SortType.FileName)
+            SortType? sort = SortType.FileName)
         {
             // reject empty requests
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
@@ -68,14 +70,15 @@ namespace starsky.foundation.database.Query
                 PathHelper.RemoveLatestSlash(parentFolder) + "/", string.Empty);
             
             // Home has no parent, so return a value 
-            if ( fileName == string.Empty && parentFolder == "/" && GetObjectByFilePath("/") != null)
+            var objectByFilePath = GetObjectByFilePath("/");
+            if ( fileName == string.Empty && parentFolder == "/" && objectByFilePath != null)
             {
 	            return new DetailView
 	            {
-		            FileIndexItem = GetObjectByFilePath("/"),
+		            FileIndexItem = objectByFilePath,
 		            RelativeObjects = new RelativeObjects(),
 		            Breadcrumb = new List<string>{"/"},
-		            ColorClassActiveList = colorClassActiveList,
+		            ColorClassActiveList = colorClassActiveList ?? new List<ColorClassParser.Color>(),
 		            IsDirectory = true,
 		            SubPath = "/",
 		            Collections = enableCollections
@@ -94,7 +97,7 @@ namespace starsky.foundation.database.Query
             }
 
             // To know when a file is deleted
-            if ( currentFileIndexItem.Tags.Contains("!delete!") )
+            if ( currentFileIndexItem.Tags != null && currentFileIndexItem.Tags.Contains("!delete!") )
             {
 	            currentFileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
             }
@@ -110,7 +113,11 @@ namespace starsky.foundation.database.Query
 	            };
             }
 
-            if (currentFileIndexItem.Tags.Contains("!delete!")) hideDeleted = false;
+            if ( currentFileIndexItem.Tags != null &&
+                 currentFileIndexItem.Tags.Contains("!delete!") )
+            {
+	            hideDeleted = false;
+            }
             
             var fileIndexItemsForPrevNextList = DisplayFileFolders(
                 parentFolder,colorClassActiveList,enableCollections,hideDeleted).ToList();
@@ -118,9 +125,9 @@ namespace starsky.foundation.database.Query
             var itemResult = new DetailView
             {
                 FileIndexItem = currentFileIndexItem,
-                RelativeObjects = GetNextPrevInSubFolder(currentFileIndexItem,fileIndexItemsForPrevNextList, sort),
+                RelativeObjects = GetNextPrevInSubFolder(currentFileIndexItem,fileIndexItemsForPrevNextList, sort ?? SortType.FileName),
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItemDbPath),
-                ColorClassActiveList = colorClassActiveList,
+                ColorClassActiveList = colorClassActiveList ?? new List<ColorClassParser.Color>(),
                 IsDirectory = false,
                 SubPath = singleItemDbPath,
 	            Collections = enableCollections
@@ -139,7 +146,7 @@ namespace starsky.foundation.database.Query
         }
         
         private static RelativeObjects GetNextPrevInSubFolder(
-	        FileIndexItem currentFileIndexItem,
+	        FileIndexItem? currentFileIndexItem,
 	        List<FileIndexItem> fileIndexItemsList, SortType sortType)
         {
             // Check if this is item is not !deleted! yet

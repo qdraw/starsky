@@ -30,7 +30,7 @@ namespace starskytest.Services
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 	        
-			var fakeReadMeta = new ReadMeta(storage);
+			var fakeReadMeta = new ReadMeta(storage, _appSettings, null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 			var helperResult = await new ExifCopy(storage, storage, fakeExifTool, 
 				fakeReadMeta).CopyExifPublish("/test.jpg", "/test2");
@@ -46,9 +46,11 @@ namespace starskytest.Services
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
-			var fakeReadMeta = new ReadMeta(storage);
+			var fakeReadMeta = new ReadMeta(storage, _appSettings, 
+				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
-			var helperResult = await new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).XmpSync("/test.dng");
+			var helperResult = await new ExifCopy(storage, 
+				storage, fakeExifTool, fakeReadMeta).XmpSync("/test.dng");
 			Assert.AreEqual("/test.xmp",helperResult);
 
 		}
@@ -62,7 +64,8 @@ namespace starskytest.Services
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
-			var fakeReadMeta = new ReadMeta(storage);
+			var fakeReadMeta = new ReadMeta(storage, _appSettings,
+				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 			
 			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).XmpCreate("/test.xmp");
@@ -81,14 +84,15 @@ namespace starskytest.Services
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			var readMeta =  new ReadMeta(storage);
+			var readMeta = new ReadMeta(storage, _appSettings,
+				null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 
 			await new ExifCopy(storage, storage, fakeExifTool, readMeta).XmpSync("/test.dng");
 			
 			Assert.AreEqual(true,storage.ExistFile("/test.xmp"));
 			var xmpContentReadStream = storage.ReadStream("/test.xmp");
-			var xmpContent = await new PlainTextFileHelper().StreamToStringAsync(xmpContentReadStream);
+			var xmpContent = await PlainTextFileHelper.StreamToStringAsync(xmpContentReadStream);
 			
 			// Those values are injected by fakeExifTool
 			Assert.AreEqual(true,xmpContent.Contains("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));

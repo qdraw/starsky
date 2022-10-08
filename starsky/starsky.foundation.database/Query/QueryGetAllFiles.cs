@@ -34,13 +34,14 @@ namespace starsky.foundation.database.Query
 			}
 		}
 		
-		internal static List<FileIndexItem> FormatOk(IReadOnlyCollection<FileIndexItem?>? input)
+		internal static List<FileIndexItem> FormatOk(IReadOnlyCollection<FileIndexItem?>? input, 
+			FileIndexItem.ExifStatus fromStatus = FileIndexItem.ExifStatus.Default)
 		{
 			if ( input == null ) return new List<FileIndexItem>();
 			return input.Where(p => p != null).Select(p =>
 			{
 				// status check for some referenced based code
-				if (p!.Status == FileIndexItem.ExifStatus.Default )
+				if (p!.Status == fromStatus )
 				{
 					p.Status = FileIndexItem.ExifStatus.Ok;
 				}

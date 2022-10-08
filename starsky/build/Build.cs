@@ -5,10 +5,12 @@ using helpers;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.ProjectModel;
-using static helpers.SonarQube;
 
+// ReSharper disable once CheckNamespace
 namespace build
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S3887:Use an immutable collection or reduce the accessibility of the non-private readonly field", Justification = "Not production code.")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S2386:Use an immutable collection or reduce the accessibility of the non-private readonly field", Justification = "Not production code.")]
 	[ShutdownDotNetAfterServerBuild]
 	public class Build : NukeBuild
 	{
@@ -156,8 +158,8 @@ namespace build
 				ShowSettingsInfo();
 				ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 				DotnetGenericHelper.RestoreNetCoreCommand(Solution);
-				InstallSonarTool(IsUnitTestDisabled(), NoSonar);
-				SonarBegin(IsUnitTestDisabled(),NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),
+				SonarQube.InstallSonarTool(IsUnitTestDisabled(), NoSonar);
+				SonarQube.SonarBegin(IsUnitTestDisabled(),NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),
 					"starskytest/coverage-merge-sonarqube.xml");
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
@@ -165,10 +167,12 @@ namespace build
 					"starskygeocli/starskygeocli.csproj",NoDependencies, 
 					"generic-netcore");
 				MergeCoverageFiles.Merge(IsUnitTestDisabled());
-				SonarEnd(IsUnitTestDisabled(),NoSonar);
+				SonarQube.SonarEnd(IsUnitTestDisabled(),NoSonar);
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
 			});
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
+		// ReSharper disable once UnusedMember.Local
 		Target DownloadDependencies => _ => _
 			.Executes(() =>
 			{
@@ -203,6 +207,8 @@ namespace build
 				
 			});
 		
+		// ReSharper disable once UnusedMember.Local
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
 		Target BuildNetCore => _ => _
 			.Executes(() =>
 			{
@@ -212,6 +218,8 @@ namespace build
 				DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 			});
 		
+		// ReSharper disable once UnusedMember.Local
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
 		Target TestNetCore => _ => _
 			.Executes(() =>
 			{

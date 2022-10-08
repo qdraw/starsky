@@ -84,6 +84,7 @@ The order of this files is used to get the values from the appsettings</p>
 <h3 id="optional-settings">Optional settings</h3>
 <ol>
 <li><code>Structure</code> - The structure that will be used when you import files, <em>has a default fallback</em>.</li>
+<li><code>DependenciesFolder</code> - where store the data of external dependencies used <em>default folder in project</em></li>
 <li><code>ReadOnlyFolders</code> - Accepts a list of folders that never may be edited, <em>defaults a empty list</em></li>
 <li><code>AddMemoryCache</code> - Enable caching <em>(default true)</em>
   The only 2 build-in exceptions are when there are no accounts or you already logged in <em>(default false)</em></li>
@@ -102,6 +103,7 @@ The order of this files is used to get the values from the appsettings</p>
 <li><code>ApplicationInsightsLog</code> - Add WebLogger output to Application Insights (need to have InstrumentationKey) <em>(default enabled, when key is provided)</em></li>
 <li><code>useHttpsRedirection</code> - Redirect users to https page. You should enable before going to production.
  This toggle is always disabled in debug/develop mode <em>(default false)</em></li>
+<li><code>httpsOn</code> Set all cookies in https Mode. You should enable before going to production. <em>(default false)</em></li>
 <li><code>Name</code> Name of the application, does not have much effect <em>(default Starsky)</em></li>
 <li><code>AppSettingsPath</code> To store the settings by user in the AppData folder <em>(default empty string)</em></li>
 <li><code>UseRealtime</code> Update the user interface realtime <em>default true</em></li>
@@ -111,6 +113,11 @@ The order of this files is used to get the values from the appsettings</p>
 <li><code>ImportIgnore</code> ImportIgnore filter  <em>default list with: &quot;lost+found&quot; &quot;.Trashes&quot;</em></li>
 <li><code>MaxDegreesOfParallelism</code> Number of jobs running in background <em>default 6</em></li>
 <li><code>MetaThumbnailOnImport</code> Create small thumbnails after import, is very fast <em>default true</em></li>
+<li><code>EnablePackageTelemetry</code> Telemetry is send for service improvement <em>default true</em></li>
+<li><code>EnablePackageTelemetryDebug</code> Debug Telemetry <em>default false</em></li>
+<li><code>AddSwaggerExportExitAfter</code> Quit application after exporting swagger files, should have <code>AddSwagger</code> and <code>AddSwaggerExport</code> enabled <em>default false</em></li>
+<li><code>NoAccountLocalhost</code> No login needed when on localhost, used in Desktop App</li>
+<li><code>VideoUseLocalTime</code> Use localtime by Camera make and model instead of UTC</li>
 </ol>
 <h3 id="appsettingsjson-example">Appsettings.json example</h3>
 <pre><code class="language-json">{

@@ -36,7 +36,7 @@ namespace starsky.foundation.database.Query
 		/// <param name="entryOriginalValuesSetValues">entry item</param>
 		/// <exception cref="NotSupportedException">unknown how to fix</exception>
 		internal static void SolveConcurrencyException(object entryEntity, 
-			PropertyValues proposedValues, PropertyValues databaseValues, string entryMetadataName, 
+			PropertyValues proposedValues, PropertyValues? databaseValues, string entryMetadataName, 
 			OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)
 		{
 			if ( !( entryEntity is FileIndexItem ) )

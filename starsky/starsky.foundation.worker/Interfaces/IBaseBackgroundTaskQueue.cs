@@ -6,9 +6,12 @@ namespace starsky.foundation.worker.Interfaces
 {
 	public interface IBaseBackgroundTaskQueue
 	{
-		void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem);
-
-		Task<Func<CancellationToken, Task>> DequeueAsync(
+		public int Count();
+		ValueTask QueueBackgroundWorkItemAsync(
+			Func<CancellationToken, ValueTask> workItem, 
+			string metaData);
+		
+		ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 			CancellationToken cancellationToken);
 	}
 }

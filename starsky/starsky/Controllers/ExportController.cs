@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.export.Interfaces;
@@ -41,7 +42,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(string),200)] // "zipHash"
 		[ProducesResponseType(typeof(List<FileIndexItem>),404)] // "Not found"
 		[Produces("application/json")]
-		public IActionResult CreateZip(string f, bool collections = true, bool thumbnail = false)
+		public async Task<IActionResult> CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 			var (zipOutputName, fileIndexResultsList) = _export.Preflight(inputFilePaths, collections, thumbnail);
@@ -54,10 +55,10 @@ namespace starsky.Controllers
 			// NOT covered: when try to export for example image thumbnails of xml file
 				
 			// Creating a zip is a background task
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await _export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName);
-			});
+			}, zipOutputName);
 			
 			// for the rest api
 			return Json(zipOutputName);

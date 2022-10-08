@@ -51,7 +51,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
   }
 
   // to know where you are
-  var history = useLocation();
+  const history = useLocation();
 
   // For the display
   const [isFormEnabled, setFormEnabled] = React.useState(true);

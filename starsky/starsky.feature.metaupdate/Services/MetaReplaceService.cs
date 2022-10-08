@@ -136,7 +136,7 @@ namespace starsky.feature.metaupdate.Services
 				PropertyInfo property = propertiesA.FirstOrDefault(p => string.Equals(
 					p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
 
-				if ( property.PropertyType == typeof(string) )
+				if ( property?.PropertyType == typeof(string) )
 				{
 					var searchIn = ( string ) searchInObject;
 					

@@ -86,7 +86,7 @@ namespace starskytest.Controllers
 		{
 			// Arrange
 			var storage = ArrangeStorage();
-			var plainTextStream = new PlainTextFileHelper().StringToStream("CorruptImage");
+			var plainTextStream = PlainTextFileHelper.StringToStream("CorruptImage");
 			await storage.WriteStreamAsync(plainTextStream, ThumbnailNameHelper.Combine(
 				"hash-corrupt-image", ThumbnailSize.ExtraLarge));
 
@@ -469,7 +469,7 @@ namespace starskytest.Controllers
 
 			var actionResult = controller.ListSizesByHash("01234567890123456789123456") as NotFoundObjectResult;
 			
-			Assert.AreNotEqual(actionResult,null);
+			Assert.AreNotEqual(null, actionResult);
 			Assert.AreEqual(404, actionResult.StatusCode);
 		}
 		
@@ -527,7 +527,7 @@ namespace starskytest.Controllers
 			var actionResult = controller.ListSizesByHash(hash) as JsonResult;
 			
 			// Thumbnail exist
-			Assert.AreNotEqual(actionResult,null);
+			Assert.AreNotEqual(null, actionResult);
 			var thumbnailAnswer = actionResult.Value as ThumbnailSizesExistStatusModel;
 
 			Assert.AreEqual(200, controller.Response.StatusCode);
@@ -569,7 +569,7 @@ namespace starskytest.Controllers
 			var actionResult = controller.ListSizesByHash("91234567890123456789123451") as JsonResult;
 			
 			// Thumbnail exist
-			Assert.AreNotEqual(actionResult,null);
+			Assert.AreNotEqual(null,actionResult);
 
 			Assert.AreEqual(210, controller.Response.StatusCode);
 

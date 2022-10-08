@@ -54,7 +54,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       "Only the files that are present are updated. Run a manual sync"
   );
 
-  var history = useLocation();
+  const history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
 
   // state without any context
@@ -89,7 +89,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       | React.ChangeEvent<HTMLDivElement>
       | React.KeyboardEvent<HTMLDivElement>
   ) {
-    var sideBarUpdate = new SidebarUpdate().Change(event, update);
+    const sideBarUpdate = new SidebarUpdate().Change(event, update);
     if (!sideBarUpdate) return;
     setUpdate(sideBarUpdate);
     setInputEnabled(new SidebarUpdate().IsFormUsed(update));
@@ -111,15 +111,15 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
           false
         : false;
 
-    var bodyParams = new URLPath().ObjectToSearchParams(update);
+    const bodyParams = new URLPath().ObjectToSearchParams(update);
     if (bodyParams.toString().length === 0) return;
 
-    var subPaths = new URLPath().MergeSelectFileIndexItem(
+    const subPaths = new URLPath().MergeSelectFileIndexItem(
       select,
       state.fileIndexItems
     );
     if (!subPaths) return;
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
+    const selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
       subPaths,
       ""
     );

@@ -173,7 +173,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var service = new WebHtmlPublishService(null,selectorStorage,null,
 				null,null,null, new FakeIWebLogger());
 			var list = service.AddFileHashIfNotExist(new List<FileIndexItem> {new FileIndexItem("/test.jpg")});
-			Assert.IsTrue(list.FirstOrDefault().FileHash != string.Empty);
+			Assert.IsTrue(list.FirstOrDefault()?.FileHash != string.Empty);
 		}
 		
 		[TestMethod]

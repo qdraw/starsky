@@ -53,7 +53,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
   const [isFormEnabled, setFormEnabled] = React.useState(true);
 
   // to know where you are
-  var history = useLocation();
+  const history = useLocation();
 
   /**
    * Update status and check if input is valid

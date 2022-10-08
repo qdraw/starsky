@@ -45,7 +45,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     "Something went wrong with the update. Please try again"
   );
 
-  var history = useLocation();
+  const history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
 
   // state without any context
@@ -77,7 +77,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       | React.ChangeEvent<HTMLDivElement>
       | React.KeyboardEvent<HTMLDivElement>
   ) {
-    var sideBarUpdate = new SidebarUpdate().Change(event, update);
+    const sideBarUpdate = new SidebarUpdate().Change(event, update);
     if (!sideBarUpdate) return;
     setUpdate(sideBarUpdate);
     setInputEnabled(new SidebarUpdate().IsFormUsed(update));

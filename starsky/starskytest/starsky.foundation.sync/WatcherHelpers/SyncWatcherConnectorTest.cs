@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		public async Task Sync_ArgumentException()
 		{
 			// ReSharper disable once AssignNullToNotNullAttribute
-			var syncWatcherPreflight = new SyncWatcherConnector(null,null!,null!,null!,null!,null);
+			var syncWatcherPreflight = new SyncWatcherConnector(null,null!,null!,null!,null!,null, null);
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>("test", null, WatcherChangeTypes.Changed));
 		}
@@ -46,7 +46,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
 				new FakeIWebSocketConnectionsService(), 
-				new FakeIQuery(), new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery() ,new TelemetryClient(new TelemetryConfiguration()));
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
@@ -76,7 +76,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
 				new FakeIWebSocketConnectionsService(), 
-				new FakeIQuery(), new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			var result = await syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), Path.Combine(appSettings.StorageFolder, "test2"), WatcherChangeTypes.Renamed));
@@ -96,7 +96,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(), 
-				new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			var result = await syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Renamed));
@@ -114,7 +114,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var websockets = new FakeIWebSocketConnectionsService();
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(),
-				sync, websockets, new FakeIQuery(), new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				sync, websockets, new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
@@ -136,7 +136,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var websockets = new FakeIWebSocketConnectionsService();
 			var appSettings = new AppSettings();
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings, 
-				sync, websockets, new FakeIQuery(), new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				sync, websockets, new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			syncWatcherConnector.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
@@ -176,7 +176,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				}});
 			
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
-				sync, websockets, query, new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			syncWatcherConnector.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
@@ -216,7 +216,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				}});
 			
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
-				sync, websockets, query, new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			syncWatcherConnector.Sync(
 				new Tuple<string, string,  WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
@@ -235,8 +235,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new FileIndexItem() { FilePath = "/4.jpg", Status = FileIndexItem.ExifStatus.NotFoundSourceMissing}
 			};
 
-			var result = new SyncWatcherConnector(null,null,
-				null,null, new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration())).FilterBefore(fileIndexItems);
+			var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
 			Assert.AreEqual(4,result.Count);
 		}
 		
@@ -249,8 +248,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new FileIndexItem() { FilePath = "/1.jpg",Status = FileIndexItem.ExifStatus.Ok},
 
 			};
-			var result = new SyncWatcherConnector(null,null,
-				null,null, new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration())).FilterBefore(fileIndexItems);
+			var result = SyncWatcherConnector.FilterBefore(fileIndexItems);
 			Assert.AreEqual(1,result.Count);
 		}
 		
@@ -280,7 +278,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		public void Sync_InjectScopes_False()
 		{
 			var syncWatcherPreflight = new SyncWatcherConnector(null!, 
-				null!, null!, null!, null!, null!);
+				null!, null!, null!, null!, null!, null!);
 			var result = syncWatcherPreflight.InjectScopes();
 			Assert.IsFalse(result);
 		}
@@ -290,7 +288,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var connector = new SyncWatcherConnector(new AppSettings(), new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 
 			var operationHolder = connector.CreateNewRequestTelemetry();
 			var operationHolder2 = operationHolder as EmptyOperationHolder<RequestTelemetry>;
@@ -302,7 +300,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 
 			var operationHolder = connector.CreateNewRequestTelemetry();
 			Assert.AreEqual("FSW SyncWatcherConnector", operationHolder.Telemetry.Name);
@@ -310,7 +308,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			new CloudRoleNameInitializer($"{new AppSettings().ApplicationType}").Initialize(expected);
 			Assert.AreEqual(expected.Context.Cloud.RoleName, operationHolder.Telemetry.Context.Cloud.RoleName);
 			Assert.AreEqual(expected.Context.Cloud.RoleInstance, operationHolder.Telemetry.Context.Cloud.RoleInstance);
-			connector.EndRequestOperation(operationHolder);
+			connector.EndRequestOperation(operationHolder, "OK");
 		}
 		
 		[TestMethod]
@@ -318,7 +316,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 
 			var operationHolder = connector.CreateNewRequestTelemetry("/test");
 			Assert.AreEqual("FSW SyncWatcherConnector", operationHolder.Telemetry.Name);
@@ -328,7 +326,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			Assert.AreEqual(expected.Context.Cloud.RoleInstance, operationHolder.Telemetry.Context.Cloud.RoleInstance);
 			// check url
 			Assert.AreEqual(expected.Url, operationHolder.Telemetry.Url);
-			connector.EndRequestOperation(operationHolder);
+			connector.EndRequestOperation(operationHolder, "OK");
 		}
 		
 		[TestMethod]
@@ -336,7 +334,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), null); // <-- no tel client
+				new FakeIWebLogger(), new FakeINotificationQuery(), null); // <-- no tel client
 
 			var operationHolder = connector.CreateNewRequestTelemetry();
 			
@@ -349,9 +347,9 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var connector = new SyncWatcherConnector(new AppSettings(), new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 
-			var result = connector.EndRequestOperation(new EmptyOperationHolder<RequestTelemetry>());
+			var result = connector.EndRequestOperation(new EmptyOperationHolder<RequestTelemetry>(), "OK");
 			Assert.IsFalse(result);
 		}
 		
@@ -360,11 +358,11 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), new TelemetryClient(new TelemetryConfiguration()));
+				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 
 			var operationHolder = connector.CreateNewRequestTelemetry();
 
-			var result = connector.EndRequestOperation(operationHolder);
+			var result = connector.EndRequestOperation(operationHolder, "OK");
 
 			Assert.IsTrue(result);
 		}
@@ -375,11 +373,11 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
-				new FakeIWebLogger(), null); // <-- no tel client
+				new FakeIWebLogger(), new FakeINotificationQuery(), null); // <-- no tel client
 
 			var operationHolder = connector.CreateNewRequestTelemetry();
 
-			var result = connector.EndRequestOperation(operationHolder);
+			var result = connector.EndRequestOperation(operationHolder, "OK");
 
 			Assert.IsFalse(result);
 		}

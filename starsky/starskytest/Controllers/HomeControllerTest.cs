@@ -35,7 +35,7 @@ namespace starskytest.Controllers
 		public void HomeController_IsCaseSensitiveRedirect_true()
 		{
 			var controller = new HomeController(new AppSettings(),_antiForgery);
-			var caseSensitive =  controller.IsCaseSensitiveRedirect("/Search","/search");
+			var caseSensitive =  HomeController.IsCaseSensitiveRedirect("/Search","/search");
 			Assert.IsTrue(caseSensitive);
 		}
 		
@@ -43,7 +43,7 @@ namespace starskytest.Controllers
 		public void HomeController_IsCaseSensitiveRedirect_false()
 		{
 			var controller = new HomeController(new AppSettings(),_antiForgery);
-			var caseSensitive =  controller.IsCaseSensitiveRedirect("/search","/search");
+			var caseSensitive =  HomeController.IsCaseSensitiveRedirect("/search","/search");
 			Assert.IsFalse(caseSensitive);
 		}
 		

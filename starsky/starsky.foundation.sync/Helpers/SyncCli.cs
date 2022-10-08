@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -32,7 +33,7 @@ namespace starsky.foundation.sync.Helpers
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
 
-			if (new ArgsHelper().NeedHelp(args))
+			if (ArgsHelper.NeedHelp(args))
 			{
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
@@ -48,7 +49,7 @@ namespace starsky.foundation.sync.Helpers
 					.ParseSubfolders(getSubPathRelative);
 			}
 
-			if (new ArgsHelper().GetIndexMode(args))
+			if (ArgsHelper.GetIndexMode(args))
 			{
 				var stopWatch = Stopwatch.StartNew();
 				_console.WriteLine($"Start indexing {subPath}");
@@ -57,9 +58,23 @@ namespace starsky.foundation.sync.Helpers
 				{
 					_console.WriteLine($"Not Found: {subPath}");
 				}
-				_console.WriteLine($"\nDone SyncFiles! (in sec: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)})");
+				
+				stopWatch.Stop();
+				_console.WriteLine($"\nDone SyncFiles! {GetStopWatchText(stopWatch)}");
 			}
 			_console.WriteLine("Done!");
+		}
+
+		internal static string GetStopWatchText(Stopwatch stopWatch, int minMinutes = 3)
+		{
+			var timeText = new StringBuilder(
+				$"(in sec: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)}");
+			if ( stopWatch.Elapsed.TotalMinutes >= minMinutes )
+			{
+				timeText.Append($" or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min");
+			}
+			timeText.Append(' '+')');
+			return timeText.ToString();
 		}
 	}
 }

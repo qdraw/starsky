@@ -1,6 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
+#pragma warning disable CS8618
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.database.Query
@@ -9,6 +11,7 @@ namespace starsky.foundation.database.Query
 	{
 		private readonly ApplicationDbContext _dbContext;
 
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public InjectServiceScope(IServiceScopeFactory scopeFactory)
 		{
 			if (scopeFactory == null) return;

@@ -35,17 +35,29 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
-# version 0.5.0-beta.7 _(Unreleased)_ - 2022-09-??
+# version 0.5.0-beta.8 _(Unreleased)_ - 2022-09-??
 - [x]   (Security) _Back-end_ Upgrade Nuget packages (PR #878)
-- [x]   (Security) _Back-end_ Update Security Headers e.g. CSP, Permissions Policy (PR #880)
+- [x]   (Security) _Back-end_ Update Security Headers e.g. CSP, Permissions Policy (PR #880, #881)
+- [x]   (Security) _Back-end_ Update dependencies for typescript, jpeg-js, typings, dotenv, jimp (PR #888, #884, #883, #879, #898, #901, #902, #904)
+- [x]   (Fixed) _Back-end_ Manual sync exception should not keep lock activated (PR #889)
+- [x]   (Changed) _Back-end_ Use node 18.x in Dockerfile (PR #895)
+- [x]   (Changed) _Tools_ Allow other projects as argument in dotnet-sdk-version-update.js (PR #895)
+- [x]   (Security) _Back-end_ Add option for secure cookies App Settings: `HttpsOn` (PR #896)
+- [x]   (Changed) _Back-end_ Refactor: MultiFile directory sync to avoid database calls (PR #894)
+- [x]   (Changed) _Back-end_ Performance update for SyncService to avoid database calls and multithreading (PR #900)
+- [x]   (Changed) _Back-end_ UseDiskWatcher to queue every 20 seconds to avoid database calls (PR #903)
+- [x]   (Added) _Back-end_  Add Settings Database Table incl. migration (PR #905)
+- [x]   (Added) _Back-end_  Add feature toggle in AppSettings: `SyncOnStartup` (PR #905)
+- [x]   (Added) _Back-end_  Sync latest changes on startup of application (PR #905)
+- [x]   (Changed) _Back-end_  Code quality: Apply C# nullable for foundation.database project (PR #905)
 
 # version 0.5.0-beta.7 - 2022-09-20
-- [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) _overwritten_ (PR #838)
+- [x]   (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) (PR #838)
 - [x]   (Fixed) _Back-end_ Null reference exceptions on mysql (PR #789 & Issue #787)
 - [x]   (Fixed) _Back-end_ Retry for InvalidOperationException when Add Item (PR #789 & Issue #802)
-- [x]   (Fixed) _Back-end_  Slug should not be --- (PR #789 & Issue #797)
+- [x]   (Fixed) _Back-end_  Slug should not be `---` (PR #789 & Issue #797)
 - [x]   (Security) _Back-end_ Upgrade nuget packages (PR #845)
-- [x]   (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.400 (Runtime: 6.0.8) (PR #855)
+- [x]   (Changed) _Back-end_ _Change is overwritten in same release_  Upgrade to .NET 6 - SDK 6.0.400 (Runtime: 6.0.8) (PR #855)
 - [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.401 (Runtime: 6.0.9)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.9/6.0.9.md) (PR #870)
 - [x]   (Issue) _Tools_ Re-enable end2end test in CI (2022-09-20)
 

@@ -92,7 +92,7 @@ namespace starsky.foundation.storage.Storage
 			catch ( UnauthorizedAccessException e )
 			{
 				_logger?.LogError(e, "[GetAllFilesInDirectory] catch-ed UnauthorizedAccessException");
-				return new string[]{};
+				return Array.Empty<string>();
 			}
 
 			var imageFilesList = new List<string>();
@@ -127,23 +127,30 @@ namespace starsky.foundation.storage.Storage
 			return Directory.GetDirectories(path).OrderBy(p => p);
 		}
 
-		public IEnumerable<string> GetDirectoryRecursive(string path)
+		/// <summary>
+		/// Returns a list of directories // Get list of child folders
+		/// </summary>
+		/// <param name="path">path</param>
+		/// <returns>list of paths and last edited times - default ordered by last edited times</returns>
+		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
 		{
-			var folders = new Queue<string>();
-			folders.Enqueue(path);
-			var folderList = new List<string>();
+			// Tuple > FilePath,Directory.GetLastWriteTime
+			var folders = new Queue<KeyValuePair<string,DateTime>>();
+			folders.Enqueue(new KeyValuePair<string, DateTime>(path, Directory.GetLastWriteTime(path)));
+			var folderList = new List<KeyValuePair<string,DateTime>>();
 			while (folders.Count != 0) {
-				var currentFolder = folders.Dequeue();
+				var (currentFolder,_) = folders.Dequeue();
 				try
 				{
 					var foldersInCurrent = Directory.GetDirectories(currentFolder,
 						"*.*", SearchOption.TopDirectoryOnly);
 					foreach ( var current in foldersInCurrent )
 					{
-						folders.Enqueue(current);
-						if ( Directory.GetLastAccessTime(current).Year != 1 )
+						var lastEditDate = Directory.GetLastWriteTime(current);
+						folders.Enqueue(new KeyValuePair<string, DateTime>(current, lastEditDate));
+						if ( lastEditDate.Year != 1 )
 						{
-							folderList.Add(current);
+							folderList.Add(new KeyValuePair<string, DateTime>(current, lastEditDate));
 						}
 					}
 				}
@@ -152,7 +159,8 @@ namespace starsky.foundation.storage.Storage
 					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed UnauthorizedAccessException => " + e.Message);
 				}
 			}
-			return folderList.OrderBy(p => p);
+
+			return folderList.OrderBy(p => p.Value);
 		}
 
 		public Stream ReadStream(string path, int maxRead = -1)
@@ -383,7 +391,10 @@ namespace starsky.foundation.storage.Storage
 		private void RecurseFind( string path, List<string> list )
 		{
 			var (filesArray, directoriesArray) = GetFilesAndDirectories(path);
-			if ( filesArray.Length <= 0 && directoriesArray.Length <= 0 ) return;
+			if ( filesArray.Length <= 0 && directoriesArray.Length <= 0 )
+			{
+				return;
+			}
             //I begin with the files, and store all of them in the list
             list.AddRange(filesArray);
             // I then add the directory and recurse that directory,

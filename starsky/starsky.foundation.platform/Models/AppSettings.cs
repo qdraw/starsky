@@ -631,6 +631,14 @@ namespace starsky.foundation.platform.Models
 		public bool? UseHttpsRedirection { get; set; } = false;
 
 		/// <summary>
+		/// Set to false when running on http-only service.
+		/// You should enable this when going to production
+		/// Ignored in Debug/Develop mode
+		/// </summary>
+		[PackageTelemetry]
+		public bool? HttpsOn { get; set; } = false;
+		
+		/// <summary>
 		/// Use WebSockets to update the UI realtime
 		/// </summary>
 		[PackageTelemetry]
@@ -659,6 +667,8 @@ namespace starsky.foundation.platform.Models
 			"/.stfolder", 
 			"/.git"
 		};
+
+		public bool? SyncOnStartup { get; set; } = true;
 		
 		/// <summary>
 		/// Ignore this part of a path while importing
@@ -709,6 +719,8 @@ namespace starsky.foundation.platform.Models
 		[PackageTelemetry]
 		public bool? EnablePackageTelemetryDebug { get; set; } = false;
 
+		public double UseDiskWatcherIntervalInMilliseconds { get; set; } = 20000;
+
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
 		// -------------------------------------------------
@@ -729,6 +741,7 @@ namespace starsky.foundation.platform.Models
 		/// Duplicate this item in memory. AND remove _databaseConnection 
 		/// </summary>
 		/// <returns>AppSettings duplicated></returns>
+		[SuppressMessage("ReSharper", "InvertIf")]
 		public AppSettings CloneToDisplay()
 		{
 			var userProfileFolder = Environment.GetFolderPath(
@@ -810,16 +823,20 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		/// <param name="localSubFolderList"></param>
 		/// <returns></returns>
-		public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
+		public List<string> RenameListItemsToDbStyle(IEnumerable<string> localSubFolderList)
 		{
-			var localSubFolderListDatabaseStyle = new List<string>();
-
-			foreach (var item in localSubFolderList)
-			{
-				localSubFolderListDatabaseStyle.Add(FullPathToDatabaseStyle(item));
-			}
-
-			return localSubFolderListDatabaseStyle;
+			return localSubFolderList.Select(FullPathToDatabaseStyle).ToList();
+		}
+		
+		/// <summary>
+		/// Rename a list to database style (short style)
+		/// </summary>
+		/// <param name="localSubFolderList"></param>
+		/// <returns></returns>
+		public IEnumerable<KeyValuePair<string, DateTime>> RenameListItemsToDbStyle(IEnumerable<KeyValuePair<string, DateTime>> localSubFolderList)
+		{
+			return localSubFolderList.Select(item => 
+				new KeyValuePair<string, DateTime>(FullPathToDatabaseStyle(item.Key), item.Value)).ToList();
 		}
         
 		/// <summary>

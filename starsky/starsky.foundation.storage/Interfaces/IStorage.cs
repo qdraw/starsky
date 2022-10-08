@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -37,21 +38,21 @@ namespace starsky.foundation.storage.Interfaces
 		/// <param name="path">subPath, path relative to the database</param>
 		/// <returns>list of files</returns>
 		IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
-
+		
 		/// <summary>
 		/// Returns a NON-Recursive list of child directories
 		/// </summary>
 		/// <param name="path">filePath</param>
 		/// <returns>list of NON-Recursive child directories</returns>
 		IEnumerable<string> GetDirectories(string path);
-		
+
 		/// <summary>
 		/// Returns a list of directories // Get list of child folders
 		/// old name: GetFilesRecursive
 		/// </summary>
 		/// <param name="path">directory</param>
 		/// <returns>list</returns>
-		IEnumerable<string> GetDirectoryRecursive(string path);
+		IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path);
 
 		Stream ReadStream(string path, int maxRead = -1);
 		

@@ -15,7 +15,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 	public class QueueProcessorTest
 	{
 		[TestMethod]
-		public void QueueProcessorTest_QueueInput()
+		public async Task QueueProcessorTest_QueueInput()
 		{
 			var diskWatcherBackgroundTaskQueue = new FakeDiskWatcherUpdateBackgroundTaskQueue();
 
@@ -25,14 +25,14 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			}
 
 			var memoryCache = new FakeMemoryCache();
-			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local, memoryCache, TimeSpan.FromSeconds(5));
+			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local);
 
-			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
 			Assert.IsTrue(diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalled);
 		}
 		
 		[TestMethod]
-		public void QueueProcessorTest_QueueInput_Counter()
+		public async Task QueueProcessorTest_QueueInput_Counter()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
@@ -45,15 +45,15 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			{
 				return Task.FromResult(new List<FileIndexItem>());
 			}
-			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local, memoryCache, TimeSpan.FromSeconds(5));
+			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local);
 			
 			// Run 3 times & 1 time different
-			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
-			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
-			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
-			queueProcessor.QueueInput("1","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
+			await queueProcessor.QueueInput("1","T", WatcherChangeTypes.All);
 
-			Assert.AreEqual(2, diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalledCounter);
+			Assert.AreEqual(4, diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalledCounter);
 		}
 		
 				
@@ -71,13 +71,14 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			{
 				return Task.FromResult(new List<FileIndexItem>());
 			}
-			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local, memoryCache, TimeSpan.FromMilliseconds(1));
+			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local);
 			
 			// Run 3 times & 1 time different
+#pragma warning disable CS4014
 			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
 			await Task.Delay(TimeSpan.FromMilliseconds(2)); // Sleep async
 			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
-
+#pragma warning restore CS4014
 			Assert.AreEqual(2, diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalledCounter);
 		}
 	}

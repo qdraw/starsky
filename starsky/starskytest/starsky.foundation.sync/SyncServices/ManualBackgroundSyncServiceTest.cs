@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -77,20 +76,21 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
 			var query = buildServiceProvider.GetService<IQuery>();
 				
-			var cacheDbName = new Query(null,null, null, null).CachingDbName(nameof(FileIndexItem), "/");
-			memoryCache.Remove(cacheDbName);
+			var cacheDbName = new Query(null,null, 
+				null, null).CachingDbName(nameof(FileIndexItem), "/");
+			memoryCache!.Remove(cacheDbName);
 			
 			var cachedContent = new List<FileIndexItem>
 			{
-				new FileIndexItem("/test999.jpg")
+				new FileIndexItem("/999_not_found.jpg")
 			};
 			memoryCache.Set(cacheDbName, cachedContent);
-			await query.AddItemAsync(new FileIndexItem("/test999.jpg"));
+			await query!.AddItemAsync(new FileIndexItem("/999_not_found.jpg"));
 
 			var item = new FakeSelectorStorage(
 					new FakeIStorage(new List<string> { "/" }, 
 						new List<string>{"/test2__1234.jpg","/test3__1234.jpg"}, 
-						new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes, FakeCreateAn.CreateAnImage.Bytes}));
+						new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes, FakeCreateAn.CreateAnImageNoExif.Bytes}));
 			
 			await new ManualBackgroundSyncService(
 					new Synchronize(appSettings, query, item, new FakeIWebLogger(), memoryCache),
@@ -104,7 +104,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var content= query.DisplayFileFolders().Where(p => p.FilePath != "/").ToList();
 			foreach ( var itemContent in content )
 			{
-				Console.WriteLine(itemContent.FilePath);
+				Console.WriteLine("Manual sync " + itemContent.FilePath);
 			}
 			
 			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test2__1234.jpg"));
@@ -231,6 +231,49 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				}});
 
 			Assert.AreEqual(0,result.Count);
+		}
+
+		[TestMethod]
+		public async Task BackgroundTaskExceptionWrapper()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache();
+			
+			var buildServiceProvider = provider.BuildServiceProvider();
+			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
+			
+			var service = new ManualBackgroundSyncService(
+				new FakeISynchronize(new List<FileIndexItem>()),
+				null,
+				new FakeIWebSocketConnectionsService(),
+				memoryCache,
+				new FakeIWebLogger(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				GetScope());
+
+			service.CreateSyncLock("test");
+			var hasCache1 = memoryCache.Get(
+				ManualBackgroundSyncService.ManualSyncCacheName + "test");
+			Assert.IsNotNull(hasCache1);
+
+			var isException = false;
+			try
+			{
+				// Should crash on null reference exception on query
+				await service.BackgroundTaskExceptionWrapper("test", "1");
+			}
+			catch ( NullReferenceException )
+			{
+				isException = true;
+
+				var hasCache = memoryCache.Get(
+					ManualBackgroundSyncService.ManualSyncCacheName + "test");
+				
+				Assert.IsNull(hasCache);
+			}
+			
+			Assert.IsTrue(isException);
+			
 		}
 	}
 }

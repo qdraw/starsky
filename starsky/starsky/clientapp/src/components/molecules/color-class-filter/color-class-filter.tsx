@@ -38,7 +38,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
     ];
 
     // used for reading current location
-    var history = useLocation();
+    const history = useLocation();
 
     let { state } = React.useContext(ArchiveContext);
     // props is used as default, state only for update

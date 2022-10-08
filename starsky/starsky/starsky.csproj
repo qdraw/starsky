@@ -13,6 +13,12 @@
         <!-- due missing support of ts4.1-->
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
         <SynchReleaseVersion>false</SynchReleaseVersion>
+        <!-- maybe needed for mac os https://www.kenmuse.com/blog/notarizing-dotnet-console-apps-for-macos/ --> 
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+        <IncludeSymbolsInSingleFile>false</IncludeSymbolsInSingleFile>
+        <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+        <UseAppHost>true</UseAppHost>
+        <PublishReadyToRun>false</PublishReadyToRun>
         <!--   < Condition=" '$(TargetFramework)' == 'net5.0' ">3.1.22</ >-->
     </PropertyGroup>
 
@@ -81,8 +87,8 @@
         <Content Include="pm2-download-azure-devops.sh">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="docker-cleanup.sh" />
-        <Content Include="docker-cleanup.sh">
+        <None Remove="cleanup-build-tools.sh" />
+        <Content Include="cleanup-build-tools.sh">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <None Remove="github-artifacts-download.sh" />
@@ -115,6 +121,7 @@
         <ProjectReference Include="..\starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj" />
         <ProjectReference Include="..\starsky.feature.realtime\starsky.feature.realtime.csproj" />
         <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj" />
+        <ProjectReference Include="..\starsky.feature.syncbackground\starsky.feature.syncbackground.csproj" />
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
         <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj" />
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />

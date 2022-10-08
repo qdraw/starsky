@@ -120,7 +120,7 @@ namespace starsky.feature.export.Services
 			// Write a single file to be sure that writing is ready
 			var doneFileFullPath = Path.Combine(_appSettings.TempFolder,zipOutputFileName) + ".done";
 			await _hostFileSystemStorage.
-				WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
+				WriteStreamAsync(PlainTextFileHelper.StringToStream("OK"), doneFileFullPath);
 			if(_appSettings.IsVerbose()) _logger.LogInformation("[CreateZip] Zip done: " + doneFileFullPath);
 		}
 		
@@ -210,7 +210,7 @@ namespace starsky.feature.export.Services
 		/// </summary>
 		/// <param name="fileIndexResultsList">list of objects with fileHashes</param>
 		/// <returns>unique 'get hashcode' string</returns>
-		private string GetName(List<FileIndexItem> fileIndexResultsList)
+		private static string GetName(IEnumerable<FileIndexItem> fileIndexResultsList)
 		{
 			var tempFileNameStringBuilder = new StringBuilder();
 			foreach ( var item in fileIndexResultsList )

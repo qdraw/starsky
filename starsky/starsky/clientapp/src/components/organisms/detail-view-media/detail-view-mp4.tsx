@@ -26,7 +26,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     "This video is not found"
   );
 
-  var history = useLocation();
+  const history = useLocation();
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);

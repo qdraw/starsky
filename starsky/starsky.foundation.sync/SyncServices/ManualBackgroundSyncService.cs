@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,13 +66,13 @@ namespace starsky.foundation.sync.SyncServices
 				return FileIndexItem.ExifStatus.OperationNotSupported;
 			}
 
-			_cache.Set(ManualSyncCacheName + subPath, true, 
-				new TimeSpan(0,1,0));
-			
-			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
+			CreateSyncLock(subPath);
+
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				await BackgroundTask(fileIndexItem.FilePath, operationId);
-			});
+				await BackgroundTaskExceptionWrapper(fileIndexItem.FilePath,
+					operationId);
+			}, fileIndexItem.FilePath);
 
 			return FileIndexItem.ExifStatus.Ok;
 		}
@@ -83,6 +84,31 @@ namespace starsky.foundation.sync.SyncServices
 			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 		}
 
+		internal void CreateSyncLock(string subPath)
+		{
+			_cache.Set(ManualSyncCacheName + subPath, true, 
+				new TimeSpan(0,2,0));
+		}
+
+		private void RemoveSyncLock(string subPath)
+		{
+			_cache.Remove(ManualSyncCacheName + subPath);
+		}
+
+		internal async Task BackgroundTaskExceptionWrapper(string subPath, string operationId)
+		{
+			try
+			{
+				await BackgroundTask(subPath, operationId);
+			}
+			catch ( Exception exception)
+			{
+				_logger.LogError(exception,"ManualBackgroundSyncService [ManualSync] catch-ed exception");
+				RemoveSyncLock(subPath);
+				throw;
+			}
+		}
+
 		internal async Task BackgroundTask(string subPath, string operationId)
 		{
 			var operationHolder = RequestTelemetryHelper.GetOperationHolder(_scopeFactory,
@@ -91,12 +117,12 @@ namespace starsky.foundation.sync.SyncServices
 			_logger.LogInformation($"[ManualBackgroundSyncService] start {subPath} " +
 			                       $"{DateTime.Now.ToShortTimeString()}");
 			
-			var updatedList = await _synchronize.Sync(subPath, false, PushToSockets);
+			var updatedList = await _synchronize.Sync(subPath, PushToSockets);
 			
 			_query.CacheUpdateItem(updatedList.Where(p => p.ParentDirectory == subPath).ToList());
 			
 			// so you can click on the button again
-			_cache.Remove(ManualSyncCacheName + subPath);
+			RemoveSyncLock(subPath);
 			_logger.LogInformation($"[ManualBackgroundSyncService] done {subPath} " +
 			                       $"{DateTime.Now.ToShortTimeString()}");
 			_logger.LogInformation($"[ManualBackgroundSyncService] Ok: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)}" +
@@ -104,6 +130,7 @@ namespace starsky.foundation.sync.SyncServices
 			operationHolder.SetData(_scopeFactory, updatedList);
 		}
 		
+		[SuppressMessage("Performance", "CA1822:Mark members as static")]
 		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
 		{
 			return syncData.Where(p => (

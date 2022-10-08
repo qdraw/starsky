@@ -7,14 +7,14 @@ namespace starsky.foundation.database.Models
     [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
     public class DetailView
     {
-        public FileIndexItem FileIndexItem { get; set; }
+        public FileIndexItem? FileIndexItem { get; set; }
 
-        public List<string> Breadcrumb { get; set; }
+        public List<string> Breadcrumb { get; set; } = new();
         
 	    /// <summary>
 	    /// List of selected Color Class's
 	    /// </summary>
-	    public List<ColorClassParser.Color> ColorClassActiveList { get; set; } = new List<ColorClassParser.Color>();
+	    public List<ColorClassParser.Color> ColorClassActiveList { get; set; } = new();
         
 	    /// <summary>
 	    /// Used by react client
@@ -26,11 +26,11 @@ namespace starsky.foundation.database.Models
         /// To return error codes in the json it is always false
         /// </summary>
         public bool IsDirectory { get; set; }
-        
+
         /// <summary>
         /// Location of the path
         /// </summary>
-        public string SubPath { get; set; }
+        public string SubPath { get; set; } = string.Empty;
 
 	    /// <summary>
 	    /// Is collections enabled?
@@ -57,7 +57,7 @@ namespace starsky.foundation.database.Models
 	    /// <summary>
 	    /// Private field for next/prev
 	    /// </summary>
-	    private RelativeObjects _relativeObjects;
+	    private RelativeObjects _relativeObjects = new();
 
 	    public RelativeObjects RelativeObjects
 	    {
@@ -69,6 +69,7 @@ namespace starsky.foundation.database.Models
 		    }
 	    }
 
+	    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")] 
 	    public bool IsReadOnly { get; set; }
     }
 }

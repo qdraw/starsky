@@ -19,6 +19,7 @@ DOTNET_CHANNEL="Current"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 export DOTNET_MULTILEVEL_LOOKUP=0
+export DOTNET_NOLOGO=1
 
 ###########################################################################
 # EXECUTION
@@ -59,4 +60,10 @@ fi
 echo "Microsoft (R) .NET SDK version $("$DOTNET_EXE" --version)"
 
 "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
-"$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- "$@"
+
+if [[ ! -f $SCRIPT_DIR"/build/bin/Debug/_build.deps.json" ]]; then
+    echo "file not found"
+    "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
+fi
+"$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- --no-logo "$@"
+echo "end"

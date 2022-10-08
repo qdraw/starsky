@@ -4,6 +4,6 @@ namespace starsky.foundation.writemeta.Interfaces
 {
 	public interface IExifToolDownload
 	{
-		Task<bool> DownloadExifTool(bool isWindows);
+		Task<bool> DownloadExifTool(bool isWindows, int minimumSize = 30);
 	}
 }

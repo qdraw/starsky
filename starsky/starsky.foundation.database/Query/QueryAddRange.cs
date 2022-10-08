@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
@@ -16,15 +17,17 @@ namespace starsky.foundation.database.Query
 		/// <returns>items with id</returns>
 		public virtual async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
 		{
-			async Task LocalQuery(ApplicationDbContext context)
+			if ( !fileIndexItemList.Any() ) return new List<FileIndexItem>();
+
+			async Task LocalQuery(ApplicationDbContext context, IEnumerable<FileIndexItem> items)
 			{
-				await context.FileIndex.AddRangeAsync(fileIndexItemList);
+				await context.FileIndex.AddRangeAsync(items);
 				await context.SaveChangesAsync();
 			}
 
 			try
 			{
-				await LocalQuery(_context);
+				await LocalQuery(_context, fileIndexItemList);
 			}
 			catch ( DbUpdateConcurrencyException concurrencyException)
 			{
@@ -35,14 +38,21 @@ namespace starsky.foundation.database.Query
 				}
 				catch ( DbUpdateConcurrencyException e)
 				{
+					if ( _appSettings.Verbose == true )
+					{
+						_context.ChangeTracker.DetectChanges();
+						_logger?.LogDebug(_context.ChangeTracker.DebugView.LongView);
+					}
 					_logger?.LogError(e, "[AddRangeAsync] save failed after DbUpdateConcurrencyException");
 				}
 			}
 			catch (ObjectDisposedException)
 			{
-				await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(), fileIndexItemList);
 			}
 
+			fileIndexItemList = FormatOk(fileIndexItemList, FileIndexItem.ExifStatus.NotFoundNotInIndex);
+			
 			foreach ( var fileIndexItem in fileIndexItemList )
 			{
 				AddCacheItem(fileIndexItem);

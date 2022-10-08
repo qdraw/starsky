@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -98,20 +99,20 @@ namespace starskytest.Controllers
 
 
 		[TestMethod]
-		public void FolderExist()
+		public async Task FolderExist()
 		{
-			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(istorage), null, new FakeIWebLogger(), _scopeFactory)
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(fakeIStorage), null, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
-			var result = controller.GeoSyncFolder("/") as JsonResult;
+			var result = await controller.GeoSyncFolder("/") as JsonResult;
 			Assert.AreEqual("job started",result.Value);
 		}
 		
 		[TestMethod]
-		public void FolderNotExist()
+		public async Task FolderNotExist()
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
@@ -119,7 +120,7 @@ namespace starskytest.Controllers
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
-			var result = controller.GeoSyncFolder("/not-found") as NotFoundObjectResult;
+			var result = await controller.GeoSyncFolder("/not-found") as NotFoundObjectResult;
 			Assert.AreEqual(404,result.StatusCode);
 		}
 

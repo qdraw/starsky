@@ -11,40 +11,43 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.realtime.Services;
-
-[TestClass]
-public class CleanUpConnectionBackgroundServiceTest
+namespace starskytest.starsky.feature.realtime.Services
 {
-	private readonly IRealtimeConnectionsService _realtimeConnectionsService;
-	private readonly FakeIWebLogger _console;
-	private readonly IServiceScopeFactory _serviceScopeFactory;
 
-	public CleanUpConnectionBackgroundServiceTest()
+	[TestClass]
+	public class CleanUpConnectionBackgroundServiceTest
 	{
-		var services = new ServiceCollection();
-		services.AddSingleton<AppSettings>();
-		services.AddSingleton<BackgroundService, CleanUpConnectionBackgroundService>();
-		services.AddSingleton<IRealtimeConnectionsService, FakeIRealtimeConnectionsService>();
-		services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		private readonly IRealtimeConnectionsService _realtimeConnectionsService;
+		private readonly FakeIWebLogger _console;
+		private readonly IServiceScopeFactory _serviceScopeFactory;
 
-		var serviceProvider = services.BuildServiceProvider();
-		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		_realtimeConnectionsService = serviceProvider.GetRequiredService<IRealtimeConnectionsService>();
+		public CleanUpConnectionBackgroundServiceTest()
+		{
+			var services = new ServiceCollection();
+			services.AddSingleton<AppSettings>();
+			services.AddSingleton<BackgroundService, CleanUpConnectionBackgroundService>();
+			services.AddSingleton<IRealtimeConnectionsService, FakeIRealtimeConnectionsService>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+
+			var serviceProvider = services.BuildServiceProvider();
+			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_realtimeConnectionsService = serviceProvider.GetRequiredService<IRealtimeConnectionsService>();
 			
-		var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
-		_console = webLogger as FakeIWebLogger;
-	}
+			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
+			_console = webLogger as FakeIWebLogger;
+		}
 	
-	[TestMethod]
-	public async Task StartAsync_IsRemoved_HappyFlow()
-	{
-		var service = _realtimeConnectionsService as FakeIRealtimeConnectionsService;
-		service!.FakeSendToAllAsync = new List<Tuple<string, DateTime>>{new Tuple<string, DateTime>("1", DateTime.UnixEpoch)};
-		Assert.AreEqual(1, service!.FakeSendToAllAsync.Count);
+		[TestMethod]
+		public async Task StartAsync_IsRemoved_HappyFlow()
+		{
+			var service = _realtimeConnectionsService as FakeIRealtimeConnectionsService;
+			service!.FakeSendToAllAsync = new List<Tuple<string, DateTime>>{new Tuple<string, DateTime>("1", DateTime.UnixEpoch)};
+			Assert.AreEqual(1, service!.FakeSendToAllAsync.Count);
 
-		await new CleanUpConnectionBackgroundService(_serviceScopeFactory).StartAsync(new CancellationToken());
-		Assert.AreEqual(0, service!.FakeSendToAllAsync.Count);
-	}
+			await new CleanUpConnectionBackgroundService(_serviceScopeFactory).StartAsync(new CancellationToken());
+			Assert.AreEqual(0, service!.FakeSendToAllAsync.Count);
+		}
 
+	}	
 }
+

@@ -60,7 +60,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<byte[]>{CreateAnImage.Bytes});
 
 			await storage.WriteStreamAsync(
-				new PlainTextFileHelper().StringToStream("not 0 bytes"), 
+				PlainTextFileHelper.StringToStream("not 0 bytes"), 
 				ThumbnailNameHelper.Combine(_fakeIStorageImageSubPath, ThumbnailSize.Small));
 			
 			var isCreated = await new Thumbnail(storage, storage, 
@@ -121,13 +121,13 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			
 			var hash = (await new FileHash(storage).GetHashCodeAsync(_fakeIStorageImageSubPath)).Key;
 			await storage.WriteStreamAsync(
-				new PlainTextFileHelper().StringToStream("not 0 bytes"), 
+				PlainTextFileHelper.StringToStream("not 0 bytes"), 
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.ExtraLarge));
 			await storage.WriteStreamAsync(
-				new PlainTextFileHelper().StringToStream("not 0 bytes"), 
+				PlainTextFileHelper.StringToStream("not 0 bytes"), 
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Large));
 			await storage.WriteStreamAsync(
-				new PlainTextFileHelper().StringToStream("not 0 bytes"), 
+				PlainTextFileHelper.StringToStream("not 0 bytes"), 
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small));
 			
 			var isCreated = await new Thumbnail(storage, 
@@ -197,9 +197,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string> {"test"}, 
 				new List<byte[]> {new byte[0]});
 
-			await new Thumbnail(storage, 
-				storage, new FakeIWebLogger()).
-				SaveThumbnailImageFormat(null,ExtensionRolesHelper.ImageFormat.bmp, null);
+			await  Thumbnail.SaveThumbnailImageFormat(null,
+				ExtensionRolesHelper.ImageFormat.bmp, null);
 			// ArgumentNullException
 		}
 		

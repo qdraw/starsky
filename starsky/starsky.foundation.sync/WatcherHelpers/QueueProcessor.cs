@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherInterfaces;
 
@@ -17,47 +15,31 @@ namespace starsky.foundation.sync.WatcherHelpers
 	{
 		private readonly IDiskWatcherBackgroundTaskQueue _bgTaskQueue;
 		private readonly SynchronizeDelegate _processFile;
-		private readonly IMemoryCache _memoryCache;
-		private readonly TimeSpan _expirationTime = TimeSpan.FromSeconds(1);
 
 		public QueueProcessor(IServiceScopeFactory serviceProvider,
-			SynchronizeDelegate processFile, IMemoryCache memoryCache)
+			SynchronizeDelegate processFile)
 		{
 			_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider.GetService<IDiskWatcherBackgroundTaskQueue>();
 			_processFile = processFile;
-			_memoryCache = memoryCache;
 		}
 
 		internal QueueProcessor(IDiskWatcherBackgroundTaskQueue diskWatcherBackgroundTaskQueue,
-			SynchronizeDelegate processFile, IMemoryCache memoryCache, TimeSpan expirationTime)
+			SynchronizeDelegate processFile)
 		{
 			_bgTaskQueue = diskWatcherBackgroundTaskQueue;
 			_processFile = processFile;
-			_memoryCache = memoryCache;
-			_expirationTime = expirationTime;
 		}
 
 		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, string, WatcherChangeTypes> value);
 
-		private static string CacheName(string filepath, string toPath)
-		{
-			return $"QueueProcessor{filepath}{toPath}";
-		}
 
-		public void QueueInput(string filepath, string toPath,  WatcherChangeTypes changeTypes)
+		public async Task QueueInput(string filepath, string toPath,
+			WatcherChangeTypes changeTypes)
 		{
-			// to avoid lots of events
-			if (_memoryCache != null && _memoryCache.TryGetValue(CacheName( filepath,  toPath), out _))
-			{
-				return;
-			}
-			_memoryCache?.Set(CacheName( filepath,  toPath), 1, _expirationTime);
-			// ends of avoid lots of events
-			
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await _processFile.Invoke(new Tuple<string, string, WatcherChangeTypes>(filepath,toPath,changeTypes));
-			});
+			}, $"from:{filepath}" + (string.IsNullOrEmpty(toPath) ? "" : "_to:" + toPath));
 		}
 	}
 

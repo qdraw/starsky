@@ -26,7 +26,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
       !props.className ? "list-image-box" : props.className
     );
 
-    var history = useLocation();
+    const history = useLocation();
 
     // Check if select exist or Length 0 or more
     const [select, setSelect] = React.useState(

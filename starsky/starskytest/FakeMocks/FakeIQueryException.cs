@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -48,29 +49,29 @@ namespace starskytest.FakeMocks
 		}
 
 		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/",
-			List<ColorClassParser.Color> colorClassActiveList = null, bool enableCollections = true,
+			List<ColorClassParser.Color>? colorClassActiveList = null, bool enableCollections = true,
 			bool hideDeleted = true)
 		{
 			throw _exception;
 		}
 
 		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems,
-			List<ColorClassParser.Color> colorClassActiveList = null, bool enableCollections = true,
+			List<ColorClassParser.Color>? colorClassActiveList = null, bool enableCollections = true,
 			bool hideDeleted = true)
 		{
 			throw _exception;
 		}
-
-		public DetailView SingleItem(string singleItemDbPath, List<ColorClassParser.Color> colorClassActiveList = null,
+		
+		public DetailView SingleItem(string singleItemDbPath, List<ColorClassParser.Color>? colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true,
-			SortType sort = SortType.FileName)
+			SortType? sort = SortType.FileName)
 		{
 			throw _exception;
 		}
 
 		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,
-			List<ColorClassParser.Color> colorClassActiveList = null, bool enableCollections = true,
-			bool hideDeleted = true, SortType sort = SortType.FileName)
+			List<ColorClassParser.Color>? colorClassActiveList = null, bool enableCollections = true,
+			bool hideDeleted = true, SortType? sort = SortType.FileName)
 		{
 			throw _exception;
 		}
@@ -80,7 +81,7 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
-		public Task<FileIndexItem> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
+		public Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
 		{
 			throw _exception;
 		}
@@ -110,12 +111,12 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
-		public string GetSubPathByHash(string fileHash)
+		public string? GetSubPathByHash(string fileHash)
 		{
 			throw _exception;
 		}
 
-		public Task<string> GetSubPathByHashAsync(string fileHash)
+		public Task<string?> GetSubPathByHashAsync(string fileHash)
 		{
 			return Task.FromResult(GetSubPathByHash(fileHash));
 		}
@@ -221,7 +222,7 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
-		public Task AddParentItemsAsync(string subPath)
+		public Task<List<FileIndexItem>> AddParentItemsAsync(string subPath)
 		{
 			throw _exception;
 		}
@@ -247,7 +248,7 @@ namespace starskytest.FakeMocks
 			return Task.CompletedTask;
 		}
 
-		public Task<int> CountAsync(Expression<Func<FileIndexItem, bool>> expression = null)
+		public Task<int> CountAsync(Expression<Func<FileIndexItem, bool>>? expression = null)
 		{
 			throw new NotImplementedException();
 		}

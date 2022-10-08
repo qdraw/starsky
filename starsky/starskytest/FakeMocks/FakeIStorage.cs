@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -216,15 +217,28 @@ namespace starskytest.FakeMocks
 			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}" + "(\\/|\\\\)\\w+.[a-z]{1,4}$").Success;
 		}
 
-		public IEnumerable<string> GetDirectoryRecursive(string subPath)
+		/// <summary>
+		/// Returns a list of directories // Get list of child folders
+		/// </summary>
+		/// <param name="path">subPath</param>
+		/// <param name="orderByAlphabet">order by alphabet or last edited, newest first</param>
+		/// <returns>list of paths</returns>
+		[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
+		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
 		{
-			if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
+			if ( path != "/" ) path = PathHelper.RemoveLatestSlash(path);
 			
-			if ( !ExistFolder(subPath) )
+			if ( !ExistFolder(path) )
 			{
-				return new List<string>();
+				return new List<KeyValuePair<string,DateTime>>();
 			}
-			return _outputSubPathFolders.Where(p => p.StartsWith(subPath) && p != subPath ).AsEnumerable();
+
+			var result = new List<KeyValuePair<string, DateTime>>();
+			foreach ( var item in _outputSubPathFolders.Where(p => p.StartsWith(path) && p != path ).AsEnumerable() )
+			{
+				result.Add(new KeyValuePair<string, DateTime>(item, DateTime.Now));
+			}
+			return result;
 
 		}
 

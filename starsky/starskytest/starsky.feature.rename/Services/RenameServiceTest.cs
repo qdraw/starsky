@@ -64,7 +64,7 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 
-			var readMeta = new ReadMeta(iStorage,_appSettings,memoryCache);
+			var readMeta = new ReadMeta(iStorage,_appSettings,memoryCache, new FakeIWebLogger());
 			
 			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			
@@ -83,14 +83,14 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			if ( !_iStorageSubPath.ExistFile(fileAlreadyExistSubPath) )
 			{
-				await _iStorageSubPath.WriteStreamAsync(new PlainTextFileHelper().StringToStream("test"),
+				await _iStorageSubPath.WriteStreamAsync(PlainTextFileHelper.StringToStream("test"),
 					fileAlreadyExistSubPath);
 			}
 			
 			var renameFs = await new RenameService( _query,_iStorageSubPath).Rename(_newImage.DbPath,
 				fileAlreadyExistSubPath);
 			
-			var result = await new PlainTextFileHelper().StreamToStringAsync(
+			var result = await PlainTextFileHelper.StreamToStringAsync(
 				_iStorageSubPath.ReadStream(fileAlreadyExistSubPath));
 			
 			// it should not overwrite the target file
@@ -466,12 +466,12 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			// First check if fakeDisk is changed
 			var folder1Files = istorage.GetAllFilesInDirectory("/folder1").ToList();
-			var folder1Dir = istorage.GetDirectoryRecursive("/folder1").ToList();
+			var folder1Dir = istorage.GetDirectoryRecursive("/folder1").Select(p => p.Key).ToList();
 			
 			Assert.AreEqual("/folder1/file.jpg", folder1Files[0]);
 			Assert.AreEqual("/folder1/subfolder", folder1Dir[0]);
 
-			var existDirContent = istorage.GetDirectoryRecursive("/exist").ToList();
+			var existDirContent = istorage.GetDirectoryRecursive("/exist").Select(p => p.Key).ToList();
 			var existFolder = istorage.GetAllFilesInDirectory("/exist").ToList();
 			
 			Assert.AreEqual(0,existDirContent.Count);

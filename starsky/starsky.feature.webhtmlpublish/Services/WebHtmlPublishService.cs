@@ -56,7 +56,7 @@ namespace starsky.feature.webhtmlpublish.Services
             _exifTool = exifTool;
 		    _console = console;
 		    _overlayImage = overlayImage;
-		    _publishManifest = new PublishManifest(_hostFileSystemStorage, new PlainTextFileHelper());
+		    _publishManifest = new PublishManifest(_hostFileSystemStorage);
 		    _toCreateSubfolder = new ToCreateSubfolder(_hostFileSystemStorage);
 		    _copyPublishedContent = new CopyPublishedContent(_appSettings, _toCreateSubfolder, 
 			    selectorStorage);
@@ -83,7 +83,7 @@ namespace starsky.feature.webhtmlpublish.Services
 
 	    internal List<FileIndexItem> AddFileHashIfNotExist(List<FileIndexItem> fileIndexItemsList)
 	    {
-		    foreach ( var item in fileIndexItemsList.Where(item => item.FileHash == null) )
+		    foreach ( var item in fileIndexItemsList.Where(item => string.IsNullOrEmpty(item.FileHash)) )
 		    {
 			    item.FileHash = new FileHash(_subPathStorage).GetHashCode(item.FilePath).Key;
 		    }
@@ -227,7 +227,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    var embeddedResult = await new ParseRazor(_hostFileSystemStorage)
 			    .EmbeddedViews(currentProfile.Template, viewModel);
 
-		    var stream = new PlainTextFileHelper().StringToStream(embeddedResult);
+		    var stream = PlainTextFileHelper.StringToStream(embeddedResult);
 		    await _hostFileSystemStorage.WriteStreamAsync(stream, 
 			    Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
 
@@ -361,19 +361,19 @@ namespace starsky.feature.webhtmlpublish.Services
 	    {
 		    _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
 		    
-		    foreach (var item in fileIndexItemsList)
+		    foreach (var subPath in fileIndexItemsList.Select(p => p.FilePath))
 		    {
 			    // input: item.FilePath
 			    var outputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder,
-				    item.FilePath, profile);
+				    subPath, profile);
 
-			    await _hostFileSystemStorage.WriteStreamAsync(_subPathStorage.ReadStream(item.FilePath),
+			    await _hostFileSystemStorage.WriteStreamAsync(_subPathStorage.ReadStream(subPath),
 				    outputPath);
                 
 			    // only delete when using in cli mode
 			    if ( moveSourceFiles )
 			    {
-				    _subPathStorage.FileDelete(item.FilePath);
+				    _subPathStorage.FileDelete(subPath);
 			    }
 		    }
 		    return fileIndexItemsList.ToDictionary(item =>
@@ -402,7 +402,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    // Write a single file to be sure that writing is ready
 		    var doneFileFullPath = Path.Combine(_appSettings.TempFolder, slugItemName) + ".done";
 		    await _hostFileSystemStorage.
-			    WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
+			    WriteStreamAsync(PlainTextFileHelper.StringToStream("OK"), doneFileFullPath);
 
 		    if ( deleteFolderAfterwards )
 		    {

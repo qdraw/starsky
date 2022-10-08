@@ -11,7 +11,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.database.Import
 {
@@ -19,8 +18,8 @@ namespace starsky.foundation.database.Import
 	public class ImportQuery : IImportQuery
 	{
 		private readonly bool _isConnection;
-		private readonly IServiceScopeFactory _scopeFactory;
-		private readonly ApplicationDbContext _dbContext;
+		private readonly IServiceScopeFactory? _scopeFactory;
+		private readonly ApplicationDbContext? _dbContext;
 		private readonly IConsole _console;
 		private readonly IWebLogger _logger;
 
@@ -31,8 +30,9 @@ namespace starsky.foundation.database.Import
 		/// </summary>
 		/// <param name="scopeFactory">to avoid threading issues with DbContext</param>
 		/// <param name="console">console output</param>
+		/// <param name="logger"></param>
 		/// <param name="dbContext"></param>
-		public ImportQuery(IServiceScopeFactory scopeFactory, IConsole console, IWebLogger logger,  ApplicationDbContext dbContext = null)
+		public ImportQuery(IServiceScopeFactory? scopeFactory, IConsole console, IWebLogger logger,  ApplicationDbContext? dbContext = null)
 		{
 			_scopeFactory = scopeFactory;
 
@@ -48,7 +48,7 @@ namespace starsky.foundation.database.Import
 		/// <returns>database context</returns>
 		private ApplicationDbContext GetDbContext()
 		{
-			return _scopeFactory != null ? new InjectServiceScope(_scopeFactory).Context() : _dbContext;
+			return (_scopeFactory != null ? new InjectServiceScope(_scopeFactory).Context() : _dbContext)!;
 		}
 
 		/// <summary>

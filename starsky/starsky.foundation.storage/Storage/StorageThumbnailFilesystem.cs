@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -135,9 +136,9 @@ namespace starsky.foundation.storage.Storage
 			throw new System.NotImplementedException();
 		}
 
-		public IEnumerable<string> GetDirectoryRecursive(string path)
+		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public Stream ReadStream(string path, int maxRead = -1)

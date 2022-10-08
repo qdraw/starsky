@@ -16,7 +16,7 @@ export interface ILoginProps {
 }
 
 const Login: React.FC<ILoginProps> = () => {
-  var history = useLocation();
+  const history = useLocation();
   const [userEmail, setUserEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);

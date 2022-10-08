@@ -1,26 +1,26 @@
 using static SimpleExec.Command;
 using static build.Build;
 
-namespace helpers;
-
-public static class ProjectCheckNetCoreCommandHelper
+namespace helpers
 {
-	public static void ProjectCheckNetCoreCommand()
+	public static class ProjectCheckNetCoreCommandHelper
 	{
-		ClientHelper.NpmPreflight();
+		public static void ProjectCheckNetCoreCommand()
+		{
+			ClientHelper.NpmPreflight();
 
-		// check branch names on CI
-		Run(NpmBaseCommand, "run release-version-check", BuildToolsPath());
+			// check branch names on CI
+			Run(NpmBaseCommand, "run release-version-check", BuildToolsPath);
 		
-		/* Checks for valid Project GUIDs in csproj files */
-		Run(NpmBaseCommand, "run project-guid", BuildToolsPath());
+			/* Checks for valid Project GUIDs in csproj files */
+			Run(NpmBaseCommand, "run project-guid", BuildToolsPath);
 		
-		/* List of nuget packages */
-		Run(NpmBaseCommand, "run nuget-package-list", BuildToolsPath());
-	}
+			/* List of nuget packages */
+			Run(NpmBaseCommand, "run nuget-package-list", BuildToolsPath);
+		}
 
-	static string  BuildToolsPath()
-	{
-		return "../starsky-tools/build-tools/";
+		const string BuildToolsPath = "../starsky-tools/build-tools/";
 	}
 }
+
+

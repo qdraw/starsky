@@ -29,9 +29,7 @@ namespace starsky.foundation.sync.WatcherServices
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 			var serviceProvider = scopeFactory.CreateScope().ServiceProvider;
 			_webLogger = serviceProvider.GetService<IWebLogger>();
-			var memoryCache = serviceProvider.GetService<IMemoryCache>();
-			
-			_queueProcessor = new QueueProcessor(scopeFactory, new SyncWatcherConnector(scopeFactory).Sync,memoryCache);
+			_queueProcessor = new QueueProcessor(scopeFactory, new SyncWatcherConnector(scopeFactory).Sync);
 		}
 
 		internal DiskWatcher(
@@ -166,8 +164,20 @@ namespace starsky.foundation.sync.WatcherServices
 			_webLogger.LogDebug($"[DiskWatcher] " +
 			                    $"{e.FullPath} OnChanged ChangeType is: {e.ChangeType} " + DateTimeDebug());
 			
-			_queueProcessor.QueueInput(e.FullPath, null, e.ChangeType);
+			_queueProcessor.QueueInput(e.FullPath, null, e.ChangeType).ConfigureAwait(false);
 			// Specify what is done when a file is changed, created, or deleted.
+		}
+
+		private static FileAttributes? GetFileAttributes(string fullPath)
+		{
+			try
+			{
+				return File.GetAttributes(fullPath);
+			}
+			catch ( Exception )
+			{
+				return null;
+			}
 		}
 
 		/// <summary>
@@ -179,20 +189,26 @@ namespace starsky.foundation.sync.WatcherServices
 		{
 			_webLogger.LogInformation($"DiskWatcher {e.OldFullPath} OnRenamed to: {e.FullPath}" +
 			                          DateTimeDebug());
-			
-			if ( e.OldFullPath.EndsWith(".tmp") || !ExtensionRolesHelper.IsExtensionSyncSupported(e.OldFullPath) )
+
+			var fileAttributes = GetFileAttributes(e.FullPath);
+			var isDirectory = fileAttributes == FileAttributes.Directory;
+
+			var isOldFullPathTempFile = e.OldFullPath.Contains(Path.DirectorySeparatorChar + "tmp.{")
+			                || e.OldFullPath.EndsWith(".tmp");
+			var isNewFullPathTempFile = e.FullPath.Contains(Path.DirectorySeparatorChar + "tmp.{")
+			                            || e.FullPath.EndsWith(".tmp");
+			if ( !isDirectory && isOldFullPathTempFile )
 			{
-				_queueProcessor.QueueInput(e.FullPath, null, WatcherChangeTypes.Created);
+				_queueProcessor.QueueInput(e.FullPath, null, WatcherChangeTypes.Created).ConfigureAwait(false);
 				return;
 			}
 			
-			if ( e.FullPath.EndsWith(".tmp") || !ExtensionRolesHelper.IsExtensionSyncSupported(e.FullPath) )
+			if ( !isDirectory && isNewFullPathTempFile )
 			{
-				_queueProcessor.QueueInput(e.OldFullPath, null, WatcherChangeTypes.Deleted);
 				return;
 			}
 
-			_queueProcessor.QueueInput(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed);
+			_queueProcessor.QueueInput(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed).ConfigureAwait(false);
 		}
 
 	}

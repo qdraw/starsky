@@ -202,7 +202,7 @@ namespace starskytest.starsky.foundation.database.Models
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(FieldAccessException))]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void ImportIndexItem_CtorRequest_SearchSubDirInDirectory()
 		{
 			new ImportIndexItem().SearchSubDirInDirectory(null, null);

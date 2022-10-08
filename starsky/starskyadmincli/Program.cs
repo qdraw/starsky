@@ -51,7 +51,7 @@ namespace starskyAdminCli
 			var userManager = serviceProvider.GetService<IUserManager>();
 			appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
 
-			if (new ArgsHelper().NeedHelp(args))
+			if (ArgsHelper.NeedHelp(args))
 			{
 				new ArgsHelper(appSettings).NeedHelpShowDialog();
 				return;

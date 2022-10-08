@@ -41,7 +41,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
         url: new UrlQuery().UrlLoginPage()
       }
     ];
-    var history = useLocation();
+    const history = useLocation();
 
     // the results
     const [suggest, setSuggest] = useState(new Array<string>());

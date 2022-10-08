@@ -7,6 +7,7 @@
         <DebugType>Full</DebugType>
         <DefineConstants>T</DefineConstants>
         <Version>0.5.0-beta.8</Version>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -77,6 +78,12 @@
 
     <ItemGroup>
       <Folder Include="Migrations" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\docs\migrations.md">
+        <Link>migrations.md</Link>
+      </Content>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

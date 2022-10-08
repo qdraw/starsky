@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -20,6 +21,16 @@ namespace starsky.foundation.sync.Helpers
 		{
 			_subPathStorage = subPathStorage;
 			_readMeta = readMeta;
+		}
+		
+		public async Task<List<FileIndexItem>> NewFileItem(List<FileIndexItem> inputItems)
+		{
+			var result = new List<FileIndexItem>();
+			foreach ( var inputItem in inputItems )
+			{
+				result.Add(await NewFileItem(inputItem));
+			}
+			return result;
 		}
 		
 		/// <summary>

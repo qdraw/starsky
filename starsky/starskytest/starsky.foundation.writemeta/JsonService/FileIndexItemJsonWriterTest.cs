@@ -106,7 +106,7 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			var jsonSubPath = "/.starsky." + "test.jpg" + ".json";
 
 			fakeStorage.WriteStream(
-				new PlainTextFileHelper().StringToStream(input), jsonSubPath);
+				PlainTextFileHelper.StringToStream(input), jsonSubPath);
 
 			var itemJsonParser = new FileIndexItemJsonParser(fakeStorage);
 

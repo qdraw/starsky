@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,10 +12,15 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
+// ReSharper disable once IdentifierTypo
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	
+	/// <summary>
+	/// AddRangeAsyncTest
+	/// </summary>
 	[TestClass]
+	[SuppressMessage("ReSharper", "ArrangeObjectCreationWhenTypeEvident")]
 	public class QueryAddRangeTest
 	{
 		private IServiceScopeFactory CreateNewScope()
@@ -40,12 +46,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			await new Query(dbContext,
 					new AppSettings {
-						AddMemoryCache = false 
+						AddMemoryCache = false,
+						Verbose = true
 					}, serviceScopeFactory,new FakeIWebLogger(), new FakeMemoryCache()
 				).AddRangeAsync(expectedResult);
 			
 			var queryFromDb = dbContext.FileIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
-			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
+			Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash, queryFromDb.FirstOrDefault()?.FileHash);
 			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
 		}
 		
@@ -73,7 +80,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var context = new InjectServiceScope(serviceScopeFactory).Context();
 			var queryFromDb = context.FileIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
 
-			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
+			Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash, queryFromDb.FirstOrDefault()?.FileHash);
 			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
 		}
 
@@ -96,7 +103,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				}, serviceScopeFactory, new FakeIWebLogger(), new FakeMemoryCache()).AddRange(expectedResult);
 			
 			var queryFromDb = dbContext.FileIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
-			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
+			Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash, queryFromDb.FirstOrDefault()?.FileHash);
 			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
 		}
 

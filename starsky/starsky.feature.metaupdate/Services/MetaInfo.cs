@@ -6,6 +6,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
@@ -22,11 +23,11 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _iStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
 
-		public MetaInfo(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IMemoryCache memoryCache)
+		public MetaInfo(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IMemoryCache memoryCache, IWebLogger logger)
 		{
 			_query = query;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_readMeta = new ReadMeta(_iStorage,appSettings, memoryCache);
+			_readMeta = new ReadMeta(_iStorage,appSettings, memoryCache, logger);
 			_statusCodeHelper = new StatusCodesHelper(appSettings);
 		}
 		

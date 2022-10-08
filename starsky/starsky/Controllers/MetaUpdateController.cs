@@ -74,7 +74,7 @@ namespace starsky.Controllers
 			var operationId = HttpContext.GetOperationId();
 			
 			// Update >
-			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				var operationHolder = RequestTelemetryHelper.GetOperationHolder(_scopeFactory,
 					nameof(UpdateAsync), operationId);
@@ -86,7 +86,7 @@ namespace starsky.Controllers
 					changedFileIndexItemName, fileIndexResultsList, null,
 						collections, append, rotateClock);
 				operationHolder.SetData(_scopeFactory, data);
-			});
+			}, string.Empty);
 
 			// before sending not founds
 			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f,collections, stopwatch);

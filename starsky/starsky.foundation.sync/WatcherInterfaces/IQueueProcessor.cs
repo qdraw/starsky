@@ -1,10 +1,11 @@
 using System.IO;
+using System.Threading.Tasks;
 
 namespace starsky.foundation.sync.WatcherInterfaces
 {
 	public interface IQueueProcessor
 	{
-		void QueueInput(string filepath, string toPath,
+		Task QueueInput(string filepath, string toPath,
 			WatcherChangeTypes changeTypes);
 	}
 }

@@ -25,7 +25,7 @@ function Search(archive: IArchiveProps) {
     "Page {pageNumber} of "
   ); // space at end
 
-  var history = useLocation();
+  const history = useLocation();
 
   // The sidebar
   const [sidebar, setSidebar] = React.useState(
