@@ -181,6 +181,25 @@ public class SettingsServiceTest
 	}
 	
 	[TestMethod]
+	public async Task AddOrUpdateSetting_ItemAdded_ViaEnum()
+	{
+		var dbContext = SetScope();
+
+		var item =
+			await new SettingsService(dbContext).AddOrUpdateSetting(
+				SettingsType.LastSyncBackgroundDateTime, "test");
+		Assert.IsNotNull(item);
+		Assert.AreEqual("test", item.Value);
+		
+		var dbResult = await dbContext.Settings.FirstOrDefaultAsync(p =>
+			p.Key == Enum.GetName(SettingsType.LastSyncBackgroundDateTime));
+		
+		Assert.AreEqual("test", dbResult?.Value);
+		await RemoveAsync(dbContext, SettingsType
+			.LastSyncBackgroundDateTime);
+	}
+	
+	[TestMethod]
 	public async Task AddOrUpdateSetting_ItemUpdated()
 	{
 		var dbContext = SetScope();
