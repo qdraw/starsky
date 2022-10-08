@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.settings.Services;
 [TestClass]
 public class SettingsServiceTest
 {
-	private ApplicationDbContext SetScope()
+	private static ApplicationDbContext SetScope()
 	{
 		// var provider = new ServiceCollection()
 		// 	.AddMemoryCache()
@@ -29,7 +29,7 @@ public class SettingsServiceTest
 		return new ApplicationDbContext(options);
 	}
 
-	private async Task RemoveAsync(ApplicationDbContext dbContext, SettingsType key )
+	private static async Task RemoveAsync(ApplicationDbContext dbContext, SettingsType key )
 	{
 		var item =await dbContext.Settings.FirstOrDefaultAsync(p => p.Key == Enum.GetName(key));
 		if ( item != null )

@@ -333,22 +333,6 @@ namespace starsky.foundation.database.Helpers
 	    }
 	    
 	    /// <summary>
-	    /// Compare bool type 
-	    /// </summary>
-	    /// <param name="propertyName">name of property e.g. IsDirectory</param>
-	    /// <param name="sourceIndexItem">source object</param>
-	    /// <param name="oldBoolValue">oldBoolValue to compare with newBoolValue</param>
-	    /// <param name="newBoolValue">oldBoolValue to compare with newBoolValue</param>
-	    /// <param name="differenceList">list of different values</param>
-        private static void CompareBool(string propertyName, FileIndexItem sourceIndexItem, 
-		    bool oldBoolValue, bool newBoolValue, List<string> differenceList)
-        {
-            if (oldBoolValue == newBoolValue) return;
-            sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newBoolValue, null);
-            differenceList.Add(propertyName.ToLowerInvariant());
-        }
-	    
-	    /// <summary>
 	    /// Compare Nullable bool type 
 	    /// </summary>
 	    /// <param name="propertyName">name of property e.g. IsDirectory</param>
