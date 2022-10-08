@@ -12,12 +12,19 @@ namespace starskytest.FakeMocks
 	/// </summary>
 	public class FakeDiskWatcherUpdateBackgroundTaskQueue : IDiskWatcherBackgroundTaskQueue
 	{
+		private int _count;
+
+		public FakeDiskWatcherUpdateBackgroundTaskQueue(int count = 0)
+		{
+			_count = count;
+		}
 		public bool QueueBackgroundWorkItemCalled { get; set; }
 		public int QueueBackgroundWorkItemCalledCounter { get; set; } = 0;
-		
+		public int DequeueAsyncCounter { get; set; } = 0;
+
 		public int Count()
 		{
-			return 0;
+			return _count;
 		}
 
 		public ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string metaData)
@@ -29,6 +36,8 @@ namespace starskytest.FakeMocks
 
 		public ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(CancellationToken cancellationToken)
 		{
+			_count--;
+			DequeueAsyncCounter++;
 			Func<CancellationToken, ValueTask> sayHello = GetMessage;
 			var res =
 				new Tuple<Func<CancellationToken, ValueTask>, string>(

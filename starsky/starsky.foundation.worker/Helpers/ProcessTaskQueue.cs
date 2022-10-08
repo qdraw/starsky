@@ -34,31 +34,42 @@ namespace starsky.foundation.worker.Helpers
 			
 			while (!cancellationToken.IsCancellationRequested)
 			{
-				await Task.Delay(RoundUp(appSettings).Item1, cancellationToken);
-
-				var taskQueueCount = taskQueue.Count();
-				if ( taskQueueCount <= 0 )
+				try
 				{
-					continue;
-				}
+					var secondsToWait = RoundUp(appSettings).Item1;
+					if ( secondsToWait.TotalMilliseconds > 10 )
+					{
+						await Task.Delay(secondsToWait, cancellationToken);
+					}
+
+					var taskQueueCount = taskQueue.Count();
+					if ( taskQueueCount <= 0 )
+					{
+						continue;
+					}
 				
-				var toDoItems = new List<Tuple<Func<CancellationToken, ValueTask>,
-					string>>();
+					var toDoItems = new List<Tuple<Func<CancellationToken, ValueTask>,
+						string>>();
 
-				for ( var i = 0; i < taskQueueCount; i++ )
-				{
-					var (workItem,metaData) = await taskQueue.DequeueAsync(cancellationToken);
-					toDoItems.Add(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
+					for ( var i = 0; i < taskQueueCount; i++ )
+					{
+						var (workItem,metaData) = await taskQueue.DequeueAsync(cancellationToken);
+						toDoItems.Add(new Tuple<Func<CancellationToken, ValueTask>, string>(workItem,metaData));
+					}
+
+					var afterDistinct = toDoItems.DistinctBy(p => p.Item2).ToList();
+
+					foreach ( var (task, meta) in afterDistinct )
+					{
+						logger.LogInformation($"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next task: " + meta);
+						await ExecuteTask(task, logger, null, cancellationToken);
+					}
+					logger.LogInformation($"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next done & wait ");
 				}
-
-				var afterDistinct = toDoItems.DistinctBy(p => p.Item2).ToList();
-
-				foreach ( var (task, meta) in afterDistinct )
+				catch ( TaskCanceledException)
 				{
-					logger.LogInformation($"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next task: " + meta);
-					await ExecuteTask(task, logger, null, cancellationToken);
+					// do nothing
 				}
-				logger.LogInformation($"[{taskQueue.GetType().ToString().Split(".").LastOrDefault()}] next done & wait ");
 			}
 		}
 
