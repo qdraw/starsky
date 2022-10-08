@@ -5,14 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.realtime.Interface;
-using starsky.feature.realtime.Services;
 using starsky.feature.syncbackground.Helpers;
-using starsky.feature.webftppublish.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Enums;
 using starsky.foundation.realtime.Interfaces;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starskytest.FakeMocks;
 
@@ -21,13 +18,6 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 	[TestClass]
 	public class OnStartupSyncTest
 	{
-		private readonly AppSettings _appSettings;
-		private readonly FakeIFtpWebRequestFactory _webRequestFactory;
-
-		public OnStartupSyncTest()
-		{
-		}
-
 		private static IServiceScopeFactory GetNewScope()
 		{
 			var services = new ServiceCollection();
