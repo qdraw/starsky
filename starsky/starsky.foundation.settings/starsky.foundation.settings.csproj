@@ -11,6 +11,7 @@
 
 <ItemGroup>
   <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
+  <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
 </ItemGroup>
 
 <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

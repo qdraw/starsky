@@ -213,7 +213,7 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="oldRotationValue">oldRotationValue to compare with newRotationValue</param>
 	    /// <param name="newRotationValue">oldRotationValue to compare with newRotationValue</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareRotation(string propertyName, FileIndexItem sourceIndexItem, 
+	    internal static void CompareRotation(string propertyName, FileIndexItem sourceIndexItem, 
 		    FileIndexItem.Rotation oldRotationValue, FileIndexItem.Rotation newRotationValue, List<string> differenceList)
         {
             if (oldRotationValue == newRotationValue || newRotationValue == FileIndexItem.Rotation.DoNotChange) return;
@@ -229,7 +229,7 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="oldDoubleValue">oldDoubleValue to compare with newDoubleValue</param>
 	    /// <param name="newDoubleValue">oldDoubleValue to compare with newDoubleValue</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareDouble(string propertyName, FileIndexItem sourceIndexItem, 
+	    internal static void CompareDouble(string propertyName, FileIndexItem sourceIndexItem, 
 		    double oldDoubleValue, double newDoubleValue, List<string> differenceList)
 	    {
 		    // Dont allow to overwrite with default 0 value
@@ -246,7 +246,7 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="oldUshortValue">oldUshortValue to compare with newUshortValue</param>
 	    /// <param name="newUshortValue">oldUshortValue to compare with newUshortValue</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareUshort(string propertyName, FileIndexItem sourceIndexItem, 
+	    internal static void CompareUshort(string propertyName, FileIndexItem sourceIndexItem, 
 		    ushort oldUshortValue, ushort newUshortValue, List<string> differenceList)
 	    {
 		    // Dont allow to overwrite with default 0 value
@@ -262,8 +262,8 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="sourceIndexItem">source object</param>
 	    /// <param name="oldImageFormatValue">two values to compare with</param>
 	    /// <param name="newImageFormatValue">two values to compare with</param>
-	    /// <param name="differenceList">lisf of dif</param>
-	    private static void CompareImageFormat(string propertyName, FileIndexItem sourceIndexItem, 
+	    /// <param name="differenceList">list of differences</param>
+	    internal static void CompareImageFormat(string propertyName, FileIndexItem sourceIndexItem, 
 		    ExtensionRolesHelper.ImageFormat oldImageFormatValue, 
 		    ExtensionRolesHelper.ImageFormat newImageFormatValue, List<string> differenceList)
 	    {
@@ -272,6 +272,14 @@ namespace starsky.foundation.database.Helpers
 		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
 	    
+	    /// <summary>
+	    /// Compare image stab value
+	    /// </summary>
+	    /// <param name="propertyName">name of property e.g. image stab</param>
+	    /// <param name="sourceIndexItem">source object</param>
+	    /// <param name="oldImageStabValue">two values to compare with</param>
+	    /// <param name="newImageStabValue">two values to compare with</param>
+	    /// <param name="differenceList">list of differences</param>
 	    private static void CompareImageStabilisationType(string propertyName, FileIndexItem sourceIndexItem, 
 		    ImageStabilisationType oldImageStabValue, ImageStabilisationType newImageStabValue, List<string> differenceList)
 	    {
@@ -288,7 +296,7 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="oldDateValue">oldDateValue to compare with newDateValue</param>
 	    /// <param name="newDateValue">oldDateValue to compare with newDateValue</param>
 	    /// <param name="differenceList">list of different values</param>
-        private static void CompareDateTime(string propertyName, FileIndexItem sourceIndexItem, 
+        internal static void CompareDateTime(string propertyName, FileIndexItem sourceIndexItem, 
 		    DateTime oldDateValue, DateTime newDateValue, List<string> differenceList)
         {
             // Dont allow to overwrite with default year 0001
@@ -305,7 +313,7 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="oldColorValue">oldColorValue to compare with newColorValue</param>
 	    /// <param name="newColorValue">oldColorValue to compare with newColorValue</param>
 	    /// <param name="differenceList">list of different values</param>
-        private static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, ColorClassParser.Color oldColorValue, 
+	    internal static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, ColorClassParser.Color oldColorValue, 
 		    ColorClassParser.Color newColorValue, List<string> differenceList)
         {
             if (oldColorValue == newColorValue || newColorValue == ColorClassParser.Color.DoNotChange) return;
@@ -322,7 +330,7 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="oldListStringValue">oldListStringValue to compare with newListStringValue</param>
 	    /// <param name="newListStringValue">newListStringValue to compare with oldListStringValue</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareListString(string propertyName, FileIndexItem sourceIndexItem, 
+	    internal static void CompareListString(string propertyName, FileIndexItem sourceIndexItem, 
 		    List<string>? oldListStringValue, List<string> newListStringValue, List<string> differenceList)
 	    {
 		    if ( oldListStringValue == null || newListStringValue.Count == 0 ) return;
@@ -340,7 +348,7 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="oldBoolValue">oldBoolValue to compare with newBoolValue</param>
 	    /// <param name="newBoolValue">oldBoolValue to compare with newBoolValue</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareNullableBool(string propertyName, FileIndexItem sourceIndexItem, 
+	    internal static void CompareNullableBool(string propertyName, FileIndexItem sourceIndexItem, 
 		    bool? oldBoolValue, bool? newBoolValue, List<string> differenceList)
 	    {
 		    if ( newBoolValue == null || oldBoolValue == newBoolValue) return;
@@ -359,7 +367,7 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="newStringValue">oldStringValue to compare with newStringValue</param>
 	    /// <param name="differenceList">list of different values</param>
 	    /// <param name="append">to add after list (if tags)</param>
-        private static void CompareString(string propertyName, FileIndexItem sourceIndexItem, 
+	    internal static void CompareString(string propertyName, FileIndexItem sourceIndexItem, 
 		    string oldStringValue, string newStringValue, 
 		    List<string> differenceList, bool append)
         {

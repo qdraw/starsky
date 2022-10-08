@@ -60,5 +60,10 @@ fi
 echo "Microsoft (R) .NET SDK version $("$DOTNET_EXE" --version)"
 
 "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
+
+if [[ ! -f $SCRIPT_DIR"/build/bin/Debug/_build.deps.json" ]]; then
+    echo "file not found"
+    "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
+fi
 "$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- --no-logo "$@"
 echo "end"

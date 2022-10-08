@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,17 +87,17 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="oldDatabaseTypeList">oldDatabaseTypeList to compare with newDatabaseTypeList</param>
 	    /// <param name="newDatabaseTypeList">newDatabaseTypeList to compare with oldDatabaseTypeList</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareDatabaseTypeList(string propertyName, AppSettings sourceIndexItem, 
+	    internal static void CompareDatabaseTypeList(string propertyName, AppSettings sourceIndexItem, 
 		    AppSettings.DatabaseTypeList oldDatabaseTypeList, 
 		    AppSettings.DatabaseTypeList newDatabaseTypeList, List<string> differenceList)
 	    {
 		    if (oldDatabaseTypeList == newDatabaseTypeList || newDatabaseTypeList == new AppSettings().DatabaseType) return;
-		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newDatabaseTypeList, null);
+		    sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newDatabaseTypeList, null);
 		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
 
 	    
-	    	    /// <summary>
+	    /// <summary>
 	    /// Compare List String
 	    /// </summary>
 	    /// <param name="propertyName">name of property e.g. Readonly folders</param>
@@ -104,7 +105,7 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="oldListStringValue">oldListStringValue to compare with newListStringValue</param>
 	    /// <param name="newListStringValue">newListStringValue to compare with oldListStringValue</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareListString(string propertyName, AppSettings sourceIndexItem, 
+	    internal static void CompareListString(string propertyName, AppSettings sourceIndexItem, 
 		    List<string> oldListStringValue, List<string> newListStringValue, List<string> differenceList)
 	    {
 		    if ( oldListStringValue == null || newListStringValue.Count == 0 ) return;
@@ -122,7 +123,7 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="oldListPublishValue">oldListPublishValue to compare with newListPublishValue</param>
 	    /// <param name="newListPublishValue">newListPublishValue to compare with oldListPublishValue</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareListPublishProfiles(string propertyName, AppSettings sourceIndexItem, 
+	    internal static void CompareListPublishProfiles(string propertyName, AppSettings sourceIndexItem, 
 		    Dictionary<string, List<AppSettingsPublishProfiles>> oldListPublishValue, 
 		    Dictionary<string, List<AppSettingsPublishProfiles>> newListPublishValue, List<string> differenceList)
 	    {
@@ -142,7 +143,7 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="oldBoolValue">oldBoolValue to compare with newBoolValue</param>
 	    /// <param name="newBoolValue">oldBoolValue to compare with newBoolValue</param>
 	    /// <param name="differenceList">list of different values</param>
-        private static void CompareBool(string propertyName, AppSettings sourceIndexItem, bool? oldBoolValue, 
+        internal static void CompareBool(string propertyName, AppSettings sourceIndexItem, bool? oldBoolValue, 
 		    bool? newBoolValue, List<string> differenceList)
         {
 	        if ( newBoolValue == null )
@@ -165,7 +166,7 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="oldStringValue">oldStringValue to compare with newStringValue</param>
 	    /// <param name="newStringValue">oldStringValue to compare with newStringValue</param>
 	    /// <param name="differenceList">list of different values</param>
-        private static void CompareString(string propertyName, AppSettings sourceIndexItem, 
+        internal static void CompareString(string propertyName, AppSettings sourceIndexItem, 
 		    string oldStringValue, string newStringValue, 
 		    List<string> differenceList)
         {
@@ -185,7 +186,7 @@ namespace starsky.foundation.platform.Helpers
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
             
-	        propertyObject.SetValue(sourceIndexItem, newStringValue, null);
+	        propertyObject?.SetValue(sourceIndexItem, newStringValue, null);
             
             differenceList.Add(propertyName.ToLowerInvariant());
         }
@@ -199,7 +200,7 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="oldStringValue">oldStringValue to compare with newStringValue</param>
 	    /// <param name="newStringValue">oldStringValue to compare with newStringValue</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareInt(string propertyName, AppSettings sourceIndexItem, 
+	    internal static void CompareInt(string propertyName, AppSettings sourceIndexItem, 
 		    int oldStringValue, int newStringValue, 
 		    List<string> differenceList)
 	    {
@@ -212,7 +213,7 @@ namespace starsky.foundation.platform.Helpers
          
 		    var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
             
-		    propertyObject.SetValue(sourceIndexItem, newStringValue, null);
+		    propertyObject?.SetValue(sourceIndexItem, newStringValue, null);
             
 		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
@@ -223,10 +224,10 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="car"></param>
 	    /// <param name="propertyName"></param>
 	    /// <returns></returns>
-	    private static object GetPropertyValue(object car, string propertyName)
+	    private static object? GetPropertyValue(object car, string propertyName)
 	    {
 		    return car.GetType().GetProperties()
-			    .Single(pi => pi.Name == propertyName)
+			    .FirstOrDefault(pi => pi.Name == propertyName)?
 			    .GetValue(car, null);
 	    }
 
