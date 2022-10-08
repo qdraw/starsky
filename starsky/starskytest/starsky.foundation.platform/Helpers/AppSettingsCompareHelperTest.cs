@@ -242,7 +242,6 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void CompareString_NotFound()
 		{
 			var list = new List<string>();
-			bool? boolValue = true;
 			AppSettingsCompareHelper.CompareString("t",
 				new AppSettings(),
 				"Test",
