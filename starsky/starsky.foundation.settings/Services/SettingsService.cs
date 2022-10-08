@@ -51,10 +51,6 @@ public class SettingsService : ISettingsService
 		{
 			return ( T? )( object? )data.Value;
 		}
-		catch ( NullReferenceException )
-		{
-			return default;
-		}
 		catch ( InvalidCastException )
 		{
 			return default;
@@ -81,11 +77,14 @@ public class SettingsService : ISettingsService
 		{
 			_context.Settings.Add(item);
 			await _context.SaveChangesAsync();
+			_context.Attach(item).State = EntityState.Detached;
 			return item;
 		}
-
+		
+		_context.Attach(item).State = EntityState.Modified;
 		_context.Settings.Update(item);
 		await _context.SaveChangesAsync();
+		_context.Attach(item).State = EntityState.Detached;
 		return item;
 	}
 }
