@@ -59,7 +59,7 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		[Column(Order = 2)]
 		[MaxLength(380)]
-		public string FilePath
+		public string? FilePath
 		{
 			get
 			{
@@ -76,7 +76,7 @@ namespace starsky.foundation.database.Models
 		/// Sets the file path as Filename and ParentDirectory
 		/// </summary>
 		/// <param name="value">The value.</param>
-		public void SetFilePath(string value)
+		public void SetFilePath(string? value)
 		{
 			var parentPath = FilenamesHelper.GetParentPath(value);
 			if ( string.IsNullOrEmpty(parentPath)) parentPath = "/";
@@ -93,7 +93,7 @@ namespace starsky.foundation.database.Models
 		/// <summary>
 		/// Internal API: Do not save null in database for FileName
 		/// </summary>
-		private string _fileName = string.Empty;
+		private string? _fileName;
 
 		/// <summary>
 		/// Get or Set FileName with extension
@@ -105,7 +105,7 @@ namespace starsky.foundation.database.Models
 		/// <example>/folder/image.jpg</example>
 		[Column(Order = 1)]
 		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
-		public string FileName
+		public string? FileName
 		{
 			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _fileName ?? string.Empty;
@@ -129,9 +129,8 @@ namespace starsky.foundation.database.Models
 		/// The file hash.
 		/// </value>
 		/// <example>OZHCK4I47QPHOT53QBRE7Z4RLI</example>
-		[MaxLength(
-			190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
-		public string FileHash { get; set; } = string.Empty;
+		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
+		public string? FileHash { get; set; } = string.Empty;
 
 		/// <summary>
 		/// GetFileNameWithoutExtension (only a getter)
@@ -156,7 +155,7 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		/// <example>/folder</example>
 		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
-		public string ParentDirectory
+		public string? ParentDirectory
 		{
 			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _parentDirectory ?? string.Empty;
@@ -202,7 +201,7 @@ namespace starsky.foundation.database.Models
 		/// <summary>
 		/// Private API: Do not save null in database for tags
 		/// </summary>
-		private string _tags = string.Empty;
+		private string? _tags;
 
 		/// <summary>
 		/// Get/Set a comma separated string of unique tags.
@@ -213,7 +212,7 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		/// <example>tag1, tag2</example>
 		[MaxLength(1024)]
-		public string Tags
+		public string? Tags
 		{
 			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _tags ?? string.Empty;
@@ -310,7 +309,7 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// The description as string
 		/// </value>
-		public string Description
+		public string? Description
 		{
 			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _description ?? string.Empty;
@@ -336,7 +335,7 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// The title as string
 		/// </value>
-		public string Title
+		public string? Title
 		{
 			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _title ?? string.Empty;
@@ -423,7 +422,7 @@ namespace starsky.foundation.database.Models
 		/// The location city.
 		/// </value>
 		[MaxLength(40)]
-		public string LocationCity { get; set; } = string.Empty;
+		public string? LocationCity { get; set; } = string.Empty;
 
 		/// <summary>
 		/// The name of the nearest state or province (Max length is 40 chars)
@@ -432,7 +431,7 @@ namespace starsky.foundation.database.Models
 		/// The state of the location.
 		/// </value>
 		[MaxLength(40)]
-		public string LocationState { get; set; } = string.Empty;
+		public string? LocationState { get; set; } = string.Empty;
 
 		/// <summary>
 		/// The name of the nearest country (Max length is 40 chars)
@@ -441,7 +440,7 @@ namespace starsky.foundation.database.Models
 		/// The location country.
 		/// </value>
 		[MaxLength(40)] 
-		public string LocationCountry { get; set; } = string.Empty;
+		public string? LocationCountry { get; set; } = string.Empty;
 
 		/// <summary>
 		/// Comma separated list of color class numbers to create a list of enums
@@ -710,7 +709,7 @@ namespace starsky.foundation.database.Models
 		/// Database string to store sidecar paths
 		/// </summary>
 		[JsonIgnore]
-		public string SidecarExtensions { get; set; } = "";
+		public string? SidecarExtensions { get; set; } = "";
 
 		/// <summary>
 		/// List of Sidecar files
@@ -788,7 +787,7 @@ namespace starsky.foundation.database.Models
 		/// The shutter speed as string
 		/// </value>
 		[MaxLength(20)]
-		public string ShutterSpeed {
+		public string? ShutterSpeed {
 			get
 			{
 				if ( string.IsNullOrEmpty(_shutterSpeed) ) return string.Empty;
@@ -840,7 +839,7 @@ namespace starsky.foundation.database.Models
 		/// Edited with this program
 		/// </summary>
 		[MaxLength(40)]
-		public string Software {
+		public string? Software {
 			get => string.IsNullOrEmpty(_softwareData) ? string.Empty : _softwareData;
 			set => _softwareData = string.IsNullOrEmpty(value) ? string.Empty : value;
 		}
@@ -848,7 +847,7 @@ namespace starsky.foundation.database.Models
 		/// <summary>
 		/// Private field to store MakeModel Data
 		/// </summary>
-		private string _makeModel = string.Empty;
+		private string? _makeModel = string.Empty;
 
 		/// <summary>
 		/// Camera Make, Model and Lens (saved pipe separated string)
@@ -856,7 +855,7 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// Camera brand and type (incl. lens)
 		/// </value>
-		public string MakeModel {
+		public string? MakeModel {
 			get
 			{
 				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;

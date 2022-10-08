@@ -28,6 +28,7 @@ namespace starsky.foundation.database.Models
 		ParentDirectoryNotFound
 	}
 	
+    [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
     public class ImportIndexItem
     {
         private readonly AppSettings _appSettings = new();
@@ -58,22 +59,22 @@ namespace starsky.foundation.database.Models
         /// FileHash before importing
         /// When using a -ColorClass=1 overwrite the fileHash changes during the import process
         /// </summary>
-        public string FileHash { get; set; } = string.Empty;
+        public string? FileHash { get; set; } = string.Empty;
 
         public string GetFileHashWithUpdate()
         {
-	        if ( FileIndexItem == null )
+	        if ( FileIndexItem == null && FileHash != null)
 	        {
 		        return FileHash;
 	        }
-	        return FileIndexItem.FileHash;
+	        return FileIndexItem?.FileHash ?? string.Empty;
         }
         
         /// <summary>
         /// The location where the image should be stored.
         /// When the user move an item this field is NOT updated
         /// </summary>
-        public string FilePath { get; set; } = string.Empty;
+        public string? FilePath { get; set; } = string.Empty;
 
         /// <summary>
         /// UTC DateTime when the file is imported
@@ -103,7 +104,7 @@ namespace starsky.foundation.database.Models
         public string Structure { get; set; } = string.Empty;
 
         [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")] 
-        public string MakeModel { get; set; } = string.Empty;
+        public string? MakeModel { get; set; } = string.Empty;
 
         /// <summary>
         /// Is the Exif DateTime parsed from the fileName
@@ -113,6 +114,7 @@ namespace starsky.foundation.database.Models
         /// <summary>
         /// ColorClass
         /// </summary>
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
         public ColorClassParser.Color ColorClass { get; set; }
 
         public DateTime ParseDateTimeFromFileName()
