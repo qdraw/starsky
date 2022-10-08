@@ -69,14 +69,14 @@ namespace starsky.Controllers
 				ToDictionary(item => item.FilePath, item => new List<string> {fieldName});
 
 			// Update >
-			_bgTaskQueue.QueueBackgroundWorkItem(async _ =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				var metaUpdateService = _scopeFactory.CreateScope()
 					.ServiceProvider.GetRequiredService<IMetaUpdateService>();
 				await metaUpdateService
 					.UpdateAsync(changedFileIndexItemName, resultsOkOrDeleteList,
 						null, collections, false, 0);
-			});
+			}, string.Empty);
 			
 			// before sending not founds
 			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f,collections, stopwatch);

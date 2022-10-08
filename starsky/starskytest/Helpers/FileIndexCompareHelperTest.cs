@@ -146,6 +146,24 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
+		public void FileIndexCompareHelperTest_LastChanged_Compare_Update()
+		{
+			var source = new FileIndexItem {LastChanged = new List<string>()};
+			var update = new FileIndexItem {LastChanged = new List<string>{"test"}};
+			FileIndexCompareHelper.Compare(source, update); // it element is updated, but the list not
+			Assert.AreEqual( 1,source.LastChanged.Count);
+		}
+		
+		[TestMethod]
+		public void FileIndexCompareHelperTest_LastChanged_Compare_RemoveFromList()
+		{
+			var source = new FileIndexItem {LastChanged = new List<string>()};
+			var update = new FileIndexItem {LastChanged = new List<string>{"test"}};
+			var result = FileIndexCompareHelper.Compare(source, update);
+			Assert.AreEqual( 0,result.Count);
+		}
+		
+		[TestMethod]
 		public void FileIndexCompareHelperTest_ImageStabilisationType_Compare_Equal_NotUpdate()
 		{
 			var source = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Off};

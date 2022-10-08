@@ -717,6 +717,8 @@ namespace starsky.foundation.platform.Models
 		[PackageTelemetry]
 		public bool? EnablePackageTelemetryDebug { get; set; } = false;
 
+		public double UseDiskWatcherIntervalInMilliseconds { get; set; } = 20000;
+
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
 		// -------------------------------------------------

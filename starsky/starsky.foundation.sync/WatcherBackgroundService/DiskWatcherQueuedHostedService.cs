@@ -1,11 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
-using starsky.foundation.worker.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherBackgroundService
@@ -14,21 +19,29 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 		InjectionLifetime = InjectionLifetime.Singleton)]
 	public class DiskWatcherQueuedHostedService : BackgroundService
 	{
+		private readonly IDiskWatcherBackgroundTaskQueue _taskQueue;
 		private readonly IWebLogger _logger;
+		private readonly AppSettings _appSettings;
+
+
 		
-		// ReSharper disable once SuggestBaseTypeForParameterInConstructor
-		public DiskWatcherQueuedHostedService(IDiskWatcherBackgroundTaskQueue taskQueue,
-			IWebLogger logger)
+		public DiskWatcherQueuedHostedService(
+			IDiskWatcherBackgroundTaskQueue taskQueue,
+			IWebLogger logger, AppSettings appSettings) =>
+			(_taskQueue, _logger, _appSettings) = (taskQueue, logger, appSettings);
+
+		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			TaskQueue = taskQueue;
-			_logger = logger;
+			_logger.LogInformation("Queued Hosted Service for DiskWatcher");
+			await ProcessTaskQueue.ProcessBatchedLoopAsync(_taskQueue, _logger,
+				_appSettings, stoppingToken);
 		}
 
-		private IBaseBackgroundTaskQueue TaskQueue { get; }
-
-		protected override Task ExecuteAsync(CancellationToken stoppingToken)
+		public override async Task StopAsync(CancellationToken stoppingToken)
 		{
-			return ProcessTaskQueue.ProcessTaskQueueAsync(TaskQueue, _logger, stoppingToken);
+			_logger.LogInformation(
+				$"QueuedHostedService {_taskQueue.GetType().Name} is stopping.");
+			await base.StopAsync(stoppingToken);
 		}
 	}
 }

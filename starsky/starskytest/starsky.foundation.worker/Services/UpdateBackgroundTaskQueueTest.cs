@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,14 +20,14 @@ using starskytest.FakeMocks;
 
 #pragma warning disable 1998
 
-namespace starskytest.starsky.foundation.worker
+namespace starskytest.starsky.foundation.worker.Services
 {
 	[TestClass]
-	public class BackgroundTaskQueueTest
+	public class UpdateBackgroundTaskQueueTest
 	{
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 
-		public BackgroundTaskQueueTest()
+		public UpdateBackgroundTaskQueueTest()
 		{
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();  
@@ -54,9 +55,9 @@ namespace starskytest.starsky.foundation.worker
 		}
         
 		[TestMethod]
-		public void BackgroundTaskQueueTest_DequeueAsync()
+		public async Task BackgroundTaskQueueTest_DequeueAsync()
 		{
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
 			{
 				for (int delayLoop = 0; delayLoop < 3; delayLoop++)
 				{
@@ -65,8 +66,17 @@ namespace starskytest.starsky.foundation.worker
 					// Cancel request > not tested very good
 					await _bgTaskQueue.DequeueAsync(token);
 				}
-			});
+			}, string.Empty);
 			Assert.IsNotNull(_bgTaskQueue);
+		}
+
+		[TestMethod]
+		public async Task Count_AddOneForCount()
+		{
+			var backgroundQueue = new UpdateBackgroundTaskQueue();
+			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
+			var count = backgroundQueue.Count();
+			Assert.AreEqual(1,count);
 		}
 
 		// https://stackoverflow.com/a/51224556
@@ -91,9 +101,9 @@ namespace starskytest.starsky.foundation.worker
 			await service.StartAsync(CancellationToken.None);
 
 			var isExecuted = false;
-			backgroundQueue.QueueBackgroundWorkItem(async token => {
+			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ => {
 				isExecuted = true;
-			});
+			}, string.Empty);
 
 			await Task.Delay(1000);
 			Assert.IsTrue(isExecuted);
@@ -105,9 +115,9 @@ namespace starskytest.starsky.foundation.worker
 		[TestMethod]
 		public async Task BackgroundTaskQueueTest_ArgumentNullExceptionFail()
 		{
-			Func<CancellationToken, Task> func = null;
+			Func<CancellationToken, ValueTask> func = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			_bgTaskQueue.QueueBackgroundWorkItem(func);
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func, string.Empty);
 			Assert.IsNull(func);
 		}
 
@@ -127,15 +137,15 @@ namespace starskytest.starsky.foundation.worker
 
 			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
 
-			await service.StartAsync(CancellationToken.None);
+			await service!.StartAsync(CancellationToken.None);
 
 			var isExecuted = false;
-			backgroundQueue.QueueBackgroundWorkItem(async token =>
+			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				isExecuted = true;
 				throw new Exception();
 				// EXCEPTION IS IGNORED
-			});
+			}, string.Empty);
 
 			await Task.Delay(1000);
 			Assert.IsTrue(isExecuted);
@@ -157,6 +167,22 @@ namespace starskytest.starsky.foundation.worker
 			Assert.IsNotNull(method);
 			method.Invoke(service, new object[]{cancelTokenSource.Token});
 			// should stop and not hit timeout
+		}
+		
+		[TestMethod]
+		[Timeout(300)]
+		public async Task Update_End_StopAsync_Test()
+		{
+			var logger = new FakeIWebLogger();
+			var service = new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(), logger);
+			
+			CancellationTokenSource source = new CancellationTokenSource();
+			CancellationToken token = source.Token;
+			source.Cancel(); // <- cancel before start
+
+			await service.StopAsync(token);
+			
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("is stopping"));
 		}
 
 	}

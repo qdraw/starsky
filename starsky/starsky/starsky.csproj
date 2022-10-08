@@ -13,6 +13,12 @@
         <!-- due missing support of ts4.1-->
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
         <SynchReleaseVersion>false</SynchReleaseVersion>
+        <!-- maybe needed for mac os https://www.kenmuse.com/blog/notarizing-dotnet-console-apps-for-macos/ --> 
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+        <IncludeSymbolsInSingleFile>false</IncludeSymbolsInSingleFile>
+        <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+        <UseAppHost>true</UseAppHost>
+        <PublishReadyToRun>false</PublishReadyToRun>
         <!--   < Condition=" '$(TargetFramework)' == 'net5.0' ">3.1.22</ >-->
     </PropertyGroup>
 

@@ -101,7 +101,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void PublishCreate_newItem()
+		public async Task PublishCreate_newItem()
 		{
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 				new FakeIWebHtmlPublishService(), 
@@ -112,7 +112,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = controller.PublishCreate("/test.jpg", 
+			var actionResult = await controller.PublishCreate("/test.jpg", 
 				"test", "test", true) as JsonResult;
 			var result = actionResult.Value as string;
 			
@@ -120,7 +120,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public void PublishCreate_newItem_readonly()
+		public async Task PublishCreate_newItem_readonly()
 		{
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 				new FakeIWebHtmlPublishService(), 
@@ -131,7 +131,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = controller.PublishCreate("/test.jpg", 
+			var actionResult = await controller.PublishCreate("/test.jpg", 
 				"test", "test", true) as JsonResult;
 			var result = actionResult.Value as string;
 			
@@ -157,7 +157,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public void PublishCreate_NotFound()
+		public async Task PublishCreate_NotFound()
 		{
 			var controller = new PublishController(new AppSettings(), 
 				new FakeIPublishPreflight(),
@@ -169,14 +169,14 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = controller.PublishCreate("/not-found.jpg", 
+			var actionResult = await controller.PublishCreate("/not-found.jpg", 
 				"test", "test", true) as NotFoundObjectResult;
 			
 			Assert.AreEqual(404, actionResult.StatusCode);
 		}
 		
 		[TestMethod]
-		public void PublishCreate_existItem_NoForce()
+		public async Task PublishCreate_existItem_NoForce()
 		{
 			var appSettings = new AppSettings{TempFolder = Path.DirectorySeparatorChar.ToString() };
 			var storage = new FakeIStorage(new List<string> { Path.DirectorySeparatorChar + "test" },
@@ -188,7 +188,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(storage),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = controller.PublishCreate("/test.jpg", 
+			var actionResult = await controller.PublishCreate("/test.jpg", 
 				"test", "test", false) as ConflictObjectResult;
 			var result = actionResult.Value as string;
 			
@@ -196,7 +196,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void PublishCreate_existItem_Force()
+		public async Task PublishCreate_existItem_Force()
 		{
 			var appSettings = new AppSettings {TempFolder = Path.DirectorySeparatorChar.ToString() };
 			var storage = new FakeIStorage(new List<string> {Path.DirectorySeparatorChar + "test"}, 
@@ -211,7 +211,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(storage),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = controller.PublishCreate("/test.jpg", 
+			var actionResult = await controller.PublishCreate("/test.jpg", 
 				"test", "test", true) as JsonResult;
 			var result = actionResult.Value as string;
 			

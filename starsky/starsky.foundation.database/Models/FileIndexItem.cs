@@ -1023,6 +1023,12 @@ namespace starsky.foundation.database.Models
 		}
 		
 		public ImageStabilisationType ImageStabilisation { get; set; }
+
+		/// <summary>
+		/// Fields that are changed in the last request
+		/// </summary>
+		[NotMapped]
+		public List<string> LastChanged { get; set; } = new List<string>();
 	}
 
 	// end class
