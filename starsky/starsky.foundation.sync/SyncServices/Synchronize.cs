@@ -38,8 +38,9 @@ namespace starsky.foundation.sync.SyncServices
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 		}
 		
-		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+		public async Task<List<FileIndexItem>> Sync(string subPath, 
+			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			DateTime? childDirectoriesAfter = null)
 		{
 			// Prefix / for database
 			subPath = PathHelper.PrefixDbSlash(subPath);
@@ -54,7 +55,7 @@ namespace starsky.foundation.sync.SyncServices
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					return await _syncFolder.Folder(subPath, updateDelegate);
+					return await _syncFolder.Folder(subPath, updateDelegate, childDirectoriesAfter);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 					var item = await _syncSingleFile.SingleFile(subPath, updateDelegate);
 					return new List<FileIndexItem>{item};
@@ -65,12 +66,13 @@ namespace starsky.foundation.sync.SyncServices
 			}
 		}
 
-		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, bool recursive = true)
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths)
 		{
+			// there is a sync multi file
 			var results = new List<FileIndexItem>();
 			foreach ( var subPath in subPaths )
 			{
-				results.AddRange(await Sync(subPath, recursive));
+				results.AddRange(await Sync(subPath));
 			}
 			return results;
 		}

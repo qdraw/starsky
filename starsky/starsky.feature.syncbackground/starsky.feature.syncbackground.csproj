@@ -18,5 +18,6 @@
 
 <ItemGroup>
   <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
+  <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
 </ItemGroup>
 </Project>

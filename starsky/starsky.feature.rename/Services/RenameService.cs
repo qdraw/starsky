@@ -383,7 +383,7 @@ namespace starsky.feature.rename.Services
 					
 			// Store Child folders
 			var directChildFolders = new List<string>();
-			directChildFolders.AddRange(_iStorage.GetDirectoryRecursive(inputFileSubPath,true));
+			directChildFolders.AddRange(_iStorage.GetDirectoryRecursive(inputFileSubPath).Select(p => p.Key));
 
 			// Store direct files
 			var directChildItems = new List<string>();

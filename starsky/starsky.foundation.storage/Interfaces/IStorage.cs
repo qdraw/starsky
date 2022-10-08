@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -35,7 +36,6 @@ namespace starsky.foundation.storage.Interfaces
 		///	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 		/// </summary>
 		/// <param name="path">subPath, path relative to the database</param>
-		/// <param name="orderByAlphabet">true to order on alphabet else by last edited</param>
 		/// <returns>list of files</returns>
 		IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
 		
@@ -51,9 +51,8 @@ namespace starsky.foundation.storage.Interfaces
 		/// old name: GetFilesRecursive
 		/// </summary>
 		/// <param name="path">directory</param>
-		/// <param name="orderByAlphabet">order by alphabet or last edited</param>
 		/// <returns>list</returns>
-		IEnumerable<string> GetDirectoryRecursive(string path, bool orderByAlphabet);
+		IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path);
 
 		Stream ReadStream(string path, int maxRead = -1);
 		

@@ -31,7 +31,7 @@ namespace starskytest.starsky.foundation.storage.Storage
             
 			// Used For subfolders
 			_storage.CreateDirectory("/test");
-			var filesInFolder = _storage.GetDirectoryRecursive("/",true).ToList();
+			var filesInFolder = _storage.GetDirectoryRecursive("/").Select(p => p.Key).ToList();
 			
 			Assert.AreEqual(true,filesInFolder.Any());
 
@@ -55,7 +55,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		[TestMethod]
 		public void GetDirectoryRecursive_Null_NotFound()
 		{
-			var result = _storage.GetDirectoryRecursive("/not_found",true);
+			var result = _storage.GetDirectoryRecursive("/not_found").Select(p => p.Key);
 			Assert.AreEqual(0,result.Count());
 		}
 		

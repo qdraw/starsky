@@ -209,12 +209,12 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="path">subPath in dir</param>
 		/// <param name="orderByAlphabet">order by alphabet or last edited</param>
 		/// <returns>list of paths</returns>
-		public IEnumerable<string> GetDirectoryRecursive(string path, bool orderByAlphabet)
+		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-			if (fullFilePath == null) return Enumerable.Empty<string>();
+			if (fullFilePath == null) return Enumerable.Empty<KeyValuePair<string,DateTime>>();
 			
-			var folders = new StorageHostFullPathFilesystem(_logger).GetDirectoryRecursive(fullFilePath,orderByAlphabet);
+			var folders = new StorageHostFullPathFilesystem(_logger).GetDirectoryRecursive(fullFilePath);
 
 			// Used For subfolders
 			// convert back to subPath style

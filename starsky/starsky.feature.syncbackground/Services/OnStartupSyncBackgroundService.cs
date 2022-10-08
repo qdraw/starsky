@@ -4,24 +4,24 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
+using starsky.foundation.sync.SyncInterfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.feature.packagetelemetry.Services
+namespace starsky.feature.syncbackground.Services
 {
 
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class PackageTelemetryBackgroundService : BackgroundService
+	public class OnStartupSyncBackgroundService : BackgroundService
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 
-		public PackageTelemetryBackgroundService(IServiceScopeFactory serviceScopeFactory)
+		public OnStartupSyncBackgroundService(IServiceScopeFactory serviceScopeFactory)
 		{
 			_serviceScopeFactory = serviceScopeFactory;
 		}
 
 		/// <summary>
 		/// Running scoped services
-		/// @see: https://thinkrethink.net/2018/07/12/injecting-a-scoped-service-into-ihostedservice/
 		/// </summary>
 		/// <param name="stoppingToken">Cancellation Token, but it ignored</param>
 		/// <returns>CompletedTask</returns>
@@ -29,12 +29,9 @@ namespace starsky.feature.packagetelemetry.Services
 		{
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
-				var appSettings = scope.ServiceProvider.GetRequiredService<ISync>();
-				var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
-				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
-				var query = scope.ServiceProvider.GetRequiredService<ISync>();
-				
-				
+				var synchronize = scope.ServiceProvider.GetRequiredService<ISynchronize>();
+				await synchronize.Sync("/");
+
 			}
 		}
 	}

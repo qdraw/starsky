@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -222,15 +223,22 @@ namespace starskytest.FakeMocks
 		/// <param name="path">subPath</param>
 		/// <param name="orderByAlphabet">order by alphabet or last edited, newest first</param>
 		/// <returns>list of paths</returns>
-		public IEnumerable<string> GetDirectoryRecursive(string path, bool orderByAlphabet)
+		[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
+		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
 		{
 			if ( path != "/" ) path = PathHelper.RemoveLatestSlash(path);
 			
 			if ( !ExistFolder(path) )
 			{
-				return new List<string>();
+				return new List<KeyValuePair<string,DateTime>>();
 			}
-			return _outputSubPathFolders.Where(p => p.StartsWith(path) && p != path ).AsEnumerable();
+
+			var result = new List<KeyValuePair<string, DateTime>>();
+			foreach ( var item in _outputSubPathFolders.Where(p => p.StartsWith(path) && p != path ).AsEnumerable() )
+			{
+				result.Add(new KeyValuePair<string, DateTime>(item, DateTime.Now));
+			}
+			return result;
 
 		}
 

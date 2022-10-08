@@ -117,7 +117,7 @@ namespace starsky.foundation.sync.SyncServices
 			_logger.LogInformation($"[ManualBackgroundSyncService] start {subPath} " +
 			                       $"{DateTime.Now.ToShortTimeString()}");
 			
-			var updatedList = await _synchronize.Sync(subPath, false, PushToSockets);
+			var updatedList = await _synchronize.Sync(subPath, PushToSockets);
 			
 			_query.CacheUpdateItem(updatedList.Where(p => p.ParentDirectory == subPath).ToList());
 			

@@ -47,12 +47,14 @@ namespace starsky.foundation.sync.SyncServices
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, console);
 		}
 
-		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public async Task<List<FileIndexItem>> Folder(string inputSubPath,
-			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null, DateTime? childDirectoriesAfter = null)
 		{
 			var subPaths = new List<string> {inputSubPath};	
-			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath, false));
+			
+			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath)
+				.Where(p => childDirectoriesAfter != null && p.Value >= childDirectoriesAfter)
+				.Select(p => p.Key));
 			
 			// Loop trough all folders recursive
 			var resultChunkList = await subPaths.ForEachAsync(
