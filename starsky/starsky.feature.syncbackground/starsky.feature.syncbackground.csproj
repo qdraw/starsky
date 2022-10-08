@@ -2,8 +2,10 @@
 
 <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <ProjectGuid>{a864f834-133f-4ea8-9a4d-53e5cad837ab}</ProjectGuid>
+    <RootNamespace>starsky.feature.syncbackground</RootNamespace>
+    <ProjectGuid>{15e1493e-6e79-4314-907f-b3ef18eb9046}</ProjectGuid>
     <Version>0.5.0-beta.8</Version>
+    <Nullable>enable</Nullable>
 </PropertyGroup>
 
 <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
@@ -11,13 +13,13 @@
 </PropertyGroup>
 
 <ItemGroup>
-  <Reference Include="Microsoft.Extensions.Hosting.Abstractions">
-    <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.9\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
-  </Reference>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
 </ItemGroup>
 
 <ItemGroup>
+  <ProjectReference Include="..\starsky.feature.realtime\starsky.feature.realtime.csproj" />
   <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
+  <ProjectReference Include="..\starsky.foundation.settings\starsky.foundation.settings.csproj" />
   <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
 </ItemGroup>
 </Project>

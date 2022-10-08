@@ -667,6 +667,8 @@ namespace starsky.foundation.platform.Models
 			"/.stfolder", 
 			"/.git"
 		};
+
+		public bool? SyncOnStartup { get; set; } = true;
 		
 		/// <summary>
 		/// Ignore this part of a path while importing

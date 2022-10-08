@@ -13,7 +13,7 @@ namespace starsky.foundation.sync.SyncInterfaces
 		delegate Task SocketUpdateDelegate(List<FileIndexItem> changedFiles);
 
 		Task<List<FileIndexItem>> Sync(string subPath,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			SocketUpdateDelegate updateDelegate = null,
 			DateTime? childDirectoriesAfter = null);
 		Task<List<FileIndexItem>> Sync(List<string> subPaths);
 	}

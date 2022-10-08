@@ -37,15 +37,18 @@ namespace starsky.foundation.sync.WatcherHelpers
 		private IWebLogger? _logger;
 		private readonly IServiceScope? _serviceScope;
 		private TelemetryClient? _telemetryClient;
+		private INotificationQuery? _notificationQuery;
 
 		internal SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
-			IWebSocketConnectionsService connectionsService, IQuery query, IWebLogger logger, TelemetryClient? telemetryClient)
+			IWebSocketConnectionsService connectionsService, IQuery query, IWebLogger logger, 
+			INotificationQuery notificationQuery, TelemetryClient? telemetryClient)
 		{
 			_appSettings = appSettings;
 			_synchronize = synchronize;
 			_connectionsService = connectionsService;
 			_query = query;
 			_logger = logger;
+			_notificationQuery = notificationQuery;
 			_telemetryClient = telemetryClient;
 		}
 
@@ -66,6 +69,8 @@ namespace starsky.foundation.sync.WatcherHelpers
 			var memoryCache = _serviceScope.ServiceProvider.GetService<IMemoryCache>();
 			_query = new QueryFactory(new SetupDatabaseTypes(_appSettings), query,
 				memoryCache, _appSettings, _logger).Query();
+			_notificationQuery = _serviceScope.ServiceProvider
+				.GetService<INotificationQuery>();
 			_telemetryClient = _serviceScope.ServiceProvider
 				.GetService<TelemetryClient>();
 			return true;
@@ -165,12 +170,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 				return syncData;
 			}
 
-			// update users who are active right now
-			_logger.LogInformation("[SyncWatcherConnector/Socket] "+ string.Join(", ", filtered.Select(p => p.FilePath).ToArray()));
-			var webSocketResponse =
-				new ApiNotificationResponseModel<List<FileIndexItem>>(filtered, ApiNotificationType.SyncWatcherConnector);
-			await _connectionsService!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
-				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			await PushToSockets(filtered);
 			
 			// And update the query Cache
 			_query!.CacheUpdateItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.Ok ||
@@ -184,6 +184,21 @@ namespace starsky.foundation.sync.WatcherHelpers
 			EndRequestOperation(operation, "OK");
 			
 			return syncData;
+		}
+
+		/// <summary>
+		/// Both websockets and NotificationAPI
+		/// update users who are active right now
+		/// </summary>
+		/// <param name="filtered">list of messages to push</param>
+		private async Task PushToSockets(List<FileIndexItem> filtered)
+		{
+			_logger!.LogInformation("[SyncWatcherConnector/Socket] "+ string.Join(", ", filtered.Select(p => p.FilePath).ToArray()));
+			var webSocketResponse =
+				new ApiNotificationResponseModel<List<FileIndexItem>>(filtered, ApiNotificationType.SyncWatcherConnector);
+			await _connectionsService!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
+				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			await _notificationQuery!.AddNotification(webSocketResponse);
 		}
 
 		internal static List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)

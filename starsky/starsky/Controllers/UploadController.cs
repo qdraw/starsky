@@ -40,13 +40,13 @@ namespace starsky.Controllers
 		private readonly IStorage _iHostStorage;
 		private readonly IQuery _query;
 		private readonly ISelectorStorage _selectorStorage;
-		private readonly IRealtimeConnectionsService _connectionsService;
+		private readonly IRealtimeConnectionsService _realtimeService;
 		private readonly IWebLogger _logger;
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 
 		public UploadController(IImport import, AppSettings appSettings, 
 			ISelectorStorage selectorStorage, IQuery query, 
-			IRealtimeConnectionsService connectionsService, IWebLogger logger, 
+			IRealtimeConnectionsService realtimeService, IWebLogger logger, 
 			IMetaExifThumbnailService metaExifThumbnailService)
 		{
 			_appSettings = appSettings;
@@ -55,7 +55,7 @@ namespace starsky.Controllers
 			_selectorStorage = selectorStorage;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_iHostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-			_connectionsService = connectionsService;
+			_realtimeService = realtimeService;
 			_logger = logger;
 			_metaExifThumbnailService = metaExifThumbnailService;
 		}
@@ -146,7 +146,7 @@ namespace starsky.Controllers
 			
 			var webSocketResponse = new ApiNotificationResponseModel<List<FileIndexItem>>(
 				socketResult,ApiNotificationType.UploadFile);
-			await _connectionsService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
+			await _realtimeService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
 			
 			// Wrong input (extension is not allowed)
             if ( fileIndexResultsList.All(p => p.Status == ImportStatus.FileError) )
