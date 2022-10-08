@@ -4,17 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>starsky.foundation.realtime</RootNamespace>
     <!-- SonarQube needs this -->
-    <ProjectGuid>{33333390175e1-ba3f-4a18-a0ff-2cde71e8151e}</ProjectGuid>
+    <ProjectGuid>{67e301f1-e700-4ca5-81ae-696abab1bb0f}</ProjectGuid>
     <Version>0.5.0-beta.8</Version>
     <Nullable>enable</Nullable>
 </PropertyGroup>
-
-<ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <!--      instead of : Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0, -->
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-</ItemGroup>
 
 <ItemGroup>
     <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
