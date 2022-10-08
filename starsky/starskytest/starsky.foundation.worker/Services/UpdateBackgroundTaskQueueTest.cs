@@ -19,14 +19,14 @@ using starskytest.FakeMocks;
 
 #pragma warning disable 1998
 
-namespace starskytest.starsky.foundation.worker
+namespace starskytest.starsky.foundation.worker.Services
 {
 	[TestClass]
-	public class BackgroundTaskQueueTest
+	public class UpdateBackgroundTaskQueueTest
 	{
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 
-		public BackgroundTaskQueueTest()
+		public UpdateBackgroundTaskQueueTest()
 		{
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();  
@@ -69,6 +69,15 @@ namespace starskytest.starsky.foundation.worker
 			Assert.IsNotNull(_bgTaskQueue);
 		}
 
+		[TestMethod]
+		public async Task Count_AddOneForCount()
+		{
+			var backgroundQueue = new UpdateBackgroundTaskQueue();
+			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
+			var count = backgroundQueue.Count();
+			Assert.AreEqual(1,count);
+		}
+
 		// https://stackoverflow.com/a/51224556
 		[TestMethod]
 		[Timeout(5000)]
@@ -91,7 +100,7 @@ namespace starskytest.starsky.foundation.worker
 			await service.StartAsync(CancellationToken.None);
 
 			var isExecuted = false;
-			await backgroundQueue.QueueBackgroundWorkItemAsync(async _ => {
+			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ => {
 				isExecuted = true;
 			}, string.Empty);
 
@@ -127,10 +136,10 @@ namespace starskytest.starsky.foundation.worker
 
 			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
 
-			await service.StartAsync(CancellationToken.None);
+			await service!.StartAsync(CancellationToken.None);
 
 			var isExecuted = false;
-			await backgroundQueue.QueueBackgroundWorkItemAsync(async token =>
+			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				isExecuted = true;
 				throw new Exception();

@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,9 +22,18 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 				
 			}, string.Empty);
 			var token = new CancellationToken();
-			queue.DequeueAsync(token);
+			queue!.DequeueAsync(token);
 			Assert.IsNotNull(token);
 
+		}
+		
+		[TestMethod]
+		public async Task Count_AddOneForCount()
+		{
+			var backgroundQueue = new DiskWatcherBackgroundTaskQueue();
+			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
+			var count = backgroundQueue.Count();
+			Assert.AreEqual(1,count);
 		}
 
 		// [TestMethod]
