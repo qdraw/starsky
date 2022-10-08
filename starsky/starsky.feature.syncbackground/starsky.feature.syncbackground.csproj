@@ -17,8 +17,6 @@
 </ItemGroup>
 
 <ItemGroup>
-  <ProjectReference Include="..\starsky.feature.realtime\starsky.feature.realtime.csproj" />
-  <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
   <ProjectReference Include="..\starsky.foundation.settings\starsky.foundation.settings.csproj" />
   <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
 </ItemGroup>

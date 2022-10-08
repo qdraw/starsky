@@ -7,8 +7,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.realtime.Interface;
 using starsky.feature.syncbackground.Services;
 using starsky.foundation.platform.Models;
-using starsky.foundation.realtime.Enums;
-using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starskytest.FakeMocks;
 

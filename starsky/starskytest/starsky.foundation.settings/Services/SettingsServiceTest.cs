@@ -2,14 +2,12 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
-using starsky.foundation.realtime.Enums;
 using starsky.foundation.realtime.Formats;
-using starsky.foundation.realtime.Services;
+using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Services;
 
 namespace starskytest.starsky.foundation.settings.Services;
 

@@ -4,14 +4,14 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.realtime.Interface;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
-using starsky.foundation.realtime.Enums;
 using starsky.foundation.realtime.Formats;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.feature.syncbackground.Helpers;
@@ -59,10 +59,13 @@ public class OnStartupSync
 	internal async Task PushToSockets(List<FileIndexItem> updatedList)
 	{
 		using var scope = _serviceScopeFactory.CreateScope();
-		var realtimeService = scope.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
+		var webSocketConnectionsService = scope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
+		var notificationQuery = scope.ServiceProvider.GetRequiredService<INotificationQuery>();
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(updatedList, ApiNotificationType.OnStartupSyncBackgroundSync);
-		await realtimeService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
+
+		await webSocketConnectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
+		await notificationQuery.AddNotification(webSocketResponse);
 	}	
 
 }

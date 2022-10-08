@@ -7,6 +7,7 @@ using starsky.feature.syncbackground.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]

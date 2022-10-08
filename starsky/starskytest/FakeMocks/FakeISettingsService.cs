@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
-using starsky.foundation.realtime.Enums;
-using starsky.foundation.realtime.Interfaces;
-using starsky.foundation.realtime.Services;
+using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Interfaces;
+using starsky.foundation.settings.Services;
 
 namespace starskytest.FakeMocks;
 

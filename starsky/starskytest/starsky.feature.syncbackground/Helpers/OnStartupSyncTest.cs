@@ -6,10 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.realtime.Interface;
 using starsky.feature.syncbackground.Helpers;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
-using starsky.foundation.realtime.Enums;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starskytest.FakeMocks;
 
@@ -21,7 +23,8 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 		private static IServiceScopeFactory GetNewScope()
 		{
 			var services = new ServiceCollection();
-			services.AddSingleton<IRealtimeConnectionsService, FakeIRealtimeConnectionsService>();
+			services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+			services.AddSingleton<INotificationQuery, FakeINotificationQuery>();
 			services.AddSingleton<AppSettings>();
 			services.AddSingleton<ISynchronize, FakeISynchronize>();
 			services.AddSingleton<ISettingsService, FakeISettingsService>();
@@ -76,13 +79,14 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
 			var synchronize = scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
 			var settingsService = scope.CreateScope().ServiceProvider.GetRequiredService<ISettingsService>();
-			var realtimeConnectionsService = scope.CreateScope().ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
+			var socketService = scope.CreateScope().ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
+			var notificationQuery = scope.CreateScope().ServiceProvider.GetRequiredService<INotificationQuery>();
 
 			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService);
 			await startupSync.PushToSockets(new List<FileIndexItem>());
 			var result =
-				( realtimeConnectionsService as
-					FakeIRealtimeConnectionsService )!.FakeSendToAllAsync.Any();
+				( socketService as
+					FakeIWebSocketConnectionsService )!.FakeSendToAllAsync.Any();
 			Assert.IsTrue(result);
 		}
 	}

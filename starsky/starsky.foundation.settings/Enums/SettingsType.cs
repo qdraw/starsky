@@ -1,4 +1,4 @@
-namespace starsky.foundation.realtime.Enums;
+namespace starsky.foundation.settings.Enums;
 
 public enum SettingsType
 {

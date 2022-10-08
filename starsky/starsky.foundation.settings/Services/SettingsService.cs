@@ -1,17 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.realtime.Enums;
 using starsky.foundation.realtime.Formats;
-using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Interfaces;
 
-namespace starsky.foundation.realtime.Services;
+namespace starsky.foundation.settings.Services;
 
 [Service(typeof(ISettingsService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class SettingsService : ISettingsService

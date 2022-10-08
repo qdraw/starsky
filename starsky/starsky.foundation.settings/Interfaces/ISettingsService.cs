@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
-using starsky.foundation.realtime.Enums;
+using starsky.foundation.settings.Enums;
 
-namespace starsky.foundation.realtime.Interfaces;
+namespace starsky.foundation.settings.Interfaces;
 
 public interface ISettingsService
 {
