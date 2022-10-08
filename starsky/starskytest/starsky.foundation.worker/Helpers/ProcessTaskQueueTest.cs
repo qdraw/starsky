@@ -37,7 +37,7 @@ public class ProcessTaskQueueTest
 
 	[TestMethod]
 	[Timeout(10000)]
-	public async Task ProcessBatchedLoopAsync_NothingIn()
+	public async Task ProcessBatchedLoopAsyncTest_NothingIn()
 	{
 		CancellationTokenSource source = new CancellationTokenSource();
 		CancellationToken token = source.Token;
@@ -59,7 +59,30 @@ public class ProcessTaskQueueTest
 	
 	[TestMethod]
 	[Timeout(10000)]
-	public async Task ProcessBatchedLoopAsync_ItemsIn()
+	public async Task ProcessBatchedLoopAsyncTest_NothingIn_CanceledDuringWait()
+	{
+		CancellationTokenSource source = new CancellationTokenSource();
+		CancellationToken token = source.Token;
+
+		var fakeService = new FakeDiskWatcherUpdateBackgroundTaskQueue();
+		var logger = new FakeIWebLogger();
+		var appSettings = new AppSettings
+		{
+			UseDiskWatcherIntervalInMilliseconds = 11
+		};
+		
+		source.CancelAfter(TimeSpan.FromSeconds(2));
+		
+		// canceled in await Task.Delay
+		await ProcessTaskQueue.ProcessBatchedLoopAsync(fakeService, logger, appSettings,token);
+		
+		Assert.IsFalse(fakeService.DequeueAsyncCounter != 0);
+		Assert.AreEqual(0, fakeService.DequeueAsyncCounter);
+	}
+	
+	[TestMethod]
+	[Timeout(10000)]
+	public async Task ProcessBatchedLoopAsyncTest_ItemsIn()
 	{
 		CancellationTokenSource source = new CancellationTokenSource();
 		CancellationToken token = source.Token;
