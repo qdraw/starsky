@@ -26,9 +26,9 @@ namespace starsky.feature.syncbackground.Services
 		/// <summary>
 		/// Running scoped services
 		/// </summary>
-		/// <param name="cancellationToken">Cancellation Token, but it ignored</param>
+		/// <param name="stoppingToken">Cancellation Token, but it ignored</param>
 		/// <returns>CompletedTask</returns>
-		protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			using var scope = _serviceScopeFactory.CreateScope();
 			var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();

@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -25,11 +26,13 @@ namespace starskytest.FakeMocks
 			_fakeCachedContent = fakeCachedContent ?? new List<FileIndexItem>();
 		}
 
+		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
 		public FakeIQuery(ApplicationDbContext context, 
 			AppSettings appSettings,
 			IServiceScopeFactory scopeFactory, 
 			IWebLogger logger, IMemoryCache? memoryCache = null)
 		{
+			// used to autoMap In QueryFactory
 		}
 		
 		private readonly List<FileIndexItem> _content = new List<FileIndexItem>();
@@ -116,11 +119,11 @@ namespace starskytest.FakeMocks
 			return new DetailView {FileIndexItem = fileIndexItem, IsDirectory = fileIndexItem.IsDirectory == true};
 		}
 
-		public DetailView? SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,
+		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,
 			List<ColorClassParser.Color>? colorClassActiveList = null, bool enableCollections = true, bool hideDeleted = true, 
 			SortType? sort = SortType.FileName)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public FileIndexItem? GetObjectByFilePath(string filePath)
@@ -198,11 +201,13 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public bool RemoveCacheParentItem(string directoryName)
 		{
 			if ( _fakeCachedContent == null ) return false;
 			var item = _fakeCachedContent.FirstOrDefault(p =>
 				p.ParentDirectory == directoryName);
+			if ( item == null ) return false;
 			_fakeCachedContent.Remove(item);
 			return true;
 		}
@@ -236,7 +241,7 @@ namespace starskytest.FakeMocks
 
 		public void ResetItemByHash(string fileHash)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public List<FileIndexItem> GetAllFolders()
@@ -317,12 +322,7 @@ namespace starskytest.FakeMocks
 
 		public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
 		{
-			throw new System.NotImplementedException();
-		}
-
-		public string SubPathSlashRemove(string subPath = "/")
-		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public RelativeObjects GetNextPrevInFolder(string currentFolder)
@@ -330,11 +330,7 @@ namespace starskytest.FakeMocks
 			return new RelativeObjects();
 		}
 
-		public List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList)
-		{
-			throw new System.NotImplementedException();
-		}
-
+		[SuppressMessage("ReSharper", "NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract")]
 		public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
 		{
 			_fakeCachedContent ??= new List<FileIndexItem>();
@@ -355,6 +351,7 @@ namespace starskytest.FakeMocks
 		{
 		}
 
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath)
 		{
 			if ( _fakeCachedContent == null )
@@ -423,9 +420,5 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(expression == null ? _content.Count : _content.Count(func!));
 		}
 
-		public bool IsCacheEnabled()
-		{
-			throw new System.NotImplementedException();
-		}
 	}
 }
