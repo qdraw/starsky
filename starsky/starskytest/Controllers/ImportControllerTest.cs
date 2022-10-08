@@ -43,16 +43,8 @@ namespace starskytest.Controllers
 
 		public ImportControllerTest()
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-
-			var memoryCache = provider.GetService<IMemoryCache>();
-
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase("test");
-			var options = builder.Options;
-			var context = new ApplicationDbContext(options);
 
 			var services = new ServiceCollection();
 

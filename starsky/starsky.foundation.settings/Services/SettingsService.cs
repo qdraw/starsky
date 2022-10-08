@@ -31,8 +31,14 @@ public class SettingsService : ISettingsService
 	public async Task<T?> GetSetting<T>(SettingsType key)
 	{
 		var data = await GetSetting(key);
+		return CastSetting<T>(data);
+	}
 
-		if ( data?.Value != null && typeof(T) == typeof(DateTime) && DateTime.TryParseExact(data.Value, 
+	public static T? CastSetting<T>(SettingsItem? data)
+	{
+		if ( data?.Value == null) return default;
+		
+		if (typeof(T) == typeof(DateTime) && DateTime.TryParseExact(data.Value, 
 			    SettingsFormats.LastSyncBackgroundDateTime, 
 			    CultureInfo.InvariantCulture, 
 			    DateTimeStyles.AssumeUniversal, 
@@ -43,7 +49,7 @@ public class SettingsService : ISettingsService
 
 		try
 		{
-			return ( T? )( object? )data?.Value;
+			return ( T? )( object? )data.Value;
 		}
 		catch ( NullReferenceException )
 		{

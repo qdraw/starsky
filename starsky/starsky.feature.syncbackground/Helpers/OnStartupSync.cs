@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Enums;
 using starsky.foundation.realtime.Formats;
@@ -22,6 +23,13 @@ public class OnStartupSync
 	private readonly IServiceScopeFactory _serviceScopeFactory;
 	private readonly AppSettings _appSettings;
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="serviceScopeFactory">req: IRealtimeConnectionsService</param>
+	/// <param name="appSettings"></param>
+	/// <param name="synchronize"></param>
+	/// <param name="settingsService"></param>
 	public OnStartupSync(IServiceScopeFactory serviceScopeFactory, AppSettings appSettings,
 		ISynchronize synchronize, ISettingsService settingsService)
 	{
@@ -48,7 +56,7 @@ public class OnStartupSync
 			DateTime.UtcNow.ToString(SettingsFormats.LastSyncBackgroundDateTime, CultureInfo.InvariantCulture));
 	}
 	
-	private async Task PushToSockets(List<FileIndexItem> updatedList)
+	internal async Task PushToSockets(List<FileIndexItem> updatedList)
 	{
 		using var scope = _serviceScopeFactory.CreateScope();
 		var realtimeService = scope.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
