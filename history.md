@@ -49,7 +49,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_  Add Settings Database Table incl. migration (PR #905)
 - [x]   (Added) _Back-end_  Add feature toggle in AppSettings: `SyncOnStartup` (PR #905)
 - [x]   (Added) _Back-end_  Sync latest changes on startup of application (PR #905)
-- [x]   (Changed) _Back-end_  Code quality: Apply C# nullable for foundation.database project (PR #905)
+- [x]   (Changed) _Back-end_  Code quality: Apply C# nullable for foundation.database project (PR #905 & rework PR #906)
 
 # version 0.5.0-beta.7 - 2022-09-20
 - [x]   (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) (PR #838)

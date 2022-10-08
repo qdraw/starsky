@@ -124,26 +124,6 @@ public class SettingsServiceTest
 	}
 	
 	[TestMethod]
-	public async Task GetSettingCast_DateTime_Null()
-	{
-		var dbContext = SetScope();
-		dbContext.Settings.Add(new SettingsItem
-		{
-			Key = Enum.GetName(SettingsType.LastSyncBackgroundDateTime),
-			Value = null
-		});
-		await dbContext.SaveChangesAsync();
-
-		var item = await new SettingsService(dbContext).GetSetting<DateTime>(SettingsType
-			.LastSyncBackgroundDateTime);
-
-		DateTime defaultDatetime = default;
-		Assert.AreEqual(defaultDatetime.ToString(CultureInfo.InvariantCulture), item.ToUniversalTime().ToString(CultureInfo.InvariantCulture));
-		await RemoveAsync(dbContext, SettingsType
-			.LastSyncBackgroundDateTime);
-	}
-
-	[TestMethod]
 	public async Task AddOrUpdateSetting_Null()
 	{
 		var dbContext = SetScope();

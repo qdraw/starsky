@@ -565,6 +565,24 @@ namespace starskytest.Controllers
             
 			Assert.AreEqual("There are no accounts, you must create an account first", actionResult.Value as string);
 		}
+		
+		[TestMethod]
+		public async Task AccountController_LoginStatus_NoAccountLocalhost_WithAppSettings()
+		{
+			var controller =
+				new AccountController(_userManager, new AppSettings
+				{
+					NoAccountLocalhost = true
+				}, _antiForgery, _selectorStorage)
+				{
+					ControllerContext = {HttpContext = new DefaultHttpContext()}
+				};
+
+			var actionResult = await controller.Status() as UnauthorizedObjectResult;
+			
+			Assert.AreEqual(401,actionResult?.StatusCode);;
+            // and NOT: There are no accounts, you must create an account first
+		}
         
 		[TestMethod]
 		public async Task AccountController_Login_CheckCredentials()
