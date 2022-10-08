@@ -13,7 +13,7 @@ namespace starsky.foundation.database.Models
 		/// <summary>
 		/// Size: MediumText
 		/// </summary>
-		public string Content { get; set; }
+		public string? Content { get; set; }
 
 		public DateTime DateTime { get; set; }
 	}

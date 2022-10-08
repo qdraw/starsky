@@ -34,7 +34,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			(_query, _) = CreateNewExampleData();
 		}
 		
-		[SuppressMessage("ReSharper", "ArrangeObjectCreationWhenTypeEvident")]
+		[SuppressMessage("ReSharper", 
+			"ArrangeObjectCreationWhenTypeEvident", 
+			Justification = "new fileIndexItem")]
 		private Tuple<IQuery, IServiceScopeFactory> CreateNewExampleData()
 		{
 			var services = new ServiceCollection();
@@ -100,6 +102,88 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.AreEqual("/folder_no_content",result[0].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
+		}
+		
+		[TestMethod]
+		public async Task Folder_Ignored_Due_Filter()
+		{
+			var storage = new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/test",
+					"/test/test"
+				}, new List<string>
+				{
+					"/test/test/test.jpg"
+				},
+				new List<byte[]>{CreateAnImage.Bytes});
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+			
+			// with filter
+			var result = await syncFolder.Folder("/test", // FILTER applied
+				null, DateTime.MaxValue);
+
+			var childFolder =
+				result.FirstOrDefault(p => p.FilePath =="/test/test/test.jpg");
+			
+			// are NOT equal
+			Assert.AreNotEqual("/test/test/test.jpg",childFolder?.FilePath);
+			Assert.AreNotEqual(FileIndexItem.ExifStatus.Ok,childFolder?.Status);
+		}
+		
+		[TestMethod]
+		public async Task Folder_AppliedWith_Filter()
+		{
+			var storage = new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/test",
+					"/test/test"
+				}, new List<string>
+				{
+					"/test/test/test.jpg"
+				},
+				new List<byte[]>{CreateAnImage.Bytes});
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+			
+			// Filter applied
+			var result = await syncFolder.Folder("/test", null, 
+				// Filter applied
+				DateTime.Now.AddDays(-1));
+
+			var childFolder =
+				result.FirstOrDefault(p => p.FilePath =="/test/test/test.jpg");
+			Assert.AreEqual("/test/test/test.jpg",childFolder?.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,childFolder?.Status);
+		}
+		
+		[TestMethod]
+		public async Task Folder_AppliedWith_No_Filter()
+		{
+			var storage = new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/test",
+					"/test/test"
+				}, new List<string>
+				{
+					"/test/test/test.jpg"
+				},
+				new List<byte[]>{CreateAnImage.Bytes});
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+			
+			var result = await syncFolder.Folder("/test");
+
+			var childFolder =
+				result.FirstOrDefault(p => p.FilePath =="/test/test/test.jpg");
+			Assert.AreEqual("/test/test/test.jpg",childFolder?.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,childFolder?.Status);
 		}
 
 		[TestMethod]

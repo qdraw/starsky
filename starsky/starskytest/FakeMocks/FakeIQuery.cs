@@ -1,5 +1,7 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -17,26 +19,29 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIQuery : IQuery
 	{
-		public FakeIQuery(List<FileIndexItem> content = null, List<FileIndexItem> fakeCachedContent = null)
+		public FakeIQuery(List<FileIndexItem>? content = null, List<FileIndexItem>? fakeCachedContent = null)
 		{
 			if ( content == null ) return;
 			_content = content;
-			_fakeCachedContent = fakeCachedContent;
+			_fakeCachedContent = fakeCachedContent ?? new List<FileIndexItem>();
 		}
 
+		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
 		public FakeIQuery(ApplicationDbContext context, 
 			AppSettings appSettings,
 			IServiceScopeFactory scopeFactory, 
-			IWebLogger logger, IMemoryCache memoryCache = null)
+			IWebLogger logger, IMemoryCache? memoryCache = null)
 		{
+			// used to autoMap In QueryFactory
 		}
 		
 		private readonly List<FileIndexItem> _content = new List<FileIndexItem>();
 		private List<FileIndexItem> _fakeCachedContent = new List<FileIndexItem>();
 
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public List<FileIndexItem> GetAllFiles(string subPath)
 		{
-			return _content?.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
+			return _content == null ? new List<FileIndexItem>() : _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
 		}
 
 		public Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths, int timeout = 1000)
@@ -77,22 +82,22 @@ namespace starskytest.FakeMocks
 		}
 
 		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
-			List<ColorClassParser.Color> colorClassActiveList = null,
+			List<ColorClassParser.Color>? colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
 			return GetAllFiles(subPath);
 		}
 
-		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems, List<ColorClassParser.Color> 
+		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems, List<ColorClassParser.Color>? 
 				colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
-		public DetailView SingleItem(string singleItemDbPath, List<ColorClassParser.Color> colorClassActiveList = null,
+		public DetailView? SingleItem(string singleItemDbPath, List<ColorClassParser.Color>? colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true, 
-			SortType sort = SortType.FileName)
+			SortType? sort = SortType.FileName)
 		{
 			if ( _content.All(p => p.FilePath != singleItemDbPath) )
 			{
@@ -116,18 +121,18 @@ namespace starskytest.FakeMocks
 		}
 
 		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,
-			List<ColorClassParser.Color> colorClassActiveList = null, bool enableCollections = true, bool hideDeleted = true, 
-			SortType sort = SortType.FileName)
+			List<ColorClassParser.Color>? colorClassActiveList = null, bool enableCollections = true, bool hideDeleted = true, 
+			SortType? sort = SortType.FileName)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
-		public FileIndexItem GetObjectByFilePath(string filePath)
+		public FileIndexItem? GetObjectByFilePath(string filePath)
 		{
 			return _content.FirstOrDefault(p => p.FilePath == filePath);
 		}
 
-		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
+		public async Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
 		{
 			try
 			{
@@ -197,21 +202,23 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public bool RemoveCacheParentItem(string directoryName)
 		{
 			if ( _fakeCachedContent == null ) return false;
 			var item = _fakeCachedContent.FirstOrDefault(p =>
 				p.ParentDirectory == directoryName);
+			if ( item == null ) return false;
 			_fakeCachedContent.Remove(item);
 			return true;
 		}
 
-		public string GetSubPathByHash(string fileHash)
+		public string? GetSubPathByHash(string fileHash)
 		{
 			return _content.FirstOrDefault(p => p.FileHash == fileHash)?.FilePath;
 		}
 
-		public Task<string> GetSubPathByHashAsync(string fileHash)
+		public Task<string?> GetSubPathByHashAsync(string fileHash)
 		{
 			return Task.FromResult(GetSubPathByHash(fileHash));
 		}
@@ -235,7 +242,7 @@ namespace starskytest.FakeMocks
 
 		public void ResetItemByHash(string fileHash)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public List<FileIndexItem> GetAllFolders()
@@ -316,12 +323,7 @@ namespace starskytest.FakeMocks
 
 		public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
 		{
-			throw new System.NotImplementedException();
-		}
-
-		public string SubPathSlashRemove(string subPath = "/")
-		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public RelativeObjects GetNextPrevInFolder(string currentFolder)
@@ -329,11 +331,7 @@ namespace starskytest.FakeMocks
 			return new RelativeObjects();
 		}
 
-		public List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList)
-		{
-			throw new System.NotImplementedException();
-		}
-
+		[SuppressMessage("ReSharper", "NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract")]
 		public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
 		{
 			_fakeCachedContent ??= new List<FileIndexItem>();
@@ -354,6 +352,7 @@ namespace starskytest.FakeMocks
 		{
 		}
 
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath)
 		{
 			if ( _fakeCachedContent == null )
@@ -416,15 +415,11 @@ namespace starskytest.FakeMocks
 			return Task.CompletedTask;
 		}
 
-		public Task<int> CountAsync(Expression<Func<FileIndexItem, bool>> expression = null)
+		public Task<int> CountAsync(Expression<Func<FileIndexItem, bool>>? expression = null)
 		{
 			var func = expression?.Compile();
-			return Task.FromResult(expression == null ? _content.Count : _content.Count(func));
+			return Task.FromResult(expression == null ? _content.Count : _content.Count(func!));
 		}
 
-		public bool IsCacheEnabled()
-		{
-			throw new System.NotImplementedException();
-		}
 	}
 }

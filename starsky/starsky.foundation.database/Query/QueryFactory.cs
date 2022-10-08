@@ -32,9 +32,9 @@ namespace starsky.foundation.database.Query
 		{
 			if ( _query == null ) return null!;
 			var context = _setupDatabaseTypes?.BuilderDbFactory();
-			if ( _query.GetType() == typeof(Query) )
+			if ( _query.GetType() == typeof(Query) && context != null && _appSettings != null && _logger != null)
 			{
-				return new Query(context, _appSettings, null, _logger, _cache);
+				return new Query(context, _appSettings, null!, _logger, _cache);
 			}
 
 			// FakeIQuery should skip creation

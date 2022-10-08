@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -42,6 +43,7 @@ namespace starsky.foundation.database.Models
 		[JsonIgnore]
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+		[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
 		public int Id { get; set; }
 
 		/// <summary>
@@ -91,7 +93,7 @@ namespace starsky.foundation.database.Models
 		/// <summary>
 		/// Internal API: Do not save null in database for FileName
 		/// </summary>
-		private string _fileName;
+		private string _fileName = string.Empty;
 
 		/// <summary>
 		/// Get or Set FileName with extension
@@ -105,6 +107,7 @@ namespace starsky.foundation.database.Models
 		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
 		public string FileName
 		{
+			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _fileName ?? string.Empty;
 			set
 			{
@@ -126,8 +129,9 @@ namespace starsky.foundation.database.Models
 		/// The file hash.
 		/// </value>
 		/// <example>OZHCK4I47QPHOT53QBRE7Z4RLI</example>
-		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
-		public string FileHash { get; set; }
+		[MaxLength(
+			190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
+		public string FileHash { get; set; } = string.Empty;
 
 		/// <summary>
 		/// GetFileNameWithoutExtension (only a getter)
@@ -137,28 +141,24 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		/// <example>filenameWithoutExtension</example>
 		[NotMapped]
-		public string FileCollectionName {
-			get
-			{
-				return Path.GetFileNameWithoutExtension(FileName);
-			} 
-		}
+		public string FileCollectionName => Path.GetFileNameWithoutExtension(FileName);
 
 		/// <summary>
 		/// Internal API: Do not save null in database for Parent Directory
 		/// </summary>
-		private string _parentDirectory;
+		private string _parentDirectory = string.Empty;
 
 		/// <summary>
 		/// Get/Set Relative path of the parent Directory
 		/// </summary>
 		/// <value>
-		/// The parent directory in subpath style
+		/// The parent directory in subPath style
 		/// </value>
 		/// <example>/folder</example>
 		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
 		public string ParentDirectory
 		{
+			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _parentDirectory ?? string.Empty;
 			set
 			{
@@ -190,7 +190,7 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		[NotMapped]
 		[JsonIgnore] // <== gives conversion errors with jsonParser
-		internal HashSet<string> Keywords {
+		internal HashSet<string>? Keywords {
 			get => HashSetHelper.StringToHashSet(Tags.Trim());
 			set
 			{
@@ -198,12 +198,11 @@ namespace starsky.foundation.database.Models
 				_tags = HashSetHelper.HashSetToString(value);
 			} 
 		}
-
         
 		/// <summary>
 		/// Private API: Do not save null in database for tags
 		/// </summary>
-		private string _tags;
+		private string _tags = string.Empty;
 
 		/// <summary>
 		/// Get/Set a comma separated string of unique tags.
@@ -216,6 +215,7 @@ namespace starsky.foundation.database.Models
 		[MaxLength(1024)]
 		public string Tags
 		{
+			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _tags ?? string.Empty;
 			set
 			{
@@ -302,7 +302,7 @@ namespace starsky.foundation.database.Models
 		/// <summary>
 		/// Internal API: to store description
 		/// </summary>
-		private string _description;
+		private string _description = string.Empty;
 
 		/// <summary>
 		/// Gets or sets the iptc:Caption-Abstract or xmp:description.
@@ -312,6 +312,7 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		public string Description
 		{
+			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _description ?? string.Empty;
 			set
 			{
@@ -327,7 +328,7 @@ namespace starsky.foundation.database.Models
 		/// <summary>
 		/// Private API: to store Title
 		/// </summary>
-		private string _title;
+		private string _title = string.Empty;
 
 		/// <summary>
 		/// Gets or sets the iptc:Object Name or xmp:title.
@@ -337,6 +338,7 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		public string Title
 		{
+			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			get => _title ?? string.Empty;
 			set
 			{
@@ -365,7 +367,6 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		public DateTime AddToDatabase { get; set; }
 	    
-	    
 		/// <summary>
 		/// Datetime of the last change to this object
 		/// </summary>
@@ -389,7 +390,6 @@ namespace starsky.foundation.database.Models
 		{
 			AddToDatabase = DateTime.UtcNow;
 		}
-	    
 
 		/// <summary>
 		/// Latitude as decimal degrees using WGS84 (stored as double)
@@ -443,27 +443,25 @@ namespace starsky.foundation.database.Models
 		[MaxLength(40)] 
 		public string LocationCountry { get; set; } = string.Empty;
 
-
-
 		/// <summary>
 		/// Comma separated list of color class numbers to create a list of enums
 		/// Used to create custom files to sort a combination of color classes
 		/// </summary>
-		/// <param name="colorclassString">The color class string.</param>
+		/// <param name="colorClassString">The color class string.</param>
 		/// <returns></returns>
-		public static List<ColorClassParser.Color> GetColorClassList(string colorclassString = null)
+		public static List<ColorClassParser.Color> GetColorClassList(string? colorClassString = null)
 		{
-			if (string.IsNullOrWhiteSpace(colorclassString)) return new List<ColorClassParser.Color>();
+			if (string.IsNullOrWhiteSpace(colorClassString)) return new List<ColorClassParser.Color>();
 
 			var colorClassStringList = new List<string>();
 
-			if (!colorclassString.Contains(',') )
+			if (!colorClassString.Contains(',') )
 			{
-				if (!int.TryParse(colorclassString, out var parsedInt)) return new List<ColorClassParser.Color>();
+				if (!int.TryParse(colorClassString, out var parsedInt)) return new List<ColorClassParser.Color>();
 				colorClassStringList.Add(parsedInt.ToString());
 			}
-			if (colorclassString.Contains(',')) {
-				colorClassStringList = colorclassString.Split(",".ToCharArray()).ToList();
+			if (colorClassString.Contains(',')) {
+				colorClassStringList = colorClassString.Split(",".ToCharArray()).ToList();
 			}
 			var colorClassList = new HashSet<ColorClassParser.Color>();
 			foreach (var colorClassStringItem in colorClassStringList)
@@ -583,14 +581,15 @@ namespace starsky.foundation.database.Models
 		{
 			if (Orientation == Rotation.DoNotChange) Orientation = Rotation.Horizontal;
             
-			var currentOrentation = _orderRotation.FindIndex(i => i == Orientation);
+			var currentOrientation = _orderRotation.FindIndex(i => i == Orientation);
             
-			if (currentOrentation >= 0 && currentOrentation+relativeRotation < 
-				_orderRotation.Count && currentOrentation+relativeRotation >= 0)
+			if (currentOrientation >= 0 && currentOrientation+relativeRotation < 
+				_orderRotation.Count && currentOrientation+relativeRotation >= 0)
 			{
-				return _orderRotation[currentOrentation + relativeRotation];
+				return _orderRotation[currentOrientation + relativeRotation];
 			}
-			if (currentOrentation + relativeRotation == -1) {
+			if (currentOrientation + relativeRotation == -1) {
+				// ReSharper disable once UseIndexFromEndExpression
 				return _orderRotation[_orderRotation.Count-1]; //changed
 			}
 			return _orderRotation[0];
@@ -660,7 +659,7 @@ namespace starsky.foundation.database.Models
 		/// <param name="imageWidth">Width of the image.</param>
 		public void SetImageWidth(int imageWidth)
 		{
-			if(imageWidth >= 1 && imageWidth <= ushort.MaxValue ) 
+			if(imageWidth is >= 1 and <= ushort.MaxValue ) 
 				ImageWidth = (ushort) imageWidth;
 		}
 
@@ -682,7 +681,7 @@ namespace starsky.foundation.database.Models
 		/// <param name="imageHeight">Height of the image.</param>
 		public void SetImageHeight(int imageHeight)
 		{
-			if(imageHeight >= 1 && imageHeight <= ushort.MaxValue ) 
+			if(imageHeight is >= 1 and <= ushort.MaxValue ) 
 				ImageHeight = (ushort) imageHeight;
 		}
 		
@@ -828,7 +827,7 @@ namespace starsky.foundation.database.Models
 		/// <param name="isoSpeed">The iso speed.</param>
 		public void SetIsoSpeed(int isoSpeed)
 		{
-			if(isoSpeed >= 1 && isoSpeed <= ushort.MaxValue ) 
+			if(isoSpeed is >= 1 and <= ushort.MaxValue ) 
 				IsoSpeed = (ushort) isoSpeed;
 		}
 		
@@ -863,6 +862,7 @@ namespace starsky.foundation.database.Models
 				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
 				return _makeModel;
 			}
+			// ReSharper disable once PropertyCanBeMadeInitOnly.Global
 			set => _makeModel = string.IsNullOrEmpty(value) ? string.Empty : value;
 		}
 
@@ -993,9 +993,8 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		/// <param name="listKeywords">list</param>
 		/// <returns>string with fixed length</returns>
-		private static string FixedListToString(List<string> listKeywords)
+		internal static string FixedListToString(IReadOnlyList<string>? listKeywords)
 		{
-
 			if ( listKeywords == null )
 			{
 				return string.Empty;
@@ -1003,7 +1002,7 @@ namespace starsky.foundation.database.Models
 
 			var toBeAddedKeywordsStringBuilder = new StringBuilder();
 
-			for ( int i = 0; i < listKeywords.Count; i++ )
+			for ( var i = 0; i < listKeywords.Count; i++ )
 			{
 				var keyword = listKeywords[i];
 

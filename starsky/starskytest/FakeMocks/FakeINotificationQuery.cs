@@ -29,7 +29,7 @@ namespace starskytest.FakeMocks
 			// nothing here
 		}
 
-		public FakeINotificationQuery(Exception? exception = null)
+		public FakeINotificationQuery(Exception? exception)
 		{
 			_exception = exception;
 		}

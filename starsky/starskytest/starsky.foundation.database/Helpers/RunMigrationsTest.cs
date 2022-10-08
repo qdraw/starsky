@@ -29,9 +29,14 @@ namespace starskytest.starsky.foundation.database.Helpers
 			services
 				.AddDbContext<ApplicationDbContext>(b =>
 					b.UseInMemoryDatabase("test1234").UseInternalServiceProvider(efServiceProvider));
+			services.AddSingleton<AppSettings>();
+
 			var serviceProvider = services.BuildServiceProvider();
 			var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
+			appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
+			
 			Assert.IsNotNull(serviceScopeFactory);
 			await RunMigrations.Run(serviceScopeFactory.CreateScope(),1);
 			// expect exception: Relational-specific methods can only be used when the context is using a relational database provider.

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
-using starskycore.Models;
 
 namespace starskytest.Helpers
 {
@@ -20,7 +19,7 @@ namespace starskytest.Helpers
 			FileIndexCompareHelper.Compare(source, update);
 			Assert.AreEqual("update",source.Tags);
 		}
-
+		
 		[TestMethod]
 		public void FileIndexCompareHelperTest_StringList_Compare()
 		{
@@ -74,7 +73,7 @@ namespace starskytest.Helpers
 			FileIndexCompareHelper.Compare(source, update);
 			Assert.AreNotEqual(update.DateTime,source.DateTime); 
 		}
-        
+		
 		[TestMethod]
 		public void FileIndexCompareHelperTest_DateTime_Compare()
 		{
@@ -249,6 +248,109 @@ namespace starskytest.Helpers
 			var result = FileIndexCompareHelper.Get(null, nameof(FileIndexItem.Tags));
 			Assert.AreEqual(null,result);
 		}
-
+		
+		[TestMethod]
+		public void CompareRotation_NotFound()
+		{
+			var list = new List<string>();
+			FileIndexCompareHelper.CompareRotation("t",
+				new FileIndexItem(),
+				FileIndexItem.Rotation.Horizontal,
+				FileIndexItem.Rotation.Horizontal, list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareDouble_NotFound()
+		{
+			var list = new List<string>();
+			FileIndexCompareHelper.CompareDouble("t",
+				new FileIndexItem(),
+				0d,
+				0d, list);
+			Assert.IsNotNull(list);
+		}
+		
+				
+		[TestMethod]
+		public void CompareUShort_NotFound()
+		{
+			var list = new List<string>();
+			FileIndexCompareHelper.CompareUshort("t",
+				new FileIndexItem(),
+				0,
+				0, list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareImageFormat_NotFound()
+		{
+			var list = new List<string>();
+			FileIndexCompareHelper.CompareImageFormat("t",
+				new FileIndexItem(),
+				ExtensionRolesHelper.ImageFormat.bmp,
+				ExtensionRolesHelper.ImageFormat.bmp, list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareDateTime_NotFound()
+		{
+			var list = new List<string>();
+			FileIndexCompareHelper.CompareDateTime("t",
+				new FileIndexItem(),
+				DateTime.Now,
+				DateTime.Now, list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareColor_NotFound()
+		{
+			var list = new List<string>();
+			FileIndexCompareHelper.CompareColor("t",
+				new FileIndexItem(),
+				ColorClassParser.Color.Winner,
+				ColorClassParser.Color.Winner, list);
+			Assert.IsNotNull(list);
+		}
+		
+				
+		[TestMethod]
+		public void CompareListString_NotFound()
+		{
+			var list = new List<string>();
+			FileIndexCompareHelper.CompareListString("t",
+				new FileIndexItem(),
+				new List<string>{"1"},
+				new List<string>{"1"}, list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
+		public void CompareNullableBool_NotFound()
+		{
+			var list = new List<string>();
+			bool? boolValue = true;
+			FileIndexCompareHelper.CompareNullableBool("t",
+				new FileIndexItem(),
+				boolValue!,
+				boolValue, list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareString_NotFound()
+		{
+			var list = new List<string>();
+			FileIndexCompareHelper.CompareString("t",
+				new FileIndexItem(),
+				"Test",
+				"test", list, true);
+			Assert.IsNotNull(list);
+		}
+		
 	}
 }

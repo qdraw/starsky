@@ -83,7 +83,7 @@ namespace starsky.feature.webhtmlpublish.Services
 
 	    internal List<FileIndexItem> AddFileHashIfNotExist(List<FileIndexItem> fileIndexItemsList)
 	    {
-		    foreach ( var item in fileIndexItemsList.Where(item => item.FileHash == null) )
+		    foreach ( var item in fileIndexItemsList.Where(item => string.IsNullOrEmpty(item.FileHash)) )
 		    {
 			    item.FileHash = new FileHash(_subPathStorage).GetHashCode(item.FilePath).Key;
 		    }

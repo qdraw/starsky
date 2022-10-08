@@ -131,14 +131,13 @@ namespace starsky.foundation.storage.Storage
 		/// Returns a list of directories // Get list of child folders
 		/// </summary>
 		/// <param name="path">path</param>
-		/// <param name="orderByAlphabet">order by alphabet or last edited, newest first</param>
-		/// <returns>list of paths</returns>
-		public IEnumerable<string> GetDirectoryRecursive(string path, bool orderByAlphabet)
+		/// <returns>list of paths and last edited times - default ordered by last edited times</returns>
+		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
 		{
 			// Tuple > FilePath,Directory.GetLastWriteTime
-			var folders = new Queue<Tuple<string,DateTime>>();
-			folders.Enqueue(new Tuple<string, DateTime>(path, Directory.GetLastWriteTime(path)));
-			var folderList = new List<Tuple<string,DateTime>>();
+			var folders = new Queue<KeyValuePair<string,DateTime>>();
+			folders.Enqueue(new KeyValuePair<string, DateTime>(path, Directory.GetLastWriteTime(path)));
+			var folderList = new List<KeyValuePair<string,DateTime>>();
 			while (folders.Count != 0) {
 				var (currentFolder,_) = folders.Dequeue();
 				try
@@ -147,11 +146,11 @@ namespace starsky.foundation.storage.Storage
 						"*.*", SearchOption.TopDirectoryOnly);
 					foreach ( var current in foldersInCurrent )
 					{
-						var lastEditDate = orderByAlphabet ? DateTime.MaxValue : Directory.GetLastWriteTime(current);
-						folders.Enqueue(new Tuple<string, DateTime>(current, lastEditDate));
-						if ( Directory.GetLastAccessTime(current).Year != 1 )
+						var lastEditDate = Directory.GetLastWriteTime(current);
+						folders.Enqueue(new KeyValuePair<string, DateTime>(current, lastEditDate));
+						if ( lastEditDate.Year != 1 )
 						{
-							folderList.Add(new Tuple<string, DateTime>(current, lastEditDate));
+							folderList.Add(new KeyValuePair<string, DateTime>(current, lastEditDate));
 						}
 					}
 				}
@@ -161,9 +160,7 @@ namespace starsky.foundation.storage.Storage
 				}
 			}
 
-			return orderByAlphabet ? 
-				folderList.OrderBy(p => p.Item1).AsEnumerable().Select(p => p.Item1) : 
-				folderList.OrderBy(p => p.Item2).AsEnumerable().Select(p => p.Item1);
+			return folderList.OrderBy(p => p.Value);
 		}
 
 		public Stream ReadStream(string path, int maxRead = -1)

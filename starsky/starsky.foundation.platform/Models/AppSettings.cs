@@ -667,6 +667,8 @@ namespace starsky.foundation.platform.Models
 			"/.stfolder", 
 			"/.git"
 		};
+
+		public bool? SyncOnStartup { get; set; } = true;
 		
 		/// <summary>
 		/// Ignore this part of a path while importing
@@ -821,16 +823,20 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		/// <param name="localSubFolderList"></param>
 		/// <returns></returns>
-		public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
+		public List<string> RenameListItemsToDbStyle(IEnumerable<string> localSubFolderList)
 		{
-			var localSubFolderListDatabaseStyle = new List<string>();
-
-			foreach (var item in localSubFolderList)
-			{
-				localSubFolderListDatabaseStyle.Add(FullPathToDatabaseStyle(item));
-			}
-
-			return localSubFolderListDatabaseStyle;
+			return localSubFolderList.Select(FullPathToDatabaseStyle).ToList();
+		}
+		
+		/// <summary>
+		/// Rename a list to database style (short style)
+		/// </summary>
+		/// <param name="localSubFolderList"></param>
+		/// <returns></returns>
+		public IEnumerable<KeyValuePair<string, DateTime>> RenameListItemsToDbStyle(IEnumerable<KeyValuePair<string, DateTime>> localSubFolderList)
+		{
+			return localSubFolderList.Select(item => 
+				new KeyValuePair<string, DateTime>(FullPathToDatabaseStyle(item.Key), item.Value)).ToList();
 		}
         
 		/// <summary>

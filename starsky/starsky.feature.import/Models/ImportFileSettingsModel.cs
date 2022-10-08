@@ -72,7 +72,7 @@ namespace starskycore.Models
         public int ColorClass {
             get => _colorClass;
             set {
-                if (value >= 0 && value <= 8) // hardcoded in FileIndexModel
+                if (value is >= 0 and <= 8) // hardcoded in FileIndexModel
                 {
                      _colorClass = value;
                     return;

@@ -74,10 +74,11 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local);
 			
 			// Run 3 times & 1 time different
+#pragma warning disable CS4014
 			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
 			await Task.Delay(TimeSpan.FromMilliseconds(2)); // Sleep async
 			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
-
+#pragma warning restore CS4014
 			Assert.AreEqual(2, diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalledCounter);
 		}
 	}

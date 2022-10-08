@@ -118,11 +118,11 @@ namespace starsky.foundation.database.Helpers
 				_newValue = newValue;
 			}
 
-			public override Expression Visit(Expression node)
+			public override Expression Visit(Expression? node)
 			{
 				if (node == _oldValue)
 					return _newValue;
-				return base.Visit(node);
+				return base.Visit(node)!;
 			}
 		}
 

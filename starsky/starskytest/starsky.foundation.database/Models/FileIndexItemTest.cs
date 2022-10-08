@@ -516,5 +516,22 @@ namespace starskytest.starsky.foundation.database.Models
 			Assert.AreEqual(2, item.Size);
 		}
 
+		[TestMethod]
+		public void FixedListToString_Null()
+		{
+			Assert.AreEqual(string.Empty, FileIndexItem.FixedListToString(null));
+		}
+		
+		[TestMethod]
+		public void FixedListToString_One()
+		{
+			Assert.AreEqual("test", FileIndexItem.FixedListToString(new List<string>{"test"}));
+		}
+		
+		[TestMethod]
+		public void FixedListToString_Two()
+		{
+			Assert.AreEqual("test|test2", FileIndexItem.FixedListToString(new List<string>{"test","test2"}));
+		}
 	}
 }

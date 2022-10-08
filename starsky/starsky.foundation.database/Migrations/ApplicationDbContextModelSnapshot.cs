@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "6.0.4");
+                .HasAnnotation("ProductVersion", "6.0.9");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -381,6 +381,25 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("Notifications", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.SettingsItem", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsUserEditable")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>

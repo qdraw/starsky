@@ -47,12 +47,18 @@ namespace starsky.foundation.sync.SyncServices
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, console);
 		}
 
-		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public async Task<List<FileIndexItem>> Folder(string inputSubPath,
-			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null, DateTime? childDirectoriesAfter = null)
 		{
 			var subPaths = new List<string> {inputSubPath};	
-			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath, false));
+			
+			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath)
+				.Where(p =>
+				{
+					if ( childDirectoriesAfter is not { Year: > 2000 } ) return true;
+					return p.Value >= childDirectoriesAfter;
+				})
+				.Select(p => p.Key));
 			
 			// Loop trough all folders recursive
 			var resultChunkList = await subPaths.ForEachAsync(
@@ -104,6 +110,16 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				allResults.Add(parentItems);
 			}
+
+			var socketUpdates = allResults.Where(p =>
+				p.Status is FileIndexItem.ExifStatus.Ok
+					or FileIndexItem.ExifStatus.Deleted).ToList();
+			
+			if ( updateDelegate != null && socketUpdates.Any() )
+			{
+				await updateDelegate(socketUpdates);
+			}
+			
 			return allResults;
 		}
 	

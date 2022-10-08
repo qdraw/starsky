@@ -192,5 +192,72 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			AppSettingsCompareHelper.Compare(source, to);
 			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
 		}
+
+		[TestMethod]
+		public void CompareDatabaseTypeList_NotFound()
+		{
+			var list = new List<string>();
+			AppSettingsCompareHelper.CompareDatabaseTypeList("t",
+				new AppSettings(),
+				AppSettings.DatabaseTypeList.Mysql,
+				AppSettings.DatabaseTypeList.Mysql, list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareListString_NotFound()
+		{
+			var list = new List<string>();
+			AppSettingsCompareHelper.CompareListString("t",
+				new AppSettings(),
+				new List<string>{"1"},
+				new List<string>{"1"}, list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareListPublishProfiles_NotFound()
+		{
+			var list = new List<string>();
+			AppSettingsCompareHelper.CompareListPublishProfiles("t",
+				new AppSettings(),
+				new Dictionary<string, List<AppSettingsPublishProfiles>>(),
+				new Dictionary<string, List<AppSettingsPublishProfiles>>(), list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareBool_NotFound()
+		{
+			var list = new List<string>();
+			bool? boolValue = true;
+			AppSettingsCompareHelper.CompareBool("t",
+				new AppSettings(),
+				boolValue,
+				boolValue, list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareString_NotFound()
+		{
+			var list = new List<string>();
+			AppSettingsCompareHelper.CompareString("t",
+				new AppSettings(),
+				"Test",
+				"test", list);
+			Assert.IsNotNull(list);
+		}
+		
+		[TestMethod]
+		public void CompareInt_NotFound()
+		{
+			var list = new List<string>();
+			AppSettingsCompareHelper.CompareInt("t",
+				new AppSettings(),
+				1,
+				2, list);
+			Assert.IsNotNull(list);
+		}
 	}
 }

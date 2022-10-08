@@ -466,12 +466,12 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			// First check if fakeDisk is changed
 			var folder1Files = istorage.GetAllFilesInDirectory("/folder1").ToList();
-			var folder1Dir = istorage.GetDirectoryRecursive("/folder1",true).ToList();
+			var folder1Dir = istorage.GetDirectoryRecursive("/folder1").Select(p => p.Key).ToList();
 			
 			Assert.AreEqual("/folder1/file.jpg", folder1Files[0]);
 			Assert.AreEqual("/folder1/subfolder", folder1Dir[0]);
 
-			var existDirContent = istorage.GetDirectoryRecursive("/exist",true).ToList();
+			var existDirContent = istorage.GetDirectoryRecursive("/exist").Select(p => p.Key).ToList();
 			var existFolder = istorage.GetAllFilesInDirectory("/exist").ToList();
 			
 			Assert.AreEqual(0,existDirContent.Count);

@@ -20,6 +20,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.health.HealthCheck;
 using starsky.feature.packagetelemetry.Services;
+using starsky.feature.syncbackground.Services;
 using starsky.foundation.accountmanagement.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
@@ -142,6 +143,7 @@ namespace starsky
 			
 			// Reference due missing links between services
 			services.AddSingleton<PackageTelemetryBackgroundService>();
+			services.AddSingleton<OnStartupSyncBackgroundService>();
         }
 
         /// <summary>
