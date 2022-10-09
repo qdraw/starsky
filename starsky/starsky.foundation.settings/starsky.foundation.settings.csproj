@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>starsky.foundation.settings</RootNamespace>
     <!-- SonarQube needs this -->
     <ProjectGuid>{67e301f1-e700-4ca5-81ae-696abab1bb0f}</ProjectGuid>
