@@ -187,4 +187,13 @@ if (process.env.DEBUG !== "true") {
   }
 }
 
+
+// run linter
+const lintSpawn = spawnSync('npm', ['run', 'lint:fix'], {
+  cwd: clientAppFolderPath,
+  env: process.env,
+  encoding: 'utf-8'
+});
+console.log(lintSpawn.output);
+
 console.log('done');
