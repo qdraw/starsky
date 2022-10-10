@@ -1,0 +1,66 @@
+name: auto clientapp create react app upgrade
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '30 4 1,15 * *'
+    
+jobs:
+  run:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: master
+
+    - name: 'Update clientapp'
+      id: clientapp_create_react_app_update
+      working-directory: ./starsky-tools/build-tools
+      run: npm run clientapp-create-react-app-update
+      
+    - shell: bash
+      working-directory: ./starsky
+      id: files_changed
+      run: |
+        git status
+        git status --porcelain
+      
+        if [[ `git status --porcelain` ]]; then
+          echo "There are files not committed yet"
+          echo "::set-output name=CHANGED::true"
+        else 
+          echo "not changed"
+          echo "::set-output name=CHANGED::false"
+        fi
+      
+    - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
+      id: cpr
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.WORKFLOW_GITHUB }}
+        commit-message: 'Update ClientApp'
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        add-paths: |
+          *
+        branch: feature/auto_clientapp_create_react_app_update
+        delete-branch: true
+        title: 'Client App - Create React App - Upgrade dependencies'
+        body: |
+          ## Upgrade Client App to the lastest version
+          - todo: test!         
+        labels: |
+          dependencies
+        draft: false
+        
+    - name: Merge current branch into -> auto_clientapp_create_react_app_update
+      uses: everlytic/branch-merge@1.1.2
+      if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
+      with:
+        github_token: ${{ secrets.WORKFLOW_GITHUB }}
+        source_ref: 'master'
+        target_branch: feature/auto_clientapp_create_react_app_update
+        commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'
