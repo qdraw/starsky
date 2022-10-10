@@ -1,4 +1,5 @@
 #!/usr/bin/node
+
 const { spawnSync } = require('child_process');
 const fs = require("fs"); 
 const path = require('path');
@@ -31,6 +32,15 @@ deleteFolderRecursive = function(path) {
 const createReactTempFolder = path.join(__dirname,'create-react-tmp-folder');
 const myAppName = "my-app";
 const createReactMyAppFolder = path.join(__dirname,'create-react-tmp-folder',myAppName);
+
+
+
+console.log('npm config set fund false --global');
+spawnSync('npm', ['config', 'set', 'fund', 'false', '--global'], {
+  cwd: clientAppFolderPath,
+  env: process.env,
+  encoding: 'utf-8'
+});
 
 
 function getNpxCreateCreateApp() {
@@ -87,7 +97,7 @@ fs.writeFileSync(path.join(clientAppFolderPath, 'package-lock.json'), JSON.strin
 
 // npm ci
 function npmCi() {
-  console.log('run > npm ci | in: ' + clientAppFolderPath);
+  console.log('run > npm ci --no-audit --legacy-peer-deps | in: ' + clientAppFolderPath);
   const npmCiOne = spawnSync('npm', ['ci', '--no-audit', '--legacy-peer-deps'], {
       cwd: clientAppFolderPath,
       env: process.env,
@@ -103,7 +113,7 @@ npmCi();
 function npmUnInstall(packageName) {
 
   console.log(`run > npm uninstall ${packageName} --save --legacy-peer-deps`);
-  const uninstall = spawnSync('npm', ['uninstall', packageName, '--save', '--legacy-peer-deps'], {
+  const uninstall = spawnSync('npm', ['uninstall', packageName, '--no-audit', '--save', '--legacy-peer-deps'], {
       cwd: clientAppFolderPath,
       env: process.env,
       encoding: 'utf-8'
@@ -134,8 +144,8 @@ function npmInstall(packageName, force, dev) {
   if (dev) {
     saveText = "--save-dev";
   }
-  console.log('npm'   + " " + 'install'  + " " + packageName  + " " + saveText + " " +  forceText);
-  const npmInstallSpawn = spawnSync('npm', ['install', packageName, saveText, forceText], {
+  console.log('npm'   + " " + 'install --no-audit'  + " " + packageName  + " " + saveText + " " +  forceText);
+  const npmInstallSpawn = spawnSync('npm', ['install', '--no-audit', packageName, saveText, forceText], {
       cwd: clientAppFolderPath,
       env: process.env,
       encoding: 'utf-8'
