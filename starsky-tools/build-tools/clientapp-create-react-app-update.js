@@ -114,8 +114,10 @@ function npmUnInstall(packageName) {
   console.log(uninstall.stout ? updateSpawn.stout : "");
 }
 
-// web-vitals
+// web-vitals is not needed
 npmUnInstall('web-vitals');
+// install later again (newer version)
+npmUnInstall('@testing-library/user-event');
 
 // update packages in clientapp package json
 console.log('next: overwrite package json file');
@@ -163,6 +165,7 @@ npmInstall('eslint-plugin-prettier', false, false);
 npmUnInstall('@types/node')
 npmInstall('@types/node', false, false);
 npmInstall('concurrently', false, true);
+npmInstall('@testing-library/user-event',false, false);
 
 npmCi();
 
