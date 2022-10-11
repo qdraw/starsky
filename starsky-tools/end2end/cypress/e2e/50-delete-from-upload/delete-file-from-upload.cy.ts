@@ -1,5 +1,4 @@
-import { uploadFileName1 } from 'integration/10-upload-to-folder/upload-filename1'
-import { checkIfExistAndCreate } from 'integration/helpers/create-directory-helper'
+import { checkIfExistAndCreate } from '../helpers/create-directory-helper.cy'
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
 const config = configFile[envFolder][envName]

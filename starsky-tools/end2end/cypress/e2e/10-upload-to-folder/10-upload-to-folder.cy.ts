@@ -1,7 +1,7 @@
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
-import { checkIfExistAndCreate } from '../helpers/create-directory-helper'
-import { uploadFileName1 } from './upload-filename1'
+import { checkIfExistAndCreate } from '../helpers/create-directory-helper.cy'
+import { uploadFileName1 } from './upload-filename1.cy'
 const config = configFile[envFolder][envName]
 
 describe('Upload to folder', () => {
