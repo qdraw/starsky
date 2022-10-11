@@ -4,13 +4,16 @@
         "isEnabled": true,
         "url": "/account/register",
         "urlStatusApi": "/starsky/api/account/register/status",
-        "successUrl" : "account/login"
+        "successUrl" : "account/login",
+        "env" : "api/env"
+
       },
       "heroku-demo": {
         "isEnabled": true,
         "url": "/account/register",
         "urlStatusApi": "/starsky/api/account/register/status",
-        "successUrl" : "account/login"
+        "successUrl" : "account/login",
+        "env" : "api/env"
       },
       "no-create-account" : {
         "isEnabled": false

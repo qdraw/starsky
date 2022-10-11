@@ -24,8 +24,21 @@ namespace starskytest.Controllers
 		{
 			var controller = new AppSettingsController(new AppSettings(),new FakeSelectorStorage());
 			var actionResult = controller.Env() as JsonResult;
-			var resultAppSettings = actionResult.Value as AppSettings;
-			Assert.AreEqual("Starsky", resultAppSettings.Name);
+			var resultAppSettings = actionResult?.Value as AppSettings;
+			Assert.AreEqual("Starsky", resultAppSettings?.Name);
+		}
+		
+		[TestMethod]
+		public void ENV_StarskyTestEnv_ForceHtml()
+		{
+			var controller = new AppSettingsController(new AppSettings(),
+				new FakeSelectorStorage());
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			controller.ControllerContext.HttpContext.Request.Headers.Add("x-force-html", "true");
+			var actionResult = controller.Env() as JsonResult;
+			var resultAppSettings = actionResult?.Value as AppSettings;
+			Assert.AreEqual("Starsky", resultAppSettings?.Name);
+			Assert.AreEqual("text/html; charset=utf-8", controller.ControllerContext.HttpContext.Response.Headers.ContentType.ToString());
 		}
 		
 		[TestMethod]
@@ -33,8 +46,8 @@ namespace starskytest.Controllers
 		{
 			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage());
 			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject {Verbose = true}) as JsonResult;
-			var result = actionResult.Value as AppSettings;
-			Assert.IsTrue(result.Verbose);
+			var result = actionResult?.Value as AppSettings;
+			Assert.IsTrue(result?.Verbose);
 		}
 		
 		[TestMethod]
@@ -48,9 +61,9 @@ namespace starskytest.Controllers
 			{
 				Verbose = true, StorageFolder = "test"
 			}) as JsonResult;
-			var result = actionResult.Value as AppSettings;
-			Assert.IsTrue(result.Verbose);
-			Assert.AreEqual(PathHelper.AddBackslash("test"),result.StorageFolder);
+			var result = actionResult?.Value as AppSettings;
+			Assert.IsTrue(result?.Verbose);
+			Assert.AreEqual(PathHelper.AddBackslash("test"),result?.StorageFolder);
 		}
 
 		[TestMethod]
@@ -89,7 +102,7 @@ namespace starskytest.Controllers
 					StorageFolder = "not_found"
 				})) as NotFoundObjectResult;
 
-			Assert.AreEqual(404, actionResult.StatusCode);
+			Assert.AreEqual(404, actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
