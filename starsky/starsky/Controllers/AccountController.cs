@@ -106,11 +106,13 @@ namespace starsky.Controllers
         /// <returns>Login status</returns>
         /// <response code="200">successful login</response>
         /// <response code="401">login failed</response>
+        /// <response code="405">ValidateAntiForgeryToken</response>
         /// <response code="423">login failed due lock</response>
         /// <response code="500">login failed due signIn errors</response>
         [HttpPost("/api/account/login")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),401)]
+        [ProducesResponseType(typeof(string),405)]
         [ValidateAntiForgeryToken]
         [Produces("application/json")]
         public async Task<IActionResult> LoginPost(LoginViewModel model)
