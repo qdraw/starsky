@@ -35,7 +35,7 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
-# version 0.5.0-beta.8 _(Unreleased)_ - 2022-09-??
+# version 0.5.0-beta.8 _(Unreleased)_ - 2022-10-11
 - [x]   (Security) _Back-end_ Upgrade Nuget packages (PR #878)
 - [x]   (Security) _Back-end_ Update Security Headers e.g. CSP, Permissions Policy (PR #880, #881)
 - [x]   (Security) _Back-end_ Update dependencies for typescript, jpeg-js, typings, dotenv, jimp (PR #888, #884, #883, #879, #898, #901, #902, #904)
@@ -50,6 +50,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_  Add feature toggle in AppSettings: `SyncOnStartup` (PR #905)
 - [x]   (Added) _Back-end_  Sync latest changes on startup of application (PR #905)
 - [x]   (Changed) _Back-end_  Code quality: Apply C# nullable for foundation.database project (PR #905 & rework PR #906)
+- [x]   (Security) _Front-end_  Client App - Create React App - Upgrade dependencies (PR #910)
+- [x]   (Issue) _Tools_ Upgrade Cypress end2end testing tool to v10 (PR #911)
 
 # version 0.5.0-beta.7 - 2022-09-20
 - [x]   (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) (PR #838)
