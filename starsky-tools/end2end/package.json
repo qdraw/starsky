@@ -24,16 +24,16 @@
     "lint": "node node_modules/eslint/bin/eslint.js \"**\" --max-warnings 0"
   },
   "devDependencies": {
-    "@types/node": "^17.0.25",
-    "@typescript-eslint/eslint-plugin": "^5.20.0",
-    "@typescript-eslint/parser": "^5.20.0",
-    "cypress": "^9.6.1",
-    "eslint": "^8.13.0",
-    "eslint-config-standard-with-typescript": "^21.0.1",
+    "@types/node": "^18.8.4",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "cypress": "^10.9.0",
+    "eslint": "^8.25.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-promise": "^6.0.1",
     "get-port": "^6.1.2",
-    "typescript": "^4.6.3"
+    "typescript": "^4.8.4"
   }
 }

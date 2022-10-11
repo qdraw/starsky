@@ -143,4 +143,11 @@ echo "next: cat"
 systemctl --user cat $SERVICE_NAME".service"
 
 echo "end"
+echo "to restart: "
+
+echo "rm "OUTPUT_DIR"app__data.db* && ""systemctl --user restart "$SERVICE_NAME".service"
+# for example: 
+#           rm /opt/starsky/app__data.db*
+#           systemctl --user restart starsky.service
+
 # credits to https://amelspahic.com/deploy-net-6-application-with-github-actions-to-self-hosted-linux-machine-virtual-private-server-raspberry-pi

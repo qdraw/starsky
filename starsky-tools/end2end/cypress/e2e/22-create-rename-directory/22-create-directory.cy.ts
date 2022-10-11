@@ -1,6 +1,6 @@
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
-import { checkIfExistAndCreate } from '../helpers/create-directory-helper'
+import { checkIfExistAndCreate } from '../helpers/create-directory-helper.cy'
 const config = configFile[envFolder][envName]
 
 function resetFolders () {
