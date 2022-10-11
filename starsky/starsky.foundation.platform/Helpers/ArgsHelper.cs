@@ -347,6 +347,11 @@ namespace starsky.foundation.platform.Helpers
 			
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebFtp) 
 				_console.WriteLine("WebFtp " + _appSettings.WebFtp);
+
+			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Admin )
+			{
+				_console.WriteLine("NoAccountLocalhost " + _appSettings.NoAccountLocalhost);
+			}
 			
 			_console.WriteLine("-- Appsettings.json locations -- ");
 			
