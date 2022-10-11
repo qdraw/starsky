@@ -43,6 +43,7 @@ jobs:
         working-directory: ${{ steps.create_temp_folder.outputs.folder_path }}
         run:  |
           ./starskygeocli -h -v
+          ./starskyadmincli -h -v
 
       - name: pm2-warmup
         shell: bash
