@@ -154,19 +154,26 @@ namespace starsky.feature.import.Services
 		internal List<ImportIndexItem> CheckForDuplicateNaming(List<ImportIndexItem> importIndexItemsList,
 			Dictionary<string,List<string>> directoriesContent)
 		{
-			foreach ( var importIndexItem in importIndexItemsList.Where(p => p.Status == ImportStatus.Ok) )
+			foreach ( var importIndexItem in importIndexItemsList.Where(p => 
+				         p.Status == ImportStatus.Ok ) )
 			{
+				if ( importIndexItem.FileIndexItem == null )
+				{
+					_logger.LogInformation("[CheckForDuplicateNaming] FileIndexItem is missing");
+					continue;
+				}
+				
 				// Try again until the max
 				var updatedFilePath = "";
 				var indexer = 0;
 				for ( var i = 0; i < MaxTryGetDestinationPath; i++ )
 				{
 					updatedFilePath = AppendIndexerToFilePath(
-						importIndexItem.FileIndexItem.ParentDirectory, 
-						importIndexItem.FileIndexItem.FileName, indexer);
+						importIndexItem.FileIndexItem!.ParentDirectory!, 
+						importIndexItem.FileIndexItem!.FileName!, indexer);
 					
 					var currentDirectoryContent =
-						directoriesContent[importIndexItem.FileIndexItem.ParentDirectory];
+						directoriesContent[importIndexItem.FileIndexItem.ParentDirectory!];
 					
 					if ( currentDirectoryContent.Any(p => p == updatedFilePath)  )
 					{
@@ -182,7 +189,7 @@ namespace starsky.feature.import.Services
 					throw new AggregateException($"tried after {MaxTryGetDestinationPath} times");
 				}
 		
-				importIndexItem.FileIndexItem.FilePath = updatedFilePath;
+				importIndexItem.FileIndexItem!.FilePath = updatedFilePath;
 				importIndexItem.FileIndexItem.FileName = PathHelper.GetFileName(updatedFilePath);
 				importIndexItem.FilePath = updatedFilePath;
 			}
