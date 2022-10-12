@@ -14,6 +14,36 @@ else
 fi
 
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+
+if [ -d "$PARENT_DIR""/TestResults" ] 
+then
+    rm -rf "$PARENT_DIR""/TestResults"
+else
+    echo "Skip: remove TestResults cache. -> ""$PARENT_DIR""/TestResults"
+fi
+
+# coverage files
+if [ -f "$PARENT_DIR""/starskytest/coverage-merge-cobertura.xml" ] 
+then
+    rm  "$PARENT_DIR""/starskytest/coverage-merge-cobertura.xml"
+fi
+
+if [ -f "$PARENT_DIR""/starskytest/coverage-merge-sonarqube.xml" ] 
+then
+    rm  "$PARENT_DIR""/starskytest/coverage-merge-sonarqube.xml"
+fi
+
+if [ -f "$PARENT_DIR""/starskytest/jest-coverage.cobertura.xml" ] 
+then
+    rm  "$PARENT_DIR""/starskytest/jest-coverage.cobertura.xml"
+fi
+
+if [ -f "$PARENT_DIR""/starskytest/netcore-coverage.opencover.xml" ] 
+then
+    rm  "$PARENT_DIR""/starskytest/netcore-coverage.opencover.xml"
+fi
+# end coverage files
+
 if [ -d $PARENT_DIR"/.sonarqube" ] 
 then
     echo "Remove sonar cache -> "$PARENT_DIR"/.sonarqube"
@@ -47,6 +77,23 @@ then
     echo "FAIL; docker could not be found"
     exit
 fi
+
+# cypress cache on mac os
+if [ -d "$HOME""/Library/Caches/Cypress" ] 
+then
+    echo "Remove cypress cache -> "$HOME"/Library/Caches/Cypress"
+    rm -rf "$HOME""/Library/Caches/Cypress"
+    
+    # and install it again
+    ROOT_REPO_DIR="$(dirname "$PARENT_DIR")"
+    
+    cd $ROOT_REPO_DIR"/starsky-tools/end2end"
+    echo "next: re-install cypress"
+    npm ci
+else
+    echo "Skip: remove cypress cache. -> "$HOME"/Library/Caches/Cypress"
+fi
+
 
 COLOR_REST="$(tput sgr0)"
 COLOR_RED="$(tput setaf 1)"
