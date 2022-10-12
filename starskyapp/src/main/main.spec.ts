@@ -1,21 +1,21 @@
 import { app, BrowserWindow } from "electron";
-import * as setupChildProcess from "../child-process/setup-child-process";
-import * as MakeLogsPath from "../config/logs-path";
-import * as MakeTempPath from "../config/temp-path";
-import * as SetupFileWatcher from "../file-watcher/setup-file-watcher";
-import * as ipcBridge from "../ipc-bridge/ipc-bridge";
-import * as logger from "../logger/logger";
-import * as createMainWindow from "../main-window/create-main-window";
-import * as restoreMainWindow from "../main-window/restore-main-window";
-import * as AppMenu from "../menu/app-menu";
-import * as DockMenu from "../menu/dock-menu";
-import * as updatesWarningWindow from "../updates-warning-window/updates-warning-window";
-import * as IsRemote from "../warmup/is-remote";
-import * as SetupSplash from "../warmup/splash";
-import * as WarmupServer from "../warmup/warmup-server";
-import * as defaultAppSettings from "./app-settings";
-import * as RestoreWarmupMainWindowAndCloseSplash from "./restore-warmup-main-window-and-close-splash";
-import * as willNavigateSecurity from "./will-navigate-security";
+import * as setupChildProcess from "../app/child-process/setup-child-process";
+import * as MakeLogsPath from "../app/config/logs-path";
+import * as MakeTempPath from "../app/config/temp-path";
+import * as SetupFileWatcher from "../app/file-watcher/setup-file-watcher";
+import * as ipcBridge from "../app/ipc-bridge/ipc-bridge";
+import * as logger from "../app/logger/logger";
+import * as createMainWindow from "../app/main-window/create-main-window";
+import * as restoreMainWindow from "../app/main-window/restore-main-window";
+import * as AppMenu from "../app/menu/app-menu";
+import * as DockMenu from "../app/menu/dock-menu";
+import * as updatesWarningWindow from "../app/updates-warning-window/updates-warning-window";
+import * as IsRemote from "../app/warmup/is-remote";
+import * as SetupSplash from "../app/warmup/splash";
+import * as WarmupServer from "../app/warmup/warmup-server";
+import * as defaultAppSettings from "../app/startup/app-settings";
+import * as RestoreWarmupMainWindowAndCloseSplash from "../app/startup/restore-warmup-main-window-and-close-splash";
+import * as willNavigateSecurity from "../app/startup/will-navigate-security";
 
 jest.mock("electron", () => {
   return {

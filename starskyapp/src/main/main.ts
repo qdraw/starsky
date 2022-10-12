@@ -1,17 +1,18 @@
 import { app, BrowserWindow } from "electron";
-import { setupChildProcess } from "../child-process/setup-child-process";
-import { MakeLogsPath } from "../config/logs-path";
-import { MakeTempPath } from "../config/temp-path";
-import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
-import ipcBridge from "../ipc-bridge/ipc-bridge";
-import createMainWindow from "../main-window/create-main-window";
-import AppMenu from "../menu/app-menu";
-import DockMenu from "../menu/dock-menu";
-import { IsRemote } from "../warmup/is-remote";
-import { SetupSplash } from "../warmup/splash";
-import defaultAppSettings from "./app-settings";
-import RestoreWarmupMainWindowAndCloseSplash from "./restore-warmup-main-window-and-close-splash";
-import { willNavigateSecurity } from "./will-navigate-security";
+import { setupChildProcess } from "../app/child-process/setup-child-process";
+import { MakeLogsPath } from "../app/config/logs-path";
+import { MakeTempPath } from "../app/config/temp-path";
+import { SetupFileWatcher } from "../app/file-watcher/setup-file-watcher";
+import ipcBridge from "../app/ipc-bridge/ipc-bridge";
+import createMainWindow from "../app/main-window/create-main-window";
+import AppMenu from "../app/menu/app-menu";
+import DockMenu from "../app/menu/dock-menu";
+import defaultAppSettings from "../app/startup/app-settings";
+import RestoreWarmupMainWindowAndCloseSplash from "../app/startup/restore-warmup-main-window-and-close-splash";
+import { willNavigateSecurity } from "../app/startup/will-navigate-security";
+import { IsRemote } from "../app/warmup/is-remote";
+import { SetupSplash } from "../app/warmup/splash";
+
 
 MakeLogsPath();
 ipcBridge();

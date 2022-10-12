@@ -1,4 +1,4 @@
-import path = require("path");
+import * as path from "path";
 import * as fs from "fs";
 import { electronCacheLocation } from "../child-process/electron-cache-location";
 

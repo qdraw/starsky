@@ -1,4 +1,5 @@
-import net = require('net');
+import * as net from "net";
+
 
 // https://stackoverflow.com/a/54229665
 export async function GetFreePort(): Promise<number> {

@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import { electronCacheLocation } from "../child-process/electron-cache-location";
-import path = require("path");
+import * as path from "path";
 
 const currentDate = new Date();
 var today = currentDate.toISOString().split("T")[0].replace(/-/gi, "");

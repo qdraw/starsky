@@ -1,20 +1,27 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "CommonJS",
-    "noImplicitAny": true,
-    "sourceMap": true,
-    "outDir": "build",
+    "strict": false,
     "baseUrl": ".",
+    "module": "ES2020",
+    "moduleResolution": "Node",
     "paths": {
-      "*": ["node_modules/*"]
+      "_public/*": ["public/*"],
+      "_main/*": ["src/main/*"],
+      "_preload/*": ["src/preload/*"],
+      "_renderer/*": ["src/renderer/*"],
+      "_types/*": ["src/types/*"],
+      "_utils/*": ["src/utils/*"],
+      "_tests/*": ["tests/*"]
     },
-    "resolveJsonModule": true
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ],
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "target": "ES2020"
   },
-  "include": [
-    "src/app/**/*",
-    "src/setup/**/*",
-    "src/preload/**/*",
-    "src/shared/**/*"
-  ]
+  "include": ["src/**/*"]
 }
