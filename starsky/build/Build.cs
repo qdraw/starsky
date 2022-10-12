@@ -22,6 +22,8 @@ namespace build
 
 		public static int Main () => Execute<Build>(x => x.Compile);
 
+		// Use `--target BuildNetCoreRuntimeSpecific --skip` parameter to run only this task 
+		
 		[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 		readonly Configuration Configuration = Configuration.Release;
 
