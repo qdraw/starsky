@@ -3,16 +3,14 @@ import { isPackaged } from "../os-info/is-packaged";
 import OsBuildKey from "../os-info/os-build-key";
 
 export function childProcessPath(): string {
-  if (!isPackaged()) {
+  if (!isPackaged()) {   
     // dev
     switch (process.platform) {
       case "darwin":
         return path.join(
           __dirname,
-          "../",
-          "../",
-          "../",
-          "../",
+          "..",
+          "..",
           "starsky",
           "osx-x64",
           "starsky"
@@ -20,12 +18,10 @@ export function childProcessPath(): string {
       case "win32":
         return path.join(
           __dirname,
-          "../",
-          "../",
-          "../",
-          "../",
+          "..",
+          "..",
           "starsky",
-          "win7-x64",
+          "win-x64",
           "starsky.exe"
         );
       default:

@@ -1,7 +1,7 @@
 {
-  "name": "starskapp",
+  "name": "Starsky",
   "version": "4.1.2",
-  "description": "Pre-configured boilerplate for Electron + React + TypeScript",
+  "description": "Starsky",
   "main": "./dist/main.bundle.js",
   "scripts": {
     "start": "electron ./dist/main.bundle.js",
@@ -12,33 +12,51 @@
     "watch-jest": "npm run jest -- --watchAll",
     "lint": "eslint . --cache --ext js,jsx,cjs,mjs,ts,tsx",
     "test": "npm run lint && npm run jest",
-    "next-rc": "npm --no-git-tag-version version prerelease --preid=rc",
-    "next-patch": "npm --no-git-tag-version version patch",
-    "next-minor": "npm --no-git-tag-version version minor",
-    "next-major": "npm --no-git-tag-version version major",
     "build:win": "electron-builder build --win",
     "build:mac": "electron-builder build --mac"
   },
   "build": {
-    "appId": "com.devtography.electron_boilerplate",
-    "productName": "Electron+React+TypeScript Boilerplate",
+    "appId": "nl.qdraw.starsky",
+    "productName": "Starsky",
     "directories": {
       "app": "./dist/",
       "output": "./out/"
     },
+    "extraResources": [
+      "runtime-starsky-${os}/**"
+    ],
+    "files": [
+      "./src/client/pages/redirect/reload-redirect.html",
+      "./src/client/build/pages/settings/settings.html"
+    ],
+    "artifactName": "starsky-${os}-desktop.${ext}",
     "mac": {
-      "target": {
+      "minimumSystemVersion": "10.12",
+      "electronLanguages": [
+        "en",
+        "nl"
+      ],
+      "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns",
+      "target": [{
         "target": "dmg",
         "arch": "universal"
+      },
+      {
+        "target": "zip",
+        "arch": "universal"
       }
+      ]
     },
     "win": {
       "target": {
-        "target": "nsis",
+        "target": [
+          "zip",
+          "nsis"
+         ],
         "arch": [
-          "x64",
-          "ia32"
-        ]
+          "x64"
+        ],
+         "icon": "src/setup/icons/baseline-searcher-detective-263238__256px.ico"
       }
     },
     "nsis": {
@@ -93,10 +111,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Devtography/electron-react-typescript-webpack-boilerplate"
+    "url": "git+https://github.com/qdraw/starsky"
   },
   "bugs": {
-    "url": "https://github.com/Devtography/electron-react-typescript-webpack-boilerplate/issues"
+    "url": "https://github.com/qdraw/starsky/issues"
   },
-  "homepage": "https://github.com/Devtography/electron-react-typescript-webpack-boilerplate#readme"
+  "homepage": "https://qdraw.github.io/starsky/"
 }
