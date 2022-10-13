@@ -62,7 +62,7 @@ for ((i = 1; i <= $#; i++ )); do
       echo "--runtime linux-arm"
       echo "     (or:) --runtime linux-arm64"
       echo "     (or:) --runtime osx-x64"
-      echo "     (or:) --runtime win7-x64"
+      echo "     (or:) --runtime win-x64"
       echo "     (or as fallback:) --runtime "$RUNTIME
       echo "(optional) --id BUILD_ID"
 
