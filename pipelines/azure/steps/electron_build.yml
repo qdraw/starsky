@@ -14,7 +14,7 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          mv $(Build.SourcesDirectory)/win7-x64/starsky-win7-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip
+          mv $(Build.SourcesDirectory)/win7-x64/starsky-win-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win-x64.zip
 
     - task: Bash@3
       enabled: true
@@ -39,7 +39,7 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          unzip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip -d $(Build.SourcesDirectory)/starsky/win7-x64
+          unzip $(Build.SourcesDirectory)/starsky/starsky-win-x64.zip -d $(Build.SourcesDirectory)/starsky/win-x64
     
     - task: Bash@3
       enabled: true
@@ -47,8 +47,8 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          chmod 777 $(Build.SourcesDirectory)/starsky/win7-x64/pm2-restore-x-rights.sh
-          bash $(Build.SourcesDirectory)/starsky/win7-x64/pm2-restore-x-rights.sh
+          chmod 777 $(Build.SourcesDirectory)/starsky/win-x64/pm2-restore-x-rights.sh
+          bash $(Build.SourcesDirectory)/starsky/win-x64/pm2-restore-x-rights.sh
 
     - task: Npm@1
       displayName: 'Electron npm ci'
