@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -86,6 +87,48 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			var claims = userManager.GetUserClaims(null);
 			Assert.AreEqual(0,claims.Count());
+		}
+		
+		[TestMethod]
+		public void GetUserClaims_ShouldReturnClaims()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+
+			var claims = userManager
+				.GetUserClaims(new User { Name = "test", Id = 1 }).ToList();
+			
+			Assert.AreEqual(1,claims.Count(p =>p.Type == ClaimTypes.Name));
+			Assert.AreEqual(1,claims.Count(p =>p.Type == ClaimTypes.NameIdentifier));
+			Assert.AreEqual(1,claims.Count(p =>p.Type == ClaimTypes.Email));
+		}
+		
+		[TestMethod]
+		public void GetUserClaims_ShouldReturnEmail()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+
+			var claims = userManager
+				.GetUserClaims(new User { Name = "test", Id = 1, Credentials = new List<Credential>
+				{
+					new Credential{Identifier = "email"}
+				}}).ToList();
+			
+			Assert.AreEqual("test",claims.FirstOrDefault(p =>p.Type == ClaimTypes.Name)?.Value);
+			Assert.AreEqual("1",claims.FirstOrDefault(p =>p.Type == ClaimTypes.NameIdentifier)?.Value);
+			Assert.AreEqual("email",claims.FirstOrDefault(p =>p.Type == ClaimTypes.Email)?.Value);
+		}
+		
+		[TestMethod]
+		public void GetUserClaims_ShouldNotFailDueMissingEmail()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+
+			var claims = userManager
+				.GetUserClaims(new User { Name = "test", Id = 1, Credentials = null}).ToList();
+			
+			Assert.AreEqual("test",claims.FirstOrDefault(p =>p.Type == ClaimTypes.Name)?.Value);
+			Assert.AreEqual("1",claims.FirstOrDefault(p =>p.Type == ClaimTypes.NameIdentifier)?.Value);
+			Assert.AreEqual("",claims.FirstOrDefault(p =>p.Type == ClaimTypes.Email)?.Value);
 		}
 		
 		

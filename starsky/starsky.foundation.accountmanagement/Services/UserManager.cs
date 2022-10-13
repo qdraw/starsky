@@ -688,11 +688,16 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				return new List<Claim>();
 			}
+
+			var email =
+				user.Credentials?.FirstOrDefault(p =>
+					!string.IsNullOrEmpty(p.Identifier))?.Identifier;
 			
 			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-				new Claim(ClaimTypes.Name, user.Name)
+				new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
+				new Claim(ClaimTypes.Email, email ?? string.Empty),
 			};
 
 			claims.AddRange(GetUserRoleClaims(user));

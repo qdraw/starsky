@@ -41,10 +41,15 @@ describe('Create Account', () => {
       cy.get(flow.fields.name).type(Cypress.env('AUTH_USER'))
       cy.get(flow.fields.password).type(Cypress.env('AUTH_PASS'))
       cy.get(flow.fields.confirmPassword).type(Cypress.env('AUTH_PASS'))
+
+      cy.intercept('POST', '/starsky/api/account/register').as('registerCall')
+
       cy.get(flow.fields.submit)
         .click()
+        .wait("@registerCall").its('response.statusCode').should('eq', 200)  
         .url()
-        .should('contain', config.successUrl)
+        .should('contain', 'account/login')
+
     })
   })
 })

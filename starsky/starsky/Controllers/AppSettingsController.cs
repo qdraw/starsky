@@ -1,4 +1,5 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -38,9 +39,14 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(AppSettings),200)]
 		[ProducesResponseType(typeof(AppSettings),401)]
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse",Justification = "Request in tests")]
 		public IActionResult Env()
 		{
 			var appSettings = _appSettings.CloneToDisplay();
+			if ( Request != null && Request.Headers.Any(p => p.Key == "x-force-html") )
+			{
+				Response.Headers.ContentType = "text/html; charset=utf-8";
+			}
 			return Json(appSettings);
 		}
 		

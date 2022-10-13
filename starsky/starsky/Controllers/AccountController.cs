@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,13 +46,13 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public async Task<IActionResult> Status()
 		{
-			if ( ! (await _userManager.AllUsersAsync()).Any() )
+			if ( ! (await _userManager.AllUsersAsync()).Any() && _appSettings.NoAccountLocalhost != true )
 			{
 				Response.StatusCode = 406;
 				return Json("There are no accounts, you must create an account first");
 			}
 			
-			if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
+			if ( User.Identity?.IsAuthenticated == false ) return Unauthorized("false");
 
 			// use model to avoid circular references
 			var currentUser = _userManager.GetCurrentUser(HttpContext);
@@ -87,6 +88,7 @@ namespace starsky.Controllers
 		[HttpHead("/account/login")]
 		[ProducesResponseType(200)]
 		[Produces("text/html")]
+		[SuppressMessage("ReSharper", "UnusedParameter.Global")]
 		public IActionResult LoginGet(string returnUrl = null, bool? fromLogout = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
@@ -104,11 +106,14 @@ namespace starsky.Controllers
         /// <returns>Login status</returns>
         /// <response code="200">successful login</response>
         /// <response code="401">login failed</response>
+        /// <response code="405">ValidateAntiForgeryToken</response>
         /// <response code="423">login failed due lock</response>
         /// <response code="500">login failed due signIn errors</response>
         [HttpPost("/api/account/login")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),401)]
+        [ProducesResponseType(typeof(string),405)]
+        [ValidateAntiForgeryToken]
         [Produces("application/json")]
         public async Task<IActionResult> LoginPost(LoginViewModel model)
         {

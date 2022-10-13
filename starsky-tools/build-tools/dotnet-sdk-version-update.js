@@ -308,22 +308,57 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 
 async function sortNetFrameworkMoniker(frameworkMonikerByPath) {
 
+    // references
 	for (let [filePath,netMonikers] of Object.entries(frameworkMonikerByPath)) {
 		const referencedProjectPaths = await getReferencedProjectPaths(filePath);
+        // console.log(filePath + ' referencedProjectPaths')
+        // console.log(referencedProjectPaths)
 		for (const refPath of referencedProjectPaths) {
 			for (const netMoniker of netMonikers) {
+                if (!frameworkMonikerByPath[refPath]) {
+                    console.log('refPath is missing ' + refPath);
+                }
 				if (!frameworkMonikerByPath[refPath].includes(netMoniker)) {
 					frameworkMonikerByPath[refPath].push(netMoniker)
 				}
 			}
 		}
 	}
-	return frameworkMonikerByPath;
+
+    // Re-order versions
+    const updatedFrameworkMonikerByPath = [];
+
+    for (let [filePath,netMonikers] of Object.entries(frameworkMonikerByPath)) {
+        const newStyleDotNetRegex = new RegExp('^net\\d', 'i');
+
+        const newStylenetMonikers  = netMonikers.filter((x)=> newStyleDotNetRegex.test(x)).sort((a,b)=>b.localeCompare(a));
+        const oldStylenetMonikers  = netMonikers.filter((x)=> !newStyleDotNetRegex.test(x)).sort((a,b)=>b.localeCompare(a));
+
+        updatedFrameworkMonikerByPath[filePath] = [...newStylenetMonikers,...oldStylenetMonikers]
+	}
+
+	return updatedFrameworkMonikerByPath;
 }
 
 
 async function getReferencedProjectPaths(filePath) {
-	let buffer = await readFile(filePath);
+	const localProjectPackagesPaths = await getProjectReferences(filePath);
+
+    let updatedLocalProjectPackagesPaths = [];
+
+	// add the references of that packages also to the list
+    for (const singlePath of localProjectPackagesPaths) {
+        const localProjectPackagesPathsRecurisive = await getProjectReferences(singlePath);
+
+        for (const item of localProjectPackagesPathsRecurisive) {
+            updatedLocalProjectPackagesPaths.push(item);
+        }
+    }
+	return updatedLocalProjectPackagesPaths;
+}
+
+async function getProjectReferences(filePath) {
+    let buffer = await readFile(filePath);
 	let fileContent = buffer.toString("utf8");
 	const currentDirName = dirname(filePath)
 
@@ -335,7 +370,7 @@ async function getReferencedProjectPaths(filePath) {
 		localProjectReferenceRegex
 	);
 
-	let localProjectPackagesPaths = [];
+    let localProjectPackagesPaths = [];
 
 	for (const result of localProjectReferenceMatches) {
 
@@ -349,18 +384,14 @@ async function getReferencedProjectPaths(filePath) {
 		const combinedPath = join(currentDirName,name);
 
 		localProjectPackagesPaths.push(combinedPath);
-
 	}
-	return localProjectPackagesPaths;
+
+    return localProjectPackagesPaths;
 }
-
-
 
 async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 
 	for (let [filePath,usedTargetFrameworkMonikers] of Object.entries(sortedFrameworkMonikerByPath)) {
-		// reverse sort
-		usedTargetFrameworkMonikers = usedTargetFrameworkMonikers.sort();
 
 		if (usedTargetFrameworkMonikers.find(p => p.startsWith("net"))) {
 			const lastNet = usedTargetFrameworkMonikers[0];

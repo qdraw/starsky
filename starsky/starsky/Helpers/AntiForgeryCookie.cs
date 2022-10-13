@@ -19,15 +19,17 @@ namespace starsky.Helpers
 		public void SetAntiForgeryCookie(HttpContext httpContext)
 		{
 			if ( httpContext == null ) return;
-			var tokens = _antiForgery.GetAndStoreTokens(httpContext);
-
+			var tokens = _antiForgery.GetAndStoreTokens(httpContext).RequestToken;
+			if ( tokens == null ) return;
+			
 			httpContext.Response.Cookies.Append(
-				"X-XSRF-TOKEN", tokens.RequestToken, 
+				"X-XSRF-TOKEN", tokens, 
 				new CookieOptions()
 				{
 					HttpOnly = false, // need to be false, is needed by the javascript front-end
 					SameSite = SameSiteMode.Lax,
-					Secure = httpContext.Request.IsHttps
+					Secure = httpContext.Request.IsHttps,
+					IsEssential = true,
 				});
 		}
 	}

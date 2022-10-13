@@ -4,7 +4,7 @@
 
 namespace starsky.foundation.database.Migrations
 {
-    public partial class SettingsTable : Migration
+    public partial class settingsTable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,8 +12,8 @@ namespace starsky.foundation.database.Migrations
                 name: "Settings",
                 columns: table => new
                 {
-                    Key = table.Column<string>(type: "TEXT", nullable: false),
-                    Value = table.Column<string>(type: "TEXT", nullable: true),
+                    Key = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false),
+                    Value = table.Column<string>(type: "TEXT", maxLength: 4096, nullable: false),
                     IsUserEditable = table.Column<bool>(type: "INTEGER", nullable: false),
                     UserId = table.Column<int>(type: "INTEGER", nullable: true)
                 },

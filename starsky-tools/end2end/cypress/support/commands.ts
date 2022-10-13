@@ -55,19 +55,39 @@ declare global {
 }
 
 function sendAuthenticationHeader () {
+
   cy.request({
-    method: 'POST',
-    url: Cypress.config().baseUrl + '/starsky/api/account/login',
+    method: 'GET',
+    url: Cypress.config().baseUrl + '/account/login',
     form: false,
     followRedirect: false,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: `Email=${Cypress.env('AUTH_USER')}&Password=${Cypress.env('AUTH_PASS')}`,
     failOnStatusCode: false
-  }).then((res) => {
-    // expect(res.status).to.eq(200)
-  })
+  }).then((response) => {
+    const cookies = response.headers['set-cookie'];
+    let afCookie = "";
+    for (const cookie of cookies) {
+      if (cookie.startsWith("X-XSRF-TOKEN")) {
+        afCookie = cookie.split(";")[0].replace("X-XSRF-TOKEN=","");
+      }
+    }
+
+    cy.request({
+      method: 'POST',
+      url: Cypress.config().baseUrl + '/starsky/api/account/login',
+      form: false,
+      followRedirect: false,
+      headers: {
+        "X-XSRF-TOKEN": afCookie,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `Email=${Cypress.env('AUTH_USER')}&Password=${Cypress.env('AUTH_PASS')}`,
+      failOnStatusCode: false
+    }).then((res) => {
+      // expect(res.status).to.eq(200)
+    })
+})
+
+
 }
 
 Cypress.Commands.add('sendAuthenticationHeader', sendAuthenticationHeader)

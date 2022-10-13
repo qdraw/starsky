@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using build;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -10,6 +11,9 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 namespace helpers
 {
+	/// <summary>
+	/// use --skip to run only this test
+	/// </summary>
 	public static class DotnetRuntimeSpecificHelper
 	{
 		public static void Clean(List<string> runtimesWithoutGeneric)
@@ -34,14 +38,20 @@ namespace helpers
 					Console.WriteLine($"folder is not removed - {Path.Combine(BasePath(), runtime)}");
 				}
 
-				// todo!
-				if (Directory.Exists($"obj/Release/net6.0/{runtime}"))
+				// get current netMoniker
+				var version = System.Runtime.InteropServices.RuntimeInformation
+					.FrameworkDescription;
+				var netMoniker = new Regex(".\\d+$").Replace(version, string.Empty).Replace(".NET ","net");
+				// e.g net6.0
+				
+				if (Directory.Exists($"obj/Release/{netMoniker}/{runtime}"))
 				{
-					Directory.Delete($"obj/Release/net6.0/{runtime}",true);
+					Console.WriteLine($"remove -> obj/Release/{netMoniker}/{runtime}");
+					Directory.Delete($"obj/Release/{netMoniker}/{runtime}",true);
 				}
 				else
 				{
-					Console.WriteLine($"folder is not removed - obj/Release/net6.0/{runtime}");
+					Console.WriteLine($"folder is not removed -> obj/Release/{netMoniker}/{runtime}");
 				}
 			}
 		}

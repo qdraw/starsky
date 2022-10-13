@@ -48,7 +48,7 @@
   "MedallionShell 1.6.2",
   "Microsoft.AspNetCore.Identity.EntityFrameworkCore 6.0.9",
   "Microsoft.Extensions.Hosting 6.0.1",
-  "Microsoft.NET.Test.Sdk 17.3.1",
+  "Microsoft.NET.Test.Sdk 17.3.2",
   "MSTest.TestAdapter 2.2.10",
   "MSTest.TestFramework 2.2.10",
   "coverlet.collector 3.1.2",

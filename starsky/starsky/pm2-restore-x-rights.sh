@@ -68,6 +68,10 @@ if [ -f pm2-warmup.sh ]; then
     chmod +rwx ./pm2-warmup.sh
 fi
 
+if [ -f service-deploy-systemd.sh ]; then
+    chmod +rwx ./service-deploy-systemd.sh
+fi
+
 if [ -f starsky ]; then
     chmod +rwx ./starsky
 fi
