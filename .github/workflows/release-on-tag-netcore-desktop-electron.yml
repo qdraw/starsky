@@ -22,10 +22,10 @@ jobs:
         with:
           dotnet-version: 6.0.401
 
-      - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64
+      - name: Build  --no-unit-test  linux-arm,linux-arm64,win-x64,osx-x64,linux-x64
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --runtime "linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test    
+        run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test    
    
       - name: Upload linux-arm as build artifact
         uses: actions/upload-artifact@v2
@@ -42,8 +42,8 @@ jobs:
       - name: Upload Win7 as build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: win7-x64
-          path: ./starsky/starsky-win7-x64.zip
+          name: win-x64
+          path: ./starsky/starsky-win-x64.zip
   
       - name: Upload linux-x64 as build artifact
         uses: actions/upload-artifact@v2
@@ -125,16 +125,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download starsky-win7-x64 as build artifact
+      - name: Download starsky-win-x64 as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: win7-x64
+          name: win-x64
           path: ./starsky
 
       - name: Unzip Windows bundle
         shell: bash
         working-directory: ./starsky
-        run: unzip starsky-win7-x64.zip -d win7-x64    
+        run: unzip starsky-win-x64.zip -d win-x64    
 
       - name: List
         shell: bash
@@ -187,7 +187,7 @@ jobs:
             - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's 
             - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *10.15* or newer
             - starsky-osx-arm64.zip - Starsky as Web Application (start from command line) only for Apple Silicon (newer then end of 2020) Mac OS *12* or newer
-            - starsky-win7-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 (Intel 64 bits)
+            - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 (Intel 64 bits)
 
             ## Changelog
             [There is an changelog to see the recent changes](https://qdraw.github.io/starsky/history.html)
@@ -228,21 +228,21 @@ jobs:
           asset_name: starsky-osx-arm64.zip
           asset_content_type: application/zip      
 
-      - name: Download win7-x64 as build artifact
+      - name: Download win-x64 as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: win7-x64
+          name: win-x64
           path: ./starsky
 
-      - name: Upload Release Asset win7-x64
-        id: upload-win7-x64
+      - name: Upload Release Asset win-x64
+        id: upload-win-x64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./starsky/starsky-win7-x64.zip
-          asset_name: starsky-win7-x64.zip
+          asset_path: ./starsky/starsky-win-x64.zip
+          asset_name: starsky-win-x64.zip
           asset_content_type: application/zip      
           
       - name: Download linux-arm64 as build artifact
