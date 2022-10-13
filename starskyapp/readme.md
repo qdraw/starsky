@@ -84,10 +84,10 @@ _We assume that you run on a 64 bits Windows version_
 _When running bash_
 
 ```bash
-../starsky/build.sh --Runtime=win7-x64
+../starsky/build.sh --Runtime=win-x64
 ```
 
-For Windows there is a folder created: `starsky/win7-x64` and this is copied to the desktop application
+For Windows there is a folder created: `starsky/win-x64` and this is copied to the desktop application
 
 ### For Mac OS
 
