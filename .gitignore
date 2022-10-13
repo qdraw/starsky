@@ -359,6 +359,7 @@ starsky-tools/docs/*/*/*/*.jpg
 **/linux-x64/*
 **/win7-x86/*
 **/win7-x64/*
+**/win-x86/*
 **/win-x64/*
 **/win-arm64/*
 **/generic-netcore/*
@@ -374,6 +375,7 @@ starsky-osx.10.12-x64.zip
 starsky-win7-x86.zip
 starsky-win7-x64.zip
 starsky-win-x64.zip
+starsky-win-arm64.zip
 starsky-generic-netcore*.zip
 starsky-netframework-msbuild.zip
 
