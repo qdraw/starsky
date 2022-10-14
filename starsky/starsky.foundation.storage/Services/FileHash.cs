@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.storage.Interfaces;
@@ -166,7 +167,7 @@ namespace starsky.foundation.storage.Services
 				{
 					int length;
 					while ( ( length = await stream
-						.ReadAsync(block, 0, block.Length)
+						.ReadAsync(block, 0, block.Length, new CancellationToken())
 						.ConfigureAwait(false) ) > 0 )
 					{
 						md5.TransformBlock(block, 0, length, null, 0);

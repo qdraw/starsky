@@ -59,7 +59,8 @@ public class SettingsService : ISettingsService
 	{
 		return await AddOrUpdateSetting(new SettingsItem
 		{
-			Key = Enum.GetName(key), Value = value
+			Key = Enum.GetName(key) ?? string.Empty, 
+			Value = value
 		});
 	}
 
