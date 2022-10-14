@@ -791,7 +791,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchViewModel_ParseDateTimeLowInt()
 		{
-			var p = new SearchViewModel().ParseDateTime("0");
+			var p = SearchViewModel.ParseDateTime("0");
 			// today
 			Assert.AreEqual(p.Day,DateTime.Now.Day);
 			Assert.AreEqual(p.Month,DateTime.Now.Month);
@@ -801,7 +801,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchViewModel_ParseDateTimeLargeInt()
 		{
-			var p = new SearchViewModel().ParseDateTime("20180911");
+			var p = SearchViewModel.ParseDateTime("20180911");
 			// defaults to today
 			Assert.AreEqual(p.Day,DateTime.Now.Day);
 			Assert.AreEqual(p.Month,DateTime.Now.Month);
@@ -810,7 +810,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchViewModel_ParseDateTimeExample()
 		{
-			var p = new SearchViewModel().ParseDateTime("2018-09-11");
+			var p = SearchViewModel.ParseDateTime("2018-09-11");
 			// defaults to today
 			Assert.AreEqual(DateTime.Parse("2018-09-11"),p);
 		}

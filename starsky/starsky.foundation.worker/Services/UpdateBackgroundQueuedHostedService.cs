@@ -29,11 +29,11 @@ namespace starsky.foundation.worker.Services
 			return ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger, cancellationToken);
 		}
 
-		public override async Task StopAsync(CancellationToken cancellationToken)
+		public override async Task StopAsync(CancellationToken stoppingToken)
 		{
 			_logger.LogInformation(
 				$"QueuedHostedService {_taskQueue.GetType().Name} is stopping.");
-			await base.StopAsync(cancellationToken);
+			await base.StopAsync(stoppingToken);
 		}
 	}
 }

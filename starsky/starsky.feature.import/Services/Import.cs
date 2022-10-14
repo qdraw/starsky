@@ -32,7 +32,7 @@ using starskycore.Models;
 namespace starsky.feature.import.Services
 {
 	/// <summary>
-	/// Also known as ImportService
+	/// Also known as ImportService - Import.cs
 	/// </summary>
 	[Service(typeof(IImport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class Import : IImport
@@ -131,14 +131,14 @@ namespace starsky.feature.import.Services
 			foreach ( var importIndexItem in importIndexItemsList.Where(p =>
 				p.Status == ImportStatus.Ok) )
 			{
-				if ( directoriesContent.ContainsKey(importIndexItem.FileIndexItem.ParentDirectory) )
+				if ( directoriesContent.ContainsKey(importIndexItem.FileIndexItem?.ParentDirectory!) )
 					continue;
 				
 				var parentDirectoryList =
 					_subPathStorage.GetAllFilesInDirectory(
-						importIndexItem.FileIndexItem
+						importIndexItem.FileIndexItem?
 							.ParentDirectory).ToList();
-				directoriesContent.Add(importIndexItem.FileIndexItem.ParentDirectory, parentDirectoryList);
+				directoriesContent.Add(importIndexItem.FileIndexItem?.ParentDirectory!, parentDirectoryList);
 			}
 
 			return directoriesContent;
@@ -389,7 +389,7 @@ namespace starsky.feature.import.Services
 			
 			var structureService = new StructureService(_subPathStorage, importIndexItem.Structure);
 			
-			importIndexItem.FileIndexItem.ParentDirectory = structureService.ParseSubfolders(
+			importIndexItem.FileIndexItem!.ParentDirectory = structureService.ParseSubfolders(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
 				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
 			
@@ -435,7 +435,7 @@ namespace starsky.feature.import.Services
 			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return false;
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
-				.Select(p => (p.FilePath, p.FileIndexItem.FileHash)).ToList();
+				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).ToList();
 			if ( !items.Any() ) return false;
 			return await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}
@@ -460,7 +460,7 @@ namespace starsky.feature.import.Services
 			{
 				// When a xmp file already exist (only for raws)
 				// AND when this created afterwards with the ExifToolImportXmpCreate setting  (only for raws)
-				importIndexItem.FileIndexItem.AddSidecarExtension("xmp");
+				importIndexItem.FileIndexItem!.AddSidecarExtension("xmp");
 			}
 			
 			// Add item to database
@@ -527,7 +527,7 @@ namespace starsky.feature.import.Services
 				var exifCopy = new ExifCopy(_subPathStorage, 
 					_thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, 
 					_appSettings, null, _logger));
-				await exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
+				await exifCopy.XmpSync(importIndexItem.FileIndexItem!.FilePath);
 			}
 		}
 
@@ -570,11 +570,11 @@ namespace starsky.feature.import.Services
 			// Add to Normal File Index database
 			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
 				_memoryCache, _appSettings,_logger).Query();
-			await query!.AddItemAsync(importIndexItem.FileIndexItem);
+			await query!.AddItemAsync(importIndexItem.FileIndexItem!);
 			
 			// Add to check db, to avoid duplicate input
 			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery,_console, _logger).ImportQuery();
-			await importQuery.AddAsync(importIndexItem, importSettings.IsConsoleOutputModeDefault() );
+			await importQuery!.AddAsync(importIndexItem, importSettings.IsConsoleOutputModeDefault() );
 			
 			await query.DisposeAsync();
 		}
