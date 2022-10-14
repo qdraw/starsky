@@ -56,6 +56,7 @@ namespace starsky.foundation.database.Query
 					continue;
 				}
 				predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path) 
+				                    && p.FileName != null 
 				                    && p.FileName.StartsWith(fileNameWithoutExtension + ".")  );
 			}
 			
