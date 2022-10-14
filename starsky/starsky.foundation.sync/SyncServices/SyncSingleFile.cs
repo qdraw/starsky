@@ -70,23 +70,7 @@ namespace starsky.foundation.sync.SyncServices
 			var (lastEditedIsSame, fileHashSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
 			if ( !lastEditedIsSame )
 			{
-				if ( updateDelegate != null )
-				{
-					new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
-				}
-
-				if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true)
-				{
-					return dbItem;
-				}
-
-				// only update last edited time in database
-				if ( fileHashSame == true )
-				{
-					return await UpdateItemLastEdited(updatedDbItem);
-				}
-				return await UpdateItem(dbItem, updatedDbItem.Size, subPath,
-						true);
+				return await HandleLastEditedIsSame(updateDelegate, dbItem, updatedDbItem, fileHashSame, subPath);
 			}
 
 			// to avoid reSync
@@ -94,6 +78,29 @@ namespace starsky.foundation.sync.SyncServices
 			AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
 			
 			return updatedDbItem;
+		}
+
+		private async Task<FileIndexItem> HandleLastEditedIsSame(ISynchronize.SocketUpdateDelegate updateDelegate, 
+			FileIndexItem dbItem, FileIndexItem updatedDbItem, bool? fileHashSame, string subPath)
+		{
+			if ( updateDelegate != null )
+			{
+				new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
+			}
+
+			if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true)
+			{
+				return dbItem;
+			}
+
+			// only update last edited time in database
+			if ( fileHashSame == true )
+			{
+				return await UpdateItemLastEdited(updatedDbItem);
+			}
+			
+			return await UpdateItem(dbItem, updatedDbItem.Size, subPath,
+				true);
 		}
 
 		/// <summary>
@@ -141,19 +148,7 @@ namespace starsky.foundation.sync.SyncServices
 			var (lastEditedIsSame, fileHashSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
 			if ( !lastEditedIsSame )
 			{
-				if ( updateDelegate != null )
-				{
-					await updateDelegate(new List<FileIndexItem> {dbItem});
-				}
-				
-				// only update last edited time in database
-				if ( fileHashSame != true ||
-				     _appSettings.SyncAlwaysUpdateLastEditedTime != true )
-				{
-					return await UpdateItem(dbItem, updatedDbItem.Size, subPath,
-						true);
-				}
-				return await UpdateItemLastEdited(updatedDbItem);
+				return await HandleLastEditedIsSame(updateDelegate, dbItem, updatedDbItem, fileHashSame, subPath);
 			}
 
 			// to avoid reSync
