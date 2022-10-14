@@ -28,7 +28,7 @@ namespace starskytest.FakeMocks
 		/// <param name="outputSubPathFolders">/</param>
 		/// <param name="outputSubPathFiles">/test.jpg</param>
 		/// <param name="byteListSource"></param>
-		/// <param name="fileHashPerThumbnail">for mock fileHash=subPath</param>
+		/// <param name="lastEdited"></param>
 		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
 			IReadOnlyList<byte[]> byteListSource = null, List<DateTime> lastEdited = null)
 		{

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ using static SimpleExec.Command;
 
 namespace helpers
 {
+	[SuppressMessage("ReSharper", "ArrangeTypeMemberModifiers")]
 	public static class SonarQube
 	{
 		public const string SonarQubePackageName = "dotnet-sonarscanner";
@@ -34,7 +36,7 @@ namespace helpers
 			}
 		
 			var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
-				.BaseDirectory).Parent.Parent.Parent.FullName;
+				.BaseDirectory!)!.Parent!.Parent!.Parent!.FullName;
 			
 			Console.WriteLine(rootDirectory);
 
@@ -113,7 +115,7 @@ namespace helpers
 			// Current branch name
 			var parent = Directory.GetParent(".")?.FullName;
         
-			var (gitBranchName,_) = ReadAsync(GitCommand, " branch --show-current", parent).Result;
+			var (gitBranchName,_) = ReadAsync(GitCommand, " branch --show-current", parent!).Result;
 		
 			// allow to overwrite the branch name
 			if (branchName == "" && !string.IsNullOrEmpty(gitBranchName)) {
@@ -153,11 +155,13 @@ namespace helpers
 				.Append($"/d:sonar.exclusions=\"**/build/*,**/build/helpers/*," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
-				        $"**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\" ")
+				        $"**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
+				        $"**/_bigimages-helper.js\" ")
 				.Append($"/d:sonar.coverage.exclusions=\"**/build/*,**/build/helpers/*," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
-				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\" ");
+				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*," +
+				        $"**/_bigimages-helper.js\" ");
         
 			// Normal build
 			if (!isPrBuild) {
@@ -168,7 +172,7 @@ namespace helpers
         
 			// Pull Request Build
 			if (isPrBuild) {
-				Information($">> PR Build isPRBuild={isPrBuild}  githubPrNumber " +
+				Information($">> PR Build isPRBuild={true}  githubPrNumber " +
 				            $"{githubPrNumber} githubBaseBranch {githubBaseBranch} githubRepoSlug {githubRepoSlug}");
 
 				sonarArguments

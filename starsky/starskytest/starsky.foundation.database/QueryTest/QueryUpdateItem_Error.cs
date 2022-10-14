@@ -476,7 +476,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceProvider = services.BuildServiceProvider();
 			var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var fakeQuery = new Query(appDbInvalidOperationException,  null, scope,null);
+			var fakeQuery = new Query(appDbInvalidOperationException,  new AppSettings(), scope,new FakeIWebLogger());
 			
 			fakeQuery.UpdateItem(new List<FileIndexItem>());
 

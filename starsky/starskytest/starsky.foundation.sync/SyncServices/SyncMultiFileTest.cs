@@ -19,15 +19,23 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	public class SyncMultiFileTest
 	{
 		private readonly IStorage _iStorageFake;
-		private readonly DateTime _dateTime;
+		private readonly DateTime _lastEditedDateTime;
 
 		public SyncMultiFileTest()
 		{
-			_dateTime = new DateTime(2020, 02, 02);
+			_lastEditedDateTime = new DateTime(2020, 02, 02);
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg","/color_class_test.jpg", "/status_deleted.jpg"},
-				new List<byte[]>{CreateAnImageNoExif.Bytes, 
-					CreateAnImageColorClass.Bytes, CreateAnImageStatusDeleted.Bytes}, new List<DateTime>{_dateTime,new DateTime(),new DateTime()});
+				new List<byte[]>{
+					CreateAnImageNoExif.Bytes, 
+					CreateAnImageColorClass.Bytes,
+					CreateAnImageStatusDeleted.Bytes
+				}, new List<DateTime>
+				{
+					_lastEditedDateTime,
+					_lastEditedDateTime,
+					_lastEditedDateTime
+				});
 		}
 
 		[TestMethod]
@@ -145,7 +153,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			{
 				new FileIndexItem("/test.jpg")
 				{
-					FileHash = fileHash
+					FileHash = fileHash,
+					LastEdited = _lastEditedDateTime
 				}
 			});
 			
@@ -174,7 +183,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FileIndexItem("/"),
 				new FileIndexItem("/test.jpg")
 				{
-					FileHash = fileHash
+					FileHash = fileHash,
+					LastEdited = _lastEditedDateTime
 				}
 			});
 			
@@ -204,7 +214,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				// no parent folder in database
 				new FileIndexItem("/test.jpg")
 				{
-					FileHash = fileHash
+					FileHash = fileHash,
+					LastEdited = _lastEditedDateTime
 				}
 			});
 			
@@ -228,7 +239,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public async Task MultiFile_FileAlreadyExist_With_Same_ByteSize()
+		public async Task MultiFile_FileAlreadyExist_With_Same_LastEditedTime()
 		{
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
 
@@ -238,7 +249,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				{
 					FileHash = fileHash,
 					Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
-					Tags = "the tags should not be updated" // <= the tags in /test.jpg is nothing
+					Tags = "the tags should not be updated", // <= the tags in /test.jpg is nothing,
+					LastEdited = _lastEditedDateTime
 				}
 			});
 			
@@ -249,10 +261,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result[0].Status);
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 
-			Assert.AreNotEqual(string.Empty, fileIndexItem.Tags);
-			Assert.AreEqual("the tags should not be updated", fileIndexItem.Tags);
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
 		}
 
 		[TestMethod]

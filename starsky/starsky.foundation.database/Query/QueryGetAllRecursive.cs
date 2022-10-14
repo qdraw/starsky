@@ -29,7 +29,7 @@ namespace starsky.foundation.database.Query
 			List<FileIndexItem> LocalQuery(ApplicationDbContext context)
 			{
 				return context.FileIndex.Where
-						(p => p.ParentDirectory.StartsWith(subPath) )
+						(p => p.ParentDirectory!.StartsWith(subPath) )
 					.OrderBy(r => r.FileName).ToList();
 			}
             
@@ -70,7 +70,7 @@ namespace starsky.foundation.database.Query
 				foreach ( var filePath in filePathList )
 				{
 					var subPath = PathHelper.RemoveLatestSlash(filePath);
-					predicates.Add(p => p.ParentDirectory.StartsWith(subPath));
+					predicates.Add(p => p.ParentDirectory!.StartsWith(subPath));
 				}
 				
 				var predicate = PredicateBuilder.OrLoop(predicates);

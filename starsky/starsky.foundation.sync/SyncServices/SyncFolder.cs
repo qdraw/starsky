@@ -274,7 +274,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task<FileIndexItem> RemoveChildItems(IQuery query, FileIndexItem item)
 		{
 			// Child items within
-			var removeItems = await _query.GetAllRecursiveAsync(item.FilePath);
+			var removeItems = await _query.GetAllRecursiveAsync(item.FilePath!);
 			foreach ( var remove in removeItems )
 			{
 				_console.Write("✕");

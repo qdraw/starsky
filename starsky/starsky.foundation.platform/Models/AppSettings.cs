@@ -719,7 +719,15 @@ namespace starsky.foundation.platform.Models
 		[PackageTelemetry]
 		public bool? EnablePackageTelemetryDebug { get; set; } = false;
 
+		/// <summary>
+		/// Time to wait to avoid duplicate requests in the UseDiskWatcher API
+		/// </summary>
 		public double UseDiskWatcherIntervalInMilliseconds { get; set; } = 20000;
+
+		/// <summary>
+		/// When sync update last edited time in db, you disable it when you share a database between multiple computers
+		/// </summary>
+		public bool? SyncAlwaysUpdateLastEditedTime { get; set; } = true;
 
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
