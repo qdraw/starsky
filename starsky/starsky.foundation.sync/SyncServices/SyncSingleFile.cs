@@ -75,14 +75,18 @@ namespace starsky.foundation.sync.SyncServices
 					new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
 				}
 
-				// only update last edited time in database
-				if ( fileHashSame != true ||
-				     _appSettings.SyncAlwaysUpdateLastEditedTime != true )
+				if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true)
 				{
-					return await UpdateItem(dbItem, updatedDbItem.Size, subPath,
-						true);
+					return dbItem;
 				}
-				return await UpdateItemLastEdited(updatedDbItem);
+
+				// only update last edited time in database
+				if ( fileHashSame == true )
+				{
+					return await UpdateItemLastEdited(updatedDbItem);
+				}
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath,
+						true);
 			}
 
 			// to avoid reSync
