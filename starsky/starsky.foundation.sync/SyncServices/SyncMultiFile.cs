@@ -111,7 +111,7 @@ namespace starsky.foundation.sync.SyncServices
 				async dbItem => await _syncSingleFile.SizeFileHashIsTheSame(dbItem), _appSettings.MaxDegreesOfParallelism);
 			if ( isSameUpdatedItemList != null )
 			{
-				foreach ( var (_,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> !p.Item1) )
+				foreach ( var (_,_,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> !p.Item1) )
 				{
 					await _syncSingleFile.UpdateItem(isSameUpdatedItem,
 						isSameUpdatedItem.Size,
