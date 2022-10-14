@@ -80,29 +80,6 @@ namespace starsky.foundation.sync.SyncServices
 			return updatedDbItem;
 		}
 
-		private async Task<FileIndexItem> HandleLastEditedIsSame(ISynchronize.SocketUpdateDelegate updateDelegate, 
-			FileIndexItem dbItem, FileIndexItem updatedDbItem, bool? fileHashSame, string subPath)
-		{
-			if ( updateDelegate != null )
-			{
-				new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
-			}
-
-			if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true)
-			{
-				return dbItem;
-			}
-
-			// only update last edited time in database
-			if ( fileHashSame == true )
-			{
-				return await UpdateItemLastEdited(updatedDbItem);
-			}
-			
-			return await UpdateItem(dbItem, updatedDbItem.Size, subPath,
-				true);
-		}
-
 		/// <summary>
 		/// Query the database and check if an single item has changed
 		/// </summary>
@@ -158,6 +135,29 @@ namespace starsky.foundation.sync.SyncServices
 			return updatedDbItem;
 		}
 
+		
+		private async Task<FileIndexItem> HandleLastEditedIsSame(ISynchronize.SocketUpdateDelegate updateDelegate, 
+			FileIndexItem dbItem, FileIndexItem updatedDbItem, bool? fileHashSame, string subPath)
+		{
+			if ( updateDelegate != null )
+			{
+				new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
+			}
+
+			if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true)
+			{
+				return dbItem;
+			}
+
+			// only update last edited time in database
+			if ( fileHashSame == true )
+			{
+				return await UpdateItemLastEdited(updatedDbItem);
+			}
+			
+			return await UpdateItem(dbItem, updatedDbItem.Size, subPath,
+				true);
+		}
 
 		/// <summary>
 		/// When the same stop checking and return value
