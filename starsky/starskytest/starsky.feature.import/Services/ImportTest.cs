@@ -21,6 +21,9 @@ using starskytest.Models;
 
 namespace starskytest.starsky.feature.import.Services
 {
+	/// <summary>
+	/// ImportTest.cs
+	/// </summary>
 	[TestClass]
 	public class ImportTest
 	{

@@ -35,7 +35,6 @@ namespace starsky.Controllers
 		/// <response code="200">returns the runtime settings of Starsky</response>
 		[HttpHead("/api/env")]
 		[HttpGet("/api/env")]
-		[IgnoreAntiforgeryToken]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(AppSettings),200)]
 		[ProducesResponseType(typeof(AppSettings),401)]
