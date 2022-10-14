@@ -214,7 +214,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null!,null!,null!);
 			fakeQuery.UpdateItem(new FileIndexItem());
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -228,7 +228,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null!,null!,null!);
 			await fakeQuery.UpdateItemAsync(new FileIndexItem("test"));
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -243,7 +243,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.Options;
 			
 			var fakeQuery = new Query(new AppDbContextConcurrencyException(options), 
-				null, null,new FakeIWebLogger(),null);
+				null!, null!,new FakeIWebLogger());
 			await fakeQuery.RemoveItemAsync(new FileIndexItem("test"));
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -272,7 +272,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			CreateScope();
 			var fakeQuery = new Query(new InvalidOperationExceptionDbContext(options), 
-				null, _serviceScopeFactory ,new FakeIWebLogger(),null);
+				null!, _serviceScopeFactory! ,new FakeIWebLogger());
 			await fakeQuery.UpdateItemAsync(new FileIndexItem("test"));
 			
 			Assert.IsTrue(InvalidOperationExceptionDbContextCount == 1);
@@ -287,7 +287,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null!,null!,null!);
 			await fakeQuery.UpdateItemAsync(new List<FileIndexItem>{new FileIndexItem("test")});
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -301,7 +301,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options), null,  null, new FakeIWebLogger(), null);
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options), new AppSettings(),  null!, new FakeIWebLogger());
 			fakeQuery.RemoveItem(new FileIndexItem());
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -330,8 +330,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var sqLiteFailContext = new SqliteExceptionDbContext(options);
 			Assert.AreEqual(0,sqLiteFailContext.Count);
 
-			var fakeQuery = new Query(sqLiteFailContext, null, scope, new FakeIWebLogger());
-			await fakeQuery.RemoveItemAsync(item);
+			var fakeQuery = new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
+			await fakeQuery.RemoveItemAsync(item!);
 			
 			Assert.AreEqual(1, sqLiteFailContext.Count);
 		}
@@ -348,7 +348,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var sqLiteFailContext = new SqliteExceptionDbContext(options);
 			Assert.AreEqual(0,sqLiteFailContext.Count);
 
-			var fakeQuery = new Query(sqLiteFailContext, null, scope, new FakeIWebLogger());
+			var fakeQuery = new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
 			await fakeQuery.AddItemAsync(new FileIndexItem("/test22.jpg"));
 			
 			Assert.AreEqual(1, sqLiteFailContext.Count);
@@ -434,7 +434,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			SolveConcurrency.SolveConcurrencyException(null,
+			SolveConcurrency.SolveConcurrencyException(null!,
 #pragma warning disable 8625
 				new FakePropertyValues(null), new FakePropertyValues(null),
 #pragma warning restore 8625
@@ -502,7 +502,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			dbContext.FileIndex.Add(testItem);
 			dbContext.SaveChanges();
 			
-			var fakeQuery = new Query(appDbInvalidOperationException,  null, scope,null);
+			var fakeQuery = new Query(appDbInvalidOperationException,  new AppSettings(), scope,new FakeIWebLogger());
 
 			testItem.Tags = "test";
 			
