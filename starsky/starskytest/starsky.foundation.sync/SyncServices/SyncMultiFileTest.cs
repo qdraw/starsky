@@ -249,10 +249,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result[0].Status);
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 
-			Assert.AreNotEqual(string.Empty, fileIndexItem.Tags);
-			Assert.AreEqual("the tags should not be updated", fileIndexItem.Tags);
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
 		}
 
 		[TestMethod]
