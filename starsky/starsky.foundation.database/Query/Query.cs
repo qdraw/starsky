@@ -899,6 +899,7 @@ namespace starsky.foundation.database.Query
 	    /// </summary>
 	    /// <param name="updateStatusContent">the FileIndexItem with database data</param>
 	    /// <returns></returns>
+	    [SuppressMessage("ReSharper", "ConditionalAccessQualifierIsNonNullableAccordingToAPIContract")]
 	    public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 	    {
 		    async Task<bool> LocalRemoveDefaultQuery()
@@ -909,7 +910,8 @@ namespace starsky.foundation.database.Query
 
 		    async Task LocalRemoveQuery(ApplicationDbContext context)
 		    {
-			    context.FileIndex.Remove(updateStatusContent);
+			    // keep conditional marker for test
+			    context.FileIndex?.Remove(updateStatusContent);
 			    await context.SaveChangesAsync();
 		    }
 
