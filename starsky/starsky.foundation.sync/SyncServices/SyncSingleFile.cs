@@ -381,11 +381,11 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="xmpSubPath">sidecar file</param>
 		/// <param name="directoryWithFileIndexItems">directory where the sidecar is located</param>
 		/// <returns>completed task</returns>
-		private async Task UpdateSidecarFile(string xmpSubPath, List<FileIndexItem> directoryWithFileIndexItems)
+		internal async Task<bool> UpdateSidecarFile(string xmpSubPath, List<FileIndexItem> directoryWithFileIndexItems)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionSidecar(xmpSubPath) )
 			{
-				return;
+				return false;
 			}
 			var sidecarExt =
 				FilenamesHelper.GetFileExtensionWithoutDot(xmpSubPath);
@@ -396,6 +396,7 @@ namespace starsky.foundation.sync.SyncServices
 				item.AddSidecarExtension(sidecarExt);
 				await _query.UpdateItemAsync(item);
 			}
+			return true;
 		}
 		
 	}
