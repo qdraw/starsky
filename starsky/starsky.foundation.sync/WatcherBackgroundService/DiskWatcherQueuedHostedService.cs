@@ -37,11 +37,11 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 				_appSettings, stoppingToken);
 		}
 
-		public override async Task StopAsync(CancellationToken stoppingToken)
+		public override async Task StopAsync(CancellationToken cancellationToken)
 		{
 			_logger.LogInformation(
 				$"QueuedHostedService {_taskQueue.GetType().Name} is stopping.");
-			await base.StopAsync(stoppingToken);
+			await base.StopAsync(cancellationToken);
 		}
 	}
 }

@@ -186,7 +186,6 @@ namespace starsky.Controllers
         [ProducesResponseType(210)] // raw
         [ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
         [ProducesResponseType(404)] // not found
-        [IgnoreAntiforgeryToken]
         [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
         [ResponseCache(Duration = 29030400)] // 4 weeks
         public IActionResult Thumbnail(

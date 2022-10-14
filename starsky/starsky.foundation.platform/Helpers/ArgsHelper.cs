@@ -436,7 +436,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="args">args</param>
 		/// <returns>list of fullFilePaths</returns>
 		/// <exception cref="FieldAccessException">_appSettings is missing</exception>
-		[SuppressMessage("Usage", "443:Remove this commented out code.", Justification = "Regex as comment")]
+		[SuppressMessage("Usage", "S125:Remove this commented out code.", Justification = "Regex as comment")]
 		public List<string> GetPathListFormArgs(IReadOnlyList<string> args)
 		{
 			if ( _appSettings == null ) throw new FieldAccessException("use with _appSettings");

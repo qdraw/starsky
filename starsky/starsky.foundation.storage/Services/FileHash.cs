@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -12,6 +13,8 @@ using starsky.foundation.storage.Interfaces;
 namespace starsky.foundation.storage.Services
 {
 
+	[SuppressMessage("Usage", "S4790:Make sure this weak hash algorithm is not used in a sensitive context here.",
+		Justification = "Not used for passwords")]
 	public class FileHash
 	{
 		private readonly IStorage _iStorage;
@@ -63,7 +66,12 @@ namespace starsky.foundation.storage.Services
 			return q;
 		}
 
-		// Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+		/// <summary>
+		/// Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+		/// </summary>
+		/// <param name="fullFileName"></param>
+		/// <param name="timeoutInMilliseconds"></param>
+		/// <returns></returns>
 		private async Task<KeyValuePair<string, bool>> Md5TimeoutAsyncWrapper(
 			string fullFileName, int timeoutInMilliseconds)
 		{

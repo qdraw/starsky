@@ -18,14 +18,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
 using starsky.foundation.storage.Exceptions;
 
 namespace starsky.foundation.storage.Services
 {
-    // Create a Base32 string based on byte max arrond 30
-    
+    /// <summary>
+    /// Create a Base32 string based on byte max arrond 30
+    /// </summary>
+    [SuppressMessage("Usage", "S3963:Initialize all 'static fields' inline and remove the 'static",
+	    Justification = "as designed")]
     public static class Base32
     {
 

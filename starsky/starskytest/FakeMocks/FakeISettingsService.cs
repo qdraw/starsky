@@ -29,7 +29,7 @@ public class FakeISettingsService : ISettingsService
 
 	public Task<SettingsItem?> AddOrUpdateSetting(SettingsItem item)
 	{
-		if ( item.Key == null || !Enum.TryParse(item.Key, out SettingsType _) )
+		if ( !Enum.TryParse(item.Key, out SettingsType _) )
 		{
 			return Task.FromResult(null as SettingsItem);
 		}
@@ -49,7 +49,7 @@ public class FakeISettingsService : ISettingsService
 	{
 		return await AddOrUpdateSetting(new SettingsItem
 		{
-			Key = Enum.GetName(key), Value = value
+			Key = Enum.GetName(key)!, Value = value
 		});
 	}
 }

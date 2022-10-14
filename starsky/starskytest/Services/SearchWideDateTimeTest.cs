@@ -3,7 +3,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
 
@@ -23,12 +22,12 @@ namespace starskytest.Services
 			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited);
 			
-			var dateTime = new SearchViewModel().ParseDateTime("2015-01-01T01:01:01");
+			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
 			Expression<Func<FileIndexItem,bool>> expectedResult = (p => p.LastEdited == dateTime);
 			
 			Assert.AreEqual(expectedResult.Body.Type,result.Body.Type);
 			Assert.AreEqual(expectedResult.Body.NodeType,result.Body.NodeType);
-			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault().Type,result.Parameters.FirstOrDefault().Type);
+			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault()?.Type,result.Parameters.FirstOrDefault()?.Type);
 		}
 		
 		[TestMethod]
@@ -41,12 +40,12 @@ namespace starskytest.Services
 			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited);
 			
-			var dateTime = new SearchViewModel().ParseDateTime("2015-01-01T01:01:01");
+			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
 			Expression<Func<FileIndexItem,bool>> expectedResult = (p => p.LastEdited <= dateTime);
 			
 			Assert.AreEqual(expectedResult.Body.Type,result.Body.Type);
 			Assert.AreEqual(expectedResult.Body.NodeType,result.Body.NodeType);
-			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault().Type,result.Parameters.FirstOrDefault().Type);
+			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault()?.Type,result.Parameters.FirstOrDefault()?.Type);
 		}
 		
 		[TestMethod]
@@ -59,12 +58,12 @@ namespace starskytest.Services
 			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited);
 			
-			var dateTime = new SearchViewModel().ParseDateTime("2015-01-01T01:01:01");
+			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
 			Expression<Func<FileIndexItem,bool>> expectedResult = (p => p.LastEdited >= dateTime);
 			
 			Assert.AreEqual(expectedResult.Body.Type,result.Body.Type);
 			Assert.AreEqual(expectedResult.Body.NodeType,result.Body.NodeType);
-			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault().Type,result.Parameters.FirstOrDefault().Type);
+			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault()?.Type,result.Parameters.FirstOrDefault()?.Type);
 		}
 		
 		[TestMethod]
@@ -83,7 +82,7 @@ namespace starskytest.Services
 			
 			Assert.AreEqual(expectedResult.Body.Type,result.Body.Type);
 			Assert.AreEqual(expectedResult.Body.NodeType,result.Body.NodeType);
-			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault().Type,result.Parameters.FirstOrDefault().Type);
+			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault()?.Type,result.Parameters.FirstOrDefault()?.Type);
 		}
 		
 		
@@ -97,12 +96,12 @@ namespace starskytest.Services
 			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase);
 			
-			var dateTime = new SearchViewModel().ParseDateTime("2015-01-01T01:01:01");
+			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
 			Expression<Func<FileIndexItem,bool>> expectedResult = (p => p.LastEdited == dateTime);
 			
 			Assert.AreEqual(expectedResult.Body.Type,result.Body.Type);
 			Assert.AreEqual(expectedResult.Body.NodeType,result.Body.NodeType);
-			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault().Type,result.Parameters.FirstOrDefault().Type);
+			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault()?.Type,result.Parameters.FirstOrDefault()?.Type);
 		}
 		
 		[TestMethod]
@@ -115,12 +114,12 @@ namespace starskytest.Services
 			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase);
 			
-			var dateTime = new SearchViewModel().ParseDateTime("2015-01-01T01:01:01");
+			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
 			Expression<Func<FileIndexItem,bool>> expectedResult = (p => p.LastEdited <= dateTime);
 			
 			Assert.AreEqual(expectedResult.Body.Type,result.Body.Type);
 			Assert.AreEqual(expectedResult.Body.NodeType,result.Body.NodeType);
-			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault().Type,result.Parameters.FirstOrDefault().Type);
+			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault()?.Type,result.Parameters.FirstOrDefault()?.Type);
 		}
 		
 		[TestMethod]
@@ -133,12 +132,12 @@ namespace starskytest.Services
 			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase);
 			
-			var dateTime = new SearchViewModel().ParseDateTime("2015-01-01T01:01:01");
+			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
 			Expression<Func<FileIndexItem,bool>> expectedResult = (p => p.LastEdited >= dateTime);
 			
 			Assert.AreEqual(expectedResult.Body.Type,result.Body.Type);
 			Assert.AreEqual(expectedResult.Body.NodeType,result.Body.NodeType);
-			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault().Type,result.Parameters.FirstOrDefault().Type);
+			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault()?.Type,result.Parameters.FirstOrDefault()?.Type);
 		}
 		
 		[TestMethod]
@@ -157,7 +156,7 @@ namespace starskytest.Services
 			
 			Assert.AreEqual(expectedResult.Body.Type,result.Body.Type);
 			Assert.AreEqual(expectedResult.Body.NodeType,result.Body.NodeType);
-			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault().Type,result.Parameters.FirstOrDefault().Type);
+			Assert.AreEqual(expectedResult.Parameters.FirstOrDefault()?.Type,result.Parameters.FirstOrDefault()?.Type);
 		}
 	}
 }
