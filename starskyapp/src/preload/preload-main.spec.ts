@@ -8,15 +8,15 @@ jest.mock("electron", () => {
       getVersion: () => "99.99.99",
       getPath: () => "tmp",
       getLocale: () => "en",
-      on: () => "en"
+      on: () => "en",
     },
     contextBridge: {
-      exposeInMainWorld: (name: string, func: Function) => {}
+      exposeInMainWorld: (_: string, _2: Function) => {},
     },
     ipcRenderer: {
       send: jest.fn(),
-      on: jest.fn()
-    }
+      on: jest.fn(),
+    },
   };
 });
 
@@ -29,7 +29,7 @@ describe("preload main", () => {
           return null;
         });
       exposeBrigde.send(LocationIsRemoteIpcKey, jest.fn());
-      expect(sendSpy).toBeCalledTimes(1);
+      expect(sendSpy).toHaveBeenCalledTimes(1);
       sendSpy.mockReset();
     });
 
@@ -40,11 +40,11 @@ describe("preload main", () => {
           return null;
         });
       exposeBrigde.send("test123", jest.fn());
-      expect(sendSpy).toBeCalledTimes(0);
+      expect(sendSpy).toHaveBeenCalledTimes(0);
       sendSpy.mockReset();
     });
 
-    it("sending non-valid channel", async () => {
+    it("sending non-valid channel 1", async () => {
       jest
         .spyOn(contextBridge, "exposeInMainWorld")
         .mockImplementationOnce((name, func) => {
@@ -59,7 +59,7 @@ describe("preload main", () => {
         });
       require("./preload-main");
 
-      expect(sendSpy).toBeCalledTimes(0);
+      expect(sendSpy).toHaveBeenCalledTimes(0);
       sendSpy.mockReset();
     });
 
@@ -68,7 +68,7 @@ describe("preload main", () => {
         return null;
       });
       exposeBrigde.receive(LocationIsRemoteIpcKey, jest.fn());
-      expect(onSpy).toBeCalledTimes(1);
+      expect(onSpy).toHaveBeenCalledTimes(1);
       onSpy.mockReset();
     });
 
@@ -77,7 +77,7 @@ describe("preload main", () => {
         return null;
       });
       exposeBrigde.receive("test123", jest.fn());
-      expect(onSpy).toBeCalledTimes(0);
+      expect(onSpy).toHaveBeenCalledTimes(0);
       onSpy.mockReset();
     });
   });

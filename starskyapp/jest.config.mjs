@@ -36,7 +36,7 @@ function pathsToESModuleNameMapper() {
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   moduleNameMapper: pathsToESModuleNameMapper(),
   modulePathIgnorePatterns: [
@@ -53,7 +53,7 @@ export default {
     ],
   },
   testMatch: [
-    '**/tests/**/*.(spec|test).([jt]s?(x))',
+    '**/**/*.(spec|test).([jt]s?(x))',
   ],
   collectCoverage: true,
   verbose: true,

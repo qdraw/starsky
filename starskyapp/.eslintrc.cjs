@@ -12,12 +12,13 @@ const baseConfig = {
   ],
   rules: {
     "max-len": ["off"],
-    "quotes": ["double"],
+    quotes: ["off"],
     "@typescript-eslint/quotes": ["off"],
     "import/extensions": ["off"],
     "arrow-body-style": ["off"],
     "@typescript-eslint/no-unsafe-call": ["off"],
-
+    "import/order": ["off"],
+    "import/no-import-module-exports": ["off"],
 
     // 'max-len': [
     //   'warn',
@@ -28,10 +29,6 @@ const baseConfig = {
     //   },
     // ],
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-    'import/order': [
-      'error',
-      { alphabetize: { order: 'asc' } },
-    ],
   },
 };
 

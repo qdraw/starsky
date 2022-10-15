@@ -1,5 +1,5 @@
 {
-  "name": "Starsky",
+  "name": "starsky",
   "version": "4.1.2",
   "description": "Starsky",
   "main": "./dist/main.bundle.js",
@@ -9,27 +9,26 @@
     "prod": "rimraf dist && cross-env NODE_ENV=production webpack --progress --color",
     "jest": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest",
     "jest-ci": "npm run jest -- --config jest.config.ci.mjs",
-    "watch-jest": "npm run jest -- --watchAll",
+    "test": "npm run jest -- --watchAll",
     "lint": "eslint . --cache --ext js,jsx,cjs,mjs,ts,tsx",
-    "test": "npm run lint && npm run jest",
+    "test:ci": "npm run lint && npm run jest",
+    "win": "electron-builder build --win",
+    "mac": "electron-builder build --mac",
     "build:win": "electron-builder build --win",
     "build:mac": "electron-builder build --mac"
   },
   "build": {
+    "beforeBuild": "dist/setup/before-build.js",
     "appId": "nl.qdraw.starsky",
     "productName": "Starsky",
     "directories": {
       "app": "./dist/",
-      "output": "./out/"
+      "output": "./dist-prod/"
     },
     "extraResources": [
       "runtime-starsky-${os}/**"
     ],
-    "files": [
-      "./src/client/pages/redirect/reload-redirect.html",
-      "./src/client/build/pages/settings/settings.html"
-    ],
-    "artifactName": "starsky-${os}-desktop.${ext}",
+    "artifactName": "starsky-${os}-${arch}-desktop.${ext}",
     "mac": {
       "minimumSystemVersion": "10.12",
       "electronLanguages": [
@@ -37,27 +36,18 @@
         "nl"
       ],
       "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns",
-      "target": [{
-        "target": "dmg",
-        "arch": "universal"
-      },
-      {
-        "target": "zip",
-        "arch": "universal"
-      }
+      "target": [
+        {
+          "target": "dmg",
+          "arch": "x64"
+        }
       ]
     },
     "win": {
-      "target": {
-        "target": [
-          "zip",
-          "nsis"
-         ],
-        "arch": [
-          "x64"
-        ],
-         "icon": "src/setup/icons/baseline-searcher-detective-263238__256px.ico"
-      }
+      "target": [
+        "zip"
+      ],
+      "icon": "src/setup/icons/baseline-searcher-detective-263238__256px.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -91,6 +81,7 @@
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
     "jest": "^29.1.2",
+    "jest-environment-jsdom": "^29.2.0",
     "ts-jest": "^29.0.3",
     "typescript": "^4.8.4"
   },

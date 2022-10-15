@@ -1,4 +1,5 @@
-"use strict";
+import * as fs from "fs";
+import * as path from "path";
 import { copyWithId } from "./copy-folder";
 
 exports.default = (context: {
@@ -11,9 +12,24 @@ exports.default = (context: {
       copyWithId("osx-x64", "runtime-starsky-mac");
       break;
     case "win":
-      copyWithId("win7-x64", "runtime-starsky-win");
+      copyWithId("win-x64", "runtime-starsky-win");
       break;
     default:
+  }
+
+  if (fs.existsSync(path.join("runtime-starsky-mac", "clientapp", "package.json"))) {
+    fs.rmSync(path.join("runtime-starsky-mac", "clientapp", "package.json"));
+  }
+  if (fs.existsSync(path.join("runtime-starsky-mac", "clientapp", "package-lock.json"))) {
+    fs.rmSync(path.join("runtime-starsky-mac", "clientapp", "package-lock.json"));
+  }
+
+  if (fs.existsSync(path.join("runtime-starsky-win", "clientapp", "package.json"))) {
+    fs.rmSync(path.join("runtime-starsky-win", "clientapp", "package.json"));
+  }
+
+  if (fs.existsSync(path.join("runtime-starsky-win", "clientapp", "package-lock.json"))) {
+    fs.rmSync(path.join("runtime-starsky-win", "clientapp", "package-lock.json"));
   }
 
   const _promises: readonly any[] = [];

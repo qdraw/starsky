@@ -337,6 +337,8 @@ starsky/starskytest/coverag*.xml
 starskyapp/ios/main.jsbundle
 **/.env
 **/.starskyenv
+starskyapp/dist-prod/*
+starskyapp/tmp/settings.json
 
 starsky-tools/docs/*.yml
 starsky-tools/docs/*.sh

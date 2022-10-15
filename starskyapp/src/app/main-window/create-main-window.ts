@@ -10,13 +10,13 @@ import { spellCheck } from "./spellcheck";
 
 async function createMainWindow(
   openSpecificUrl: string,
-  offset: number = 0
+  offset = 0,
 ): Promise<BrowserWindow> {
   const mainWindowStateKeeper = await windowStateKeeper("main");
 
-  let { x, y } = getNewFocusedWindow(
+  const { x, y } = getNewFocusedWindow(
     mainWindowStateKeeper.x - offset,
-    mainWindowStateKeeper.y - offset
+    mainWindowStateKeeper.y - offset,
   );
 
   let newWindow = new BrowserWindow({
@@ -30,28 +30,25 @@ async function createMainWindow(
       nodeIntegration: false,
       sandbox: false,
       webviewTag: true,
-      spellcheck:true, 
+      spellcheck: true,
       partition: "persist:main",
       contextIsolation: true,
-      preload: path.join(__dirname, "..", "..", "preload", "preload-main.js") // use a preload script
-    }
+      preload: path.join(__dirname, "preload-main.bundle.js"), // use a preload script preload-main.js
+    },
   });
 
   // Add Starsky as user agent also in develop mode
-  newWindow.webContents.userAgent =
-    newWindow.webContents.userAgent + " starsky/" + GetAppVersion();
+  newWindow.webContents.userAgent = `${newWindow.webContents.userAgent} starsky/${GetAppVersion()}`;
 
   mainWindowStateKeeper.track(newWindow);
 
   const location = path.join(
     __dirname,
-    "..",
-    "..",
-    "client/pages/redirect/reload-redirect.html"
+    "client/pages/redirect/reload-redirect.html",
   );
 
   newWindow.loadFile(location, {
-    query: { "remember-url": openSpecificUrl }
+    query: { "remember-url": openSpecificUrl },
   });
 
   spellCheck(newWindow);
@@ -63,7 +60,7 @@ async function createMainWindow(
 
   newWindow.webContents.setWindowOpenHandler(({ url }) => {
     console.log(url);
-    
+
     return {
       action: 'allow',
       overrideBrowserWindowOptions: {
@@ -71,11 +68,11 @@ async function createMainWindow(
           devTools: true, // allow
           partition: "persist:main",
           contextIsolation: true,
-          preload: path.join(__dirname, "..", "..", "preload", "preload-main.js") // use a preload script
-        }
-      }
-    }
-  })
+          preload: path.join(__dirname, "preload-main.bundle.js"), // use a preload script
+        },
+      },
+    };
+  });
 
   // normal navigations
   newWindow.webContents.on("did-navigate", () => {

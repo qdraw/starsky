@@ -1,8 +1,8 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
 import CopyPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import path from 'path';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import { fileURLToPath } from 'url';
 import webpack from 'webpack';
 import { merge } from 'webpack-merge';
 
@@ -53,8 +53,10 @@ const commonConfig = {
     ],
   },
   externals: {
-    fsevents: "require('fsevents')"
-  }
+    fsevents: "require('fsevents')",
+    fs: "require('fs')",
+    path: "require('path')",
+  },
 };
 
 const mainConfig = merge(commonConfig, {
@@ -105,4 +107,51 @@ const rendererConfig = merge(commonConfig, {
   ],
 });
 
-export default [mainConfig, preloadConfig, rendererConfig];
+const clientConfig = merge(commonConfig, {
+  entry: {
+    'reload-redirect': "./src/client/script/reload-redirect.ts",
+    settings: "./src/client/script/settings.ts",
+    'focus-button-autoclose': "./src/client/script/focus-button-autoclose.ts",
+    'before-build': "./src/setup/before-build.ts",
+
+  },
+  output: {
+    filename: (pathData) => {
+      switch (pathData.runtime) {
+        case 'focus-button-autoclose':
+        case 'settings':
+        case 'reload-redirect':
+          return path.join('dist', 'client', 'script', '[name].js');
+        case 'before-build':
+          return path.join('dist', 'setup', '[name].js');
+        default:
+          return '[name].js';
+      }
+    },
+    path: __dirname,
+  },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "src/client/css",
+          to: "dist/client/css",
+        },
+        {
+          from: "src/client/fonts",
+          to: "dist/client/fonts",
+        },
+        {
+          from: "src/client/images",
+          to: "dist/client/images",
+        },
+        {
+          from: "src/client/pages",
+          to: "dist/client/pages",
+        },
+      ],
+    }),
+  ],
+});
+
+export default [mainConfig, preloadConfig, rendererConfig, clientConfig];

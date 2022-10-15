@@ -15,8 +15,8 @@ export const createErrorWindow = async (error: string) => {
     show: true,
     resizable: !isPackaged(),
     webPreferences: {
-      contextIsolation: true
-    }
+      contextIsolation: true,
+    },
   });
 
   // hides the menu for windows
@@ -26,12 +26,10 @@ export const createErrorWindow = async (error: string) => {
 
   const errorPage = path.join(
     __dirname,
-    "..",
-    "..",
     "client",
     "pages",
     "error",
-    "error.html"
+    "error.html",
   );
   newWindow.loadFile(errorPage, { query: { error } });
 
@@ -47,3 +45,5 @@ export const createErrorWindow = async (error: string) => {
   errorWindows.add(newWindow);
   return newWindow;
 };
+
+export default createErrorWindow;

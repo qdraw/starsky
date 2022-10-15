@@ -11,7 +11,6 @@ export function SetupSplash() :BrowserWindow {
   });
 
   splash.loadFile(path.join(__dirname,
-    "..",
     "client/pages/splash/splash.html"
     ));
 

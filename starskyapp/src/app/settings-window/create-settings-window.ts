@@ -16,8 +16,8 @@ export const createSettingsWindow = async () => {
     webPreferences: {
       partition: "persist:main",
       contextIsolation: true,
-      preload: path.join(__dirname, "..", "..", "preload", "preload-main.js") // use a preload script
-    }
+      preload: path.join(__dirname, "preload-main.bundle.js"), // use a preload script
+    },
   });
 
   // hides the menu for windows
@@ -27,12 +27,10 @@ export const createSettingsWindow = async () => {
 
   const settingsPage = path.join(
     __dirname,
-    "..",
-    "..",
     "client",
     "pages",
     "settings",
-    "settings.html"
+    "settings.html",
   );
   newWindow.loadFile(settingsPage);
 
@@ -48,3 +46,5 @@ export const createSettingsWindow = async () => {
   settingsWindows.add(newWindow);
   return newWindow;
 };
+
+export default createSettingsWindow;
