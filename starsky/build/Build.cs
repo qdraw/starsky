@@ -114,7 +114,14 @@ namespace build
 				ClientHelper.NpmPreflight();
 				ClientHelper.ClientCiCommand();
 				ClientHelper.ClientBuildCommand();
-				ClientHelper.ClientTestCommand();
+				if ( !IsUnitTestDisabled() )
+				{
+					ClientHelper.ClientTestCommand();
+				}
+				else
+				{
+					Console.WriteLine("Test skipped due --no-unit-tests flag");
+				}
 			});
 
 		void ShowSettingsInfo()
