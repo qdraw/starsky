@@ -44,12 +44,13 @@ namespace starskytest.FakeMocks
 			return _content == null ? new List<FileIndexItem>() : _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
 		}
 
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths, int timeout = 1000)
 		{
 			var result = new List<FileIndexItem>();
-			foreach ( var subPath in filePaths )
+			foreach ( var files in filePaths.Select(GetAllFiles).Where(files => files != null) )
 			{
-				result.AddRange(GetAllFiles(subPath));
+				result.AddRange(files);
 			}
 			return Task.FromResult(result);
 		}
