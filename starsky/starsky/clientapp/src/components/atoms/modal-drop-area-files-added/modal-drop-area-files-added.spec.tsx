@@ -33,7 +33,7 @@ describe("ModalDropAreaFilesAdded", () => {
           );
         });
 
-      var exampleList = [
+      const exampleList = [
         {
           fileName: "test.jpg",
           filePath: "/test.jpg"
@@ -72,9 +72,9 @@ describe("ModalDropAreaFilesAdded", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = render(
+      const component = render(
         <ModalDropAreaFilesAdded
           isOpen={true}
           uploadFilesList={[]}

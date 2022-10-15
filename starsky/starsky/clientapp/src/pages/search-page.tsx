@@ -11,8 +11,8 @@ import { URLPath } from "../shared/url-path";
 const SearchPage: FunctionComponent<RouteComponentProps<any>> = () => {
   const history = useLocation();
 
-  var urlObject = new URLPath().StringToIUrl(history.location.search);
-  var searchList = useSearchList(urlObject.t, urlObject.p, true);
+  const urlObject = new URLPath().StringToIUrl(history.location.search);
+  const searchList = useSearchList(urlObject.t, urlObject.p, true);
 
   if (!searchList) return <>Something went wrong</>;
   if (searchList.pageType === PageType.ApplicationException) {

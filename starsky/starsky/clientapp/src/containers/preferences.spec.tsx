@@ -12,17 +12,17 @@ describe("Preferences", () => {
 
   describe("status", () => {
     it("should mount child components", () => {
-      var preferencesUsernameSpy = jest
+      const preferencesUsernameSpy = jest
         .spyOn(PreferencesUsername, "default")
         .mockImplementationOnce(() => <></>);
-      var preferencesPasswordSpy = jest
+      const preferencesPasswordSpy = jest
         .spyOn(PreferencesPassword, "default")
         .mockImplementationOnce(() => <></>);
-      var preferencesAppSettingsSpy = jest
+      const preferencesAppSettingsSpy = jest
         .spyOn(PreferencesAppSettings, "default")
         .mockImplementationOnce(() => <></>);
 
-      var component = render(<Preferences />);
+      const component = render(<Preferences />);
 
       expect(preferencesUsernameSpy).toBeCalled();
       expect(preferencesPasswordSpy).toBeCalled();

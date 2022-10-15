@@ -9,7 +9,7 @@ import Notification, {
 } from "../../atoms/notification/notification";
 
 const HealthStatusError: React.FunctionComponent = () => {
-  var healthCheck = useFetch(new UrlQuery().UrlHealthDetails(), "get");
+  const healthCheck = useFetch(new UrlQuery().UrlHealthDetails(), "get");
 
   const settings = useGlobalSettings();
   const MessageCriticalErrors = new Language(settings.language).text(
@@ -24,7 +24,7 @@ const HealthStatusError: React.FunctionComponent = () => {
   )
     return null;
 
-  var content: JSX.Element[] = [
+  const content: JSX.Element[] = [
     <span key="warning">{MessageCriticalErrors}</span>
   ];
 

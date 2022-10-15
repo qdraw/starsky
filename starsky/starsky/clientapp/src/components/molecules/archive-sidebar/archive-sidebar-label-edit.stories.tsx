@@ -12,7 +12,7 @@ storiesOf("components/molecules/archive-sidebar/label-edit", module)
   })
   .add("enabled", () => {
     globalHistory.navigate("/?select=test.jpg");
-    var archive = {} as IArchiveProps;
+    const archive = {} as IArchiveProps;
     return (
       <ArchiveContextProvider {...archive}>
         {" "}

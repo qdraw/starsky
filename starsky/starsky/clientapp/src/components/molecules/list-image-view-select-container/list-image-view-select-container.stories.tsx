@@ -5,7 +5,7 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageBox from "./list-image-view-select-container";
 
-var fileIndexItem = {
+const fileIndexItem = {
   fileName: "test.jpg",
   colorClass: 1
 } as IFileIndexItem;

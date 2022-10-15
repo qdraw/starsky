@@ -9,7 +9,7 @@ import MenuOptionMoveToTrash from "./menu-option-move-to-trash";
 storiesOf("components/molecules/menu-option-move-to-trash", module).add(
   "default",
   () => {
-    var test = {
+    const test = {
       ...newIArchive(),
       fileIndexItems: [
         {

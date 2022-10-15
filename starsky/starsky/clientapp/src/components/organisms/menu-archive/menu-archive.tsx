@@ -61,11 +61,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const history = useLocation();
 
-  var allSelection = () =>
+  const allSelection = () =>
     new Select(select, setSelect, state, history).allSelection();
-  var undoSelection = () =>
+  const undoSelection = () =>
     new Select(select, setSelect, state, history).undoSelection();
-  var removeSidebarSelection = () =>
+  const removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
 
   // Command + A for mac os || Ctrl + A for windows
@@ -85,7 +85,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
 
-  var toggleLabels = () =>
+  const toggleLabels = () =>
     new Sidebar(sidebar, setSidebar, history).toggleSidebar();
 
   const [isModalExportOpen, setModalExportOpen] = useState(false);

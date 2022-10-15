@@ -84,13 +84,13 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
 
     function cleanColorClass(): string {
       if (!props.subPath) return "/";
-      var urlObject = new URLPath().StringToIUrl(history.location.search);
+      const urlObject = new URLPath().StringToIUrl(history.location.search);
       urlObject.colorClass = [];
       return new URLPath().IUrlToString(urlObject);
     }
 
     function getFilterUrlColorClass(item: number): string {
-      var urlObject = new URLPath().StringToIUrl(history.location.search);
+      const urlObject = new URLPath().StringToIUrl(history.location.search);
 
       if (!urlObject.colorClass) {
         urlObject.colorClass = [];
@@ -99,7 +99,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
       if (!urlObject.colorClass || urlObject.colorClass.indexOf(item) === -1) {
         urlObject.colorClass.push(item);
       } else {
-        var index = urlObject.colorClass.indexOf(item);
+        const index = urlObject.colorClass.indexOf(item);
         if (index !== -1) urlObject.colorClass.splice(index, 1);
       }
 

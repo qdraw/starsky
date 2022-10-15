@@ -121,8 +121,8 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     );
 
     for (let key of Object.entries(update)) {
-      var fieldName = key[0];
-      var fieldValue = key[1];
+      const fieldName = key[0];
+      const fieldValue = key[1];
 
       if (
         fieldName &&
@@ -132,15 +132,17 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         bodyParams.set("fieldName", fieldName);
         bodyParams.set("search", fieldValue);
 
-        var replaceFieldName = "replace" + Capitalize(fieldName);
-        var replaceAnyValue = (update as any)[replaceFieldName];
-        var replaceValue: string = replaceAnyValue ? replaceAnyValue : "";
+        const replaceFieldName = "replace" + Capitalize(fieldName);
+        const replaceAnyValue = (update as any)[replaceFieldName];
+        const replaceValue: string = replaceAnyValue ? replaceAnyValue : "";
 
         bodyParams.set("replace", replaceValue);
 
         FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString())
           .then((anyData) => {
-            var result = new CastToInterface().InfoFileIndexArray(anyData.data);
+            const result = new CastToInterface().InfoFileIndexArray(
+              anyData.data
+            );
             result.forEach((element) => {
               if (element.status === IExifStatus.ReadOnly)
                 setIsError(MessageErrorReadOnly);

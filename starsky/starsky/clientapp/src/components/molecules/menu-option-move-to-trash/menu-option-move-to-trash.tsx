@@ -28,7 +28,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
-    var undoSelection = () =>
+    const undoSelection = () =>
       new Select(select, setSelect, state, history).undoSelection();
 
     const MessageMoveToTrash = language.text(
@@ -41,7 +41,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
     async function moveToTrashSelection() {
       if (!select || isReadOnly) return;
 
-      var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
+      const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
         select,
         state.fileIndexItems
       );
@@ -67,7 +67,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
         ).toString()
       );
 
-      var resultDo = await FetchPost(
+      const resultDo = await FetchPost(
         new UrlQuery().UrlUpdateApi(),
         bodyParams.toString()
       );

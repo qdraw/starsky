@@ -15,7 +15,7 @@ storiesOf("components/molecules/archive-sidebar/selection-list", module)
   })
   .add("one item selected", () => {
     globalHistory.navigate("/?select=test.jpg");
-    var archive = {
+    const archive = {
       fileIndexItems: [{ fileName: "test", filePath: "/test.jpg" }]
     } as IArchiveProps;
     return (

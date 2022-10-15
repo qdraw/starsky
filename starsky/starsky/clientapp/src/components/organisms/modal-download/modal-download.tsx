@@ -108,7 +108,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     return props.select[0];
   }
 
-  var singleFileThumbResult = useFetch(
+  const singleFileThumbResult = useFetch(
     new UrlQuery().UrlAllowedTypesThumb(getFirstSelectResult()),
     "get"
   );

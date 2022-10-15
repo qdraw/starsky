@@ -12,9 +12,11 @@ describe("Trash", () => {
 
   it("check if warning exist with no items in the list", () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
-    var spyGet = jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
-      return newIConnectionDefault();
-    });
+    const spyGet = jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      });
 
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 

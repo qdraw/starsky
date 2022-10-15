@@ -11,8 +11,8 @@ import { URLPath } from "../shared/url-path";
 const TrashPage: FunctionComponent<RouteComponentProps<any>> = () => {
   const history = useLocation();
 
-  var urlObject = new URLPath().StringToIUrl(history.location.search);
-  var searchList = useSearchList("!delete!", urlObject.p, true);
+  const urlObject = new URLPath().StringToIUrl(history.location.search);
+  const searchList = useSearchList("!delete!", urlObject.p, true);
 
   if (!searchList) return <>Something went wrong</>;
   if (searchList.pageType === PageType.ApplicationException) {

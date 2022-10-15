@@ -8,7 +8,7 @@ describe("Breadcrumb", () => {
   });
 
   it("disabled", () => {
-    var wrapper = render(<Breadcrumb subPath="" breadcrumb={[]} />);
+    const wrapper = render(<Breadcrumb subPath="" breadcrumb={[]} />);
 
     const spans = wrapper.queryAllByTestId("breadcrumb-span");
     expect(spans).toHaveLength(0);

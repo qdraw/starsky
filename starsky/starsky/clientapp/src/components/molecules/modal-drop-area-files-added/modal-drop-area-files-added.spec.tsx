@@ -9,7 +9,7 @@ describe("ModalDropAreaFilesAdded", () => {
   it("renders", () => {
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
-    var component = render(
+    const component = render(
       <ModalDropAreaFilesAdded
         isOpen={true}
         uploadFilesList={[]}
@@ -35,16 +35,16 @@ describe("ModalDropAreaFilesAdded", () => {
           );
         });
 
-      var exampleList = [
+      const exampleList = [
         {
           fileName: "test.jpg",
           filePath: "/test.jpg"
         } as IFileIndexItem
       ];
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = render(
+      const component = render(
         <ModalDropAreaFilesAdded
           isOpen={true}
           uploadFilesList={exampleList}
@@ -74,9 +74,9 @@ describe("ModalDropAreaFilesAdded", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = render(
+      const component = render(
         <ModalDropAreaFilesAdded
           isOpen={true}
           uploadFilesList={[]}

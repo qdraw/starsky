@@ -22,12 +22,12 @@ describe("Login", () => {
       data: "true"
     } as IConnectionDefault;
 
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = render(<Login />);
+    const login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
     expect(useFetchSpy).toBeCalledWith(
@@ -53,12 +53,12 @@ describe("Login", () => {
       data: ""
     } as IConnectionDefault;
 
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var view = render(<Login />);
+    const view = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
     expect(useFetchSpy).toBeCalledWith(
@@ -84,12 +84,12 @@ describe("Login", () => {
       data: "true"
     } as IConnectionDefault;
 
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = render(<Login />);
+    const login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
     expect(login.queryByTestId("logout")).toBeTruthy();
@@ -119,12 +119,12 @@ describe("Login", () => {
       data: "true"
     } as IConnectionDefault;
 
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = render(<Login />);
+    const login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
     expect(login.queryByTestId("logout")).toBeTruthy();
@@ -151,12 +151,12 @@ describe("Login", () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = render(<Login />);
+    const login = render(<Login />);
 
     expect(login.queryByTestId("email")).toBeTruthy();
     expect(login.queryByTestId("password")).toBeTruthy();
@@ -178,13 +178,13 @@ describe("Login", () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 406 } as IConnectionDefault;
 
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = render(<Login />);
+    const login = render(<Login />);
 
     expect(
       globalHistory.location.pathname.indexOf(
@@ -205,7 +205,7 @@ describe("Login", () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -216,11 +216,11 @@ describe("Login", () => {
       statusCode: 200,
       data: "ok"
     });
-    var postSpy = jest
+    const postSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPost);
 
-    var login = render(<Login />);
+    const login = render(<Login />);
 
     // email
     act(() => {
@@ -264,7 +264,7 @@ describe("Login", () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -277,12 +277,12 @@ describe("Login", () => {
       statusCode: 401,
       data: "fail"
     });
-    var postSpy = jest
+    const postSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPost)
       .mockImplementationOnce(() => mockPost);
 
-    var login = render(<Login />);
+    const login = render(<Login />);
 
     // email
     act(() => {
@@ -318,7 +318,7 @@ describe("Login", () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -331,11 +331,11 @@ describe("Login", () => {
       statusCode: 423,
       data: "fail"
     });
-    var postSpy = jest
+    const postSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPost);
 
-    var login = render(<Login />);
+    const login = render(<Login />);
 
     // email
     act(() => {

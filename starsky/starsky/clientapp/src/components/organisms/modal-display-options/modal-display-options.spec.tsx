@@ -56,7 +56,7 @@ describe("ModalDisplayOptions", () => {
     });
 
     describe("click button", () => {
-      var modal: RenderResult;
+      let modal: RenderResult;
       beforeEach(() => {
         jest.useFakeTimers();
         modal = render(

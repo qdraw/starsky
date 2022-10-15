@@ -14,7 +14,7 @@ describe("MenuSearch", () => {
 
   describe("with Context", () => {
     it("open hamburger menu", () => {
-      var component = render(
+      const component = render(
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
           dispatch={jest.fn()}
@@ -38,7 +38,7 @@ describe("MenuSearch", () => {
 
     it("un select items", () => {
       globalHistory.navigate("/?select=1");
-      var component = render(
+      const component = render(
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
           dispatch={jest.fn()}
@@ -68,7 +68,7 @@ describe("MenuSearch", () => {
           return { key: "a", ctrlKey: true };
         });
 
-      var state = {
+      const state = {
         subPath: "/",
         fileIndexItems: [
           {
@@ -78,7 +78,7 @@ describe("MenuSearch", () => {
           }
         ]
       } as IArchive;
-      var contextValues = { state, dispatch: jest.fn() };
+      const contextValues = { state, dispatch: jest.fn() };
 
       jest
         .spyOn(React, "useContext")
@@ -87,7 +87,7 @@ describe("MenuSearch", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      var component = render(
+      const component = render(
         <MenuSearch state={undefined as any} dispatch={jest.fn()} />
       );
 

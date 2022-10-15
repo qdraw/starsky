@@ -97,11 +97,11 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
     setFileName(fieldValue);
     setButtonState(true);
 
-    var extensionsState = new FileExtensions().MatchExtension(
+    const extensionsState = new FileExtensions().MatchExtension(
       state.fileIndexItem.fileName,
       fieldValue
     );
-    var isValidFileName = new FileExtensions().IsValidFileName(fieldValue);
+    const isValidFileName = new FileExtensions().IsValidFileName(fieldValue);
 
     if (!isValidFileName) {
       setError(MessageNonValidExtension);

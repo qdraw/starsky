@@ -22,7 +22,7 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(
         () => Promise.resolve({ statusCode: 876 }) as any
       );
-    var compontent = render(<AccountRegister />);
+    const compontent = render(<AccountRegister />);
     expect(compontent.queryByTestId("toc")).toBeTruthy();
   });
 
@@ -32,7 +32,7 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(
         () => Promise.resolve({ statusCode: 123 }) as any
       );
-    var compontent = render(<AccountRegister />);
+    const compontent = render(<AccountRegister />);
     expect(compontent.queryByTestId("privacy")).toBeTruthy();
   });
 
@@ -44,12 +44,12 @@ describe("AccountRegister", () => {
         data: null
       } as IConnectionDefault);
     jest.spyOn(FetchGet, "default").mockReset();
-    var fetchGetSpy = jest
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = render(<></>);
+    let container = render(<></>);
     await act(async () => {
       container = await render(<AccountRegister />);
     });
@@ -78,12 +78,12 @@ describe("AccountRegister", () => {
         data: null
       } as IConnectionDefault);
 
-    var fetchGetSpy = jest
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = render(<></>);
+    let container = render(<></>);
     await act(async () => {
       container = await render(<AccountRegister />);
     });
@@ -112,12 +112,12 @@ describe("AccountRegister", () => {
         data: null
       } as IConnectionDefault);
 
-    var fetchGetSpy = jest
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = render(<></>);
+    let container = render(<></>);
     await act(async () => {
       container = await render(<AccountRegister />);
     });
@@ -158,7 +158,7 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = render(<></>);
+    let container = render(<></>);
     await act(async () => {
       container = await render(<AccountRegister />);
     });
@@ -234,7 +234,7 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = render(<></>);
+    let container = render(<></>);
     await act(async () => {
       container = await render(<AccountRegister />);
     });
@@ -260,7 +260,7 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = render(<></>);
+    let container = render(<></>);
     await act(async () => {
       container = await render(<AccountRegister />);
     });
@@ -292,12 +292,12 @@ describe("AccountRegister", () => {
         data: "Ok"
       } as IConnectionDefault);
 
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPostIConnectionDefault);
 
     // need to await here
-    var container = render(<></>);
+    let container = render(<></>);
     await act(async () => {
       container = await render(<AccountRegister />);
     });
@@ -334,14 +334,14 @@ describe("AccountRegister", () => {
         data: null
       } as IConnectionDefault);
 
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockClear()
       .mockImplementationOnce(() => mockPostIConnectionDefault)
       .mockImplementationOnce(() => mockPostIConnectionDefault);
 
     // need to await here
-    var container = render(<AccountRegister />);
+    const container = render(<AccountRegister />);
 
     submitEmailPassword(
       container,

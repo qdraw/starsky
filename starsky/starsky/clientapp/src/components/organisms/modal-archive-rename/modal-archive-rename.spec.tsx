@@ -30,7 +30,7 @@ describe("ModalArchiveRename", () => {
   });
   describe("rename", () => {
     it("rename to non valid directory name", async () => {
-      var modal = render(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -42,7 +42,7 @@ describe("ModalArchiveRename", () => {
         "modal-archive-rename-btn-default"
       ) as HTMLButtonElement;
 
-      var submitButtonBefore = button.disabled;
+      const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
       const directoryName = modal.queryByTestId(
@@ -65,7 +65,7 @@ describe("ModalArchiveRename", () => {
         modal.queryByTestId("modal-archive-rename-warning-box")
       ).toBeTruthy();
 
-      var submitButtonAfter = button.disabled;
+      const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
       // Cleanup
@@ -78,7 +78,7 @@ describe("ModalArchiveRename", () => {
       // use this import => import * as FetchPost from '../../../shared/fetch-post';;
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -95,7 +95,7 @@ describe("ModalArchiveRename", () => {
         "modal-archive-rename-btn-default"
       ) as HTMLButtonElement;
 
-      var submitButtonBefore = button.disabled;
+      const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
       const directoryName = modal.queryByTestId(
@@ -111,7 +111,7 @@ describe("ModalArchiveRename", () => {
 
       expect(modal.queryByTestId("modal-archive-rename")).not.toBeNull();
 
-      var submitButtonAfter = button.disabled;
+      const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeFalsy();
 
       // await is needed => there is no button
@@ -167,7 +167,7 @@ describe("ModalArchiveRename", () => {
 
       expect(modal.queryByTestId("modal-archive-rename")).not.toBeNull();
 
-      var submitButtonAfter = button.disabled;
+      const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeFalsy();
 
       // await is needed => there is no button
@@ -232,7 +232,7 @@ describe("ModalArchiveRename", () => {
 
       expect(modal.queryByTestId("modal-archive-rename")).not.toBeNull();
 
-      var submitButtonAfter = button.disabled;
+      const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeFalsy();
 
       // await is needed => there is no button
@@ -252,11 +252,11 @@ describe("ModalArchiveRename", () => {
       // use this import => import * as FetchPost from '../../../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 500 } as IConnectionDefault);
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var modal = render(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -281,7 +281,7 @@ describe("ModalArchiveRename", () => {
 
       expect(modal.queryByTestId("modal-archive-rename")).not.toBeNull();
 
-      var submitButtonAfter = button.disabled;
+      const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeFalsy();
 
       // await is needed => there is no button
@@ -315,7 +315,7 @@ describe("ModalArchiveRename", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const dispatch = jest.fn();
-      var modal = render(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -370,9 +370,9 @@ describe("ModalArchiveRename", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = render(
+      const component = render(
         <ModalArchiveRename
           subPath="/"
           isOpen={true}

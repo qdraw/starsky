@@ -259,7 +259,7 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      var event = new KeyboardEvent("keydown", {
+      const event = new KeyboardEvent("keydown", {
         bubbles: true,
         cancelable: true,
         key: "0",

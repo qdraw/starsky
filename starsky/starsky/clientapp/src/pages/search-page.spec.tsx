@@ -16,7 +16,7 @@ describe("SearchPage", () => {
       .mockImplementationOnce(() => {})
       .mockImplementationOnce(() => {});
 
-    var contextSpy = jest
+    const contextSpy = jest
       .spyOn(ArchiveContextWrapper, "default")
       .mockImplementationOnce(() => {
         return <></>;

@@ -21,7 +21,7 @@ storiesOf("components/organisms/archive-sidebar", module)
   })
   .add("one item selected", () => {
     globalHistory.navigate("/?sidebar=true&select=test.jpg");
-    var archive = {
+    const archive = {
       isReadOnly: false,
       fileIndexItems: [{ fileName: "test.jpg", filePath: "/test.jpg" }]
     } as IArchiveProps;

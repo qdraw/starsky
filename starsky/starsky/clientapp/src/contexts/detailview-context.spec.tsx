@@ -20,7 +20,7 @@ describe("DetailViewContext", () => {
     fileHash: "1"
   } as IDetailView;
   it("update - check if item is update (append false)", () => {
-    var action = {
+    const action = {
       type: "update",
       tags: "tags",
       colorclass: 1,
@@ -29,7 +29,7 @@ describe("DetailViewContext", () => {
       status: IExifStatus.Ok
     } as any;
 
-    var result = detailviewReducer(state, action);
+    const result = detailviewReducer(state, action);
 
     expect(result.fileIndexItem.tags).toBe("tags");
     expect(result.fileIndexItem.colorClass).toBe(1);
@@ -38,38 +38,38 @@ describe("DetailViewContext", () => {
   });
 
   it("update - check if orientation is updated", () => {
-    var action = { type: "update", orientation: 4 } as any;
+    const action = { type: "update", orientation: 4 } as any;
 
-    var result = detailviewReducer(state, action);
+    const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.orientation).toBe(4);
   });
 
   it("update - check if lastEdited is updated", () => {
-    var action = { type: "update", lastEdited: "2" } as any;
+    const action = { type: "update", lastEdited: "2" } as any;
 
-    var result = detailviewReducer(state, action);
+    const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.lastEdited).toBe("2");
   });
 
   it("update - check if dateTime is updated", () => {
-    var action = { type: "update", dateTime: "2" } as any;
+    const action = { type: "update", dateTime: "2" } as any;
 
-    var result = detailviewReducer(state, action);
+    const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.dateTime).toBe("2");
   });
 
   it("update - check if fileHash is updated", () => {
-    var action = { type: "update", fileHash: "2" } as any;
+    const action = { type: "update", fileHash: "2" } as any;
 
-    var result = detailviewReducer(state, action);
+    const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.fileHash).toBe("2");
   });
 
   it("append - check if tags is updated", () => {
     state.fileIndexItem.tags = "";
-    var action = { type: "append", tags: "tags" } as any;
+    const action = { type: "append", tags: "tags" } as any;
 
-    var result = detailviewReducer(state, action);
+    const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.tags).toBe(",tags");
   });
 
@@ -78,7 +78,7 @@ describe("DetailViewContext", () => {
 
     const action = { type: "remove", tags: "!delete!" } as any;
 
-    var result = detailviewReducer(state, action);
+    const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.tags).toBe("");
   });
 
@@ -90,7 +90,7 @@ describe("DetailViewContext", () => {
       payload: { fileIndexItem: { tags: "test" } }
     } as any;
 
-    var result = detailviewReducer(state, action);
+    const result = detailviewReducer(state, action);
 
     expect(result.fileIndexItem.tags).toBe("test");
   });

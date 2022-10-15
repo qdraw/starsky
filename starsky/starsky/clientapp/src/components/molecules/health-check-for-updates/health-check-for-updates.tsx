@@ -23,7 +23,7 @@ export function SkipDisplayOfUpdate(): boolean {
   );
   if (!localStorageItem) return false;
 
-  var getItem = parseInt(localStorageItem);
+  const getItem = parseInt(localStorageItem);
   if (isNaN(getItem)) return false;
   return DifferenceInDate(getItem) < 5760; // 4 days
 }
@@ -41,7 +41,7 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
 
   if (SkipDisplayOfUpdate() || checkForUpdates.statusCode !== 202) return null;
 
-  var language = new Language(settings.language);
+  const language = new Language(settings.language);
 
   const ReleasesUrlToken =
     "<a target='_blank' href='https://github.com/qdraw/starsky/releases/latest' " +

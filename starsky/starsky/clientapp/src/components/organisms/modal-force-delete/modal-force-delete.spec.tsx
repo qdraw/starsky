@@ -125,9 +125,9 @@ describe("ModalForceDelete", () => {
       return <>{props.children}</>;
     });
 
-    var handleExitSpy = jest.fn();
+    const handleExitSpy = jest.fn();
 
-    var component = render(
+    const component = render(
       <ModalForceDelete
         isOpen={true}
         dispatch={jest.fn()}

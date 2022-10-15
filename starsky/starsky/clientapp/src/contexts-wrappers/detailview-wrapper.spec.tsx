@@ -17,8 +17,8 @@ describe("DetailViewWrapper", () => {
 
   describe("with mount", () => {
     it("check if DetailView is mounted", () => {
-      var args = { ...newDetailView() } as IDetailView;
-      var detailView = jest
+      const args = { ...newDetailView() } as IDetailView;
+      const detailView = jest
         .spyOn(DetailView, "default")
         .mockImplementationOnce(() => {
           return <></>;
@@ -30,7 +30,7 @@ describe("DetailViewWrapper", () => {
     });
 
     it("check if dispatch is called", () => {
-      var contextValues = {
+      const contextValues = {
         state: { fileIndexItem: newIFileIndexItem() },
         dispatch: jest.fn()
       } as any;
@@ -41,12 +41,12 @@ describe("DetailViewWrapper", () => {
         .mockImplementationOnce(() => contextValues as any)
         .mockImplementationOnce(() => contextValues as any);
 
-      var args = {
+      const args = {
         ...newDetailView(),
         fileIndexItem: newIFileIndexItem()
       } as IDetailView;
 
-      var detailView = jest
+      const detailView = jest
         .spyOn(DetailView, "default")
         .mockImplementationOnce(() => {
           return <></>;
@@ -63,7 +63,7 @@ describe("DetailViewWrapper", () => {
 
   describe("no context", () => {
     it("No context if used", () => {
-      var contextValues = {
+      const contextValues = {
         state: null,
         dispatch: jest.fn()
       } as any;
@@ -72,8 +72,8 @@ describe("DetailViewWrapper", () => {
         .spyOn(useDetailViewContext, "useDetailViewContext")
         .mockImplementationOnce(() => contextValues as any);
 
-      var args = { ...newDetailView() } as IDetailView;
-      var compontent = render(<DetailViewWrapper {...args} />);
+      const args = { ...newDetailView() } as IDetailView;
+      const compontent = render(<DetailViewWrapper {...args} />);
 
       expect(compontent.container.innerHTML).toBe("");
       compontent.unmount();
@@ -100,11 +100,13 @@ describe("DetailViewWrapper", () => {
     });
 
     it("Check if event is received", () => {
-      var dispatch = jest.fn();
+      const dispatch = jest.fn();
       document.body.innerHTML = "";
-      var result = mountReactHook(DetailViewEventListenerUseEffect, [dispatch]);
+      const result = mountReactHook(DetailViewEventListenerUseEffect, [
+        dispatch
+      ]);
 
-      var detail = {
+      const detail = {
         data: [
           {
             ...newIFileIndexItem()
@@ -118,7 +120,7 @@ describe("DetailViewWrapper", () => {
           }
         ]
       };
-      var event = new CustomEvent(useSocketsEventName, {
+      const event = new CustomEvent(useSocketsEventName, {
         detail
       });
 
@@ -127,7 +129,7 @@ describe("DetailViewWrapper", () => {
       expect(dispatch).toBeCalled();
       expect(dispatch).toBeCalledWith(detail.data[1]);
 
-      var element = result.componentMount as any;
+      const element = result.componentMount as any;
       element.unmount();
     });
   });

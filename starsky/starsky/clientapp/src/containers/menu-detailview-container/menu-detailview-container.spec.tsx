@@ -12,7 +12,7 @@ describe("MenuDetailViewContainer", () => {
     const menuDetailViewSpy = jest
       .spyOn(MenuDetailView, "default")
       .mockImplementationOnce(() => null);
-    var component = render(<MenuDetailViewContainer />);
+    const component = render(<MenuDetailViewContainer />);
     expect(menuDetailViewSpy).toBeCalled();
     component.unmount();
   });
@@ -25,7 +25,7 @@ describe("MenuDetailViewContainer", () => {
       .spyOn(MenuDetailView, "default")
       .mockImplementationOnce(() => null);
 
-    var component = render(<MenuDetailViewContainer />);
+    const component = render(<MenuDetailViewContainer />);
     expect(menuDetailViewSpy).toBeCalled();
 
     component.unmount();

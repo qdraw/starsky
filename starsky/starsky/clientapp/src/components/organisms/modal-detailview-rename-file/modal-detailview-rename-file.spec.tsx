@@ -29,18 +29,18 @@ describe("ModalDetailviewRenameFile", () => {
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var state = {
+      const state = {
         fileIndexItem: {
           status: IExifStatus.Ok,
           filePath: "/test/image.jpg",
           fileName: "image.jpg"
         }
       } as IDetailView;
-      var contextValues = { state, dispatch: jest.fn() };
+      const contextValues = { state, dispatch: jest.fn() };
 
       jest
         .spyOn(React, "useContext")
@@ -51,7 +51,7 @@ describe("ModalDetailviewRenameFile", () => {
           return contextValues;
         });
 
-      var modal = render(
+      const modal = render(
         <ModalDetailviewRenameFile
           isOpen={true}
           state={state}
@@ -63,7 +63,7 @@ describe("ModalDetailviewRenameFile", () => {
         "modal-detailview-rename-file-btn-default"
       ) as HTMLButtonElement;
 
-      var submitButtonBefore = button.disabled;
+      const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
       const directoryName = modal.queryByTestId(
@@ -86,7 +86,7 @@ describe("ModalDetailviewRenameFile", () => {
         modal.queryByTestId("modal-detailview-rename-file-warning-box")
       ).toBeTruthy();
 
-      var submitButtonAfter = button.disabled;
+      const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
       expect(fetchPostSpy).toBeCalled();
@@ -101,14 +101,14 @@ describe("ModalDetailviewRenameFile", () => {
     });
 
     it("to non valid extension", async () => {
-      var state = {
+      const state = {
         fileIndexItem: {
           status: IExifStatus.Ok,
           filePath: "/test/image.jpg",
           fileName: "image.jpg"
         }
       } as IDetailView;
-      var contextValues = { state, dispatch: jest.fn() };
+      const contextValues = { state, dispatch: jest.fn() };
 
       jest
         .spyOn(React, "useContext")
@@ -122,7 +122,7 @@ describe("ModalDetailviewRenameFile", () => {
           return contextValues;
         });
 
-      var modal = render(
+      const modal = render(
         <ModalDetailviewRenameFile
           isOpen={true}
           state={state}
@@ -134,7 +134,7 @@ describe("ModalDetailviewRenameFile", () => {
         "modal-detailview-rename-file-btn-default"
       ) as HTMLButtonElement;
 
-      var submitButtonBefore = button.disabled;
+      const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
       const directoryName = modal.queryByTestId(
@@ -157,7 +157,7 @@ describe("ModalDetailviewRenameFile", () => {
         modal.queryByTestId("modal-detailview-rename-file-warning-box")
       ).toBeTruthy();
 
-      var submitButtonAfter = button.disabled;
+      const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
       // cleanup
@@ -170,18 +170,18 @@ describe("ModalDetailviewRenameFile", () => {
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var state = {
+      const state = {
         fileIndexItem: {
           status: IExifStatus.Ok,
           filePath: "/test/image.jpg",
           fileName: "image.jpg"
         }
       } as IDetailView;
-      var contextValues = { state, dispatch: jest.fn() };
+      const contextValues = { state, dispatch: jest.fn() };
 
       jest
         .spyOn(React, "useContext")
@@ -192,7 +192,7 @@ describe("ModalDetailviewRenameFile", () => {
           return contextValues;
         });
 
-      var modal = render(
+      const modal = render(
         <ModalDetailviewRenameFile
           isOpen={true}
           state={state}
@@ -239,9 +239,9 @@ describe("ModalDetailviewRenameFile", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = render(
+      const component = render(
         <ModalDetailviewRenameFile
           state={{} as any}
           isOpen={true}

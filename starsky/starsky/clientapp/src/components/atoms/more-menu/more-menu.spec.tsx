@@ -34,7 +34,7 @@ describe("More Menu", () => {
   });
 
   it("turn off using event", (done) => {
-    var element = render(<MoreMenu>test</MoreMenu>);
+    const element = render(<MoreMenu>test</MoreMenu>);
 
     const menuContext = element.queryAllByTestId("menu-context")[0];
 

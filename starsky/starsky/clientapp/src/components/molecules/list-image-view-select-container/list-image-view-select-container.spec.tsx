@@ -7,7 +7,7 @@ import ListImageNormalSelectContainer from "./list-image-view-select-container";
 
 describe("ListImageTest", () => {
   it("renders", () => {
-    var fileIndexItem = {
+    const fileIndexItem = {
       fileName: "test",
       status: IExifStatus.Ok
     } as IFileIndexItem;
@@ -20,11 +20,11 @@ describe("ListImageTest", () => {
     });
 
     it("NonSelectMode - when click on Link, it should display a preloader", () => {
-      var fileIndexItem = {
+      const fileIndexItem = {
         fileName: "test",
         status: IExifStatus.Ok
       } as IFileIndexItem;
-      var component = render(
+      const component = render(
         <ListImageNormalSelectContainer item={fileIndexItem}>
           t
         </ListImageNormalSelectContainer>
@@ -48,11 +48,11 @@ describe("ListImageTest", () => {
     });
 
     it("when click on Link, with command key it should ignore preloader", () => {
-      var fileIndexItem = {
+      const fileIndexItem = {
         fileName: "test",
         status: IExifStatus.Ok
       } as IFileIndexItem;
-      var component = render(
+      const component = render(
         <ListImageNormalSelectContainer item={fileIndexItem} />
       );
 
@@ -82,13 +82,13 @@ describe("ListImageTest", () => {
     });
 
     it("when click on button it add the selected file to the history", () => {
-      var fileIndexItem = {
+      const fileIndexItem = {
         fileName: "test",
         status: IExifStatus.Ok
       } as IFileIndexItem;
 
-      var onSelectionCallback = jest.fn();
-      var component = render(
+      const onSelectionCallback = jest.fn();
+      const component = render(
         <ListImageNormalSelectContainer
           item={fileIndexItem}
           onSelectionCallback={onSelectionCallback}
@@ -118,14 +118,14 @@ describe("ListImageTest", () => {
     });
 
     it("shift click it should submit callback", () => {
-      var fileIndexItem = {
+      const fileIndexItem = {
         fileName: "test",
         filePath: "/test.jpg",
         status: IExifStatus.Ok
       } as IFileIndexItem;
 
-      var onSelectionCallback = jest.fn();
-      var component = render(
+      const onSelectionCallback = jest.fn();
+      const component = render(
         <ListImageNormalSelectContainer
           item={fileIndexItem}
           onSelectionCallback={onSelectionCallback}
@@ -155,13 +155,13 @@ describe("ListImageTest", () => {
     });
 
     it("shift click it should not submit callback when input is undefined", () => {
-      var fileIndexItem = {
+      const fileIndexItem = {
         fileName: "test",
         filePath: "/test.jpg",
         status: IExifStatus.Ok
       } as IFileIndexItem;
 
-      var component = render(
+      const component = render(
         <ListImageNormalSelectContainer
           item={fileIndexItem}
           onSelectionCallback={undefined as any}

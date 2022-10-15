@@ -15,7 +15,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=0");
     });
 
-    var component = render(
+    const component = render(
       <SearchPagination lastPageNumber={2}></SearchPagination>
     );
 
@@ -37,7 +37,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=1");
     });
 
-    var component = render(
+    const component = render(
       <SearchPagination lastPageNumber={2}></SearchPagination>
     );
 
@@ -57,7 +57,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=1&select=test");
     });
 
-    var component = render(
+    const component = render(
       <SearchPagination lastPageNumber={2}></SearchPagination>
     );
 
@@ -76,7 +76,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=0&select=test");
     });
 
-    var component = render(
+    const component = render(
       <SearchPagination lastPageNumber={2}></SearchPagination>
     );
 

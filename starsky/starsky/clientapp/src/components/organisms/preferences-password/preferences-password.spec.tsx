@@ -13,7 +13,7 @@ describe("PreferencesPassword", () => {
 
   describe("context", () => {
     it("default nothing entered", () => {
-      var component = render(<PreferencesPassword />);
+      const component = render(<PreferencesPassword />);
 
       act(() => {
         component.queryByTestId("preferences-password-submit")?.click();
@@ -75,7 +75,7 @@ describe("PreferencesPassword", () => {
     }
 
     it("The passwords do not match", () => {
-      var component = render(<PreferencesPassword />);
+      const component = render(<PreferencesPassword />);
 
       submitPassword(component, "12345", "password1", "something-else");
 
@@ -90,12 +90,12 @@ describe("PreferencesPassword", () => {
     });
 
     it("Test if your password has been successfully changed", async () => {
-      var component = render(<PreferencesPassword />);
+      const component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../../../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200, data: { success: true } });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -134,12 +134,12 @@ describe("PreferencesPassword", () => {
     });
 
     it("Test if enter your current password", async () => {
-      var component = render(<PreferencesPassword />);
+      const component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 401, data: null });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -171,12 +171,12 @@ describe("PreferencesPassword", () => {
     });
 
     it("Modal Error - The new password does not meet the criteria", async () => {
-      var component = render(<PreferencesPassword />);
+      const component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 400, data: null });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 

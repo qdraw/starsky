@@ -23,12 +23,12 @@ describe("ItemListView", () => {
   });
 
   describe("with Context", () => {
-    var exampleData = [
+    const exampleData = [
       { fileName: "test.jpg", filePath: "/test.jpg", colorClass: 1 }
     ] as IFileIndexItem[];
 
     it("search with data-filepath in child element", () => {
-      var component = render(
+      const component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}
@@ -52,7 +52,7 @@ describe("ItemListView", () => {
       const flatListItemSpy = jest
         .spyOn(FlatListItem, "default")
         .mockImplementationOnce(() => <></>);
-      var component = render(
+      const component = render(
         <ItemListView
           iconList={false}
           fileIndexItems={exampleData}
@@ -64,7 +64,7 @@ describe("ItemListView", () => {
     });
 
     it("no content", () => {
-      var component = render(
+      const component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={undefined as any}
@@ -75,7 +75,7 @@ describe("ItemListView", () => {
     });
 
     it("text should be: New? Set your drive location in the settings.  There are no photos in this folder", () => {
-      var component = render(
+      const component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={[]}
@@ -89,7 +89,7 @@ describe("ItemListView", () => {
     });
 
     it("text should be: There are no photos in this folder", () => {
-      var component = render(
+      const component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={[]}
@@ -103,7 +103,7 @@ describe("ItemListView", () => {
     });
 
     it("you did select a different colorclass but there a no items with this colorclass", () => {
-      var component = render(
+      const component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={[]}
@@ -116,7 +116,7 @@ describe("ItemListView", () => {
     });
 
     it("scroll to state with filePath [item exist]", () => {
-      var scrollTo = jest
+      const scrollTo = jest
         .spyOn(window, "scrollTo")
         .mockImplementationOnce(() => {});
 
@@ -130,7 +130,7 @@ describe("ItemListView", () => {
       } as INavigateState;
       jest.useFakeTimers();
 
-      var component = render(
+      const component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}
@@ -153,13 +153,13 @@ describe("ItemListView", () => {
     it("when clicking shift in selection mode", () => {
       const listImageChildItemSpy = jest.spyOn(ListImageChildItem, "default");
       globalHistory.navigate("/?select=");
-      var shiftSelectionHelperSpy = jest
+      const shiftSelectionHelperSpy = jest
         .spyOn(ShiftSelectionHelper, "ShiftSelectionHelper")
         .mockImplementationOnce(() => {
           return true;
         });
 
-      var component = render(
+      const component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}
@@ -201,7 +201,7 @@ describe("ItemListView", () => {
       const listImageChildItemSpy = jest
         .spyOn(ListImageChildItem, "default")
         .mockImplementationOnce(() => <>t</>);
-      var component = render(
+      const component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}

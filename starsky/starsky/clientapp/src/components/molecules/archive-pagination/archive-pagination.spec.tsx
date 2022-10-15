@@ -11,7 +11,7 @@ describe("ArchivePagination", () => {
     render(<ArchivePagination relativeObjects={newIRelativeObjects()} />);
   });
 
-  var relativeObjects = {
+  const relativeObjects = {
     nextFilePath: "next",
     prevFilePath: "prev"
   } as IRelativeObjects;

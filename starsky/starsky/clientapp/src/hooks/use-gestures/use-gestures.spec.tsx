@@ -109,7 +109,7 @@ describe("useGestures", () => {
 
       const t = { current: { x: 1, y: 1 } };
 
-      var result = getCurrentTouches(
+      const result = getCurrentTouches(
         sourceEvent as any,
         newTouches as any,
         prevTouch as any,
@@ -143,7 +143,7 @@ describe("useGestures", () => {
 
       const t = { current: { x: 1, y: 1 } };
 
-      var result = getCurrentTouches(
+      const result = getCurrentTouches(
         sourceEvent as any,
         newTouches as any,
         prevTouch as any,
@@ -180,7 +180,7 @@ describe("useGestures", () => {
 
     it("check if is called once", () => {
       jest.useFakeTimers();
-      var component = render(<Rotate />);
+      const component = render(<Rotate />);
 
       const image = component.container.querySelector(
         "img"
@@ -203,7 +203,7 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       const event = new TouchEvent("touchstart", exampleSingleTouches);
 
@@ -228,7 +228,7 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       const event = new TouchEvent("touchstart", exampleDoubleTouches);
 
@@ -253,7 +253,7 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -287,7 +287,7 @@ describe("useGestures", () => {
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -318,7 +318,7 @@ describe("useGestures", () => {
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -353,7 +353,7 @@ describe("useGestures", () => {
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -388,7 +388,7 @@ describe("useGestures", () => {
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -423,7 +423,7 @@ describe("useGestures", () => {
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
@@ -446,7 +446,7 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       const event = new TouchEvent("touchmove", exampleDoubleTouches);
 
@@ -477,7 +477,7 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       act(() => {
         demoElement.dispatchEvent(touchEndEvent);
@@ -504,7 +504,7 @@ describe("useGestures", () => {
 
       const demoElement = document.createElement("div");
 
-      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+      const hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       act(() => {
         demoElement.dispatchEvent(touchEndEvent);

@@ -7,7 +7,7 @@ import {
 } from "../../../interfaces/IFileIndexItem";
 import ItemListView from "./item-list-view";
 
-var exampleData8Selected = [
+const exampleData8Selected = [
   { fileName: "test.jpg", filePath: "/test.jpg", lastEdited: "1" },
   { fileName: "test2.jpg", filePath: "/test2.jpg", lastEdited: "1" },
   { fileName: "test3.jpg", filePath: "/test3.jpg", lastEdited: "1" },

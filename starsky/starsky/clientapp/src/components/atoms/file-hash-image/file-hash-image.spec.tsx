@@ -41,12 +41,12 @@ describe("FileHashImage", () => {
         return Promise.resolve(false);
       });
 
-    var spyGet = jest
+    const spyGet = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var component = render(<>test</>);
+    let component = render(<>test</>);
     await act(async () => {
       component = await render(
         <FileHashImage
@@ -89,12 +89,12 @@ describe("FileHashImage", () => {
         return Promise.resolve(false);
       });
 
-    var spyGet = jest
+    const spyGet = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var component = render(<></>);
+    let component = render(<></>);
     await act(async () => {
       component = await render(
         <FileHashImage
@@ -124,12 +124,12 @@ describe("FileHashImage", () => {
         return Promise.resolve(true);
       });
 
-    var spyGet = jest
+    const spyGet = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var component = render(<></>);
+    let component = render(<></>);
     await act(async () => {
       component = await render(
         <FileHashImage

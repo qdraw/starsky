@@ -87,7 +87,7 @@ const AccountRegister: FunctionComponent = () => {
   new DocumentTitle().SetDocumentTitlePrefix(MessageCreateNewAccount);
 
   const setUpAccountHandler = async () => {
-    var loginValidation = validateLoginForm(userEmail, userPassword);
+    const loginValidation = validateLoginForm(userEmail, userPassword);
 
     if (!loginValidation) {
       setError(
