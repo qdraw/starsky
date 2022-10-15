@@ -36,11 +36,11 @@ describe("ModalDownload", () => {
       statusCode: 200,
       data: null
     } as IConnectionDefault;
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = render(
+    const modal = render(
       <ModalDownload
         collections={false}
         select={["/"]}
@@ -84,11 +84,11 @@ describe("ModalDownload", () => {
         data: null
       } as IConnectionDefault);
 
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockFetchGetIConnectionDefault);
 
-    var modal = render(
+    const modal = render(
       <ModalDownload
         collections={false}
         select={["/file0", "/file1.jpg"]}
@@ -116,11 +116,11 @@ describe("ModalDownload", () => {
       statusCode: 415,
       data: null
     } as IConnectionDefault;
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = render(
+    const modal = render(
       <ModalDownload
         collections={false}
         select={["/"]}
@@ -163,9 +163,9 @@ describe("ModalDownload", () => {
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var handleExitSpy = jest.fn();
+    const handleExitSpy = jest.fn();
 
-    var modal = render(
+    const modal = render(
       <ModalDownload
         collections={false}
         select={["/"]}

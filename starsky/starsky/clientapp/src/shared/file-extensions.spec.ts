@@ -1,126 +1,126 @@
 import { FileExtensions } from "./file-extensions";
 
 describe("keyboard", () => {
-  var fileExt = new FileExtensions();
+  const fileExt = new FileExtensions();
   describe("MatchExtension", () => {
     it("wrong from input without extension", () => {
-      var result = fileExt.MatchExtension("test", "");
+      const result = fileExt.MatchExtension("test", "");
       expect(result).toBeNull();
     });
 
     it("wrong from input (nothing)", () => {
-      var result = fileExt.MatchExtension("", "");
+      const result = fileExt.MatchExtension("", "");
       expect(result).toBeNull();
     });
 
     it("wrong to output", () => {
-      var result = fileExt.MatchExtension("test.jpg", "");
+      const result = fileExt.MatchExtension("test.jpg", "");
       expect(result).toBeFalsy();
     });
 
     it("jpeg != tiff", () => {
-      var result = fileExt.MatchExtension("test.jpg", "test.tiff");
+      const result = fileExt.MatchExtension("test.jpg", "test.tiff");
       expect(result).toBeFalsy();
     });
     it("two jpeg files", () => {
-      var result = fileExt.MatchExtension("222.jpg", "test1.jpg");
+      const result = fileExt.MatchExtension("222.jpg", "test1.jpg");
       expect(result).toBeTruthy();
     });
   });
 
   describe("IsValidFileName", () => {
     it("valid filename", () => {
-      var result = fileExt.IsValidFileName("222.jpg");
+      const result = fileExt.IsValidFileName("222.jpg");
       expect(result).toBeTruthy();
     });
 
     it("only extension filename (non valid)", () => {
-      var result = fileExt.IsValidFileName(".jpg");
+      const result = fileExt.IsValidFileName(".jpg");
       expect(result).toBeFalsy();
     });
 
     it("start with underscore _.com", () => {
-      var result = fileExt.IsValidFileName("_.com");
+      const result = fileExt.IsValidFileName("_.com");
       expect(result).toBeTruthy();
     });
   });
 
   describe("IsValidDirectoryName", () => {
     it("valid DirectoryName", () => {
-      var result = fileExt.IsValidDirectoryName("222");
+      const result = fileExt.IsValidDirectoryName("222");
       expect(result).toBeTruthy();
     });
 
     it("non valid directory name to short", () => {
-      var result = fileExt.IsValidDirectoryName("d");
+      const result = fileExt.IsValidDirectoryName("d");
       expect(result).toBeFalsy();
     });
 
     it("non valid directory name string.emthy", () => {
-      var result = fileExt.IsValidDirectoryName("");
+      const result = fileExt.IsValidDirectoryName("");
       expect(result).toBeFalsy();
     });
 
     it("non valid directory name", () => {
-      var result = fileExt.IsValidDirectoryName(".èjpg");
+      const result = fileExt.IsValidDirectoryName(".èjpg");
       expect(result).toBeFalsy();
     });
 
     it("start with underscore _test", () => {
-      var result = fileExt.IsValidDirectoryName("_test");
+      const result = fileExt.IsValidDirectoryName("_test");
       expect(result).toBeTruthy();
     });
   });
 
   describe("GetParentPath", () => {
     it("get parent path #1", () => {
-      var result = fileExt.GetParentPath("/__starsky/test/");
+      const result = fileExt.GetParentPath("/__starsky/test/");
       expect(result).toBe("/__starsky");
     });
     it("get parent path #2", () => {
-      var result = fileExt.GetParentPath("/__starsky/test");
+      const result = fileExt.GetParentPath("/__starsky/test");
       expect(result).toBe("/__starsky");
     });
     it("get parent path #3", () => {
-      var result = fileExt.GetParentPath("/__starsky");
+      const result = fileExt.GetParentPath("/__starsky");
       expect(result).toBe("/");
     });
     it("get parent path #4", () => {
-      var result = fileExt.GetParentPath("/");
+      const result = fileExt.GetParentPath("/");
       expect(result).toBe("/");
     });
   });
 
   describe("GetFileExtensionWithoutDot", () => {
     it("get file ext without extension No Extension", () => {
-      var result = fileExt.GetFileExtensionWithoutDot("/test_image");
+      const result = fileExt.GetFileExtensionWithoutDot("/test_image");
       expect(result).toBe("");
     });
 
     it("get file ext without extension com file", () => {
-      var result = fileExt.GetFileExtensionWithoutDot("/te_st/test.com");
+      const result = fileExt.GetFileExtensionWithoutDot("/te_st/test.com");
       expect(result).toBe("com");
     });
 
     it("get file ext without extension mp4 file", () => {
-      var result = fileExt.GetFileExtensionWithoutDot("/te_st/test.mp4");
+      const result = fileExt.GetFileExtensionWithoutDot("/te_st/test.mp4");
       expect(result).toBe("mp4");
     });
 
     it("get file ext without extension Uppercase mp4 file", () => {
-      var result = fileExt.GetFileExtensionWithoutDot("/te_st/test.MP4");
+      const result = fileExt.GetFileExtensionWithoutDot("/te_st/test.MP4");
       expect(result).toBe("mp4");
     });
 
     it("get file name without extension space and http file", () => {
-      var result = fileExt.GetFileExtensionWithoutDot(
+      const result = fileExt.GetFileExtensionWithoutDot(
         "http://path/Lists/Test/Attachments/1/Document Test.docx"
       );
       expect(result).toBe("docx");
     });
 
     it("get file name without extension on root", () => {
-      var result = fileExt.GetFileExtensionWithoutDot(
+      const result = fileExt.GetFileExtensionWithoutDot(
         "/0000000000aaaaa__exifreadingtest00.jpg"
       );
       expect(result).toBe("jpg");
@@ -129,34 +129,34 @@ describe("keyboard", () => {
 
   describe("GetFileName", () => {
     it("get file name no slash", () => {
-      var result = fileExt.GetFileName("testung.jpg");
+      const result = fileExt.GetFileName("testung.jpg");
       expect(result).toBe("testung.jpg");
     });
 
     it("get file name no ext", () => {
-      var result = fileExt.GetFileName("/te_st/test");
+      const result = fileExt.GetFileName("/te_st/test");
       expect(result).toBe("test");
     });
 
     it("get file name  com file", () => {
-      var result = fileExt.GetFileName("/te_st/test.com");
+      const result = fileExt.GetFileName("/te_st/test.com");
       expect(result).toBe("test.com");
     });
 
     it("get file name  mp4 file", () => {
-      var result = fileExt.GetFileName("/te_st/test.mp4");
+      const result = fileExt.GetFileName("/te_st/test.mp4");
       expect(result).toBe("test.mp4");
     });
 
     it("get file name space and http file", () => {
-      var result = fileExt.GetFileName(
+      const result = fileExt.GetFileName(
         "http://path/Lists/Test/Attachments/1/Document Test.docx"
       );
       expect(result).toBe("Document Test.docx");
     });
 
     it("get file name on root", () => {
-      var result = fileExt.GetFileName(
+      const result = fileExt.GetFileName(
         "/0000000000aaaaa__exifreadingtest00.jpg"
       );
       expect(result).toBe("0000000000aaaaa__exifreadingtest00.jpg");
@@ -165,24 +165,24 @@ describe("keyboard", () => {
 
   describe("GetFileNameWithoutExtension", () => {
     it("get file name without extension com file", () => {
-      var result = fileExt.GetFileNameWithoutExtension("/te_st/test.com");
+      const result = fileExt.GetFileNameWithoutExtension("/te_st/test.com");
       expect(result).toBe("test");
     });
 
     it("get file name without extension mp4 file", () => {
-      var result = fileExt.GetFileNameWithoutExtension("/te_st/test.mp4");
+      const result = fileExt.GetFileNameWithoutExtension("/te_st/test.mp4");
       expect(result).toBe("test");
     });
 
     it("get file name without extension space and http file", () => {
-      var result = fileExt.GetFileNameWithoutExtension(
+      const result = fileExt.GetFileNameWithoutExtension(
         "http://path/Lists/Test/Attachments/1/Document Test.docx"
       );
       expect(result).toBe("Document Test");
     });
 
     it("get file name without extension on root", () => {
-      var result = fileExt.GetFileNameWithoutExtension(
+      const result = fileExt.GetFileNameWithoutExtension(
         "/0000000000aaaaa__exifreadingtest00.jpg"
       );
       expect(result).toBe("0000000000aaaaa__exifreadingtest00");

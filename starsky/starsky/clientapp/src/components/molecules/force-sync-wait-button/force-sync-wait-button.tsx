@@ -59,7 +59,7 @@ const ForceSyncWaitButton: React.FunctionComponent<
     setIsLoading(true);
     new FileListCache().CacheCleanEverything();
 
-    var urlSync = new UrlQuery().UrlSync(parentFolder);
+    const urlSync = new UrlQuery().UrlSync(parentFolder);
     return FetchPost(urlSync, "");
   }
 

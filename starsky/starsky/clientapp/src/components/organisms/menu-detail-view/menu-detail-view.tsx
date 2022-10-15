@@ -77,7 +77,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     new URLPath().StringToIUrl(history.location.search).details
   );
   useEffect(() => {
-    var details = new URLPath().StringToIUrl(history.location.search).details;
+    const details = new URLPath().StringToIUrl(history.location.search).details;
     setDetails(details);
   }, [history.location.search]);
 
@@ -148,7 +148,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
    * Create body params to do url queries
    */
   function newBodyParams(): URLSearchParams {
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.set("f", state.subPath);
     return bodyParams;
   }
@@ -192,7 +192,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     else {
       bodyParams.set("fieldName", "tags");
       bodyParams.set("search", "!delete!");
-      var resultUndo = await FetchPost(
+      const resultUndo = await FetchPost(
         new UrlQuery().UrlReplaceApi(),
         bodyParams.toString()
       );
@@ -221,7 +221,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
    * Checks if the hash is changes and update Context:  orientation + fileHash
    */
   async function requestNewFileHash(): Promise<boolean | null> {
-    var resultGet = await FetchGet(
+    const resultGet = await FetchGet(
       new UrlQuery().UrlIndexServerApi({ f: state.subPath })
     );
     if (!resultGet) return null;
@@ -230,8 +230,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       setIsLoading(false);
       return null;
     }
-    var media = new CastToInterface().MediaDetailView(resultGet.data).data;
-    var orientation =
+    const media = new CastToInterface().MediaDetailView(resultGet.data).data;
+    const orientation =
       media.fileIndexItem && media.fileIndexItem.orientation
         ? media.fileIndexItem.orientation
         : Orientation.Horizontal;
@@ -256,9 +256,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     if (isMarkedAsDeleted || isReadOnly) return;
     setIsLoading(true);
 
-    var bodyParams = newBodyParams();
+    const bodyParams = newBodyParams();
     bodyParams.set("rotateClock", "1");
-    var resultPost = await FetchPost(
+    const resultPost = await FetchPost(
       new UrlQuery().UrlUpdateApi(),
       bodyParams.toString()
     );
@@ -269,7 +269,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
     // there is an async backend event triggered, sometimes there is an que
     setTimeout(async () => {
-      var result = await requestNewFileHash();
+      const result = await requestNewFileHash();
       if (result === false) {
         setTimeout(async () => {
           await requestNewFileHash();

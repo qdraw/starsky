@@ -3,9 +3,9 @@ import { LeafletEmptyImageUrlGridLayer } from "./leaflet-modify-empty-image-url-
 
 describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
   it("remove tile form leaflet [extension]", () => {
-    var gridlayer = new LeafletEmptyImageUrlGridLayer();
+    const gridlayer = new LeafletEmptyImageUrlGridLayer();
 
-    var el = document.createElement("div");
+    const el = document.createElement("div");
 
     // mock a tile
     (gridlayer as any)._tiles = {
@@ -16,7 +16,7 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
       }
     } as InternalTiles;
 
-    var fire = jest.fn();
+    const fire = jest.fn();
     gridlayer.fire = fire;
 
     // this is normaly excuted by leaflet
@@ -27,20 +27,20 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
   });
 
   it("tile ready form leaflet (_fadeAnimated disabled) [extension]", () => {
-    var requestAnimFrameSpy = jest
+    const requestAnimFrameSpy = jest
       .spyOn(L.Util, "requestAnimFrame")
       .mockImplementationOnce(() => {
         return 0;
       });
 
-    var exampleCoords = {
+    const exampleCoords = {
       x: 51,
       y: 10,
       z: 1
     } as Coords;
-    var el = document.createElement("div") as any;
+    const el = document.createElement("div") as any;
 
-    var gridlayer = new LeafletEmptyImageUrlGridLayer();
+    const gridlayer = new LeafletEmptyImageUrlGridLayer();
 
     (gridlayer as any)._map = true;
     // mock a tile
@@ -52,7 +52,7 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
       }
     } as InternalTiles;
 
-    var _pruneTiles = jest.fn();
+    const _pruneTiles = jest.fn();
     (gridlayer as any)._pruneTiles = _pruneTiles;
 
     (gridlayer as any)._noTilesToLoad = () => {
@@ -66,22 +66,22 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
   });
 
   it("tile ready form leaflet (_fadeAnimated enabled) [extension]", () => {
-    var requestAnimFrameSpy = jest
+    const requestAnimFrameSpy = jest
       .spyOn(L.Util, "requestAnimFrame")
       .mockImplementationOnce(() => {
         return 0;
       });
 
-    var timeoutSpy = jest.spyOn(global, "setTimeout");
+    const timeoutSpy = jest.spyOn(global, "setTimeout");
 
-    var exampleCoords = {
+    const exampleCoords = {
       x: 51,
       y: 10,
       z: 1
     } as Coords;
-    var el = document.createElement("div") as any;
+    const el = document.createElement("div") as any;
 
-    var gridlayer = new LeafletEmptyImageUrlGridLayer();
+    const gridlayer = new LeafletEmptyImageUrlGridLayer();
 
     (gridlayer as any)._map = true;
 

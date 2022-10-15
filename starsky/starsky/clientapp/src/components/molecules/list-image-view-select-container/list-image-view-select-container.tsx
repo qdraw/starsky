@@ -37,7 +37,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
     }, [history.location.search]);
 
     function toggleSelection(fileName: string): void {
-      var urlObject = new URLPath().toggleSelection(
+      const urlObject = new URLPath().toggleSelection(
         fileName,
         history.location.search
       );
@@ -47,7 +47,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
       setSelect(urlObject.select);
     }
 
-    var preloader = <Preloader isOverlay={true} isWhite={false} />;
+    const preloader = <Preloader isOverlay={true} isWhite={false} />;
     const [isPreloaderState, setPreloaderState] = React.useState(false);
 
     function preloaderStateOnClick(event: React.MouseEvent) {

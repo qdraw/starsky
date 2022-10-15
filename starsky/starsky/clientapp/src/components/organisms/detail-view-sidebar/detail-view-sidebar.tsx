@@ -97,12 +97,12 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
     const [collections, setCollections] = React.useState([] as string[]);
 
     // To Get information from Info Api
-    var location = new UrlQuery().UrlQueryInfoApi(props.filePath);
+    const location = new UrlQuery().UrlQueryInfoApi(props.filePath);
     const infoResponseObject = useFetch(location, "get");
 
     useEffect(() => {
       if (!infoResponseObject.data) return;
-      var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(
+      const infoFileIndexItem = new CastToInterface().InfoFileIndexArray(
         infoResponseObject.data
       );
       if (!infoFileIndexItem) return;
@@ -119,7 +119,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
     }, [dispatch, fileIndexItem.lastEdited]);
 
     function updateCollections(infoFileIndexItem: IFileIndexItem[]) {
-      var collectionsList: string[] = [];
+      const collectionsList: string[] = [];
       infoFileIndexItem.forEach((element) => {
         collectionsList.push(element.filePath);
       });
@@ -168,7 +168,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
       (event: KeyboardEvent) => {
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();
-        var current = tagsReference.current as HTMLDivElement;
+        const current = tagsReference.current as HTMLDivElement;
         new Keyboard().SetFocusOnEndField(current);
       },
       [props]
@@ -179,7 +179,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
       (event: KeyboardEvent) => {
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();
-        var copy = new ClipboardHelper().Copy(
+        const copy = new ClipboardHelper().Copy(
           tagsReference,
           descriptionReference,
           titleReference

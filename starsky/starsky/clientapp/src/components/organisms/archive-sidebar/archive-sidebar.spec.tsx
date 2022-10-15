@@ -30,7 +30,7 @@ describe("ArchiveSidebar", () => {
 
     it("restore scroll after unmount", () => {
       jest.spyOn(window, "scrollTo").mockReset();
-      var scrollTo = jest
+      const scrollTo = jest
         .spyOn(window, "scrollTo")
         .mockImplementationOnce(() => {});
 

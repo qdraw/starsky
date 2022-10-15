@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using starskycore.Helpers;
@@ -9,12 +10,16 @@ namespace starskytest.FakeCreateAn
 	{
 
 		public readonly string FullFileGpxPath = 
-			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + FileNameGpx;
+			Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + Path.DirectorySeparatorChar + FileNameGpx;
+		
+		[SuppressMessage("Performance", "CA1822:Mark members as static")]
+		[SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
 		public string FileName => FileNameGpx;
+		
 		private const string FileNameGpx = "zz__test.gpx";
 
 		public readonly string BasePath =
-			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+			Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + Path.DirectorySeparatorChar;
         
 		private static readonly string Base64GpxString = "CjxncHggeG1sbnM9Imh0dHA6Ly93d3cudG9wb2dyYWZpeC5jb20vR1BYLzEvMSIg" +
 			"eG1sbnM6Z3B4eD0iaHR0cDovL3d3dy5nYXJtaW4uY29tL3htbHNjaGVtYXMvR3B4" +

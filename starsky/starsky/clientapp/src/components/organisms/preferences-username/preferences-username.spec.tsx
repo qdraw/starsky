@@ -15,7 +15,7 @@ describe("PreferencesUsername", () => {
         return { ...newIConnectionDefault(), statusCode: 500 };
       });
 
-      var component = render(<PreferencesUsername />);
+      const component = render(<PreferencesUsername />);
       expect(
         component.queryByTestId("preferences-username-text")?.textContent
       ).toBe("Unknown username");
@@ -33,7 +33,7 @@ describe("PreferencesUsername", () => {
         };
       });
 
-      var component = render(<PreferencesUsername />);
+      const component = render(<PreferencesUsername />);
       expect(
         component.queryByTestId("preferences-username-text")?.textContent
       ).toBe("Unknown username");
@@ -41,7 +41,7 @@ describe("PreferencesUsername", () => {
     });
 
     it("should get the identifier", () => {
-      var testReply = {
+      const testReply = {
         ...newIConnectionDefault(),
         data: {
           credentialsIdentifiers: ["test"]
@@ -53,7 +53,7 @@ describe("PreferencesUsername", () => {
         .mockImplementationOnce(() => testReply)
         .mockImplementationOnce(() => testReply);
 
-      var component = render(<PreferencesUsername />);
+      const component = render(<PreferencesUsername />);
       expect(
         component.queryByTestId("preferences-username-text")?.textContent
       ).toBe("test");

@@ -77,7 +77,7 @@ namespace starsky.foundation.writemeta.Helpers
 			byte[] buffer = new byte[FileHash.MaxReadSize];
 			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize, CancellationToken.None);
 			
-			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer));
+			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer), new CancellationToken(false));
 			if ( string.IsNullOrEmpty(newHashCode)) return string.Empty;
 
 			if ( oldFileHashCodeKeyPair.Key == newHashCode ) return newHashCode;

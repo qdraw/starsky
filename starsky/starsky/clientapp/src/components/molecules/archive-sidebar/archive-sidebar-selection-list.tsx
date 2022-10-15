@@ -30,21 +30,21 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
       setSelect(new URLPath().StringToIUrl(history.location.search).select);
     }, [history.location.search]);
 
-    var allSelection = () =>
+    const allSelection = () =>
       new Select(
         select,
         setSelect,
         props as IArchiveProps,
         history
       ).allSelection();
-    var undoSelection = () =>
+    const undoSelection = () =>
       new Select(
         select,
         setSelect,
         props as IArchiveProps,
         history
       ).undoSelection();
-    var toggleSelection = (item: string) =>
+    const toggleSelection = (item: string) =>
       new Select(
         select,
         setSelect,

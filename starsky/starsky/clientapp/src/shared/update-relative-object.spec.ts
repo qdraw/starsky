@@ -5,8 +5,8 @@ import { UpdateRelativeObject } from "./update-relative-object";
 
 describe("UpdateRelativeObject", () => {
   it("status failing should reject", (done) => {
-    var test = jest.fn();
-    var connectionDefault2: IConnectionDefault = {
+    const test = jest.fn();
+    const connectionDefault2: IConnectionDefault = {
       statusCode: 400,
       data: "key"
     };
@@ -29,8 +29,8 @@ describe("UpdateRelativeObject", () => {
   });
 
   it("status 200 should accept", (done) => {
-    var test = jest.fn();
-    var connectionDefault2: IConnectionDefault = {
+    const test = jest.fn();
+    const connectionDefault2: IConnectionDefault = {
       statusCode: 200,
       data: "key"
     };
@@ -49,8 +49,8 @@ describe("UpdateRelativeObject", () => {
   });
 
   it("FetchGet rejects", (done) => {
-    var test = jest.fn();
-    var connectionDefault2: IConnectionDefault = {
+    const test = jest.fn();
+    const connectionDefault2: IConnectionDefault = {
       statusCode: 200,
       data: "key"
     };

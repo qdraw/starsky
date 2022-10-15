@@ -45,7 +45,7 @@ describe("UseFileList", () => {
     it("with archive content 200", async () => {
       const { hook } = mounter();
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       setFetchSpy(200, PageType.Archive);
 
@@ -69,7 +69,7 @@ describe("UseFileList", () => {
     it("with detailview content 200", async () => {
       const { hook } = mounter();
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       setFetchSpy(200, PageType.DetailView);
 
@@ -93,7 +93,7 @@ describe("UseFileList", () => {
     it("with archive content 404", async () => {
       const { hook } = mounter();
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       setFetchSpy(404, PageType.Archive);
 
@@ -108,7 +108,7 @@ describe("UseFileList", () => {
     it("with archive content 401", async () => {
       const { hook } = mounter();
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       setFetchSpy(401, PageType.Archive);
 
@@ -123,7 +123,7 @@ describe("UseFileList", () => {
     it("with archive content 500", async () => {
       const { hook } = mounter();
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       setFetchSpy(500, PageType.Archive);
 
@@ -137,7 +137,7 @@ describe("UseFileList", () => {
 
     it("get from cache", async () => {
       const { hook } = mounter();
-      var cacheGetSpy = jest
+      const cacheGetSpy = jest
         .spyOn(FileListCache.prototype, "CacheGet")
         .mockImplementationOnce(() => {
           return { ...newIArchive(), dateCache: Date.now() };
@@ -149,7 +149,7 @@ describe("UseFileList", () => {
 
     it("check cache first and then query", async () => {
       const { hook } = mounter();
-      var cacheSetSpy = jest
+      const cacheSetSpy = jest
         .spyOn(FileListCache.prototype, "CacheGet")
         .mockImplementationOnce(() => {
           return null;
@@ -166,7 +166,7 @@ describe("UseFileList", () => {
     it("with connection rejected", async () => {
       const { hook } = mounter();
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       const mockResult = Promise.reject();
       fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {

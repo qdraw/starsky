@@ -22,7 +22,7 @@ describe("DropArea", () => {
       eventType: "dragenter" | "dragleave" | "dragover" | "drop"
     ): CustomEvent & { dataTransfer?: DataTransfer } {
       // Create a non-null file
-      var event: CustomEvent & {
+      const event: CustomEvent & {
         dataTransfer?: DataTransfer;
       } = new CustomEvent("CustomEvent");
       event.initCustomEvent(eventType, true, true, null);
@@ -33,7 +33,7 @@ describe("DropArea", () => {
       return event;
     }
 
-    var scrollToSpy = jest.fn();
+    const scrollToSpy = jest.fn();
 
     beforeEach(() => {
       window.scrollTo = scrollToSpy;
@@ -67,11 +67,11 @@ describe("DropArea", () => {
             }
           ]
         });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var callbackSpy = jest.fn();
+      const callbackSpy = jest.fn();
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
         render(
@@ -88,7 +88,7 @@ describe("DropArea", () => {
         await document.dispatchEvent(createDnDEvent("drop"));
       });
 
-      var compareFormData = new FormData();
+      const compareFormData = new FormData();
       compareFormData.append("file", exampleFile);
 
       expect(fetchPostSpy).toBeCalled();
@@ -163,7 +163,7 @@ describe("DropArea", () => {
 
   describe("PostSingleFormData", () => {
     it("no input", () => {
-      var callBackWhenReady = jest.fn();
+      const callBackWhenReady = jest.fn();
 
       PostSingleFormData(
         "/",
@@ -179,7 +179,7 @@ describe("DropArea", () => {
     });
 
     it("to big", () => {
-      var callBackWhenReady = jest.fn();
+      const callBackWhenReady = jest.fn();
 
       const file = {
         name: "test.jpg",
@@ -228,7 +228,7 @@ describe("DropArea", () => {
             }
           ]
         });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -273,7 +273,7 @@ describe("DropArea", () => {
           data: null
         });
 
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -312,7 +312,7 @@ describe("DropArea", () => {
           data: [null]
         });
 
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -366,7 +366,7 @@ describe("DropArea", () => {
           ]
         });
 
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -415,7 +415,7 @@ describe("DropArea", () => {
           ]
         });
 
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 

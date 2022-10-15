@@ -2,9 +2,9 @@ import { globalHistory } from "@reach/router";
 import { Sidebar } from "./sidebar";
 
 describe("sidebar", () => {
-  var setSidebarSpy = jest.fn();
-  var sidebar: Sidebar;
-  var navigateSpy = jest.fn();
+  let setSidebarSpy = jest.fn();
+  let sidebar: Sidebar;
+  let navigateSpy = jest.fn();
 
   beforeEach(() => {
     navigateSpy = jest.fn();

@@ -6,7 +6,7 @@ import ContentPage from "./content-page";
 
 describe("ContentPage", () => {
   it("default", () => {
-    var mediaContentSpy = jest
+    const mediaContentSpy = jest
       .spyOn(MediaContent, "default")
       .mockImplementationOnce(() => {
         return <></>;
@@ -16,7 +16,7 @@ describe("ContentPage", () => {
   });
 
   it("with navigate and location", () => {
-    var mediaContentSpy = jest
+    const mediaContentSpy = jest
       .spyOn(MediaContent, "default")
       .mockImplementationOnce(() => {
         return <></>;

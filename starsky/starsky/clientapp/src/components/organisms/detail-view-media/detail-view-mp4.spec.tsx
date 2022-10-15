@@ -22,9 +22,9 @@ describe("DetailViewMp4", () => {
     });
 
     it("click to play video resolve", () => {
-      var component = render(<DetailViewMp4></DetailViewMp4>);
+      const component = render(<DetailViewMp4></DetailViewMp4>);
 
-      var playSpy = jest
+      const playSpy = jest
         .spyOn(HTMLMediaElement.prototype, "play")
         .mockImplementationOnce(() => Promise.resolve());
 
@@ -37,11 +37,11 @@ describe("DetailViewMp4", () => {
     });
 
     it("click to play video rejected", async () => {
-      var component = render(<DetailViewMp4></DetailViewMp4>);
+      const component = render(<DetailViewMp4></DetailViewMp4>);
 
       jest.spyOn(HTMLMediaElement.prototype, "play").mockReset();
 
-      var playSpy = jest
+      const playSpy = jest
         .spyOn(HTMLMediaElement.prototype, "play")
         .mockImplementationOnce(() => {
           return Promise.reject();
@@ -57,9 +57,9 @@ describe("DetailViewMp4", () => {
       });
     });
     it("click to play video and timeupdate", () => {
-      var component = render(<DetailViewMp4></DetailViewMp4>);
+      const component = render(<DetailViewMp4></DetailViewMp4>);
 
-      var playSpy = jest
+      const playSpy = jest
         .spyOn(HTMLMediaElement.prototype, "play")
         .mockImplementationOnce(() => {
           return Promise.resolve();
@@ -82,15 +82,15 @@ describe("DetailViewMp4", () => {
     it("progress DOM", () => {
       const component = document.createElement("div");
       ReactDOM.render(<DetailViewMp4 />, component);
-      var progress = component.querySelector("progress");
+      const progress = component.querySelector("progress");
       if (progress == null) throw new Error("missing progress tag");
       progress.click();
     });
 
     it("progress", () => {
-      var component = render(<DetailViewMp4></DetailViewMp4>);
+      const component = render(<DetailViewMp4></DetailViewMp4>);
 
-      var playSpy = jest
+      const playSpy = jest
         .spyOn(HTMLMediaElement.prototype, "play")
         .mockImplementationOnce(() => {
           return Promise.resolve();
@@ -107,7 +107,7 @@ describe("DetailViewMp4", () => {
           return Promise.resolve();
         });
 
-      var progress = component.container.querySelector(
+      const progress = component.container.querySelector(
         "progress"
       ) as HTMLElement;
 
@@ -137,13 +137,13 @@ describe("DetailViewMp4", () => {
         } as IFileIndexItem
       } as IDetailView;
 
-      var contextValues = { state, dispatch: jest.fn() };
+      const contextValues = { state, dispatch: jest.fn() };
 
-      var useContextSpy = jest
+      const useContextSpy = jest
         .spyOn(React, "useContext")
         .mockImplementation(() => contextValues);
 
-      var notificationSpy = jest
+      const notificationSpy = jest
         .spyOn(Notification, "default")
         .mockImplementationOnce(() => {
           return <></>;

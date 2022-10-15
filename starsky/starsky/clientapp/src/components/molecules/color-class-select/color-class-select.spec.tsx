@@ -34,7 +34,7 @@ describe("ColorClassSelect", () => {
         data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
       }
     );
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -70,11 +70,11 @@ describe("ColorClassSelect", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
       newIConnectionDefault()
     );
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = render(
+    const wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -110,11 +110,11 @@ describe("ColorClassSelect", () => {
         data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
       }
     );
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = render(
+    const wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -167,11 +167,11 @@ describe("ColorClassSelect", () => {
         data: [{ status: IExifStatus.ReadOnly }] as IFileIndexItem[]
       }
     );
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = render(
+    const wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}

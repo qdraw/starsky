@@ -25,7 +25,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			_webRequestFactory = new FakeIFtpWebRequestFactory();
 		}
 
-		private byte[] ExampleManifest()
+		private static byte[] ExampleManifest()
 		{
 			var input = "{\n  \"Name\": \"Test\",\n  " +
 			            "\"Copy\": {\n    \"1000/0_kl1k.jpg\": " +
@@ -33,7 +33,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			            "  \"Slug\": \"test\",\n  \"Export\": \"20200808121411\",\n" +
 			            "  \"Version\": \"0.3.0.0\"\n}";
 			var stream = PlainTextFileHelper.StringToStream(input) as MemoryStream;
-			return stream.ToArray();
+			return stream?.ToArray();
 		}
 		
 		[TestMethod]
@@ -43,8 +43,8 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			new WebFtpCli(_appSettings, new FakeSelectorStorage(), console,_webRequestFactory )
 				.Run(new []{"-h"});
 			
-			Assert.IsTrue(console.WrittenLines.FirstOrDefault().Contains("Starksy WebFtp Cli ~ Help:"));
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("  use -v -help to show settings: "));
+			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Starsky WebFtp Cli ~ Help:"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("  use -v -help to show settings: "));
 		}
 
 		[TestMethod]
@@ -64,7 +64,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			new WebFtpCli(_appSettings, new FakeSelectorStorage(), console, _webRequestFactory)
 				.Run(new []{"-p"});
 			
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("is not found"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("is not found"));
 		}
 
 		[TestMethod]
@@ -77,7 +77,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			new WebFtpCli(new AppSettings(),fakeSelectorStorage , console, _webRequestFactory)
 				.Run(new []{"-p", "/test"});
 			
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("WebFtp settings"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("WebFtp settings"));
 		}
 		
 		[TestMethod]
@@ -89,7 +89,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			new WebFtpCli(_appSettings,fakeSelectorStorage , console, _webRequestFactory)
 				.Run(new []{"-p", "/test"});
 			
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("generate a settings file"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("generate a settings file"));
 		}
 		
 		[TestMethod]
@@ -98,23 +98,33 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			var console = new FakeConsoleWrapper();
 
 			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}, 
-				new List<string>{$"/test{Path.DirectorySeparatorChar}_settings.json", "/test/1000/0_kl1k.jpg"}, new List<byte[]> {ExampleManifest(), new byte[0]}));
+				new List<string>{$"/test{Path.DirectorySeparatorChar}_settings.json", 
+					"/test/1000/0_kl1k.jpg"}, new List<byte[]> {ExampleManifest(), Array.Empty<byte>()}));
+			// instead of new byte[0]
 			
 			new WebFtpCli(_appSettings, fakeSelectorStorage , console, _webRequestFactory)
 				.Run(new []{"-p", "/test"});
 
-			var isSuccess = console.WrittenLines.LastOrDefault()
+			var isSuccess = console?.WrittenLines?.LastOrDefault()?
 				.Contains("Ftp copy successful done");
-			
-			// To Debug why the test has failed
-			if ( !isSuccess )
+
+			switch ( isSuccess )
 			{
-				foreach ( var line in console.WrittenLines )
+				// To Debug why the test has failed
+				case false:
 				{
-					Console.WriteLine(line);
+					foreach ( var line in console.WrittenLines )
+					{
+						Console.WriteLine(line);
+					}
+
+					break;
 				}
+				case null:
+					Assert.IsNotNull(isSuccess);
+					break;
 			}
-			
+
 			Assert.IsTrue(isSuccess);
 		}
 

@@ -18,9 +18,9 @@ describe("ArchiveSidebarLabelEdit", () => {
       .mockImplementationOnce(() => state)
       .mockImplementationOnce(() => state);
 
-    var component = render(<ArchiveSidebarLabelEdit />);
+    const component = render(<ArchiveSidebarLabelEdit />);
 
-    var item = component.queryByTestId("switch-button-right") as HTMLElement;
+    const item = component.queryByTestId("switch-button-right") as HTMLElement;
 
     let formControls = component.queryAllByRole("form-control");
     formControls.forEach((element) => {

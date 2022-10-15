@@ -1,15 +1,15 @@
 import ArrayHelper from "./array-helper";
 
 describe("ArrayHelper", () => {
-  var arrayHelper = new ArrayHelper();
+  const arrayHelper = new ArrayHelper();
 
   it("undefined return same output", () => {
-    var result = arrayHelper.UniqueResults(undefined as any, "test");
+    const result = arrayHelper.UniqueResults(undefined as any, "test");
     expect(result).toBeUndefined();
   });
 
   it("Check duplicate values check first", () => {
-    var family = [
+    const family = [
       { name: "Nancy", age: 15 },
       { name: "Nancy", age: 2 },
       { name: "Mike", age: 10 },
@@ -17,17 +17,17 @@ describe("ArrayHelper", () => {
       { name: "Carl", age: 40 }
     ];
 
-    var unique = arrayHelper.UniqueResults(family, "name");
+    const unique = arrayHelper.UniqueResults(family, "name");
     expect(unique[0].name).toBe("Nancy");
     expect(unique[0].age).toBe(15);
   });
 
   it("Check duplicate values length", () => {
-    var family = [
+    const family = [
       { name: "Nancy", age: 15 },
       { name: "Nancy", age: 2 }
     ];
-    var unique = arrayHelper.UniqueResults(family, "name");
+    const unique = arrayHelper.UniqueResults(family, "name");
     expect(unique.length).toBe(1);
   });
 });

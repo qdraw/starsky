@@ -113,7 +113,7 @@ function updateCache(stateLocal: IDetailView): IDetailView {
   if (!stateLocal.fileIndexItem) {
     return stateLocal;
   }
-  var urlObject = {
+  const urlObject = {
     f: stateLocal.subPath,
     colorClass: stateLocal.colorClassActiveList,
     collections: stateLocal.collections

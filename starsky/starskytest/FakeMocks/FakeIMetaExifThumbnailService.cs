@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace starskytest.FakeMocks
 	public class FakeIMetaExifThumbnailService : IMetaExifThumbnailService
 	{
 		public List<(string, string)> Input { get; set; } =
-			new (string, string)[0].ToList();
+			Array.Empty<(string, string)>().ToList();
 		
 		public Task<bool> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
 		{

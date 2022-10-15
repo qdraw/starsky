@@ -9,12 +9,12 @@ describe("MenuDefault", () => {
 
   describe("with Context", () => {
     it("has hamburger", () => {
-      var component = render(<MenuDefault isEnabled={true} />);
+      const component = render(<MenuDefault isEnabled={true} />);
       expect(component.queryByTestId("hamburger")).toBeTruthy();
     });
 
     it("[menu default]check if on click the hamburger opens", () => {
-      var component = render(<MenuDefault isEnabled={true} />);
+      const component = render(<MenuDefault isEnabled={true} />);
 
       const hamburger = component.queryByTestId("hamburger");
       expect(hamburger?.querySelector(".open")).toBeFalsy();

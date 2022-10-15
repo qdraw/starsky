@@ -11,7 +11,7 @@ describe("ClearSearchCache", () => {
       newIConnectionDefault()
     );
 
-    var fetchSpy = jest
+    const fetchSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
     ClearSearchCache("?test");
@@ -26,7 +26,7 @@ describe("ClearSearchCache", () => {
       newIConnectionDefault()
     );
 
-    var fetchSpy = jest
+    const fetchSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
     ClearSearchCache("?t=test");

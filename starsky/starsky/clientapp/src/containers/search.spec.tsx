@@ -18,7 +18,7 @@ describe("Search", () => {
 
   describe("Results count", () => {
     it("No results", () => {
-      var component = render(
+      const component = render(
         <Search
           {...newIArchive()}
           fileIndexItems={[]}
@@ -33,7 +33,7 @@ describe("Search", () => {
     });
 
     it("Page 3 of 1 results", () => {
-      var component = render(
+      const component = render(
         <Search
           {...newIArchive()}
           collectionsCount={1}
@@ -49,7 +49,7 @@ describe("Search", () => {
     });
 
     it("Page 1 of 1 results", () => {
-      var component = render(
+      const component = render(
         <Search
           {...newIArchive()}
           collectionsCount={1}
@@ -65,11 +65,11 @@ describe("Search", () => {
     });
 
     it("SearchPagination exist", () => {
-      var numberOfFileIndexItems = newIFileIndexItemArray();
+      const numberOfFileIndexItems = newIFileIndexItemArray();
       for (let index = 0; index < 21; index++) {
         numberOfFileIndexItems.push(newIFileIndexItem());
       }
-      var component = render(
+      const component = render(
         <Search
           {...newIArchive()}
           collectionsCount={1}

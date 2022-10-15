@@ -26,7 +26,7 @@ describe("DetailView", () => {
     render(<DetailView {...newDetailView()} />);
   });
 
-  var defaultState = {
+  const defaultState = {
     breadcrumb: [],
     isReadOnly: false,
     fileIndexItem: {
@@ -96,7 +96,7 @@ describe("DetailView", () => {
 
     it("test if image is loaded", () => {
       // eslint-disable-next-line testing-library/prefer-screen-queries
-      var imgContainer = Component.queryByTestId(
+      const imgContainer = Component.queryByTestId(
         "pan-zoom-image"
       ) as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
@@ -119,7 +119,7 @@ describe("DetailView", () => {
 
     it("test if image is failed", () => {
       // eslint-disable-next-line testing-library/prefer-screen-queries
-      var imgContainer = Component.queryByTestId(
+      const imgContainer = Component.queryByTestId(
         "pan-zoom-image"
       ) as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
@@ -176,7 +176,7 @@ describe("DetailView", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
 
       // use as ==> import * as useLocation from '../hooks/use-location';
-      var locationSpy = jest
+      const locationSpy = jest
         .spyOn(useLocation, "default")
         .mockImplementationOnce(() => {
           return {
@@ -186,7 +186,7 @@ describe("DetailView", () => {
         });
 
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      var detailview = render(<TestComponent />);
+      const detailview = render(<TestComponent />);
 
       // eslint-disable-next-line testing-library/prefer-screen-queries
       const next = detailview.queryByTestId(
@@ -267,7 +267,7 @@ describe("DetailView", () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const detailview = render(<TestComponent />);
 
-      var event = new KeyboardEvent("keydown", {
+      const event = new KeyboardEvent("keydown", {
         bubbles: true,
         cancelable: true,
         key: "ArrowLeft",
@@ -309,9 +309,9 @@ describe("DetailView", () => {
         });
 
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      var compontent = render(<TestComponent />);
+      const compontent = render(<TestComponent />);
 
-      var event = new KeyboardEvent("keydown", {
+      const event = new KeyboardEvent("keydown", {
         bubbles: true,
         cancelable: true,
         key: "ArrowRight",
@@ -340,14 +340,14 @@ describe("DetailView", () => {
       });
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
-      var locationFaker = () => {
+      const locationFaker = () => {
         return {
           location: globalHistory.location,
           navigate: navigateSpy
         };
       };
 
-      var updateRelativeObjectSpy = jest
+      const updateRelativeObjectSpy = jest
         .spyOn(UpdateRelativeObject.prototype, "Update")
         .mockImplementationOnce(() => {
           return Promise.resolve({
@@ -362,7 +362,7 @@ describe("DetailView", () => {
           } as IRelativeObjects);
         });
 
-      var locationSpy = jest
+      const locationSpy = jest
         .spyOn(useLocation, "default")
         .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker)
@@ -370,7 +370,7 @@ describe("DetailView", () => {
         .mockImplementationOnce(locationFaker);
 
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      var detailview = render(<TestComponent />);
+      const detailview = render(<TestComponent />);
 
       // eslint-disable-next-line testing-library/prefer-screen-queries
       const prev = detailview.queryByTestId(
@@ -412,9 +412,9 @@ describe("DetailView", () => {
         });
 
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      var component = render(<TestComponent />);
+      const component = render(<TestComponent />);
 
-      var event = new KeyboardEvent("keydown", {
+      const event = new KeyboardEvent("keydown", {
         bubbles: true,
         cancelable: true,
         key: "Escape",
@@ -477,7 +477,7 @@ describe("DetailView", () => {
 
       jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      var component = render(<TestComponent />);
+      const component = render(<TestComponent />);
 
       // eslint-disable-next-line testing-library/prefer-screen-queries
       (component.queryByTestId("fake-button") as HTMLButtonElement).click();
@@ -533,7 +533,7 @@ describe("DetailView", () => {
 
       jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      var component = render(<TestComponent />);
+      const component = render(<TestComponent />);
 
       // eslint-disable-next-line testing-library/prefer-screen-queries
       (component.queryByTestId("fake-button") as HTMLButtonElement).click();

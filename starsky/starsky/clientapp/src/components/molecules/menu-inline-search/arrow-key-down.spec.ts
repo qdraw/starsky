@@ -2,7 +2,7 @@ import ArrowKeyDown from "./arrow-key-down";
 
 describe("ArrowKeyDown", () => {
   it("not arrow down or up", () => {
-    var callback = jest.fn();
+    const callback = jest.fn();
     ArrowKeyDown(
       {
         key: "t"
@@ -18,7 +18,7 @@ describe("ArrowKeyDown", () => {
   });
 
   it("inputFormControlReferenceCurrent is null", () => {
-    var callback = jest.fn();
+    const callback = jest.fn();
     ArrowKeyDown(
       {
         key: "ArrowDown"
@@ -33,7 +33,7 @@ describe("ArrowKeyDown", () => {
   });
 
   it("suggest has nothing", () => {
-    var callback = jest.fn();
+    const callback = jest.fn();
     ArrowKeyDown(
       {
         key: "ArrowDown"
@@ -48,8 +48,8 @@ describe("ArrowKeyDown", () => {
   });
 
   it("1 arrow down", () => {
-    var callback = jest.fn();
-    var inputElement = document.createElement("input");
+    const callback = jest.fn();
+    const inputElement = document.createElement("input");
     ArrowKeyDown(
       {
         key: "ArrowDown"
@@ -66,8 +66,8 @@ describe("ArrowKeyDown", () => {
   });
 
   it("1 arrow up", () => {
-    var callback = jest.fn();
-    var inputElement = document.createElement("input");
+    const callback = jest.fn();
+    const inputElement = document.createElement("input");
     ArrowKeyDown(
       {
         key: "ArrowUp"
@@ -84,8 +84,8 @@ describe("ArrowKeyDown", () => {
   });
 
   it("end of arrow down list", () => {
-    var callback = jest.fn();
-    var inputElement = document.createElement("input");
+    const callback = jest.fn();
+    const inputElement = document.createElement("input");
     ArrowKeyDown(
       {
         key: "ArrowDown"
@@ -100,8 +100,8 @@ describe("ArrowKeyDown", () => {
   });
 
   it("before of arrow up list", () => {
-    var callback = jest.fn();
-    var inputElement = document.createElement("input");
+    const callback = jest.fn();
+    const inputElement = document.createElement("input");
     ArrowKeyDown(
       {
         key: "ArrowUp"

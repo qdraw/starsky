@@ -28,8 +28,8 @@ describe("ModalArchiveMkdir", () => {
 
   describe("mkdir", () => {
     it("to non valid dirname", async () => {
-      var state = {} as IArchiveProps;
-      var contextValues = { state, dispatch: jest.fn() };
+      const state = {} as IArchiveProps;
+      const contextValues = { state, dispatch: jest.fn() };
 
       jest
         .spyOn(React, "useContext")
@@ -43,7 +43,7 @@ describe("ModalArchiveMkdir", () => {
           return contextValues;
         });
 
-      var modal = render(
+      const modal = render(
         <ModalArchiveMkdir
           state={state}
           dispatch={jest.fn()}
@@ -56,7 +56,7 @@ describe("ModalArchiveMkdir", () => {
         "modal-archive-mkdir-btn-default"
       ) as HTMLButtonElement;
 
-      var submitButtonBefore = button.disabled;
+      const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
       const directoryName = modal.queryByTestId(
@@ -79,7 +79,7 @@ describe("ModalArchiveMkdir", () => {
         modal.queryByTestId("modal-archive-mkdir-warning-box")
       ).toBeTruthy();
 
-      var submitButtonAfter = button.disabled;
+      const submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
       // cleanup
@@ -93,7 +93,7 @@ describe("ModalArchiveMkdir", () => {
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
 
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -108,16 +108,16 @@ describe("ModalArchiveMkdir", () => {
           } as IArchiveProps
         } as IConnectionDefault);
 
-      var fetchGetSpy = jest
+      const fetchGetSpy = jest
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      var state = {
+      const state = {
         subPath: "/test"
       } as IArchive;
-      var contextValues = { state, dispatch: jest.fn() };
+      const contextValues = { state, dispatch: jest.fn() };
 
-      var modal = render(
+      const modal = render(
         <ModalArchiveMkdir
           state={state}
           dispatch={contextValues.dispatch}
@@ -178,9 +178,9 @@ describe("ModalArchiveMkdir", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = render(
+      const component = render(
         <ModalArchiveMkdir
           state={{} as any}
           isOpen={true}

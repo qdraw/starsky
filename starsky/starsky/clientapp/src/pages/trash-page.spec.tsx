@@ -15,13 +15,13 @@ describe("TrashPage", () => {
       return {} as ISearchList;
     });
 
-    var error = render(<TrashPage>t</TrashPage>);
+    const error = render(<TrashPage>t</TrashPage>);
 
     expect(error.container.innerHTML).toBe("Something went wrong");
   });
 
   it("check if context is called", () => {
-    var contextSpy = jest
+    const contextSpy = jest
       .spyOn(ArchiveContextWrapper, "default")
       .mockImplementationOnce(() => {
         return <></>;
@@ -34,7 +34,7 @@ describe("TrashPage", () => {
       } as ISearchList;
     });
 
-    var trashPage = render(<TrashPage>t</TrashPage>);
+    const trashPage = render(<TrashPage>t</TrashPage>);
 
     expect(contextSpy).toBeCalled();
 

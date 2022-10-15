@@ -20,8 +20,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
 				new AppSettings(), console, new FakeIWebLogger()).Publisher(new []{"-h"});
 			
-			Assert.IsTrue(console.WrittenLines.FirstOrDefault().Contains("Starksy WebHtml Cli ~ Help:"));
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("  use -v -help to show settings: "));
+			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Starsky WebHtml Cli ~ Help:"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("  use -v -help to show settings: "));
 		}
 
 		[TestMethod]

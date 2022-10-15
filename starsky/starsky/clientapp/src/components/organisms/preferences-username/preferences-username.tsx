@@ -13,7 +13,7 @@ const PreferencesUsername: React.FunctionComponent<any> = (_) => {
   );
   const MessageUsername = language.text("Gebruikersnaam", "Username");
 
-  var accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
+  const accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
   const [userName, setUserName] = React.useState(MessageUnknownUsername);
 
   useEffect(() => {

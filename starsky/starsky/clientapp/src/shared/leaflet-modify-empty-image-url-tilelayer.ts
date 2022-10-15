@@ -20,8 +20,8 @@ export class LeafletEmptyImageUrlTileLayer extends TileLayer {
    * Source: https://github.com/Leaflet/Leaflet/issues/6113#issuecomment-377672239
    */
   public _abortLoading() {
-    var i;
-    var tile: any;
+    let i;
+    let tile: any;
     for (i in this._tiles) {
       if (this._tiles[i].coords.z !== this._tileZoom) {
         tile = this._tiles[i].el;

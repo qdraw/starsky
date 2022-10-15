@@ -32,7 +32,7 @@ describe("ModalArchiveMkdir", () => {
     });
 
     it("no date input", () => {
-      var modal = render(
+      const modal = render(
         <ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />
       );
 
@@ -48,7 +48,7 @@ describe("ModalArchiveMkdir", () => {
     });
 
     it("example date no error dialog", () => {
-      var modal = render(
+      const modal = render(
         <ModalDatetime
           dateTime="2020-01-01T01:29:40"
           subPath={"/test"}
@@ -95,7 +95,7 @@ describe("ModalArchiveMkdir", () => {
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ data: null, statusCode: 200 });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -136,9 +136,9 @@ describe("ModalArchiveMkdir", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = render(
+      const component = render(
         <ModalDatetime
           subPath="/test.jpg"
           isOpen={true}

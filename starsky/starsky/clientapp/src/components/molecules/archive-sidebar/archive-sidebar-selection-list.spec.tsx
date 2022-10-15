@@ -28,7 +28,7 @@ describe("archive-sidebar-selection-list", () => {
       });
     });
 
-    var items = [
+    const items = [
       { fileName: "test.jpg", parentDirectory: "/" },
       { fileName: "to-select.jpg", parentDirectory: "/" }
     ] as IFileIndexItem[];
@@ -50,7 +50,7 @@ describe("archive-sidebar-selection-list", () => {
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
 
-      var spy = jest.spyOn(URLPath.prototype, "toggleSelection");
+      const spy = jest.spyOn(URLPath.prototype, "toggleSelection");
 
       const selectionList = component.queryByTestId(
         "sidebar-selection-list"
@@ -71,9 +71,9 @@ describe("archive-sidebar-selection-list", () => {
       const component = render(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
-      var allSelectionButton = component.queryByTestId("select-all");
+      const allSelectionButton = component.queryByTestId("select-all");
 
-      var spy = jest.spyOn(URLPath.prototype, "GetAllSelection");
+      const spy = jest.spyOn(URLPath.prototype, "GetAllSelection");
 
       act(() => {
         (allSelectionButton as HTMLElement).click();

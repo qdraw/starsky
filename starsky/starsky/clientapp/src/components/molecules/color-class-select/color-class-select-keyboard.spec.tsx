@@ -31,7 +31,7 @@ describe("ColorClassSelectKeyboard", () => {
         data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
       }
     );
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -45,7 +45,7 @@ describe("ColorClassSelectKeyboard", () => {
       />
     );
 
-    var event = new KeyboardEvent("keydown", {
+    const event = new KeyboardEvent("keydown", {
       bubbles: true,
       cancelable: true,
       key: "5",

@@ -18,7 +18,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get dutch language nl", () => {
-      var languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(window.navigator, "language", "get");
       languageGetter.mockReturnValue("nl");
 
       runHook();
@@ -27,7 +27,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get dutch language nl-NL", () => {
-      var languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(window.navigator, "language", "get");
       languageGetter.mockReturnValue("nl-NL");
 
       runHook();
@@ -36,7 +36,7 @@ describe("useGlobalSettings", () => {
     });
 
     it("get dutch language nl-BE", () => {
-      var languageGetter = jest.spyOn(window.navigator, "language", "get");
+      const languageGetter = jest.spyOn(window.navigator, "language", "get");
       languageGetter.mockReturnValue("nl-BE");
 
       runHook();

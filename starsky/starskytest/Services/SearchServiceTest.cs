@@ -580,9 +580,9 @@ namespace starskytest.Services
 			InsertSearchData();
 
 			var del = _search.Search("!delete!");
-			var count = del.FileIndexItems.Count();
+			var count = del.FileIndexItems?.Count;
 			Assert.AreEqual(1,count);
-			Assert.AreEqual("stationdeletedfile", del.FileIndexItems.FirstOrDefault().FileHash);
+			Assert.AreEqual("stationdeletedfile", del.FileIndexItems?.FirstOrDefault()?.FileHash);
 		}
 
 		[TestMethod]
@@ -608,7 +608,7 @@ namespace starskytest.Services
 				});
 			var searchService = new SearchService(_dbContext,fakeCache);
 			var result = searchService.Search("t"); // <= t is only to detect in fakeCache
-			Assert.AreEqual(1,result.FileIndexItems.Count);
+			Assert.AreEqual(1,result.FileIndexItems?.Count);
 		}
 	    
 
@@ -617,7 +617,7 @@ namespace starskytest.Services
 		{
 			InsertSearchData();
 			var result = _search.Search("-FileHash=stationdeletedfile || -FileHash=lelystadcentrum2",0,false);
-			Assert.AreEqual(2,result.FileIndexItems.Count);
+			Assert.AreEqual(2,result.FileIndexItems?.Count);
 		}
 	    
 		[TestMethod]
@@ -625,7 +625,7 @@ namespace starskytest.Services
 		{
 			InsertSearchData();
 			var result = _search.Search("-Description=lelystadcentrum2 -ImageFormat=tiff",0,false);
-			Assert.AreEqual(1,result.FileIndexItems.Count);
+			Assert.AreEqual(1,result.FileIndexItems?.Count);
 		}
 	    
 		[TestMethod]
@@ -633,7 +633,7 @@ namespace starskytest.Services
 		{
 			InsertSearchData();
 			var result = _search.Search("-Description=lelystadcentrum2",0,false);
-			Assert.AreEqual(1,result.FileIndexItems.Count);
+			Assert.AreEqual(1,result.FileIndexItems?.Count);
 		}
 
 		[TestMethod]
@@ -647,7 +647,7 @@ namespace starskytest.Services
 			// the and applies to all previous items
 			// lelystadcentrum && lelystadcentrum2 are items
 			// station = duplicate in this example but triggers other results when using || instead of &&
-			Assert.AreEqual(2,result.FileIndexItems.Count);
+			Assert.AreEqual(2,result.FileIndexItems?.Count);
 		}
 
 		[TestMethod]
@@ -655,7 +655,7 @@ namespace starskytest.Services
 		{
 			InsertSearchData();
 			var result = _search.Search("station || lelystad",0,false);
-			Assert.AreEqual(3,result.FileIndexItems.Count);
+			Assert.AreEqual(3,result.FileIndexItems?.Count);
 		}
 
 		[TestMethod]
@@ -688,7 +688,7 @@ namespace starskytest.Services
 			var modelSearchQuery = "-\"station test\"";
 			var model = new SearchViewModel();
 			model.ParseDefaultOption(modelSearchQuery);
-			Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
+			Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions?[0]);
 		}
 	    
 		[TestMethod]
@@ -697,7 +697,7 @@ namespace starskytest.Services
 			var modelSearchQuery = "-station";
 			var model = new SearchViewModel();
 			model.ParseDefaultOption(modelSearchQuery);
-			Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
+			Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions?[0]);
 		}
 	    
 		[TestMethod]
@@ -771,8 +771,8 @@ namespace starskytest.Services
 			var modelSearchQuery = "query of";
 			var searchViewModel = new SearchViewModel();
 			searchViewModel.ParseDefaultOption(modelSearchQuery);
-			Assert.AreEqual("query", searchViewModel.SearchFor[0]);
-			Assert.AreEqual("of", searchViewModel.SearchFor[1]);
+			Assert.AreEqual("query", searchViewModel.SearchFor?[0]);
+			Assert.AreEqual("of", searchViewModel.SearchFor?[1]);
 		}
 	    
 		[TestMethod]
@@ -784,8 +784,8 @@ namespace starskytest.Services
 			searchViewModel.ParseDefaultOption(modelSearchQuery);
 
 			Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal, searchViewModel.SearchForOptions[0]);
-			Assert.AreEqual("Tags", searchViewModel.SearchIn[0]);
-			Assert.AreEqual("ns", searchViewModel.SearchFor[0]);
+			Assert.AreEqual("Tags", searchViewModel.SearchIn?[0]);
+			Assert.AreEqual("ns", searchViewModel.SearchFor?[0]);
 		}
 
 		[TestMethod]
@@ -885,7 +885,7 @@ namespace starskytest.Services
 			model.SetAddSearchForOptions("=");
 
 			var result = model.NarrowSearch(model);
-			Assert.AreEqual(1,result.FileIndexItems.Count);
+			Assert.AreEqual(1,result.FileIndexItems?.Count);
 		}
 	    
 		[TestMethod]
@@ -918,22 +918,22 @@ namespace starskytest.Services
 			model.SetAddSearchForOptions("=");
 
 			// Add extra NOT query			
-			model.SearchIn.Add("imageformat");
+			model.SearchIn?.Add("imageformat");
 			model.SetAddSearchFor("tiff"); // not query
 			model.SetAddSearchForOptions("-");
 
 			var result = model.NarrowSearch(model);
 
-			Assert.AreEqual("lelystadcentrum2",result.FileIndexItems[0].Tags);
-			Assert.AreEqual(1,result.FileIndexItems.Count);
+			Assert.AreEqual(1,result.FileIndexItems?.Count);
+			Assert.AreEqual("lelystadcentrum2",result.FileIndexItems?[0].Tags);
 		}
 
 		[TestMethod]
 		public void SearchService_Search_Percentage()
 		{
 			var results = _search.Search("%", 0);
-			Assert.AreEqual(0,results.FileIndexItems.Count);
-			Assert.AreEqual("%",results.SearchQuery);
+			Assert.AreEqual(0,results?.FileIndexItems?.Count);
+			Assert.AreEqual("%",results?.SearchQuery);
 		}
 
 

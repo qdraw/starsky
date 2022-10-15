@@ -218,7 +218,7 @@ namespace starsky.foundation.platform.Helpers
 				throw new FieldAccessException("use with _appsettings");
 			}
 			
-			_console.WriteLine("Starksy " + _appSettings.ApplicationType + " Cli ~ Help:");
+			_console.WriteLine("Starsky " + _appSettings.ApplicationType + " Cli ~ Help:");
 			_console.WriteLine("--help or -h == help (this window)");
 			
 			switch (_appSettings.ApplicationType)

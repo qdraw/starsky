@@ -34,7 +34,7 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo(
       new URLPath().StringToIUrl(history.location.search).sidebar
     );
     useEffect(() => {
-      var sidebarLocal = new URLPath().StringToIUrl(
+      const sidebarLocal = new URLPath().StringToIUrl(
         history.location.search
       ).sidebar;
       setIsSidebar(sidebarLocal);

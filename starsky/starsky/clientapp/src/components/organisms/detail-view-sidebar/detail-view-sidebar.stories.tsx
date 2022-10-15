@@ -9,7 +9,7 @@ import DetailViewSidebar from "./detail-view-sidebar";
 storiesOf("components/organisms/detail-view-sidebar", module).add(
   "default",
   () => {
-    var contextProvider = {
+    const contextProvider = {
       dispatch: () => {},
       state: {
         breadcrumb: [],

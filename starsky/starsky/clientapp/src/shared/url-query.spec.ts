@@ -2,21 +2,21 @@ import * as isDev from "./is-dev";
 import { UrlQuery } from "./url-query";
 
 describe("url-query", () => {
-  var urlQuery = new UrlQuery();
+  const urlQuery = new UrlQuery();
 
   it("UrlQuerySearchApi", () => {
-    var result = urlQuery.UrlQuerySearchApi("for", 1);
+    const result = urlQuery.UrlQuerySearchApi("for", 1);
     expect(result).toContain("for");
     expect(result).toContain("1");
   });
 
   it("UrlSearchTrashApi", () => {
-    var result = urlQuery.UrlSearchTrashApi(1);
+    const result = urlQuery.UrlSearchTrashApi(1);
     expect(result).toContain("1");
   });
 
   it("UrlQueryServerApi f/colorclass/collections", () => {
-    var result = urlQuery.UrlQueryServerApi(
+    const result = urlQuery.UrlQueryServerApi(
       "?f=test&colorClass=1&collections=false&details=true"
     );
     expect(result).toContain("1");
@@ -25,124 +25,124 @@ describe("url-query", () => {
   });
 
   it("UrlQueryServerApi sort", () => {
-    var result = urlQuery.UrlQueryServerApi("?sort=fileName");
+    const result = urlQuery.UrlQueryServerApi("?sort=fileName");
     expect(result).toContain("sort");
     expect(result).toContain("fileName");
   });
 
   it("UrlIndexServerApi", () => {
-    var result = urlQuery.UrlIndexServerApi({ f: "/test" });
+    const result = urlQuery.UrlIndexServerApi({ f: "/test" });
     expect(result).toContain("test");
     expect(result).toBe(urlQuery.prefix + "/api/index?f=/test");
   });
 
   it("UrlIndexServerApi nothing", () => {
-    var result = urlQuery.UrlIndexServerApi({});
+    const result = urlQuery.UrlIndexServerApi({});
     expect(result).toBe(urlQuery.prefix + "/api/index?");
   });
 
   it("UrlQueryInfoApi", () => {
-    var result = urlQuery.UrlQueryInfoApi("/test");
+    const result = urlQuery.UrlQueryInfoApi("/test");
     expect(result).toContain("/test");
   });
 
   it("UrlQueryInfoApi null", () => {
-    var result = urlQuery.UrlQueryInfoApi("");
+    const result = urlQuery.UrlQueryInfoApi("");
     expect(result).toBe("");
   });
 
   it("UrlQueryInfoApi slash", () => {
-    var result = urlQuery.UrlQueryInfoApi("/");
+    const result = urlQuery.UrlQueryInfoApi("/");
     expect(result).toBe(urlQuery.prefix + "/api/info?f=/&json=true");
   });
 
   it("UrlQueryUpdateApi", () => {
-    var result = urlQuery.UrlUpdateApi();
+    const result = urlQuery.UrlUpdateApi();
     expect(result).toContain("update");
   });
 
   it("UrlQueryThumbnailJsonApi", () => {
-    var result = urlQuery.UrlThumbnailJsonApi("0000");
+    const result = urlQuery.UrlThumbnailJsonApi("0000");
     expect(result).toContain("0000");
   });
 
   it("UrlDownloadPhotoApi", () => {
-    var result = urlQuery.UrlDownloadPhotoApi("0000");
+    const result = urlQuery.UrlDownloadPhotoApi("0000");
     expect(result).toContain("0000");
   });
 
   it("UrlExportPostZipApi", () => {
-    var result = urlQuery.UrlExportPostZipApi();
+    const result = urlQuery.UrlExportPostZipApi();
     expect(result).toContain("export");
   });
 
   it("UrlExportZipApi", () => {
-    var result = urlQuery.UrlExportZipApi("123");
+    const result = urlQuery.UrlExportZipApi("123");
     expect(result).toContain("123");
   });
 
   it("UrlDeleteApi", () => {
-    var result = urlQuery.UrlDeleteApi();
+    const result = urlQuery.UrlDeleteApi();
     expect(result).toContain("delete");
   });
 
   it("UrlPublish", () => {
-    var result = urlQuery.UrlPublish();
+    const result = urlQuery.UrlPublish();
     expect(result).toContain("publish");
   });
   it("UrlPublishCreate", () => {
-    var result = urlQuery.UrlPublishCreate();
+    const result = urlQuery.UrlPublishCreate();
     expect(result).toContain("publish/create");
   });
 
   it("UrlPublishExist", () => {
-    var result = urlQuery.UrlPublishExist("name");
+    const result = urlQuery.UrlPublishExist("name");
     expect(result).toContain("itemName=name");
   });
 
   it("UrlSearchTrashApi should contain trash", () => {
-    var result = urlQuery.UrlSearchTrashApi();
+    const result = urlQuery.UrlSearchTrashApi();
     expect(result).toContain("trash");
   });
   it("UrlQuerySearchApi should contain test", () => {
-    var result = urlQuery.UrlQuerySearchApi("test");
+    const result = urlQuery.UrlQuerySearchApi("test");
     expect(result).toContain("test");
   });
 
   it("UrlLoginApi", () => {
-    var result = urlQuery.UrlLoginApi();
+    const result = urlQuery.UrlLoginApi();
     expect(result).toContain("login");
   });
 
   it("UrlLogoutApi", () => {
-    var result = urlQuery.UrlLogoutApi();
+    const result = urlQuery.UrlLogoutApi();
     expect(result).toContain("logout");
   });
 
   describe("GetReturnUrl", () => {
     it("default", () => {
-      var test = urlQuery.GetReturnUrl("?");
+      const test = urlQuery.GetReturnUrl("?");
       expect(test).toStrictEqual("/?f=/");
     });
     it("url", () => {
-      var test = urlQuery.GetReturnUrl("ReturnUrl=test");
+      const test = urlQuery.GetReturnUrl("ReturnUrl=test");
       expect(test).toStrictEqual("test");
     });
   });
 
   describe("updateFilePath", () => {
     it("default", () => {
-      var test = urlQuery.updateFilePathHash("?f=test", "test1");
+      const test = urlQuery.updateFilePathHash("?f=test", "test1");
       expect(test).toStrictEqual("/?f=test1");
     });
 
     it("contains colorclass", () => {
-      var test = urlQuery.updateFilePathHash("?f=test&colorclass=1", "test1");
+      const test = urlQuery.updateFilePathHash("?f=test&colorclass=1", "test1");
       expect(test).toStrictEqual("/?f=test1&colorClass=1");
     });
 
     it("remove search query", () => {
-      var test = urlQuery.updateFilePathHash(
+      const test = urlQuery.updateFilePathHash(
         "?f=test&colorclass=1&t=1",
         "test1",
         true
@@ -151,7 +151,7 @@ describe("url-query", () => {
     });
 
     it("keep search query", () => {
-      var test = urlQuery.updateFilePathHash(
+      const test = urlQuery.updateFilePathHash(
         "?f=test&colorclass=1&t=1",
         "test1"
       );
@@ -159,7 +159,7 @@ describe("url-query", () => {
     });
 
     it("keep search query and remove select", () => {
-      var test = urlQuery.updateFilePathHash(
+      const test = urlQuery.updateFilePathHash(
         "?f=test&colorclass=1&t=1&select=t5",
         "test1",
         false,
@@ -171,14 +171,14 @@ describe("url-query", () => {
 
   describe("UrlGeoSync", () => {
     it("should contain geo sync", () => {
-      var test = urlQuery.UrlGeoSync();
+      const test = urlQuery.UrlGeoSync();
       expect(test).toContain("/geo/sync");
     });
   });
 
   describe("UrlGeoStatus", () => {
     it("should contain status and parm", () => {
-      var test = urlQuery.UrlGeoStatus("parm");
+      const test = urlQuery.UrlGeoStatus("parm");
       expect(test).toContain("/geo/status");
       expect(test).toContain("parm");
     });
@@ -186,19 +186,19 @@ describe("url-query", () => {
 
   describe("UrlThumbnailImage", () => {
     it("should contain hash_test (issingleitem false)", () => {
-      var test = urlQuery.UrlThumbnailImage("hash_test", false);
+      const test = urlQuery.UrlThumbnailImage("hash_test", false);
       expect(test).toContain("hash_test");
     });
 
     it("should contain hash_test (issingleitem true)", () => {
-      var test = urlQuery.UrlThumbnailImage("hash_test", true);
+      const test = urlQuery.UrlThumbnailImage("hash_test", true);
       expect(test).toContain("hash_test");
     });
   });
 
   describe("UrlThumbnailImageLargeOrExtraLarge", () => {
     it("should contain hash_test (large false)", () => {
-      var test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
+      const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
         "hash_test",
         false
       );
@@ -206,7 +206,10 @@ describe("url-query", () => {
     });
 
     it("should contain hash_test (large true)", () => {
-      var test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("hash_test", true);
+      const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
+        "hash_test",
+        true
+      );
       expect(test).toContain("hash_test");
     });
   });
@@ -233,7 +236,7 @@ describe("url-query", () => {
     it("default secure context", () => {
       window.location.protocol = "https:";
       window.location.host = "google.com";
-      var url = urlQuery.UrlRealtime();
+      const url = urlQuery.UrlRealtime();
       expect(url).toBe("wss://google.com/starsky/realtime");
       expect(url).toContain("realtime");
     });
@@ -241,7 +244,7 @@ describe("url-query", () => {
     it("default non-secure context", () => {
       window.location.protocol = "http:";
       window.location.host = "localhost:7382";
-      var url = new UrlQuery().UrlRealtime();
+      const url = new UrlQuery().UrlRealtime();
       expect(url).toBe("ws://localhost:7382/starsky/realtime");
       expect(url).toContain("realtime");
     });
@@ -251,7 +254,7 @@ describe("url-query", () => {
 
       window.location.protocol = "http:";
       window.location.host = "localhost:3000";
-      var url = new UrlQuery().UrlRealtime();
+      const url = new UrlQuery().UrlRealtime();
       expect(url).toBe("ws://localhost:3000/starsky/realtime");
       expect(url).toContain("realtime");
     });
@@ -260,7 +263,7 @@ describe("url-query", () => {
 
       window.location.protocol = "http:";
       window.location.host = "localhost:3000";
-      var url = new UrlQuery().UrlRealtime();
+      const url = new UrlQuery().UrlRealtime();
       expect(url).toBe("ws://localhost:4000/starsky/realtime");
       expect(url).toContain("realtime");
     });

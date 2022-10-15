@@ -16,7 +16,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
-    var defaultMenu = [
+    const defaultMenu = [
       { name: "Home", url: new UrlQuery().UrlHomePage() },
       {
         name: language.text("Foto's van deze week", "Photos of this week"),
@@ -72,7 +72,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
         if (suggest && suggest.length >= 1) setSuggest([]);
         return;
       }
-      var result: Array<string> = [...responseObject.data];
+      const result: Array<string> = [...responseObject.data];
       setSuggest(result);
 
       // to avoid endless loops
@@ -120,7 +120,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
      * @param event mouse event from document
      */
     function handleClickOutside(event: MouseEvent) {
-      var target = event.target as HTMLElement;
+      const target = event.target as HTMLElement;
       if (
         target.className.indexOf("menu-item") === -1 &&
         target.className.indexOf("icon-addon") === -1 &&

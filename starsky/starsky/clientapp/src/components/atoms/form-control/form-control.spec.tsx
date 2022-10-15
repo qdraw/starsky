@@ -97,7 +97,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthKey - keydown max limit but allow control/command a", async () => {
-      var component = render(
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -138,7 +138,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthKey - keydown max limit but allow control/command e", async () => {
-      var component = render(
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -177,7 +177,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthKey - keydown ok", async () => {
-      var component = render(
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -216,7 +216,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthPaste - copy -> paste limit/preventDefault", async () => {
-      var component = render(
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -247,7 +247,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthPaste - copy -> paste ok", async () => {
-      var component = render(
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -278,7 +278,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthBlur - null/nothing", async () => {
-      var component = render(
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -304,9 +304,9 @@ describe("FormControl", () => {
     });
 
     it("limitLengthBlur - onBlur pushed/ok", async () => {
-      var onBlurSpy = jest.fn();
+      const onBlurSpy = jest.fn();
 
-      var component = render(
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -335,8 +335,8 @@ describe("FormControl", () => {
     });
 
     it("limitLengthBlur - onBlur limit/preventDefault", () => {
-      var onBlurSpy = jest.fn();
-      var component = render(
+      const onBlurSpy = jest.fn();
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -365,8 +365,8 @@ describe("FormControl", () => {
     });
 
     it("limitLengthBlur - onBlur limit", () => {
-      var onBlurSpy = jest.fn();
-      var component = render(
+      const onBlurSpy = jest.fn();
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}

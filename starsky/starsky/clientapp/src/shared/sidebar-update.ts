@@ -64,7 +64,7 @@ export class SidebarUpdate {
   };
 
   public IsFormUsed = (updateSidebar: ISidebarUpdate): boolean => {
-    var totalChars = 0;
+    let totalChars = 0;
     if (updateSidebar.tags) {
       totalChars += updateSidebar.tags.length;
     }

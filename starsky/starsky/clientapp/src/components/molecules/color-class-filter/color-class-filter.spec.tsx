@@ -17,7 +17,7 @@ describe("ColorClassFilter", () => {
   });
 
   it("onClick value", () => {
-    var component = render(
+    const component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -48,7 +48,7 @@ describe("ColorClassFilter", () => {
   });
 
   it("outside current scope display reset", () => {
-    var component = render(
+    const component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -61,7 +61,7 @@ describe("ColorClassFilter", () => {
   });
 
   it("onClick value and preloader exist", () => {
-    var component = render(
+    const component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -88,7 +88,7 @@ describe("ColorClassFilter", () => {
   it("undo selection when clicking on already selected colorclass", () => {
     globalHistory.navigate("/?colorclass=1");
 
-    var component = render(
+    const component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -104,7 +104,7 @@ describe("ColorClassFilter", () => {
 
     expect(colorClass.classList).toContain("active");
 
-    var urlToStringSpy = jest
+    const urlToStringSpy = jest
       .spyOn(URLPath.prototype, "IUrlToString")
       .mockImplementationOnce(() => {
         return "";

@@ -44,11 +44,11 @@ describe("ArchiveSidebarColorClass", () => {
 
       // is used in multiple ways
       // use this: ==> import * as AppContext from '../contexts/archive-context';
-      var useContextSpy = jest
+      const useContextSpy = jest
         .spyOn(React, "useContext")
         .mockImplementation(() => contextValues);
 
-      var dispatch = jest.fn();
+      const dispatch = jest.fn();
       const contextValues = {
         state: newIArchive(),
         dispatch
@@ -62,7 +62,7 @@ describe("ArchiveSidebarColorClass", () => {
       // to use with: => import { act } from 'react-dom/test-utils';
       globalHistory.navigate("/?select=test.jpg");
 
-      var isCalled = false;
+      let isCalled = false;
       jest
         .spyOn(ColorClassSelect, "default")
         .mockImplementationOnce(() => {

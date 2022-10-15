@@ -27,13 +27,13 @@ describe("useInterval", () => {
   });
 
   it("check if setInterval is called", () => {
-    var clearIntervalSpy = jest
+    const clearIntervalSpy = jest
       .spyOn(window, "setInterval")
       .mockImplementationOnce(() => {
         return {} as any;
       });
 
-    var component = render(
+    const component = render(
       <UseIntervalComponentTest timer={10} callback={jest.fn()} />
     );
     component.unmount();

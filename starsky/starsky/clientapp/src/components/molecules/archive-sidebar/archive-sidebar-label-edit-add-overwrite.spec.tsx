@@ -20,19 +20,19 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("isReadOnly: true", () => {
     const mainElement = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-    var formControl = mainElement.queryAllByTestId("form-control");
+    const formControl = mainElement.queryAllByTestId("form-control");
 
     // there are 3 classes [title,info,description]
     formControl.forEach((element) => {
-      var disabled = element.classList;
+      const disabled = element.classList;
       expect(disabled).toContain("disabled");
     });
   });
 
   describe("with context", () => {
-    var useContextSpy: jest.SpyInstance;
+    let useContextSpy: jest.SpyInstance;
 
-    var dispatchedValues: any[] = [];
+    let dispatchedValues: any[] = [];
 
     beforeEach(() => {
       // is used in multiple ways
@@ -141,7 +141,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("click overwrite > generic fail > remove message retry when success", async () => {
-      var connectionDefault: IConnectionDefault = {
+      const connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [] as any[]
       };
@@ -225,7 +225,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const add = component.queryByTestId("add") as HTMLElement;
 
-      var className = add.className;
+      const className = add.className;
       expect(className).toBe("btn btn--default");
 
       act(() => {
@@ -234,7 +234,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("click append", async () => {
-      var connectionDefault: IConnectionDefault = {
+      const connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [
           {
@@ -247,7 +247,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       };
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(connectionDefault);
-      var spy = jest
+      const spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -300,7 +300,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("click append | read only", async () => {
       jest.spyOn(FetchPost, "default").mockReset();
 
-      var connectionDefault: IConnectionDefault = {
+      const connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [
           {
@@ -358,7 +358,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       jest.spyOn(FetchPost, "default").mockReset();
 
-      var connectionDefault: IConnectionDefault = {
+      const connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [
           {
@@ -377,7 +377,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       };
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(connectionDefault);
-      var spy = jest
+      const spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -433,11 +433,11 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("keydown should be fired", () => {
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      var keyboardSpy = jest
+      const keyboardSpy = jest
         .spyOn(Keyboard.prototype, "SetFocusOnEndField")
         .mockImplementationOnce(() => {});
 
-      var event = new KeyboardEvent("keydown", {
+      const event = new KeyboardEvent("keydown", {
         bubbles: true,
         cancelable: true,
         key: "t",

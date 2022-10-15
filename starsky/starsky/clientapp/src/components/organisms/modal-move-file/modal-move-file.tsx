@@ -27,7 +27,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     props.parentDirectory
   );
 
-  var usesFileList = useFileList("?f=" + currentFolderPath, true);
+  let usesFileList = useFileList("?f=" + currentFolderPath, true);
 
   // only for navigation in this file
   const history = useLocation();
@@ -60,7 +60,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       return null;
     }
 
-    var fileIndexItems = resultDo.data as IFileIndexItem[];
+    const fileIndexItems = resultDo.data as IFileIndexItem[];
     if (resultDo.statusCode !== 200) {
       console.error(resultDo);
       setError(fileIndexItems[0].status.toString());
@@ -71,7 +71,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     new FileListCache().CacheCleanEverything();
 
     // now go to the new location
-    var toNavigateUrl = new UrlQuery().updateFilePathHash(
+    const toNavigateUrl = new UrlQuery().updateFilePathHash(
       history.location.search,
       fileIndexItems[0].filePath
     );

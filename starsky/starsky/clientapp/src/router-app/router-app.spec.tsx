@@ -11,7 +11,7 @@ import RouterApp from "./router-app";
 
 describe("Router", () => {
   it("default", () => {
-    var contentPageSpy = jest
+    const contentPageSpy = jest
       .spyOn(ContentPage, "default")
       .mockImplementationOnce(() => {
         return <></>;
@@ -21,7 +21,7 @@ describe("Router", () => {
   });
 
   it("search", () => {
-    var searchPagePageSpy = jest
+    const searchPagePageSpy = jest
       .spyOn(SearchPage, "default")
       .mockImplementationOnce(() => {
         return <></>;
@@ -32,7 +32,7 @@ describe("Router", () => {
   });
 
   it("TrashPage", () => {
-    var trashPagePageSpy = jest
+    const trashPagePageSpy = jest
       .spyOn(TrashPage, "default")
       .mockImplementationOnce(() => {
         return <></>;
@@ -43,7 +43,7 @@ describe("Router", () => {
   });
 
   it("ImportPage", () => {
-    var importPagePageSpy = jest
+    const importPagePageSpy = jest
       .spyOn(ImportPage, "default")
       .mockImplementationOnce(() => {
         return <></>;
@@ -54,7 +54,7 @@ describe("Router", () => {
   });
 
   it("LoginPage", () => {
-    var loginPagePageSpy = jest
+    const loginPagePageSpy = jest
       .spyOn(LoginPage, "default")
       .mockImplementationOnce(() => {
         return <></>;
@@ -65,7 +65,7 @@ describe("Router", () => {
   });
 
   it("NotFoundPage", () => {
-    var notFoundPageSpy = jest
+    const notFoundPageSpy = jest
       .spyOn(NotFoundPage, "default")
       .mockImplementationOnce(() => {
         return <></>;

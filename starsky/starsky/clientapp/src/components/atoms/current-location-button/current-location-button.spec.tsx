@@ -34,7 +34,7 @@ describe("CurrentLocationButton", () => {
       };
       (global as any).navigator.geolocation = mockGeolocation;
 
-      var callback = jest.fn();
+      const callback = jest.fn();
       const component = render(<CurrentLocationButton callback={callback} />);
       component.getByRole("button").click();
 
@@ -61,7 +61,7 @@ describe("CurrentLocationButton", () => {
       };
       (global as any).navigator.geolocation = mockGeolocation;
 
-      var component = render(<CurrentLocationButton />);
+      const component = render(<CurrentLocationButton />);
       component.getByRole("button").click();
 
       // no callback
@@ -78,8 +78,8 @@ describe("CurrentLocationButton", () => {
       };
       (global as any).navigator.geolocation = mockGeolocation;
 
-      var callback = jest.fn();
-      var component = render(<CurrentLocationButton callback={callback} />);
+      const callback = jest.fn();
+      const component = render(<CurrentLocationButton callback={callback} />);
 
       // need to await here
       await component.getByRole("button").click();

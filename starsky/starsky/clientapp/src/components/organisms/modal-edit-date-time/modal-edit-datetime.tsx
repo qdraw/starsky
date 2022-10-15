@@ -66,9 +66,9 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
   function updateDateTime() {
     if (!isFormEnabled) return;
 
-    var updateApiUrl = new UrlQuery().UrlUpdateApi();
+    const updateApiUrl = new UrlQuery().UrlUpdateApi();
 
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", props.subPath);
     bodyParams.append("datetime", getDates());
 

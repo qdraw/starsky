@@ -44,7 +44,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   );
 
   useEffect(() => {
-    var downloadApiLocal = new UrlQuery().UrlDownloadPhotoApi(
+    const downloadApiLocal = new UrlQuery().UrlDownloadPhotoApi(
       new URLPath().encodeURI(
         new URLPath().getFilePath(history.location.search)
       ),
@@ -89,7 +89,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   const [isPaused, setPaused] = useState(true);
   const [isStarted, setStarted] = useState(false);
 
-  var videoRefCurrent = videoRef.current;
+  const videoRefCurrent = videoRef.current;
   useEffect(() => {
     if (!videoRefCurrent) return;
     // when video ends
@@ -121,7 +121,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     setStarted(true);
 
     if (isPaused) {
-      var promise = videoRef.current.play();
+      const promise = videoRef.current.play();
 
       promise?.catch(() => {
         setIsError(MessageVideoPlayBackError);
@@ -158,7 +158,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     progressRef.current.value = videoRef.current.currentTime;
 
     // scrubber bol
-    var srubberPercentage =
+    const srubberPercentage =
       (progressRef.current.value / videoRef.current.duration) * 100;
     scrubberRef.current.style.left = srubberPercentage + "%";
 

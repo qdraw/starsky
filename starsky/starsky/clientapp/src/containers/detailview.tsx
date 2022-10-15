@@ -48,7 +48,7 @@ const DetailView: React.FC<IDetailView> = () => {
     new URLPath().StringToIUrl(history.location.search).details
   );
   useEffect(() => {
-    var details = new URLPath().StringToIUrl(history.location.search).details;
+    const details = new URLPath().StringToIUrl(history.location.search).details;
     setDetails(details);
   }, [history.location.search]);
 
@@ -104,7 +104,7 @@ const DetailView: React.FC<IDetailView> = () => {
       if (!history.location) return;
       if (new Keyboard().isInForm(event)) return;
 
-      var url = isSearchQuery
+      const url = isSearchQuery
         ? new UrlQuery().HashSearchPage(history.location.search)
         : new UrlQuery().updateFilePathHash(
             history.location.search,
@@ -122,7 +122,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // toggle details side menu
   function toggleLabels() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
+    const urlObject = new URLPath().StringToIUrl(history.location.search);
     urlObject.details = !isDetails;
     setDetails(urlObject.details);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
@@ -179,7 +179,7 @@ const DetailView: React.FC<IDetailView> = () => {
    * @param relative object to move from
    */
   function navigateNext(relative: IRelativeObjects) {
-    var nextPath = new UrlQuery().updateFilePathHash(
+    const nextPath = new UrlQuery().updateFilePathHash(
       history.location.search,
       relative.nextFilePath,
       false
@@ -222,7 +222,7 @@ const DetailView: React.FC<IDetailView> = () => {
    * @param relative object to move from
    */
   function navigatePrev(relative: IRelativeObjects) {
-    var prevPath = new UrlQuery().updateFilePathHash(
+    const prevPath = new UrlQuery().updateFilePathHash(
       history.location.search,
       relativeObjects.prevFilePath,
       false

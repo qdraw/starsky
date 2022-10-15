@@ -5,7 +5,7 @@ import AccountRegisterPage from "./account-register-page";
 
 describe("ContentPage", () => {
   it("default", () => {
-    var accountRegisterSpy = jest
+    const accountRegisterSpy = jest
       .spyOn(AccountRegister, "default")
       .mockImplementationOnce(() => {
         return <></>;

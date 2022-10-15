@@ -6,7 +6,7 @@ import { ProcessingState } from "./processing-state";
 
 describe("ExportIntervalUpdate", () => {
   it("ready", async () => {
-    var setProcessingSpy = jest.fn();
+    const setProcessingSpy = jest.fn();
 
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
@@ -14,7 +14,7 @@ describe("ExportIntervalUpdate", () => {
         data: true
       } as IConnectionDefault);
 
-    var fetchGetSpy = jest
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
@@ -29,7 +29,7 @@ describe("ExportIntervalUpdate", () => {
   });
 
   it("fail", async () => {
-    var setProcessingSpy = jest.fn();
+    const setProcessingSpy = jest.fn();
 
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
@@ -37,7 +37,7 @@ describe("ExportIntervalUpdate", () => {
         data: true
       } as IConnectionDefault);
 
-    var fetchGetSpy = jest
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
@@ -52,7 +52,7 @@ describe("ExportIntervalUpdate", () => {
   });
 
   it("wait 206", async () => {
-    var setProcessingSpy = jest.fn();
+    const setProcessingSpy = jest.fn();
 
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
@@ -60,7 +60,7 @@ describe("ExportIntervalUpdate", () => {
         data: true
       } as IConnectionDefault);
 
-    var fetchGetSpy = jest
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
@@ -74,7 +74,7 @@ describe("ExportIntervalUpdate", () => {
   });
 
   it("wait 404", async () => {
-    var setProcessingSpy = jest.fn();
+    const setProcessingSpy = jest.fn();
 
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
@@ -82,7 +82,7 @@ describe("ExportIntervalUpdate", () => {
         data: true
       } as IConnectionDefault);
 
-    var fetchGetSpy = jest
+    const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 

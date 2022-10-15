@@ -13,8 +13,8 @@ describe("SwitchButton", () => {
   });
 
   it("trigger change", async () => {
-    var outputSpy = jest.fn();
-    var component = render(
+    const outputSpy = jest.fn();
+    const component = render(
       <Select selectOptions={["Test"]} callback={outputSpy} />
     );
 
@@ -33,8 +33,8 @@ describe("SwitchButton", () => {
   });
 
   it("trigger change (no callback)", () => {
-    var outputSpy = jest.fn();
-    var component = render(<Select selectOptions={[]} />);
+    const outputSpy = jest.fn();
+    const component = render(<Select selectOptions={[]} />);
     const selectElement = component.queryByTestId("select") as HTMLElement;
 
     const changeEvent = createEvent.change(selectElement, {
@@ -47,7 +47,7 @@ describe("SwitchButton", () => {
   });
 
   it("find option", () => {
-    var component = render(<Select selectOptions={["Test"]} />);
+    const component = render(<Select selectOptions={["Test"]} />);
 
     const selectElement = component.queryByTestId("select") as HTMLElement;
 
@@ -55,7 +55,7 @@ describe("SwitchButton", () => {
   });
 
   it("null option", () => {
-    var component = render(<Select selectOptions={[]} />);
+    const component = render(<Select selectOptions={[]} />);
 
     const selectElement = component.queryByTestId("select") as HTMLElement;
 

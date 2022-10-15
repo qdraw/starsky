@@ -4,15 +4,15 @@ import SwitchButton from "./switch-button";
 
 describe("SwitchButton", () => {
   it("renders", () => {
-    var toggle = jest.fn();
+    const toggle = jest.fn();
     render(
       <SwitchButton onToggle={toggle} leftLabel={"on"} rightLabel={"off"} />
     );
   });
 
   it("renders (disabled:state)", () => {
-    var toggle = jest.fn();
-    var wrapper = render(
+    const toggle = jest.fn();
+    const wrapper = render(
       <SwitchButton
         isEnabled={false}
         onToggle={toggle}
@@ -30,7 +30,7 @@ describe("SwitchButton", () => {
 
   it("test if element triggers onToggle when changed (default)", () => {
     const toggle = jest.fn();
-    var wrapper = render(
+    const wrapper = render(
       <SwitchButton
         isOn={true}
         onToggle={toggle}
@@ -51,8 +51,8 @@ describe("SwitchButton", () => {
   });
 
   it("test if element triggers onToggle when changed (negative)", () => {
-    var toggle = jest.fn();
-    var wrapper = render(
+    const toggle = jest.fn();
+    const wrapper = render(
       <SwitchButton
         isOn={false}
         onToggle={toggle}

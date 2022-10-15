@@ -20,7 +20,7 @@ export class SelectCheckIfActive {
     // you can't select an item thats not shown
     select.forEach((selectedPath) => {
       if (fileNameList.indexOf(selectedPath) === -1) {
-        var selectIndex = select.indexOf(selectedPath);
+        const selectIndex = select.indexOf(selectedPath);
         delete select[selectIndex];
       }
     });
