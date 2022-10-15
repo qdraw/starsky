@@ -14,7 +14,7 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          mv $(Build.SourcesDirectory)/win7-x64/starsky-win-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win-x64.zip
+          mv $(Build.SourcesDirectory)/win-x64/starsky-win-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win-x64.zip
 
     - task: Bash@3
       enabled: true

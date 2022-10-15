@@ -49,7 +49,7 @@ for ((i = 1; i <= $#; i++ )); do
         echo "--runtime linux-arm"
         echo "     (or:) --runtime linux-arm64"
         echo "     (or:) --runtime osx-x64"
-        echo "     (or:) --runtime win7-x64"
+        echo "     (or:) --runtime win-x64"
         echo "(optional) --port 4823"
         echo "(optional) --anywhere (to allow access from anywhere, defaults to false)"
         echo "(optional) --appinsights - to ask for app insights keys"
