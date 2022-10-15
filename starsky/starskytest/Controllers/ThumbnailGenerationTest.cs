@@ -64,7 +64,7 @@ namespace starskytest.Controllers
 			var folder = thumbStorage.GetAllFilesInDirectoryRecursive(
 				"/").ToList();
 			
-			Assert.AreEqual(1, folder.Count(p => !p.Contains("@")));
+			Assert.AreEqual(1, folder.Count(p => !p.Contains('@')));
 		}
 		
 		[TestMethod]
