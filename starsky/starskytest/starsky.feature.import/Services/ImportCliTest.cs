@@ -41,7 +41,7 @@ namespace starskytest.starsky.feature.import.Services
 				new FakeIImport(new FakeSelectorStorage()), new AppSettings(),
 				fakeConsole, new FakeExifToolDownload()).Importer(new List<string>().ToArray());
 			
-			Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault().Contains("Starksy Importer Cli ~ Help"));
+			Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault()?.Contains("Starsky Importer Cli ~ Help"));
 		}
 		
 		[TestMethod]
@@ -55,7 +55,7 @@ namespace starskytest.starsky.feature.import.Services
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
 				new AppSettings(), fakeConsole, new FakeExifToolDownload()).Importer(
 				new List<string>{"-p", "/test"}.ToArray());
-			Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault().Contains("Done Importing"));
+			Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault()?.Contains("Done Importing"));
 		}
 
 				

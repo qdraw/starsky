@@ -43,8 +43,8 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			new WebFtpCli(_appSettings, new FakeSelectorStorage(), console,_webRequestFactory )
 				.Run(new []{"-h"});
 			
-			Assert.IsTrue(console.WrittenLines.FirstOrDefault().Contains("Starksy WebFtp Cli ~ Help:"));
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("  use -v -help to show settings: "));
+			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Starsky WebFtp Cli ~ Help:"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("  use -v -help to show settings: "));
 		}
 
 		[TestMethod]
@@ -64,7 +64,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			new WebFtpCli(_appSettings, new FakeSelectorStorage(), console, _webRequestFactory)
 				.Run(new []{"-p"});
 			
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("is not found"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("is not found"));
 		}
 
 		[TestMethod]
@@ -77,7 +77,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			new WebFtpCli(new AppSettings(),fakeSelectorStorage , console, _webRequestFactory)
 				.Run(new []{"-p", "/test"});
 			
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("WebFtp settings"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("WebFtp settings"));
 		}
 		
 		[TestMethod]
@@ -89,7 +89,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			new WebFtpCli(_appSettings,fakeSelectorStorage , console, _webRequestFactory)
 				.Run(new []{"-p", "/test"});
 			
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("generate a settings file"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("generate a settings file"));
 		}
 		
 		[TestMethod]
