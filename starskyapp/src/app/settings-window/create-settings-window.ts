@@ -32,7 +32,8 @@ export const createSettingsWindow = async () => {
     "settings",
     "settings.html",
   );
-  newWindow.loadFile(settingsPage);
+
+  await newWindow.loadFile(settingsPage);
 
   newWindow.once("ready-to-show", () => {
     newWindow.show();

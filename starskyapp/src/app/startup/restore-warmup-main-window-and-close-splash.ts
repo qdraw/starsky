@@ -6,18 +6,20 @@ import { CloseSplash } from "../warmup/splash";
 import { WarmupServer } from "../warmup/warmup-server";
 
 export function RestoreMainWindowAndCloseSplash(splashWindow: BrowserWindow) {
-    restoreMainWindow().then(() => {
-      createCheckForUpdatesContainerWindow().catch(() => {});
-    });
-    CloseSplash(splashWindow);
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  restoreMainWindow().then(() => {
+    createCheckForUpdatesContainerWindow().catch(() => {});
+  });
+  CloseSplash(splashWindow);
 }
 
-export default function RestoreWarmupMainWindowAndCloseSplash(splashWindow: BrowserWindow, isRemote : Boolean) {
-    if (!isRemote) {    
-        WarmupServer(appPort).then(()=>{
-            RestoreMainWindowAndCloseSplash(splashWindow);
-        });
-        return;
-    }
-    RestoreMainWindowAndCloseSplash(splashWindow);
+export default function RestoreWarmupMainWindowAndCloseSplash(splashWindow: BrowserWindow, isRemote : boolean) {
+  if (!isRemote) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    WarmupServer(appPort).then(() => {
+      RestoreMainWindowAndCloseSplash(splashWindow);
+    });
+    return;
+  }
+  RestoreMainWindowAndCloseSplash(splashWindow);
 }

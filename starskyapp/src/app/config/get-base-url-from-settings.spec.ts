@@ -1,19 +1,23 @@
-jest.mock('net', () => ({
-    Socket: function() {
-        return {
-            connect() {
-                return 'Hello World'
-            }
-        }
-    }
-}))
 import * as appConfig from "electron-settings";
+import { unfreezeImport } from "../../shared/unfreeze-import";
 import { GetBaseUrlFromSettings } from "./get-base-url-from-settings";
+
+unfreezeImport(appConfig, 'get');
+jest.mock('net', () => ({
+  Socket() {
+    return {
+      connect() {
+        return 'Hello World';
+      },
+    };
+  },
+}));
+
 jest.mock("electron", () => {
   return {
     app: {
-      getPath: () => "tmp"
-    }
+      getPath: () => "tmp",
+    },
   };
 });
 

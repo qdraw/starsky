@@ -9,20 +9,20 @@ import { CheckFileExist } from "./check-file-exist";
 
 export async function ActionWhenFileIsChanged(
   filePathOnDisk: string,
-  stats: Stats
+  stats: Stats,
 ) {
   if (
-    filePathOnDisk.endsWith(".info") ||
-    filePathOnDisk.endsWith(".DS_Store")
+    filePathOnDisk.endsWith(".info")
+    || filePathOnDisk.endsWith(".DS_Store")
   ) {
     return;
   }
 
-  const infoFilePath = filePathOnDisk + ".info";
+  const infoFilePath = `${filePathOnDisk}.info`;
 
   if (await CheckFileExist(infoFilePath)) {
     const oldByteSize = await fs.promises.readFile(infoFilePath, {
-      encoding: "utf-8"
+      encoding: "utf-8",
     });
     if (oldByteSize === stats.size.toString()) {
       return;
@@ -34,13 +34,13 @@ export async function ActionWhenFileIsChanged(
     .replace(path.sep, "/");
 
   const url = toSubPath.endsWith(".xmp")
-    ? (await GetBaseUrlFromSettings()).location + "/starsky/api/upload-sidecar"
-    : (await GetBaseUrlFromSettings()).location + "/starsky/api/upload";
+    ? `${(await GetBaseUrlFromSettings()).location}/starsky/api/upload-sidecar`
+    : `${(await GetBaseUrlFromSettings()).location}/starsky/api/upload`;
 
-  uploadNetRequest(
+  await uploadNetRequest(
     url,
     toSubPath,
     filePathOnDisk,
-    session.fromPartition("persist:main")
+    session.fromPartition("persist:main"),
   );
 }

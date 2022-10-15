@@ -10,7 +10,7 @@ export enum Color {
   Extras = 7, // Blauw - blue
   Trash = 8, // grijs - Grey
   None = 0, // donkergrijs Dark Grey
-  DoNotChange = -1
+  DoNotChange = -1,
 }
 
 export interface IFileIndexItem {
@@ -57,14 +57,14 @@ export enum ImageFormat {
   png = "png" as any,
   xmp = "xmp" as any,
   gpx = "gpx" as any,
-  mp4 = "mp4" as any
+  mp4 = "mp4" as any,
 }
 
 export enum Orientation {
   Horizontal = "Horizontal" as any,
   Rotate90Cw = "Rotate90Cw" as any,
   Rotate180 = "Rotate180" as any,
-  Rotate270Cw = "Rotate270Cw" as any
+  Rotate270Cw = "Rotate270Cw" as any,
 }
 
 // Warning: Input elements should not switch from uncontrolled to controlled https://fb.me/react-controlled-components
@@ -72,7 +72,7 @@ export function newIFileIndexItem(): IFileIndexItem {
   return {
     tags: "",
     title: "",
-    description: ""
+    description: "",
   } as IFileIndexItem;
 }
 

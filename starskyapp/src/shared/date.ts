@@ -5,7 +5,9 @@
  */
 export const DifferenceInDate = (
   date: number,
-  now: number = new Date().valueOf()
+  now: number = new Date().valueOf(),
 ): number => {
   return (now - date) / 60000;
 };
+
+export default DifferenceInDate;

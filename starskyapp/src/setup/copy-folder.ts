@@ -32,7 +32,7 @@ export function copyFolderRecursiveSync(
   // Copy
   if (fs.lstatSync(source).isDirectory()) {
     files = fs.readdirSync(source);
-    files.forEach((file) => {
+    files.forEach((file: string) => {
       const curSource = path.join(source, file);
       if (fs.lstatSync(curSource).isDirectory()) {
         copyFolderRecursiveSync(curSource, targetFolder, match);

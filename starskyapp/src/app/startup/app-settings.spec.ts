@@ -1,11 +1,12 @@
 import * as appConfig from "electron-settings";
 import * as logger from "../logger/logger";
 import defaultAppSettings from "./app-settings";
+
 jest.mock("electron", () => {
   return {
     app: {
-      getPath: () => "tmp"
-    }
+      getPath: () => "tmp",
+    },
   };
 });
 
@@ -14,7 +15,7 @@ describe("app settings", () => {
     jest.spyOn(logger, "default").mockRestore();
   });
   describe("defaultAppSettings", () => {
-    it("default output", async () => {
+    it("default output", () => {
       jest.spyOn(appConfig, "configure").mockImplementationOnce(() => {});
       jest.spyOn(appConfig, "file").mockImplementationOnce(() => "test");
 

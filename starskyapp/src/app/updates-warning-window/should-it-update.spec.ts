@@ -13,8 +13,8 @@ jest.mock("electron", () => {
       getVersion: () => "99.99.99",
       getPath: () => "tmp",
       getLocale: () => "en",
-      on: () => "en"
-    }
+      on: () => "en",
+    },
   };
 });
 
@@ -23,7 +23,7 @@ describe("SkipDisplayOfUpdate", () => {
     jest.spyOn(logger, "default").mockImplementation(() => {
       return {
         info: jest.fn(),
-        warn: jest.fn()
+        warn: jest.fn(),
       };
     });
   });
@@ -38,6 +38,7 @@ describe("SkipDisplayOfUpdate", () => {
     });
     it("not exist, so it should re-check", async () => {
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return Promise.resolve(null);
       });
       const result = await SkipDisplayOfUpdate();
@@ -105,7 +106,7 @@ describe("SkipDisplayOfUpdate", () => {
       try {
         await shouldItUpdate();
       } catch (error) {
-        errorMessage = error;
+        errorMessage = error as string;
       }
       expect(errorMessage).toBeUndefined();
     });

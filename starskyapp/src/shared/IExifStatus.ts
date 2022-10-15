@@ -6,5 +6,7 @@ export enum IExifStatus {
   NotFoundSourceMissing = "NotFoundSourceMissing" as any,
   ServerError = "ServerError" as any,
   IgnoredAlreadyImported = "IgnoredAlreadyImported" as any,
-  FileError = "FileError" as any
+  FileError = "FileError" as any,
 }
+
+export default IExifStatus;

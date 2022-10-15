@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import * as appConfig from "electron-settings";
 import { willNavigateSecurity } from "./will-navigate-security";
 
@@ -10,10 +12,10 @@ describe("willNavigateSecurity", () => {
     const preventDefaultSpy = jest.fn();
     await willNavigateSecurity(
       { preventDefault: preventDefaultSpy } as any,
-      "http://google.com"
+      "http://google.com",
     );
-    expect(preventDefaultSpy).toBeCalled();
-    expect(preventDefaultSpy).toBeCalledTimes(1);
+    expect(preventDefaultSpy).toHaveBeenCalled();
+    expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
   });
 
   it("allow localhost", async () => {
@@ -24,9 +26,9 @@ describe("willNavigateSecurity", () => {
     const preventDefaultSpy = jest.fn();
     await willNavigateSecurity(
       { preventDefault: preventDefaultSpy } as any,
-      "http://localhost:5000"
+      "http://localhost:5000",
     );
-    expect(preventDefaultSpy).toBeCalledTimes(0);
+    expect(preventDefaultSpy).toHaveBeenCalledTimes(0);
   });
 
   it("allow file://", async () => {
@@ -37,9 +39,9 @@ describe("willNavigateSecurity", () => {
     const preventDefaultSpy = jest.fn();
     await willNavigateSecurity(
       { preventDefault: preventDefaultSpy } as any,
-      "file://t"
+      "file://t",
     );
-    expect(preventDefaultSpy).toBeCalledTimes(0);
+    expect(preventDefaultSpy).toHaveBeenCalledTimes(0);
 
     jest.spyOn(appConfig, "get").mockReset();
   });
@@ -52,8 +54,8 @@ describe("willNavigateSecurity", () => {
     const preventDefaultSpy = jest.fn();
     await willNavigateSecurity(
       { preventDefault: preventDefaultSpy } as any,
-      "http://test.com"
+      "http://test.com",
     );
-    expect(preventDefaultSpy).toBeCalledTimes(0);
+    expect(preventDefaultSpy).toHaveBeenCalledTimes(0);
   });
 });
