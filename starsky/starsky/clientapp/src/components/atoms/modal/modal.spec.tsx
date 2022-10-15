@@ -15,7 +15,7 @@ describe("Modal", () => {
   describe("Close Modal", () => {
     function renderModal(): any {
       window.scrollTo = jest.fn();
-      var handleExit = jest.fn();
+      const handleExit = jest.fn();
       const element = render(
         <Modal id="test-modal" isOpen={true} handleExit={handleExit}>
           &nbsp;
@@ -55,7 +55,7 @@ describe("Modal", () => {
       const spyScrollTo = jest.fn();
       window.scrollTo = spyScrollTo;
 
-      var handleExit = jest.fn() as any;
+      const handleExit = jest.fn() as any;
       const component = render(
         <div>
           <Modal id="test-modal" isOpen={true} handleExit={handleExit}>
@@ -67,10 +67,10 @@ describe("Modal", () => {
       return [spyScrollTo, component];
     }
 
-    it("sould open modal", () => {
+    it("should open modal", () => {
       const [spyScrollTo, component] = renderModal2();
 
-      var element = document.body.querySelector(".modal-bg--open");
+      const element = document.body.querySelector(".modal-bg--open");
 
       expect(element).toBeTruthy();
 
