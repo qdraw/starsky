@@ -11,6 +11,7 @@ jest.mock("electron", () => {
       on: () => "en",
     },
     contextBridge: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-types
       exposeInMainWorld: (_: string, _2: Function) => {},
     },
     ipcRenderer: {
@@ -22,7 +23,7 @@ jest.mock("electron", () => {
 
 describe("preload main", () => {
   describe("exposeInMainWorld", () => {
-    it("sending valid channel", async () => {
+    it("sending valid channel", () => {
       const sendSpy = jest
         .spyOn(ipcRenderer, "send")
         .mockImplementationOnce(() => {
@@ -33,7 +34,7 @@ describe("preload main", () => {
       sendSpy.mockReset();
     });
 
-    it("sending non-valid channel", async () => {
+    it("sending non-valid channel", () => {
       const sendSpy = jest
         .spyOn(ipcRenderer, "send")
         .mockImplementationOnce(() => {
@@ -44,10 +45,11 @@ describe("preload main", () => {
       sendSpy.mockReset();
     });
 
-    it("sending non-valid channel 1", async () => {
+    it("sending non-valid channel 1", () => {
       jest
         .spyOn(contextBridge, "exposeInMainWorld")
         .mockImplementationOnce((name, func) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           func.send("test123");
           return null;
         });
@@ -57,13 +59,14 @@ describe("preload main", () => {
         .mockImplementationOnce(() => {
           return null;
         });
+      // eslint-disable-next-line global-require
       require("./preload-main");
 
       expect(sendSpy).toHaveBeenCalledTimes(0);
       sendSpy.mockReset();
     });
 
-    it("receive valid channel", async () => {
+    it("receive valid channel", () => {
       const onSpy = jest.spyOn(ipcRenderer, "on").mockImplementationOnce(() => {
         return null;
       });
@@ -72,7 +75,7 @@ describe("preload main", () => {
       onSpy.mockReset();
     });
 
-    it("receive non-valid channel", async () => {
+    it("receive non-valid channel", () => {
       const onSpy = jest.spyOn(ipcRenderer, "on").mockImplementationOnce(() => {
         return null;
       });

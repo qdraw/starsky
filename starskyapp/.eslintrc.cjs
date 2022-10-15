@@ -19,15 +19,7 @@ const baseConfig = {
     "@typescript-eslint/no-unsafe-call": ["off"],
     "import/order": ["off"],
     "import/no-import-module-exports": ["off"],
-
-    // 'max-len': [
-    //   'warn',
-    //   {
-    //     code: 80,
-    //     tabWidth: 2,
-    //     ignoreComments: true,
-    //   },
-    // ],
+    "import/no-extraneous-dependencies": ["off"],
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
 };

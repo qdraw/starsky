@@ -47,7 +47,7 @@ async function createMainWindow(
     "client/pages/redirect/reload-redirect.html",
   );
 
-  newWindow.loadFile(location, {
+  await newWindow.loadFile(location, {
     query: { "remember-url": openSpecificUrl },
   });
 
@@ -76,16 +76,19 @@ async function createMainWindow(
 
   // normal navigations
   newWindow.webContents.on("did-navigate", () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     saveRememberUrl(newWindow);
   });
 
   // hash navigations
   newWindow.webContents.on("did-navigate-in-page", () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     saveRememberUrl(newWindow);
   });
 
   // Emitted when the window is going to be closed
   newWindow.on("close", () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     removeRememberUrl(newWindow.id);
   });
 
