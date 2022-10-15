@@ -9,7 +9,7 @@ export async function ExportIntervalUpdate(
 ) {
   // need to check if ProcessingState = server
   if (!zipKey) return;
-  var result = await FetchGet(new UrlQuery().UrlExportZipApi(zipKey, true));
+  const result = await FetchGet(new UrlQuery().UrlExportZipApi(zipKey, true));
 
   switch (result.statusCode) {
     case 200:

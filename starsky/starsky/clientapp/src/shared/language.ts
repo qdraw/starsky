@@ -17,12 +17,12 @@ export class Language {
    * Get the right content based on the language
    */
   public text(nl: string, en: string): string {
-    var selectedLanguageMap = new Map<number, string>([
+    const selectedLanguageMap = new Map<number, string>([
       [SupportedLanguages.nl, nl],
       [SupportedLanguages.en, en]
     ]);
 
-    var content = selectedLanguageMap.get(this.selectedLanguage);
+    const content = selectedLanguageMap.get(this.selectedLanguage);
     return content ? content : "";
   }
 

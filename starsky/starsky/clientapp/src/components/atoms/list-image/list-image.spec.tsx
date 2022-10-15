@@ -16,7 +16,7 @@ describe("ListImageTest", () => {
 
   it("useIntersection = true", () => {
     (useIntersection as jest.Mock<any>).mockImplementation(() => true);
-    var element = render(
+    const element = render(
       <ListImage fileHash={"test.jpg"} imageFormat={ImageFormat.jpg}>
         test
       </ListImage>
@@ -40,7 +40,7 @@ describe("ListImageTest", () => {
   });
 
   it("img-box--error null", () => {
-    var element = render(
+    const element = render(
       <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 
@@ -53,7 +53,7 @@ describe("ListImageTest", () => {
   });
 
   it("img-box--error null 2", () => {
-    var element = render(
+    const element = render(
       <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 

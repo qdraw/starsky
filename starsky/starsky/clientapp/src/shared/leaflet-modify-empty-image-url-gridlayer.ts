@@ -18,7 +18,7 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
   }
 
   public _removeTile(key: string) {
-    var tile = this._tiles[key];
+    const tile = this._tiles[key];
     if (!tile) {
       return;
     }
@@ -75,7 +75,7 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
       });
     }
 
-    var key = this._tileCoordsToKey(coords);
+    const key = this._tileCoordsToKey(coords);
 
     tile = this._tiles[key];
     if (!tile) {

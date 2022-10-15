@@ -59,11 +59,11 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 
-  var allSelection = () =>
+  const allSelection = () =>
     new Select(select, setSelect, state, history).allSelection();
-  var removeSidebarSelection = () =>
+  const removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
-  var undoSelection = () =>
+  const undoSelection = () =>
     new Select(select, setSelect, state, history).undoSelection();
 
   // Command + A for mac os || Ctrl + A for windows
@@ -76,7 +76,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   useEffect(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
-  var toggleLabels = () =>
+  const toggleLabels = () =>
     new Sidebar(sidebar, setSidebar, history).toggleSidebar();
 
   // download modal

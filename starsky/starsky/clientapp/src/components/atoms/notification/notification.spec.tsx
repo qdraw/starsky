@@ -35,7 +35,7 @@ describe("ItemListView", () => {
         <Notification type={NotificationType.default}>test</Notification>
       );
 
-      var portalElement = document.getElementById(PortalId);
+      const portalElement = document.getElementById(PortalId);
       if (!portalElement) throw new Error("portal should not be undefined");
       portalElement.remove();
 
@@ -45,7 +45,7 @@ describe("ItemListView", () => {
     });
 
     it("Callback test Ok close", () => {
-      var callback = jest.fn();
+      const callback = jest.fn();
       const component = render(
         <Notification callback={callback} type={NotificationType.default}>
           test
@@ -67,17 +67,17 @@ describe("ItemListView", () => {
         </>
       );
 
-      var portalElement = document.getElementById(PortalId);
+      const portalElement = document.getElementById(PortalId);
       if (!portalElement) throw new Error("portal should not be undefined");
 
       // first close default
-      var closeElement = portalElement.querySelector(
+      const closeElement = portalElement.querySelector(
         ".icon--close"
       ) as HTMLDivElement;
 
       closeElement.click();
 
-      var portalElement2 = document.getElementById(PortalId);
+      const portalElement2 = document.getElementById(PortalId);
       expect(portalElement2).toBeNull();
     });
   });

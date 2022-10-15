@@ -21,7 +21,10 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
     "You have changed this setting, now you need to perform a full sync. Go to the root folder, the more menu and click on manual sync."
   );
 
-  var permissionsData = useFetch(new UrlQuery().UrlAccountPermissions(), "get");
+  const permissionsData = useFetch(
+    new UrlQuery().UrlAccountPermissions(),
+    "get"
+  );
 
   const [enabled, setIsEnabled] = useState(false);
 
@@ -43,7 +46,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
   const [storageFolderNotFound, setStorageFolderNotFound] = useState(false);
 
   async function changeSetting(value: string, name?: string): Promise<number> {
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.set(name ? name : "", value);
     const result = await FetchPost(
       new UrlQuery().UrlApiAppSettings(),
@@ -52,7 +55,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
     return result?.statusCode;
   }
 
-  var appSettings = useFetch(new UrlQuery().UrlApiAppSettings(), "get")
+  const appSettings = useFetch(new UrlQuery().UrlApiAppSettings(), "get")
     ?.data as IAppSettings | null;
 
   const [verbose, setIsVerbose] = useState(appSettings?.verbose);

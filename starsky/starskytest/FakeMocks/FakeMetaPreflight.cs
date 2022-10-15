@@ -32,7 +32,7 @@ namespace starskytest.FakeMocks
 			return Task.FromResult( (new List<FileIndexItem>{inputModel}, changedFileIndexItemName));
 		}
 
-		public void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView,
+		private static void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView,
 			FileIndexItem inputModel, bool append, int rotateClock)
 		{
 			if ( !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )

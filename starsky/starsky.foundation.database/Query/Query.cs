@@ -68,7 +68,7 @@ namespace starsky.foundation.database.Query
             catch (ObjectDisposedException e)
             {
 	            _logger.LogInformation("[GetObjectByFilePath] catch-ed ObjectDisposedException", e);
-	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context()!);
+	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
 		
@@ -89,7 +89,7 @@ namespace starsky.foundation.database.Query
 		{
 			// cache code:
 			if ( cacheTime != null && 
-			     _appSettings?.AddMemoryCache == true &&
+			     _appSettings.AddMemoryCache == true &&
 			     _cache != null &&
 			     _cache.TryGetValue(
 				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
@@ -104,7 +104,7 @@ namespace starsky.foundation.database.Query
 			var result = ( await GetObjectByFilePathQueryAsync(filePath) );
 
 			// cache code:
-			if ( cacheTime == null || _appSettings?.AddMemoryCache != true || result == null)
+			if ( cacheTime == null || _appSettings.AddMemoryCache != true || result == null)
 				return result;
 
 			SetGetObjectByFilePathCache(filePath, result.Clone(), cacheTime);
@@ -116,6 +116,7 @@ namespace starsky.foundation.database.Query
 			FileIndexItem result,
 			TimeSpan? cacheTime)
 		{
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 			if ( _cache == null || cacheTime == null || result == null )
 			{
 				_logger.LogDebug("SetGetObjectByFilePathCache not used");
@@ -179,9 +180,9 @@ namespace starsky.foundation.database.Query
 		/// Remove fileHash from hash-list-cache
 		/// </summary>
 		/// <param name="fileHash">base32 fileHash</param>
-	    public void ResetItemByHash(string fileHash)
+	    public void ResetItemByHash(string? fileHash)
 	    {
-		    if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+		    if( _cache == null || _appSettings.AddMemoryCache == false) return;
 		    
 			var queryCacheName = CachingDbName("hashList", fileHash);
 			
@@ -210,7 +211,7 @@ namespace starsky.foundation.database.Query
 	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        return LocalQueryGetItemByHash(context!);
+		        return LocalQueryGetItemByHash(context);
 	        }
         }
         
@@ -231,7 +232,7 @@ namespace starsky.foundation.database.Query
 	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        return await LocalQueryGetItemByHashAsync(context!);
+		        return await LocalQueryGetItemByHashAsync(context);
 	        }
         }
         
@@ -244,7 +245,7 @@ namespace starsky.foundation.database.Query
         /// <returns>an unique key</returns>
         [SuppressMessage("Performance", "CA1822:Mark members as static")]
         // ReSharper disable once MemberCanBeMadeStatic.Global
-        internal string CachingDbName(string functionName, string singleItemDbPath)
+        internal string CachingDbName(string functionName, string? singleItemDbPath)
         {
 	        // when is nothing assume its the home item
             if ( string.IsNullOrWhiteSpace(singleItemDbPath) ) singleItemDbPath = "/";
@@ -277,7 +278,7 @@ namespace starsky.foundation.database.Query
 		        }
 
 		        // object cache path is used to avoid updates
-		        SetGetObjectByFilePathCache(fileIndexItem.FilePath, updateStatusContent, TimeSpan.FromMinutes(1));
+		        SetGetObjectByFilePathCache(fileIndexItem.FilePath!, updateStatusContent, TimeSpan.FromMinutes(1));
 	        }
 
 	        try
@@ -302,7 +303,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( DbUpdateConcurrencyException e)
 		        {
-			        _logger?.LogInformation(e, "[UpdateItemAsync] save failed after DbUpdateConcurrencyException");
+			        _logger.LogInformation(e, "[UpdateItemAsync] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
             
@@ -344,7 +345,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException )
 	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context()!;
+		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        try
 		        {
 			        return await LocalQuery(context, updateStatusContentList);
@@ -365,8 +366,9 @@ namespace starsky.foundation.database.Query
 		        catch ( DbUpdateConcurrencyException e)
 		        {
 			        var items =  await GetObjectsByFilePathQueryAsync(updateStatusContentList
-				        .Select(p => p.FilePath).ToList());
-			        _logger?.LogInformation($"double error UCL:{updateStatusContentList.Count} Count: {items.Count}", e);
+				        .Where(p => p.FilePath != null)
+				        .Select(p => p.FilePath).ToList()!);
+			        _logger.LogInformation($"double error UCL:{updateStatusContentList.Count} Count: {items.Count}", e);
 			        return updateStatusContentList;
 		        }
 	        }
@@ -382,15 +384,15 @@ namespace starsky.foundation.database.Query
         /// <param name="delay">retry delay in milliseconds, 1000 = 1 second</param>
         private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
         {
-	        _logger?.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source}");
-	        _logger?.LogInformation("[RetrySaveChangesAsync] next retry ~>");
+	        _logger.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source}");
+	        _logger.LogInformation("[RetrySaveChangesAsync] next retry ~>");
 	        
 	        async Task LocalRetrySaveChangesAsyncQuery()
 	        {
 		        // InvalidOperationException: A second operation started on this context before a previous operation completed.
 		        // https://go.microsoft.com/fwlink/?linkid=2097913
 		        await Task.Delay(delay);
-		        var context = new InjectServiceScope(_scopeFactory).Context()!;
+		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
 		        context.Attach(updateStatusContent).State = EntityState.Detached;
@@ -403,7 +405,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( MySqlException mySqlException)
 	        {
-		        _logger?.LogInformation(mySqlException,$"[RetrySaveChangesAsync] MySqlException catch-ed and retry again, from {source}");
+		        _logger.LogInformation(mySqlException,$"[RetrySaveChangesAsync] MySqlException catch-ed and retry again, from {source}");
 		        await LocalRetrySaveChangesAsyncQuery();
 	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
@@ -411,13 +413,13 @@ namespace starsky.foundation.database.Query
 		        SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
 		        try
 		        {
-			        _logger?.LogInformation("[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop disposed item");
-			        var context = new InjectServiceScope(_scopeFactory).Context()!;
+			        _logger.LogInformation("[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop disposed item");
+			        var context = new InjectServiceScope(_scopeFactory).Context();
 			        await context.SaveChangesAsync();
 		        }
 		        catch ( DbUpdateConcurrencyException retry2Exception)
 		        {
-			        _logger?.LogError(retry2Exception, 
+			        _logger.LogError(retry2Exception, 
 				        "[RetrySaveChangesAsync] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
@@ -447,7 +449,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException error)
 	        {
-		        _logger?.LogInformation(error,"[UpdateItem] catch-ed ObjectDisposedException");
+		        _logger.LogInformation(error,"[UpdateItem] catch-ed ObjectDisposedException");
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalUpdateItemQuery(context);
 	        }
@@ -465,7 +467,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( DbUpdateConcurrencyException e)
 		        {
-			        _logger?.LogError(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
+			        _logger.LogError(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
 
@@ -501,7 +503,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch (InvalidOperationException invalidOperationException)
 	        {
-		        _logger?.LogError(invalidOperationException, "[List<>UpdateItem] InvalidOperationException");
+		        _logger.LogError(invalidOperationException, "[List<>UpdateItem] InvalidOperationException");
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
 	        }
@@ -514,7 +516,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( DbUpdateConcurrencyException e)
 		        {
-			        _logger?.LogError(e, "[List<>UpdateItem] save failed after DbUpdateConcurrencyException");
+			        _logger.LogError(e, "[List<>UpdateItem] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
 	        
@@ -528,7 +530,7 @@ namespace starsky.foundation.database.Query
         /// <returns>true when enabled</returns>
 	    internal bool IsCacheEnabled()
 	    {
-		    if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
+		    if( _cache == null || _appSettings.AddMemoryCache == false) return false;
 		    return true;
 	    }
 
@@ -542,10 +544,10 @@ namespace starsky.foundation.database.Query
         internal void AddCacheItem(FileIndexItem updateStatusContent)
         {
             // If cache is turned of
-            if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+            if( _cache == null || _appSettings.AddMemoryCache == false) return;
 
             var queryCacheName = CachingDbName(nameof(FileIndexItem), 
-                updateStatusContent.ParentDirectory);
+                updateStatusContent.ParentDirectory!);
 
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
             
@@ -565,7 +567,7 @@ namespace starsky.foundation.database.Query
 	    /// <param name="updateStatusContent">items to update</param>
 	    public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
 	    {
-		    if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+		    if( _cache == null || _appSettings.AddMemoryCache == false) return;
 
 		    var skippedCacheItems = new HashSet<string>();
 		    foreach (var item in updateStatusContent.ToList())
@@ -577,12 +579,12 @@ namespace starsky.foundation.database.Query
 			    
 			    // ToList() > Collection was modified; enumeration operation may not execute.
 			    var queryCacheName = CachingDbName(nameof(FileIndexItem), 
-				    item.ParentDirectory);
+				    item.ParentDirectory!);
 
 			    if ( !_cache.TryGetValue(queryCacheName,
 				        out var objectFileFolders) )
 			    {
-				    skippedCacheItems.Add(item.ParentDirectory);
+				    skippedCacheItems.Add(item.ParentDirectory!);
 				    continue;
 			    }
 				
@@ -613,9 +615,9 @@ namespace starsky.foundation.database.Query
 			    _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 		    }
 
-		    if ( skippedCacheItems.Any() && _appSettings?.Verbose == true )
+		    if ( skippedCacheItems.Any() && _appSettings.Verbose == true )
 		    {
-			    _logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
+			    _logger.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
 		    }
 			
 	    }
@@ -627,7 +629,7 @@ namespace starsky.foundation.database.Query
         /// <param name="updateStatusContent"></param>
         public void RemoveCacheItem(List<FileIndexItem> updateStatusContent)
         {
-	        if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+	        if( _cache == null || _appSettings.AddMemoryCache == false) return;
 
 	        foreach ( var item in updateStatusContent.ToList() )
 	        {
@@ -643,10 +645,10 @@ namespace starsky.foundation.database.Query
         public void RemoveCacheItem(FileIndexItem updateStatusContent)
         {
             // Add protection for disabled caching
-            if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+            if( _cache == null || _appSettings.AddMemoryCache == false) return;
 
             var queryCacheName = CachingDbName(nameof(FileIndexItem), 
-                updateStatusContent.ParentDirectory);
+                updateStatusContent.ParentDirectory!);
 
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
             
@@ -668,7 +670,7 @@ namespace starsky.foundation.database.Query
         public bool RemoveCacheParentItem(string directoryName)
         {
             // Add protection for disabled caching
-            if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
+            if( _cache == null || _appSettings.AddMemoryCache == false) return false;
             
             var queryCacheName = CachingDbName(nameof(FileIndexItem), 
                 PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
@@ -686,7 +688,7 @@ namespace starsky.foundation.database.Query
         public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
         {
 	        // Add protection for disabled caching
-	        if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
+	        if( _cache == null || _appSettings.AddMemoryCache == false) return false;
             
 	        var queryCacheName = CachingDbName(nameof(FileIndexItem), 
 		        PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
@@ -720,7 +722,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( DbUpdateConcurrencyException e)
 	        {
-		        _logger?.LogInformation("AddItem catch-ed DbUpdateConcurrencyException (ignored)", e);
+		        _logger.LogInformation("AddItem catch-ed DbUpdateConcurrencyException (ignored)", e);
 	        }
             
             AddCacheItem(updateStatusContent);
@@ -733,6 +735,7 @@ namespace starsky.foundation.database.Query
 	    /// </summary>
 	    /// <param name="fileIndexItem">the item</param>
 	    /// <returns>item with id</returns>
+	    [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 	    {
 		    async Task<FileIndexItem> LocalDefaultQuery()
@@ -759,19 +762,19 @@ namespace starsky.foundation.database.Query
 		    }
 		    catch ( Microsoft.Data.Sqlite.SqliteException e)
 		    {
-			    _logger?.LogInformation(e, $"[AddItemAsync] catch-ed SqliteException going to retry 2 times {fileIndexItem.FilePath}");
+			    _logger.LogInformation(e, $"[AddItemAsync] catch-ed SqliteException going to retry 2 times {fileIndexItem.FilePath}");
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
 		    catch ( DbUpdateException e)
 		    {
-			    _logger?.LogInformation(e, $"[AddItemAsync] catch-ed DbUpdateException going to retry 2 times {fileIndexItem.FilePath}");
+			    _logger.LogInformation(e, $"[AddItemAsync] catch-ed DbUpdateException going to retry 2 times {fileIndexItem.FilePath}");
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
 		    catch ( InvalidOperationException e) // or ObjectDisposedException
 		    {
-			    _logger?.LogInformation(e, $"[AddItemAsync] catch-ed InvalidOperationException going to retry 2 times {fileIndexItem.FilePath}");
+			    _logger.LogInformation(e, $"[AddItemAsync] catch-ed InvalidOperationException going to retry 2 times {fileIndexItem.FilePath}");
 			    return await RetryHelper.DoAsync(
 				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
@@ -866,20 +869,20 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException disposedException)
 	        {
-		        _logger?.LogInformation("catch-ed disposedException:",disposedException);
+		        _logger.LogInformation("catch-ed disposedException:",disposedException);
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
 	        }
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
-		        _logger?.LogInformation("catch-ed concurrencyException:",concurrencyException);
+		        _logger.LogInformation("catch-ed concurrencyException:",concurrencyException);
 		        try
 		        {
 			        _context.SaveChanges();
 		        }
 		        catch ( DbUpdateConcurrencyException e)
 		        {
-			        _logger?.LogInformation(e, "[RemoveItem] save failed after DbUpdateConcurrencyException");
+			        _logger.LogInformation(e, "[RemoveItem] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
 	        
@@ -887,7 +890,7 @@ namespace starsky.foundation.database.Query
 			RemoveCacheItem(updateStatusContent);
 
 			// remove getFileHash Cache
-			ResetItemByHash(updateStatusContent.FileHash);
+			ResetItemByHash(updateStatusContent.FileHash!);
 			return updateStatusContent;
 	    }
 	    
@@ -896,6 +899,7 @@ namespace starsky.foundation.database.Query
 	    /// </summary>
 	    /// <param name="updateStatusContent">the FileIndexItem with database data</param>
 	    /// <returns></returns>
+	    [SuppressMessage("ReSharper", "ConditionalAccessQualifierIsNonNullableAccordingToAPIContract")]
 	    public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 	    {
 		    async Task<bool> LocalRemoveDefaultQuery()
@@ -906,6 +910,7 @@ namespace starsky.foundation.database.Query
 
 		    async Task LocalRemoveQuery(ApplicationDbContext context)
 		    {
+			    // keep conditional marker for test
 			    context.FileIndex?.Remove(updateStatusContent);
 			    await context.SaveChangesAsync();
 		    }
@@ -930,7 +935,7 @@ namespace starsky.foundation.database.Query
 		    }
 		    catch ( DbUpdateConcurrencyException e)
 		    {
-			    _logger?.LogInformation(e,"[RemoveItemAsync] catch-ed " +
+			    _logger.LogInformation(e,"[RemoveItemAsync] catch-ed " +
 			                              "DbUpdateConcurrencyException (do nothing)");
 		    }
 
@@ -943,7 +948,7 @@ namespace starsky.foundation.database.Query
 	    }
 	    
 	    /// <summary>
-	    /// Use only when new Context item is created manualy, otherwise there is only 1 context
+	    /// Use only when new Context item is created manually, otherwise there is only 1 context
 	    /// </summary>
 	    public async Task DisposeAsync()
 	    {

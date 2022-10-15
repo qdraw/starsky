@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.sync.SyncServices;
@@ -19,15 +18,20 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	public class SyncSingleFileTest
 	{
 		private readonly IStorage _iStorageFake;
-		private readonly DateTime _dateTime;
+		private readonly DateTime _lastEditedDateTime;
 
 		public SyncSingleFileTest()
 		{
-			_dateTime = new DateTime(2020, 02, 02);
+			_lastEditedDateTime = new DateTime(2020, 02, 02);
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg","/color_class_test.jpg", "/status_deleted.jpg"},
 				new List<byte[]>{CreateAnImageNoExif.Bytes, 
-					CreateAnImageColorClass.Bytes, CreateAnImageStatusDeleted.Bytes}, new List<DateTime>{_dateTime,new DateTime(),new DateTime()});
+					CreateAnImageColorClass.Bytes, CreateAnImageStatusDeleted.Bytes}, new List<DateTime>
+				{
+					_lastEditedDateTime,
+					_lastEditedDateTime,
+					_lastEditedDateTime
+				});
 		}
 
 		[TestMethod]
@@ -71,7 +75,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var detailView = fakeQuery.SingleItem("/test.jpg");
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg", fileIndexItem.FilePath);
+			Assert.AreEqual("/test.jpg", fileIndexItem?.FilePath);
 			
 			// should not duplicate add items
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
@@ -107,7 +111,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			// should add files to db
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/level/deep/test.jpg", fileIndexItem.FilePath);
+			Assert.AreEqual("/level/deep/test.jpg", fileIndexItem?.FilePath);
 			
 			// should not duplicate add items
 			var count= (await fakeQuery.GetAllFilesAsync("/level/deep"))
@@ -140,7 +144,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			{
 				new FileIndexItem("/test.jpg")
 				{
-					FileHash = fileHash
+					FileHash = fileHash,
+					LastEdited = _lastEditedDateTime
 				}
 			});
 			
@@ -156,7 +161,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var detailView = fakeQuery.SingleItem("/test.jpg");
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg", fileIndexItem.FilePath);
+			Assert.AreEqual("/test.jpg", fileIndexItem?.FilePath);
 		}
 
 		[TestMethod]
@@ -168,7 +173,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			{
 				new FileIndexItem("/test.jpg")
 				{
-					FileHash = fileHash
+					FileHash = fileHash,
+					LastEdited = _lastEditedDateTime
 				}
 			});
 			
@@ -190,7 +196,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		
 		
 		[TestMethod]
-		public async Task SingleFile_FileAlreadyExist_With_Same_ByteSize()
+		public async Task SingleFile_FileAlreadyExist_With_Same_LastEditedTime()
 		{
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
 
@@ -200,7 +206,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				{
 					FileHash = fileHash,
 					Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
-					Tags = "the tags should not be updated" // <= the tags in /test.jpg is nothing
+					Tags = "the tags should not be updated", // <= the tags in /test.jpg is nothing,
+					LastEdited = _lastEditedDateTime
 				}
 			});
 			
@@ -211,10 +218,44 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result.Status);
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 
-			Assert.AreNotEqual(string.Empty, fileIndexItem.Tags);
-			Assert.AreEqual("the tags should not be updated", fileIndexItem.Tags);
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
+		}
+		
+		[TestMethod]
+		public async Task SingleFile_FileAlreadyExist_With_Different_LastEditedTime()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = fileHash,
+				Size =
+					_iStorageFake.Info("/test.jpg").Size, // < right byte size
+				Tags =
+					"the tags should not be updated", // <= the tags in /test.jpg is nothing,
+				LastEdited = new DateTime(1999, 01, 02)
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				item
+			});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, null, new FakeIWebLogger());
+			
+			var result = await sync.SingleFile("/test.jpg");
+			Assert.AreEqual(1, result.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+			
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
+
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
+			Assert.AreEqual(_lastEditedDateTime, fileIndexItem?.LastEdited);
 		}
 
 		[TestMethod]
@@ -244,14 +285,14 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
-			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+			Assert.AreEqual("/test.jpg",fileIndexItem?.FilePath);
+			Assert.AreEqual(fileHash, fileIndexItem?.FileHash);
 			
 			// Should be around now-ish
-			Assert.AreEqual(DateTime.UtcNow.Day, fileIndexItem.LastEdited.Day);
-			Assert.AreEqual(DateTime.UtcNow.Month, fileIndexItem.LastEdited.Month);
-			Assert.AreEqual(DateTime.UtcNow.Hour, fileIndexItem.LastEdited.Hour);
-			Assert.AreEqual(DateTime.UtcNow.Minute, fileIndexItem.LastEdited.Minute);
+			Assert.AreEqual(DateTime.UtcNow.Day, fileIndexItem?.LastEdited.Day);
+			Assert.AreEqual(DateTime.UtcNow.Month, fileIndexItem?.LastEdited.Month);
+			Assert.AreEqual(DateTime.UtcNow.Hour, fileIndexItem?.LastEdited.Hour);
+			Assert.AreEqual(DateTime.UtcNow.Minute, fileIndexItem?.LastEdited.Minute);
 		}
 
 		[TestMethod]
@@ -280,6 +321,45 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.IsTrue(isCalled);
 		}
 		
+				
+		[TestMethod]
+		public async Task SingleFile_FileAlreadyExist_With_Different_LastEditedTime_AppSettingsIgnore()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = fileHash,
+				Size =
+					_iStorageFake.Info("/test.jpg").Size, // < right byte size
+				Tags =
+					"the tags should not be updated", // <= the tags in /test.jpg is nothing,
+				LastEdited = new DateTime(1999, 01, 02),
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				item
+			});
+			
+			var sync = new SyncSingleFile(new AppSettings
+				{
+					SyncAlwaysUpdateLastEditedTime = false // <-- ignore due this setting
+				}, fakeQuery,
+				_iStorageFake, null, new FakeIWebLogger());
+			
+			var result = await sync.SingleFile("/test.jpg");
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+			Assert.AreEqual(0, result.LastChanged.Count);
+			Assert.AreEqual(0, result.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
+
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
+
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
+		}
+		
 		[TestMethod]
 		public async Task SingleItem_DbItem_Updated()
 		{
@@ -305,8 +385,142 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
-			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+			Assert.AreEqual("/test.jpg",fileIndexItem?.FilePath);
+			Assert.AreEqual(fileHash, fileIndexItem?.FileHash);
+		}
+		
+		// - - - - - - - - - - - - - - - - -  DB ITEMS - - - - - - - - - - - - - -
+		
+		[TestMethod]
+		public async Task SingleFile_DbItem_FileAlreadyExist_WithSameFileHash()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = fileHash, LastEdited = _lastEditedDateTime
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				item
+			});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, null, new FakeIWebLogger());
+			var result = await sync.SingleFile("/test.jpg", item);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result.Status);
+			
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
+			Assert.AreEqual(1,count);
+			
+			var detailView = fakeQuery.SingleItem("/test.jpg");
+			Assert.IsNotNull(detailView);
+			var fileIndexItem = detailView.FileIndexItem;
+			Assert.AreEqual("/test.jpg", fileIndexItem?.FilePath);
+		}
+		
+		[TestMethod]
+		public async Task SingleItem_DbItem_Null()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = "THIS_IS_THE_OLD_HASH"
+			};
+			
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, null, new FakeIWebLogger());
+			
+			var result = await sync.SingleFile("/test.jpg",null as FileIndexItem);  // % % % % Enter item here % % % % % 
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
+			Assert.AreEqual(1,count);
+			
+			var detailView = fakeQuery.SingleItem("/test.jpg");
+			
+			Assert.IsNotNull(detailView);
+			var fileIndexItem = detailView.FileIndexItem;
+			Assert.AreEqual("/test.jpg",fileIndexItem?.FilePath);
+			Assert.AreEqual(fileHash, fileIndexItem?.FileHash);
+		}
+		
+		
+				
+		[TestMethod]
+		public async Task SingleFile_DbItem_FileAlreadyExist_With_Different_LastEditedTime()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = fileHash,
+				Size =
+					_iStorageFake.Info("/test.jpg").Size, // < right byte size
+				Tags =
+					"the tags should not be updated", // <= the tags in /test.jpg is nothing,
+				LastEdited = new DateTime(1999, 01, 02)
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				item
+			});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, null, new FakeIWebLogger());
+			
+			var result = await sync.SingleFile("/test.jpg", item);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+			Assert.AreEqual(1, result.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
+			
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
+
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
+			Assert.AreEqual(_lastEditedDateTime, fileIndexItem?.LastEdited);
+		}
+		
+		[TestMethod]
+		public async Task SingleFile_DbItem_FileAlreadyExist_With_Different_LastEditedTime_AppSettingsIgnore()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = fileHash,
+				Size =
+					_iStorageFake.Info("/test.jpg").Size, // < right byte size
+				Tags =
+					"the tags should not be updated", // <= the tags in /test.jpg is nothing,
+				LastEdited = new DateTime(1999, 01, 02),
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				item
+			});
+			
+			var sync = new SyncSingleFile(new AppSettings
+				{
+					SyncAlwaysUpdateLastEditedTime = false // <-- ignore due this setting
+				}, fakeQuery,
+				_iStorageFake, null, new FakeIWebLogger());
+			
+			var result = await sync.SingleFile("/test.jpg", item);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+			Assert.AreEqual(0, result.LastChanged.Count);
+			Assert.AreEqual(0, result.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
+
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
+
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
 		}
 		
 		[TestMethod]
@@ -362,7 +576,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, null, new FakeIWebLogger());
-			var result= await sync.SingleFile("/test.jpg",null);  // % % % % Null value here % % % % % 
+			var result= await sync.SingleFile("/test.jpg");  // % % % % Null value here % % % % % 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
 			
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
@@ -372,8 +586,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
-			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+			Assert.AreEqual("/test.jpg",fileIndexItem?.FilePath);
+			Assert.AreEqual(fileHash, fileIndexItem?.FileHash);
 		}
 		
 		[TestMethod]
@@ -393,10 +607,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, null, new FakeIWebLogger());
 			await sync.SingleFile("/test.jpg",item); // % % % % Enter item here % % % % % 
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 
-			Assert.AreNotEqual(string.Empty, fileIndexItem.Tags);
-			Assert.AreEqual("the tags should not be updated", fileIndexItem.Tags);
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
 		}
 
 		[TestMethod]
@@ -421,10 +635,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, null, new FakeIWebLogger());
 			await sync.SingleFile("/test.xmp",item);
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 			
-			Assert.AreEqual(1,fileIndexItem.SidecarExtensionsList.Count);
-			Assert.AreEqual("xmp",fileIndexItem.SidecarExtensionsList.ToList()[0]);
+			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
+			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);
 		}
 		
 		[TestMethod]
@@ -450,10 +664,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, null, new FakeIWebLogger());
 			await sync.SingleFile("/test.xmp",item);
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 			
-			Assert.AreEqual(1,fileIndexItem.SidecarExtensionsList.Count);
-			Assert.AreEqual("xmp",fileIndexItem.SidecarExtensionsList.ToList()[0]);
+			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
+			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);
 		}
 		
 		[TestMethod]
@@ -475,7 +689,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			await sync.SingleFile("/color_class_test.jpg");
 			
-			var fileIndexItem = fakeQuery.SingleItem("/color_class_test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/color_class_test.jpg")?.FileIndexItem;
 			
 			Assert.IsNotNull(fileIndexItem);
 			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
@@ -504,7 +718,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery();
 			var sync =  new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeIStorage(new List<string>{"/", "/sub"}, new List<string>{"/sub/test8495.jpg"}, new List<byte[]>
+				new FakeIStorage(new List<string>{"/", "/sub"}, 
+					new List<string>{"/sub/test8495.jpg"}, new List<byte[]>
 				{
 					CreateAnImageNoExif.Bytes
 				}), null, new FakeIWebLogger());
@@ -530,11 +745,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery();
 			var sync =  new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeIStorage(new List<string>{"/", "/sub"}, new List<string>{"/sub/test8495.jpg"}, new List<byte[]>
+				new FakeIStorage(new List<string>{"/", "/sub"}, 
+					new List<string>{"/sub/test8495.jpg"}, new List<byte[]>
 				{
 					CreateAnImageNoExif.Bytes
 				}), null, new FakeIWebLogger());
-			var syncResult = await sync.NewItem(new List<FileIndexItem>{new FileIndexItem("/sub/test8495.jpg")
+			var syncResult = await sync.NewItem(new List<FileIndexItem>{
+				new FileIndexItem("/sub/test8495.jpg")
 			{
 				Status = FileIndexItem.ExifStatus.Ok
 			}}, true);// <- - - - add parent item is True
@@ -556,7 +773,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery();
 			var sync =  new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeIStorage(new List<string>{"/", "/sub"}, new List<string>{"/sub/test8495.jpg"}, new List<byte[]>
+				new FakeIStorage(new List<string>{"/", "/sub"}, 
+					new List<string>{"/sub/test8495.jpg"}, new List<byte[]>
 				{
 					CreateAnImageNoExif.Bytes
 				}), null, new FakeIWebLogger());
@@ -591,9 +809,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		public void AddDeleteStatus_NotDeleted()
 		{
 			var item = new FileIndexItem() {Tags = "test", Status = FileIndexItem.ExifStatus.Ok};
-			
-			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
-				_iStorageFake, null, new FakeIWebLogger());
 
 			var result = SyncSingleFile.AddDeleteStatus(item);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result.Status);
@@ -603,9 +818,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		public void AddDeleteStatus_Deleted()
 		{
 			var item = new FileIndexItem() {Tags = "!delete!"};
-			
-			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
-				_iStorageFake, null, new FakeIWebLogger());
 
 			var result = SyncSingleFile.AddDeleteStatus(item);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
@@ -619,7 +831,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var theSame = await sync.SizeFileHashIsTheSame(new FileIndexItem("/test.jpg")
 			{
-				LastEdited = _dateTime
+				LastEdited = _lastEditedDateTime
 			});
 
 			Assert.IsTrue(theSame.Item1);
@@ -633,7 +845,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var theSame = await sync.SizeFileHashIsTheSame(new FileIndexItem("/not-found.jpg")
 			{
-				LastEdited = _dateTime
+				LastEdited = _lastEditedDateTime
 			});
 
 			Assert.IsFalse(theSame.Item1);
@@ -704,6 +916,33 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var item = sync.CheckForStatusNotOk("/not-found.jpg");
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, item.Status);
+		}
+
+		[TestMethod]
+		public async Task UpdateSidecarFileTest_False()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+				new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.jpg"}, 
+					new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
+			var result =
+				await sync.UpdateSidecarFile("test.jpg",
+					new List<FileIndexItem>());
+			Assert.IsFalse(result);
+		}
+		
+		
+		[TestMethod]
+		public async Task UpdateSidecarFileTest_True()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+				new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.jpg"}, 
+					new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
+			var result =
+				await sync.UpdateSidecarFile("test.xmp",
+					new List<FileIndexItem>());
+			Assert.IsTrue(result);
 		}
 	}
 }

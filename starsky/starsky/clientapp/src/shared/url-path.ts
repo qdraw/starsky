@@ -12,7 +12,7 @@ export class URLPath {
     let hash = this.RemovePrefixUrl(locationHash);
     let params = new URLSearchParams(hash).entries();
 
-    var urlObject: IUrl = {};
+    const urlObject: IUrl = {};
     for (let key of Array.from(params)) {
       switch (key[0].toLowerCase()) {
         case "colorClass".toLowerCase():
@@ -40,7 +40,7 @@ export class URLPath {
           urlObject.t = key[1];
           break;
         case "p": // used for search pagination
-          var pagination = Number(key[1]);
+          const pagination = Number(key[1]);
           if (isNaN(pagination)) continue;
           urlObject.p = pagination;
           break;
@@ -69,7 +69,7 @@ export class URLPath {
   private getStringArrayFromCommaSeparatedString(
     colorClassText: string
   ): string[] {
-    var colorClassArray: Array<string> = [];
+    let colorClassArray: Array<string> = [];
     if (colorClassText && colorClassText.indexOf(",") === -1) {
       colorClassArray = [colorClassText];
     } else if (colorClassText.indexOf(",") >= 1) {
@@ -85,7 +85,7 @@ export class URLPath {
    * @param colorClassText
    */
   private stringToNumberArray(colorClassText: string): number[] {
-    var colorClassArray: Array<number> = [];
+    let colorClassArray: Array<number> = [];
     if (colorClassText && !isNaN(Number(colorClassText))) {
       colorClassArray = [Number(colorClassText)];
     } else if (colorClassText.indexOf(",") >= 1) {
@@ -103,11 +103,11 @@ export class URLPath {
    * @param urlObject Casted Object that holds the url state
    */
   public IUrlToString(urlObject: IUrl): string {
-    var params = new URLSearchParams();
+    const params = new URLSearchParams();
     for (let key of Object.entries(urlObject)) {
       params.set(key[0], key[1]);
     }
-    var url = this.AddPrefixUrl(params.toString());
+    let url = this.AddPrefixUrl(params.toString());
     url = url.replace(/\+/gi, " ").replace(/%2F/gi, "/").replace(/%2C/gi, ",");
     return url;
   }
@@ -123,7 +123,7 @@ export class URLPath {
    * @param toUpdate
    */
   public ObjectToSearchParams(toUpdate: Object): URLSearchParams {
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     for (let key of Object.entries(toUpdate)) {
       if (key[1] && key[1].length >= 1) {
         bodyParams.set(key[0], key[1]);
@@ -163,8 +163,8 @@ export class URLPath {
     if (!getFilePath) return "/";
     getFilePath = this.endOnSlash(getFilePath);
 
-    var parentPath = "";
-    var filePathArray = getFilePath.split("/");
+    let parentPath = "";
+    const filePathArray = getFilePath.split("/");
     for (let index = 0; index < filePathArray.length; index++) {
       const element = filePathArray[index];
       if (index <= filePathArray.length - 3) {
@@ -209,13 +209,13 @@ export class URLPath {
     historyLocationHash: string,
     toUpdateSelect: string[]
   ): IUrl {
-    var urlObject = new URLPath().StringToIUrl(historyLocationHash);
+    const urlObject = new URLPath().StringToIUrl(historyLocationHash);
     urlObject.select = toUpdateSelect;
     return urlObject;
   }
 
   public toggleSelection(fileName: string, locationHash: string): IUrl {
-    var urlObject = new URLPath().StringToIUrl(locationHash);
+    const urlObject = new URLPath().StringToIUrl(locationHash);
     if (!urlObject.select) {
       urlObject.select = [];
     }
@@ -223,7 +223,7 @@ export class URLPath {
     if (!urlObject.select || urlObject.select.indexOf(fileName) === -1) {
       urlObject.select.push(fileName);
     } else {
-      var index = urlObject.select.indexOf(fileName);
+      const index = urlObject.select.indexOf(fileName);
       if (index !== -1) urlObject.select.splice(index, 1);
     }
     return urlObject;
@@ -235,7 +235,9 @@ export class URLPath {
    */
   public getSelect(historyLocationSearch: string) {
     let selectList = new Array<string>();
-    var selectResult = new URLPath().StringToIUrl(historyLocationSearch).select;
+    const selectResult = new URLPath().StringToIUrl(
+      historyLocationSearch
+    ).select;
     if (selectResult !== undefined) {
       selectList = selectResult;
     }
@@ -246,7 +248,7 @@ export class URLPath {
     select: string[] | undefined,
     parent: string | undefined
   ): string[] {
-    var subPaths: string[] = [];
+    const subPaths: string[] = [];
     if (select === undefined || parent === undefined) return subPaths;
 
     select.forEach((item) => {
@@ -270,7 +272,7 @@ export class URLPath {
     fileIndexItems: IFileIndexItem[]
   ): string[] {
     fileIndexItems.forEach((fileIndexItem) => {
-      var include = select.includes(fileIndexItem.fileName);
+      const include = select.includes(fileIndexItem.fileName);
       if (!include) {
         select.push(fileIndexItem.fileName);
       }
@@ -287,7 +289,7 @@ export class URLPath {
     select: string[],
     fileIndexItems: IFileIndexItem[]
   ): string[] {
-    var subPaths: string[] = [];
+    const subPaths: string[] = [];
 
     fileIndexItems.forEach((item) => {
       if (item.fileName && select.indexOf(item.fileName) >= 0) {
@@ -305,7 +307,7 @@ export class URLPath {
    * @param select Array with path
    */
   public ArrayToCommaSeperatedString(select: string[]): string {
-    var selectString = "";
+    let selectString = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];
       if (index === 0) {
@@ -321,12 +323,12 @@ export class URLPath {
     select: string[],
     parent: string
   ): string {
-    var selectParams = "";
+    let selectParams = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];
 
       // no double slash in front of path
-      var slash = !parent && element.startsWith("/") ? "" : "/";
+      const slash = !parent && element.startsWith("/") ? "" : "/";
       selectParams += parent + slash + element;
 
       if (index !== select.length - 1) {

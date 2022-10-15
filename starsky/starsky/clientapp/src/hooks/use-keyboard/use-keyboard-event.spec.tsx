@@ -16,7 +16,7 @@ describe("useKeyboardEvent", () => {
     });
 
   it("check if is called once", () => {
-    var callback = jest.fn();
+    const callback = jest.fn();
     render(
       <UseKeyboardEventComponentTest
         dependencies={[]}
@@ -25,7 +25,7 @@ describe("useKeyboardEvent", () => {
       ></UseKeyboardEventComponentTest>
     );
 
-    var event = new KeyboardEvent("keydown", {
+    const event = new KeyboardEvent("keydown", {
       bubbles: true,
       cancelable: true,
       key: "q",
@@ -38,7 +38,7 @@ describe("useKeyboardEvent", () => {
   });
 
   it("to be not called input z => check for q", () => {
-    var callback = jest.fn();
+    const callback = jest.fn();
     render(
       <UseKeyboardEventComponentTest
         dependencies={[]}
@@ -47,7 +47,7 @@ describe("useKeyboardEvent", () => {
       />
     );
 
-    var event = new KeyboardEvent("keydown", {
+    const event = new KeyboardEvent("keydown", {
       bubbles: true,
       cancelable: true,
       key: "z",

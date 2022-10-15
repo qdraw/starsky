@@ -1,9 +1,11 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.storage.Interfaces;
@@ -11,6 +13,8 @@ using starsky.foundation.storage.Interfaces;
 namespace starsky.foundation.storage.Services
 {
 
+	[SuppressMessage("Usage", "S4790:Make sure this weak hash algorithm is not used in a sensitive context here.",
+		Justification = "Not used for passwords")]
 	public class FileHash
 	{
 		private readonly IStorage _iStorage;
@@ -62,7 +66,12 @@ namespace starsky.foundation.storage.Services
 			return q;
 		}
 
-		// Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+		/// <summary>
+		/// Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+		/// </summary>
+		/// <param name="fullFileName"></param>
+		/// <param name="timeoutInMilliseconds"></param>
+		/// <returns></returns>
 		private async Task<KeyValuePair<string, bool>> Md5TimeoutAsyncWrapper(
 			string fullFileName, int timeoutInMilliseconds)
 		{
@@ -155,7 +164,8 @@ namespace starsky.foundation.storage.Services
 			}
 		}
 
-		public static async Task<string> CalculateHashAsync(Stream stream)
+		public static async Task<string> CalculateHashAsync(Stream stream, 
+			CancellationToken cancellationToken = new CancellationToken())
 		{
 			var block =
 				ArrayPool<byte>.Shared
@@ -166,7 +176,7 @@ namespace starsky.foundation.storage.Services
 				{
 					int length;
 					while ( ( length = await stream
-						.ReadAsync(block, 0, block.Length)
+						.ReadAsync(block, 0, block.Length, cancellationToken)
 						.ConfigureAwait(false) ) > 0 )
 					{
 						md5.TransformBlock(block, 0, length, null, 0);

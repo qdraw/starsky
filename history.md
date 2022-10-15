@@ -37,7 +37,10 @@ node starsky-tools/build-tools/app-version-update.js
 ```
 
 # version 0.5.0 _(Unreleased)_ - 2022-??-??
-- nothing yet. todo: https://github.com/qdraw/starsky/milestone/2
+- [x]   (Changed) _Back-end_ Last Edited is updated when Single Sync a file (PR #916)
+- [x]   (Changed) _Back-end_ Code style quality (PR #917, #919)
+ 
+- > Todo: https://github.com/qdraw/starsky/milestone/2
 
 # version 0.5.0-beta.8 - 2022-10-11
 - [x]   (Security) _Back-end_ Upgrade Nuget packages (PR #878)

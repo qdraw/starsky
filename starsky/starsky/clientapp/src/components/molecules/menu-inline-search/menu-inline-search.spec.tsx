@@ -25,7 +25,7 @@ describe("Menu.SearchBar", () => {
           return { ...newIConnectionDefault(), statusCode: 200 };
         });
 
-      var menuBar = render(<MenuInlineSearch />);
+      const menuBar = render(<MenuInlineSearch />);
 
       // default
       expect(menuBar.container.querySelector("label")?.classList).toContain(
@@ -62,7 +62,7 @@ describe("Menu.SearchBar", () => {
           return newIConnectionDefault();
         });
 
-      var menuBar = render(<MenuInlineSearch />);
+      const menuBar = render(<MenuInlineSearch />);
 
       const input = menuBar.queryByTestId(
         "menu-inline-search"
@@ -90,7 +90,7 @@ describe("Menu.SearchBar", () => {
       menuBar.unmount();
     });
 
-    var suggestionsExample = {
+    const suggestionsExample = {
       statusCode: 200,
       data: ["suggest1", "suggest2"]
     } as IConnectionDefault;
@@ -103,8 +103,8 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => suggestionsExample)
         .mockImplementationOnce(() => suggestionsExample);
 
-      var callback = jest.fn();
-      var menuBar = render(
+      const callback = jest.fn();
+      const menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
@@ -116,7 +116,7 @@ describe("Menu.SearchBar", () => {
 
       fireEvent.change(input, { target: { value: "test" } });
 
-      var results = menuBar.container.querySelectorAll(
+      const results = menuBar.container.querySelectorAll(
         ".menu-item--results > button"
       );
 
@@ -140,8 +140,8 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => suggestionsExample)
         .mockImplementationOnce(() => suggestionsExample);
 
-      var callback = jest.fn();
-      var menuBar = render(
+      const callback = jest.fn();
+      const menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
@@ -153,7 +153,7 @@ describe("Menu.SearchBar", () => {
 
       fireEvent.change(input, { target: { value: "test" } });
 
-      var results = menuBar.container.querySelectorAll(
+      const results = menuBar.container.querySelectorAll(
         ".menu-item--results > button"
       );
 
@@ -173,8 +173,8 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
-      var callback = jest.fn();
-      var menuBar = render(
+      const callback = jest.fn();
+      const menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
@@ -188,7 +188,7 @@ describe("Menu.SearchBar", () => {
       // and change it back
       fireEvent.change(input, { target: { value: "" } });
 
-      var results = menuBar.container.querySelector(".menu-item--default");
+      const results = menuBar.container.querySelector(".menu-item--default");
 
       expect(results).toBeTruthy();
 
@@ -204,12 +204,12 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => suggestionsExample)
         .mockImplementationOnce(() => suggestionsExample);
 
-      var callback = jest.fn();
-      var menuBar = render(
+      const callback = jest.fn();
+      const menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      var arrowKeyDownSpy = jest
+      const arrowKeyDownSpy = jest
         .spyOn(ArrowKeyDown, "default")
         .mockImplementationOnce(() => {});
 

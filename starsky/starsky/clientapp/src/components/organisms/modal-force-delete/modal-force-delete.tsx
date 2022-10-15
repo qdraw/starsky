@@ -56,14 +56,14 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
       state.fileIndexItems
     );
     if (!toUndoTrashList) return;
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
+    const selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
       toUndoTrashList,
       ""
     );
 
     if (selectParams.length === 0) return;
 
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", selectParams);
     bodyParams.append("collections", "false");
 

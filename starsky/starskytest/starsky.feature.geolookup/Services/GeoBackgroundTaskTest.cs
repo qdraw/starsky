@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.feature.geolookup.Services;
@@ -30,14 +29,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 				new FakeMemoryCache(new Dictionary<string, object>());
 			_geoFileDownload = new FakeIGeoFileDownload();
 		}
-		
-		private IServiceScopeFactory GetScope()
-		{
-			var services = new ServiceCollection();
-			var serviceProvider = services.BuildServiceProvider();
-			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		}
-		
+
 		[TestMethod]
 		public async Task GeoBackgroundTask_WithResults_AlreadyHasGps()
 		{

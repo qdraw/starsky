@@ -9,7 +9,7 @@ import { CurrentLocationButtonPropTypes } from "../../atoms/current-location-but
 import DetailViewGpx from "./detail-view-gpx";
 
 describe("DetailViewGpx", () => {
-  var responseString =
+  const responseString =
     '<?xml version="1.0" encoding="UTF - 8" ?><gpx version="1.1"><trkpt lat="52" lon="13"></trkpt></gpx>';
   const xmlParser = new DOMParser();
   const mockGetIConnectionDefault: Promise<IConnectionDefault> =
@@ -28,15 +28,17 @@ describe("DetailViewGpx", () => {
 
   describe("with Context", () => {
     it("renders with example GPX (very short one)", async () => {
-      var spyGet = jest
+      const spyGet = jest
         .spyOn(FetchXml, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      var polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
-        return {
-          addTo: jest.fn()
-        } as any;
-      });
+      const polylineSpy = jest
+        .spyOn(L, "polyline")
+        .mockImplementationOnce(() => {
+          return {
+            addTo: jest.fn()
+          } as any;
+        });
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
       const div = document.createElement("div");
@@ -57,7 +59,7 @@ describe("DetailViewGpx", () => {
       // });
     });
 
-    var responseString = `<gpx version="1.1">
+    const responseString = `<gpx version="1.1">
         <trkpt lat="52" lon="13"></trkpt>
         <trkpt lat="52" lon="13"></trkpt>
         <trkpt lat="55" lon="13"></trkpt>
@@ -73,7 +75,7 @@ describe("DetailViewGpx", () => {
 
       jest.spyOn(FetchXml, "default").mockReset();
 
-      var spyGet = jest
+      const spyGet = jest
         .spyOn(FetchXml, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
@@ -82,7 +84,7 @@ describe("DetailViewGpx", () => {
       (window as any).domNode = div;
       document.body.appendChild(div);
 
-      var spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
+      const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
           ...(new MapMock("", {}) as any),
           dragging: { disable: jest.fn() },
@@ -95,14 +97,16 @@ describe("DetailViewGpx", () => {
         };
       });
 
-      var polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
-        return {
-          addTo: jest.fn()
-        } as any;
-      });
+      const polylineSpy = jest
+        .spyOn(L, "polyline")
+        .mockImplementationOnce(() => {
+          return {
+            addTo: jest.fn()
+          } as any;
+        });
 
       // attachTo: (window as any).domNode
-      var gpx = render(<DetailViewGpx></DetailViewGpx>);
+      const gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       await waitFor(() => expect(spyGet).toBeCalled());
 
@@ -118,7 +122,7 @@ describe("DetailViewGpx", () => {
           statusCode: 200,
           data: xmlParser.parseFromString(responseString, "text/xml")
         } as IConnectionDefault);
-      var spyGet = jest
+      const spyGet = jest
         .spyOn(FetchXml, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
@@ -127,10 +131,10 @@ describe("DetailViewGpx", () => {
       // (window as any).domNode = div;
       // document.body.appendChild(div);
 
-      var zoomIn = jest.fn();
-      var enable = jest.fn();
+      const zoomIn = jest.fn();
+      const enable = jest.fn();
 
-      var spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
+      const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
           ...(new MapMock("", {}) as any),
           dragging: { disable: jest.fn(), enable },
@@ -144,13 +148,15 @@ describe("DetailViewGpx", () => {
         };
       });
 
-      var polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
-        return {
-          addTo: jest.fn()
-        } as any;
-      });
+      const polylineSpy = jest
+        .spyOn(L, "polyline")
+        .mockImplementationOnce(() => {
+          return {
+            addTo: jest.fn()
+          } as any;
+        });
 
-      var gpx = render(<DetailViewGpx></DetailViewGpx>);
+      const gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       expect(spyGet).toBeCalled();
       expect(spyGet).toBeCalledTimes(1);
@@ -177,7 +183,7 @@ describe("DetailViewGpx", () => {
           statusCode: 200,
           data: xmlParser.parseFromString(responseString, "text/xml")
         } as IConnectionDefault);
-      var spyGet = jest
+      const spyGet = jest
         .spyOn(FetchXml, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
@@ -186,8 +192,8 @@ describe("DetailViewGpx", () => {
       (window as any).domNode = div;
       document.body.appendChild(div);
 
-      var zoomOut = jest.fn();
-      var enable = jest.fn();
+      const zoomOut = jest.fn();
+      const enable = jest.fn();
 
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
@@ -203,13 +209,15 @@ describe("DetailViewGpx", () => {
         };
       });
 
-      var polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
-        return {
-          addTo: jest.fn()
-        } as any;
-      });
+      const polylineSpy = jest
+        .spyOn(L, "polyline")
+        .mockImplementationOnce(() => {
+          return {
+            addTo: jest.fn()
+          } as any;
+        });
 
-      var gpx = render(<DetailViewGpx></DetailViewGpx>);
+      const gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       expect(spyGet).toBeCalled();
       expect(spyGet).toBeCalledTimes(1);
@@ -251,9 +259,9 @@ describe("DetailViewGpx", () => {
       // (window as any).domNode = div;
       // document.body.appendChild(div);
 
-      var zoomOut = jest.fn();
-      var enable = jest.fn();
-      var disable = jest.fn();
+      const zoomOut = jest.fn();
+      const enable = jest.fn();
+      const disable = jest.fn();
 
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
@@ -276,7 +284,7 @@ describe("DetailViewGpx", () => {
       });
 
       //attachTo: (window as any).domNode
-      var gpx = render(<DetailViewGpx></DetailViewGpx>);
+      const gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
       await waitFor(() => expect(spyMap).toBeCalled());
@@ -317,8 +325,8 @@ describe("DetailViewGpx", () => {
       (window as any).domNode = div;
       document.body.appendChild(div);
 
-      var setViewSpy = jest.fn();
-      var lMapMock = () => {
+      const setViewSpy = jest.fn();
+      const lMapMock = () => {
         return {
           ...(new MapMock("", {}) as any),
           dragging: { disable: jest.fn(), enable: jest.fn() },
@@ -339,7 +347,7 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      var locationButton = (input: CurrentLocationButtonPropTypes) => {
+      const locationButton = (input: CurrentLocationButtonPropTypes) => {
         return (
           <button
             id="current-location"
@@ -351,14 +359,14 @@ describe("DetailViewGpx", () => {
           ></button>
         );
       };
-      var currentLocationButtonSpy = jest
+      const currentLocationButtonSpy = jest
         .spyOn(CurrentLocationButton, "default")
         .mockImplementationOnce(locationButton)
         .mockImplementationOnce(locationButton)
         .mockImplementationOnce(locationButton)
         .mockImplementationOnce(locationButton);
 
-      var gpx = render(<DetailViewGpx></DetailViewGpx>);
+      const gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
       await waitFor(() => expect(spyMap).toBeCalled());

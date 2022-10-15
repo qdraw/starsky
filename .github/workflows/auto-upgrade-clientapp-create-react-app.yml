@@ -3,7 +3,7 @@ name: auto clientapp create react app upgrade
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '30 4 1,15 * *'
+    - cron:  '30 4 15 * *'
     
 jobs:
   run:

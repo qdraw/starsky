@@ -19,7 +19,7 @@ import MenuOptionMoveToTrash from "./menu-option-move-to-trash";
 
 describe("MenuOptionMoveToTrash", () => {
   it("renders", () => {
-    var test = {
+    const test = {
       ...newIArchive(),
       fileIndexItems: newIFileIndexItemArray()
     } as IArchiveProps;
@@ -37,7 +37,7 @@ describe("MenuOptionMoveToTrash", () => {
   describe("context", () => {
     it("check if dispatch", async () => {
       jest.spyOn(FetchPost, "default").mockReset();
-      var test = {
+      const test = {
         ...newIArchive(),
         fileIndexItems: [
           {
@@ -54,12 +54,12 @@ describe("MenuOptionMoveToTrash", () => {
           data: null,
           statusCode: 200
         });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var dispatch = jest.fn();
-      var component = await render(
+      const dispatch = jest.fn();
+      const component = await render(
         <MenuOptionMoveToTrash
           setSelect={jest.fn()}
           select={["test.jpg"]}
@@ -87,7 +87,7 @@ describe("MenuOptionMoveToTrash", () => {
 
     it("check if when pressing Delete key", () => {
       jest.spyOn(FetchPost, "default").mockReset();
-      var test = {
+      const test = {
         ...newIArchive(),
         fileIndexItems: [
           {
@@ -113,7 +113,7 @@ describe("MenuOptionMoveToTrash", () => {
         .spyOn(useLocation, "default")
         .mockImplementationOnce(() => locationObject);
 
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 

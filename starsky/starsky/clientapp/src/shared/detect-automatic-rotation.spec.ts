@@ -19,7 +19,7 @@ describe("select", () => {
       };
       expect(testAutoOrientationImageURL).toContain("data:image");
 
-      var result = await DetectAutomaticRotation();
+      const result = await DetectAutomaticRotation();
       expect(result).toBeFalsy();
     });
 
@@ -30,7 +30,7 @@ describe("select", () => {
           return true;
         });
 
-      var result = await DetectAutomaticRotation();
+      const result = await DetectAutomaticRotation();
       expect(result).toBeTruthy();
     });
   });

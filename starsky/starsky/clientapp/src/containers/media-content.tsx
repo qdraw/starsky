@@ -19,7 +19,7 @@ import Login from "./login";
 
 const MediaContent: React.FC = () => {
   const history = useLocation();
-  var usesFileList = useFileList(history.location.search, false);
+  const usesFileList = useFileList(history.location.search, false);
 
   const pageType = usesFileList ? usesFileList.pageType : PageType.Loading;
   const archive: IArchive | undefined = usesFileList

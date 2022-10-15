@@ -24,7 +24,7 @@ describe("ModalArchiveSynchronizeManually", () => {
 
   describe("with Context", () => {
     describe("buttons exist", () => {
-      var modal: RenderResult;
+      let modal: RenderResult;
       beforeEach(() => {
         modal = render(
           <ModalArchiveSynchronizeManually
@@ -58,7 +58,7 @@ describe("ModalArchiveSynchronizeManually", () => {
     });
 
     describe("click button", () => {
-      var modal: RenderResult;
+      let modal: RenderResult;
       beforeEach(() => {
         jest.useFakeTimers();
         modal = render(
@@ -86,7 +86,7 @@ describe("ModalArchiveSynchronizeManually", () => {
             data: null
           } as IConnectionDefault);
 
-        var fetchPostSpy = jest
+        const fetchPostSpy = jest
           .spyOn(FetchPost, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
@@ -108,7 +108,7 @@ describe("ModalArchiveSynchronizeManually", () => {
             data: null
           } as IConnectionDefault);
 
-        var fetchGetSpy = jest
+        const fetchGetSpy = jest
           .spyOn(FetchGet, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
@@ -132,11 +132,11 @@ describe("ModalArchiveSynchronizeManually", () => {
             data: null
           } as IConnectionDefault);
 
-        var fetchPostSpy = jest
+        const fetchPostSpy = jest
           .spyOn(FetchPost, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-        var urlGeoSyncUrlQuerySpy = jest
+        const urlGeoSyncUrlQuerySpy = jest
           .spyOn(UrlQuery.prototype, "UrlGeoSync")
           .mockImplementationOnce(() => "");
 
@@ -158,7 +158,7 @@ describe("ModalArchiveSynchronizeManually", () => {
             data: null
           } as IConnectionDefault);
 
-        var fetchGetSpy = jest
+        const fetchGetSpy = jest
           .spyOn(FetchPost, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
@@ -187,9 +187,9 @@ describe("ModalArchiveSynchronizeManually", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = render(
+      const component = render(
         <ModalArchiveSynchronizeManually
           parentFolder="/"
           isOpen={true}

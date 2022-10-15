@@ -24,7 +24,7 @@ export class Sidebar {
    * Toggle the labels button
    */
   public toggleSidebar() {
-    var urlObject = new URLPath().StringToIUrl(this.history.location.search);
+    const urlObject = new URLPath().StringToIUrl(this.history.location.search);
     urlObject.sidebar = !urlObject.sidebar;
 
     this.setSidebar(urlObject.details);

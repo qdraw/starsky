@@ -8,13 +8,13 @@ describe("Portal", () => {
   });
 
   it("default render", () => {
-    var component = render(<Portal>test</Portal>);
+    const component = render(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
     component.unmount();
   });
 
   it("default cleanup after render", () => {
-    var component = render(<Portal>test</Portal>);
+    const component = render(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
     console.log(document.body.innerHTML);
 
@@ -25,10 +25,10 @@ describe("Portal", () => {
   });
 
   it("null cleanup after render", () => {
-    var component = render(<Portal>test</Portal>);
+    const component = render(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
 
-    var tempItem = document.querySelector("#portal-root");
+    const tempItem = document.querySelector("#portal-root");
     if (!tempItem) throw Error("missing item");
     tempItem.remove();
 

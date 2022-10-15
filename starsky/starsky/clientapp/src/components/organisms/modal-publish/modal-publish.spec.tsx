@@ -29,11 +29,11 @@ describe("ModalPublish", () => {
       statusCode: 200,
       data: null
     } as IConnectionDefault;
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = render(
+    const modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -68,7 +68,7 @@ describe("ModalPublish", () => {
       statusCode: 200,
       data: ["_default"]
     } as IConnectionDefault;
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault)
@@ -77,7 +77,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var connectionDefault: IConnectionDefault = {
+    const connectionDefault: IConnectionDefault = {
       statusCode: 200,
       data: "key"
     };
@@ -87,7 +87,7 @@ describe("ModalPublish", () => {
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var modal = render(
+    const modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -115,7 +115,7 @@ describe("ModalPublish", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var connectionDefault2: IConnectionDefault = {
+    const connectionDefault2: IConnectionDefault = {
       statusCode: 206,
       data: "key"
     };
@@ -142,7 +142,10 @@ describe("ModalPublish", () => {
   });
 
   it("Fail - Publish flow with default options -> and waiting 2", async () => {
-    var connectionDefault: IConnectionDefault = { statusCode: 500, data: null };
+    const connectionDefault: IConnectionDefault = {
+      statusCode: 500,
+      data: null
+    };
     const mockIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve(connectionDefault);
 
@@ -162,7 +165,7 @@ describe("ModalPublish", () => {
       statusCode: 200,
       data: ["_default"]
     } as IConnectionDefault;
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault)
@@ -171,7 +174,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = render(
+    const modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -220,7 +223,7 @@ describe("ModalPublish", () => {
   });
 
   it("Fail - Publish flow with default options -> wait and go back", async () => {
-    var connectionDefault: IConnectionDefault = {
+    const connectionDefault: IConnectionDefault = {
       statusCode: 500,
       data: null
     };
@@ -243,7 +246,7 @@ describe("ModalPublish", () => {
       statusCode: 200,
       data: ["_default"]
     } as IConnectionDefault;
-    var useFetchSpy = jest
+    const useFetchSpy = jest
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault)
@@ -252,7 +255,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = render(
+    const modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -325,9 +328,9 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var handleExitSpy = jest.fn();
+    const handleExitSpy = jest.fn();
 
-    var modal = render(
+    const modal = render(
       <ModalPublish select={["/"]} isOpen={true} handleExit={handleExitSpy} />
     );
 

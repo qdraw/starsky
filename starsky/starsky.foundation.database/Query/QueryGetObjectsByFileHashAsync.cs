@@ -20,7 +20,7 @@ namespace starsky.foundation.database.Query
 			{
 				var result = await context.
 					FileIndex.TagWith("GetObjectsByFileHashAsync").Where(p =>
-						fileHashesList.Contains(p.FileHash)).ToListAsync();
+						fileHashesList.Contains(p.FileHash!)).ToListAsync();
 				foreach ( var fileHash in fileHashesList )
 				{
 					if ( result.FirstOrDefault(p => p.FileHash == fileHash) == null )

@@ -28,7 +28,7 @@ namespace starskytest.FakeMocks
 		/// <param name="outputSubPathFolders">/</param>
 		/// <param name="outputSubPathFiles">/test.jpg</param>
 		/// <param name="byteListSource"></param>
-		/// <param name="fileHashPerThumbnail">for mock fileHash=subPath</param>
+		/// <param name="lastEdited"></param>
 		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
 			IReadOnlyList<byte[]> byteListSource = null, List<DateTime> lastEdited = null)
 		{
@@ -197,17 +197,17 @@ namespace starskytest.FakeMocks
 			return folderFileListNotRecrusive;
 		}
 
-		private bool CheckAndFixChildFolders(string parentFolder, string childFolder)
+		private static bool CheckAndFixChildFolders(string parentFolder, string childFolder)
 		{
 			var replaced = childFolder.Replace(parentFolder, childFolder);
-			if ( replaced.Contains("/") ||  replaced.Contains(Path.DirectorySeparatorChar))
+			if ( replaced.Contains('/') ||  replaced.Contains(Path.DirectorySeparatorChar))
 			{
 				return true;
 			}
 			return false;
 		}
 
-		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
+		private static bool CheckAndFixParentFiles(string parentFolder, string filePath)
 		{
 			if ( parentFolder != string.Empty && !filePath.StartsWith(parentFolder) ) return false;
 			// unescaped: (\/|\\)\w+.[a-z]{1,4}$

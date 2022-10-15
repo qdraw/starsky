@@ -6,6 +6,9 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
+	/// <summary>
+	/// QuerySingleItem
+	/// </summary>
     public partial class Query
     {
         // For displaying single photo's
@@ -137,7 +140,7 @@ namespace starsky.foundation.database.Query
             var collectionPaths = new List<string> {singleItemDbPath};
             collectionPaths.AddRange(fileIndexItemsList
                 .Where(p => p.FileCollectionName == currentFileIndexItem.FileCollectionName)
-                .Select(p => p.FilePath));
+                .Select(p => p.FilePath)!);
 
 	        var collectionPathsHashSet = new HashSet<string>(collectionPaths);
             itemResult.FileIndexItem.CollectionPaths = collectionPathsHashSet.ToList(); 
@@ -159,14 +162,14 @@ namespace starsky.foundation.database.Query
 
             if (currentIndex != fileIndexItemsList.Count - 1)
             {
-                relativeObject.NextFilePath = fileIndexItemsList[currentIndex + 1].FilePath;
-                relativeObject.NextHash = fileIndexItemsList[currentIndex + 1].FileHash;
+                relativeObject.NextFilePath = fileIndexItemsList[currentIndex + 1].FilePath!;
+                relativeObject.NextHash = fileIndexItemsList[currentIndex + 1].FileHash!;
             }
 
             if ( currentIndex >= 1 )
             {
-	            relativeObject.PrevFilePath = fileIndexItemsList[currentIndex - 1].FilePath;
-	            relativeObject.PrevHash = fileIndexItemsList[currentIndex - 1].FileHash;	            
+	            relativeObject.PrevFilePath = fileIndexItemsList[currentIndex - 1].FilePath!;
+	            relativeObject.PrevHash = fileIndexItemsList[currentIndex - 1].FileHash!;            
             }
 
             return relativeObject;

@@ -43,7 +43,7 @@ describe("DetailViewSidebar", () => {
   });
 
   it("test warning (without state component)", () => {
-    var wrapper = render(
+    const wrapper = render(
       <DetailViewSidebar
         status={IExifStatus.Default}
         filePath={"/t"}
@@ -117,17 +117,17 @@ describe("DetailViewSidebar", () => {
     }
 
     it("test if tags from the context is displayed", () => {
-      var tags = findDataName("tags");
+      const tags = findDataName("tags");
       expect(tags?.textContent).toBe("tags!");
     });
 
     it("test if title from the context is displayed", () => {
-      var tags = findDataName("title");
+      const tags = findDataName("title");
       expect(tags?.textContent).toBe("title!");
     });
 
     it("test if description from the context is displayed", () => {
-      var description = findDataName("description");
+      const description = findDataName("description");
       expect(description?.textContent).toBe("description!");
     });
 
@@ -138,7 +138,7 @@ describe("DetailViewSidebar", () => {
     });
 
     it("test if dateTime from the context is displayed", () => {
-      var dateTime = Component.queryByTestId("dateTime");
+      const dateTime = Component.queryByTestId("dateTime");
 
       expect(dateTime?.textContent).toBe(
         parseDate("2019-09-15T17:29:59", SupportedLanguages.en) +
@@ -147,11 +147,11 @@ describe("DetailViewSidebar", () => {
     });
 
     it("click on datetime modal", () => {
-      var dateTime = Component.queryByTestId("dateTime") as HTMLElement;
+      const dateTime = Component.queryByTestId("dateTime") as HTMLElement;
       expect(dateTime).not.toBeNull();
 
       // import * as ModalDatetime from './modal-datetime';
-      var modalDatetimeSpy = jest
+      const modalDatetimeSpy = jest
         .spyOn(ModalDatetime, "default")
         .mockImplementationOnce((props) => {
           return <></>;
@@ -165,11 +165,11 @@ describe("DetailViewSidebar", () => {
     });
 
     it("click on datetime modal and return value", () => {
-      var dateTime = Component.queryByTestId("dateTime") as HTMLElement;
+      const dateTime = Component.queryByTestId("dateTime") as HTMLElement;
       expect(dateTime).not.toBeNull();
 
       // import * as ModalDatetime from './modal-datetime';
-      var modalDatetimeSpy = jest
+      const modalDatetimeSpy = jest
         .spyOn(ModalDatetime, "default")
         .mockImplementationOnce((props) => {
           props.handleExit([
@@ -184,7 +184,9 @@ describe("DetailViewSidebar", () => {
 
       expect(modalDatetimeSpy).toBeCalled();
 
-      var updatedDatetime = Component.queryByTestId("dateTime") as HTMLElement;
+      const updatedDatetime = Component.queryByTestId(
+        "dateTime"
+      ) as HTMLElement;
       expect(updatedDatetime).not.toBeNull();
 
       expect(updatedDatetime.textContent).toBe(
@@ -202,21 +204,21 @@ describe("DetailViewSidebar", () => {
         colorClassSelectItem.click();
       });
 
-      var lastEdited = Component.queryByTestId("lastEdited") as HTMLElement;
+      const lastEdited = Component.queryByTestId("lastEdited") as HTMLElement;
 
       expect(lastEdited).not.toBeNull();
       expect(lastEdited.textContent).toBe("less than one minuteago edited");
     });
 
     it("test if lastEdited from the context is displayed", () => {
-      var lastEdited = Component.queryByTestId("lastEdited") as HTMLElement;
+      const lastEdited = Component.queryByTestId("lastEdited") as HTMLElement;
 
       expect(lastEdited).not.toBeNull();
       expect(lastEdited.textContent).toBe("less than one minuteago edited");
     });
 
     it("test if make from the context is displayed", () => {
-      var make = Component.queryByTestId("make") as HTMLElement;
+      const make = Component.queryByTestId("make") as HTMLElement;
 
       expect(make).not.toBeNull();
       expect(make.textContent).toContain("apple"); // <= with space on end, so contain
@@ -256,7 +258,7 @@ describe("DetailViewSidebar", () => {
       // use this => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ ...newIConnectionDefault(), statusCode: 200 });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -271,7 +273,7 @@ describe("DetailViewSidebar", () => {
 
       await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
-      var expectedBodyParams = new URLSearchParams();
+      const expectedBodyParams = new URLSearchParams();
       expectedBodyParams.append("f", "/test.jpg");
       expectedBodyParams.append("tags", "a");
 
@@ -284,13 +286,13 @@ describe("DetailViewSidebar", () => {
     });
 
     it("When there is nothing in the tags field a null char is send", () => {
-      var nullChar = "\0";
+      const nullChar = "\0";
 
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ ...newIConnectionDefault(), statusCode: 200 });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -304,11 +306,11 @@ describe("DetailViewSidebar", () => {
 
       expect(fetchPostSpy).toBeCalled();
 
-      var expectedBodyParams = new URLSearchParams();
+      const expectedBodyParams = new URLSearchParams();
       expectedBodyParams.append("f", "/test.jpg");
       expectedBodyParams.append("tags", "\0");
 
-      var expectedBodyString = expectedBodyParams
+      const expectedBodyString = expectedBodyParams
         .toString()
         .replace(/%00/gi, nullChar);
 
@@ -377,7 +379,7 @@ describe("DetailViewSidebar", () => {
     it("ReadOnly status (from FileIndexItem)", async () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.ReadOnly;
 
-      var DeletedTestComponent = () => (
+      const DeletedTestComponent = () => (
         <DetailViewContext.Provider value={contextProvider}>
           <DetailViewSidebar
             status={IExifStatus.Ok}
@@ -387,7 +389,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = render(<DeletedTestComponent />);
+      const component = render(<DeletedTestComponent />);
 
       const statusReadOnly = component.queryByTestId(
         "detailview-exifstatus-status-read-only"
@@ -430,7 +432,7 @@ describe("DetailViewSidebar", () => {
         "ClearSearchCache"
       );
 
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault)
         .mockImplementationOnce(() => mockIConnectionDefault)
@@ -471,7 +473,7 @@ describe("DetailViewSidebar", () => {
       let vPasteIsCalled = false;
       function keyboardCallback(regex: RegExp, callback: Function) {
         if (regex.source === "^([v])$") {
-          var event = new KeyboardEvent("keydown", {
+          const event = new KeyboardEvent("keydown", {
             bubbles: true,
             cancelable: true,
             key: "v"
@@ -501,7 +503,7 @@ describe("DetailViewSidebar", () => {
           return false;
         });
 
-      var component = render(
+      const component = render(
         <DetailViewSidebar
           status={IExifStatus.Default}
           filePath={"/t"}
@@ -519,7 +521,7 @@ describe("DetailViewSidebar", () => {
       let cCopyIsCalled = false;
       function keyboardCallback(regex: RegExp, callback: Function) {
         if (regex.source === "^([c])$") {
-          var event = new KeyboardEvent("keydown", {
+          const event = new KeyboardEvent("keydown", {
             bubbles: true,
             cancelable: true,
             key: "c"
@@ -549,7 +551,7 @@ describe("DetailViewSidebar", () => {
           return false;
         });
 
-      var component = render(
+      const component = render(
         <DetailViewSidebar
           status={IExifStatus.Default}
           filePath={"/t"}
@@ -566,7 +568,7 @@ describe("DetailViewSidebar", () => {
 
   describe("own context", () => {
     it("keydown t/i should be fired", async () => {
-      var contextProvider = {
+      const contextProvider = {
         dispatch: () => jest.fn(),
         state: {
           breadcrumb: [],
@@ -600,7 +602,7 @@ describe("DetailViewSidebar", () => {
         })
         .mockImplementationOnce(() => {});
 
-      var TestComponent = () => (
+      const TestComponent = () => (
         <DetailViewContext.Provider value={contextProvider}>
           <DetailViewSidebar
             status={IExifStatus.Ok}
@@ -611,13 +613,15 @@ describe("DetailViewSidebar", () => {
         </DetailViewContext.Provider>
       );
 
-      var component = render(<TestComponent />, { baseElement: document.body });
+      const component = render(<TestComponent />, {
+        baseElement: document.body
+      });
 
       expect(useKeyboardEventSpy).toBeCalled();
       expect(isInFormSpy).toBeCalled();
       expect(isInFormSpy).toBeCalledTimes(1);
 
-      // var event = new KeyboardEvent("keydown", {
+      // const event = new KeyboardEvent("keydown", {
       //   bubbles: true,
       //   cancelable: true,
       //   key: "t",

@@ -102,7 +102,7 @@ namespace starskytest.Controllers
 		///  Add the file in the underlying request object.
 		/// </summary>
 		/// <returns>Controller Context with file</returns>
-		private ControllerContext RequestWithFile(byte[] bytes = null)
+		private static ControllerContext RequestWithFile(byte[] bytes = null)
 		{
 			// ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
 			if ( bytes == null ) bytes = CreateAnImage.Bytes;
@@ -378,7 +378,7 @@ namespace starskytest.Controllers
 		///  Add the file in the underlying request object.
 		/// </summary>
 		/// <returns>Controller Context with file</returns>
-		private ControllerContext RequestWithSidecar()
+		private static ControllerContext RequestWithSidecar()
 		{
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");

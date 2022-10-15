@@ -8,12 +8,12 @@ import ImportPage from "./import-page";
 
 describe("ImportPage", () => {
   it("default check if MenuDefault is called", () => {
-    var menuDefaultSpy = jest
+    const menuDefaultSpy = jest
       .spyOn(MenuDefault, "default")
       .mockImplementationOnce(() => {
         return <></>;
       });
-    var dropAreaSpy = jest
+    const dropAreaSpy = jest
       .spyOn(DropArea, "default")
       .mockImplementationOnce(() => {
         return <></>;
@@ -25,17 +25,17 @@ describe("ImportPage", () => {
   });
 
   it("drop area callback", () => {
-    var menuDefaultSpy = jest
+    const menuDefaultSpy = jest
       .spyOn(MenuDefault, "default")
       .mockImplementationOnce(() => {
         return <></>;
       });
-    var dropAreaSpy = jest
+    const dropAreaSpy = jest
       .spyOn(DropArea, "default")
       .mockImplementationOnce(({ ...props }) => {
         return <></>;
       });
-    var modal = jest
+    const modal = jest
       .spyOn(ModalDropAreaFilesAdded, "default")
       .mockImplementationOnce(() => {
         return <></>;

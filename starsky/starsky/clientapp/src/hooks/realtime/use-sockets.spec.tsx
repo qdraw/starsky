@@ -25,10 +25,10 @@ describe("useSockets", () => {
   });
 
   it("feature toggle disabled", () => {
-    var socketService = new WebSocketService("");
+    const socketService = new WebSocketService("");
     localStorage.setItem("use-sockets", "false");
 
-    var wsCurrent = jest
+    const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
       .mockImplementationOnce(() => socketService);
 
@@ -42,8 +42,8 @@ describe("useSockets", () => {
   });
 
   it("ws current has been called", () => {
-    var socketService = new WebSocketService("");
-    var wsCurrent = jest
+    const socketService = new WebSocketService("");
+    const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
       .mockImplementationOnce(() => socketService);
     mountComponent();
@@ -69,7 +69,7 @@ describe("useSockets", () => {
     (window as any).appInsights.trackTrace = jest.fn();
 
     jest.useFakeTimers();
-    var socketService = new FakeWebSocketService();
+    const socketService = new FakeWebSocketService();
 
     // set the difference in time longer than 0.5 minutes
     jest
@@ -78,7 +78,7 @@ describe("useSockets", () => {
 
     jest.spyOn(WsCurrentStart, "default").mockClear();
 
-    var wsCurrent = jest
+    const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
       .mockImplementationOnce(() => socketService)
       .mockImplementationOnce(() => socketService);
@@ -145,7 +145,7 @@ describe("useSockets", () => {
   it("should ignore when Client is disabled", () => {
     jest.useFakeTimers();
 
-    var socketService = new FakeWebSocketService();
+    const socketService = new FakeWebSocketService();
 
     localStorage.setItem("use-sockets", "false");
     const wsCurrent = jest

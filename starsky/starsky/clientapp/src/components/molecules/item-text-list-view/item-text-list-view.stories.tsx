@@ -16,7 +16,7 @@ storiesOf("components/molecules/item-text-list-view", module)
     );
   })
   .add("2 items", () => {
-    var exampleData = [
+    const exampleData = [
       { fileName: "test.jpg", filePath: "/test.jpg" },
       { fileName: "test2.jpg", filePath: "/test2.jpg" }
     ] as IFileIndexItem[];

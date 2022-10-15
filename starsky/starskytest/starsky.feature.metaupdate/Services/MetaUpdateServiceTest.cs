@@ -46,7 +46,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			builder.UseInMemoryDatabase(nameof(MetaUpdateService));
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
-			_query = new Query(dbContext, new AppSettings(), null,null,_memoryCache);
+			_query = new Query(dbContext, new AppSettings(), null,new FakeIWebLogger(),_memoryCache);
 			_queryWithoutCache = new Query(dbContext, new AppSettings{ AddMemoryCache = false}, null,new FakeIWebLogger(),null);
 
 			_appSettings = new AppSettings();

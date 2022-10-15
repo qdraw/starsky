@@ -22,8 +22,8 @@ export class Keyboard {
     }
     if (!current.childNodes[0].textContent) return;
     // Set selection to the end of the element
-    var range = document.createRange();
-    var sel = window.getSelection();
+    const range = document.createRange();
+    const sel = window.getSelection();
     range.setStart(
       current.childNodes[0],
       current.childNodes[0].textContent.length

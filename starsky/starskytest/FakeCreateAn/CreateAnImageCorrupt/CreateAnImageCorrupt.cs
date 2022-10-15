@@ -18,7 +18,7 @@ namespace starskytest.FakeCreateAn.CreateAnImageCorrupt
 			Bytes = StreamToBytes(path);
 		}
 
-		private byte[] StreamToBytes(string path)
+		private static byte[] StreamToBytes(string path)
 		{
 			using var input = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(path);
 			using var ms = new MemoryStream();

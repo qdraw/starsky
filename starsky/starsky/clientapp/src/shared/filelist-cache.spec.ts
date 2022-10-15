@@ -4,12 +4,12 @@ import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import { FileListCache } from "./filelist-cache";
 
 describe("FileListCache", () => {
-  var fileListCache = new FileListCache();
+  const fileListCache = new FileListCache();
   describe("Test", () => {
     it("input and check if any result", () => {
       fileListCache.CacheSet("?f=1", {} as any);
 
-      var result = sessionStorage.getItem(
+      const result = sessionStorage.getItem(
         fileListCache.CacheKeyGenerator({
           f: "1",
           collections: true,
@@ -17,14 +17,14 @@ describe("FileListCache", () => {
         })
       );
 
-      var cacheGetter = fileListCache.CacheGet("?f=1");
+      const cacheGetter = fileListCache.CacheGet("?f=1");
 
       expect(cacheGetter).toBeTruthy();
       expect(result).toBeTruthy();
     });
 
     it("CacheCleanByPath remove item by name", () => {
-      var detailView = newDetailView();
+      const detailView = newDetailView();
 
       fileListCache.CacheSetObject(
         { f: "/test/image.jpg" },
@@ -40,19 +40,19 @@ describe("FileListCache", () => {
         }
       );
       // should not be null -->
-      var result1 = fileListCache.CacheGetObject({ f: "/test/image.jpg" });
+      const result1 = fileListCache.CacheGetObject({ f: "/test/image.jpg" });
       expect(result1).not.toBeNull();
 
       // action >
       fileListCache.CacheCleanByPath("/test/image.jpg");
 
-      var result2 = fileListCache.CacheGetObject({ f: "/test/image.jpg" });
+      const result2 = fileListCache.CacheGetObject({ f: "/test/image.jpg" });
 
       expect(result2).toBeNull();
     });
 
     it("should update parent item when exist (collections on)", () => {
-      var detailView = newDetailView();
+      const detailView = newDetailView();
       detailView.fileIndexItem = newIFileIndexItem();
       detailView.fileIndexItem.parentDirectory = "/test";
       detailView.fileIndexItem.fileCollectionName = "image";
@@ -89,7 +89,7 @@ describe("FileListCache", () => {
         }
       );
 
-      var cacheGetter = fileListCache.CacheGet("?f=/test") as IArchive;
+      const cacheGetter = fileListCache.CacheGet("?f=/test") as IArchive;
 
       expect(cacheGetter).toBeTruthy();
 
@@ -97,7 +97,7 @@ describe("FileListCache", () => {
     });
 
     it("should update parent item when exist (collections OFF)", () => {
-      var detailView = newDetailView();
+      const detailView = newDetailView();
       detailView.fileIndexItem = newIFileIndexItem();
       detailView.fileIndexItem.parentDirectory = "/test_off";
       detailView.fileIndexItem.fileCollectionName = "image";
@@ -122,7 +122,7 @@ describe("FileListCache", () => {
           index < Object.keys(sessionStorage).length;
           index++
         ) {
-          var item = new FileListCache().ParseJson(
+          const item = new FileListCache().ParseJson(
             sessionStorage.getItem(Object.keys(sessionStorage)[index])
           );
           console.log(Object.keys(sessionStorage)[index]);
@@ -145,7 +145,7 @@ describe("FileListCache", () => {
         }
       );
 
-      var cacheGetter = fileListCache.CacheGet(
+      const cacheGetter = fileListCache.CacheGet(
         "?f=/test_off&collections=false"
       ) as IArchive;
 
@@ -155,7 +155,7 @@ describe("FileListCache", () => {
     });
 
     it("should ignore non valid parent item", () => {
-      var detailView = newDetailView();
+      const detailView = newDetailView();
       detailView.fileIndexItem = newIFileIndexItem();
       detailView.fileIndexItem.parentDirectory = "/test_non_valid";
       detailView.fileIndexItem.fileCollectionName = "test_non_valid";
@@ -227,7 +227,7 @@ describe("FileListCache", () => {
         } as any)
       );
 
-      var cacheGetter = fileListCache.CacheGet("?f=2");
+      const cacheGetter = fileListCache.CacheGet("?f=2");
 
       expect(cacheGetter).toBeNull();
     });
@@ -243,7 +243,7 @@ describe("FileListCache", () => {
       );
 
       console.error("--> should give non valid json");
-      var cacheGetter = fileListCache.CacheGet("?f=2");
+      const cacheGetter = fileListCache.CacheGet("?f=2");
 
       expect(cacheGetter).toBeNull();
 
@@ -272,7 +272,10 @@ describe("FileListCache", () => {
     });
 
     it("should ignore key Without dateCache", () => {
-      var key = fileListCache.CacheKeyGenerator({ f: "3", collections: true });
+      const key = fileListCache.CacheKeyGenerator({
+        f: "3",
+        collections: true
+      });
       sessionStorage.setItem(
         key,
         JSON.stringify({
@@ -282,7 +285,7 @@ describe("FileListCache", () => {
       fileListCache.CacheCleanOld();
 
       // its ignored by the getter
-      var cacheGetter2 = fileListCache.CacheGet("?f=3");
+      const cacheGetter2 = fileListCache.CacheGet("?f=3");
       expect(cacheGetter2).toBeNull();
 
       // but the key does exist
@@ -302,7 +305,7 @@ describe("FileListCache", () => {
         } as any)
       );
 
-      var data4 = {
+      const data4 = {
         data: 2,
         dateCache: Date.now()
       } as any;
@@ -317,10 +320,10 @@ describe("FileListCache", () => {
 
       fileListCache.CacheCleanOld();
 
-      var cacheGetter2 = fileListCache.CacheGet("?f=3");
+      const cacheGetter2 = fileListCache.CacheGet("?f=3");
       expect(cacheGetter2).toBeNull();
 
-      var cacheGetter4 = fileListCache.CacheGet("?f=4");
+      const cacheGetter4 = fileListCache.CacheGet("?f=4");
 
       expect(cacheGetter4).toStrictEqual(data4);
     });
@@ -352,24 +355,24 @@ describe("FileListCache", () => {
 
       fileListCache.CacheCleanEverything();
 
-      var cacheGetter9 = fileListCache.CacheGet("?f=9");
+      const cacheGetter9 = fileListCache.CacheGet("?f=9");
       expect(cacheGetter9).toBeNull();
 
-      var cacheGetter10 = fileListCache.CacheGet("?f=10");
+      const cacheGetter10 = fileListCache.CacheGet("?f=10");
       expect(cacheGetter10).toBeNull();
     });
 
     it("setter ignore when feature toggle is off", () => {
       localStorage.setItem("clientCache", "false");
 
-      var data6 = {
+      const data6 = {
         data: 2,
         dateCache: Date.now()
       } as any;
 
       fileListCache.CacheSetObject({ f: "6" }, data6);
 
-      var checkIfItemNotExist = sessionStorage.getItem(
+      const checkIfItemNotExist = sessionStorage.getItem(
         fileListCache.CacheKeyGenerator({
           f: "6",
           collections: true,
@@ -382,7 +385,7 @@ describe("FileListCache", () => {
     });
 
     it("getter ignore when feature toggle is off", () => {
-      var data7 = {
+      const data7 = {
         data: 2,
         dateCache: Date.now()
       } as any;
@@ -392,7 +395,7 @@ describe("FileListCache", () => {
 
       localStorage.setItem("clientCache", "false");
 
-      var checkIfItemNotExist = fileListCache.CacheGetObject({ f: "6" });
+      const checkIfItemNotExist = fileListCache.CacheGetObject({ f: "6" });
       expect(checkIfItemNotExist).toBeNull();
 
       localStorage.removeItem("clientCache");

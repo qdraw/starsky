@@ -79,7 +79,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       return;
     }
 
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.set(
       "f",
       new URLPath().ArrayToCommaSeperatedString(props.select)
@@ -90,7 +90,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
     setProcessing(ProcessingState.server);
 
-    var zipKeyResult = await FetchPost(
+    const zipKeyResult = await FetchPost(
       new UrlQuery().UrlPublishCreate(),
       bodyParams.toString()
     );
@@ -103,7 +103,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     await ExportIntervalUpdate(zipKeyResult.data, setProcessing);
   }
 
-  var allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get").data;
+  const allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get").data;
   useEffect(() => {
     // set the default option
     if (!allPublishProfiles) return;
@@ -116,7 +116,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }, 9000);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
-    var toUpdateItemName = event.target.textContent
+    const toUpdateItemName = event.target.textContent
       ? event.target.textContent.trim()
       : "";
     setItemName(toUpdateItemName);

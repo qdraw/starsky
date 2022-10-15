@@ -50,7 +50,7 @@ describe("ForceSyncWaitButton", () => {
 
     await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
-    var urlSync = new UrlQuery().UrlSync("/");
+    const urlSync = new UrlQuery().UrlSync("/");
     expect(fetchPostSpy).toBeCalledWith(urlSync, "");
   });
 

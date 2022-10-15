@@ -29,13 +29,13 @@ const DetailViewGpx: React.FC = () => {
 
     // reset leaflet first
     mapReference.current.innerHTML = "";
-    var container = L.DomUtil.get(mapReference.current);
+    const container = L.DomUtil.get(mapReference.current);
     if (container != null) {
       (container as any)._leaflet_id = null;
     }
 
-    var tracks: any[] = [];
-    var tracksNodeList: NodeListOf<Element> = (
+    const tracks: any[] = [];
+    const tracksNodeList: NodeListOf<Element> = (
       response.data as XMLDocument
     ).querySelectorAll("trkpt");
 
@@ -66,7 +66,7 @@ const DetailViewGpx: React.FC = () => {
 
     map.fitBounds(tracks);
 
-    var blueIcon = L.icon({
+    const blueIcon = L.icon({
       iconUrl: MarkerBlueSvg,
       shadowUrl: MarkerShadowPng,
       iconSize: [50, 50], // size of the icon
@@ -76,8 +76,8 @@ const DetailViewGpx: React.FC = () => {
       popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
     });
 
-    var firstTrack = tracks[0];
-    var lastTrack = tracks[tracks.length - 1];
+    const firstTrack = tracks[0];
+    const lastTrack = tracks[tracks.length - 1];
 
     L.marker(tracks[0], { title: "gpx", icon: blueIcon }).addTo(map);
 

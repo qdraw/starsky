@@ -4,8 +4,8 @@ import NotFoundPage from "./not-found-page";
 
 describe("NotFoundPage", () => {
   it("has MenuDefault child Component", () => {
-    var notFoundComponent = render(<NotFoundPage></NotFoundPage>);
-    var headerText = (
+    let notFoundComponent = render(<NotFoundPage></NotFoundPage>);
+    const headerText = (
       notFoundComponent.container.querySelector(
         ".content--header"
       ) as HTMLElement

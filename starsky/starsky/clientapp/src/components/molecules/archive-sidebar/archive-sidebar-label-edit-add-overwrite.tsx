@@ -129,7 +129,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString())
       .then((anyData) => {
-        var result = new CastToInterface().InfoFileIndexArray(anyData.data);
+        const result = new CastToInterface().InfoFileIndexArray(anyData.data);
         result.forEach((element) => {
           if (element.status === IExifStatus.ReadOnly)
             setIsError(MessageErrorReadOnly);
@@ -171,7 +171,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     (event: KeyboardEvent) => {
       if (new Keyboard().isInForm(event)) return;
       event.preventDefault();
-      var current = tagsReference.current as HTMLDivElement;
+      const current = tagsReference.current as HTMLDivElement;
       new Keyboard().SetFocusOnEndField(current);
     },
     []

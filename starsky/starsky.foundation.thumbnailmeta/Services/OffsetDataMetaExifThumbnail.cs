@@ -65,15 +65,15 @@ namespace starsky.foundation.metathumbnail.Services
 			var rotation = ReadMetaExif.GetOrientationFromExifItem(
 				allExifItems.FirstOrDefault(p => p.Name == "Exif IFD0"));
 					
-			int.TryParse(
+			var heightParseResult = int.TryParse(
 				jpegTags?.FirstOrDefault(p => p.Name == "Image Height")?
-					.Description.Replace(" pixels",string.Empty), out var height);
+					.Description?.Replace(" pixels",string.Empty), out var height);
 				
-			int.TryParse(
+			var widthParseResult =int.TryParse(
 				jpegTags?.FirstOrDefault(p => p.Name == "Image Width")?
-					.Description.Replace(" pixels",string.Empty), out var width);
+					.Description?.Replace(" pixels",string.Empty), out var width);
 				
-			if ( height == 0||  width == 0)
+			if ( !heightParseResult || !widthParseResult || height == 0||  width == 0)
 			{
 				_logger.LogInformation($"[] ${reference} has no height or width {width}x{height} ");
 			}

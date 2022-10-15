@@ -27,8 +27,8 @@ describe("WsCurrentStart", () => {
 
   describe("WsCurrentStart or default", () => {
     it("connected and returns default", () => {
-      var setSocketConnectedSpy = jest.fn();
-      var wsCurrentStart = WsCurrentStart(
+      const setSocketConnectedSpy = jest.fn();
+      const wsCurrentStart = WsCurrentStart(
         true,
         setSocketConnectedSpy,
         { current: true },
@@ -99,12 +99,12 @@ describe("WsCurrentStart", () => {
 
   describe("FireOnOpen", () => {
     it("check if setSocketConnected is called", () => {
-      var setSocketConnectedSpy = jest.fn();
+      const setSocketConnectedSpy = jest.fn();
       FireOnOpen(false, setSocketConnectedSpy);
       expect(setSocketConnectedSpy).toBeCalled();
     });
     it("check if setSocketConnected is called 0 times when true", () => {
-      var setSocketConnectedSpy = jest.fn();
+      const setSocketConnectedSpy = jest.fn();
       FireOnOpen(true, setSocketConnectedSpy);
       expect(setSocketConnectedSpy).toBeCalledTimes(0);
     });
@@ -126,7 +126,7 @@ describe("WsCurrentStart", () => {
 
   describe("FireOnMessage", () => {
     it("check if setKeepAliveTimeSpy is on Welcome", () => {
-      var setKeepAliveTimeSpy = jest.fn();
+      const setKeepAliveTimeSpy = jest.fn();
       FireOnMessage(
         new MessageEvent("t", {
           data: '{"type" : "Welcome", "welcome": true}'
@@ -138,7 +138,7 @@ describe("WsCurrentStart", () => {
     });
 
     it("check if setKeepAliveTimeSpy is on Time", () => {
-      var setKeepAliveTimeSpy = jest.fn();
+      const setKeepAliveTimeSpy = jest.fn();
       FireOnMessage(
         new MessageEvent("t", { data: '{"type" : "Welcome", "time": 1}' }),
         setKeepAliveTimeSpy,
@@ -168,7 +168,7 @@ describe("WsCurrentStart", () => {
     });
 
     it("should ignore keep alive when sending real message", () => {
-      var setKeepAliveTimeSpy = jest.fn();
+      const setKeepAliveTimeSpy = jest.fn();
       FireOnMessage(
         new MessageEvent("t", { data: '{"data": 1}' }),
         setKeepAliveTimeSpy,
@@ -179,7 +179,7 @@ describe("WsCurrentStart", () => {
 
     it("should fire an event", (done) => {
       document.body.addEventListener(useSocketsEventName, (e) => {
-        var event = e as CustomEvent;
+        const event = e as CustomEvent;
         expect(event.detail).toStrictEqual({ data: 1 });
         done();
       });
@@ -194,7 +194,7 @@ describe("WsCurrentStart", () => {
 
   describe("HandleKeepAliveMessage", () => {
     it("should ignore keep alive when sending real message", () => {
-      var setKeepAliveTimeSpy = jest.fn();
+      const setKeepAliveTimeSpy = jest.fn();
       HandleKeepAliveMessage(setKeepAliveTimeSpy, { data: '{"data": 1}' });
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
     });

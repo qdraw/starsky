@@ -47,7 +47,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ReadGpxFromFileTest_NonValidInput()
 		{
-			var gpxBytes = new byte[0];
+			var gpxBytes = Array.Empty<byte>();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 	        
 			var returnItem = ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");

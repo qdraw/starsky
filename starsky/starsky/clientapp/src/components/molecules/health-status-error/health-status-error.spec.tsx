@@ -18,13 +18,13 @@ describe("HealthStatusError", () => {
         return newIConnectionDefault();
       });
 
-      var notificationSpy = jest
+      const notificationSpy = jest
         .spyOn(Notification, "default")
         .mockImplementationOnce(() => {
           return null;
         });
 
-      var component = render(<HealthStatusError />);
+      const component = render(<HealthStatusError />);
 
       expect(notificationSpy).not.toBeCalled();
       expect(notificationSpy).toBeCalledTimes(0);
@@ -39,13 +39,13 @@ describe("HealthStatusError", () => {
       });
 
       // usage => import * as Notification from './notification';
-      var notificationSpy = jest
+      const notificationSpy = jest
         .spyOn(Notification, "default")
         .mockImplementationOnce(() => {
           return null;
         });
 
-      var component = render(<HealthStatusError></HealthStatusError>);
+      const component = render(<HealthStatusError></HealthStatusError>);
 
       expect(notificationSpy).toBeCalled();
 
@@ -76,13 +76,13 @@ describe("HealthStatusError", () => {
       });
 
       // usage => import * as Notification from './notification';
-      var notificationSpy = jest
+      const notificationSpy = jest
         .spyOn(Notification, "default")
         .mockImplementationOnce(() => {
           return null;
         });
 
-      var component = render(<HealthStatusError />);
+      const component = render(<HealthStatusError />);
 
       expect(notificationSpy).toBeCalled();
 

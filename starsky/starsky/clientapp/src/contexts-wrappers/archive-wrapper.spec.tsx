@@ -27,12 +27,12 @@ describe("ArchiveContextWrapper", () => {
 
   describe("with mount", () => {
     it("check if archive is mounted", () => {
-      var args = {
+      const args = {
         ...newIArchive(),
         fileIndexItems: [],
         pageType: PageType.Archive
       } as IArchiveProps;
-      var archive = jest
+      const archive = jest
         .spyOn(Archive, "default")
         .mockImplementationOnce(() => {
           return <></>;
@@ -47,15 +47,17 @@ describe("ArchiveContextWrapper", () => {
     });
 
     it("check if search is mounted", () => {
-      var args = {
+      const args = {
         ...newIArchive(),
         fileIndexItems: [],
         pageType: PageType.Search,
         searchQuery: ""
       } as IArchiveProps;
-      var search = jest.spyOn(Search, "default").mockImplementationOnce(() => {
-        return <></>;
-      });
+      const search = jest
+        .spyOn(Search, "default")
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
 
       // for loading
       jest.spyOn(Archive, "default").mockImplementationOnce(() => {
@@ -72,12 +74,12 @@ describe("ArchiveContextWrapper", () => {
     });
 
     it("check if Unauthorized/Login is mounted", () => {
-      var args = {
+      const args = {
         ...newIArchive(),
         fileIndexItems: [],
         pageType: PageType.Unauthorized
       } as IArchiveProps;
-      var login = jest.spyOn(Login, "default").mockImplementationOnce(() => {
+      const login = jest.spyOn(Login, "default").mockImplementationOnce(() => {
         return <></>;
       });
 
@@ -88,12 +90,12 @@ describe("ArchiveContextWrapper", () => {
     });
 
     it("check if Trash is mounted", () => {
-      var args = {
+      const args = {
         ...newIArchive(),
         fileIndexItems: [],
         pageType: PageType.Trash
       } as IArchiveProps;
-      var login = jest.spyOn(Trash, "default").mockImplementationOnce(() => {
+      const login = jest.spyOn(Trash, "default").mockImplementationOnce(() => {
         return <></>;
       });
 
@@ -109,12 +111,12 @@ describe("ArchiveContextWrapper", () => {
       jest.spyOn(React, "useContext").mockImplementationOnce(() => {
         return { state: null, dispatch: jest.fn() };
       });
-      var args = {
+      const args = {
         ...newIArchive(),
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      var component = render(
+      const component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
@@ -126,12 +128,12 @@ describe("ArchiveContextWrapper", () => {
       jest.spyOn(React, "useContext").mockImplementationOnce(() => {
         return { state: { fileIndexItems: undefined }, dispatch: jest.fn() };
       });
-      var args = {
+      const args = {
         ...newIArchive(),
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      var component = render(
+      const component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
@@ -146,12 +148,12 @@ describe("ArchiveContextWrapper", () => {
           dispatch: jest.fn()
         };
       });
-      var args = {
+      const args = {
         ...newIArchive(),
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      var component = render(
+      const component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
@@ -180,7 +182,7 @@ describe("ArchiveContextWrapper", () => {
     });
 
     it("Check if event is received", () => {
-      var dispatch = (e: any) => {
+      const dispatch = (e: any) => {
         // should ignore the first one
         expect(e).toStrictEqual({
           add: [
@@ -199,8 +201,8 @@ describe("ArchiveContextWrapper", () => {
         });
       };
 
-      var result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
-      var detail = {
+      const result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
+      const detail = {
         data: [
           {
             colorclass: undefined,
@@ -212,7 +214,7 @@ describe("ArchiveContextWrapper", () => {
           }
         ]
       };
-      var event = new CustomEvent(useSocketsEventName, {
+      const event = new CustomEvent(useSocketsEventName, {
         detail
       });
 
@@ -222,7 +224,7 @@ describe("ArchiveContextWrapper", () => {
     });
 
     it("When outside current directory it should be ignored 2", () => {
-      var dispatch = (e: any) => {
+      const dispatch = (e: any) => {
         // should ignore the first one
         expect(e).toStrictEqual({
           add: [],
@@ -230,7 +232,7 @@ describe("ArchiveContextWrapper", () => {
         });
       };
 
-      var result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
+      const result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
       const detail = {
         data: [
           {
@@ -242,7 +244,7 @@ describe("ArchiveContextWrapper", () => {
           }
         ]
       };
-      var event = new CustomEvent(useSocketsEventName, {
+      const event = new CustomEvent(useSocketsEventName, {
         detail
       });
 

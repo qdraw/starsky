@@ -9,7 +9,7 @@ describe("document-title", () => {
     });
 
     it("Archive Home", () => {
-      var state = {
+      const state = {
         pageType: PageType.Archive,
         subPath: "/",
         breadcrumb: ["/"]
@@ -18,7 +18,7 @@ describe("document-title", () => {
       expect(document.title).toContain("Home");
     });
     it("Archive Child folder", () => {
-      var state = {
+      const state = {
         pageType: PageType.Archive,
         subPath: "/test",
         breadcrumb: ["/", "/test"]
@@ -27,7 +27,7 @@ describe("document-title", () => {
       expect(document.title).toContain("test");
     });
     it("Detailview Child folder", () => {
-      var state = {
+      const state = {
         pageType: PageType.DetailView,
         subPath: "/test",
         breadcrumb: ["/", "/test"]
@@ -37,7 +37,7 @@ describe("document-title", () => {
     });
 
     it("Search fallback", () => {
-      var state = {
+      const state = {
         pageType: PageType.Search,
         breadcrumb: ["/", "search"]
       } as IArchiveProps;
@@ -46,7 +46,7 @@ describe("document-title", () => {
     });
 
     it("Search fallback 2", () => {
-      var state = {
+      const state = {
         pageType: PageType.Search,
         breadcrumb: ["/", "search"],
         searchQuery: undefined
@@ -56,7 +56,7 @@ describe("document-title", () => {
     });
 
     it("Search with title", () => {
-      var state = {
+      const state = {
         pageType: PageType.Search,
         breadcrumb: ["/", "search"],
         searchQuery: "test"
@@ -66,7 +66,7 @@ describe("document-title", () => {
     });
 
     it("Trash with trash", () => {
-      var state = {
+      const state = {
         pageType: PageType.Trash,
         breadcrumb: ["/", "search"],
         searchQuery: "!delete!"
@@ -85,7 +85,7 @@ describe("document-title", () => {
         value: "Electron starsky/"
       });
 
-      var title = new DocumentTitle().GetDocumentTitle("test");
+      const title = new DocumentTitle().GetDocumentTitle("test");
 
       expect(title).toContain("dummy.com");
     });

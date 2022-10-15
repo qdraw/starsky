@@ -30,10 +30,10 @@ namespace starskycore.Services
 				 afterIndexSearchForOptions >= 0 )
 			{
 				var beforeDateTime =
-					model.ParseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
+					SearchViewModel.ParseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
 				
 				var afterDateTime =
-					model.ParseDateTime(model.SearchFor[afterIndexSearchForOptions]);
+					SearchViewModel.ParseDateTime(model.SearchFor[afterIndexSearchForOptions]);
 
 				// We have now an extra query, and this is always AND  
 				model.SetAndOrOperator('&', -2);
@@ -51,7 +51,7 @@ namespace starskycore.Services
 				}
 			}
 			
-			var dateTime = model.ParseDateTime(model.SearchFor[indexer]);
+			var dateTime = SearchViewModel.ParseDateTime(model.SearchFor[indexer]);
 
 			// Normal search
 			switch ( model.SearchForOptions[indexer] )
@@ -103,7 +103,7 @@ namespace starskycore.Services
 		/// <param name="indexer">in the index</param>
 		private void SearchForEntireDay(SearchViewModel model, int indexer)
 		{
-			var dateTime = model.ParseDateTime(model.SearchFor[indexer]);
+			var dateTime = SearchViewModel.ParseDateTime(model.SearchFor[indexer]);
 			
 			model.SearchFor[indexer] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",
 				CultureInfo.InvariantCulture);

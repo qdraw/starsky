@@ -65,7 +65,7 @@ export const useIntersection = (
     if (ref.current == null) {
       return;
     }
-    var observer = newIntersectionObserver(
+    const observer = newIntersectionObserver(
       ref,
       setIntersecting,
       once,

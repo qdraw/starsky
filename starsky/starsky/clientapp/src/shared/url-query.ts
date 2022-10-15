@@ -47,7 +47,7 @@ export class UrlQuery {
    * Search path based on Location Hash
    */
   public HashSearchPage(historyLocationHash: string): string {
-    var url = new URLPath().StringToIUrl(historyLocationHash);
+    const url = new URLPath().StringToIUrl(historyLocationHash);
     return document.location.pathname.indexOf(this.prefix) === -1
       ? `/search${new URLPath().IUrlToString(url)}`
       : `${this.prefix}/search${new URLPath().IUrlToString(url)}`;
@@ -162,7 +162,7 @@ export class UrlQuery {
     clearTSearchQuery?: boolean,
     emthySelectQuery?: boolean
   ): string {
-    var url = new URLPath().StringToIUrl(historyLocationHash);
+    const url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
     // when browsing to a parent folder from a detailview item
     if (clearTSearchQuery) {
@@ -182,9 +182,9 @@ export class UrlQuery {
    * Used with localisation hash
    */
   public UrlQueryServerApi = (historyLocationHash: string): string => {
-    var requested = new URLPath().StringToIUrl(historyLocationHash);
+    const requested = new URLPath().StringToIUrl(historyLocationHash);
 
-    var urlObject = newIUrl();
+    const urlObject = newIUrl();
     if (requested.f) {
       urlObject.f = requested.f;
     }
@@ -226,7 +226,7 @@ export class UrlQuery {
    */
   public UrlQueryInfoApi(subPath: string): string {
     if (!subPath) return "";
-    var url = this.urlReplacePath(subPath);
+    const url = this.urlReplacePath(subPath);
     return this.prefix + "/api/info?f=" + url + "&json=true";
   }
 
@@ -424,7 +424,7 @@ export class UrlQuery {
   }
 
   public UrlRealtime(): string {
-    var url = window.location.protocol === "https:" ? "wss:" : "ws:";
+    let url = window.location.protocol === "https:" ? "wss:" : "ws:";
     url += "//" + window.location.host + this.prefix + "/realtime";
 
     // Create React App is not supporting websockets. At least is isn't working

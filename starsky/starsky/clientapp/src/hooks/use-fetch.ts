@@ -49,7 +49,7 @@ export const fetchContent = async (
     console.error("use-fetch", url, event);
   }
 
-  var response = {
+  const response = {
     statusCode,
     data
   } as IConnectionDefault;

@@ -55,15 +55,15 @@ export class ColorClassUpdateSingle {
     if (!this.isEnabled) return;
 
     this.setIsLoading(true);
-    var updateApiUrl = new UrlQuery().UrlUpdateApi();
+    const updateApiUrl = new UrlQuery().UrlUpdateApi();
 
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", this.filePath);
     bodyParams.append("colorclass", colorClass.toString());
     bodyParams.append("collections", this.collections.toString());
 
     FetchPost(updateApiUrl, bodyParams.toString()).then((anyData) => {
-      var result = new CastToInterface().InfoFileIndexArray(anyData.data);
+      const result = new CastToInterface().InfoFileIndexArray(anyData.data);
       this.setIsLoading(false);
       if (
         !result ||

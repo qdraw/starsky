@@ -2,11 +2,11 @@ import { ISidebarUpdate } from "../interfaces/ISidebarUpdate";
 import { SidebarUpdate } from "../shared/sidebar-update";
 
 describe("url-path", () => {
-  var sidebarUpdate = new SidebarUpdate();
+  const sidebarUpdate = new SidebarUpdate();
 
   describe("CastToISideBarUpdate", () => {
     it("no fieldname", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "",
         "value",
         {} as ISidebarUpdate
@@ -15,7 +15,7 @@ describe("url-path", () => {
     });
 
     it("no value", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "field",
         "",
         {} as ISidebarUpdate
@@ -24,7 +24,7 @@ describe("url-path", () => {
     });
 
     it("tags", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "tags",
         "test",
         {} as ISidebarUpdate
@@ -33,7 +33,7 @@ describe("url-path", () => {
     });
 
     it("description", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "description",
         "test",
         {} as ISidebarUpdate
@@ -42,7 +42,7 @@ describe("url-path", () => {
     });
 
     it("title", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "title",
         "test",
         {} as ISidebarUpdate
@@ -51,7 +51,7 @@ describe("url-path", () => {
     });
 
     it("replace-tags", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "replace-tags",
         "test",
         {} as ISidebarUpdate
@@ -60,7 +60,7 @@ describe("url-path", () => {
     });
 
     it("replace-description", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "replace-description",
         "test",
         {} as ISidebarUpdate
@@ -69,7 +69,7 @@ describe("url-path", () => {
     });
 
     it("replace-title", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "replace-title",
         "test",
         {} as ISidebarUpdate
@@ -78,7 +78,7 @@ describe("url-path", () => {
     });
 
     it("send emthy string replace-title", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "replace-title",
         "",
         {} as ISidebarUpdate
@@ -87,7 +87,7 @@ describe("url-path", () => {
     });
 
     it("send emthy string tags", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "tags",
         "",
         {} as ISidebarUpdate
@@ -96,7 +96,7 @@ describe("url-path", () => {
     });
 
     it("send emthy string non existing tag", () => {
-      var result = sidebarUpdate.CastToISideBarUpdate(
+      const result = sidebarUpdate.CastToISideBarUpdate(
         "testung",
         "",
         {} as ISidebarUpdate
@@ -106,7 +106,7 @@ describe("url-path", () => {
   });
   describe("Change", () => {
     it("no field name should return null", () => {
-      var result = sidebarUpdate.Change(
+      const result = sidebarUpdate.Change(
         { currentTarget: { textContent: null, dataset: {} } } as any,
         {} as ISidebarUpdate
       );
@@ -114,7 +114,7 @@ describe("url-path", () => {
     });
 
     it("no text should return emthy object", () => {
-      var result = sidebarUpdate.Change(
+      const result = sidebarUpdate.Change(
         {
           currentTarget: { textContent: null, dataset: { name: "test" } }
         } as any,
@@ -124,7 +124,7 @@ describe("url-path", () => {
     });
 
     it("has text and tag name", () => {
-      var result = sidebarUpdate.Change(
+      const result = sidebarUpdate.Change(
         {
           currentTarget: { textContent: "test", dataset: { name: "tags" } }
         } as any,
@@ -138,32 +138,35 @@ describe("url-path", () => {
 
   describe("IsFormUsed", () => {
     it("no input", () => {
-      var input = {} as ISidebarUpdate;
-      var result = sidebarUpdate.IsFormUsed(input);
+      const input = {} as ISidebarUpdate;
+      const result = sidebarUpdate.IsFormUsed(input);
       expect(result).toBeFalsy();
     });
 
     it("replace input", () => {
-      var input = { replaceTags: "hey", replaceTitle: "ok" } as ISidebarUpdate;
-      var result = sidebarUpdate.IsFormUsed(input);
+      const input = {
+        replaceTags: "hey",
+        replaceTitle: "ok"
+      } as ISidebarUpdate;
+      const result = sidebarUpdate.IsFormUsed(input);
       expect(result).toBeFalsy();
     });
 
     it("tags input", () => {
-      var input = { tags: "t" } as ISidebarUpdate;
-      var result = sidebarUpdate.IsFormUsed(input);
+      const input = { tags: "t" } as ISidebarUpdate;
+      const result = sidebarUpdate.IsFormUsed(input);
       expect(result).toBeTruthy();
     });
 
     it("title input", () => {
-      var input = { title: "t" } as ISidebarUpdate;
-      var result = sidebarUpdate.IsFormUsed(input);
+      const input = { title: "t" } as ISidebarUpdate;
+      const result = sidebarUpdate.IsFormUsed(input);
       expect(result).toBeTruthy();
     });
 
     it("description input", () => {
-      var input = { description: "t" } as ISidebarUpdate;
-      var result = sidebarUpdate.IsFormUsed(input);
+      const input = { description: "t" } as ISidebarUpdate;
+      const result = sidebarUpdate.IsFormUsed(input);
       expect(result).toBeTruthy();
     });
   });

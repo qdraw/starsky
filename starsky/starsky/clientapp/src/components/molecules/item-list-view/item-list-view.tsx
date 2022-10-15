@@ -44,14 +44,14 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   );
 
   useEffect(() => {
-    var navigationState = history.location.state as INavigateState;
+    const navigationState = history.location.state as INavigateState;
 
     if (!navigationState || !navigationState.filePath) return;
 
     // for the DOM delay
     setTimeout(() => {
-      var dataTagQuery = `[data-filepath="${navigationState.filePath}"]`;
-      var elementList = document.querySelectorAll(dataTagQuery);
+      const dataTagQuery = `[data-filepath="${navigationState.filePath}"]`;
+      const elementList = document.querySelectorAll(dataTagQuery);
       if (elementList.length !== 1) return;
 
       window.scrollTo({

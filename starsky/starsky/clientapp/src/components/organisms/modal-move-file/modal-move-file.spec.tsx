@@ -34,7 +34,7 @@ describe("ModalMoveFile", () => {
       return null;
     });
 
-    var modal = render(
+    const modal = render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -90,7 +90,7 @@ describe("ModalMoveFile", () => {
       return startArchive;
     });
 
-    var modal = render(
+    const modal = render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -142,11 +142,11 @@ describe("ModalMoveFile", () => {
         ]
       } as IConnectionDefault
     );
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var modal = render(
+    const modal = render(
       <ModalMoveFile
         parentDirectory="/test"
         selectedSubPath="/test/test.jpg"
@@ -173,7 +173,7 @@ describe("ModalMoveFile", () => {
     expect(fetchPostSpy).toBeCalledTimes(1);
 
     // generate url
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", "/test/test.jpg");
     bodyParams.append("to", "/");
     bodyParams.append("collections", true.toString());
@@ -210,11 +210,11 @@ describe("ModalMoveFile", () => {
         ]
       } as IConnectionDefault
     );
-    var fetchPostSpy = jest
+    const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var locationMockData = {
+    const locationMockData = {
       location: jest.fn(),
       navigate: jest.fn()
     } as any;
@@ -226,7 +226,7 @@ describe("ModalMoveFile", () => {
       .mockImplementationOnce(() => locationMockData)
       .mockImplementationOnce(() => locationMockData);
 
-    var modal = render(
+    const modal = render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -256,7 +256,7 @@ describe("ModalMoveFile", () => {
     expect(fetchPostSpy).toBeCalledTimes(1);
 
     // generate url
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", "/test.jpg");
     bodyParams.append("to", "/test/");
     bodyParams.append("collections", true.toString());
@@ -279,9 +279,9 @@ describe("ModalMoveFile", () => {
       return <>{props.children}</>;
     });
 
-    var handleExitSpy = jest.fn();
+    const handleExitSpy = jest.fn();
 
-    var component = render(
+    const component = render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"

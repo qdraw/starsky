@@ -41,8 +41,8 @@ describe("UseFetch", () => {
 
   it("with default archive feedback", async () => {
     setFetchSpy(200);
-    var controller = new AbortController();
-    var setDataSpy = jest.fn();
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
     await fetchContent("test", "get", true, controller, setDataSpy);
 
     // fetchSpy

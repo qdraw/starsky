@@ -55,7 +55,7 @@ namespace starskytest.Controllers
 			return item;
 		}
 
-		private IStorage ArrangeStorage()
+		private static IStorage ArrangeStorage()
 		{
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.jpg","/test.xmp", "/corrupt.jpg"};

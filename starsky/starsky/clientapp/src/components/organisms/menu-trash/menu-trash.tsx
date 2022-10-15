@@ -75,18 +75,18 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     if (!select) return;
     setIsLoading(true);
 
-    var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
+    const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
       select,
       state.fileIndexItems
     );
     if (!toUndoTrashList) return;
-    var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(
+    const selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(
       toUndoTrashList,
       ""
     );
     if (selectPaths.length === 0) return;
 
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.set("fieldName", "tags");
     bodyParams.set("search", "!delete!");
     bodyParams.append("f", selectPaths);

@@ -9,7 +9,7 @@ describe("CurrentLocationButton", () => {
 
   describe("ButtonStyled", () => {
     it("set type", () => {
-      var component = render(<ButtonStyled type={"submit"} />);
+      const component = render(<ButtonStyled type={"submit"} />);
       const button = component.getByRole("button") as HTMLInputElement;
       expect(button.type).toEqual("submit");
     });

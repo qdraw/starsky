@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
@@ -35,7 +36,7 @@ namespace starskytest.Helpers
 		public void Base64HelperTest_TryParseCorruptString()
 		{
 			var currupt = Base64Helper.TryParse("failing");
-			var noByte = new byte[0];
+			var noByte = Array.Empty<byte>();
 			Assert.AreEqual(noByte.Length, currupt.Length);
 		}
 

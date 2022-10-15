@@ -80,7 +80,7 @@ function updateDetailViewFromEvent(
     event as CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>
   ).detail;
   // useLocation, state or detailView is here always the default value
-  var locationPath = new URLPath().StringToIUrl(window.location.search).f;
+  const locationPath = new URLPath().StringToIUrl(window.location.search).f;
 
   for (const pushMessage of pushMessages.data) {
     // only update the state of the current view

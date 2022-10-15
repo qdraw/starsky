@@ -23,7 +23,7 @@ function getIndexOfCurrentAppendFilePath(
   filePath: string,
   items: IFileIndexItem[]
 ): number {
-  var filePathAppendIndex: number = -1;
+  let filePathAppendIndex: number = -1;
   for (let index = 0; index < items.length; index++) {
     const element = items[index];
     if (element.filePath === filePath) {
@@ -44,7 +44,7 @@ function getNearbyStartIndex(
   select: string[],
   items: IFileIndexItem[]
 ): number {
-  var alreadySelectIndexes: number[] = [];
+  const alreadySelectIndexes: number[] = [];
   // the order of select is done by the user
 
   for (let index = 0; index < items.length; index++) {
@@ -69,7 +69,7 @@ function toAddedLoopMinToMax(
   nearbyStartIndex: number,
   items: IFileIndexItem[]
 ): string[] {
-  var toBeAddedToSelect: string[] = [];
+  const toBeAddedToSelect: string[] = [];
 
   // loop from the lowest value to the highest
   for (
@@ -100,21 +100,21 @@ export function ShiftSelectionHelper(
   // when nothing is selected assume the first
   if (select.length === 0 && items.length >= 1) select = [items[0].fileName];
 
-  var filePathAppendIndex = getIndexOfCurrentAppendFilePath(filePath, items);
+  const filePathAppendIndex = getIndexOfCurrentAppendFilePath(filePath, items);
   if (filePathAppendIndex === -1) return false;
-  var nearbyStartIndex = getNearbyStartIndex(
+  const nearbyStartIndex = getNearbyStartIndex(
     filePathAppendIndex,
     select,
     items
   );
-  var toBeAddedToSelect = toAddedLoopMinToMax(
+  const toBeAddedToSelect = toAddedLoopMinToMax(
     filePathAppendIndex,
     nearbyStartIndex,
     items
   );
 
   // remove duplicates
-  var newSelect = [
+  const newSelect = [
     ...select,
     items[filePathAppendIndex].fileName,
     ...toBeAddedToSelect
@@ -127,7 +127,7 @@ export function ShiftSelectionHelper(
       ].indexOf(item) === pos
     );
   });
-  var urlObject = new URLPath().updateSelection(
+  const urlObject = new URLPath().updateSelection(
     history.location.search,
     newSelect
   );

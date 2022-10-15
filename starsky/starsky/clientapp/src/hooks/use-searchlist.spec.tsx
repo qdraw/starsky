@@ -43,7 +43,7 @@ describe("UseSearchList", () => {
     it("with search content 200", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       setFetchSpy(200, PageType.Search);
 
@@ -67,7 +67,7 @@ describe("UseSearchList", () => {
     it("with search content 404", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       setFetchSpy(404, PageType.Archive);
 
@@ -82,7 +82,7 @@ describe("UseSearchList", () => {
     it("with search content 401", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       setFetchSpy(401, PageType.Archive);
 
@@ -97,7 +97,7 @@ describe("UseSearchList", () => {
     it("with search content 500", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
-      var controller = new AbortController();
+      const controller = new AbortController();
 
       setFetchSpy(500, PageType.Archive);
 

@@ -67,14 +67,10 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 			
-			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
-			if ( !isSame )
+			var (lastEditedIsSame, fileHashSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
+			if ( !lastEditedIsSame )
 			{
-				if ( updateDelegate != null )
-				{
-					new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
-				}
-				return await UpdateItem(dbItem, updatedDbItem.Size, subPath, true);
+				return await HandleLastEditedIsSame(updateDelegate, dbItem, updatedDbItem, fileHashSame, subPath);
 			}
 
 			// to avoid reSync
@@ -126,14 +122,10 @@ namespace starsky.foundation.sync.SyncServices
 				return dbItem;
 			}
 
-			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
-			if ( !isSame )
+			var (lastEditedIsSame, fileHashSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
+			if ( !lastEditedIsSame )
 			{
-				if ( updateDelegate != null )
-				{
-					await updateDelegate(new List<FileIndexItem> {dbItem});
-				}
-				return await UpdateItem(dbItem, updatedDbItem.Size, subPath, true);
+				return await HandleLastEditedIsSame(updateDelegate, dbItem, updatedDbItem, fileHashSame, subPath);
 			}
 
 			// to avoid reSync
@@ -143,31 +135,54 @@ namespace starsky.foundation.sync.SyncServices
 			return updatedDbItem;
 		}
 
+		
+		private async Task<FileIndexItem> HandleLastEditedIsSame(ISynchronize.SocketUpdateDelegate updateDelegate, 
+			FileIndexItem dbItem, FileIndexItem updatedDbItem, bool? fileHashSame, string subPath)
+		{
+			if ( updateDelegate != null )
+			{
+				new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
+			}
+
+			if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true)
+			{
+				return dbItem;
+			}
+
+			// only update last edited time in database
+			if ( fileHashSame == true )
+			{
+				return await UpdateItemLastEdited(updatedDbItem);
+			}
+			
+			return await UpdateItem(dbItem, updatedDbItem.Size, subPath,
+				true);
+		}
 
 		/// <summary>
 		/// When the same stop checking and return value
 		/// </summary>
 		/// <param name="dbItem">item that contain size and fileHash</param>
-		/// <returns>database item</returns>
-		internal async Task<Tuple<bool,FileIndexItem>> SizeFileHashIsTheSame(FileIndexItem dbItem)
+		/// <returns>Last Edited is the bool, FileHash Same bool , database item</returns>
+		internal async Task<Tuple<bool,bool?,FileIndexItem>> SizeFileHashIsTheSame(FileIndexItem dbItem)
 		{
 			// when last edited is the same
 			var (isLastEditTheSame, lastEdit) = CompareLastEditIsTheSame(dbItem);
 			dbItem.LastEdited = lastEdit;
 			dbItem.Size = _subPathStorage.Info(dbItem.FilePath).Size;
 
-			if (isLastEditTheSame) return new Tuple<bool, FileIndexItem>(true ,dbItem);
+			if (isLastEditTheSame) return new Tuple<bool, bool?, FileIndexItem>(true, null, dbItem);
 			
 			// when byte hash is different update
 			var (fileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
 
-			return new Tuple<bool, FileIndexItem>(fileHashTheSame,dbItem);
+			return new Tuple<bool, bool?, FileIndexItem>(false, fileHashTheSame, dbItem);
 		}
 
 		internal static FileIndexItem AddDeleteStatus(FileIndexItem dbItem, 
 			FileIndexItem.ExifStatus exifStatus = FileIndexItem.ExifStatus.Deleted)
 		{
-			if ( dbItem == null ) return null;
+			if ( dbItem?.Tags == null ) return null;
 			if ( dbItem.Tags.Contains("!delete!") )
 			{
 				dbItem.Status = exifStatus;
@@ -289,7 +304,21 @@ namespace starsky.foundation.sync.SyncServices
 			AddDeleteStatus(dbItem);
 			return updateItem;
 		}
-		
+
+		/// <summary>
+		/// Only update the last edited time
+		/// </summary>
+		/// <param name="updatedDbItem">item incl updated last edited time</param>
+		/// <returns>object with ok status</returns>
+		internal async Task<FileIndexItem> UpdateItemLastEdited(FileIndexItem updatedDbItem)
+		{
+			await _query.UpdateItemAsync(updatedDbItem);
+			updatedDbItem.Status = FileIndexItem.ExifStatus.Ok;
+			updatedDbItem.LastChanged =
+				new List<string> {nameof(FileIndexItem.LastEdited)};
+			return updatedDbItem;
+		}
+
 		/// <summary>
 		/// Compare the file hash en return 
 		/// </summary>
@@ -352,11 +381,11 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="xmpSubPath">sidecar file</param>
 		/// <param name="directoryWithFileIndexItems">directory where the sidecar is located</param>
 		/// <returns>completed task</returns>
-		private async Task UpdateSidecarFile(string xmpSubPath, List<FileIndexItem> directoryWithFileIndexItems)
+		internal async Task<bool> UpdateSidecarFile(string xmpSubPath, List<FileIndexItem> directoryWithFileIndexItems)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionSidecar(xmpSubPath) )
 			{
-				return;
+				return false;
 			}
 			var sidecarExt =
 				FilenamesHelper.GetFileExtensionWithoutDot(xmpSubPath);
@@ -367,6 +396,7 @@ namespace starsky.foundation.sync.SyncServices
 				item.AddSidecarExtension(sidecarExt);
 				await _query.UpdateItemAsync(item);
 			}
+			return true;
 		}
 		
 	}

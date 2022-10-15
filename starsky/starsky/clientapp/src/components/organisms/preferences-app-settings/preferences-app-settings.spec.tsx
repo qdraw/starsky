@@ -28,7 +28,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
-      var component = render(<PreferencesAppSettings />);
+      const component = render(<PreferencesAppSettings />);
 
       const switchButtons = component.queryAllByTestId("switch-button-right");
 
@@ -42,7 +42,7 @@ describe("PreferencesAppSettings", () => {
     });
 
     it("not disabled when admin", () => {
-      var connectionDefault = {
+      const connectionDefault = {
         statusCode: 200,
         data: ["AppSettingsWrite"]
       } as IConnectionDefault;
@@ -54,7 +54,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => connectionDefault)
         .mockImplementationOnce(() => connectionDefault);
 
-      var component = render(<PreferencesAppSettings />);
+      const component = render(<PreferencesAppSettings />);
 
       const switchButtons = component.queryAllByTestId("switch-button-right");
 
@@ -68,11 +68,11 @@ describe("PreferencesAppSettings", () => {
     });
 
     it("filled right data", () => {
-      var permissions = {
+      const permissions = {
         statusCode: 200,
         data: ["AppSettingsWrite"]
       } as IConnectionDefault;
-      var appSettings = {
+      const appSettings = {
         statusCode: 200,
         data: {
           verbose: true,
@@ -88,7 +88,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      var component = render(<PreferencesAppSettings />);
+      const component = render(<PreferencesAppSettings />);
 
       const formControls = component.queryAllByTestId("form-control");
 
@@ -105,11 +105,11 @@ describe("PreferencesAppSettings", () => {
     });
 
     it("change storageFolder", async () => {
-      var permissions = {
+      const permissions = {
         statusCode: 200,
         data: ["AppSettingsWrite"]
       } as IConnectionDefault;
-      var appSettings = {
+      const appSettings = {
         statusCode: 200,
         data: {
           verbose: true,
@@ -130,11 +130,11 @@ describe("PreferencesAppSettings", () => {
 
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(newIConnectionDefault());
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = render(<PreferencesAppSettings />);
+      const component = render(<PreferencesAppSettings />);
 
       const formControls = component
         .queryAllByTestId("form-control")
@@ -161,11 +161,11 @@ describe("PreferencesAppSettings", () => {
     });
 
     it("change storageFolder failed", async () => {
-      var permissions = {
+      const permissions = {
         statusCode: 200,
         data: ["AppSettingsWrite"]
       } as IConnectionDefault;
-      var appSettings = {
+      const appSettings = {
         statusCode: 200,
         data: {
           verbose: true,
@@ -187,11 +187,11 @@ describe("PreferencesAppSettings", () => {
       // This fails -->
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ ...newIConnectionDefault(), statusCode: 404 });
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = render(<PreferencesAppSettings />);
+      const component = render(<PreferencesAppSettings />);
 
       const formControls = component
         .queryAllByTestId("form-control")
@@ -222,11 +222,11 @@ describe("PreferencesAppSettings", () => {
     });
 
     it("toggle verbose", async () => {
-      var permissions = {
+      const permissions = {
         statusCode: 200,
         data: ["AppSettingsWrite"]
       } as IConnectionDefault;
-      var appSettings = {
+      const appSettings = {
         statusCode: 200,
         data: {
           verbose: true,
@@ -244,7 +244,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      var component = render(<PreferencesAppSettings />);
+      const component = render(<PreferencesAppSettings />);
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")

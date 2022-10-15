@@ -44,12 +44,13 @@ namespace starskytest.FakeMocks
 			return _content == null ? new List<FileIndexItem>() : _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
 		}
 
+		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths, int timeout = 1000)
 		{
 			var result = new List<FileIndexItem>();
-			foreach ( var subPath in filePaths )
+			foreach ( var files in filePaths.Select(GetAllFiles).Where(files => files != null) )
 			{
-				result.AddRange(GetAllFiles(subPath));
+				result.AddRange(files);
 			}
 			return Task.FromResult(result);
 		}
@@ -62,7 +63,7 @@ namespace starskytest.FakeMocks
 		public List<FileIndexItem> GetAllRecursive(string subPath = "")
 		{
 			return _content.Where
-					(p => p.ParentDirectory.StartsWith(subPath))
+					(p => p.ParentDirectory!.StartsWith(subPath))
 				.OrderBy(r => r.FileName).ToList();
 		}
 
@@ -114,7 +115,7 @@ namespace starskytest.FakeMocks
 				fileIndexItem.CollectionPaths.AddRange(
 					_content.Where(
 							p => p.FileCollectionName == fileIndexItem.FileCollectionName)
-						.Select(p => p.FilePath)
+						.Select(p => p.FilePath!)
 				);
 			}
 			return new DetailView {FileIndexItem = fileIndexItem, IsDirectory = fileIndexItem.IsDirectory == true};
@@ -177,7 +178,7 @@ namespace starskytest.FakeMocks
 			{
 				var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(path);
 				result.AddRange(_content.Where(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path) 
-					&& p.FileName.StartsWith(fileNameWithoutExtension)));
+					&& p.FileName!.StartsWith(fileNameWithoutExtension)));
 			}
 			return Task.FromResult(result);
 		}
@@ -226,7 +227,7 @@ namespace starskytest.FakeMocks
 		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
 		{
 			var result = _content.Where(p =>
-					fileHashesList.Contains(p.FileHash)).ToList();
+					fileHashesList.Contains(p.FileHash!)).ToList();
 			
 			foreach ( var fileHash in fileHashesList )
 			{

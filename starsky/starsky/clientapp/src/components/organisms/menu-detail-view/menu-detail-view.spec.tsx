@@ -45,13 +45,13 @@ describe("MenuDetailView", () => {
     } as IDetailView;
 
     it("readonly - move click", () => {
-      var moveModal = jest
+      const moveModal = jest
         .spyOn(ModalMoveFile, "default")
         .mockImplementationOnce(() => {
           return <></>;
         });
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -69,13 +69,13 @@ describe("MenuDetailView", () => {
     });
 
     it("readonly - rename click", () => {
-      var renameModal = jest
+      const renameModal = jest
         .spyOn(ModalDetailviewRenameFile, "default")
         .mockImplementationOnce(() => {
           return <></>;
         });
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -95,11 +95,11 @@ describe("MenuDetailView", () => {
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -128,7 +128,7 @@ describe("MenuDetailView", () => {
           parentDirectory: "/test"
         }
       } as IDetailView;
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -157,7 +157,7 @@ describe("MenuDetailView", () => {
           parentDirectory: "/test"
         }
       } as IDetailView;
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -176,7 +176,7 @@ describe("MenuDetailView", () => {
   });
 
   describe("with Context", () => {
-    var state = {
+    const state = {
       subPath: "/test/image.jpg",
       fileIndexItem: {
         status: IExifStatus.Ok,
@@ -192,7 +192,7 @@ describe("MenuDetailView", () => {
       // add search query to url
       globalHistory.navigate("/?t=test&p=0");
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -215,7 +215,7 @@ describe("MenuDetailView", () => {
 
       //  With updated LastEdited
 
-      var updateState = {
+      const updateState = {
         ...state,
         fileIndexItem: {
           ...state.fileIndexItem,
@@ -223,7 +223,7 @@ describe("MenuDetailView", () => {
         }
       };
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={updateState} dispatch={jest.fn()} />
       );
 
@@ -241,7 +241,7 @@ describe("MenuDetailView", () => {
         globalHistory.navigate("/?details=true");
       });
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -255,13 +255,13 @@ describe("MenuDetailView", () => {
     });
 
     it("export click [menu]", () => {
-      var exportModal = jest
+      const exportModal = jest
         .spyOn(ModalExport, "default")
         .mockImplementationOnce(() => {
           return <></>;
         });
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -281,7 +281,7 @@ describe("MenuDetailView", () => {
     });
 
     it("labels click .item--labels [menu]", () => {
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -291,7 +291,9 @@ describe("MenuDetailView", () => {
         labels?.click();
       });
 
-      var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
+      const urlObject = new URLPath().StringToIUrl(
+        globalHistory.location.search
+      );
 
       expect(urlObject.details).toBeTruthy();
 
@@ -304,16 +306,18 @@ describe("MenuDetailView", () => {
     });
 
     it("labels click (in MoreMenu)", () => {
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
-      //       var item = component.find('[data-test="labels"]');
+      //       const item = component.find('[data-test="labels"]');
       const labels = component.queryByTestId("labels");
       expect(labels).toBeTruthy();
       labels?.click();
 
-      var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
+      const urlObject = new URLPath().StringToIUrl(
+        globalHistory.location.search
+      );
       expect(urlObject.details).toBeTruthy();
 
       // reset afterwards
@@ -326,7 +330,7 @@ describe("MenuDetailView", () => {
     it("navigate to parent folder click", () => {
       globalHistory.navigate("/?t=test");
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -343,13 +347,13 @@ describe("MenuDetailView", () => {
     });
 
     it("[menu detail] move click", () => {
-      var moveModal = jest
+      const moveModal = jest
         .spyOn(ModalMoveFile, "default")
         .mockImplementationOnce(() => {
           return <></>;
         });
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -370,13 +374,13 @@ describe("MenuDetailView", () => {
     });
 
     it("rename click", () => {
-      var renameModal = jest
+      const renameModal = jest
         .spyOn(ModalDetailviewRenameFile, "default")
         .mockImplementationOnce(() => {
           return <></>;
         });
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -399,11 +403,11 @@ describe("MenuDetailView", () => {
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var spy = jest
+      const spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -424,7 +428,7 @@ describe("MenuDetailView", () => {
     });
 
     it("trash click to trash and collection is true", () => {
-      var component = render(
+      const component = render(
         <MenuDetailView
           state={{
             ...state,
@@ -451,11 +455,11 @@ describe("MenuDetailView", () => {
 
     it("rotate click", async () => {
       jest.useFakeTimers();
-      var setTimeoutSpy = jest.spyOn(global, "setTimeout");
+      const setTimeoutSpy = jest.spyOn(global, "setTimeout");
 
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var spyPost = jest
+      const spyPost = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -473,11 +477,11 @@ describe("MenuDetailView", () => {
             }
           } as IDetailView
         } as IConnectionDefault);
-      var spyGet = jest
+      const spyGet = jest
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      var component = render(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -514,7 +518,7 @@ describe("MenuDetailView", () => {
 
   describe("file is marked as deleted", () => {
     it("trash click to trash", () => {
-      var state = {
+      const state = {
         subPath: "/trashed/test1.jpg",
         fileIndexItem: {
           status: IExifStatus.Deleted,
@@ -522,7 +526,7 @@ describe("MenuDetailView", () => {
           fileName: "test1.jpg"
         }
       } as IDetailView;
-      var contextValues = { state, dispatch: jest.fn() };
+      const contextValues = { state, dispatch: jest.fn() };
 
       jest.spyOn(React, "useContext").mockImplementationOnce(() => {
         return contextValues;
@@ -537,7 +541,7 @@ describe("MenuDetailView", () => {
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
 
-      var spy = jest
+      const spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -560,7 +564,7 @@ describe("MenuDetailView", () => {
     it("press 'Delete' on keyboard to trash", () => {
       jest.spyOn(FetchPost, "default").mockReset();
 
-      var state = {
+      const state = {
         subPath: "/trashed/test1.jpg",
         fileIndexItem: {
           status: IExifStatus.Deleted,
@@ -581,11 +585,11 @@ describe("MenuDetailView", () => {
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var spyFetchPost = jest
+      const spyFetchPost = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var event = new KeyboardEvent("keydown", {
+      const event = new KeyboardEvent("keydown", {
         bubbles: false,
         cancelable: true,
         key: "Delete",
@@ -664,14 +668,14 @@ describe("MenuDetailView", () => {
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
-        var item = component.queryByTestId("export") as HTMLDivElement;
+        const item = component.queryByTestId("export") as HTMLDivElement;
         expect(item.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved", () => {
         jest.spyOn(React, "useContext").mockReset();
 
-        var state = {
+        const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
@@ -684,14 +688,14 @@ describe("MenuDetailView", () => {
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
-        var item = component.queryByTestId("move") as HTMLDivElement;
+        const item = component.queryByTestId("move") as HTMLDivElement;
         expect(item.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be renamed", () => {
         jest.spyOn(React, "useContext").mockReset();
 
-        var state = {
+        const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
@@ -704,14 +708,14 @@ describe("MenuDetailView", () => {
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
-        var item = component.queryByTestId("rename") as HTMLDivElement;
+        const item = component.queryByTestId("rename") as HTMLDivElement;
         expect(item.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved to trash", () => {
         jest.spyOn(React, "useContext").mockReset();
 
-        var state = {
+        const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
@@ -724,12 +728,12 @@ describe("MenuDetailView", () => {
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
-        var item = component.queryByTestId("trash") as HTMLDivElement;
+        const item = component.queryByTestId("trash") as HTMLDivElement;
         expect(item.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be rotated", () => {
-        var state = {
+        const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
@@ -742,7 +746,7 @@ describe("MenuDetailView", () => {
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
-        var item = component.queryByTestId("rotate") as HTMLDivElement;
+        const item = component.queryByTestId("rotate") as HTMLDivElement;
         expect(item.className).toBe("menu-option disabled");
       });
     });

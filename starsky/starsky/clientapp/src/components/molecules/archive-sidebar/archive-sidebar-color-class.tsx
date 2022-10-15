@@ -31,11 +31,11 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
     // updated parameters based on select
     const [selectParams, setSelectParams] = React.useState("");
     useEffect(() => {
-      var subPaths = new URLPath().MergeSelectFileIndexItem(
+      const subPaths = new URLPath().MergeSelectFileIndexItem(
         select,
         props.fileIndexItems
       );
-      var selectParamsLocal =
+      const selectParamsLocal =
         new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "");
       setSelectParams(selectParamsLocal);
     }, [select, props.fileIndexItems]);

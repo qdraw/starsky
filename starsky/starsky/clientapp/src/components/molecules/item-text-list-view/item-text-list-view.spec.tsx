@@ -17,7 +17,7 @@ describe("ItemTextListView", () => {
   });
 
   it("renders undefined", () => {
-    var content = render(
+    const content = render(
       <ItemTextListView fileIndexItems={undefined as any} callback={() => {}} />
     );
 
@@ -27,7 +27,7 @@ describe("ItemTextListView", () => {
   });
 
   it("list of 1 file item", () => {
-    var fileIndexItems = [
+    const fileIndexItems = [
       {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
@@ -35,7 +35,7 @@ describe("ItemTextListView", () => {
         isDirectory: false
       }
     ] as IFileIndexItem[];
-    var list = render(
+    const list = render(
       <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
     );
 
@@ -45,7 +45,7 @@ describe("ItemTextListView", () => {
   });
 
   it("list of 1 error item", () => {
-    var fileIndexItems = [
+    const fileIndexItems = [
       {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
@@ -53,7 +53,7 @@ describe("ItemTextListView", () => {
         isDirectory: false
       }
     ] as IFileIndexItem[];
-    var list = render(
+    const list = render(
       <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
     );
 
@@ -66,7 +66,7 @@ describe("ItemTextListView", () => {
   });
 
   it("list of 1 directory item", () => {
-    var fileIndexItems = [
+    const fileIndexItems = [
       {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
@@ -75,8 +75,8 @@ describe("ItemTextListView", () => {
       }
     ] as IFileIndexItem[];
 
-    var callback = jest.fn();
-    var list = render(
+    const callback = jest.fn();
+    const list = render(
       <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
     );
 
@@ -86,7 +86,7 @@ describe("ItemTextListView", () => {
   });
 
   it("list of 1 directory item callback", () => {
-    var fileIndexItems = [
+    const fileIndexItems = [
       {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
@@ -95,8 +95,8 @@ describe("ItemTextListView", () => {
       }
     ] as IFileIndexItem[];
 
-    var callback = jest.fn();
-    var list = render(
+    const callback = jest.fn();
+    const list = render(
       <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
     );
 

@@ -71,7 +71,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     thumbnail	false
     collections	true
     */
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
 
     bodyParams.set(
       "f",
@@ -82,7 +82,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     bodyParams.set("collections", props.collections.toString());
     setProcessing(ProcessingState.server);
 
-    var zipKeyResult = await FetchPost(
+    const zipKeyResult = await FetchPost(
       new UrlQuery().UrlExportPostZipApi(),
       bodyParams.toString()
     );
@@ -108,7 +108,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     return props.select[0];
   }
 
-  var singleFileThumbResult = useFetch(
+  const singleFileThumbResult = useFetch(
     new UrlQuery().UrlAllowedTypesThumb(getFirstSelectResult()),
     "get"
   );

@@ -54,7 +54,7 @@ const useSearchList = (
   const [archive, setArchive] = useState(newIArchive());
   const [pageType, setPageType] = useState(PageType.Loading);
 
-  var location = query
+  const location = query
     ? new UrlQuery().UrlQuerySearchApi(query, pageNumber)
     : undefined;
 
@@ -91,7 +91,7 @@ const useSearchList = (
 
       const responseObject = await res.json();
 
-      var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+      const archiveMedia = new CastToInterface().MediaArchive(responseObject);
       setPageType(archiveMedia.data.pageType);
 
       if (

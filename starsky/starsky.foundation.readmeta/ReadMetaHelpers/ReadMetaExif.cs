@@ -731,7 +731,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         }
         
         
-        private double GetGeoLocationLongitude(List<Directory> allExifItems)
+        private static double GetGeoLocationLongitude(List<Directory> allExifItems)
         {
             var longitudeString = string.Empty;
             var longitudeRef = string.Empty;

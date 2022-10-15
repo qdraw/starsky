@@ -9,8 +9,10 @@ using Nuke.Common.ProjectModel;
 // ReSharper disable once CheckNamespace
 namespace build
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S3887:Use an immutable collection or reduce the accessibility of the non-private readonly field", Justification = "Not production code.")]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S2386:Use an immutable collection or reduce the accessibility of the non-private readonly field", Justification = "Not production code.")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S3887:Use an immutable collection or reduce the " +
+		"accessibility of the non-private readonly field", Justification = "Not production code.")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S2386:Use an immutable collection or reduce " +
+		"the accessibility of the non-private readonly field", Justification = "Not production code.")]
 	[ShutdownDotNetAfterServerBuild]
 	public class Build : NukeBuild
 	{

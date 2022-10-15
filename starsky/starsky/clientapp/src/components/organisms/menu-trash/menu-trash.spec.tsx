@@ -26,7 +26,7 @@ describe("MenuTrash", () => {
     let contextValues: any;
 
     beforeEach(() => {
-      var state = {
+      const state = {
         subPath: "/",
         fileIndexItems: [
           {
@@ -60,7 +60,7 @@ describe("MenuTrash", () => {
     });
 
     it("open hamburger menu (MenuTrash)", () => {
-      var component = render(
+      const component = render(
         <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
       );
 
@@ -80,7 +80,7 @@ describe("MenuTrash", () => {
     });
 
     it("select is not disabled", () => {
-      var component = render(
+      const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -106,7 +106,7 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/");
       });
 
-      var component = render(
+      const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -132,7 +132,7 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=");
       });
 
-      var component = render(
+      const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -179,7 +179,7 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = render(
+      const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -209,7 +209,7 @@ describe("MenuTrash", () => {
 
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
-      var modalSpy = jest
+      const modalSpy = jest
         .spyOn(Modal, "default")
         .mockImplementationOnce(({ children }) => {
           return <>{children}</>;
@@ -220,11 +220,11 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = render(
+      const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var item = component.queryByTestId("delete");
+      const item = component.queryByTestId("delete");
 
       act(() => {
         item?.click();
@@ -250,7 +250,7 @@ describe("MenuTrash", () => {
 
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
-      var modalSpy = jest
+      const modalSpy = jest
         .spyOn(Modal, "default")
         .mockImplementationOnce(({ children }) => {
           return <span id="test">{children}</span>;
@@ -261,11 +261,11 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = render(
+      const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var item = component.queryByTestId("delete");
+      const item = component.queryByTestId("delete");
 
       act(() => {
         item?.click();
@@ -304,7 +304,7 @@ describe("MenuTrash", () => {
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(newIConnectionDefault());
-      var fetchPostSpy = jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -313,11 +313,11 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = render(
+      const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var item = component.queryByTestId("restore-from-trash");
+      const item = component.queryByTestId("restore-from-trash");
 
       // // need to await here
       await act(async () => {
@@ -349,7 +349,7 @@ describe("MenuTrash", () => {
           return { key: "a", ctrlKey: true };
         });
 
-      var state = {
+      const state = {
         subPath: "/",
         fileIndexItems: [
           {
@@ -359,7 +359,7 @@ describe("MenuTrash", () => {
           }
         ]
       } as IArchive;
-      var contextValues = { state, dispatch: jest.fn() };
+      const contextValues = { state, dispatch: jest.fn() };
 
       jest
         .spyOn(React, "useContext")
@@ -368,7 +368,7 @@ describe("MenuTrash", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      var component = render(
+      const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 

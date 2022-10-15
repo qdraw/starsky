@@ -74,7 +74,7 @@ const Login: React.FC<ILoginProps> = () => {
   // We don't want to login twich
   const [isLogin, setLogin] = React.useState(true);
 
-  var accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
+  const accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
 
   useEffect(() => {
     if (!accountStatus) return;
@@ -111,7 +111,7 @@ const Login: React.FC<ILoginProps> = () => {
         setError(MessageWrongUsernamePassword);
       } else {
         // redirect
-        var returnUrl = new UrlQuery().GetReturnUrl(history.location.search);
+        let returnUrl = new UrlQuery().GetReturnUrl(history.location.search);
         // only used in the dev, because you have the same url
         if (`/${history.location.search}` === returnUrl) {
           returnUrl += "&details=true";
@@ -162,7 +162,7 @@ const Login: React.FC<ILoginProps> = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 setError(null);
-                var loginValidation = validateLoginForm(
+                const loginValidation = validateLoginForm(
                   userEmail,
                   userPassword
                 );

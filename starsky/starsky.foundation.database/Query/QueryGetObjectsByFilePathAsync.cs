@@ -84,7 +84,7 @@ namespace starsky.foundation.database.Query
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{
 				var result = await context.FileIndex.TagWith("GetObjectsByFilePathQueryAsync").Where(p =>
-					filePathList.Contains(p.FilePath)).ToListAsync();
+					p.FilePath != null && filePathList.Contains(p.FilePath)).ToListAsync();
 				return FormatOk(result);
 			}
 
