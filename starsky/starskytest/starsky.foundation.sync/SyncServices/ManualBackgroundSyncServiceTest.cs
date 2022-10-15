@@ -20,7 +20,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	public class ManualBackgroundSyncServiceTest
 	{
 
-		private IServiceScopeFactory GetScope()
+		private static IServiceScopeFactory GetScope()
 		{
 			var services = new ServiceCollection();
 			var serviceProvider = services.BuildServiceProvider();

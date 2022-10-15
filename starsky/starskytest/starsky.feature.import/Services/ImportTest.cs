@@ -585,7 +585,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/", "/2018", "/2018/04","/2018/04/2018_04_22"}, 
 				new List<string>{"/test.jpg","/2018/04/2018_04_22/20180422_161454_test.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes, new byte[0]});
+				new List<byte[]>{CreateAnImage.Bytes, Array.Empty<byte>()}); // instead of new byte[0]
 
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
 				new FakeIImportQuery(),
@@ -617,7 +617,7 @@ namespace starskytest.starsky.feature.import.Services
 			
 			// AddToDatabase is Used by the importer History agent
 
-			Assert.IsTrue(result[0].FileIndexItem.AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
+			Assert.IsTrue(result[0].FileIndexItem?.AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
 			Assert.IsTrue(result[0].AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
 		}
 
@@ -767,7 +767,8 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"/","/0001","/2020"},
 				new List<string>{"/test.jpg","/0001/00010101_000000_d.png", 
 					"/0001/00010101_000000_d_2.png", "/2020/20200501_120000_1.png"},
-				new List<byte[]>{new byte[0], new byte[0], new byte[0], new byte[0]}
+				new List<byte[]>{Array.Empty<byte>(), Array.Empty<byte>(),
+					Array.Empty<byte>(), Array.Empty<byte>()} // instead of new byte[0]
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,importQuery,
 				new FakeExifTool(storage, appSettings),query, _console,
@@ -813,7 +814,7 @@ namespace starskytest.starsky.feature.import.Services
 		}
 
 		[TestMethod]
-		public async Task Preflight_Predict_Duplicates_MissingFileIndexObject()
+		public void Preflight_Predict_Duplicates_MissingFileIndexObject()
 		{
 			var appSettings = new AppSettings
 			{
@@ -826,7 +827,9 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"/","/0001","/2020"},
 				new List<string>{"/test.jpg","/0001/00010101_000000_d.png", 
 					"/0001/00010101_000000_d_2.png", "/2020/20200501_120000_1.png"},
-				new List<byte[]>{new byte[0], new byte[0], new byte[0], new byte[0]}
+				new List<byte[]>{Array.Empty<byte>(), Array.Empty<byte>(),
+					Array.Empty<byte>(), Array.Empty<byte>()}
+				// instead of new byte[0]
 			);
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,importQuery,

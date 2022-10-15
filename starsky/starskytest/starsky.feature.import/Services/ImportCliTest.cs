@@ -50,7 +50,7 @@ namespace starskytest.starsky.feature.import.Services
 			var fakeConsole = new FakeConsoleWrapper(new List<string>());
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test"}, 
-				new List<byte[]>(new byte[0][]));
+				new List<byte[]>(Array.Empty<byte[]>()));
 			
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
 				new AppSettings(), fakeConsole, new FakeExifToolDownload()).Importer(
@@ -65,7 +65,7 @@ namespace starskytest.starsky.feature.import.Services
 			var fakeConsole = new FakeConsoleWrapper(new List<string>());
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test"}, 
-				new List<byte[]>(new byte[0][]));
+				new List<byte[]>(Array.Empty<byte[]>()));
 			
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
 				new AppSettings(), fakeConsole, new FakeExifToolDownload()).Importer(
@@ -84,7 +84,7 @@ namespace starskytest.starsky.feature.import.Services
 			var fakeConsole = new FakeConsoleWrapper(new List<string>());
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test"}, 
-				new List<byte[]>(new byte[0][]));
+				new List<byte[]>(Array.Empty<byte[]>()));
 			
 			var cli = new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
 				new AppSettings {Verbose = true}, fakeConsole, new FakeExifToolDownload());
@@ -101,7 +101,7 @@ namespace starskytest.starsky.feature.import.Services
 			var fakeConsole = new FakeConsoleWrapper(new List<string>());
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test"}, 
-				new List<byte[]>(new byte[0][]));
+				new List<byte[]>(Array.Empty<byte[]>())); // instead of new byte[0][]
         	
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
 					new AppSettings{Verbose = false}, fakeConsole, new FakeExifToolDownload())
