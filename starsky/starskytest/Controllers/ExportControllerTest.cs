@@ -57,7 +57,7 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, new AppSettings(), null, 
+			_query = new Query(context, new AppSettings(), null!, 
 				new FakeIWebLogger(), memoryCache);
 
 			// Inject Fake Exiftool; dependency injection
@@ -114,8 +114,8 @@ namespace starskytest.Controllers
 			var controller = new ExportController( _bgTaskQueue, storageSelector, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
-			Assert.AreEqual(404,actionResult.StatusCode);
+			var actionResult = await controller.CreateZip("/fail") as NotFoundObjectResult;
+			Assert.AreEqual(404,actionResult?.StatusCode);
 		}
 
 		[TestMethod]
@@ -171,8 +171,7 @@ namespace starskytest.Controllers
 			};
 
 
-			var actionResult = await controller.CreateZip(_createAnImage.DbPath,
-				true,false) as JsonResult;
+			var actionResult = await controller.CreateZip(_createAnImage.DbPath) as JsonResult;
 			
 			Assert.AreNotEqual(null,actionResult);
 			var zipHash = actionResult!.Value as string;
@@ -185,14 +184,14 @@ namespace starskytest.Controllers
 			var sourceFullPath = Path.Join(appSettings.TempFolder,zipHash) + ".zip";
 			await fakeStorage.WriteStreamAsync(new StorageHostFullPathFilesystem().ReadStream(sourceFullPath), sourceFullPath);
 
-			var actionResult2zip = controller.Status(zipHash,true) as JsonResult;
-			Assert.AreNotEqual(actionResult2zip, null);
+			var actionResult2Zip = controller.Status(zipHash,true) as JsonResult;
+			Assert.AreNotEqual(null,actionResult2Zip);
 
-			var resultValue = ( string ) actionResult2zip.Value;
+			var resultValue = ( string ) actionResult2Zip?.Value;
 			
 			if ( resultValue != "OK" && resultValue != "Not Ready" )
 			{
-				throw new Exception(actionResult2zip.StatusCode.ToString());
+				throw new Exception(actionResult2Zip?.StatusCode.ToString());
 			}
 
 			// Don't check if file exist due async
@@ -221,7 +220,7 @@ namespace starskytest.Controllers
 
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
 
-			Assert.AreEqual(true,filePaths.FirstOrDefault().Contains(item.FileHash));
+			Assert.AreEqual(true,filePaths.FirstOrDefault()?.Contains(item.FileHash));
 		}
 		
 		[TestMethod]
@@ -284,7 +283,7 @@ namespace starskytest.Controllers
 			
 			var filePaths = await export.CreateListToExport(fileIndexResultsList,false);
 
-			Assert.AreEqual(true, filePaths.FirstOrDefault().Contains(item.FileName));
+			Assert.AreEqual(true, filePaths.FirstOrDefault()?.Contains(item.FileName));
 
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,
 				hostFileSystemStorage.IsFolderOrFile(filePaths.FirstOrDefault()));
@@ -343,7 +342,7 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = controller.Status("____fail", true) as NotFoundObjectResult;
-			Assert.AreEqual(404, actionResult.StatusCode);
+			Assert.AreEqual(404, actionResult?.StatusCode);
 		}
 	}
 }

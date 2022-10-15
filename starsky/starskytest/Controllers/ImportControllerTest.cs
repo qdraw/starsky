@@ -67,7 +67,7 @@ namespace starskytest.Controllers
 		///  Add the file in the underlying request object.
 		/// </summary>
 		/// <returns>Controller Context with file</returns>
-		private ControllerContext RequestWithFile()
+		private static ControllerContext RequestWithFile()
 		{
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
@@ -91,9 +91,9 @@ namespace starskytest.Controllers
 			};
 
 			var actionResult = await importController.IndexPost() as JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+			var list = actionResult?.Value as List<ImportIndexItem>;
 
-			Assert.AreEqual(ImportStatus.FileError, list.FirstOrDefault().Status);
+			Assert.AreEqual(ImportStatus.FileError, list?.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
@@ -166,7 +166,7 @@ namespace starskytest.Controllers
 			var actionResult =
 				await importController.FromUrl("", "../../path-injection.dll", null) as
 					BadRequestResult;
-			Assert.AreEqual(400, actionResult.StatusCode);
+			Assert.AreEqual(400, actionResult?.StatusCode);
 		}
 
 		[TestMethod]
@@ -191,7 +191,7 @@ namespace starskytest.Controllers
 			var actionResult =
 				await importController.FromUrl("https://download.geonames.org", "example.tiff",
 					null) as NotFoundObjectResult;
-			Assert.AreEqual(404, actionResult.StatusCode);
+			Assert.AreEqual(404, actionResult?.StatusCode);
 		}
 
 		[TestMethod]
@@ -218,9 +218,9 @@ namespace starskytest.Controllers
 			var actionResult =
 				await importController.FromUrl("https://qdraw.nl", "example_image.tiff", null) as
 					JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+			var list = actionResult?.Value as List<ImportIndexItem>;
 
-			Assert.IsTrue(list.FirstOrDefault().FilePath.Contains("example_image.tiff"));
+			Assert.IsTrue(list?.FirstOrDefault()?.FilePath?.Contains("example_image.tiff"));
 		}
 
 		[TestMethod]
@@ -242,12 +242,12 @@ namespace starskytest.Controllers
 				"01234567890123456789123456.jpg"; // len() 26
 
 			var actionResult = await importController.Thumbnail() as JsonResult;
-			var list = actionResult.Value as List<string>;
+			var list = actionResult?.Value as List<string>;
 			var existFileInTempFolder =
 				storageProvider.ExistFile(
 					_appSettings.TempFolder + "01234567890123456789123456.jpg");
 
-			Assert.AreEqual("01234567890123456789123456", list.FirstOrDefault());
+			Assert.AreEqual("01234567890123456789123456", list?.FirstOrDefault());
 			Assert.IsFalse(existFileInTempFolder);
 		}
 		
@@ -270,12 +270,12 @@ namespace starskytest.Controllers
 				"01234567890123456789123456@300.jpg"; // len() 26
 
 			var actionResult = await importController.Thumbnail() as JsonResult;
-			var list = actionResult.Value as List<string>;
+			var list = actionResult?.Value as List<string>;
 			var existFileInTempFolder =
 				storageProvider.ExistFile(
 					_appSettings.TempFolder + "01234567890123456789123456@300.jpg");
 
-			Assert.AreEqual("01234567890123456789123456@300", list.FirstOrDefault());
+			Assert.AreEqual("01234567890123456789123456@300", list?.FirstOrDefault());
 			Assert.IsFalse(existFileInTempFolder);
 		}
 
@@ -298,9 +298,9 @@ namespace starskytest.Controllers
 			importController.Request.Headers["filename"] = "123.jpg"; // len() 3
 
 			var actionResult = await importController.Thumbnail() as JsonResult;
-			var list = actionResult.Value as List<string>;
+			var list = actionResult?.Value as List<string>;
 
-			Assert.AreEqual(0, list.Count);
+			Assert.AreEqual(0, list?.Count);
 		}
 	}
 }
