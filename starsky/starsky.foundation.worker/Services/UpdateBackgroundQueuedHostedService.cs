@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +13,8 @@ namespace starsky.foundation.worker.Services
 {
 	[Service(typeof(IHostedService),
 		InjectionLifetime = InjectionLifetime.Singleton)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S927: Rename parameter 'stoppingToken' " +
+		"to 'cancellationToken' to match the base class declaration", Justification = "Is checked")]
 	public class UpdateBackgroundQueuedHostedService : BackgroundService
 	{
 		private readonly IUpdateBackgroundTaskQueue _taskQueue;
