@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { copyWithId } from "./copy-folder";
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 exports.default = (context: {
   platform: { buildConfigurationKey: string };
 }) => {
@@ -32,6 +33,7 @@ exports.default = (context: {
     fs.rmSync(path.join("runtime-starsky-win", "clientapp", "package-lock.json"));
   }
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle, @typescript-eslint/no-explicit-any
   const _promises: readonly any[] = [];
   return Promise.all(_promises);
 };
