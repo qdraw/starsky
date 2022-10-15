@@ -3,14 +3,14 @@ import { LeafletEmptyImageUrlTileLayer } from "./leaflet-modify-empty-image-url-
 
 describe("LeafletEmptyImageUrlTileLayer [leaflet-extension]", () => {
   it("remove tile form leaflet [extension]", () => {
-    var exampleCoords = {
+    const exampleCoords = {
       x: 51,
       y: 10,
       z: 1
     } as Coords;
-    var el = document.createElement("div") as any;
+    const el = document.createElement("div") as any;
 
-    var tileLayer = new LeafletEmptyImageUrlTileLayer("51:10:1");
+    const tileLayer = new LeafletEmptyImageUrlTileLayer("51:10:1");
 
     // mock a tile
     (tileLayer as any)._tiles = {

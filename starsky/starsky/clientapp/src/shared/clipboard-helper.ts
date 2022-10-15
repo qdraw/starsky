@@ -23,9 +23,9 @@ export class ClipboardHelper {
       return false;
     }
 
-    var tags = tagsReference.current.innerText;
-    var description = descriptionReference.current.innerText;
-    var title = titleReference.current.innerText;
+    const tags = tagsReference.current.innerText;
+    const description = descriptionReference.current.innerText;
+    const title = titleReference.current.innerText;
 
     sessionStorage.setItem(
       this.clipBoardName,
@@ -39,9 +39,9 @@ export class ClipboardHelper {
   }
 
   public Read(): IClipboardData | null {
-    var result = {};
+    let result = {};
     try {
-      var resultString = sessionStorage.getItem(this.clipBoardName);
+      const resultString = sessionStorage.getItem(this.clipBoardName);
       result = JSON.parse(resultString ? resultString : "");
     } catch (error) {
       return null;
@@ -57,7 +57,7 @@ export class ClipboardHelper {
     if (!updateChange) {
       return false;
     }
-    var readData = this.Read();
+    const readData = this.Read();
 
     if (!readData) {
       return false;

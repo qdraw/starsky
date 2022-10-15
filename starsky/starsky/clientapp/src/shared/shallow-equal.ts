@@ -10,7 +10,7 @@ const shallowEqual = (
   ) => boolean | undefined,
   compareContext?: any
 ): boolean => {
-  var ret = compare ? compare.call(compareContext, objA, objB) : void 0;
+  let ret = compare ? compare.call(compareContext, objA, objB) : void 0;
 
   if (ret !== void 0) {
     return !!ret;
@@ -24,14 +24,14 @@ const shallowEqual = (
     return false;
   }
 
-  var keysA = Object.keys(objA);
-  var keysB = Object.keys(objB);
+  const keysA = Object.keys(objA);
+  const keysB = Object.keys(objB);
 
   if (keysA.length !== keysB.length) {
     return false;
   }
 
-  var bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB);
+  const bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB);
 
   // Test for A's keys different from B.
   for (const key of keysA) {
@@ -39,8 +39,8 @@ const shallowEqual = (
       return false;
     }
 
-    var valueA = objA[key];
-    var valueB = objB[key];
+    const valueA = objA[key];
+    const valueB = objB[key];
 
     ret = compare ? compare.call(compareContext, valueA, valueB, key) : void 0;
 

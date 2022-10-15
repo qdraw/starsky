@@ -27,7 +27,7 @@ export class Select {
 
   public undoSelection() {
     if (!this.select) return;
-    var urlObject = new URLPath().updateSelection(
+    const urlObject = new URLPath().updateSelection(
       this.history.location.search,
       []
     );
@@ -42,12 +42,12 @@ export class Select {
    */
   public allSelection() {
     if (!this.select) return;
-    var updatedSelect = new URLPath().GetAllSelection(
+    const updatedSelect = new URLPath().GetAllSelection(
       this.select,
       this.state.fileIndexItems
     );
 
-    var urlObject = new URLPath().updateSelection(
+    const urlObject = new URLPath().updateSelection(
       this.history.location.search,
       updatedSelect
     );
@@ -58,7 +58,7 @@ export class Select {
   }
 
   public toggleSelection(fileName: string): void {
-    var urlObject = new URLPath().toggleSelection(
+    const urlObject = new URLPath().toggleSelection(
       fileName,
       this.history.location.search
     );
@@ -73,8 +73,8 @@ export class Select {
    * In the menu Nothing selected and items selected
    */
   public removeSidebarSelection() {
-    var urlObject = new URLPath().StringToIUrl(this.history.location.search);
-    var selectVar: string[] = urlObject.select ? urlObject.select : [];
+    const urlObject = new URLPath().StringToIUrl(this.history.location.search);
+    const selectVar: string[] = urlObject.select ? urlObject.select : [];
     if (!urlObject.select) {
       urlObject.select = [];
     } else {

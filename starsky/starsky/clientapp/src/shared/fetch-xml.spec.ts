@@ -2,14 +2,14 @@ import FetchGet from "./fetch-xml";
 
 describe("fetch-xml", () => {
   it("default string response", async () => {
-    var responseString = "<div>response</div>";
+    const responseString = "<div>response</div>";
     const mockFetchAsXml: Promise<Response> = Promise.resolve(
       new Response(responseString)
     );
-    var spy = jest
+    const spy = jest
       .spyOn(window, "fetch")
       .mockImplementationOnce(() => mockFetchAsXml);
-    var result = await FetchGet("/test");
+    const result = await FetchGet("/test");
 
     const xmlParser = new DOMParser();
 
@@ -25,14 +25,14 @@ describe("fetch-xml", () => {
   });
 
   it("corrupt xml object response", async () => {
-    var responseString = "<div>response"; // this should not have a close div
+    const responseString = "<div>response"; // this should not have a close div
     const mockFetchAsXml: Promise<Response> = Promise.resolve(
       new Response(responseString)
     );
-    var spy = jest
+    const spy = jest
       .spyOn(window, "fetch")
       .mockImplementationOnce(() => mockFetchAsXml);
-    var result = await FetchGet("/test");
+    const result = await FetchGet("/test");
 
     expect(spy).toBeCalledWith("/test", {
       credentials: "include",
@@ -46,16 +46,16 @@ describe("fetch-xml", () => {
   });
 
   it("error string response", async () => {
-    var responseString = "<div>response</div>";
-    var response = new Response(responseString, {
+    const responseString = "<div>response</div>";
+    const response = new Response(responseString, {
       statusText: "error",
       status: 500
     });
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
-    var spy = jest
+    const spy = jest
       .spyOn(window, "fetch")
       .mockImplementationOnce(() => mockFetchAsXml);
-    var result = await FetchGet("/test");
+    const result = await FetchGet("/test");
     const xmlParser = new DOMParser();
 
     expect(spy).toBeCalledWith("/test", {

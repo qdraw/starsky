@@ -7,7 +7,7 @@ import { ShiftSelectionHelper } from "./shift-selection-helper";
 
 describe("ShiftSelectionHelper", () => {
   it("items undefined", () => {
-    var result = ShiftSelectionHelper(
+    const result = ShiftSelectionHelper(
       globalHistory,
       [],
       "test",
@@ -17,7 +17,7 @@ describe("ShiftSelectionHelper", () => {
   });
 
   it("select undefined", () => {
-    var result = ShiftSelectionHelper(
+    const result = ShiftSelectionHelper(
       globalHistory,
       undefined as any,
       "test",
@@ -27,7 +27,7 @@ describe("ShiftSelectionHelper", () => {
   });
 
   it("filePath not found", () => {
-    var result = ShiftSelectionHelper(
+    const result = ShiftSelectionHelper(
       globalHistory,
       [],
       "test",
@@ -36,7 +36,7 @@ describe("ShiftSelectionHelper", () => {
     expect(result).toBeFalsy();
   });
 
-  var exampleItems = [
+  const exampleItems = [
     { ...newIFileIndexItem(), fileName: "test0", filePath: "/test0" },
     { ...newIFileIndexItem(), fileName: "test1", filePath: "/test1" },
     { ...newIFileIndexItem(), fileName: "test2", filePath: "/test2" },
@@ -46,7 +46,7 @@ describe("ShiftSelectionHelper", () => {
 
   it("add item after and assume first is selected", () => {
     globalHistory.navigate("/");
-    var result = ShiftSelectionHelper(
+    const result = ShiftSelectionHelper(
       globalHistory,
       [],
       "/test3",
@@ -60,7 +60,7 @@ describe("ShiftSelectionHelper", () => {
 
   it("add item before", () => {
     globalHistory.navigate("/");
-    var result = ShiftSelectionHelper(
+    const result = ShiftSelectionHelper(
       globalHistory,
       ["test4"],
       "/test2",
@@ -72,7 +72,7 @@ describe("ShiftSelectionHelper", () => {
 
   it("add same item", () => {
     globalHistory.navigate("/");
-    var result = ShiftSelectionHelper(
+    const result = ShiftSelectionHelper(
       globalHistory,
       ["test4"],
       "/test4",

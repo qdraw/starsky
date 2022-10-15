@@ -84,11 +84,11 @@ const parseDate = (
 ): string => {
   if (!dateTime) return "";
   // UTC DateTime already ends with Z
-  var dateTimeObject = new Date(
+  const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
   // We prefer British English, uses day-month-year order
-  var locateString =
+  const locateString =
     locate === SupportedLanguages.en ? "en-GB" : locate.toString();
   if (dateTime.endsWith("Z")) {
     return dateTimeObject.toLocaleDateString(locateString, {
@@ -116,11 +116,11 @@ const parseDateDate = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  var dateTimeObject = new Date(
+  const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleDateString([], {
+  const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
     day: "numeric"
   });
@@ -135,11 +135,11 @@ const parseDateYear = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  var dateTimeObject = new Date(
+  const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleDateString([], {
+  const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
     year: "numeric"
   });
@@ -154,11 +154,11 @@ const parseDateMonth = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  var dateTimeObject = new Date(
+  const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleDateString([], {
+  const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
     month: "numeric"
   });
@@ -173,7 +173,7 @@ const parseTime = (dateTime: string | undefined): string => {
   if (!isValidDate(dateTime) || !dateTime) {
     return "";
   }
-  var dateTimeObject = new Date(
+  const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
 
@@ -195,11 +195,11 @@ const parseTimeHour = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  var dateTimeObject = new Date(
+  const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleTimeString([], {
+  const numberValue = dateTimeObject.toLocaleTimeString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
     hour12: false,
     hour: "2-digit"

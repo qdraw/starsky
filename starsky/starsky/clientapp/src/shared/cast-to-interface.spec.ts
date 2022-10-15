@@ -5,12 +5,12 @@ import { CastToInterface } from "./cast-to-interface";
 describe("cast-to-interface", () => {
   describe("MediaDetailView", () => {
     it("DetailView default", () => {
-      var test = new CastToInterface().MediaDetailView({});
+      const test = new CastToInterface().MediaDetailView({});
       expect(test.data.lastUpdated).toBeUndefined();
     });
 
     it("DetailView", () => {
-      var test = new CastToInterface().MediaDetailView({
+      const test = new CastToInterface().MediaDetailView({
         pageType: "DetailView",
         fileIndexItem: {
           tags: "test"
@@ -23,11 +23,11 @@ describe("cast-to-interface", () => {
 
   describe("MediaArchive", () => {
     it("Archive default", () => {
-      var test = new CastToInterface().MediaArchive({});
+      const test = new CastToInterface().MediaArchive({});
       expect(test.data).toStrictEqual({} as IMedia<"Archive">);
     });
     it("Archive", () => {
-      var test = new CastToInterface().MediaArchive({
+      const test = new CastToInterface().MediaArchive({
         pageType: "Archive",
         fileIndexItems: [{ tags: "test" }]
       });
@@ -38,12 +38,12 @@ describe("cast-to-interface", () => {
 
   describe("InfoFileIndexArray", () => {
     it("one item", () => {
-      var test = new CastToInterface().InfoFileIndexArray([{ tags: "test" }]);
+      const test = new CastToInterface().InfoFileIndexArray([{ tags: "test" }]);
       expect(test[0].tags).toBe("test");
     });
 
     it("should ignore string", () => {
-      var test = new CastToInterface().InfoFileIndexArray("test");
+      const test = new CastToInterface().InfoFileIndexArray("test");
       expect(test).toStrictEqual([]);
     });
   });

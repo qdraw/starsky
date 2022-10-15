@@ -13,7 +13,7 @@ export default function ArrowKeyDown(
 
   if (event.key === "ArrowUp" && keyDownIndex <= 0) return;
 
-  var value = event.key === "ArrowDown" ? keyDownIndex + 1 : keyDownIndex - 1;
+  const value = event.key === "ArrowDown" ? keyDownIndex + 1 : keyDownIndex - 1;
 
   if (value < suggest.length) {
     inputFormControlReferenceCurrent.value = suggest[value];

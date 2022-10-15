@@ -2,12 +2,12 @@ import FetchGet from "./fetch-get";
 
 describe("fetch-get", () => {
   it("default string response", async () => {
-    var response = new Response(JSON.stringify("response"));
+    const response = new Response(JSON.stringify("response"));
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
-    var spy = jest
+    const spy = jest
       .spyOn(window, "fetch")
       .mockImplementationOnce(() => mockFetchAsXml);
-    var result = await FetchGet("/test");
+    const result = await FetchGet("/test");
 
     expect(spy).toBeCalledWith("/test", {
       credentials: "include",
@@ -24,12 +24,12 @@ describe("fetch-get", () => {
   });
 
   it("default object response", async () => {
-    var response = new Response(JSON.stringify({ test: true }));
+    const response = new Response(JSON.stringify({ test: true }));
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
-    var spy = jest
+    const spy = jest
       .spyOn(window, "fetch")
       .mockImplementationOnce(() => mockFetchAsXml);
-    var result = await FetchGet("/test");
+    const result = await FetchGet("/test");
 
     expect(spy).toBeCalledWith("/test", {
       credentials: "include",
@@ -46,14 +46,14 @@ describe("fetch-get", () => {
   });
 
   it("corrupt object response", async () => {
-    var response = new Response("{test: }");
+    const response = new Response("{test: }");
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
-    var spy = jest
+    const spy = jest
       .spyOn(window, "fetch")
       .mockImplementationOnce(() => mockFetchAsXml);
 
     console.error("the response has a wrong input ==>");
-    var result = await FetchGet("/test");
+    const result = await FetchGet("/test");
 
     expect(spy).toBeCalledWith("/test", {
       credentials: "include",
@@ -70,15 +70,15 @@ describe("fetch-get", () => {
   });
 
   it("error string response", async () => {
-    var response = new Response(JSON.stringify("response"), {
+    const response = new Response(JSON.stringify("response"), {
       statusText: "error",
       status: 500
     });
     const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
-    var spy = jest
+    const spy = jest
       .spyOn(window, "fetch")
       .mockImplementationOnce(() => mockFetchAsXml);
-    var result = await FetchGet("/test");
+    const result = await FetchGet("/test");
 
     expect(spy).toBeCalledWith("/test", {
       credentials: "include",

@@ -107,7 +107,7 @@ const useFileList = (
     locationScoped: string,
     abortController: AbortController
   ): Promise<void> => {
-    var content = new FileListCache().CacheGet(locationSearch);
+    const content = new FileListCache().CacheGet(locationSearch);
     if (content) {
       console.log(
         "-- Gets Cache",

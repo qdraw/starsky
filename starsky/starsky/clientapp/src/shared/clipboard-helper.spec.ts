@@ -2,17 +2,17 @@ import { createRef } from "react";
 import { ClipboardHelper, IClipboardData } from "./clipboard-helper";
 
 describe("ClipboardHelper", () => {
-  var clipboardHelper = new ClipboardHelper();
-  var clipBoardName = "starskyClipboardData";
+  const clipboardHelper = new ClipboardHelper();
+  const clipBoardName = "starskyClipboardData";
 
   function refGenerator(text: string): any {
-    var div = document.createElement("div");
+    const div = document.createElement("div");
     div.innerText = text;
     return { current: div } as any;
   }
 
   function getClipboardData(): IClipboardData {
-    var data = sessionStorage.getItem(clipBoardName);
+    const data = sessionStorage.getItem(clipBoardName);
     if (!data) {
       throw new Error("missing session storage data");
     }
@@ -25,19 +25,19 @@ describe("ClipboardHelper", () => {
 
   describe("Copy", () => {
     it("non valid ref", () => {
-      var ref = createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       expect(clipboardHelper.Copy(ref, ref, ref)).toBeFalsy();
     });
 
     it("Copy data", () => {
-      var copyResult = clipboardHelper.Copy(
+      const copyResult = clipboardHelper.Copy(
         refGenerator("1"),
         refGenerator("2"),
         refGenerator("3")
       );
       expect(copyResult).toBeTruthy();
 
-      var clipboard = getClipboardData();
+      const clipboard = getClipboardData();
 
       expect(clipboard.tags).toBe("1");
       expect(clipboard.description).toBe("2");
@@ -53,7 +53,7 @@ describe("ClipboardHelper", () => {
 
     it("No clipboard data", () => {
       const callback = jest.fn();
-      var copyResult = clipboardHelper.Paste(callback);
+      const copyResult = clipboardHelper.Paste(callback);
       expect(copyResult).toBeFalsy();
     });
 

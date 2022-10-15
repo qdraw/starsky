@@ -6,8 +6,8 @@ describe("select", () => {
   describe("removeSidebarSelection", () => {
     it("single disable", () => {
       globalHistory.navigate("/?select=");
-      var setSelectSpy = jest.fn();
-      var select = new Select(
+      const setSelectSpy = jest.fn();
+      const select = new Select(
         [],
         setSelectSpy,
         {} as IArchiveProps,
@@ -22,8 +22,8 @@ describe("select", () => {
 
     it("multiple disable", () => {
       globalHistory.navigate("/?select=1,2");
-      var setSelectSpy = jest.fn();
-      var select = new Select(
+      const setSelectSpy = jest.fn();
+      const select = new Select(
         [],
         setSelectSpy,
         {} as IArchiveProps,

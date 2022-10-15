@@ -111,7 +111,7 @@ const Login: React.FC<ILoginProps> = () => {
         setError(MessageWrongUsernamePassword);
       } else {
         // redirect
-        const returnUrl = new UrlQuery().GetReturnUrl(history.location.search);
+        let returnUrl = new UrlQuery().GetReturnUrl(history.location.search);
         // only used in the dev, because you have the same url
         if (`/${history.location.search}` === returnUrl) {
           returnUrl += "&details=true";

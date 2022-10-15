@@ -5,12 +5,12 @@ export class FileExtensions {
    * @param to changeto.jpg
    */
   public MatchExtension(from: string, to: string): boolean | null {
-    var extensionRegex = /\.[0-9a-z]+$/;
+    const extensionRegex = /\.[0-9a-z]+$/;
 
-    var fromExtMatchArray = from.match(extensionRegex);
+    const fromExtMatchArray = from.match(extensionRegex);
     if (!fromExtMatchArray) return null;
 
-    var toExtMatchArray = to.match(extensionRegex);
+    const toExtMatchArray = to.match(extensionRegex);
     if (!toExtMatchArray) return false;
     return toExtMatchArray[0] === fromExtMatchArray[0];
   }
@@ -20,9 +20,9 @@ export class FileExtensions {
    * @param filename
    */
   public IsValidFileName(filename: string): boolean {
-    var extensionRegex =
+    const extensionRegex =
       /^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
-    var fromExtMatchArray = filename.match(extensionRegex);
+    const fromExtMatchArray = filename.match(extensionRegex);
     return !!fromExtMatchArray;
   }
 
@@ -31,8 +31,8 @@ export class FileExtensions {
    * @param directoryName only the name, not the full path
    */
   public IsValidDirectoryName(directoryName: string): boolean {
-    var extensionRegex = /^[$a-zA-Z0-9_\s-]{2,}$/;
-    var fromDirMatchArray = directoryName.match(extensionRegex);
+    const extensionRegex = /^[$a-zA-Z0-9_\s-]{2,}$/;
+    const fromDirMatchArray = directoryName.match(extensionRegex);
     return !!fromDirMatchArray;
   }
 
@@ -70,7 +70,7 @@ export class FileExtensions {
    * @param filePath the filepath
    */
   public GetFileNameWithoutExtension(filePath: string) {
-    var fileName = this.GetFileName(filePath);
+    const fileName = this.GetFileName(filePath);
     return fileName.replace(new RegExp("\\.[a-zA-Z0-9]{1,4}$"), "");
   }
 
@@ -80,7 +80,7 @@ export class FileExtensions {
    */
   public GetFileExtensionWithoutDot(fileNameWithDot: string) {
     if (fileNameWithDot.indexOf(".") === -1) return "";
-    var fileNameMatchArray = fileNameWithDot.match(
+    const fileNameMatchArray = fileNameWithDot.match(
       new RegExp("[^.][a-zA-Z0-9]{1,4}$")
     );
     if (!fileNameMatchArray) return "";

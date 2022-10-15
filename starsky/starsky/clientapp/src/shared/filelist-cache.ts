@@ -76,12 +76,12 @@ export class FileListCache {
     if (!value.pageType || value.pageType !== PageType.DetailView) {
       return;
     }
-    var detailview = value as IDetailView;
+    const detailview = value as IDetailView;
     if (!detailview.fileIndexItem) {
       return;
     }
 
-    var parentItem = this.CacheGetObject({
+    const parentItem = this.CacheGetObject({
       ...urlObject,
       f: detailview.fileIndexItem.parentDirectory
     }) as IArchive;
@@ -124,7 +124,7 @@ export class FileListCache {
   }
 
   public CacheSet(locationSearch: string, value: IArchive | IDetailView): any {
-    var urlObject = new URLPath().StringToIUrl(locationSearch);
+    const urlObject = new URLPath().StringToIUrl(locationSearch);
     return this.CacheSetObject(urlObject, value);
   }
 
@@ -133,7 +133,7 @@ export class FileListCache {
    * @param locationSearch where to look for
    */
   public CacheGet(locationSearch: string): NullableIArchiveOrDetailView {
-    var urlObject = new URLPath().StringToIUrl(locationSearch);
+    const urlObject = new URLPath().StringToIUrl(locationSearch);
     return this.CacheGetObject(urlObject);
   }
 
@@ -145,7 +145,7 @@ export class FileListCache {
     if (localStorage.getItem("clientCache") === "false") return null;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
 
-    var cache = this.ParseJson(
+    const cache = this.ParseJson(
       sessionStorage.getItem(this.CacheKeyGenerator(urlObject))
     );
     if (!cache) return null;
@@ -160,10 +160,10 @@ export class FileListCache {
    * Get all items from Session Storage
    */
   private GetAll(): IGetAllTransferObject[] {
-    var list = [];
+    const list = [];
     for (const itemName of Object.keys(sessionStorage)) {
       if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
-      var item = this.ParseJson(sessionStorage.getItem(itemName));
+      const item = this.ParseJson(sessionStorage.getItem(itemName));
       if (!item || !item.dateCache) continue;
       list.push({
         name: itemName,
@@ -199,7 +199,7 @@ export class FileListCache {
    */
   public ParseJson(cacheString: string | null): IArchive | IDetailView | null {
     if (!cacheString) return null;
-    var cacheData: any = {};
+    let cacheData: any = {};
     try {
       cacheData = JSON.parse(cacheString);
     } catch (error) {

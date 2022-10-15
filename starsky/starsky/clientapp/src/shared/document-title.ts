@@ -6,7 +6,7 @@ export class DocumentTitle {
   public SetDocumentTitle = (archive: IArchiveProps | IDetailView): void => {
     if (!archive.breadcrumb || !archive.pageType) return;
 
-    var name = archive.breadcrumb[archive.breadcrumb.length - 1];
+    let name = archive.breadcrumb[archive.breadcrumb.length - 1];
 
     // The breadcrumb implementation of Archive/DetailView does not include the current item
     if (
