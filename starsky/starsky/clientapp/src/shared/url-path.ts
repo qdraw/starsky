@@ -123,7 +123,7 @@ export class URLPath {
    * @param toUpdate
    */
   public ObjectToSearchParams(toUpdate: Object): URLSearchParams {
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     for (let key of Object.entries(toUpdate)) {
       if (key[1] && key[1].length >= 1) {
         bodyParams.set(key[0], key[1]);

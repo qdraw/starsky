@@ -89,13 +89,13 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
     setFormEnabled(false);
     setIsLoading(true);
 
-    var newDirectorySubPath = `${state.subPath}/${directoryName}`;
+    const newDirectorySubPath = `${state.subPath}/${directoryName}`;
 
     // API call
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", newDirectorySubPath);
 
-    var result = await FetchPost(
+    const result = await FetchPost(
       new UrlQuery().UrlDiskMkdir(),
       bodyParams.toString()
     );
@@ -113,13 +113,13 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
     }
 
     // Force update
-    var connectionResult = await FetchGet(
+    const connectionResult = await FetchGet(
       new UrlQuery().UrlIndexServerApi({ f: state.subPath })
     );
-    var forceSyncResult = new CastToInterface().MediaArchive(
+    const forceSyncResult = new CastToInterface().MediaArchive(
       connectionResult.data
     );
-    var payload = forceSyncResult.data as IArchiveProps;
+    const payload = forceSyncResult.data as IArchiveProps;
     if (payload.fileIndexItems) {
       dispatch({ type: "force-reset", payload });
     }

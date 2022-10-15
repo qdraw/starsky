@@ -96,19 +96,19 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     setInputEnabled(false);
 
     update.append = false;
-    var subPaths = new URLPath().MergeSelectFileIndexItem(
+    const subPaths = new URLPath().MergeSelectFileIndexItem(
       select,
       state.fileIndexItems
     );
     if (!subPaths) return;
-    var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(
+    const selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(
       subPaths,
       ""
     );
 
     if (selectPaths.length === 0) return;
 
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", selectPaths);
     bodyParams.append(
       "collections",

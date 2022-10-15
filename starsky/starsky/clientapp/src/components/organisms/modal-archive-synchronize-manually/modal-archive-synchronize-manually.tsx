@@ -106,9 +106,9 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   const [geoSyncPercentage, setGeoSyncPercentage] = useState(0);
 
   function geoSync() {
-    var parentFolder = props.parentFolder ? props.parentFolder : "/";
+    const parentFolder = props.parentFolder ? props.parentFolder : "/";
 
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
     FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then((_) => {
       // do nothing with result
@@ -116,7 +116,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   }
 
   function fetchGeoSyncStatus() {
-    var parentFolder = props.parentFolder ? props.parentFolder : "/";
+    const parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet(
       new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))
     ).then((anyData) => {
@@ -136,8 +136,8 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   useInterval(() => fetchGeoSyncStatus(), 10000);
 
   function manualThumbnailSync() {
-    var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    var bodyParams = new URLSearchParams();
+    const parentFolder = props.parentFolder ? props.parentFolder : "/";
+    const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
     setIsLoading(true);
 

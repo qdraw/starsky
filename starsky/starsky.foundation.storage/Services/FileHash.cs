@@ -164,7 +164,8 @@ namespace starsky.foundation.storage.Services
 			}
 		}
 
-		public static async Task<string> CalculateHashAsync(Stream stream)
+		public static async Task<string> CalculateHashAsync(Stream stream, 
+			CancellationToken cancellationToken = new CancellationToken())
 		{
 			var block =
 				ArrayPool<byte>.Shared
@@ -175,7 +176,7 @@ namespace starsky.foundation.storage.Services
 				{
 					int length;
 					while ( ( length = await stream
-						.ReadAsync(block, 0, block.Length, new CancellationToken())
+						.ReadAsync(block, 0, block.Length, cancellationToken)
 						.ConfigureAwait(false) ) > 0 )
 					{
 						md5.TransformBlock(block, 0, length, null, 0);

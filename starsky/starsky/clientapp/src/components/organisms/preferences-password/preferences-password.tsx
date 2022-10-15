@@ -73,7 +73,7 @@ const PreferencesPassword: React.FunctionComponent<any> = (_) => {
 
   async function changeSecret() {
     setLoading(true);
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.set("Password", userCurrentPassword);
     bodyParams.set("ChangedPassword", userChangedPassword);
     bodyParams.set("ChangedConfirmPassword", userChangedConfirmPassword);
