@@ -1,7 +1,7 @@
 import * as appConfig from "electron-settings";
 import { LocationIsRemoteSettingsKey } from "../config/location-settings.const";
 
-export async function IsRemote(): Promise<Boolean> {
+export async function IsRemote(): Promise<boolean> {
   const currentSettings = await appConfig.get(LocationIsRemoteSettingsKey);
 
   let isLocationRemote = false;

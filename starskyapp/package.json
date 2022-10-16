@@ -1,6 +1,6 @@
 {
   "name": "starsky",
-  "version": "4.1.2",
+  "version": "0.5.0",
   "description": "Starsky",
   "main": "./dist/main.bundle.js",
   "scripts": {
