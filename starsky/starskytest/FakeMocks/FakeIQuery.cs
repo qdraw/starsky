@@ -41,7 +41,14 @@ namespace starskytest.FakeMocks
 		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public List<FileIndexItem> GetAllFiles(string subPath)
 		{
-			return _content == null ? new List<FileIndexItem>() : _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
+			try
+			{
+				return _content.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
+			}
+			catch ( Exception )
+			{
+				return new List<FileIndexItem>();
+			}
 		}
 
 		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
