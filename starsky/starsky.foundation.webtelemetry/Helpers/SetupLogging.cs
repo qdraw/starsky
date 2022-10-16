@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using starsky.foundation.platform.Interfaces;
@@ -19,9 +20,11 @@ namespace starsky.foundation.webtelemetry.Helpers
 	            
 				// Skip when is Development
 				if (appSettings.ApplicationInsightsLog != true || 
-				    string.IsNullOrWhiteSpace(appSettings.ApplicationInsightsInstrumentationKey)) return;
+				    string.IsNullOrWhiteSpace(appSettings.ApplicationInsightsConnectionString)) return;
 	            
-				logging.AddApplicationInsights(appSettings.ApplicationInsightsInstrumentationKey);
+				// appSettings.ApplicationInsightsConnectionString
+				var options = new ApplicationInsightsServiceOptions { ConnectionString = appSettings.ApplicationInsightsConnectionString };
+				logging.AddApplicationInsights(options: options);
 			});
 
 			services.AddScoped<IWebLogger, WebLogger>();

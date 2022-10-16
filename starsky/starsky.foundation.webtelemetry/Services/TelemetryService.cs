@@ -14,10 +14,13 @@ namespace starsky.foundation.webtelemetry.Services
 
 		public TelemetryService(AppSettings appSettings)
 		{
-			if (appSettings == null ||  string.IsNullOrEmpty(appSettings.ApplicationInsightsInstrumentationKey) ) return;
+			if (appSettings == null ||  string.IsNullOrEmpty(appSettings.ApplicationInsightsConnectionString) ) return;
 			_telemetry = new TelemetryClient(TelemetryConfiguration.CreateDefault())
 			{
-				InstrumentationKey = appSettings.ApplicationInsightsInstrumentationKey
+				TelemetryConfiguration =
+				{
+					ConnectionString = appSettings.ApplicationInsightsConnectionString
+				}
 			};
 		}
 		public bool TrackException(Exception exception)

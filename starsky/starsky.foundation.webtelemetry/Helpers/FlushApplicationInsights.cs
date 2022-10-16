@@ -30,7 +30,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 		internal TelemetryClient GetTelemetryClient()
 		{
 			var client = _serviceProvider != null ? _serviceProvider.GetService<TelemetryClient>() : _app.ApplicationServices.GetService<TelemetryClient>();
-			if ( client == null && _appSettings != null && !string.IsNullOrEmpty(_appSettings.ApplicationInsightsInstrumentationKey) )
+			if ( client == null && _appSettings != null && !string.IsNullOrEmpty(_appSettings.ApplicationInsightsConnectionString) )
 			{
 				_logger.LogInformation("TelemetryClient is null on exit");
 			}

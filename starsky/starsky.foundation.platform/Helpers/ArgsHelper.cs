@@ -326,8 +326,8 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine("Name " + _appSettings.Name);
 			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
 			_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
-			_console.WriteLine($"ApplicationInsightsKey {_appSettings.ApplicationInsightsInstrumentationKey} ");
-			if ( !string.IsNullOrEmpty(_appSettings.ApplicationInsightsInstrumentationKey) )
+			_console.WriteLine($"ApplicationInsightsConnectionString {_appSettings.ApplicationInsightsConnectionString} ");
+			if ( !string.IsNullOrEmpty(_appSettings.ApplicationInsightsConnectionString) )
 			{
 				_console.WriteLine($"ApplicationInsightsDatabaseTracking {_appSettings.ApplicationInsightsDatabaseTracking} \n" +
 				                   $"ApplicationInsightsLog {_appSettings.ApplicationInsightsLog} ");
