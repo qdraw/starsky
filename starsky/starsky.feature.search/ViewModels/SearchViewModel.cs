@@ -545,21 +545,17 @@ namespace starsky.feature.search.ViewModels
 			    return model;
 		    }
 
-		    if ( property.PropertyType == typeof(bool) )
+		    if ( property.PropertyType == typeof(bool) && bool.TryParse(searchForQuery, out var boolIsValue))
 		    {
-			    bool.TryParse(searchForQuery, out var boolIsValue);
 			    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 			                                                           && (bool?) p.GetType().GetProperty(property.Name)?.GetValue(p, null)  == boolIsValue
 			    ).ToList();
 			    return model;
 		    }
 		    
-		    if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) )
+		    if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) && Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
+			        searchForQuery.ToLowerInvariant(), out var castImageFormat) )
 		    {
-			    
-			    Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
-				    searchForQuery.ToLowerInvariant(), out var castImageFormat);
-
 			    switch (searchType)
 			    {
 				    case SearchForOptionType.Not:
@@ -625,10 +621,9 @@ namespace starsky.feature.search.ViewModels
 	    {
 
 		    // For relative values
-		    if ( Regex.IsMatch(input, @"^\d+$") )
+		    if ( Regex.IsMatch(input, @"^\d+$") && int.TryParse(input, out var relativeValue) )
 		    {
-			    int.TryParse(input, out var relativeValue);
-			    if(relativeValue >= 1) relativeValue = relativeValue * -1; // always in the past
+			    if(relativeValue >= 1) relativeValue *= -1; // always in the past
 			    if ( relativeValue > -60000 ) // 24-11-1854
 			    {
 				    return DateTime.Today.AddDays(relativeValue);
