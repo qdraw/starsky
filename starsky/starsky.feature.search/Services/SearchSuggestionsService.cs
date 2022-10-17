@@ -142,7 +142,7 @@ namespace starsky.feature.search.Services
 			return results;
 		}
 
-		private IEnumerable<string> SystemResults()
+		private static IEnumerable<string> SystemResults()
 		{
 			return new HashSet<string>
 			{

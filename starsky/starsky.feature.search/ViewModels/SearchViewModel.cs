@@ -351,7 +351,7 @@ namespace starsky.feature.search.ViewModels
 	    /// </summary>
 	    /// <param name="item">searchquery</param>
 	    /// <returns>bool</returns>
-	    public char AndOrRegex(string item)
+	    public static char AndOrRegex(string item)
 	    {
 		    // (\|\||\&\&)$
 		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase);

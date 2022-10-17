@@ -101,7 +101,7 @@ namespace starsky.feature.search.Services
 		/// </summary>
 		/// <param name="model">to add results to</param>
 		/// <param name="indexer">in the index</param>
-		private void SearchForEntireDay(SearchViewModel model, int indexer)
+		private static void SearchForEntireDay(SearchViewModel model, int indexer)
 		{
 			var dateTime = SearchViewModel.ParseDateTime(model.SearchFor[indexer]);
 			

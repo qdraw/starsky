@@ -197,10 +197,12 @@ namespace starsky.feature.search.Services
 			    switch ( searchInType )
 			    {
 				    case SearchViewModel.SearchInTypes.imageformat:
-					    Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
-						    model.SearchFor[i].ToLowerInvariant(), out var castImageFormat);
-					    var result = castImageFormat;
-					    predicates.Add(x => x.ImageFormat == result);
+					    if ( Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
+						        model.SearchFor[i].ToLowerInvariant(), out var castImageFormat) )
+					    {
+						    var result = castImageFormat;
+						    predicates.Add(x => x.ImageFormat == result);
+					    }
 					    break;
 				    case SearchViewModel.SearchInTypes.description:
 						// need to have description out of the Func<>
@@ -221,7 +223,7 @@ namespace starsky.feature.search.Services
 					    predicates.Add(x => x.ParentDirectory!.ToLower().Contains(parentDirectory));
 					    break;
 				    case SearchViewModel.SearchInTypes.title:
-					    var title = new StringBuilder(model.SearchFor[i]);
+					    var title = model.SearchFor[i];
 					    predicates.Add(x => x.Title!.ToLower().Contains(title.ToString()));
 					    break;
 				    case SearchViewModel.SearchInTypes.make:
@@ -243,10 +245,12 @@ namespace starsky.feature.search.Services
 					    predicates.Add(x => x.Software!.ToLower().Contains(software));
 					    break;
 				    case SearchViewModel.SearchInTypes.isdirectory:
-					    bool.TryParse(model.SearchFor[i].ToLowerInvariant(),
-						    out var boolIsDirectory);
-					    predicates.Add(x => x.IsDirectory == boolIsDirectory);
-					    model.SearchFor[i] = boolIsDirectory.ToString();
+					    if ( bool.TryParse(model.SearchFor[i].ToLowerInvariant(),
+						        out var boolIsDirectory) )
+					    {
+						    predicates.Add(x => x.IsDirectory == boolIsDirectory);
+						    model.SearchFor[i] = boolIsDirectory.ToString();
+					    }
 					    break;
 				    case SearchViewModel.SearchInTypes.lastedited:
 					    predicates.Add(new SearchWideDateTime().
@@ -261,9 +265,11 @@ namespace starsky.feature.search.Services
 						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.DateTime));
 					    break;
 				    case SearchViewModel.SearchInTypes.colorclass:
-					    Enum.TryParse<ColorClassParser.Color>(
-						    model.SearchFor[i].ToLowerInvariant(), out var castColorClass);
-					    predicates.Add(x => x.ColorClass == castColorClass);
+					    if ( Enum.TryParse<ColorClassParser.Color>(
+						        model.SearchFor[i].ToLowerInvariant(), out var castColorClass) )
+					    {
+						    predicates.Add(x => x.ColorClass == castColorClass);
+					    }
 					    break;
 				    case SearchViewModel.SearchInTypes.tags:
 				    default:
@@ -372,15 +378,15 @@ namespace starsky.feature.search.Services
             var regexInUrlMatches = inurlRegex.Matches(model.SearchQuery);
             if(regexInUrlMatches.Count == 0) return;
 
-            foreach (Match regexInUrl in regexInUrlMatches)
+            foreach (var regexInUrlValue in regexInUrlMatches.Select(p => p.Value))
             {
-                var itemQuery = regexInUrl.Value;
+                var itemQuery = regexInUrlValue;
 	            
 	            // ignore fake results
 	            if ( string.IsNullOrEmpty(itemQuery) ) continue;
 
 	            // put ||&& in operator field => next regex > removed
-	            model.SetAndOrOperator(model.AndOrRegex(itemQuery));
+	            model.SetAndOrOperator(SearchViewModel.AndOrRegex(itemQuery));
 	            
 	            Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<|-)", RegexOptions.IgnoreCase);
 
@@ -415,7 +421,7 @@ namespace starsky.feature.search.Services
 	    /// </summary>
 	    /// <param name="query">searchQuery</param>
 	    /// <returns>trimmed value</returns>
-        public string QuerySafe(string query)
+        public static string QuerySafe(string query)
         {
             query = query.Trim();
             return query;
@@ -426,7 +432,7 @@ namespace starsky.feature.search.Services
 	    /// </summary>
 	    /// <param name="query">search Query</param>
 	    /// <returns>replaced Url</returns>
-        public string QueryShortcuts(string query)
+        public static string QueryShortcuts(string query)
         {
 	        // should be ignoring case
             query = Regex.Replace(query, "-inurl", "-FilePath", RegexOptions.IgnoreCase);
@@ -461,7 +467,7 @@ namespace starsky.feature.search.Services
 	    /// </summary>
 	    /// <param name="toRound">to round e.g. 10</param>
 	    /// <returns>roundup value</returns>
-        public int RoundUp(int toRound)
+        public static int RoundUp(int toRound)
         {
             // 10 => ResultsInView
             if (toRound % NumberOfResultsInView == 0) return toRound;
@@ -473,7 +479,7 @@ namespace starsky.feature.search.Services
 	    /// </summary>
 	    /// <param name="toRound">to round</param>
 	    /// <returns>round down value</returns>
-        public int RoundDown(int toRound)
+        public static int RoundDown(int toRound)
         {
             return toRound - toRound % 10;
         }
