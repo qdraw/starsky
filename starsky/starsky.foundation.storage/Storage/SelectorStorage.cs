@@ -29,17 +29,17 @@ namespace starsky.foundation.storage.Storage
 		public IStorage Get(StorageServices storageServices)
 		{
 			var services = _serviceProvider.GetServices<IStorage>();
-			switch ( storageServices )
+			return storageServices switch
 			{
-				case StorageServices.SubPath:
-					return services.First(o => o.GetType() == typeof(StorageSubPathFilesystem));
-				case StorageServices.HostFilesystem:
-					return services.First(o => o.GetType() == typeof(StorageHostFullPathFilesystem));
-				case StorageServices.Thumbnail:
-					return services.First(o => o.GetType() == typeof(StorageThumbnailFilesystem));
-				default:
-					throw new ArgumentOutOfRangeException(nameof(storageServices), storageServices, null);
-			}
+				StorageServices.SubPath => services.First(o =>
+					o is StorageSubPathFilesystem),
+				StorageServices.HostFilesystem => services.First(o =>
+					o is StorageHostFullPathFilesystem),
+				StorageServices.Thumbnail => services.First(o =>
+					o is StorageThumbnailFilesystem),
+				_ => throw new ArgumentOutOfRangeException(
+					nameof(storageServices), storageServices, null)
+			};
 		}
 	}
 }
