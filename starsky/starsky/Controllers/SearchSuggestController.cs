@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.feature.search.Interfaces;
+using starsky.feature.search.ViewModels;
 using starsky.Helpers;
-using starskycore.Interfaces;
-using starskycore.ViewModels;
 
 namespace starsky.Controllers
 {

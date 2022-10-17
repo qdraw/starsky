@@ -227,7 +227,7 @@ describe('Delete file from upload (50)', () => {
       })
     }
 
-    cy.request('/starsky/api/memorycachedebug').then((res) => {
+    cy.request('/starsky/api/memory-cache-debug').then((res) => {
       cy.log(JSON.stringify(res.body))
     })
 

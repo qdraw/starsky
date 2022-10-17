@@ -3,8 +3,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Models;
-using starskycore.Interfaces;
-using starskycore.ViewModels;
+using starsky.feature.search.Interfaces;
+using starsky.feature.search.ViewModels;
 
 namespace starsky.Controllers
 {
@@ -64,7 +64,7 @@ namespace starsky.Controllers
 
 			if (photoIndexOfQuery != searchViewModel.FileIndexItems.Count - 1 )
 			{
-				relativeObject.NextFilePath = searchViewModel.FileIndexItems[photoIndexOfQuery + 1]?.FilePath;
+				relativeObject.NextFilePath = searchViewModel.FileIndexItems[photoIndexOfQuery + 1].FilePath;
 				relativeObject.NextHash = searchViewModel.FileIndexItems[photoIndexOfQuery + 1]?.FileHash;
 			}
 

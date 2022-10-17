@@ -108,11 +108,12 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public void EnableDatabaseTracking_shouldEnable()
 		{
+			var testGuid = Guid.NewGuid().ToString();
 			var console = new FakeIWebLogger();
 			var appSettings = new AppSettings {
 				Verbose = true,
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
-				ApplicationInsightsConnectionString = "any",
+				ApplicationInsightsConnectionString = $"InstrumentationKey={testGuid}",
 				ApplicationInsightsDatabaseTracking = true
 			};
 			var services = new ServiceCollection();

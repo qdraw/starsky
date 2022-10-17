@@ -9,24 +9,24 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starskycore.Interfaces;
+using starsky.feature.search.Interfaces;
 
-namespace starskycore.Services
+namespace starsky.feature.search.Services
 {
 	
 	[Service(typeof(ISearchSuggest), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SearchSuggestionsService : ISearchSuggest
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly IMemoryCache _cache;
+		private readonly IMemoryCache? _cache;
 		private readonly AppSettings _appSettings;
 		private readonly IWebLogger _logger;
 
 		public SearchSuggestionsService(
 			ApplicationDbContext context, 
-			IMemoryCache memoryCache,
+			IMemoryCache? memoryCache,
 			IWebLogger logger, 
-			AppSettings appSettings = null)
+			AppSettings appSettings)
 		{
 			_context = context;
 			_cache = memoryCache;
@@ -43,6 +43,8 @@ namespace starskycore.Services
 		/// <returns></returns>
 		public async Task<List<KeyValuePair<string,int>>> Inflate()
 		{
+			if ( _cache == null) return new List<KeyValuePair<string, int>>();
+			
 			if (_cache.TryGetValue(nameof(SearchSuggestionsService), out _)) 
 				return new Dictionary<string,int>().ToList();
 
@@ -55,7 +57,7 @@ namespace starskycore.Services
 					// ReSharper disable once UseMethodAny.1
 					.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
 					.TagWith("Inflate SearchSuggestionsService")
-					.Select(val => new KeyValuePair<string, int>(val.Key, val.Count())).ToListAsync();
+					.Select(val => new KeyValuePair<string, int>(val.Key!, val.Count())).ToListAsync();
 			}
 			catch ( Exception exception )
 			{
@@ -106,9 +108,12 @@ namespace starskycore.Services
 		{
 			if( _cache == null || _appSettings?.AddMemoryCache == false) 
 				return new Dictionary<string,int>();
-			
-			if (_cache.TryGetValue(nameof(SearchSuggestionsService), out var objectFileFolders))
-				return objectFileFolders as List<KeyValuePair<string,int>>;
+
+			if ( _cache.TryGetValue(nameof(SearchSuggestionsService),
+				    out var objectFileFolders) )
+			{
+				return objectFileFolders as List<KeyValuePair<string,int>> ?? new List<KeyValuePair<string,int>>();
+			}
 			
 			return await Inflate();
 		}
@@ -137,7 +142,7 @@ namespace starskycore.Services
 			return results;
 		}
 
-		private IEnumerable<string> SystemResults()
+		private static IEnumerable<string> SystemResults()
 		{
 			return new HashSet<string>
 			{

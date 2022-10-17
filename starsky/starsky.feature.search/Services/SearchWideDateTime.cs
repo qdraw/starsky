@@ -2,9 +2,9 @@ using System;
 using System.Globalization;
 using System.Linq.Expressions;
 using starsky.foundation.database.Models;
-using starskycore.ViewModels;
+using starsky.feature.search.ViewModels;
 
-namespace starskycore.Services
+namespace starsky.feature.search.Services
 {
 	public class SearchWideDateTime
 	{
@@ -16,7 +16,7 @@ namespace starskycore.Services
 	    /// <param name="model">output</param>
 	    /// <param name="indexer">number of search query (i)</param>
 	    /// <param name="type"></param>
-	    public Expression<Func<FileIndexItem,bool>> WideSearchDateTimeGet(SearchViewModel model, int indexer,  WideSearchDateTimeGetType type)
+	    public static Expression<Func<FileIndexItem,bool>> WideSearchDateTimeGet(SearchViewModel model, int indexer,  WideSearchDateTimeGetType type)
 	    {
 			SearchForEntireDay(model,indexer);
 
@@ -101,7 +101,7 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="model">to add results to</param>
 		/// <param name="indexer">in the index</param>
-		private void SearchForEntireDay(SearchViewModel model, int indexer)
+		private static void SearchForEntireDay(SearchViewModel model, int indexer)
 		{
 			var dateTime = SearchViewModel.ParseDateTime(model.SearchFor[indexer]);
 			

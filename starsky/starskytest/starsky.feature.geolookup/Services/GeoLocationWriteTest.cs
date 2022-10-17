@@ -3,15 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starskycore.Interfaces;
-using starskycore.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
-namespace starskytest.starskyGeoCore.Services
+namespace starskytest.starsky.feature.geolookup.Services
 {
 	[TestClass]
 	public class GeoLocationWriteTest

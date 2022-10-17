@@ -1,6 +1,6 @@
-﻿using starskycore.ViewModels;
+﻿using starsky.feature.search.ViewModels;
 
-namespace starskycore.Interfaces
+namespace starsky.feature.search.Interfaces
 {
     public interface ISearch
     {

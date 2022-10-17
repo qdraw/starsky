@@ -7,8 +7,6 @@ using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
-using starskycore.Interfaces;
-using starskycore.Services;
 
 namespace starskytest.Middleware
 {

@@ -1,7 +1,5 @@
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starskycore.Interfaces;
-using starskycore.Services;
 
 namespace starskytest.FakeMocks
 {

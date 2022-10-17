@@ -8,13 +8,14 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using System.Text.Json.Serialization;
 
-namespace starskycore.ViewModels
+namespace starsky.feature.search.ViewModels
 {
+    [SuppressMessage("ReSharper", "ArrangeAccessorOwnerBody")]
     public class SearchViewModel
     {
         public SearchViewModel()
@@ -23,7 +24,6 @@ namespace starskycore.ViewModels
             _searchIn ??= new List<string>();
             FileIndexItems ??= new List<FileIndexItem>();
             Breadcrumb ??= new List<string>();
-            SearchQuery ??= string.Empty;
 
 	        // to know how long a query takes
 	        _dateTime = DateTime.Now;
@@ -37,19 +37,20 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Items on the page
 	    /// </summary>
-	    public List<FileIndexItem>? FileIndexItems { get; set; }
+	    public List<FileIndexItem> FileIndexItems { get; set; }
         
 	    /// <summary>
 	    /// Full location specification
 	    /// </summary>
 	    // ReSharper disable once UnusedAutoPropertyAccessor.Global
 	    // ReSharper disable once CollectionNeverQueried.Global
+	    // ReSharper disable once PropertyCanBeMadeInitOnly.Global
 	    public List<string> Breadcrumb { get; set; }
         
 	    /// <summary>
 	    /// Where to search for
 	    /// </summary>
-	    public string SearchQuery { get; set; }
+	    public string SearchQuery { get; set; } = string.Empty;
 	    
 	    /// <summary>
 	    /// Current page number (index=0)
@@ -107,12 +108,12 @@ namespace starskycore.ViewModels
         /// <summary>
         /// Private Field: Contains an list of Database fields to search in.
         /// </summary>
-        private List<string>? _searchIn;
+        private List<string> _searchIn;
 	    
 	    /// <summary>
 	    /// Contains an list of Database fields to search in.
 	    /// </summary>
-        public List<string>? SearchIn => _searchIn;
+        public List<string> SearchIn => _searchIn;
 
 	    /// <summary>
 	    /// In which database field the search query is needed
@@ -120,6 +121,7 @@ namespace starskycore.ViewModels
 	    /// <param name="value">Search field name e.g. Tags</param>
         public void SetAddSearchInStringType(string value)
 	    {
+		    // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 		    _searchIn ??= new List<string>();
 		    
             // use ctor to have an empty list
@@ -141,12 +143,12 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// The values to search for, to know which field use the same indexer in _searchIn
 	    /// </summary>
-        public List<string>? SearchFor
+        public List<string> SearchFor
         {  
             // don't change it to 'SearchFor => _searchFor'
             get
             {
-	            return _searchFor;
+	            return _searchFor ?? new List<string>();
             }
         }
 
@@ -200,9 +202,12 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)  to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
-	    public List<SearchForOptionType>? SearchForOptions
+	    public List<SearchForOptionType> SearchForOptions
         {  
-            get { return _searchForOptions; }
+            get
+            {
+	            return _searchForOptions ?? new List<SearchForOptionType>();
+            }
         }
 
 	    /// <summary>
@@ -211,7 +216,7 @@ namespace starskycore.ViewModels
 	    /// <param name="value">searchFor option (e.g. =, &gt;, &lt; </param>
         public void SetAddSearchForOptions(string value)
 	    {
-		    if (_searchForOptions == null) _searchForOptions = new List<SearchForOptionType>();
+		    _searchForOptions ??= new List<SearchForOptionType>();
 
 		    switch ( value.Trim()[0] )
 		    {
@@ -346,7 +351,7 @@ namespace starskycore.ViewModels
 	    /// </summary>
 	    /// <param name="item">searchquery</param>
 	    /// <returns>bool</returns>
-	    public char AndOrRegex(string item)
+	    public static char AndOrRegex(string item)
 	    {
 		    // (\|\||\&\&)$
 		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase);
@@ -387,13 +392,13 @@ namespace starskycore.ViewModels
 		    // Quoted or words
 		    // [\w!]+|(["'])(\\?.)*?\1
 		    
-		    Regex inurlRegex = new Regex("[\\w!]+|([\"\'])(\\\\?.)*?\\1",
+		    Regex inUrlRegex = new Regex("[\\w!]+|([\"\'])(\\\\?.)*?\\1",
 			    RegexOptions.IgnoreCase);
 
 		    // Escape special quotes
 		    defaultQuery = Regex.Replace(defaultQuery, "[“”‘’]", "\"");
 		    
-		    var regexInUrlMatches = inurlRegex.Matches(defaultQuery);
+		    var regexInUrlMatches = inUrlRegex.Matches(defaultQuery);
 
 		    foreach ( Match regexInUrl in regexInUrlMatches )
 		    {
@@ -442,7 +447,7 @@ namespace starskycore.ViewModels
 
 		    // fallback situation
 		    // search on for example: '%'
-		    if ( SearchFor == null ) 
+		    if ( !SearchFor.Any() ) 
 		    {
 			    SetAddSearchFor(defaultQuery);
 			    SetAddSearchInStringType("tags");
@@ -462,7 +467,7 @@ namespace starskycore.ViewModels
 			    SetAndOrOperator(AndOrRegex(andOrValue.Value));
 		    }
 
-		    // add for default situatons
+		    // add for default situations
 		    if ( SearchFor.Count != SearchOperatorOptions.Count )
 		    {
 			    for ( int i = SearchOperatorOptions.Count; i < SearchFor.Count; i++ )
@@ -482,25 +487,25 @@ namespace starskycore.ViewModels
 	    /// </summary>
 	    /// <param name="model"></param>
 	    /// <returns></returns>
-	    public SearchViewModel NarrowSearch(SearchViewModel model)
+	    public static SearchViewModel NarrowSearch(SearchViewModel model)
 	    {
+		    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 		    if ( model.FileIndexItems == null ) model = new SearchViewModel();
-		    model._searchIn ??= new List<string>();
-		    
-		    for ( var i = 0; i < model.SearchIn!.Count; i++ )
+
+		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
 			    var propertyStringName = FileIndexItem.FileIndexPropList().FirstOrDefault(p =>
-				    String.Equals(p, model.SearchIn[i], StringComparison.InvariantCultureIgnoreCase));
+				    string.Equals(p, model.SearchIn[i], StringComparison.InvariantCultureIgnoreCase));
 			    if ( string.IsNullOrEmpty(propertyStringName) ) continue;
 
-			    PropertyInfo property = new FileIndexItem().GetType().GetProperty(propertyStringName)!;
+			    var property = new FileIndexItem().GetType().GetProperty(propertyStringName)!;
 					    
 			    // skip OR searches
 			    if ( !model.SearchOperatorContinue(i, model.SearchIn.Count) )
 			    {
 				    continue;
 			    }
-			    PropertySearch(model, property, model.SearchFor![i],model.SearchForOptions![i]);
+			    PropertySearch(model, property, model.SearchFor[i],model.SearchForOptions[i]);
 		    }
 
 		    return model;
@@ -514,7 +519,7 @@ namespace starskycore.ViewModels
 	    /// <param name="searchForQuery">the query to search for (always string) </param>
 	    /// <param name="searchType">greater then, equal</param>
 	    /// <returns>search values</returns>
-	    private SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string searchForQuery, SearchForOptionType searchType)
+	    private static SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string searchForQuery, SearchForOptionType searchType)
 	    {
 
 		    if ( property.PropertyType == typeof(string) )
@@ -522,7 +527,7 @@ namespace starskycore.ViewModels
 			    switch (searchType)
 			    {
 				    case SearchForOptionType.Not:
-					    model.FileIndexItems = model.FileIndexItems?.Where(
+					    model.FileIndexItems = model.FileIndexItems.Where(
 						    p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						         && ! // not
 							         p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
@@ -530,7 +535,7 @@ namespace starskycore.ViewModels
 					    ).ToList();
 					    break;
 				    default:
-					    model.FileIndexItems = model.FileIndexItems?.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 					                                                           && p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
 						                                                           .ToString()!.ToLowerInvariant().Contains(searchForQuery)  
 					    ).ToList();
@@ -540,25 +545,21 @@ namespace starskycore.ViewModels
 			    return model;
 		    }
 
-		    if ( property.PropertyType == typeof(bool) )
+		    if ( property.PropertyType == typeof(bool) && bool.TryParse(searchForQuery, out var boolIsValue))
 		    {
-			    bool.TryParse(searchForQuery, out var boolIsValue);
-			    model.FileIndexItems = model.FileIndexItems?.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+			    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 			                                                           && (bool?) p.GetType().GetProperty(property.Name)?.GetValue(p, null)  == boolIsValue
 			    ).ToList();
 			    return model;
 		    }
 		    
-		    if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) )
+		    if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) && Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
+			        searchForQuery.ToLowerInvariant(), out var castImageFormat) )
 		    {
-			    
-			    Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
-				    searchForQuery.ToLowerInvariant(), out var castImageFormat);
-
 			    switch (searchType)
 			    {
 				    case SearchForOptionType.Not:
-					    model.FileIndexItems = model.FileIndexItems?.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 					                                                           && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
 						                                                           .GetValue(p, null)!  
 					                                                           != // not
@@ -566,7 +567,7 @@ namespace starskycore.ViewModels
 					    ).ToList();
 					    break;
 				    default:
-					    model.FileIndexItems = model.FileIndexItems?.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 					                                                           && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
 						                                                           .GetValue(p, null)!  == castImageFormat
 					    ).ToList();
@@ -579,25 +580,23 @@ namespace starskycore.ViewModels
 		    {
 			    
 			    var parsedDateTime = ParseDateTime(searchForQuery);
-			    // parse it back?!
-			    searchForQuery = parsedDateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
 						
 			    switch (searchType)
 			    {
 				    case SearchForOptionType.LessThen:
-					    model.FileIndexItems = model.FileIndexItems?.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 					                                                           && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)! 
 					                                                           <= parsedDateTime
 					    ).ToList();
 					    break;
 				    case SearchForOptionType.GreaterThen:
-					    model.FileIndexItems = model.FileIndexItems?.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 					                                                           && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 					                                                           >= parsedDateTime
 					    ).ToList();
 					    break;
 				    default:
-					    model.FileIndexItems = model.FileIndexItems?.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 					                                                           && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 					                                                           == parsedDateTime
 					    ).ToList();
@@ -622,10 +621,9 @@ namespace starskycore.ViewModels
 	    {
 
 		    // For relative values
-		    if ( Regex.IsMatch(input, @"^\d+$") )
+		    if ( Regex.IsMatch(input, @"^\d+$") && int.TryParse(input, out var relativeValue) )
 		    {
-			    int.TryParse(input, out var relativeValue);
-			    if(relativeValue >= 1) relativeValue = relativeValue * -1; // always in the past
+			    if(relativeValue >= 1) relativeValue *= -1; // always in the past
 			    if ( relativeValue > -60000 ) // 24-11-1854
 			    {
 				    return DateTime.Today.AddDays(relativeValue);

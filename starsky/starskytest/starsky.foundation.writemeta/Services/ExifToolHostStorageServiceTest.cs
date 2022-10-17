@@ -113,7 +113,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 		}
 		
 		[TestMethod]
-		public async Task WriteTagsAndRenameThumbnailAsync_FakeExifToolBashTest_WindowsOnly()
+		public async Task WriteTagsAndRenameThumbnailAsync_FakeExifToolTest_WindowsOnly()
 		{
 			if ( !new AppSettings().IsWindows )
 			{
