@@ -548,7 +548,7 @@ namespace starsky.feature.search.ViewModels
 		    if ( property.PropertyType == typeof(bool) )
 		    {
 			    bool.TryParse(searchForQuery, out var boolIsValue);
-			    model.FileIndexItems = model.FileIndexItems?.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+			    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 			                                                           && (bool?) p.GetType().GetProperty(property.Name)?.GetValue(p, null)  == boolIsValue
 			    ).ToList();
 			    return model;
@@ -600,7 +600,7 @@ namespace starsky.feature.search.ViewModels
 					    ).ToList();
 					    break;
 				    default:
-					    model.FileIndexItems = model.FileIndexItems?.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 					                                                           && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 					                                                           == parsedDateTime
 					    ).ToList();

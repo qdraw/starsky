@@ -115,7 +115,7 @@ namespace starskytest.starsky.feature.search.Services
 		public async Task SearchSuggestionsService_NoCache_memCacheIsNull()
 		{
 			// The feature does not work without cache enabled
-			var result = await new SearchSuggestionsService(_dbContext, null, null)
+			var result = await new SearchSuggestionsService(_dbContext, null, null!, new AppSettings())
 				.SearchSuggest("sch");
 
 			Assert.AreEqual(0, result.Count());
