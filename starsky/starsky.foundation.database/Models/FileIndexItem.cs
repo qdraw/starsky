@@ -448,6 +448,7 @@ namespace starsky.foundation.database.Models
 		/// @see: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
 		/// </summary>
 		[MaxLength(3)]
+		[NotMapped]
 		public string? LocationCountryCode { get; set; }
 
 
