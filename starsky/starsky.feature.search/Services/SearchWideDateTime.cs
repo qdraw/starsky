@@ -2,9 +2,9 @@ using System;
 using System.Globalization;
 using System.Linq.Expressions;
 using starsky.foundation.database.Models;
-using starsky.foundation.search.ViewModels;
+using starsky.feature.search.ViewModels;
 
-namespace starsky.foundation.search.Services
+namespace starsky.feature.search.Services
 {
 	public class SearchWideDateTime
 	{

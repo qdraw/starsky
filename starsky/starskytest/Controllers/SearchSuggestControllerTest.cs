@@ -12,7 +12,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starsky.foundation.search.Services;
+using starsky.feature.search.Services;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers

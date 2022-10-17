@@ -8,7 +8,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starsky.foundation.search.Services
+namespace starsky.feature.search.Services
 {
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class SearchSuggestionsInflateHostedService : IHostedService
@@ -19,7 +19,7 @@ namespace starsky.foundation.search.Services
 		private readonly IWebLogger _logger;
 
 		public SearchSuggestionsInflateHostedService(IServiceScopeFactory scopeFactory,
-			IMemoryCache memoryCache, IWebLogger logger, AppSettings appSettings = null)
+			IMemoryCache memoryCache, IWebLogger logger, AppSettings appSettings)
 		{
 			_scopeFactory = scopeFactory;
 			_memoryCache = memoryCache;

@@ -9,10 +9,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
-using starsky.foundation.search.Services;
+using starsky.feature.search.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.search.Services
+namespace starskytest.starsky.feature.search.Services
 {
 	[TestClass]
 	public class SearchSuggestionsInflateHostedServiceTest

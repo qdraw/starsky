@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.search.ViewModels;
+using starsky.feature.search.ViewModels;
 
 namespace starskytest.Models
 {

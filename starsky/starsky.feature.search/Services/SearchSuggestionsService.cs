@@ -9,9 +9,9 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.search.Interfaces;
+using starsky.feature.search.Interfaces;
 
-namespace starsky.foundation.search.Services
+namespace starsky.feature.search.Services
 {
 	
 	[Service(typeof(ISearchSuggest), InjectionLifetime = InjectionLifetime.Scoped)]

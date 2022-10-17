@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,10 +14,10 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.search.Interfaces;
-using starsky.foundation.search.ViewModels;
+using starsky.feature.search.Interfaces;
+using starsky.feature.search.ViewModels;
 
-namespace starsky.foundation.search.Services
+namespace starsky.feature.search.Services
 {
 	[Service(typeof(ISearch), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SearchService : ISearch
@@ -154,10 +155,12 @@ namespace starsky.foundation.search.Services
             model = model.NarrowSearch(model);
 
             // Remove duplicates from list
-            model.FileIndexItems = model.FileIndexItems.GroupBy(s => s.FilePath)
+            model.FileIndexItems = model.FileIndexItems
+	            .Where(p => p.FilePath != null)
+	            .GroupBy(s => s.FilePath)
                 .Select(grp => grp.FirstOrDefault())
-                .OrderBy(s => s.FilePath)
-                .ToList();
+                .OrderBy(s => s!.FilePath)
+                .ToList()!;
             
             model.SearchCount = model.FileIndexItems.Count;
 
@@ -196,39 +199,40 @@ namespace starsky.foundation.search.Services
 				    case SearchViewModel.SearchInTypes.imageformat:
 					    Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
 						    model.SearchFor[i].ToLowerInvariant(), out var castImageFormat);
-					    predicates.Add(x => x.ImageFormat == castImageFormat);
+					    var result = castImageFormat;
+					    predicates.Add(x => x.ImageFormat == result);
 					    break;
 				    case SearchViewModel.SearchInTypes.description:
 						// need to have description out of the Func<>
 						// ToLowerInvariant.Contains(__description_1))' could not be translated. 
 					    var description = model.SearchFor[i];
-					    predicates.Add(x => x.Description.ToLower().Contains(description));
+					    predicates.Add(x => x.Description!.ToLower().Contains(description));
 					    break;
 				    case SearchViewModel.SearchInTypes.filename:
 					    var filename = model.SearchFor[i];
-					    predicates.Add(x => x.FileName.ToLower().Contains(filename));
+					    predicates.Add(x => x.FileName!.ToLower().Contains(filename));
 					    break;
 				    case SearchViewModel.SearchInTypes.filepath:
 					    var filePath = model.SearchFor[i];
-					    predicates.Add(x => x.FilePath.ToLower().Contains(filePath));
+					    predicates.Add(x => x.FilePath!.ToLower().Contains(filePath));
 					    break;
 				    case SearchViewModel.SearchInTypes.parentdirectory:
 					    var parentDirectory = model.SearchFor[i];
-					    predicates.Add(x => x.ParentDirectory.ToLower().Contains(parentDirectory));
+					    predicates.Add(x => x.ParentDirectory!.ToLower().Contains(parentDirectory));
 					    break;
 				    case SearchViewModel.SearchInTypes.title:
-					    var title = model.SearchFor[i];
-					    predicates.Add(x => x.Title.ToLower().Contains(title));
+					    var title = new StringBuilder(model.SearchFor[i]);
+					    predicates.Add(x => x.Title!.ToLower().Contains(title.ToString()));
 					    break;
 				    case SearchViewModel.SearchInTypes.make:
 					    // is in the database one field => will be filtered in narrowSearch
 					    var make = model.SearchFor[i];
-					    predicates.Add(x => x.MakeModel.ToLower().Contains(make));
+					    predicates.Add(x => x.MakeModel!.ToLower().Contains(make));
 					    break;
 				    case SearchViewModel.SearchInTypes.model:
 					    // is in the database one field => will be filtered in narrowSearch
 					    var modelMake = model.SearchFor[i];
-					    predicates.Add(x => x.MakeModel.ToLower().Contains(modelMake));
+					    predicates.Add(x => x.MakeModel!.ToLower().Contains(modelMake));
 					    break;
 				    case SearchViewModel.SearchInTypes.filehash:
 					    var fileHash = model.SearchFor[i];
@@ -236,7 +240,7 @@ namespace starsky.foundation.search.Services
 					    break;
 				    case SearchViewModel.SearchInTypes.software:
 					    var software = model.SearchFor[i];
-					    predicates.Add(x => x.Software.ToLower().Contains(software));
+					    predicates.Add(x => x.Software!.ToLower().Contains(software));
 					    break;
 				    case SearchViewModel.SearchInTypes.isdirectory:
 					    bool.TryParse(model.SearchFor[i].ToLowerInvariant(),
@@ -264,7 +268,7 @@ namespace starsky.foundation.search.Services
 				    case SearchViewModel.SearchInTypes.tags:
 				    default:
 					    var tags = model.SearchFor[i];
-					    predicates.Add(x => x.Tags.ToLower().Contains(tags));
+					    predicates.Add(x => x.Tags!.ToLower().Contains(tags));
 					    break;
 			    }
 			    // Need to have the type registered in FileIndexPropList
