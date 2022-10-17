@@ -458,7 +458,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_AppInsightsKey_ApplicationInsightsDatabaseTracking()
 		{
 			var console = new FakeConsoleWrapper();
-			new ArgsHelper(new AppSettings { ApplicationInsightsInstrumentationKey = "1", 
+			new ArgsHelper(new AppSettings { ApplicationInsightsConnectionString = "1", 
 					ApplicationType = AppSettings.StarskyAppType.Sync, Verbose = true},console)
 				.NeedHelpShowDialog();
 			

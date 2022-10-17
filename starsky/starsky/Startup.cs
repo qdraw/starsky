@@ -301,7 +301,7 @@ namespace starsky
 	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
 
 	        if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings
-		        .ApplicationInsightsInstrumentationKey) )
+		        .ApplicationInsightsConnectionString) )
 	        {
 		        var configuration = app.ApplicationServices.GetRequiredService<TelemetryConfiguration>();
 		        configuration.TelemetryProcessorChainBuilder.Use(next => new FilterWebsocketsTelemetryProcessor(next));
