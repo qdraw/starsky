@@ -142,10 +142,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(2, result.Count);
 			
 			var item = await query.GetObjectByFilePathAsync("/sidecar_test/test.dng");
-			Assert.AreEqual(0, item.SidecarExtensionsList.Count);
+			Assert.AreEqual(0, item?.SidecarExtensionsList.Count);
 			
 			var item2 = await query.GetObjectByFilePathAsync("/sidecar_test2/test.dng");
-			Assert.AreEqual(0, item2.SidecarExtensionsList.Count);
+			Assert.AreEqual(0, item2?.SidecarExtensionsList.Count);
 		}
 		
 	}
