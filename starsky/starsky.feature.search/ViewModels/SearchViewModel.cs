@@ -487,7 +487,7 @@ namespace starsky.feature.search.ViewModels
 	    /// </summary>
 	    /// <param name="model"></param>
 	    /// <returns></returns>
-	    public SearchViewModel NarrowSearch(SearchViewModel model)
+	    public static SearchViewModel NarrowSearch(SearchViewModel model)
 	    {
 		    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 		    if ( model.FileIndexItems == null ) model = new SearchViewModel();

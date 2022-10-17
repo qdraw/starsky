@@ -152,7 +152,7 @@ namespace starsky.feature.search.Services
 
             model = WideSearch(_context.FileIndex.AsNoTracking(),model);
 	        
-            model = model.NarrowSearch(model);
+            model = SearchViewModel.NarrowSearch(model);
 
             // Remove duplicates from list
             model.FileIndexItems = model.FileIndexItems
@@ -253,16 +253,13 @@ namespace starsky.feature.search.Services
 					    }
 					    break;
 				    case SearchViewModel.SearchInTypes.lastedited:
-					    predicates.Add(new SearchWideDateTime().
-						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited));
+					    predicates.Add(SearchWideDateTime.WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited));
 					    break;
 				    case SearchViewModel.SearchInTypes.addtodatabase:
-					    predicates.Add(new SearchWideDateTime().
-						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase));
+					    predicates.Add(SearchWideDateTime.WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase));
 					    break;
 				    case SearchViewModel.SearchInTypes.datetime:
-					    predicates.Add(new SearchWideDateTime().
-						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.DateTime));
+					    predicates.Add(SearchWideDateTime.WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.DateTime));
 					    break;
 				    case SearchViewModel.SearchInTypes.colorclass:
 					    if ( Enum.TryParse<ColorClassParser.Color>(

@@ -842,7 +842,7 @@ namespace starskytest.starsky.feature.search.Services
 			
 			model.SetAddSearchForOptions("=");
 
-			var result = model.NarrowSearch(model);
+			var result = SearchViewModel.NarrowSearch(model);
 			Assert.AreEqual(2,result.FileIndexItems.Count);
 
 			// Add extra NOT query			
@@ -850,7 +850,7 @@ namespace starskytest.starsky.feature.search.Services
 			model.SetAddSearchFor("lelystadcentrum2"); // not query
 			model.SetAddSearchForOptions("-");
 
-			var result2 = model.NarrowSearch(model);
+			var result2 = SearchViewModel.NarrowSearch(model);
 
 			Assert.AreEqual("lelystadcentrum",result.FileIndexItems[0].Tags);
 		}
@@ -884,7 +884,7 @@ namespace starskytest.starsky.feature.search.Services
 			model.SetAddSearchFor("test1"); 
 			model.SetAddSearchForOptions("=");
 
-			var result = model.NarrowSearch(model);
+			var result = SearchViewModel.NarrowSearch(model);
 			Assert.AreEqual(1,result.FileIndexItems?.Count);
 		}
 	    
@@ -922,7 +922,7 @@ namespace starskytest.starsky.feature.search.Services
 			model.SetAddSearchFor("tiff"); // not query
 			model.SetAddSearchForOptions("-");
 
-			var result = model.NarrowSearch(model);
+			var result = SearchViewModel.NarrowSearch(model);
 
 			Assert.AreEqual(1,result.FileIndexItems?.Count);
 			Assert.AreEqual("lelystadcentrum2",result.FileIndexItems?[0].Tags);

@@ -16,7 +16,7 @@ namespace starsky.feature.search.Services
 	    /// <param name="model">output</param>
 	    /// <param name="indexer">number of search query (i)</param>
 	    /// <param name="type"></param>
-	    public Expression<Func<FileIndexItem,bool>> WideSearchDateTimeGet(SearchViewModel model, int indexer,  WideSearchDateTimeGetType type)
+	    public static Expression<Func<FileIndexItem,bool>> WideSearchDateTimeGet(SearchViewModel model, int indexer,  WideSearchDateTimeGetType type)
 	    {
 			SearchForEntireDay(model,indexer);
 
