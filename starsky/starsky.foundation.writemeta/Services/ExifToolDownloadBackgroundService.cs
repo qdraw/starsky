@@ -12,7 +12,7 @@ namespace starsky.foundation.writemeta.Services
 {
 
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class ExifToolDownloadBackgroundService : BackgroundService
+	public sealed class ExifToolDownloadBackgroundService : BackgroundService
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 

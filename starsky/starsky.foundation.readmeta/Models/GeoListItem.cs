@@ -2,7 +2,7 @@
 
 namespace starsky.foundation.readmeta.Models
 {
-    public class GeoListItem
+    public sealed class GeoListItem
     {
         public string Title { get; set; }
         public double Latitude { get; set; }

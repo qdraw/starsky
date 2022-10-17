@@ -4,7 +4,7 @@ using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.platform.Helpers
 {
-	public class StopWatchLogger
+	public sealed class StopWatchLogger
 	{
 		private readonly IWebLogger _logger;
 

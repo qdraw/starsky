@@ -4,7 +4,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 
 namespace starsky.foundation.webtelemetry.Processor
 {
-	public class FilterWebsocketsTelemetryProcessor : ITelemetryProcessor
+	public sealed class FilterWebsocketsTelemetryProcessor : ITelemetryProcessor
 	{
 		private readonly ITelemetryProcessor _next;
 

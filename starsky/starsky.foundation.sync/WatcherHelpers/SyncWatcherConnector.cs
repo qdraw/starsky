@@ -28,7 +28,7 @@ using starsky.foundation.webtelemetry.Models;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherHelpers
 {
-	public class SyncWatcherConnector
+	public sealed class SyncWatcherConnector
 	{
 		private ISynchronize? _synchronize;
 		private AppSettings? _appSettings;

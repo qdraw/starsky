@@ -8,9 +8,9 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
-using starsky.foundation.realtime.Formats;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Formats;
 using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 

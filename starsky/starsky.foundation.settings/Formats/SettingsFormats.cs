@@ -1,4 +1,4 @@
-namespace starsky.foundation.realtime.Formats;
+namespace starsky.foundation.settings.Formats;
 
 public static class SettingsFormats
 {

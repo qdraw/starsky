@@ -12,7 +12,7 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Models
 {
-	public class FileIndexItem
+	public sealed class FileIndexItem
 	{
 		/// <summary>
 		/// Default

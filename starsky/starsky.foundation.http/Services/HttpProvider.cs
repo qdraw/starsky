@@ -9,7 +9,7 @@ using starsky.foundation.injection;
 namespace starsky.foundation.http.Services
 {
 	[Service(typeof(IHttpProvider), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class HttpProvider : IHttpProvider
+	public sealed class HttpProvider : IHttpProvider
 	{
 		/// <summary>
 		/// HttpClient object

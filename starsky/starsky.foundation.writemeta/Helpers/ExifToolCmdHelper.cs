@@ -11,11 +11,10 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
-using starskycore.Helpers;
 
 namespace starsky.foundation.writemeta.Helpers
 {
-	public class ExifToolCmdHelper
+	public sealed class ExifToolCmdHelper
 	{
 		private readonly IExifTool _exifTool;
 		private readonly IStorage _iStorage;

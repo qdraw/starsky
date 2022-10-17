@@ -27,7 +27,7 @@ using AuthenticationProperties = Microsoft.AspNetCore.Authentication.Authenticat
 namespace starsky.foundation.accountmanagement.Services
 {
 	[Service(typeof(IUserManager), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class UserManager : IUserManager
+	public sealed class UserManager : IUserManager
 	{
 		private readonly ApplicationDbContext _dbContext;
 		private readonly IMemoryCache _cache;

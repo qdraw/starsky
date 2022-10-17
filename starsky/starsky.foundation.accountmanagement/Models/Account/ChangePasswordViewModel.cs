@@ -3,7 +3,7 @@
 // ReSharper disable once IdentifierTypo
 namespace starsky.foundation.accountmanagement.Models.Account
 {
-    public class ChangePasswordViewModel
+    public sealed class ChangePasswordViewModel
     {
 	    /// <summary>
 	    /// Password before change

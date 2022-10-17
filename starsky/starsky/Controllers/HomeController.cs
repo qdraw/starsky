@@ -11,7 +11,7 @@ using starsky.Helpers;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class HomeController : Controller
+	public sealed class HomeController : Controller
 	{
 		private readonly string  _clientApp;
 		private readonly IAntiforgery _antiForgery;

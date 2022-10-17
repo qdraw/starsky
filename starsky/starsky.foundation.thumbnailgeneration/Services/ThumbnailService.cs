@@ -10,7 +10,7 @@ using starsky.foundation.thumbnailgeneration.Interfaces;
 namespace starsky.foundation.thumbnailgeneration.Services
 {
 	[Service(typeof(IThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ThumbnailService : IThumbnailService
+	public sealed class ThumbnailService : IThumbnailService
 	{
 
 		private readonly Thumbnail _thumbnail;

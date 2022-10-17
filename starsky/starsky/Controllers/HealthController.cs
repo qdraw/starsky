@@ -14,12 +14,13 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.VersionHelpers;
 using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Interfaces;
+using starsky.foundation.webtelemetry.Services;
 using starskycore.ViewModels;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.Controllers
 {
-	public class HealthController: Controller
+	public sealed class HealthController: Controller
 	{
 		private readonly HealthCheckService _service;
 		private readonly ApplicationInsightsJsHelper _applicationInsightsJsHelper;

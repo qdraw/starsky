@@ -15,7 +15,7 @@ using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper
 namespace starsky.foundation.writemeta.Services
 {
 	[Service(typeof(IGeoLocationWrite), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class GeoLocationWrite : IGeoLocationWrite
+	public sealed class GeoLocationWrite : IGeoLocationWrite
 	{
 		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;

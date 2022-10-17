@@ -3,7 +3,7 @@ using starsky.foundation.database.Models.Account;
 
 namespace starsky.foundation.accountmanagement.Models
 {
-	public class ValidateResult
+	public sealed class ValidateResult
 	{
 		public User User { get; set; }
 		public bool Success { get; set; }

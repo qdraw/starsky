@@ -14,7 +14,7 @@ using starsky.foundation.storage.Models;
 namespace starsky.foundation.storage.Storage
 {
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class StorageThumbnailFilesystem : IStorage
+	public sealed class StorageThumbnailFilesystem : IStorage
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IWebLogger _logger;

@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ using starsky.foundation.platform.Models;
 namespace starsky.foundation.database.Helpers
 {
 	
-	public class MySqlDatabaseFixes
+	public sealed class MySqlDatabaseFixes
 	{
 		private readonly MySqlConnection? _connection;
 		private readonly AppSettings _appSettings;

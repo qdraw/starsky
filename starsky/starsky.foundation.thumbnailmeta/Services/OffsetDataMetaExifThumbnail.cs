@@ -7,6 +7,7 @@ using MetadataExtractor.Formats.Exif;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.metathumbnail.Models;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
@@ -18,7 +19,7 @@ using Directory = MetadataExtractor.Directory;
 namespace starsky.foundation.metathumbnail.Services
 {
 	[Service(typeof(IOffsetDataMetaExifThumbnail), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
+	public sealed class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
 	{
 		private readonly IStorage _iStorage;
 		private readonly IWebLogger _logger;

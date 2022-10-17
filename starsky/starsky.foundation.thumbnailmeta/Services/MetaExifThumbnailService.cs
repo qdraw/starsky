@@ -16,7 +16,7 @@ using starsky.foundation.storage.Storage;
 namespace starsky.foundation.metathumbnail.Services
 {
 	[Service(typeof(IMetaExifThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class MetaExifThumbnailService : IMetaExifThumbnailService
+	public sealed class MetaExifThumbnailService : IMetaExifThumbnailService
 	{
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;

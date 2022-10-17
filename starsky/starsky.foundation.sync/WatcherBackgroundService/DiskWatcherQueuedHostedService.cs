@@ -17,7 +17,7 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 {
 	[Service(typeof(IHostedService),
 		InjectionLifetime = InjectionLifetime.Singleton)]
-	public class DiskWatcherQueuedHostedService : BackgroundService
+	public sealed class DiskWatcherQueuedHostedService : BackgroundService
 	{
 		private readonly IDiskWatcherBackgroundTaskQueue _taskQueue;
 		private readonly IWebLogger _logger;

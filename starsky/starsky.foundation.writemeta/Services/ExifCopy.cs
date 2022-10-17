@@ -11,7 +11,7 @@ using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper
 
 namespace starsky.foundation.writemeta.Services
 {
-	public class ExifCopy
+	public sealed class ExifCopy
 	{
 		private readonly IStorage _iStorage;
 		private readonly IReadMeta _readMeta;

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 namespace starsky.foundation.realtime.Middleware
 {
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
-	public class DisabledWebSocketsMiddleware
+	public sealed class DisabledWebSocketsMiddleware
 	{
 		public DisabledWebSocketsMiddleware(RequestDelegate next)
 		{

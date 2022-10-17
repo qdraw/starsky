@@ -19,7 +19,7 @@ using starsky.foundation.thumbnailgeneration.Interfaces;
 namespace starsky.foundation.thumbnailgeneration.Services
 {
 	[Service(typeof(IThumbnailCleaner), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ThumbnailCleaner : IThumbnailCleaner
+	public sealed class ThumbnailCleaner : IThumbnailCleaner
 	{
 		private readonly IQuery _query;
 		private readonly IStorage _thumbnailStorage;

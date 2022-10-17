@@ -1,23 +1,24 @@
+#nullable enable
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.injection;
 
-namespace starsky.foundation.webtelemetry.Helpers
+namespace starsky.foundation.webtelemetry.Services
 {
 	[Service(InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ApplicationInsightsJsHelper
+	public sealed class ApplicationInsightsJsHelper
 	{
-		private readonly IHttpContextAccessor _httpContext;
-		private readonly JavaScriptSnippet _aiJavaScriptSnippet;
+		private readonly IHttpContextAccessor? _httpContext;
+		private readonly JavaScriptSnippet? _aiJavaScriptSnippet;
         
 		/// <summary>
 		/// Init script helper - need a csp-nonce in the context
 		/// </summary>
 		/// <param name="httpContext">Your IHttpContext</param>
 		/// <param name="aiJavaScriptSnippet">the snip-it from app insights</param>
-		public ApplicationInsightsJsHelper(IHttpContextAccessor httpContext, JavaScriptSnippet aiJavaScriptSnippet = null)
+		public ApplicationInsightsJsHelper(IHttpContextAccessor? httpContext, JavaScriptSnippet? aiJavaScriptSnippet = null)
 		{
 			_httpContext = httpContext;
 			if(aiJavaScriptSnippet != null && !string.IsNullOrEmpty(aiJavaScriptSnippet.FullScript)) _aiJavaScriptSnippet = aiJavaScriptSnippet;
@@ -37,7 +38,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 				// Replace the default script with a nonce version, to avoid XSS attacks
 				const string scriptTagStart = @"<script type=""text/javascript"">";
 				var scriptTagStartWithNonce = "<script type=\"text/javascript\" " +
-				                              $"nonce=\"{_httpContext.HttpContext.Items["csp-nonce"]}\">";
+				                              $"nonce=\"{_httpContext?.HttpContext?.Items["csp-nonce"]}\">";
 				var script = js.Replace(scriptTagStart, scriptTagStartWithNonce);
 				return script;
 			}
@@ -78,14 +79,14 @@ namespace starsky.foundation.webtelemetry.Helpers
 			}
 		}
 
-		internal string GetCurrentUserId()
+		internal string? GetCurrentUserId()
 		{
-			if (_httpContext == null || !_httpContext.HttpContext.User.Identity.IsAuthenticated)
+			if (_httpContext == null || _httpContext?.HttpContext?.User.Identity?.IsAuthenticated == false)
 			{
 				return string.Empty;
 			}
 
-			return _httpContext.HttpContext.User.Claims
+			return _httpContext!.HttpContext!.User.Claims
 				.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
 				?.Value;
 		}

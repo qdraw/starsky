@@ -7,6 +7,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Helpers;
 using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.metathumbnail.Models;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Models;
@@ -16,7 +17,7 @@ using starsky.foundation.storage.Storage;
 namespace starsky.foundation.metathumbnail.Services
 {
 	[Service(typeof(IWriteMetaThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class WriteMetaThumbnailService : IWriteMetaThumbnailService
+	public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
 	{
 		private readonly IWebLogger _logger;
 		private readonly IStorage _thumbnailStorage;

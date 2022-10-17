@@ -1,6 +1,6 @@
 namespace starsky.foundation.platform.Models
 {
-	public class CameraMakeModel
+	public sealed class CameraMakeModel
 	{
 		public CameraMakeModel()
 		{

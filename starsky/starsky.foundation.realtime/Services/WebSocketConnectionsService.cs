@@ -15,7 +15,7 @@ using starsky.foundation.realtime.Interfaces;
 namespace starsky.foundation.realtime.Services
 {
 	[Service(typeof(IWebSocketConnectionsService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class WebSocketConnectionsService : IWebSocketConnectionsService
+	public sealed class WebSocketConnectionsService : IWebSocketConnectionsService
 	{
 		public WebSocketConnectionsService(IWebLogger logger)
 		{

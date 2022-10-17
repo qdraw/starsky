@@ -5,15 +5,14 @@ using System.Threading.Tasks;
 
 namespace starsky.foundation.storage.Helpers
 {
-    [SuppressMessage("Performance", "CA1822:Mark members as static")]
-    public class PlainTextFileHelper
+    public static class PlainTextFileHelper
     {
 	    /// <summary>
 	    /// Stream to string (UTF8)
 	    /// </summary>
 	    /// <param name="stream">stream</param>
 	    /// <returns>content of the file as string</returns>
-	    public string StreamToString(Stream stream)
+	    public static string StreamToString(Stream stream)
 	    {
 		    var reader = new StreamReader(stream, Encoding.UTF8);
 		    var result = reader.ReadToEnd();

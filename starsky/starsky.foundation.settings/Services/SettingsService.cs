@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.realtime.Formats;
 using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Formats;
 using starsky.foundation.settings.Interfaces;
 
 namespace starsky.foundation.settings.Services;
 
 [Service(typeof(ISettingsService), InjectionLifetime = InjectionLifetime.Scoped)]
-public class SettingsService : ISettingsService
+public sealed class SettingsService : ISettingsService
 {
 	private readonly ApplicationDbContext _context;
 

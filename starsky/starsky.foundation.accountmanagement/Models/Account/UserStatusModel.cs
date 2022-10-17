@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace starsky.foundation.accountmanagement.Models.Account
 {
-	public class UserIdentifierStatusModel
+	public sealed class UserIdentifierStatusModel
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }

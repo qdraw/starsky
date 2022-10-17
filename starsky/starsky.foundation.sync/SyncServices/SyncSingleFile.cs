@@ -17,7 +17,7 @@ using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
 {
-	public class SyncSingleFile
+	public sealed class SyncSingleFile
 	{
 		private readonly IStorage _subPathStorage;
 		private readonly IQuery _query;

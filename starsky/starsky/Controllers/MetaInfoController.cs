@@ -9,7 +9,7 @@ using starsky.foundation.platform.Helpers;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class MetaInfoController : Controller
+	public sealed class MetaInfoController : Controller
 	{
 		private readonly IMetaInfo _metaInfo;
 

@@ -5,7 +5,7 @@ using starsky.foundation.accountmanagement.Interfaces;
 // ReSharper disable once IdentifierTypo
 namespace starsky.foundation.accountmanagement.Middleware
 {
-    public class BasicAuthenticationSignInManager
+    public sealed class BasicAuthenticationSignInManager
     {
         private readonly IUserManager _userManager;
 

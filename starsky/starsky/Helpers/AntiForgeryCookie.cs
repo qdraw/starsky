@@ -7,7 +7,7 @@ namespace starsky.Helpers
 		"this cookie without the HttpOnly flag is safe", Justification = "As Designed used by front-end")]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S2092:Make sure creating " +
 		"without setting the 'Secure' property is safe here.", Justification = "As Designed used by front-end")]
-	public class AntiForgeryCookie
+	public sealed class AntiForgeryCookie
 	{
 		private readonly IAntiforgery _antiForgery;
 

@@ -17,7 +17,7 @@ namespace starsky.foundation.sync.WatcherServices
 	/// Service is created only once, and used everywhere
 	/// </summary>
 	[Service(typeof(IDiskWatcher), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class DiskWatcher : IDiskWatcher
+	public sealed class DiskWatcher : IDiskWatcher
 	{
 		private IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
 		private readonly IWebLogger _webLogger;

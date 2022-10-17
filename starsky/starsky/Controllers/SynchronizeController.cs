@@ -8,7 +8,7 @@ using starsky.foundation.webtelemetry.Helpers;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class SynchronizeController : Controller
+	public sealed class SynchronizeController : Controller
 	{
 		private readonly IManualBackgroundSyncService _manualBackgroundSyncService;
 

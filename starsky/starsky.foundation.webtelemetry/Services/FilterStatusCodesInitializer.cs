@@ -6,7 +6,7 @@ using starsky.foundation.injection;
 namespace starsky.foundation.webtelemetry.Services
 {
 	[Service(typeof(ITelemetryInitializer), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class FilterStatusCodesInitializer : ITelemetryInitializer
+	public sealed class FilterStatusCodesInitializer : ITelemetryInitializer
 	{
 		public void Initialize(ITelemetry telemetry)
 		{

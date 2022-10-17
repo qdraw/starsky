@@ -12,7 +12,7 @@ namespace starsky.foundation.accountmanagement.Middleware
     /// <summary>
     /// Auto login when use is on localhost
     /// </summary>
-    public class NoAccountLocalhostMiddleware
+    public sealed class NoAccountLocalhostMiddleware
     {
        
         public NoAccountLocalhostMiddleware(RequestDelegate next)

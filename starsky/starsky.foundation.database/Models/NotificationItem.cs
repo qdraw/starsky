@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace starsky.foundation.database.Models
 {
-	public class NotificationItem
+	public sealed class NotificationItem
 	{
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]

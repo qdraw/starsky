@@ -4,7 +4,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 
 namespace starsky.foundation.webtelemetry.Initializers
 {
-	public class CloudRoleNameInitializer : ITelemetryInitializer
+	public sealed class CloudRoleNameInitializer : ITelemetryInitializer
 	{
 		private readonly string _roleName;
 

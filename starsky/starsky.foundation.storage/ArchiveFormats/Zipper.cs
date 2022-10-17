@@ -9,7 +9,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 {
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	[SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-	public class Zipper
+	public sealed class Zipper
 	{
 
 		/// <summary>

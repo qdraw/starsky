@@ -7,7 +7,7 @@ using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.ArchiveFormats
 {
-    public class TarBal
+    public sealed class TarBal
     {
 	    private readonly IStorage _storage;
 	    public TarBal(IStorage storage)

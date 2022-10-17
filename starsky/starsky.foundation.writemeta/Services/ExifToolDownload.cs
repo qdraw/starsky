@@ -24,7 +24,7 @@ namespace starsky.foundation.writemeta.Services
 	[Service(typeof(IExifToolDownload), InjectionLifetime = InjectionLifetime.Singleton)]
 	[SuppressMessage("Usage", "S1075:Refactor your code not to use hardcoded absolute paths or URIs", Justification = "Source of files")]
 	[SuppressMessage("Usage", "S4790:Make sure this weak hash algorithm is not used in a sensitive context here.", Justification = "Safe")]
-	public class ExifToolDownload : IExifToolDownload
+	public sealed class ExifToolDownload : IExifToolDownload
 	{
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly AppSettings _appSettings;

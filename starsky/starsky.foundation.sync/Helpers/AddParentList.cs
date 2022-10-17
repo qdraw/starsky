@@ -8,7 +8,7 @@ using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.sync.Helpers;
 
-public class AddParentList
+public sealed class AddParentList
 {
 	private readonly IStorage _subPathStorage;
 	private readonly IQuery _query;

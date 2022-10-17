@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,7 +9,7 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class MemoryCacheDebugController: Controller
+	public sealed class MemoryCacheDebugController: Controller
 	{
 		private readonly IMemoryCache _memoryCache;
 		private readonly IWebLogger _logger;
@@ -22,7 +20,7 @@ namespace starsky.Controllers
 			_logger = logger;
 		}
 		
-		[HttpGet("/api/MemoryCacheDebug")]
+		[HttpGet("/api/memory-cache-debug")]
 		public IActionResult MemoryCacheDebug()
 		{
 			var result = new Dictionary<string, object>();

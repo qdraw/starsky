@@ -38,7 +38,7 @@ using starsky.Helpers;
 namespace starsky
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class Startup
+    public sealed class Startup
     {
         private readonly IConfigurationRoot _configuration;
         private AppSettings _appSettings;

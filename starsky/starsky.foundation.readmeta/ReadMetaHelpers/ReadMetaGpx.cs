@@ -83,7 +83,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             if (geoList == null) geoList = new List<GeoListItem>();
 
 	        // Some files are having problems with gpxDoc.Load()
-	        var fileString = new PlainTextFileHelper().StreamToString(stream);
+	        var fileString = PlainTextFileHelper.StreamToString(stream);
 	        
 	        try
 	        {

@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 namespace starsky.Controllers
 {
     [Authorize]
-    public class CacheIndexController : Controller
+    public sealed class CacheIndexController : Controller
     {
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;

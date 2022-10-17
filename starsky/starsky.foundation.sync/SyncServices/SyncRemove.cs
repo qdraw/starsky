@@ -14,7 +14,7 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.sync.SyncServices
 {
-	public class SyncRemove
+	public sealed class SyncRemove
 	{
 		private readonly AppSettings _appSettings;
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;

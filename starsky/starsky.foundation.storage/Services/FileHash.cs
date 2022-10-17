@@ -15,7 +15,7 @@ namespace starsky.foundation.storage.Services
 
 	[SuppressMessage("Usage", "S4790:Make sure this weak hash algorithm is not used in a sensitive context here.",
 		Justification = "Not used for passwords")]
-	public class FileHash
+	public sealed class FileHash
 	{
 		private readonly IStorage _iStorage;
 

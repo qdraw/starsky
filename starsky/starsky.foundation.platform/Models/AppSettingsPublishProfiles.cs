@@ -13,7 +13,7 @@ namespace starsky.foundation.platform.Models
     //"Template": "index",
     //"Append": "_kl1k"
     
-    public class AppSettingsPublishProfiles
+    public sealed class AppSettingsPublishProfiles
     {
 	  
 	    /// <summary>

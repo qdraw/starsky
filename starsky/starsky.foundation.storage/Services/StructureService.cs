@@ -10,7 +10,7 @@ using starsky.foundation.storage.Models;
 
 namespace starsky.foundation.storage.Services
 {
-	public class StructureService
+	public sealed class StructureService
 	{
 		private readonly IStorage _storage;
 		private readonly string _structure;

@@ -19,7 +19,7 @@ using starsky.foundation.sync.SyncInterfaces;
 namespace starsky.foundation.sync.SyncServices
 {
 	[Service(typeof(ISynchronize), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class Synchronize : ISynchronize
+	public sealed class Synchronize : ISynchronize
 	{
 		private readonly IStorage _subPathStorage;
 		private readonly SyncSingleFile _syncSingleFile;
