@@ -113,6 +113,7 @@ namespace starsky.foundation.writemeta.Helpers
 			command = UpdateLocationAltitudeCommand(command, comparedNames, updateModel);
 
 			command = UpdateLocationCountryCommand(command, comparedNames, updateModel);
+			command = UpdateLocationCountryCodeCommand(command, comparedNames, updateModel);
 			command = UpdateLocationStateCommand(command, comparedNames, updateModel);
 			command = UpdateLocationCityCommand(command, comparedNames, updateModel);
 		    
@@ -292,7 +293,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <summary>
 		/// Add state to ExifTool command
 		/// to remove:
-		/// -Country= -Country-PrimaryLocationName= -State= -Province-State=  -City= -xmp:City= -overwrite_original
+		/// -Country-PrimaryLocationName="" -Country="" -State="" -Province-State="" -City="" -xmp:City="" -overwrite_original
 		/// </summary>
 		/// <param name="command">Command that is used</param>
 		/// <param name="comparedNames">names lowercase</param>
@@ -315,6 +316,17 @@ namespace starsky.foundation.writemeta.Helpers
 			{
 				command += " -Country=\"" + updateModel.LocationCountry 
 				                          + "\" -Country-PrimaryLocationName=\"" + updateModel.LocationCountry + "\"";
+			}
+			return command;
+		}
+		
+		private static string UpdateLocationCountryCodeCommand(
+			string command, List<string> comparedNames, FileIndexItem updateModel)
+		{
+			if (comparedNames.Contains( nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant() ))
+			{
+				command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode 
+				                          + "\" -XMP:CountryCode=\"" + updateModel.LocationCountry + "\"";
 			}
 			return command;
 		}

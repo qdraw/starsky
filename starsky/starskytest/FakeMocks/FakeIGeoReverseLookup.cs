@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.database.Models;
 
@@ -15,11 +16,11 @@ namespace starskytest.FakeMocks
 
 		public int Count { get; set; }
 
-		public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory, bool overwriteLocationNames)
+		public Task<List<FileIndexItem>> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory, bool overwriteLocationNames)
 		{
 			Count++;
 			metaFilesInDirectory.AddRange(_fileIndexItems);
-			return metaFilesInDirectory;
+			return Task.FromResult(metaFilesInDirectory);
 		}
 	}
 }

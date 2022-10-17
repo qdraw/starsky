@@ -139,7 +139,7 @@ namespace starskytest.Controllers
 			};
 			
 			var statusJson = controller.Status("/StatusCheck_CachedItemExist") as JsonResult;
-			var status = statusJson.Value as GeoCacheStatus;
+			var status = statusJson!.Value as GeoCacheStatus;
 			Assert.AreEqual(1,status.Current);
 			Assert.AreEqual(2,status.Total);
 		}

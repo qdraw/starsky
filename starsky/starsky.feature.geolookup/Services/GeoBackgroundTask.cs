@@ -71,7 +71,7 @@ namespace starsky.feature.geolookup.Services
 			}
 
 			fileIndexList =
-				_geoReverseLookup
+				await _geoReverseLookup
 					.LoopFolderLookup(fileIndexList, overwriteLocationNames);
 				
 			if ( fileIndexList.Count >= 1 )

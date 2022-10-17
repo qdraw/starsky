@@ -1,13 +1,14 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using NGeoNames;
 using NGeoNames.Entities;
-using NGeoNames.Parsers;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
@@ -23,11 +24,12 @@ namespace starsky.feature.geolookup.Services
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public class GeoReverseLookup : IGeoReverseLookup
     {
-        private ReverseGeoCode<ExtendedGeoName> _reverseGeoCode;
-        private readonly IEnumerable<Admin1Code> _admin1CodesAscii;
-        private readonly IMemoryCache _cache;
+        private ReverseGeoCode<ExtendedGeoName>? _reverseGeoCode;
+        private IEnumerable<Admin1Code>? _admin1CodesAscii;
+        private readonly IMemoryCache? _cache;
         private readonly AppSettings _appSettings;
         private readonly IWebLogger _logger;
+        private readonly IGeoFileDownload _geoFileDownload;
 
         /// <summary>
         /// Getting GeoData
@@ -35,44 +37,34 @@ namespace starsky.feature.geolookup.Services
         /// <param name="appSettings">to know where to store the deps files</param>
         /// <param name="geoFileDownload">Abstraction to download Geo Data</param>
         /// <param name="memoryCache">for keeping status</param>
-        public GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload, IMemoryCache memoryCache = null, IWebLogger logger = null)
+        /// <param name="logger">debug logger</param>
+        public GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload, IWebLogger logger, IMemoryCache? memoryCache = null)
         {
-	        // Needed when not having this, application will fail
-	        geoFileDownload.Download().ConfigureAwait(false).GetAwaiter();
-	        
 	        _appSettings = appSettings;
 	        _logger = logger;
-            _admin1CodesAscii = GeoFileReader.ReadAdmin1Codes(
-                Path.Combine(appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
-            
-            // Create our ReverseGeoCode class and supply it with data
-            InitReverseGeoCode();
+	        _geoFileDownload = geoFileDownload;
+	        _reverseGeoCode = null;
+	        _admin1CodesAscii = null;
+	        _cache = memoryCache;
+        }
+        
+        public async Task<(IEnumerable<Admin1Code>, ReverseGeoCode<ExtendedGeoName>)> SetupAsync()
+        {
+	        await _geoFileDownload.DownloadAsync();
+	        
+			_admin1CodesAscii = GeoFileReader.ReadAdmin1Codes(
+				Path.Combine(_appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
+			
+			_reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
+				GeoFileReader.ReadExtendedGeoNames(
+					Path.Combine(_appSettings.DependenciesFolder, GeoFileDownload.CountryName + ".txt")));
 
-            _cache = memoryCache;
+			return (_admin1CodesAscii, _reverseGeoCode );
         }
 
-        private void InitReverseGeoCode()
+        private string? GetAdmin1Name(string countryCode, string[] adminCodes)
         {
-	        if ( _reverseGeoCode != null ) return;
-	        try
-	        {
-		        _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
-			        GeoFileReader.ReadExtendedGeoNames(
-				        Path.Combine(_appSettings.DependenciesFolder, GeoFileDownload.CountryName + ".txt")));
-	        }
-	        catch ( ParserException e )
-	        {
-		        _logger?.LogError(e,"catch-ed GeoFileDownload GeoReverseLookup error");
-	        }
-	        catch ( FileNotFoundException e )
-	        {
-		        _logger?.LogError(e,"catch-ed GeoFileDownload GeoReverseLookup error");
-	        }
-        }
-
-        private string GetAdmin1Name(string countryCode, string[] adminCodes)
-        {
-            if (adminCodes.Length != 4) return null;
+            if (_admin1CodesAscii == null || adminCodes.Length != 4) return null;
 
             var admin1Code = countryCode + "." + adminCodes[0];
             
@@ -118,16 +110,19 @@ namespace starsky.feature.geolookup.Services
 	    /// <param name="metaFilesInDirectory">list of files to lookup</param>
 	    /// <param name="overwriteLocationNames">true = overwrite the location names, that have a gps location</param>
 	    /// <returns></returns>
-	    public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
+	    public async Task<List<FileIndexItem>> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
             bool overwriteLocationNames)
-        {
-	        InitReverseGeoCode();
-	        
-	        metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
+	    {
+		    if ( _reverseGeoCode == null );
+		    {
+			    (_, _reverseGeoCode) = await SetupAsync();
+		    }
+
+		    metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
 
             var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
             
-	        new GeoCacheStatusService(_cache).StatusUpdate(subPath, metaFilesInDirectory.Count, StatusType.Total);
+	        new GeoCacheStatusService(_cache).StatusUpdate(subPath, metaFilesInDirectory.Count*2, StatusType.Total);
 
             foreach (var metaFileItem in metaFilesInDirectory.Select(
 	            (value, index) => new { value, index }))
@@ -138,7 +133,9 @@ namespace starsky.feature.geolookup.Services
             
                 // Find nearest
                 var nearestPlace = _reverseGeoCode.NearestNeighbourSearch(place, 1).FirstOrDefault();
-            
+
+                if ( nearestPlace == null ) continue;
+                
                 // Distance to avoid non logic locations
                 var distanceTo = GeoDistanceTo.GetDistance(
                     nearestPlace.Latitude, 
@@ -157,12 +154,15 @@ namespace starsky.feature.geolookup.Services
                 // Catch is used for example the region VA (Vatican City)
                 try
                 {
-	                metaFileItem.value.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
+	                var region = new RegionInfo(nearestPlace.CountryCode);
+	                metaFileItem.value.LocationCountry = region.NativeName;
+	                metaFileItem.value.LocationCountryCode = region.ThreeLetterISORegionName;
                 }
                 catch ( ArgumentException e )
                 {
-	                Console.WriteLine(e);
+	                _logger.LogInformation("[GeoReverseLookup] " + e.Message);
                 }
+                
                 metaFileItem.value.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
             }
             
