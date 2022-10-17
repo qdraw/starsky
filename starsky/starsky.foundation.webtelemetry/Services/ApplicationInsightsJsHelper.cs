@@ -80,12 +80,12 @@ namespace starsky.foundation.webtelemetry.Helpers
 
 		internal string GetCurrentUserId()
 		{
-			if (_httpContext == null || !_httpContext.HttpContext.User.Identity.IsAuthenticated)
+			if (_httpContext == null || _httpContext?.HttpContext?.User.Identity?.IsAuthenticated == false)
 			{
 				return string.Empty;
 			}
 
-			return _httpContext.HttpContext.User.Claims
+			return _httpContext!.HttpContext!.User.Claims
 				.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
 				?.Value;
 		}

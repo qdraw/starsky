@@ -145,9 +145,15 @@ namespace starskytest.Helpers
 		public void ApplicationInsightsJsHelper_CheckIfContainsNonce_ScriptTag()
 		{
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+
+			if ( httpContext?.HttpContext?.Items == null )
+			{
+				throw new NotSupportedException("[ApplicationInsightsJsHelper" +
+				                                "_CheckIfContainsNonce_ScriptTag] HttpContext is null");
+			}
 			
 			var toCheckNonce = Guid.NewGuid() + "__";
-			httpContext.HttpContext.Items["csp-nonce"] = toCheckNonce;
+			httpContext!.HttpContext!.Items["csp-nonce"] = toCheckNonce;
 			
 			var someOptions = Options.Create(new ApplicationInsightsServiceOptions());
 			
@@ -165,7 +171,8 @@ namespace starskytest.Helpers
 		{
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
 			
-			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create<ApplicationInsightsServiceOptions>(new ApplicationInsightsServiceOptions());
+			IOptions<ApplicationInsightsServiceOptions> someOptions = 
+				Options.Create(new ApplicationInsightsServiceOptions());
 			
 			var fakeJs = new MockJavaScriptSnippet(_telemetryConfiguration, someOptions, httpContext,
 				new JavaScriptTestEncoder());
@@ -202,13 +209,39 @@ namespace starskytest.Helpers
 			{
 				HttpContext = new DefaultHttpContext()
 			};
-			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create<ApplicationInsightsServiceOptions>(new ApplicationInsightsServiceOptions());
+			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create(new ApplicationInsightsServiceOptions());
 			
 			var fakeJs = new MockJavaScriptSnippet(_telemetryConfiguration, someOptions, httpContextAccessor,
 				new JavaScriptTestEncoder());
 			
 			var script = new ApplicationInsightsJsHelper(httpContextAccessor, fakeJs).GetCurrentUserId();
 			Assert.AreEqual("", script);
+		}
+		
+		[TestMethod]
+		public void ApplicationInsightsJsHelper_GetCurrentUserId_WithMissing_ClaimTypes_NameIdentifier()
+		{
+			var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+			
+			
+			var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+			{
+				// NameIdentifier is missing, so it will return null string
+				new Claim(ClaimTypes.Name, "example name"),
+			}, "mock"));
+
+			httpContextAccessor.HttpContext =
+				new DefaultHttpContext() {User = user};
+			
+			Assert.IsTrue(httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated);
+			
+			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create(new ApplicationInsightsServiceOptions());
+			
+			var fakeJs = new MockJavaScriptSnippet(_telemetryConfiguration, someOptions, httpContextAccessor,
+				new JavaScriptTestEncoder());
+			
+			var script = new ApplicationInsightsJsHelper(httpContextAccessor, fakeJs).GetCurrentUserId();
+			Assert.AreEqual(null, script);
 		}
 	}
 }
