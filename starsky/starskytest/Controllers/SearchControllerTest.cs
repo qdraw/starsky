@@ -10,9 +10,9 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starskycore.Interfaces;
-using starskycore.Services;
-using starskycore.ViewModels;
+using starsky.foundation.search.Interfaces;
+using starsky.foundation.search.Services;
+using starsky.foundation.search.ViewModels;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers

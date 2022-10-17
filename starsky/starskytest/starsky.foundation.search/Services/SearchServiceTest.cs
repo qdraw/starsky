@@ -10,11 +10,11 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starskycore.Services;
-using starskycore.ViewModels;
+using starsky.foundation.search.Services;
+using starsky.foundation.search.ViewModels;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.search.Services
 {
 	[TestClass]
 	public class SearchServiceTest

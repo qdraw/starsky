@@ -17,11 +17,7 @@ using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.Services;
 using starskytest.FakeMocks;
 
 namespace starskytest.Middleware

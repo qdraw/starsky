@@ -9,9 +9,9 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starskycore.Interfaces;
+using starsky.foundation.search.Interfaces;
 
-namespace starskycore.Services
+namespace starsky.foundation.search.Services
 {
 	
 	[Service(typeof(ISearchSuggest), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -19,14 +19,14 @@ namespace starskycore.Services
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly IMemoryCache _cache;
-		private readonly AppSettings _appSettings;
+		private readonly AppSettings? _appSettings;
 		private readonly IWebLogger _logger;
 
 		public SearchSuggestionsService(
 			ApplicationDbContext context, 
 			IMemoryCache memoryCache,
 			IWebLogger logger, 
-			AppSettings appSettings = null)
+			AppSettings? appSettings = null)
 		{
 			_context = context;
 			_cache = memoryCache;

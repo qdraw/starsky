@@ -116,6 +116,7 @@
         <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj" />
         <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
         <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj" />
+        <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
         <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj" />
         <ProjectReference Include="..\starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj" />
         <ProjectReference Include="..\starsky.feature.realtime\starsky.feature.realtime.csproj" />
@@ -126,6 +127,7 @@
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
         <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
         <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
+        <ProjectReference Include="..\starsky.feature.search\starsky.feature.search.csproj" />
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
         <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj" />
         <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj" />

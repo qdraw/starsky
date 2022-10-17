@@ -3,10 +3,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starskycore.Services;
-using starskycore.ViewModels;
+using starsky.foundation.search.Services;
+using starsky.foundation.search.ViewModels;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.search.Services
 {
 	[TestClass]
 	public class SearchWideDateTimeTest

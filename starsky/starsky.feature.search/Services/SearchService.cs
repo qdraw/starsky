@@ -13,25 +13,24 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.ViewModels;
+using starsky.foundation.search.Interfaces;
+using starsky.foundation.search.ViewModels;
 
-namespace starskycore.Services
+namespace starsky.foundation.search.Services
 {
 	[Service(typeof(ISearch), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SearchService : ISearch
     {
         private readonly ApplicationDbContext _context;
-        private readonly IMemoryCache _cache;
-        private readonly AppSettings _appSettings;
-        private readonly IWebLogger _logger;
+        private readonly IMemoryCache? _cache;
+        private readonly AppSettings? _appSettings;
+        private readonly IWebLogger? _logger;
 
         public SearchService(
             ApplicationDbContext context, 
-            IMemoryCache memoryCache = null,
-            AppSettings appSettings = null,
-            IWebLogger logger = null)
+            IMemoryCache? memoryCache = null,
+            AppSettings? appSettings = null,
+            IWebLogger? logger = null)
         {
             _context = context;
             _cache = memoryCache;
@@ -94,18 +93,26 @@ namespace starskycore.Services
         /// <param name="objectSearchModel"></param>
         /// <param name="pageNumber">current page (0 = page 1)</param>
         /// <returns></returns>
-        private SearchViewModel SkipSearchItems(object objectSearchModel, int pageNumber)
+        private static SearchViewModel SkipSearchItems(object? objectSearchModel, int pageNumber)
         {
-            var searchModel = objectSearchModel as SearchViewModel;            
-            
-            // Clone the item to avoid removing items from cache
+	        if ( objectSearchModel is not SearchViewModel searchModel)
+            {
+	            return new SearchViewModel();
+            }
+        
+	        // Clone the item to avoid removing items from cache
             searchModel = searchModel.Clone();
+            if ( searchModel.FileIndexItems == null )
+            {
+	            return new SearchViewModel();
+            }
             
             searchModel.PageNumber = pageNumber;
 	        
 	        var skipFirstNumber = pageNumber * NumberOfResultsInView;
 	        var skipLastNumber = searchModel.SearchCount - ( pageNumber * NumberOfResultsInView ) - NumberOfResultsInView;
 
+	        
 	        // Remove the last items
 	        var skippedLastList = searchModel.FileIndexItems
 		        .Skip(skipFirstNumber)

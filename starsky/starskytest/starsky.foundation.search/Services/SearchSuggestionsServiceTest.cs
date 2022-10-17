@@ -9,10 +9,10 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starskycore.Services;
+using starsky.foundation.search.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.search.Services
 {
 	[TestClass]
 	public class SearchSuggestionsServiceTest

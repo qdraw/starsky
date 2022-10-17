@@ -8,7 +8,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
-namespace starskycore.Services
+namespace starsky.foundation.search.Services
 {
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class SearchSuggestionsInflateHostedService : IHostedService
