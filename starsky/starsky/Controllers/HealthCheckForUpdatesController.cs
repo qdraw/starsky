@@ -9,7 +9,7 @@ using starsky.feature.health.UpdateCheck.Models;
 namespace starsky.Controllers
 {
 	[AllowAnonymous]
-	public class HealthCheckForUpdatesController : Controller
+	public sealed class HealthCheckForUpdatesController : Controller
 	{
 		private readonly ICheckForUpdates _checkForUpdates;
 

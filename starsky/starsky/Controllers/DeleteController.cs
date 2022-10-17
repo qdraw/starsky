@@ -6,7 +6,7 @@ using starsky.foundation.database.Models;
 
 namespace starsky.Controllers
 {
-	public class DeleteController : Controller
+	public sealed class DeleteController : Controller
 	{
 		private readonly IDeleteItem _deleteItem;
 

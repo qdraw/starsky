@@ -1,6 +1,6 @@
 ﻿namespace starsky.foundation.storage.Models
 {
-    public class FolderOrFileModel
+    public sealed class FolderOrFileModel
     {
 	    /// <summary>
 	    /// To Store output if file exist, folder or deleted

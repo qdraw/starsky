@@ -13,7 +13,7 @@ namespace starsky.foundation.sync.WatcherServices
 	/// Run DiskWatcher as singleton (once) in the background of the app
 	/// </summary>
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class DiskWatcherBackgroundService : BackgroundService
+	public sealed class DiskWatcherBackgroundService : BackgroundService
 	{
 		private readonly IDiskWatcher _diskWatcher;
 		private readonly AppSettings _appSettings;

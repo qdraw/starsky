@@ -15,7 +15,7 @@ using starskycore.Helpers;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class DownloadPhotoController : Controller
+	public sealed class DownloadPhotoController : Controller
 	{
 		private readonly IQuery _query;
 		private readonly IStorage _iStorage;

@@ -11,7 +11,7 @@ using starskycore.ViewModels;
 namespace starsky.Controllers
 {
     [Authorize]
-    public class IndexController : Controller
+    public sealed class IndexController : Controller
     {
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;

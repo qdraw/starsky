@@ -8,7 +8,7 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.webtelemetry.Helpers
 {
-	public class FlushApplicationInsights
+	public sealed class FlushApplicationInsights
 	{
 		private readonly ServiceProvider _serviceProvider;
 		private readonly IApplicationBuilder _app;

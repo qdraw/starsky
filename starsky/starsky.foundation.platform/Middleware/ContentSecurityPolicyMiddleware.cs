@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace starsky.foundation.platform.Middleware
 {
-	public class ContentSecurityPolicyMiddleware
+	public sealed class ContentSecurityPolicyMiddleware
 	{
 		
 		private readonly RequestDelegate _next;

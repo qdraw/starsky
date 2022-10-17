@@ -8,7 +8,7 @@ using starsky.foundation.webtelemetry.Interfaces;
 namespace starsky.foundation.webtelemetry.Services
 {
 	[Service(typeof(ITelemetryService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class TelemetryService : ITelemetryService
+	public sealed class TelemetryService : ITelemetryService
 	{
 		private readonly TelemetryClient _telemetry;
 

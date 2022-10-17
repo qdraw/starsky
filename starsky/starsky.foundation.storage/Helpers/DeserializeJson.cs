@@ -4,7 +4,7 @@ using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.Helpers
 {
-	public class DeserializeJson
+	public sealed class DeserializeJson
 	{
 		private readonly IStorage _iStorage;
 
@@ -24,7 +24,7 @@ namespace starsky.foundation.storage.Helpers
 		{
 			if ( !_iStorage.ExistFile(jsonSubPath) ) throw new FileNotFoundException(jsonSubPath);
 			var stream = _iStorage.ReadStream(jsonSubPath);
-			var jsonAsString = new PlainTextFileHelper().StreamToString(stream);
+			var jsonAsString = PlainTextFileHelper.StreamToString(stream);
 			var returnFileIndexItem = JsonSerializer.Deserialize<T>(jsonAsString);
 			return returnFileIndexItem;
 		}

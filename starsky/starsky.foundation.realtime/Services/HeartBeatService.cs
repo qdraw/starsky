@@ -11,7 +11,7 @@ using starsky.foundation.realtime.Model;
 namespace starsky.foundation.realtime.Services
 {
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class HeartbeatService : IHostedService
+	public sealed class HeartbeatService : IHostedService
 	{
 		private const int SpeedInSeconds = 30;
 

@@ -6,7 +6,7 @@ using starsky.foundation.database.Models;
 
 namespace starsky.foundation.database.Helpers
 {
-	public class Duplicate
+	public sealed class Duplicate
 	{
 		private readonly IQuery _query;
 

@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace starsky.foundation.storage.Storage
 {
-	public class RetryStream
+	public sealed class RetryStream
 	{
 		private readonly int _waitTime;
 

@@ -2,7 +2,7 @@ using System;
 
 namespace starsky.foundation.storage.Models
 {
-	public class StorageInfo
+	public sealed class StorageInfo
 	{
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile { get; set; }
 		

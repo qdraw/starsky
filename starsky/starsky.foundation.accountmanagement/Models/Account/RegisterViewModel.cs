@@ -2,7 +2,7 @@
 
 namespace starsky.foundation.accountmanagement.Models.Account
 {
-    public class RegisterViewModel
+    public sealed class RegisterViewModel
     {
         [Required]
         [EmailAddress]

@@ -11,7 +11,7 @@ using XmpCore;
 
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
-	public class ReadMetaXmp
+	public sealed class ReadMetaXmp
 	{
 		private readonly IStorage _iStorage;
 
@@ -35,7 +35,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	             !_iStorage.ExistFile(xmpSubPath) ) return databaseItem;
 	        
 	        // Read the text-content of the xmp file.
-            var xmp = new PlainTextFileHelper().StreamToString(_iStorage.ReadStream(xmpSubPath));
+            var xmp = PlainTextFileHelper.StreamToString(_iStorage.ReadStream(xmpSubPath));
             // Get the data from the xmp
             databaseItem = GetDataFromString(xmp,databaseItem);
             return databaseItem;

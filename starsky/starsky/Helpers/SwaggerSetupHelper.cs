@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.Helpers
 {
-	public class SwaggerSetupHelper
+	public sealed class SwaggerSetupHelper
 	{
 		private readonly AppSettings _appSettings;
 

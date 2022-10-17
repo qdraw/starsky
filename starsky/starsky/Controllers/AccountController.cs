@@ -16,7 +16,7 @@ using starsky.Helpers;
 
 namespace starsky.Controllers
 {
-    public class AccountController : Controller
+    public sealed class AccountController : Controller
     {
         private readonly IUserManager _userManager;
         private readonly AppSettings _appSettings;

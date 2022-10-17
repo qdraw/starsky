@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace starsky.foundation.realtime.Model
 {
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-	public class HeartbeatModel
+	public sealed class HeartbeatModel
 	{
 		public HeartbeatModel(int? speedInSeconds)
 		{

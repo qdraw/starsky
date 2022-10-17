@@ -15,7 +15,7 @@ using TimeZoneConverter;
 namespace starsky.foundation.platform.Models
 {
 	[SuppressMessage("ReSharper", "CA1822")]
-	public class AppSettings
+	public sealed class AppSettings
 	{
 		public AppSettings()
 		{

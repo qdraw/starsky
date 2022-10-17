@@ -9,7 +9,7 @@ namespace starsky.foundation.database.Models
 	/// <summary>
 	/// In DetailView there are values added for handling Args  
 	/// </summary>
-    public class RelativeObjects
+    public sealed class RelativeObjects
     {
 	    /// <summary>
 	    /// Set Args based on Collections and ColorClass Settings

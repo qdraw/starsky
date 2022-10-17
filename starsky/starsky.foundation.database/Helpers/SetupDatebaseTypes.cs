@@ -12,7 +12,7 @@ using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Helpers
 {
-	public class SetupDatabaseTypes
+	public sealed class SetupDatabaseTypes
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IServiceCollection? _services;

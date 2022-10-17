@@ -23,7 +23,7 @@ using Directory = MetadataExtractor.Directory;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
-	public class ReadMetaExif
+	public sealed class ReadMetaExif
 	{
 		private readonly IStorage _iStorage;
 		private readonly AppSettings _appSettings;

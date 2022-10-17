@@ -17,7 +17,7 @@ using starsky.foundation.worker.Interfaces;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class PublishController : Controller
+	public sealed class PublishController : Controller
 	{
 		private readonly IWebHtmlPublishService _publishService;
 		private readonly IPublishPreflight _publishPreflight;

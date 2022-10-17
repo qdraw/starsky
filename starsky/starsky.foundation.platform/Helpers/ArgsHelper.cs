@@ -12,7 +12,7 @@ using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.platform.Helpers
 {
-	public class ArgsHelper
+	public sealed class ArgsHelper
 	{
 		// Table of Content
 		

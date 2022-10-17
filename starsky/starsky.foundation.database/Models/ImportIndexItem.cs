@@ -29,7 +29,7 @@ namespace starsky.foundation.database.Models
 	}
 	
     [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
-    public class ImportIndexItem
+    public sealed class ImportIndexItem
     {
         private readonly AppSettings _appSettings = new();
 

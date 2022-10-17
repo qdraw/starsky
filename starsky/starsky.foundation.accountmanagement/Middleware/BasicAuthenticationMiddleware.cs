@@ -10,7 +10,7 @@ namespace starsky.foundation.accountmanagement.Middleware
     /// <summary>
     /// Accepts either username or email as user identifier for sign in with Http Basic authentication
     /// </summary>
-    public class BasicAuthenticationMiddleware
+    public sealed class BasicAuthenticationMiddleware
     {
        
         public BasicAuthenticationMiddleware(RequestDelegate next)

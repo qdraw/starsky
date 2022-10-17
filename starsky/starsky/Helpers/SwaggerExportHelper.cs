@@ -17,7 +17,7 @@ using starsky.foundation.storage.Storage;
 namespace starsky.Helpers
 {
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class SwaggerExportHelper : BackgroundService
+	public sealed class SwaggerExportHelper : BackgroundService
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly IWebLogger _logger;

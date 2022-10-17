@@ -17,7 +17,7 @@ using starsky.foundation.storage.Storage;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class AppSettingsController : Controller
+	public sealed class AppSettingsController : Controller
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _hostStorage;

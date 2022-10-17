@@ -11,7 +11,7 @@ using starsky.foundation.writemeta.Interfaces;
 namespace starsky.foundation.writemeta.Services
 {
 	[Service(typeof(IExifTool), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ExifToolService : IExifTool
+	public sealed class ExifToolService : IExifTool
 	{
 		private readonly IExifTool _exifTool;
 

@@ -12,7 +12,7 @@ namespace starsky.foundation.accountmanagement.Middleware
 	/// <summary>
 	/// Check if login has entity in database
 	/// </summary>
-	public class CheckIfAccountExistMiddleware
+	public sealed class CheckIfAccountExistMiddleware
 	{
        
 		public CheckIfAccountExistMiddleware(RequestDelegate next)

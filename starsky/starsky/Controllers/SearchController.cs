@@ -9,7 +9,7 @@ using starskycore.ViewModels;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class SearchController : Controller
+	public sealed class SearchController : Controller
 	{
 		private readonly ISearch _search;
 

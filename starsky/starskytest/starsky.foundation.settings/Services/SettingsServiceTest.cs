@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
-using starsky.foundation.realtime.Formats;
 using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Formats;
 using starsky.foundation.settings.Services;
 
 namespace starskytest.starsky.foundation.settings.Services;

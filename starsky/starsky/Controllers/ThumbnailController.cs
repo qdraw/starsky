@@ -16,7 +16,7 @@ using starskycore.Helpers;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class ThumbnailController : Controller
+	public sealed class ThumbnailController : Controller
 	{
 		private readonly IQuery _query;
 		private readonly IStorage _iStorage;

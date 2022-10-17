@@ -19,7 +19,7 @@ using starskycore.ViewModels;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.Controllers
 {
-	public class HealthController: Controller
+	public sealed class HealthController: Controller
 	{
 		private readonly HealthCheckService _service;
 		private readonly ApplicationInsightsJsHelper _applicationInsightsJsHelper;

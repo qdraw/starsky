@@ -17,7 +17,7 @@ using starsky.foundation.platform.Models;
 namespace starsky.foundation.database.Notifications
 {
 	[Service(typeof(INotificationQuery), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class NotificationQuery : INotificationQuery
+	public sealed class NotificationQuery : INotificationQuery
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly IWebLogger _logger;

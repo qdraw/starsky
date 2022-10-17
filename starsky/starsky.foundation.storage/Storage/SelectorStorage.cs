@@ -7,7 +7,7 @@ using starsky.foundation.storage.Interfaces;
 namespace starsky.foundation.storage.Storage
 {
 	[Service(typeof(ISelectorStorage), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class SelectorStorage : ISelectorStorage
+	public sealed class SelectorStorage : ISelectorStorage
 	{
 		private readonly IServiceProvider _serviceProvider;
 

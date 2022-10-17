@@ -7,7 +7,7 @@ using starsky.foundation.injection;
 namespace starsky.foundation.webtelemetry.Helpers
 {
 	[Service(InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ApplicationInsightsJsHelper
+	public sealed class ApplicationInsightsJsHelper
 	{
 		private readonly IHttpContextAccessor _httpContext;
 		private readonly JavaScriptSnippet _aiJavaScriptSnippet;

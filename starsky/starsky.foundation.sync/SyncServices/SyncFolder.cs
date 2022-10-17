@@ -21,7 +21,7 @@ using starsky.foundation.sync.SyncInterfaces;
 namespace starsky.foundation.sync.SyncServices
 {
 
-	public class SyncFolder
+	public sealed class SyncFolder
 	{
 		private readonly AppSettings _appSettings;
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;

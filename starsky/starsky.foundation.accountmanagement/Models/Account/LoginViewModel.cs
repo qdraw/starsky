@@ -2,7 +2,7 @@
 
 namespace starsky.foundation.accountmanagement.Models.Account
 {
-    public class LoginViewModel
+    public sealed class LoginViewModel
     {
         [Required]
         [EmailAddress]

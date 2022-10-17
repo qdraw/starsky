@@ -8,7 +8,7 @@ using starsky.foundation.database.Interfaces;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class NotificationController : Controller
+	public sealed class NotificationController : Controller
 	{
 		private readonly INotificationQuery _notificationQuery;
 

@@ -7,7 +7,7 @@ using starskycore.ViewModels;
 
 namespace starsky.Controllers
 {
-	public class SearchSuggestController : Controller
+	public sealed class SearchSuggestController : Controller
 	{
 		private readonly ISearchSuggest _suggest;
 

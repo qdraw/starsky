@@ -20,7 +20,7 @@ using starsky.foundation.worker.Interfaces;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class MetaUpdateController : Controller
+	public sealed class MetaUpdateController : Controller
 	{
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;

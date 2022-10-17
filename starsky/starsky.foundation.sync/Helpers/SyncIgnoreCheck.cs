@@ -4,7 +4,7 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.sync.Helpers
 {
-	public class SyncIgnoreCheck
+	public sealed class SyncIgnoreCheck
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IConsole _console;

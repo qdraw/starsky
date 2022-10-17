@@ -16,7 +16,7 @@ using starsky.foundation.storage.Storage;
 namespace starsky.foundation.http.Services
 {
 	[Service(typeof(IHttpClientHelper), InjectionLifetime = InjectionLifetime.Singleton)]
-    public class HttpClientHelper : IHttpClientHelper
+    public sealed class HttpClientHelper : IHttpClientHelper
     {
 	    private readonly IStorage? _storage;
 
