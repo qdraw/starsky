@@ -112,7 +112,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var appSettings = new AppSettings {
 				Verbose = true,
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
-				ApplicationInsightsInstrumentationKey = "any",
+				ApplicationInsightsConnectionString = "any",
 				ApplicationInsightsDatabaseTracking = true
 			};
 			var services = new ServiceCollection();
@@ -130,7 +130,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var appSettings = new AppSettings {
 				Verbose = true,
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
-				ApplicationInsightsInstrumentationKey = string.Empty, // <-- No Key
+				ApplicationInsightsConnectionString = string.Empty, // <-- No Key
 				ApplicationInsightsDatabaseTracking = true
 			};
 			var services = new ServiceCollection();

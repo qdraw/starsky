@@ -20,7 +20,7 @@ namespace starsky.foundation.webtelemetry.Extensions
 		/// <param name="appSettings">to use for ApplicationInsights InstrumentationKey</param>
 		public static void AddMonitoring(this IServiceCollection services, AppSettings appSettings)
 		{
-			if ( string.IsNullOrWhiteSpace(appSettings.ApplicationInsightsInstrumentationKey) )
+			if ( string.IsNullOrWhiteSpace(appSettings.ApplicationInsightsConnectionString) )
 			{
 				return;
 			}
@@ -40,8 +40,7 @@ namespace starsky.foundation.webtelemetry.Extensions
 					EnableHeartbeat = true,
 					EnableAuthenticationTrackingJavaScript = true,
 					EnableEventCounterCollectionModule = true,
-					InstrumentationKey = appSettings
-						.ApplicationInsightsInstrumentationKey,
+					ConnectionString = appSettings.ApplicationInsightsConnectionString
 				});
 			
 			services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer($"{AppSettings.StarskyAppType.WebController}"));

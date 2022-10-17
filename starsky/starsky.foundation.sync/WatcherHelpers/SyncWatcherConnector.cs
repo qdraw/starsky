@@ -79,7 +79,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		internal IOperationHolder<RequestTelemetry> CreateNewRequestTelemetry(string? fullFilePath = null)
 		{
 			if (_telemetryClient == null || string.IsNullOrEmpty(_appSettings!
-				    .ApplicationInsightsInstrumentationKey) )
+				    .ApplicationInsightsConnectionString) )
 			{
 				return new EmptyOperationHolder<RequestTelemetry>();
 			}
@@ -99,7 +99,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		internal bool EndRequestOperation(IOperationHolder<RequestTelemetry> operation, string statusCode)
 		{
 			if ( _telemetryClient == null || string.IsNullOrEmpty(_appSettings!
-				    .ApplicationInsightsInstrumentationKey) )
+				    .ApplicationInsightsConnectionString) )
 			{
 				return false;
 			}

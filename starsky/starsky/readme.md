@@ -65,7 +65,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
 14. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User or Administrator _(default User)_
-15. `applicationInsightsInstrumentationKey` - Track Telemetry with Microsoft Application Insights _(default disabled)_
+15. `ApplicationInsightsConnectionString` - Track Telemetry with Microsoft Application Insights (use connection string instead of Instrumentation key) _(default disabled)_
 16. `ApplicationInsightsDatabaseTracking` - Track database dependencies (need to have InstrumentationKey) _(default disabled)_
 17. `ApplicationInsightsLog` - Add WebLogger output to Application Insights (need to have InstrumentationKey) _(default enabled, when key is provided)_
 18. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.

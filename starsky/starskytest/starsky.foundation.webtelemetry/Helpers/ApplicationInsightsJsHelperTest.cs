@@ -90,7 +90,7 @@ namespace starskytest.Helpers
 			_telemetryConfiguration = new TelemetryConfiguration
 			{
 				TelemetryChannel = mockTelemetryChannel,
-				InstrumentationKey = Guid.NewGuid().ToString()
+				ConnectionString = $"InstrumentationKey={Guid.NewGuid().ToString()}",
 			};
 			_telemetryConfiguration.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
 			
