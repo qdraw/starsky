@@ -126,7 +126,7 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				foreach ( var singleCollectionPath in collectionPath )
 				{
-					if ( item.FilePath.StartsWith(singleCollectionPath) 
+					if ( item.FilePath!.StartsWith(singleCollectionPath) 
 					     && !ExtensionRolesHelper.IsExtensionSidecar(item.FilePath) )
 					{
 						item.RemoveSidecarExtension("xmp");
