@@ -448,7 +448,7 @@ namespace starsky.feature.search.Services
 	    /// </summary>
 	    /// <param name="fileIndexQueryCount">number of search results</param>
 	    /// <returns>last page number (0=index)</returns>
-        private int GetLastPageNumber(int fileIndexQueryCount)
+        private static int GetLastPageNumber(int fileIndexQueryCount)
         {
             var searchLastPageNumbers = (RoundUp(fileIndexQueryCount) / NumberOfResultsInView) - 1;
 
