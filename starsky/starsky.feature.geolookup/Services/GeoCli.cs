@@ -20,7 +20,8 @@ namespace starsky.feature.geolookup.Services
 {
 	/// <summary>
 	/// GeoCLI is a command line interface for the GeoLookup
-	/// To test: exiftool image.jpg -Country-PrimaryLocationName="" -Country="" -State="" -Province-State="" -City="" -xmp:City="" -overwrite_original
+	/// To test: exiftool image.jpg -Country-PrimaryLocationName="" -Country="" -State="" -Province-State=""
+	/// -City="" -xmp:City="" -XMP:CountryCode="" -Country-PrimaryLocationCode="" -overwrite_original
 	/// </summary>
 	public class GeoCli
 	{

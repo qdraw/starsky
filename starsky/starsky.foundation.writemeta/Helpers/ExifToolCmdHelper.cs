@@ -293,7 +293,8 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <summary>
 		/// Add state to ExifTool command
 		/// to remove:
-		/// -Country-PrimaryLocationName="" -Country="" -State="" -Province-State="" -City="" -xmp:City="" -overwrite_original
+		/// -Country-PrimaryLocationName="" -Country=""  -XMP:CountryCode="" -Country-PrimaryLocationCode=""
+		/// -State="" -Province-State="" -City="" -xmp:City="" -overwrite_original
 		/// </summary>
 		/// <param name="command">Command that is used</param>
 		/// <param name="comparedNames">names lowercase</param>
