@@ -65,6 +65,8 @@ namespace starsky.foundation.writemeta.Services
 				_logger.LogInformation("[DownloadExifTool] Skipped due AddSwaggerExportExitAfter setting");
 				return false;
 			}
+
+			CreateDirectoryDependenciesFolderIfNotExists();
 			
 			if ( isWindows &&
 			     (!_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath ()) ||
@@ -91,6 +93,14 @@ namespace starsky.foundation.writemeta.Services
 			if ( isWindows) return true;
 
 			return await RunChmodOnExifToolUnixExe();
+		}
+
+		private void CreateDirectoryDependenciesFolderIfNotExists()
+		{
+			if ( _hostFileSystemStorage.ExistFolder(_appSettings
+				    .DependenciesFolder) ) return;
+			_logger.LogInformation("[DownloadExifTool] Create Directory: " + _appSettings.DependenciesFolder);
+			_hostFileSystemStorage.CreateDirectory(_appSettings.DependenciesFolder);
 		}
 
 		internal async Task<KeyValuePair<bool, string>?> DownloadCheckSums()
