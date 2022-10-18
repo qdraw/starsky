@@ -125,9 +125,9 @@ namespace starsky.feature.geolookup.Services
 			{
 				_console.WriteLine($"CameraTimeZone: {_appSettings.CameraTimeZone}");
 				_console.WriteLine($"Folder: {inputPath}");
-    
-				toMetaFilesUpdate = new GeoIndexGpx(_appSettings, 
-					_iStorage).LoopFolder(fileIndexList);
+
+				var geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage);
+				toMetaFilesUpdate = geoIndexGpx.LoopFolder(fileIndexList);
       
 				_console.Write("¬");
 				await _geoLocationWrite.LoopFolderAsync(toMetaFilesUpdate, false);

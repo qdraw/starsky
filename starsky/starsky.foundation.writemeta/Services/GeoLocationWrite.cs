@@ -58,12 +58,15 @@ namespace starsky.foundation.writemeta.Services
 					nameof(FileIndexItem.LocationCity).ToLowerInvariant(),
 					nameof(FileIndexItem.LocationState).ToLowerInvariant(),
 					nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
+					nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()
 				});
                 
-				await new ExifToolCmdHelper(_exifTool, 
+				var exifToolCmdHelper = new ExifToolCmdHelper(_exifTool, 
 					_iStorage, 
 					_thumbnailStorage, 
-					new ReadMeta(_iStorage, _appSettings, null, _logger)).UpdateAsync(metaFileItem, comparedNamesList);
+					new ReadMeta(_iStorage, _appSettings, null, _logger));
+				
+				await exifToolCmdHelper.UpdateAsync(metaFileItem, comparedNamesList);
 
 				// Rocket man!
 				_console.Write(_appSettings.IsVerbose()
