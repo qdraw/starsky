@@ -113,7 +113,7 @@ namespace starsky.feature.geolookup.Services
 	    public async Task<List<FileIndexItem>> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
             bool overwriteLocationNames)
 	    {
-		    if ( _reverseGeoCode == null );
+		    if ( _reverseGeoCode == null )
 		    {
 			    (_, _reverseGeoCode) = await SetupAsync();
 		    }
