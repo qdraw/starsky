@@ -88,10 +88,13 @@ namespace starskytest.starsky.feature.geolookup.Services
 				new FakeIWebLogger()).LoopFolderLookup(folderOfPhotos,false);
 
 			Assert.AreEqual("Argentina", buenosAires.LocationCountry);
+			Assert.AreEqual("ARG", buenosAires.LocationCountryCode);
 			Assert.AreEqual(string.Empty, northSea.LocationCountry);
 			Assert.AreEqual("'s-Hertogenbosch", cakeBakerPhoto.LocationCity);
 			Assert.AreEqual("North Brabant", cakeBakerPhoto.LocationState);
 			Assert.AreEqual("Nederland", cakeBakerPhoto.LocationCountry);
+			Assert.AreEqual("NLD", cakeBakerPhoto.LocationCountryCode);
+
 		}
 
 		[TestMethod]
