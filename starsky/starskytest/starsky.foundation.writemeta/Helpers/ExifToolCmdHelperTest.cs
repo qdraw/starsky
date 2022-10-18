@@ -36,6 +36,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				LocationCity = "LocationCity",
 				LocationState = "LocationState",
 				LocationCountry = "LocationCountry",
+				LocationCountryCode = "NLD",
 				Title = "Title",
 				ColorClass = ColorClassParser.Color.Trash,
 				Orientation = FileIndexItem.Rotation.Rotate90Cw,
@@ -50,6 +51,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				nameof(FileIndexItem.LocationCity).ToLowerInvariant(),
 				nameof(FileIndexItem.LocationState).ToLowerInvariant(),
 				nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
+				nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant(),
 				nameof(FileIndexItem.Title).ToLowerInvariant(),
 				nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
 				nameof(FileIndexItem.Orientation).ToLowerInvariant(),
@@ -74,6 +76,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Assert.AreEqual(true,helperResult.Contains(updateModel.LocationCity));
 			Assert.AreEqual(true,helperResult.Contains(updateModel.LocationState));
 			Assert.AreEqual(true,helperResult.Contains(updateModel.LocationCountry));
+			Assert.AreEqual(true,helperResult.Contains(updateModel.LocationCountryCode));
 			Assert.AreEqual(true,helperResult.Contains(updateModel.Title));
 		}
 
@@ -93,7 +96,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var inputSubPaths = new List<string>{"/test.jpg"};
 
 			var storage =
-				new FakeIStorage(folderPaths, inputSubPaths, null);
+				new FakeIStorage(folderPaths, inputSubPaths);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 
 			var helperResult = new ExifToolCmdHelper(fakeExifTool, 
@@ -117,7 +120,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var inputSubPaths = new List<string>{"/test.jpg"};
 
 			var storage =
-				new FakeIStorage(folderPaths, inputSubPaths, null);
+				new FakeIStorage(folderPaths, inputSubPaths);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 			await new ExifToolCmdHelper(fakeExifTool, 
 				storage,storage,
@@ -138,7 +141,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	        var inputSubPaths = new List<string>{"/test.dng"};
 
 	        var storage =
-		        new FakeIStorage(folderPaths, inputSubPaths, null);
+		        new FakeIStorage(folderPaths, inputSubPaths);
 	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
 	        await new ExifToolCmdHelper(fakeExifTool, 
 		        storage,storage,
@@ -164,7 +167,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 			var helperResult = (await new ExifToolCmdHelper(fakeExifTool, storage,storage ,
-				new FakeReadMeta()).UpdateAsync(updateModel, comparedNames, true));
+				new FakeReadMeta()).UpdateAsync(updateModel, comparedNames));
 			
 			Assert.IsTrue(helperResult.Item1.Contains("tags"));
 			Assert.IsTrue(helperResult.Item1.Contains("Description"));
@@ -188,7 +191,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
 	        var helperResult = (await new ExifToolCmdHelper(fakeExifTool, storage,storage ,
-		        new FakeReadMeta()).UpdateAsync(updateModel, comparedNames, true));
+		        new FakeReadMeta()).UpdateAsync(updateModel, comparedNames));
 			
 	        Assert.IsTrue(helperResult.Item1.Contains("tags"));
 	        Assert.IsTrue(helperResult.Item1.Contains("Description"));
@@ -205,9 +208,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	        var comparedNames = new List<string>{
 		        nameof(FileIndexItem.ImageStabilisation).ToLowerInvariant(),
 	        };
-
-	        var exifToolCmdHelper = new ExifToolCmdHelper(null, null, null, null);
-
+	        
 	        var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
 		        comparedNames, true);
 	        
@@ -224,13 +225,28 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	        var comparedNames = new List<string>{
 		        nameof(FileIndexItem.ImageStabilisation).ToLowerInvariant(),
 	        };
-
-	        var exifToolCmdHelper = new ExifToolCmdHelper(null, null, null, null);
-
+	        
 	        var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
 		        comparedNames, true);
 	        
 	        Assert.AreEqual(string.Empty,result);
+        }
+        
+        [TestMethod]
+        public void ExifToolCommandLineArgs_LocationCountryCode()
+        {
+	        var updateModel = new FileIndexItem
+	        {
+		        LocationCountryCode = "NLD" // < - - - - include here
+	        };
+	        var comparedNames = new List<string>{
+		        nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant(),
+	        };
+
+	        var result = ExifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+		        comparedNames, true);
+	        
+	        Assert.AreEqual("-json -overwrite_original -Country-PrimaryLocationCode=\"NLD\" -XMP:CountryCode=\"NLD\"",result);
         }
 	}
 }

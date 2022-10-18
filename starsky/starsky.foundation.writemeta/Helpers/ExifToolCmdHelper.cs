@@ -326,7 +326,7 @@ namespace starsky.foundation.writemeta.Helpers
 			if (comparedNames.Contains( nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant() ))
 			{
 				command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode 
-				                          + "\" -XMP:CountryCode=\"" + updateModel.LocationCountry + "\"";
+				                          + "\" -XMP:CountryCode=\"" + updateModel.LocationCountryCode + "\"";
 			}
 			return command;
 		}
