@@ -350,7 +350,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="updateModel">the model that has the data</param>
 		/// <param name="includeSoftware">to include the original software name</param>
 		/// <returns></returns>
-		private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel, bool includeSoftware)
+		internal static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel, bool includeSoftware)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.Software).ToLowerInvariant()) )
 				return command;

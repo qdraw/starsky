@@ -248,5 +248,40 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	        
 	        Assert.AreEqual("-json -overwrite_original -Country-PrimaryLocationCode=\"NLD\" -XMP:CountryCode=\"NLD\"",result);
         }
+        
+                
+        [TestMethod]
+        public void UpdateSoftwareCommand_True()
+        {
+	        var updateModel = new FileIndexItem
+	        {
+		        Software = "Test" // < - - - - include here
+	        };
+	        var comparedNames = new List<string>{
+		        nameof(FileIndexItem.Software).ToLowerInvariant(),
+	        };
+
+	        var result = ExifToolCmdHelper.UpdateSoftwareCommand(string.Empty, comparedNames, updateModel, true);
+	        
+	        Assert.AreEqual(" -Software=\"Test\" -CreatorTool=\"Test\" " +
+	                        "-HistorySoftwareAgent=\"Test\" -HistoryParameters=\"\" -PMVersion=\"\" ",result);
+        }
+        
+        [TestMethod]
+        public void UpdateSoftwareCommand_False()
+        {
+	        var updateModel = new FileIndexItem
+	        {
+		        Software = "Test" // < - - - - include here
+	        };
+	        var comparedNames = new List<string>{
+		        nameof(FileIndexItem.Software).ToLowerInvariant(),
+	        };
+
+	        var result = ExifToolCmdHelper.UpdateSoftwareCommand(string.Empty, comparedNames, updateModel, false);
+	        
+	        Assert.AreEqual(" -Software=\"Starsky\" -CreatorTool=\"Starsky\" " +
+	                        "-HistorySoftwareAgent=\"Starsky\" -HistoryParameters=\"\" -PMVersion=\"\" ",result);
+        }
 	}
 }
