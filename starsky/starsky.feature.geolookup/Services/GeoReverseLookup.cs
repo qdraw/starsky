@@ -98,7 +98,7 @@ namespace starsky.feature.geolookup.Services
                     && (string.IsNullOrEmpty(metaFileItem.LocationCity) 
                         || string.IsNullOrEmpty(metaFileItem.LocationState) 
                         || string.IsNullOrEmpty(metaFileItem.LocationCountry) 
-                        || string.IsNullOrEmpty(metaFileItem.LocationCountryCode)))
+                        )) // for now NO check on: metaFileItem.LocationCountryCode
                     && ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)
                     ).ToList();
         }
