@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
@@ -57,7 +58,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		}
 
 		[TestMethod]
-		public void GeoReverseLookup_LoopFolderLookupTest()
+		public async Task GeoReverseLookup_LoopFolderLookupTest()
 		{
 			var cakeBakerPhoto = new FileIndexItem
 			{
@@ -83,18 +84,21 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 			Console.WriteLine(NGeoNames.GeoFileDownloader.DEFAULTGEOFILEBASEURI);
 		        
-			new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
-				null, new FakeIWebLogger()).LoopFolderLookup(folderOfPhotos,false);
+			await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).LoopFolderLookup(folderOfPhotos,false);
 
 			Assert.AreEqual("Argentina", buenosAires.LocationCountry);
+			Assert.AreEqual("ARG", buenosAires.LocationCountryCode);
 			Assert.AreEqual(string.Empty, northSea.LocationCountry);
 			Assert.AreEqual("'s-Hertogenbosch", cakeBakerPhoto.LocationCity);
 			Assert.AreEqual("North Brabant", cakeBakerPhoto.LocationState);
 			Assert.AreEqual("Nederland", cakeBakerPhoto.LocationCountry);
+			Assert.AreEqual("NLD", cakeBakerPhoto.LocationCountryCode);
+
 		}
 
 		[TestMethod]
-		public void GeoReverseLookup_CatchError_VaticanCity()
+		public async Task GeoReverseLookup_CatchError_VaticanCity()
 		{
 			// the Country code VA does not exist
 			var vaticanCity = new FileIndexItem
@@ -105,7 +109,9 @@ namespace starskytest.starsky.feature.geolookup.Services
 			};
 			var folderOfPhotos = new List<FileIndexItem> {vaticanCity};
 
-			new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),null, new FakeIWebLogger()).LoopFolderLookup(folderOfPhotos,false);
+			await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).LoopFolderLookup(folderOfPhotos,false);
+			
 			Assert.AreEqual("Vatican City", vaticanCity.LocationCity);
 		}
 
@@ -117,7 +123,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 				new FileIndexItem(),
 				new FileIndexItem{ Latitude = 50, Longitude = 50}
 			};
-			var result = new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),null, new FakeIWebLogger())
+			var result = new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(), new FakeIWebLogger())
 				.RemoveNoUpdateItems(list,true);
 			Assert.AreEqual(1, result.Count);
 		}
@@ -133,10 +139,31 @@ namespace starskytest.starsky.feature.geolookup.Services
 		    
 			// ignore city
 			var result = new GeoReverseLookup(_appSettings, 
-				new FakeIGeoFileDownload(),null, new FakeIWebLogger()).RemoveNoUpdateItems(list,false);
+				new FakeIGeoFileDownload(),new FakeIWebLogger()).RemoveNoUpdateItems(list,false);
 			Assert.AreEqual(0, result.Count);
 
 		}
-	    
+
+
+		[TestMethod]
+		public void GetAdmin1Name_Null()
+		{
+			var geoReverseLookup = new GeoReverseLookup(_appSettings,
+				new FakeIGeoFileDownload(), new FakeIWebLogger());
+
+			var result = geoReverseLookup.GetAdmin1Name(string.Empty, Array.Empty<string>());
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public async Task GetAdmin1Name_DifferentLength()
+		{
+			var geoReverseLookup = new GeoReverseLookup(_appSettings,
+				new FakeIGeoFileDownload(), new FakeIWebLogger());
+
+			await geoReverseLookup.SetupAsync();
+			var result = geoReverseLookup.GetAdmin1Name("NL", new string[3]);
+			Assert.IsNull(result);
+		}
 	}
 }

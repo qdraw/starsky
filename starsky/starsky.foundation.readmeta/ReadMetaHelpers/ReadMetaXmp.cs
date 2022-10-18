@@ -158,6 +158,9 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	            var lensModel = GetContentNameSpace(property, "exifEX:LensModel");
 	            if (lensModel != null) item.SetMakeModel(lensModel,2);
 	            
+	            var countryCode = GetContentNameSpace(property, "Iptc4xmpCore:CountryCode");
+	            if ( countryCode != null ) item.LocationCountryCode = countryCode;
+	            
 	            // ImageStabilisation is not found in XMP
 	            
 	            // dont show in production 

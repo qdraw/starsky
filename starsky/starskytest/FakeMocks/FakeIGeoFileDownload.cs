@@ -7,7 +7,7 @@ namespace starskytest.FakeMocks
 	public class FakeIGeoFileDownload : IGeoFileDownload
 	{
 		public int Count { get; set; } = 0;
-		public Task Download()
+		public Task DownloadAsync()
 		{
 			if ( Count == int.MaxValue  )
 			{

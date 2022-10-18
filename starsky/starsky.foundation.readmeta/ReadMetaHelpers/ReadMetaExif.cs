@@ -8,9 +8,9 @@ using System.Text.RegularExpressions;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Exif.Makernotes;
+using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.QuickTime;
 using MetadataExtractor.Formats.Xmp;
-using Microsoft.Extensions.Logging;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -220,7 +220,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             }
             
             item.ImageStabilisation = GetImageStabilisation(allExifItems);
-            
+            item.LocationCountryCode = GetLocationCountryCode(allExifItems);
+
             // DateTime of image
             var dateTime = GetExifDateTime(allExifItems, new CameraMakeModel(item.Make, item.Model));
             if ( dateTime != null )
@@ -251,6 +252,25 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
 	        return ImageStabilisationType.Unknown;
         }
+        
+        internal static string GetLocationCountryCode(List<Directory> allExifItems)
+        {
+	        var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+	        var countryCodeIptc = iptcDirectory?.GetDescription(IptcDirectory.TagCountryOrPrimaryLocationCode);
+
+	        if ( !string.IsNullOrEmpty(countryCodeIptc) )
+	        {
+		        return countryCodeIptc;
+	        }
+	        
+	        // XMP,http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/,Iptc4xmpCore:CountryCode,NLD
+	        var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+	        var countryCodeXmp =  GetXmpData(xmpDirectory, "Iptc4xmpCore:CountryCode");
+	        
+	        return countryCodeXmp;
+        }
+        
+        
 
         private static string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)
         {
@@ -357,7 +377,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
 	        
             foreach (var exifItem in allExifItems) {
-                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+	            foreach ( var tag in exifItem.Tags )
+	            {
+		            _logger.LogDebug($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+	            }
+	            
                 // for xmp notes
                 if ( exifItem is not XmpDirectory xmpDirectory ||
                      xmpDirectory.XmpMeta == null ) continue;
@@ -393,9 +417,9 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    private static string GetXmpData(Directory exifItem, string propertyPath)
 	    {
 		    // for xmp notes
-		    if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
+		    if ( exifItem is not XmpDirectory xmpDirectory || xmpDirectory.XmpMeta == null )
 			    return string.Empty;
-
+		    
 		    return ( from property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value)) 
 			    where property.Path == propertyPath select property.Value ).FirstOrDefault();
 	    }

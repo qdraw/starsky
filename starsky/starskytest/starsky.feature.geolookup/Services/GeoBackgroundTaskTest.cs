@@ -38,7 +38,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 				new List<byte[]>{CreateAnImage.Bytes}
 				);
 			var storageSelector = new FakeSelectorStorage(storage);
-			var geoReverseLookup = new GeoReverseLookup(_appSettings, _geoFileDownload, _memoryCache);
+			var geoReverseLookup = new GeoReverseLookup(_appSettings, _geoFileDownload, new FakeIWebLogger(),_memoryCache);
 
 			var controller = new GeoBackgroundTask(_appSettings, storageSelector,
 				_geoLocationWrite, _memoryCache, new FakeIWebLogger(),
@@ -79,7 +79,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		
 		
 		[TestMethod]
-		public void GeoBackgroundTask_IsNotCalled()
+		public async Task GeoBackgroundTask_IsNotCalled()
 		{
 			var storage = new FakeIStorage(); // <= main folder not found
 			var storageSelector = new FakeSelectorStorage(storage);
@@ -90,7 +90,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 				new FakeIWebLogger(),  
 				geoReverseLookup );
 
-			controller.GeoBackgroundTaskAsync();
+			await controller.GeoBackgroundTaskAsync();
 		
 			Assert.AreEqual(0, geoReverseLookup.Count);
 		}
