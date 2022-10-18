@@ -140,6 +140,27 @@ namespace starskytest.starsky.feature.geolookup.Services
 			Assert.AreEqual(0, result.Count);
 
 		}
-	    
+
+
+		[TestMethod]
+		public void GetAdmin1Name_Null()
+		{
+			var geoReverseLookup = new GeoReverseLookup(_appSettings,
+				new FakeIGeoFileDownload(), new FakeIWebLogger());
+
+			var result = geoReverseLookup.GetAdmin1Name(string.Empty, Array.Empty<string>());
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public async Task GetAdmin1Name_DifferentLength()
+		{
+			var geoReverseLookup = new GeoReverseLookup(_appSettings,
+				new FakeIGeoFileDownload(), new FakeIWebLogger());
+
+			await geoReverseLookup.SetupAsync();
+			var result = geoReverseLookup.GetAdmin1Name("NL", new string[3]);
+			Assert.IsNull(result);
+		}
 	}
 }

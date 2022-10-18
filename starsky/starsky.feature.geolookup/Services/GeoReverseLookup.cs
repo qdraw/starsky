@@ -48,7 +48,7 @@ namespace starsky.feature.geolookup.Services
 	        _cache = memoryCache;
         }
         
-        public async Task<(IEnumerable<Admin1Code>, ReverseGeoCode<ExtendedGeoName>)> SetupAsync()
+        internal async Task<(IEnumerable<Admin1Code>, ReverseGeoCode<ExtendedGeoName>)> SetupAsync()
         {
 	        await _geoFileDownload.DownloadAsync();
 	        
@@ -62,7 +62,7 @@ namespace starsky.feature.geolookup.Services
 			return (_admin1CodesAscii, _reverseGeoCode );
         }
 
-        private string? GetAdmin1Name(string countryCode, string[] adminCodes)
+        internal string? GetAdmin1Name(string countryCode, string[] adminCodes)
         {
             if (_admin1CodesAscii == null || adminCodes.Length != 4) return null;
 
