@@ -387,7 +387,7 @@ namespace starsky.feature.import.Services
 				importIndexItem.Structure = overwriteStructure;
 			}
 			
-			var structureService = new StructureService(_subPathStorage, importIndexItem.Structure);
+			var structureService = new StructureService(_subPathStorage, importIndexItem.Structure, true);
 			
 			importIndexItem.FileIndexItem!.ParentDirectory = structureService.ParseSubfolders(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,

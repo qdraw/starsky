@@ -14,11 +14,13 @@ namespace starsky.foundation.storage.Services
 	{
 		private readonly IStorage _storage;
 		private readonly string _structure;
+		private readonly DateTimeKind _sourceDateTimeKind;
 
-		public StructureService(IStorage storage, string structure)
+		public StructureService(IStorage storage, string structure, DateTimeKind sourceDateTimeKind = DateTimeKind.Local)
 		{
 			_storage = storage;
 			_structure = structure;
+			_sourceDateTimeKind = sourceDateTimeKind;
 		}
 
 		/// <summary>
@@ -36,7 +38,7 @@ namespace starsky.foundation.storage.Services
 			CheckStructureFormat();
 			var fileNameStructure =
 				PathHelper.PrefixDbSlash(FilenamesHelper.GetFileName(_structure));
-			var parsedStructuredList = ParseStructure(fileNameStructure, dateTime, fileNameBase, extensionWithoutDot);
+			var parsedStructuredList = ParseStructure(fileNameStructure, dateTime, DateTimeKind fileNameBase, extensionWithoutDot);
 			return PathHelper.RemovePrefixDbSlash(ApplyStructureRangeToStorage(parsedStructuredList));
 		}
 
@@ -197,10 +199,11 @@ namespace starsky.foundation.storage.Services
 		/// </summary>
 		/// <param name="structure">Structure</param>
 		/// <param name="dateTime">Where to parse to</param>
+		/// <param name="sourceDateTimeKind">source datetime kind</param>
 		/// <param name="fileNameBase">source name, can be used in the options</param>
 		/// <param name="extensionWithoutDot">fileExtension without dot</param>
 		/// <returns>Object with Structure Range output</returns>
-		private static List<List<StructureRange>> ParseStructure(string structure, DateTime dateTime,
+		private List<List<StructureRange>> ParseStructure(string structure, DateTime dateTime, DateTimeKind sourceDateTimeKind,
 			string fileNameBase = "", string extensionWithoutDot = "")
 		{
 			var structureList = structure.Split('/');
@@ -222,7 +225,7 @@ namespace starsky.foundation.storage.Services
 						Pattern = match.Value,
 						Start = match.Index,
 						End = match.Index + match.Length,
-						Output = OutputStructureRangeItemParser(match.Value, dateTime, fileNameBase, extensionWithoutDot)
+						Output = OutputStructureRangeItemParser(match.Value, dateTime, sourceDateTimeKind, fileNameBase, extensionWithoutDot)
 					});
 				}
 
@@ -237,11 +240,12 @@ namespace starsky.foundation.storage.Services
 		/// </summary>
 		/// <param name="pattern">Split pattern item. For example yyyy or dd</param>
 		/// <param name="dateTime">Date and Time</param>
+		/// <param name="sourceDateTimeKind"></param>
 		/// <param name="fileNameBase">source file name without extension</param>
 		/// <param name="extensionWithoutDot">fileExtension without dot</param>
 		/// <returns>Current item name, with parsed DateTime and without escape signs</returns>
-		private static string OutputStructureRangeItemParser(string pattern, DateTime dateTime,
-			string fileNameBase, string extensionWithoutDot = "")
+		private string OutputStructureRangeItemParser(string pattern, DateTime dateTime,
+			DateTimeKind sourceDateTimeKind, string fileNameBase, string extensionWithoutDot = "")
 		{
 			// allow only full word matches (so .ext is no match)
 			MatchCollection matchCollection = new Regex(DateRegexPattern).Matches(pattern);
@@ -250,6 +254,10 @@ namespace starsky.foundation.storage.Services
 				// Ignore escaped items
 				if ( !match.Value.StartsWith("\\") && match.Index == 0 && match.Length == pattern.Length )
 				{
+					if ( sourceDateTimeKind == DateTimeKind.Utc )
+					{
+						
+					}
 					return dateTime.ToString(pattern, CultureInfo.InvariantCulture);
 				}
 			}

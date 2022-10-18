@@ -76,7 +76,7 @@ namespace starsky.feature.import.Services
 			var result = await _importService.Importer(inputPathListFormArgs, importSettings);
 
 			WriteOutputStatus(importSettings, result, stopWatch);
-			Console.WriteLine("done import");
+			_console.WriteLine("done import");
 
 		}
 
