@@ -23,6 +23,28 @@ else
     echo "Skip: remove TestResults cache. -> ""$PARENT_DIR""/TestResults"
 fi
 
+echo "next: search for bin folders in sub projects, but not main due the fact that the config and database is stored there"
+SEARCH_OUTPUT=()
+SEARCH_INPUT="bin"
+while IFS=  read -r -d $'\0'; do
+    SEARCH_OUTPUT+=("$REPLY")
+done < <(find . -name "${SEARCH_INPUT}" -print0)
+
+for i in "${SEARCH_OUTPUT[@]}"
+do
+    if [[ "$i" == *"feature"* ]] || [[ "$i" == *"foundation"* ]]; 
+    then
+       echo "next remove feature/found.: " $i
+       rm -rf $i
+    fi
+    
+    if [[ "$i" == *"cli/bin" && "$i" == "./starsky"* &&  "$i" != *"node_modules"* ]]; then
+       echo "next remove cli/bins: " $i
+       rm -rf $i
+    fi
+done
+
+
 # coverage files
 if [ -f "$PARENT_DIR""/starskytest/coverage-merge-cobertura.xml" ] 
 then
