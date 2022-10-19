@@ -15,6 +15,26 @@ jest.mock("electron", () => {
       getLocale: () => "en",
       on: () => "en",
     },
+    BrowserWindow: () => {
+      return {
+        loadFile: jest.fn(),
+        once: (_: string, func: Function) => {
+          return func();
+        },
+        show: jest.fn(),
+        on: (_: string, func: Function) => {
+          return func();
+        },
+        setMenu: jest.fn(),
+        close: jest.fn(),
+      };
+    },
+  };
+});
+
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "99.99.99",
   };
 });
 

@@ -591,7 +591,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 # version 0.3.0-beta.0 - 2020-08-11
 - [x]   (Added) _Back-end_ Update meta information for folders
 - [x]   (Added) _Back-end_ Write component
-- [x]   (Added) _Back-end_ Add read component (sync) [not implemented]
+- [x]   (Added) _Back-end_ Add read component (sync) (not implemented)
 - [x]   (Added) _Back-end_ Move json sidecar file
 - [x]   (Added) _Back-end_ Directory sidecar write file
 - [x]   (Fixed) _Back-end_ Unknown/GPX files sidecar files
@@ -694,7 +694,7 @@ __Should build before 2020-04-22, Import UnitTests have a date bug. For all vers
 - [x]   (Fixed) _Front-end_ navigator.language issue in Safari
 - [x]   (Changed) _Front-end_ use `starsky` prefix in api urls
 - [x]   (Fixed) _Front-end_ use `starsky` prefix only when needed
-- [x]   (Fixed) _Back-end_ __Cookie path fix for stuck in 'Do you want to log out?' screen__
+- [x]   (Fixed) _Back-end_ Cookie path fix for stuck in 'Do you want to log out?' screen
 - [x]   (Fixed) _Front-end_ with prefix on the archive page navigate to the right url
 - [x]   (Fixed) _Front-end_ Search page cache not cleared after edit multiple images
 - [x]   (Fixed) _Front-end_ Delete multiple images collections no applied
@@ -800,7 +800,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x]   (feature) _Front-end_ _Back-end_ Health view (feature) when a disk is full, show a warning
 
 # version 0.1.13 - 2020-01-25
-- [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__
+- [x]   (remove) _V1_ Removal of Old Layout (V1) and All Razor Views
 - [x]   (feature) _Front-end_ _API_ Add new account in React
 - [x]   (feature) _Front-end_ _API_ Redirect to new account creation on new setup
 - [x]   (feature) _Front-end_ Upload to directory (+ backend)

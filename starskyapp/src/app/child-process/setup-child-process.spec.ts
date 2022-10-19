@@ -6,6 +6,20 @@ import * as GetPortProxy from "../get-free-port/get-free-port";
 import logger from "../logger/logger";
 import { setupChildProcess } from "./setup-child-process";
 
+jest.mock('child_process', () => {
+  return {
+    spawn: () => {},
+    __esModule: true,
+  };
+});
+
+jest.mock('fs', () => {
+  return {
+    existsSync: () => {},
+    __esModule: true,
+  };
+});
+
 jest.mock("electron", () => {
   return {
     app: {
@@ -13,11 +27,12 @@ jest.mock("electron", () => {
       getPath: () => "tmp",
       getLocale: () => "en",
       on: () => "en",
-      getName: () => "test"
+      getName: () => "test",
     },
     net: {
-      request: () => {}
-    }
+      request: () => {},
+    },
+    __esModule: true,
   };
 });
 
@@ -34,7 +49,7 @@ describe("setupChildProcess", () => {
         .mockImplementationOnce(() => false);
 
       jest.spyOn(GetPortProxy, "GetFreePort").mockImplementationOnce(() => {
-        return Promise.resolve(0) as any;
+        return Promise.resolve(0);
       });
 
       const mkdirSpy = jest
@@ -52,14 +67,14 @@ describe("setupChildProcess", () => {
       });
       await setupChildProcess();
 
-      expect(mkdirSpy).toBeCalled();
-      expect(mkdirSpy).toBeCalledTimes(2);
+      expect(mkdirSpy).toHaveBeenCalled();
+      expect(mkdirSpy).toHaveBeenCalledTimes(2);
 
-      expect(spawnSpy.stdout.on).toBeCalled();
-      expect(spawnSpy.stdout.on).toBeCalledWith("data", expect.anything());
+      expect(spawnSpy.stdout.on).toHaveBeenCalled();
+      expect(spawnSpy.stdout.on).toHaveBeenCalledWith("data", expect.anything());
 
-      expect(spawnSpy.stderr.on).toBeCalled();
-      expect(spawnSpy.stderr.on).toBeCalledWith("data", expect.anything());
+      expect(spawnSpy.stderr.on).toHaveBeenCalled();
+      expect(spawnSpy.stderr.on).toHaveBeenCalledWith("data", expect.anything());
     });
   });
 });
