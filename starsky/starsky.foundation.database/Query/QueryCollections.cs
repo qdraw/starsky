@@ -42,7 +42,6 @@ namespace starsky.foundation.database.Query
             }
 
             // Then add the items that are non duplicate back to the list
-            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var dbItem in databaseSubFolderList.ToList())
             {
                 // check if any item is duplicate

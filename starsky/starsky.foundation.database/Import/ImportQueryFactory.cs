@@ -23,7 +23,7 @@ namespace starsky.foundation.database.Import
 		public IImportQuery? ImportQuery()
 		{
 			var context = _setupDatabaseTypes.BuilderDbFactory();
-			if ( _importQuery.GetType() == typeof(ImportQuery) )
+			if ( _importQuery is ImportQuery )
 			{
 				return new ImportQuery(null,_console,_logger,context);
 			}
