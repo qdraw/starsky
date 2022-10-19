@@ -128,17 +128,15 @@ namespace starsky.feature.import.Services
 		internal Dictionary<string,List<string>> ParentFoldersDictionary(List<ImportIndexItem> importIndexItemsList)
 		{
 			var directoriesContent = new Dictionary<string,List<string>>();
-			foreach ( var importIndexItem in importIndexItemsList.Where(p =>
-				p.Status == ImportStatus.Ok) )
+			foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(p =>
+				p.Status == ImportStatus.Ok).Select(p => p.FileIndexItem?.ParentDirectory) )
 			{
-				if ( directoriesContent.ContainsKey(importIndexItem.FileIndexItem?.ParentDirectory!) )
+				if ( directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory!) )
 					continue;
 				
 				var parentDirectoryList =
-					_subPathStorage.GetAllFilesInDirectory(
-						importIndexItem.FileIndexItem?
-							.ParentDirectory).ToList();
-				directoriesContent.Add(importIndexItem.FileIndexItem?.ParentDirectory!, parentDirectoryList);
+					_subPathStorage.GetAllFilesInDirectory(importIndexItemFileIndexItemParentDirectory).ToList();
+				directoriesContent.Add(importIndexItemFileIndexItemParentDirectory!, parentDirectoryList);
 			}
 
 			return directoriesContent;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +51,7 @@ namespace starsky.foundation.http.Streaming
 	            selectorStorage, HeaderFileName(request,appSettings));            
         }
 
+        [SuppressMessage("Usage", "S125:Remove this commented out code")]
         public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, 
 	        ISelectorStorage selectorStorage, string headerFileName = null)
         {

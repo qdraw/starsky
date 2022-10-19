@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -27,33 +28,34 @@ namespace starsky.foundation.database.Query
 
             foreach (var stackItemByName in stackItemsByFileCollectionName)
             {
-                var duplicateItems = databaseSubFolderList.Where(p => 
+	            var duplicateItems = databaseSubFolderList.Where(p => 
                     p.FileCollectionName == stackItemByName.FileCollectionName).ToList();
                 // The idea to pick thumbnail based images first, followed by non-thumb supported
                 // when not pick alphabetaly > todo implement this
 
-                for (int i = 0; i < duplicateItems.Count; i++)
-                {
-                    if(ExtensionRolesHelper.IsExtensionThumbnailSupported(duplicateItems[i].FileName))
-                    {
-                        querySubFolderList.Add(duplicateItems[i]);
-                    }
-                }
+                querySubFolderList.AddRange(duplicateItems.Where(item => 
+	                ExtensionRolesHelper.IsExtensionThumbnailSupported(item.FileName)));
             }
 
-            // Then add the items that are non duplicate back to the list
-            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var dbItem in databaseSubFolderList.ToList())
-            {
-                // check if any item is duplicate
-                if (stackItemsByFileCollectionName.All(p => 
-                    p.FileCollectionName != dbItem.FileCollectionName))
-                {
-                    querySubFolderList.Add(dbItem);
-                }
-            }
-            
-            return querySubFolderList.OrderBy(p => p.FileName).ToList();
+			return AddNonDuplicateBackToList(databaseSubFolderList,stackItemsByFileCollectionName,querySubFolderList);
         }
+
+	    [SuppressMessage("Usage", "S3267:Loops should be simplified with LINQ expressions")]
+	    private static List<FileIndexItem> AddNonDuplicateBackToList(IEnumerable<FileIndexItem> databaseSubFolderList,
+		    IReadOnlyCollection<FileIndexItem> stackItemsByFileCollectionName, ICollection<FileIndexItem> querySubFolderList)
+	    {
+		    // Then add the items that are non duplicate back to the list
+		    foreach (var dbItem in databaseSubFolderList.ToList())
+		    {
+			    // check if any item is duplicate
+			    if (stackItemsByFileCollectionName.All(p => 
+				        p.FileCollectionName != dbItem.FileCollectionName))
+			    {
+				    querySubFolderList.Add(dbItem);
+			    }
+		    }
+            
+		    return querySubFolderList.OrderBy(p => p.FileName).ToList();
+	    }
     }
 }
