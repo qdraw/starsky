@@ -16,6 +16,15 @@ jest.mock('child_process', () => {
 jest.mock('fs', () => {
   return {
     existsSync: () => {},
+    mkdirSync: () => {},
+    stat: () => {},
+    __esModule: true,
+  };
+});
+
+jest.mock('readline', () => {
+  return {
+    emitKeypressEvents: () => {},
     __esModule: true,
   };
 });
