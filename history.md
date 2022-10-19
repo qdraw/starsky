@@ -38,8 +38,9 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.5.0 _(Unreleased)_ - 2022-??-??
 - [x]   (Changed) _Back-end_ Last Edited is updated when Single Sync a file (PR #916)
-- [x]   (Changed) _Back-end_ Code style quality (PR #917, #919)
+- [x]   (Changed) _Back-end_ Code style quality, move search to feature, sealed classes (PR #917, #919, #922, #921)
 - [x]   __(Breaking Change)__ _Back-end_ Use Application Insights Connection String instead of Instrumentation Key (PR #920, Issue #908) 
+- [x]   (Added) _Back-end_ Use Country code in geo services (PR #923)
 
 - > Todo: https://github.com/qdraw/starsky/milestone/2
 
