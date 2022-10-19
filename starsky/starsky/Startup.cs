@@ -38,7 +38,7 @@ using starsky.Helpers;
 namespace starsky
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class Startup
+    public sealed class Startup
     {
         private readonly IConfigurationRoot _configuration;
         private AppSettings _appSettings;
@@ -301,7 +301,7 @@ namespace starsky
 	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
 
 	        if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings
-		        .ApplicationInsightsInstrumentationKey) )
+		        .ApplicationInsightsConnectionString) )
 	        {
 		        var configuration = app.ApplicationServices.GetRequiredService<TelemetryConfiguration>();
 		        configuration.TelemetryProcessorChainBuilder.Use(next => new FilterWebsocketsTelemetryProcessor(next));

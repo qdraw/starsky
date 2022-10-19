@@ -1,6 +1,6 @@
 namespace starsky.foundation.platform.Models
 {
-	public class AccountRoles
+	public static class AccountRoles
 	{
 		public enum AppAccountRoles
 		{

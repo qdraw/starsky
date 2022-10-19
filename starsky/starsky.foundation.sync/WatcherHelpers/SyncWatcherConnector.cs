@@ -28,7 +28,7 @@ using starsky.foundation.webtelemetry.Models;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherHelpers
 {
-	public class SyncWatcherConnector
+	public sealed class SyncWatcherConnector
 	{
 		private ISynchronize? _synchronize;
 		private AppSettings? _appSettings;
@@ -79,7 +79,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		internal IOperationHolder<RequestTelemetry> CreateNewRequestTelemetry(string? fullFilePath = null)
 		{
 			if (_telemetryClient == null || string.IsNullOrEmpty(_appSettings!
-				    .ApplicationInsightsInstrumentationKey) )
+				    .ApplicationInsightsConnectionString) )
 			{
 				return new EmptyOperationHolder<RequestTelemetry>();
 			}
@@ -99,7 +99,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		internal bool EndRequestOperation(IOperationHolder<RequestTelemetry> operation, string statusCode)
 		{
 			if ( _telemetryClient == null || string.IsNullOrEmpty(_appSettings!
-				    .ApplicationInsightsInstrumentationKey) )
+				    .ApplicationInsightsConnectionString) )
 			{
 				return false;
 			}

@@ -29,10 +29,10 @@ The command line arguments are shortcuts to set an in-app environment variable.
 You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
 1.  You can use `appsettings.json` inside the application folder to set base settings.
     The order of this files is used to get the values from the appsettings
-    -    `/bin/Debug/netcoreapp3.1/appsettings.patch.json`
-    -    `/bin/Debug/netcoreapp3.1/appsettings.computername.patch.json`
-    -    `/bin/Debug/netcoreapp3.1/appsettings.json`
-    -    `/bin/Debug/netcoreapp3.1/appsettings.computername.json`
+    -    `/bin/Debug/net6.0/appsettings.patch.json`
+    -    `/bin/Debug/net6.0/appsettings.computername.patch.json`
+    -    `/bin/Debug/net6.0/appsettings.json`
+    -    `/bin/Debug/net6.0/appsettings.computername.json`
 
 2.  Use Environment variables to overwrite those base settings
    For `ThumbnailTempFolder` use `app__ThumbnailTempFolder`
@@ -43,10 +43,10 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 1. To start it is __not__ mandatory to adjust any settings.
 
 ### Recommend settings
-1.  `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/netcoreapp3.1/thumbnailTempFolder`)
-2.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp3.1/storageFolder`)
+1.  `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/net6.0/thumbnailTempFolder`)
+2.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/net6.0/storageFolder`)
 3.  `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
-4.  `DatabaseConnection` - The connection-string to the database (default: `./bin/Debug/netcoreapp3.1/data.db`)
+4.  `DatabaseConnection` - The connection-string to the database (default: `./bin/Debug/net6.0/data.db`)
 5.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
 
 ### Optional settings
@@ -65,7 +65,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
 14. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User or Administrator _(default User)_
-15. `applicationInsightsInstrumentationKey` - Track Telemetry with Microsoft Application Insights _(default disabled)_
+15. `ApplicationInsightsConnectionString` - Track Telemetry with Microsoft Application Insights (use connection string instead of Instrumentation key) _(default disabled)_
 16. `ApplicationInsightsDatabaseTracking` - Track database dependencies (need to have InstrumentationKey) _(default disabled)_
 17. `ApplicationInsightsLog` - Add WebLogger output to Application Insights (need to have InstrumentationKey) _(default enabled, when key is provided)_
 18. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.

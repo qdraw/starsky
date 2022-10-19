@@ -23,7 +23,6 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
-using starskycore.Interfaces;
 using starskycore.ViewModels;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;

@@ -11,7 +11,7 @@ using starsky.foundation.storage.Storage;
 namespace starsky.foundation.readmeta.Services
 {
 	[Service(typeof(IReadMetaSubPathStorage), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ReadMetaSubPathStorage : IReadMetaSubPathStorage
+	public sealed class ReadMetaSubPathStorage : IReadMetaSubPathStorage
 	{
 		private readonly ReadMeta _readMeta;
 

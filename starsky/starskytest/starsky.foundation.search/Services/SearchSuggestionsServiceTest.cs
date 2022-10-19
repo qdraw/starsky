@@ -9,10 +9,10 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starskycore.Services;
+using starsky.feature.search.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.feature.search.Services
 {
 	[TestClass]
 	public class SearchSuggestionsServiceTest
@@ -115,7 +115,7 @@ namespace starskytest.Services
 		public async Task SearchSuggestionsService_NoCache_memCacheIsNull()
 		{
 			// The feature does not work without cache enabled
-			var result = await new SearchSuggestionsService(_dbContext, null, null)
+			var result = await new SearchSuggestionsService(_dbContext, null, null!, new AppSettings())
 				.SearchSuggest("sch");
 
 			Assert.AreEqual(0, result.Count());

@@ -1,6 +1,6 @@
 ﻿namespace starsky.foundation.database.Models
 {
-    public class PageViewType
+    public sealed class PageViewType
     {
         public enum PageType
         {

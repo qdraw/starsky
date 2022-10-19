@@ -19,7 +19,7 @@ using starsky.foundation.worker.Interfaces;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class MetaReplaceController : Controller
+	public sealed class MetaReplaceController : Controller
 	{
 		private readonly IMetaReplaceService _metaReplaceService;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;

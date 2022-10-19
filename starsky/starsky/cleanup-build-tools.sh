@@ -4,6 +4,7 @@
 # docker system prune -a -f
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+NET_MONIKER="net6.0"
 
 if [ -d $HOME"/.sonar" ] 
 then
@@ -21,6 +22,28 @@ then
 else
     echo "Skip: remove TestResults cache. -> ""$PARENT_DIR""/TestResults"
 fi
+
+echo "next: search for bin folders in sub projects, but not main due the fact that the config and database is stored there"
+SEARCH_OUTPUT=()
+SEARCH_INPUT="bin"
+while IFS=  read -r -d $'\0'; do
+    SEARCH_OUTPUT+=("$REPLY")
+done < <(find . -name "${SEARCH_INPUT}" -print0)
+
+for i in "${SEARCH_OUTPUT[@]}"
+do
+    if [[ "$i" == *"feature"* ]] || [[ "$i" == *"foundation"* ]]; 
+    then
+       echo "next remove feature/found.: " $i
+       rm -rf $i
+    fi
+    
+    if [[ "$i" == *"cli/bin" && "$i" == "./starsky"* &&  "$i" != *"node_modules"* ]]; then
+       echo "next remove cli/bins: " $i
+       rm -rf $i
+    fi
+done
+
 
 # coverage files
 if [ -f "$PARENT_DIR""/starskytest/coverage-merge-cobertura.xml" ] 
@@ -43,6 +66,36 @@ then
     rm  "$PARENT_DIR""/starskytest/netcore-coverage.opencover.xml"
 fi
 # end coverage files
+
+# dependency files
+if [ -d "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies" ] 
+then
+    rm -rf "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies"
+else
+    echo "Skip: remove dependencies cache (Release). -> ""$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies"
+fi
+
+if [ -d "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/dependencies" ] 
+then
+    rm -rf "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/dependencies"
+else
+    echo "Skip: remove dependencies cache (Debug) -> ""$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/dependencies"
+fi
+
+# temp folder of the project
+if [ -d "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp" ] 
+then
+    rm -rf "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp"
+else
+    echo "Skip: remove temp cache (Release). -> ""$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/temp"
+fi
+
+if [ -d "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp" ] 
+then
+    rm -rf "$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp"
+else
+    echo "Skip: remove temp cache (Debug) -> ""$PARENT_DIR""/starsky/bin/Debug/"$NET_MONIKER"/temp"
+fi
 
 if [ -d $PARENT_DIR"/.sonarqube" ] 
 then
@@ -69,8 +122,36 @@ then
     dotnet nuget locals all --clear
     
     cd $PARENT_DIR
+    echo "next clean debug"
     dotnet clean starsky.sln || true
+    echo "next clean release"
+    dotnet clean starsky.sln --configuration Release || true
 fi
+
+
+# cypress cache on mac os
+if [ -d "$HOME""/Library/Caches/Cypress" ] 
+then
+    COUNT_CYPRESS=$(ls "$HOME""/Library/Caches/Cypress" | wc -l | sed 's/ *$//g')
+    if [ $COUNT_CYPRESS -ne "1" ]; then
+        echo "Remove cypress cache -> "$HOME"/Library/Caches/Cypress"
+        rm -rf "$HOME""/Library/Caches/Cypress"
+        
+        # and install it again
+        ROOT_REPO_DIR="$(dirname "$PARENT_DIR")"
+        
+        cd $ROOT_REPO_DIR"/starsky-tools/end2end"
+        echo "next: re-install cypress"
+        npm ci
+    else
+        echo "Skip: remove cypress cache. There is only 1 folder in the cypress cache, skip remove"
+    fi
+
+else
+    echo "Skip: remove cypress cache. -> "$HOME"/Library/Caches/Cypress"
+fi
+
+# Docker cache clean
 
 if ! command -v docker &> /dev/null
 then
@@ -78,22 +159,7 @@ then
     exit
 fi
 
-# cypress cache on mac os
-if [ -d "$HOME""/Library/Caches/Cypress" ] 
-then
-    echo "Remove cypress cache -> "$HOME"/Library/Caches/Cypress"
-    rm -rf "$HOME""/Library/Caches/Cypress"
-    
-    # and install it again
-    ROOT_REPO_DIR="$(dirname "$PARENT_DIR")"
-    
-    cd $ROOT_REPO_DIR"/starsky-tools/end2end"
-    echo "next: re-install cypress"
-    npm ci
-else
-    echo "Skip: remove cypress cache. -> "$HOME"/Library/Caches/Cypress"
-fi
-
+echo "next: docker"
 
 COLOR_REST="$(tput sgr0)"
 COLOR_RED="$(tput setaf 1)"

@@ -14,7 +14,7 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.sync.SyncServices
 {
-	public class SyncRemove
+	public sealed class SyncRemove
 	{
 		private readonly AppSettings _appSettings;
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;
@@ -126,7 +126,7 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				foreach ( var singleCollectionPath in collectionPath )
 				{
-					if ( item.FilePath.StartsWith(singleCollectionPath) 
+					if ( item.FilePath!.StartsWith(singleCollectionPath) 
 					     && !ExtensionRolesHelper.IsExtensionSidecar(item.FilePath) )
 					{
 						item.RemoveSidecarExtension("xmp");

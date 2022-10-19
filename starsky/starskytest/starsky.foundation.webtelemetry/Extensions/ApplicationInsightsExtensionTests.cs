@@ -20,11 +20,11 @@ namespace starskytest.starsky.foundation.webtelemetry.Extensions
 			IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
 			serviceCollection.AddSingleton(configuration); 
 			
-			serviceCollection.AddMonitoring(new AppSettings{ApplicationInsightsInstrumentationKey = "t"});
+			serviceCollection.AddMonitoring(new AppSettings{ApplicationInsightsConnectionString = "t"});
 
 			Assert.IsTrue(serviceCollection.Count >= 1);
 			var result= serviceCollection.FirstOrDefault(p
-				=> p.ServiceType.FullName.Contains("ApplicationInsights"));
+				=> p.ServiceType.FullName!.Contains("ApplicationInsights"));
 			Assert.IsNotNull(result);
 		}
 		
@@ -32,11 +32,11 @@ namespace starskytest.starsky.foundation.webtelemetry.Extensions
 		public void TestIfServiceIsDisabled()
 		{
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddMonitoring(new AppSettings{ApplicationInsightsInstrumentationKey = ""});
+			serviceCollection.AddMonitoring(new AppSettings{ApplicationInsightsConnectionString = ""});
 
 			Assert.AreEqual(0, serviceCollection.Count());
 			var result= serviceCollection.FirstOrDefault(p
-				=> p.ServiceType.FullName.Contains("ApplicationInsights"));
+				=> p.ServiceType.FullName!.Contains("ApplicationInsights"));
 			Assert.IsNull(result);
 		}
 

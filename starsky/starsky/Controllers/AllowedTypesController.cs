@@ -8,7 +8,7 @@ using starskycore.Helpers;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class AllowedTypesController : Controller
+	public sealed class AllowedTypesController : Controller
 	{
 		
 		/// <summary>

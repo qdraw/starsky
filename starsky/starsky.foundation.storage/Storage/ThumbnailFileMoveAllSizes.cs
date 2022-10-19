@@ -2,7 +2,7 @@ using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.Storage
 {
-	public class ThumbnailFileMoveAllSizes
+	public sealed class ThumbnailFileMoveAllSizes
 	{
 		private readonly IStorage _thumbnailStorage;
 

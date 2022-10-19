@@ -23,7 +23,7 @@ using starsky.foundation.worker.Services;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class ThumbnailGenerationController : Controller
+	public sealed class ThumbnailGenerationController : Controller
 	{
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IWebLogger _logger;

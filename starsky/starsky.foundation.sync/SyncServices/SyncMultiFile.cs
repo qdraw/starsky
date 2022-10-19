@@ -17,7 +17,7 @@ using starsky.foundation.sync.SyncInterfaces;
 namespace starsky.foundation.sync.SyncServices
 {
 	
-	public class SyncMultiFile
+	public sealed class SyncMultiFile
 	{
 		private readonly IQuery _query;
 		private readonly IWebLogger _logger;

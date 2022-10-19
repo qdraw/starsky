@@ -160,6 +160,7 @@ if [ -f starsky.dll ]; then
     do
         if [[ $ENTRY != "appsettings"* 
         && $ENTRY != "pm2-"*
+        && $ENTRY != "github-artifacts-download.sh"
         && $ENTRY != "service-"*
         && $ENTRY != "thumbnailTempFolder"
         && $ENTRY != "temp"

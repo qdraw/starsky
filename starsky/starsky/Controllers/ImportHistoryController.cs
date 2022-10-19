@@ -7,7 +7,7 @@ using starsky.foundation.database.Models;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class ImportHistoryController : Controller
+	public sealed class ImportHistoryController : Controller
 	{
 		private readonly IImportQuery _importQuery;
 

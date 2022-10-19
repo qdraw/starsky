@@ -19,9 +19,14 @@ namespace starsky.foundation.webtelemetry.Helpers
 	            
 				// Skip when is Development
 				if (appSettings.ApplicationInsightsLog != true || 
-				    string.IsNullOrWhiteSpace(appSettings.ApplicationInsightsInstrumentationKey)) return;
+				    string.IsNullOrWhiteSpace(appSettings.ApplicationInsightsConnectionString)) return;
 	            
-				logging.AddApplicationInsights(appSettings.ApplicationInsightsInstrumentationKey);
+				logging.AddApplicationInsights(
+					telemetryConfiguration =>
+					{
+						telemetryConfiguration.ConnectionString = appSettings.ApplicationInsightsConnectionString;
+					},
+					_ => { });
 			});
 
 			services.AddScoped<IWebLogger, WebLogger>();

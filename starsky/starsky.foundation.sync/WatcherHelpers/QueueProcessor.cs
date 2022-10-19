@@ -11,7 +11,7 @@ using starsky.foundation.sync.WatcherInterfaces;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherHelpers
 {
-	public class QueueProcessor : IQueueProcessor // not injected
+	public sealed class QueueProcessor : IQueueProcessor // not injected
 	{
 		private readonly IDiskWatcherBackgroundTaskQueue _bgTaskQueue;
 		private readonly SynchronizeDelegate _processFile;

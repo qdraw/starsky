@@ -20,7 +20,7 @@ namespace starsky.foundation.writemeta.Helpers
 	/// Only for writing commands 
 	/// Check for mapping objects to exifTool commandline args -> 'ExifToolCmdHelper'
 	/// </summary>
-	public class ExifTool : IExifTool
+	public sealed class ExifTool : IExifTool
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;

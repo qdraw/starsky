@@ -13,7 +13,7 @@ namespace starsky.foundation.platform.Models
 	}
 
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-	public class ApiNotificationResponseModel<T> : ApiNotificationResponseModel
+	public sealed class ApiNotificationResponseModel<T> : ApiNotificationResponseModel
 	{
 		public ApiNotificationResponseModel(T? data = default, ApiNotificationType type = ApiNotificationType.Unknown)
 		{

@@ -10,7 +10,6 @@ using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.readmeta.Services;
 using starskycore.Helpers;
 using starskycore.Models;
-using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -190,6 +189,29 @@ namespace starskytest.Services
 			var data = ReadMetaXmp.GetDataFromString(xmpStart);
 			Assert.AreEqual(string.Empty,data.Tags);
 
+		}
+
+
+		[TestMethod]
+		public void XmpGetSidecarFile_LocationCountryCode()
+		{
+			const string xmpData = "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+			                       "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.42'>\n" +
+			                       "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n" +
+			                       " <rdf:Description rdf:about=''\n" +
+			                       "  xmlns:Iptc4xmpCore='http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/'>\n" +
+			                       "  <Iptc4xmpCore:CountryCode>NLD</Iptc4xmpCore:CountryCode>\n" +
+			                       " </rdf:Description>\n</rdf:RDF>\n" +
+			                       "</x:xmpmeta>\n<?xpacket end='w'?>";
+
+			var xmpByteArray = Encoding.UTF8.GetBytes(xmpData);
+		    
+			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
+				new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
+			
+			var data = new ReadMetaXmp(fakeIStorage).XmpGetSidecarFile(new FileIndexItem("/test.arw"));
+
+			Assert.AreEqual("NLD", data.LocationCountryCode);
 		}
 	}
 }

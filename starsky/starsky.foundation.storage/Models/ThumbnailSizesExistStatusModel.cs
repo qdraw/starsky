@@ -1,6 +1,6 @@
 namespace starsky.foundation.storage.Models
 {
-	public class ThumbnailSizesExistStatusModel
+	public sealed class ThumbnailSizesExistStatusModel
 	{
 		public bool TinyMeta { get; set; }
 		public bool Small { get; set; }

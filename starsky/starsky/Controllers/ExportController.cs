@@ -15,7 +15,7 @@ using starskycore.Helpers;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class ExportController : Controller
+	public sealed class ExportController : Controller
 	{
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _hostFileSystemStorage;

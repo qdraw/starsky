@@ -34,7 +34,7 @@ namespace starsky.Controllers
 	[Authorize] // <- should be logged in!
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S5693:Make sure the content " +
 		"length limit is safe here", Justification = "Is checked")]
-	public class UploadController : Controller
+	public sealed class UploadController : Controller
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IImport _import;

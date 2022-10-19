@@ -75,7 +75,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var logger = new FakeIWebLogger();
 			new FlushApplicationInsights(new ServiceCollection()
-				.BuildServiceProvider(), new AppSettings{ApplicationInsightsInstrumentationKey = "t"}, logger).GetTelemetryClient();
+				.BuildServiceProvider(), new AppSettings{ApplicationInsightsConnectionString = "t"}, logger).GetTelemetryClient();
 			Assert.AreEqual(1, logger.TrackedInformation.Count);
 			Assert.AreEqual("TelemetryClient is null on exit", logger.TrackedInformation[0].Item2);
 		}
@@ -85,7 +85,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var logger = new FakeIWebLogger();
 			new FlushApplicationInsights(new ServiceCollection()
-				.BuildServiceProvider(), new AppSettings{ApplicationInsightsInstrumentationKey = "t"}, logger).Flush();
+				.BuildServiceProvider(), new AppSettings{ApplicationInsightsConnectionString = "t"}, logger).Flush();
 			Assert.AreEqual(1, logger.TrackedInformation.Count);
 			Assert.AreEqual("TelemetryClient is null on exit", logger.TrackedInformation[0].Item2);
 		}
@@ -95,7 +95,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var logger = new FakeIWebLogger();
 			await new FlushApplicationInsights(new ServiceCollection()
-				.BuildServiceProvider(), new AppSettings{ApplicationInsightsInstrumentationKey = "t"}, logger).FlushAsync();
+				.BuildServiceProvider(), new AppSettings{ApplicationInsightsConnectionString = "t"}, logger).FlushAsync();
 			Assert.AreEqual(1, logger.TrackedInformation.Count);
 			Assert.AreEqual("TelemetryClient is null on exit", logger.TrackedInformation[0].Item2);
 		}
@@ -106,7 +106,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var logger = new FakeIWebLogger();
 			new FlushApplicationInsights(new ServiceCollection()
-				.BuildServiceProvider(), new AppSettings{ApplicationInsightsInstrumentationKey = ""}, logger).GetTelemetryClient();
+				.BuildServiceProvider(), new AppSettings{ApplicationInsightsConnectionString = ""}, logger).GetTelemetryClient();
 			Assert.AreEqual(0, logger.TrackedInformation.Count);
 		}
 	}

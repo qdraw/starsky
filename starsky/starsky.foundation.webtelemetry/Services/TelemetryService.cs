@@ -8,16 +8,19 @@ using starsky.foundation.webtelemetry.Interfaces;
 namespace starsky.foundation.webtelemetry.Services
 {
 	[Service(typeof(ITelemetryService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class TelemetryService : ITelemetryService
+	public sealed class TelemetryService : ITelemetryService
 	{
 		private readonly TelemetryClient _telemetry;
 
 		public TelemetryService(AppSettings appSettings)
 		{
-			if (appSettings == null ||  string.IsNullOrEmpty(appSettings.ApplicationInsightsInstrumentationKey) ) return;
+			if (appSettings == null ||  string.IsNullOrEmpty(appSettings.ApplicationInsightsConnectionString) ) return;
 			_telemetry = new TelemetryClient(TelemetryConfiguration.CreateDefault())
 			{
-				InstrumentationKey = appSettings.ApplicationInsightsInstrumentationKey
+				TelemetryConfiguration =
+				{
+					ConnectionString = appSettings.ApplicationInsightsConnectionString
+				}
 			};
 		}
 		public bool TrackException(Exception exception)

@@ -18,7 +18,7 @@ namespace starskytest.starsky.foundation.consoletelemetry.Extensions
 			IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
 			serviceCollection.AddSingleton(configuration); 
 			
-			serviceCollection.AddMonitoringWorkerService(new AppSettings{ApplicationInsightsInstrumentationKey = "t"}, AppSettings.StarskyAppType.Importer);
+			serviceCollection.AddMonitoringWorkerService(new AppSettings{ApplicationInsightsConnectionString = "t"}, AppSettings.StarskyAppType.Importer);
 
 			Assert.IsTrue(serviceCollection.Count >= 1);
 			var result= serviceCollection.FirstOrDefault(p
@@ -30,7 +30,7 @@ namespace starskytest.starsky.foundation.consoletelemetry.Extensions
 		public void TestIfServiceIsDisabled()
 		{
 			var serviceCollection = new ServiceCollection();
-			serviceCollection.AddMonitoringWorkerService(new AppSettings{ApplicationInsightsInstrumentationKey = ""}, AppSettings.StarskyAppType.Importer);
+			serviceCollection.AddMonitoringWorkerService(new AppSettings{ApplicationInsightsConnectionString = ""}, AppSettings.StarskyAppType.Importer);
 
 			Assert.AreEqual(0, serviceCollection.Count());
 			var result= serviceCollection.FirstOrDefault(p

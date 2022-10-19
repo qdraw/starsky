@@ -17,7 +17,7 @@ using starsky.foundation.worker.Interfaces;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class GeoController : Controller
+	public sealed class GeoController : Controller
 	{
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IMemoryCache _cache;

@@ -12,7 +12,7 @@ namespace starsky.foundation.sync.Helpers
 	/// <summary>
 	/// Scope is only a object 
 	/// </summary>
-	public class NewItem
+	public sealed class NewItem
 	{
 		private readonly IStorage _subPathStorage;
 		private readonly IReadMeta _readMeta;

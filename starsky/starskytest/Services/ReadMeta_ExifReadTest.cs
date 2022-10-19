@@ -11,11 +11,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starskycore.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using XmpCore;
 using XmpCore.Impl;
 
 namespace starskytest.Services
@@ -347,7 +347,50 @@ namespace starskytest.Services
 			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
 			Assert.AreEqual( ImageStabilisationType.Off, item.ImageStabilisation);
 		}
+		
 				
+		[TestMethod]
+		public void LocationCountryCode()
+		{
+			var newImage = CreateAnImageA6600.Bytes;
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
+			 
+			var item = new ReadMetaExif(fakeStorage,new AppSettings{Verbose = true}, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
+			Assert.AreEqual( "NLD", item.LocationCountryCode);
+		}
+				
+		
+		
+
+						
+		[TestMethod]
+		public void LocationCountryCode_ListDir()
+		{
+			var xmpData = "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+			              "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.42'>\n" +
+			              "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n" +
+			              " <rdf:Description rdf:about=''\n" +
+			              "  xmlns:Iptc4xmpCore='http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/'>\n" +
+			              "  <Iptc4xmpCore:CountryCode>NLD</Iptc4xmpCore:CountryCode>\n" +
+			              " </rdf:Description>\n</rdf:RDF>\n" +
+			              "</x:xmpmeta>\n<?xpacket end='w'?>";
+			
+			var xmpMeta = XmpMetaFactory.ParseFromString(xmpData);
+
+			var properties = xmpMeta.Properties.Any();
+			Assert.IsTrue(properties);
+			
+			var container = new List<Directory>();
+			var dir2 = new XmpDirectory();
+			dir2.SetXmpMeta(xmpMeta);
+			container.Add(dir2);
+
+			var result =  ReadMetaExif.GetLocationCountryCode(container);
+				
+			Assert.AreEqual( "NLD", result);
+		}
+		
 		[TestMethod]
 		public void LensModelTamRon()
 		{

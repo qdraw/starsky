@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.platform.Helpers
 {
 	public static class EnumHelper
 	{

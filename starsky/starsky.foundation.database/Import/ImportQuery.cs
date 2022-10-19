@@ -15,7 +15,7 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.foundation.database.Import
 {
 	[Service(typeof(IImportQuery), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ImportQuery : IImportQuery
+	public sealed class ImportQuery : IImportQuery
 	{
 		private readonly bool _isConnection;
 		private readonly IServiceScopeFactory? _scopeFactory;
@@ -60,7 +60,7 @@ namespace starsky.foundation.database.Import
 			return !_isConnection ? GetDbContext().TestConnection(_logger) : _isConnection;
 		}
 
-		public virtual async Task<bool> IsHashInImportDbAsync(string fileHashCode)
+		public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
 			if ( _isConnection )
 			{
@@ -80,7 +80,7 @@ namespace starsky.foundation.database.Import
 		/// <param name="updateStatusContent">import database item</param>
 		/// <param name="writeConsole">add icon to console</param>
 		/// <returns>fail or success</returns>
-		public virtual async Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true)
+		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true)
 		{
 			var dbContext = GetDbContext();
 			updateStatusContent.AddToDatabase = DateTime.UtcNow;
@@ -101,7 +101,7 @@ namespace starsky.foundation.database.Import
 			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 		}
 
-		public virtual async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
+		public async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
 		{
 			var dbContext = GetDbContext();
 			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);

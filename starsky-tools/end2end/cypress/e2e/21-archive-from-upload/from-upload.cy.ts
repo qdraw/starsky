@@ -88,6 +88,7 @@ describe('Archive (from upload)', () => {
         expect(sourceTags2).eq('test')
 
         cy.reload()
+        cy.reload()
 
         cy.log('next step: check DOM')
 

@@ -4,6 +4,6 @@ namespace starsky.feature.geolookup.Interfaces
 {
 	public interface IGeoFileDownload
 	{
-		Task Download();
+		Task DownloadAsync();
 	}
 }

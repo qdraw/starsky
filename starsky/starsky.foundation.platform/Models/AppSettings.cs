@@ -15,7 +15,7 @@ using TimeZoneConverter;
 namespace starsky.foundation.platform.Models
 {
 	[SuppressMessage("ReSharper", "CA1822")]
-	public class AppSettings
+	public sealed class AppSettings
 	{
 		public AppSettings()
 		{
@@ -592,25 +592,25 @@ namespace starsky.foundation.platform.Models
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		[PackageTelemetry]
 		public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
-	    
+		
 		/// <summary>
 		/// Private storage for Application Insights InstrumentationKey
 		/// </summary>
-		private string ApplicationInsightsInstrumentationKeyPrivate { get; set; } = "";
-	    
+		private string ApplicationInsightsConnectionStringPrivate { get; set; } = "";
+		
 		/// <summary>
-		/// Insert the Application Insights InstrumentationKey here or use environment variable: APPINSIGHTS_INSTRUMENTATIONKEY
+		/// Insert the Application Insights Connection String here or use environment variable: APPLICATIONINSIGHTS_CONNECTION_STRING
 		/// </summary>
-		public string ApplicationInsightsInstrumentationKey {
+		public string ApplicationInsightsConnectionString {
 			get
 			{
-				if ( string.IsNullOrWhiteSpace(ApplicationInsightsInstrumentationKeyPrivate) )
+				if ( string.IsNullOrWhiteSpace(ApplicationInsightsConnectionStringPrivate) )
 				{
-					return Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
+					return Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
 				}
-				return ApplicationInsightsInstrumentationKeyPrivate;
+				return ApplicationInsightsConnectionStringPrivate;
 			}
-			set => ApplicationInsightsInstrumentationKeyPrivate = value;
+			set => ApplicationInsightsConnectionStringPrivate = value;
 		}
 
 		[PackageTelemetry]
@@ -768,9 +768,9 @@ namespace starsky.foundation.platform.Models
 					Replace(userProfileFolder, "~");
 			}
 
-			if ( !string.IsNullOrEmpty(appSettings.ApplicationInsightsInstrumentationKey) )
+			if ( !string.IsNullOrEmpty(appSettings.ApplicationInsightsConnectionString) )
 			{
-				appSettings.ApplicationInsightsInstrumentationKey = CloneToDisplaySecurityWarning;
+				appSettings.ApplicationInsightsConnectionString = CloneToDisplaySecurityWarning;
 			}
 
 			if ( !string.IsNullOrEmpty(appSettings.WebFtp) )

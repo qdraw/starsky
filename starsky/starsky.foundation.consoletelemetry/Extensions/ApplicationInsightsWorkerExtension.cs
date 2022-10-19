@@ -18,7 +18,7 @@ namespace starsky.foundation.consoletelemetry.Extensions
 			AppSettings appSettings, AppSettings.StarskyAppType appType)
 		{
 			if ( string.IsNullOrWhiteSpace(appSettings
-				    .ApplicationInsightsInstrumentationKey) )
+				    .ApplicationInsightsConnectionString) )
 			{
 				return;
 			}
@@ -28,8 +28,7 @@ namespace starsky.foundation.consoletelemetry.Extensions
 			
 			services.AddApplicationInsightsTelemetryWorkerService(new ApplicationInsightsServiceOptions
 			{
-				InstrumentationKey = appSettings
-					.ApplicationInsightsInstrumentationKey,
+				ConnectionString = appSettings.ApplicationInsightsConnectionString,
 				ApplicationVersion = appSettings.AppVersion,
 				EnableDependencyTrackingTelemetryModule = true,
 				EnableHeartbeat = true

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +9,6 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -20,7 +18,7 @@ using starskycore.ViewModels;
 namespace starsky.Controllers
 {
     [Authorize]
-    public class DiskController : Controller
+    public sealed class DiskController : Controller
     {
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;

@@ -15,7 +15,7 @@ using starsky.foundation.realtime.Model;
 
 namespace starsky.foundation.realtime.Middleware
 {
-	public class WebSocketConnectionsMiddleware
+	public sealed class WebSocketConnectionsMiddleware
 	{
 		#region Fields
 		private readonly WebSocketConnectionsOptions _options;

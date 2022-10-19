@@ -20,7 +20,7 @@ using starsky.foundation.worker.Interfaces;
 namespace starsky.foundation.sync.SyncServices
 {
 	[Service(typeof(IManualBackgroundSyncService), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class ManualBackgroundSyncService : IManualBackgroundSyncService
+	public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 	{
 		private readonly ISynchronize _synchronize;
 		private readonly IQuery _query;

@@ -298,7 +298,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[TestMethod]
 		public void CreateNewRequestTelemetry_Key()
 		{
-			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
+			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsConnectionString = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
 				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 
@@ -314,7 +314,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[TestMethod]
 		public void CreateNewRequestTelemetry_Key_WithUrl()
 		{
-			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
+			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsConnectionString = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
 				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 
@@ -332,7 +332,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[TestMethod]
 		public void CreateNewRequestTelemetry_Key_NoTelemetryClient()
 		{
-			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
+			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsConnectionString = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
 				new FakeIWebLogger(), new FakeINotificationQuery(), null); // <-- no tel client
 
@@ -356,7 +356,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[TestMethod]
 		public void EndRequestOperation_Key()
 		{
-			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
+			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsConnectionString = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
 				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 
@@ -371,7 +371,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[TestMethod]
 		public void EndRequestOperation_Key_NoTelemetryClient()
 		{
-			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
+			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsConnectionString = "1"}, new FakeISynchronize(),
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
 				new FakeIWebLogger(), new FakeINotificationQuery(), null); // <-- no tel client
 

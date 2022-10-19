@@ -7,7 +7,7 @@ using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.writemeta.JsonService
 {
-	public class FileIndexItemJsonParser
+	public sealed class FileIndexItemJsonParser
 	{
 		private readonly IStorage _iStorage;
 

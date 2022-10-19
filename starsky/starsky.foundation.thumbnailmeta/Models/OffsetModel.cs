@@ -1,6 +1,6 @@
-namespace starsky.foundation.readmeta.Models
+namespace starsky.foundation.metathumbnail.Models
 {
-	public class OffsetModel
+	public sealed class OffsetModel
 	{
 		/// <summary>
 		/// Offset

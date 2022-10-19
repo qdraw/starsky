@@ -279,6 +279,10 @@ namespace starsky.foundation.database.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("LocationCountryCode")
+                        .HasMaxLength(3)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("LocationState")
                         .HasMaxLength(40)
                         .HasColumnType("TEXT");

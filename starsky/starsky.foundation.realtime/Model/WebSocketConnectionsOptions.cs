@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace starsky.foundation.realtime.Model
 {
-	public class WebSocketConnectionsOptions
+	public sealed class WebSocketConnectionsOptions
 	{
 		public HashSet<string> AllowedOrigins { get; set; }
 

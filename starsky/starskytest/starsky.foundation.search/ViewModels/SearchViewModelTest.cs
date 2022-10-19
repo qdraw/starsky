@@ -1,8 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starskycore.ViewModels;
+using starsky.feature.search.ViewModels;
 
-namespace starskytest.ViewModels
+namespace starskytest.starsky.feature.search.ViewModels
 {
 	[TestClass]
 	public class SearchViewModelTest

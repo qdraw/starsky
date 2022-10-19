@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn

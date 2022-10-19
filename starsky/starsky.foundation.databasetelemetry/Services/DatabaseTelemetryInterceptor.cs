@@ -13,7 +13,7 @@ namespace starsky.foundation.databasetelemetry.Services
 	/// <summary>
 	/// @see: https://amuratgencay.medium.com/how-to-track-postgresql-queries-using-entityframework-core-in-application-insights-2f173d6c636d
 	/// </summary>
-    public class DatabaseTelemetryInterceptor : IDbCommandInterceptor
+    public sealed class DatabaseTelemetryInterceptor : IDbCommandInterceptor
     {
         private readonly TelemetryClient? _telemetryClient;
 

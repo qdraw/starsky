@@ -5,7 +5,7 @@ using starsky.foundation.platform.Helpers;
 namespace starsky.foundation.database.Models
 {
     [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-    public class DetailView
+    public sealed class DetailView
     {
         public FileIndexItem? FileIndexItem { get; set; }
 

@@ -7,7 +7,7 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.foundation.platform.Services
 {
 	[Service(typeof(IWebLogger), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class WebLogger : IWebLogger
+	public sealed class WebLogger : IWebLogger
 	{
 		private readonly ILogger _logger;
 		private readonly IConsole _console;

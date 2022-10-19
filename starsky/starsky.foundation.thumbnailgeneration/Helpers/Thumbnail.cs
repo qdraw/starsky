@@ -22,7 +22,7 @@ using starsky.foundation.storage.Storage;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.thumbnailgeneration.Helpers
 {
-	public class Thumbnail
+	public sealed class Thumbnail
 	{
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;

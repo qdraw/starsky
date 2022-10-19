@@ -19,7 +19,7 @@ namespace starsky.foundation.sync.WatcherServices
 	/// </summary>
 	[Service(typeof(IFileSystemWatcherWrapper), InjectionLifetime = InjectionLifetime.Singleton)]
 	[SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
-	public class BufferingFileSystemWatcher : Component, IFileSystemWatcherWrapper
+	public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWrapper
     {
         private readonly FileSystemWatcher _containedFsw = null;
 

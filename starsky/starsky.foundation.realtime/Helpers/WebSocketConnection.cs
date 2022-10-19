@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace starsky.foundation.realtime.Helpers
 {
-	public class WebSocketConnection
+	public sealed class WebSocketConnection
 	{
 		#region Fields
 		private readonly WebSocket _webSocket;

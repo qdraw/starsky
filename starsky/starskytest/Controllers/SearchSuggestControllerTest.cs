@@ -12,7 +12,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starskycore.Services;
+using starsky.feature.search.Services;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
@@ -35,8 +35,8 @@ namespace starskytest.Controllers
 			builder.UseInMemoryDatabase(nameof(SearchSuggestController));
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, new AppSettings(), null, new FakeIWebLogger(), _memoryCache);
-			_searchSuggest = new SearchSuggestionsService(context,_memoryCache, null);
+			_query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(), _memoryCache);
+			_searchSuggest = new SearchSuggestionsService(context,_memoryCache, null!, new AppSettings());
 		}
 
 		private void InjectMockedData()
@@ -62,7 +62,7 @@ namespace starskytest.Controllers
 			InjectMockedData();
 			var controller = new SearchSuggestController(_searchSuggest);
 			var result = await controller.Suggest("e") as JsonResult;
-			var list = result.Value as List<string>;
+			var list = result!.Value as List<string>;
 			CollectionAssert.AreEqual(new List<string>{"enter","exit"}, list);
 		}
 
@@ -74,9 +74,9 @@ namespace starskytest.Controllers
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			var result = await controller.Suggest(string.Empty) as JsonResult;
-			var list = result.Value as List<string>;
+			var list = result!.Value as List<string>;
 	        
-			Assert.IsFalse(list.Any());
+			Assert.IsFalse(list!.Any());
 		}
 
 		[TestMethod]
@@ -85,8 +85,8 @@ namespace starskytest.Controllers
 			InjectMockedData();
 			var controller = new SearchSuggestController(_searchSuggest);
 			var result = await controller.Suggest("l") as JsonResult; // search for live
-			var list = result.Value as List<string>;
-			CollectionAssert.AreEqual(new List<string>{}, list);
+			var list = result!.Value as List<string>;
+			CollectionAssert.AreEqual(new List<string>(), list);
 		}
         
 		[TestMethod]
@@ -95,7 +95,7 @@ namespace starskytest.Controllers
 			InjectMockedData();
 			var controller = new SearchSuggestController(_searchSuggest);
 			var result = await controller.All() as JsonResult; // search for live
-			var list = result.Value as List<KeyValuePair<string, int>>;
+			var list = result!.Value as List<KeyValuePair<string, int>>;
 
 			var expected = new List<KeyValuePair<string, int>>
 			{

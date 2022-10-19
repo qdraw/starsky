@@ -15,7 +15,7 @@ namespace starsky.foundation.worker.Services
 		InjectionLifetime = InjectionLifetime.Singleton)]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S927: Rename parameter 'stoppingToken' " +
 		"to 'cancellationToken' to match the base class declaration", Justification = "Is checked")]
-	public class UpdateBackgroundQueuedHostedService : BackgroundService
+	public sealed class UpdateBackgroundQueuedHostedService : BackgroundService
 	{
 		private readonly IUpdateBackgroundTaskQueue _taskQueue;
 		private readonly IWebLogger _logger;

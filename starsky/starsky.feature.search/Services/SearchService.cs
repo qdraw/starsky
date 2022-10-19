@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,25 +14,24 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.ViewModels;
+using starsky.feature.search.Interfaces;
+using starsky.feature.search.ViewModels;
 
-namespace starskycore.Services
+namespace starsky.feature.search.Services
 {
 	[Service(typeof(ISearch), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SearchService : ISearch
     {
         private readonly ApplicationDbContext _context;
-        private readonly IMemoryCache _cache;
-        private readonly AppSettings _appSettings;
-        private readonly IWebLogger _logger;
+        private readonly IMemoryCache? _cache;
+        private readonly AppSettings? _appSettings;
+        private readonly IWebLogger? _logger;
 
         public SearchService(
             ApplicationDbContext context, 
-            IMemoryCache memoryCache = null,
-            AppSettings appSettings = null,
-            IWebLogger logger = null)
+            IMemoryCache? memoryCache = null,
+            AppSettings? appSettings = null,
+            IWebLogger? logger = null)
         {
             _context = context;
             _cache = memoryCache;
@@ -94,18 +94,26 @@ namespace starskycore.Services
         /// <param name="objectSearchModel"></param>
         /// <param name="pageNumber">current page (0 = page 1)</param>
         /// <returns></returns>
-        private SearchViewModel SkipSearchItems(object objectSearchModel, int pageNumber)
+        private static SearchViewModel SkipSearchItems(object? objectSearchModel, int pageNumber)
         {
-            var searchModel = objectSearchModel as SearchViewModel;            
-            
-            // Clone the item to avoid removing items from cache
+	        if ( objectSearchModel is not SearchViewModel searchModel)
+            {
+	            return new SearchViewModel();
+            }
+        
+	        // Clone the item to avoid removing items from cache
             searchModel = searchModel.Clone();
+            if ( searchModel.FileIndexItems == null )
+            {
+	            return new SearchViewModel();
+            }
             
             searchModel.PageNumber = pageNumber;
 	        
 	        var skipFirstNumber = pageNumber * NumberOfResultsInView;
 	        var skipLastNumber = searchModel.SearchCount - ( pageNumber * NumberOfResultsInView ) - NumberOfResultsInView;
 
+	        
 	        // Remove the last items
 	        var skippedLastList = searchModel.FileIndexItems
 		        .Skip(skipFirstNumber)
@@ -144,13 +152,15 @@ namespace starskycore.Services
 
             model = WideSearch(_context.FileIndex.AsNoTracking(),model);
 	        
-            model = model.NarrowSearch(model);
+            model = SearchViewModel.NarrowSearch(model);
 
             // Remove duplicates from list
-            model.FileIndexItems = model.FileIndexItems.GroupBy(s => s.FilePath)
+            model.FileIndexItems = model.FileIndexItems
+	            .Where(p => p.FilePath != null)
+	            .GroupBy(s => s.FilePath)
                 .Select(grp => grp.FirstOrDefault())
-                .OrderBy(s => s.FilePath)
-                .ToList();
+                .OrderBy(s => s!.FilePath)
+                .ToList()!;
             
             model.SearchCount = model.FileIndexItems.Count;
 
@@ -187,41 +197,44 @@ namespace starskycore.Services
 			    switch ( searchInType )
 			    {
 				    case SearchViewModel.SearchInTypes.imageformat:
-					    Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
-						    model.SearchFor[i].ToLowerInvariant(), out var castImageFormat);
-					    predicates.Add(x => x.ImageFormat == castImageFormat);
+					    if ( Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
+						        model.SearchFor[i].ToLowerInvariant(), out var castImageFormat) )
+					    {
+						    var result = castImageFormat;
+						    predicates.Add(x => x.ImageFormat == result);
+					    }
 					    break;
 				    case SearchViewModel.SearchInTypes.description:
 						// need to have description out of the Func<>
 						// ToLowerInvariant.Contains(__description_1))' could not be translated. 
 					    var description = model.SearchFor[i];
-					    predicates.Add(x => x.Description.ToLower().Contains(description));
+					    predicates.Add(x => x.Description!.ToLower().Contains(description));
 					    break;
 				    case SearchViewModel.SearchInTypes.filename:
 					    var filename = model.SearchFor[i];
-					    predicates.Add(x => x.FileName.ToLower().Contains(filename));
+					    predicates.Add(x => x.FileName!.ToLower().Contains(filename));
 					    break;
 				    case SearchViewModel.SearchInTypes.filepath:
 					    var filePath = model.SearchFor[i];
-					    predicates.Add(x => x.FilePath.ToLower().Contains(filePath));
+					    predicates.Add(x => x.FilePath!.ToLower().Contains(filePath));
 					    break;
 				    case SearchViewModel.SearchInTypes.parentdirectory:
 					    var parentDirectory = model.SearchFor[i];
-					    predicates.Add(x => x.ParentDirectory.ToLower().Contains(parentDirectory));
+					    predicates.Add(x => x.ParentDirectory!.ToLower().Contains(parentDirectory));
 					    break;
 				    case SearchViewModel.SearchInTypes.title:
 					    var title = model.SearchFor[i];
-					    predicates.Add(x => x.Title.ToLower().Contains(title));
+					    predicates.Add(x => x.Title!.ToLower().Contains(title.ToString()));
 					    break;
 				    case SearchViewModel.SearchInTypes.make:
 					    // is in the database one field => will be filtered in narrowSearch
 					    var make = model.SearchFor[i];
-					    predicates.Add(x => x.MakeModel.ToLower().Contains(make));
+					    predicates.Add(x => x.MakeModel!.ToLower().Contains(make));
 					    break;
 				    case SearchViewModel.SearchInTypes.model:
 					    // is in the database one field => will be filtered in narrowSearch
 					    var modelMake = model.SearchFor[i];
-					    predicates.Add(x => x.MakeModel.ToLower().Contains(modelMake));
+					    predicates.Add(x => x.MakeModel!.ToLower().Contains(modelMake));
 					    break;
 				    case SearchViewModel.SearchInTypes.filehash:
 					    var fileHash = model.SearchFor[i];
@@ -229,35 +242,36 @@ namespace starskycore.Services
 					    break;
 				    case SearchViewModel.SearchInTypes.software:
 					    var software = model.SearchFor[i];
-					    predicates.Add(x => x.Software.ToLower().Contains(software));
+					    predicates.Add(x => x.Software!.ToLower().Contains(software));
 					    break;
 				    case SearchViewModel.SearchInTypes.isdirectory:
-					    bool.TryParse(model.SearchFor[i].ToLowerInvariant(),
-						    out var boolIsDirectory);
-					    predicates.Add(x => x.IsDirectory == boolIsDirectory);
-					    model.SearchFor[i] = boolIsDirectory.ToString();
+					    if ( bool.TryParse(model.SearchFor[i].ToLowerInvariant(),
+						        out var boolIsDirectory) )
+					    {
+						    predicates.Add(x => x.IsDirectory == boolIsDirectory);
+						    model.SearchFor[i] = boolIsDirectory.ToString();
+					    }
 					    break;
 				    case SearchViewModel.SearchInTypes.lastedited:
-					    predicates.Add(new SearchWideDateTime().
-						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited));
+					    predicates.Add(SearchWideDateTime.WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited));
 					    break;
 				    case SearchViewModel.SearchInTypes.addtodatabase:
-					    predicates.Add(new SearchWideDateTime().
-						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase));
+					    predicates.Add(SearchWideDateTime.WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase));
 					    break;
 				    case SearchViewModel.SearchInTypes.datetime:
-					    predicates.Add(new SearchWideDateTime().
-						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.DateTime));
+					    predicates.Add(SearchWideDateTime.WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.DateTime));
 					    break;
 				    case SearchViewModel.SearchInTypes.colorclass:
-					    Enum.TryParse<ColorClassParser.Color>(
-						    model.SearchFor[i].ToLowerInvariant(), out var castColorClass);
-					    predicates.Add(x => x.ColorClass == castColorClass);
+					    if ( Enum.TryParse<ColorClassParser.Color>(
+						        model.SearchFor[i].ToLowerInvariant(), out var castColorClass) )
+					    {
+						    predicates.Add(x => x.ColorClass == castColorClass);
+					    }
 					    break;
 				    case SearchViewModel.SearchInTypes.tags:
 				    default:
 					    var tags = model.SearchFor[i];
-					    predicates.Add(x => x.Tags.ToLower().Contains(tags));
+					    predicates.Add(x => x.Tags!.ToLower().Contains(tags));
 					    break;
 			    }
 			    // Need to have the type registered in FileIndexPropList
@@ -361,15 +375,15 @@ namespace starskycore.Services
             var regexInUrlMatches = inurlRegex.Matches(model.SearchQuery);
             if(regexInUrlMatches.Count == 0) return;
 
-            foreach (Match regexInUrl in regexInUrlMatches)
+            foreach (var regexInUrlValue in regexInUrlMatches.Select(p => p.Value))
             {
-                var itemQuery = regexInUrl.Value;
+                var itemQuery = regexInUrlValue;
 	            
 	            // ignore fake results
 	            if ( string.IsNullOrEmpty(itemQuery) ) continue;
 
 	            // put ||&& in operator field => next regex > removed
-	            model.SetAndOrOperator(model.AndOrRegex(itemQuery));
+	            model.SetAndOrOperator(SearchViewModel.AndOrRegex(itemQuery));
 	            
 	            Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<|-)", RegexOptions.IgnoreCase);
 
@@ -404,7 +418,7 @@ namespace starskycore.Services
 	    /// </summary>
 	    /// <param name="query">searchQuery</param>
 	    /// <returns>trimmed value</returns>
-        public string QuerySafe(string query)
+        public static string QuerySafe(string query)
         {
             query = query.Trim();
             return query;
@@ -415,7 +429,7 @@ namespace starskycore.Services
 	    /// </summary>
 	    /// <param name="query">search Query</param>
 	    /// <returns>replaced Url</returns>
-        public string QueryShortcuts(string query)
+        public static string QueryShortcuts(string query)
         {
 	        // should be ignoring case
             query = Regex.Replace(query, "-inurl", "-FilePath", RegexOptions.IgnoreCase);
@@ -434,7 +448,7 @@ namespace starskycore.Services
 	    /// </summary>
 	    /// <param name="fileIndexQueryCount">number of search results</param>
 	    /// <returns>last page number (0=index)</returns>
-        private int GetLastPageNumber(int fileIndexQueryCount)
+        private static int GetLastPageNumber(int fileIndexQueryCount)
         {
             var searchLastPageNumbers = (RoundUp(fileIndexQueryCount) / NumberOfResultsInView) - 1;
 
@@ -450,7 +464,7 @@ namespace starskycore.Services
 	    /// </summary>
 	    /// <param name="toRound">to round e.g. 10</param>
 	    /// <returns>roundup value</returns>
-        public int RoundUp(int toRound)
+        public static int RoundUp(int toRound)
         {
             // 10 => ResultsInView
             if (toRound % NumberOfResultsInView == 0) return toRound;
@@ -462,7 +476,7 @@ namespace starskycore.Services
 	    /// </summary>
 	    /// <param name="toRound">to round</param>
 	    /// <returns>round down value</returns>
-        public int RoundDown(int toRound)
+        public static int RoundDown(int toRound)
         {
             return toRound - toRound % 10;
         }

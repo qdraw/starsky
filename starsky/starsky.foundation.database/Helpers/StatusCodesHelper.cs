@@ -5,7 +5,7 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Helpers
 {
-    public class StatusCodesHelper
+    public sealed class StatusCodesHelper
     {
         private readonly AppSettings _appSettings;
 

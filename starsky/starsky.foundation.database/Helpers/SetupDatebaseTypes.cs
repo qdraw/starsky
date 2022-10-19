@@ -12,7 +12,7 @@ using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Helpers
 {
-	public class SetupDatabaseTypes
+	public sealed class SetupDatabaseTypes
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IServiceCollection? _services;
@@ -91,7 +91,7 @@ namespace starsky.foundation.database.Helpers
 		private bool IsDatabaseTrackingEnabled()
 		{
 			return !string.IsNullOrEmpty(_appSettings
-				       .ApplicationInsightsInstrumentationKey) && _appSettings.ApplicationInsightsDatabaseTracking == true;
+				       .ApplicationInsightsConnectionString) && _appSettings.ApplicationInsightsDatabaseTracking == true;
 		}
 
 		internal bool EnableDatabaseTracking( DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
@@ -103,7 +103,7 @@ namespace starsky.foundation.database.Helpers
 			databaseOptionsBuilder.AddInterceptors(
 				new DatabaseTelemetryInterceptor(
 					TelemetryConfigurationHelper.InitTelemetryClient(
-						_appSettings.ApplicationInsightsInstrumentationKey, 
+						_appSettings.ApplicationInsightsConnectionString, 
 						_appSettings.ApplicationType.ToString(),_logger,_telemetryClient)
 					)
 				);

@@ -13,7 +13,7 @@ using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.Helpers
 {
-	public class SyncCli
+	public sealed class SyncCli
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IConsole _console;

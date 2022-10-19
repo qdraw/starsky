@@ -11,11 +11,10 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
-using starskycore.Helpers;
 
 namespace starsky.foundation.writemeta.Helpers
 {
-	public class ExifToolCmdHelper
+	public sealed class ExifToolCmdHelper
 	{
 		private readonly IExifTool _exifTool;
 		private readonly IStorage _iStorage;
@@ -114,6 +113,7 @@ namespace starsky.foundation.writemeta.Helpers
 			command = UpdateLocationAltitudeCommand(command, comparedNames, updateModel);
 
 			command = UpdateLocationCountryCommand(command, comparedNames, updateModel);
+			command = UpdateLocationCountryCodeCommand(command, comparedNames, updateModel);
 			command = UpdateLocationStateCommand(command, comparedNames, updateModel);
 			command = UpdateLocationCityCommand(command, comparedNames, updateModel);
 		    
@@ -293,7 +293,8 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <summary>
 		/// Add state to ExifTool command
 		/// to remove:
-		/// -Country= -Country-PrimaryLocationName= -State= -Province-State=  -City= -xmp:City= -overwrite_original
+		/// -Country-PrimaryLocationName="" -Country=""  -XMP:CountryCode="" -Country-PrimaryLocationCode=""
+		/// -State="" -Province-State="" -City="" -xmp:City="" -overwrite_original
 		/// </summary>
 		/// <param name="command">Command that is used</param>
 		/// <param name="comparedNames">names lowercase</param>
@@ -319,6 +320,17 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 			return command;
 		}
+		
+		private static string UpdateLocationCountryCodeCommand(
+			string command, List<string> comparedNames, FileIndexItem updateModel)
+		{
+			if (comparedNames.Contains( nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant() ))
+			{
+				command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode 
+				                          + "\" -XMP:CountryCode=\"" + updateModel.LocationCountryCode + "\"";
+			}
+			return command;
+		}
         
 		private static string UpdateDescriptionCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 		{
@@ -339,7 +351,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="updateModel">the model that has the data</param>
 		/// <param name="includeSoftware">to include the original software name</param>
 		/// <returns></returns>
-		private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel, bool includeSoftware)
+		internal static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel, bool includeSoftware)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.Software).ToLowerInvariant()) )
 				return command;

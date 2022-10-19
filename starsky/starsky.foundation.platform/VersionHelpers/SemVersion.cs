@@ -8,7 +8,7 @@ namespace starsky.foundation.platform.VersionHelpers
 	/// Sem V2
 	/// Credits for: https://github.com/maxhauser/semver/blob/master/Semver/SemVersion.cs
 	/// </summary>
-	public class SemVersion
+	public sealed class SemVersion
 	{
 		/// <summary>
 		/// Constructs a new instance of the <see cref="SemVersion" /> class.

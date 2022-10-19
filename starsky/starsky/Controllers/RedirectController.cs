@@ -9,7 +9,7 @@ using starsky.foundation.storage.Storage;
 namespace starsky.Controllers
 {
 	[Authorize]
-	public class RedirectController : Controller
+	public sealed class RedirectController : Controller
 	{
 		private readonly StructureService _structureService;
 

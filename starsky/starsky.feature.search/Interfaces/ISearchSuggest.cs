@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace starskycore.Interfaces
+namespace starsky.feature.search.Interfaces
 {
 	
 	public interface ISearchSuggest

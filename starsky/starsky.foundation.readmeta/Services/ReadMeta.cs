@@ -14,7 +14,7 @@ using starsky.foundation.storage.Services;
 
 namespace starsky.foundation.readmeta.Services
 {
-	public class ReadMeta : IReadMeta
+	public sealed class ReadMeta : IReadMeta
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IMemoryCache _cache;

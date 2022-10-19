@@ -49,10 +49,10 @@ namespace starsky.foundation.databasetelemetry.Helpers
 			}
 		}
 
-		private static TelemetryConfiguration? CreateTelemetryConfiguration(string appInsightsInstrumentationKey)
+		private static TelemetryConfiguration? CreateTelemetryConfiguration(string appInsightsConnectionString)
 		{
 			var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
-			telemetryConfiguration.InstrumentationKey = appInsightsInstrumentationKey;
+			telemetryConfiguration.ConnectionString = appInsightsConnectionString;
 			return telemetryConfiguration;
 		}
 

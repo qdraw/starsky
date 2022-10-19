@@ -4,7 +4,7 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.Controllers
 {
-	public class ErrorController : Controller  
+	public sealed class ErrorController : Controller  
 	{
 		private readonly string  _clientApp;
 

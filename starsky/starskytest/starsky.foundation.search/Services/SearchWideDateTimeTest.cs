@@ -3,10 +3,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starskycore.Services;
-using starskycore.ViewModels;
+using starsky.feature.search.Services;
+using starsky.feature.search.ViewModels;
 
-namespace starskytest.Services
+namespace starskytest.starsky.feature.search.Services
 {
 	[TestClass]
 	public class SearchWideDateTimeTest
@@ -19,7 +19,7 @@ namespace starskytest.Services
 			inputModel.SetAddSearchFor("2015-01-01T01:01:01");
 			inputModel.SetAddSearchForOptions("=");
 
-			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
+			var result = SearchWideDateTime.WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited);
 			
 			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
@@ -37,7 +37,7 @@ namespace starskytest.Services
 			inputModel.SetAddSearchFor("2015-01-01T01:01:01");
 			inputModel.SetAddSearchForOptions("<");
 
-			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
+			var result = SearchWideDateTime.WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited);
 			
 			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
@@ -55,7 +55,7 @@ namespace starskytest.Services
 			inputModel.SetAddSearchFor("2015-01-01T01:01:01");
 			inputModel.SetAddSearchForOptions(">");
 
-			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
+			var result = SearchWideDateTime.WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited);
 			
 			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
@@ -75,7 +75,7 @@ namespace starskytest.Services
 			inputModel.SetAddSearchFor("2015-01-02T01:01:01");
 			inputModel.SetAddSearchForOptions("<");
 
-			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
+			var result = SearchWideDateTime.WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited);
 			
 			Expression<Func<FileIndexItem,bool>> expectedResult = (p => p.LastEdited >= new DateTime() && p.LastEdited <= new DateTime());
@@ -93,7 +93,7 @@ namespace starskytest.Services
 			inputModel.SetAddSearchFor("2015-01-01T01:01:01");
 			inputModel.SetAddSearchForOptions("=");
 
-			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
+			var result = SearchWideDateTime.WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase);
 			
 			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
@@ -111,7 +111,7 @@ namespace starskytest.Services
 			inputModel.SetAddSearchFor("2015-01-01T01:01:01");
 			inputModel.SetAddSearchForOptions("<");
 
-			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
+			var result = SearchWideDateTime.WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase);
 			
 			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
@@ -129,7 +129,7 @@ namespace starskytest.Services
 			inputModel.SetAddSearchFor("2015-01-01T01:01:01");
 			inputModel.SetAddSearchForOptions(">");
 
-			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
+			var result = SearchWideDateTime.WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase);
 			
 			var dateTime = SearchViewModel.ParseDateTime("2015-01-01T01:01:01");
@@ -149,7 +149,7 @@ namespace starskytest.Services
 			inputModel.SetAddSearchFor("2015-01-02T01:01:01");
 			inputModel.SetAddSearchForOptions("<");
 
-			var result = new SearchWideDateTime().WideSearchDateTimeGet(inputModel, 
+			var result = SearchWideDateTime.WideSearchDateTimeGet(inputModel, 
 				0,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase);
 			
 			Expression<Func<FileIndexItem,bool>> expectedResult = (p => p.LastEdited >= new DateTime() && p.LastEdited <= new DateTime());

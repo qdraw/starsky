@@ -10,7 +10,7 @@ using starsky.foundation.thumbnailgeneration.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.Helpers
 {
-	public class ThumbnailCli
+	public sealed class ThumbnailCli
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IConsole _console;

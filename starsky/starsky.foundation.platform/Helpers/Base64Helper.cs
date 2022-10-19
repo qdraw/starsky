@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.platform.Helpers
 {
 	public static class Base64Helper
 	{

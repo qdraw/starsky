@@ -4,6 +4,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.databasetelemetry.Helpers;
 using starskytest.FakeMocks;
+using starskytest.Helpers;
 
 namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 {
@@ -13,8 +14,10 @@ namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 		[TestMethod]
 		public void InitTelemetryClientTest()
 		{
+			var testGuid = Guid.NewGuid().ToString();
+
 			var result = TelemetryConfigurationHelper.InitTelemetryClient(
-				"test","role", new FakeIWebLogger(), null);
+				$"InstrumentationKey={testGuid}","role", new FakeIWebLogger(), null);
 			Assert.IsNotNull(result);
 		}
 		
@@ -22,8 +25,15 @@ namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 		public void UseExistingTelemetryClient()
 		{
 			var testGuid = Guid.NewGuid().ToString();
-			var telemetryClient = new TelemetryClient(
-					new TelemetryConfiguration(testGuid));
+		
+			var mockTelemetryChannel = new MockTelemetryChannel();
+			var configuration = new TelemetryConfiguration
+			{
+				TelemetryChannel = mockTelemetryChannel,
+				ConnectionString = $"InstrumentationKey={testGuid}",
+			};
+			
+			var telemetryClient = new TelemetryClient(configuration);
 			
 			var result = TelemetryConfigurationHelper.InitTelemetryClient(
 				"test","role", new FakeIWebLogger(), telemetryClient);

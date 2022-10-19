@@ -10,11 +10,11 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starskycore.Services;
-using starskycore.ViewModels;
+using starsky.feature.search.Services;
+using starsky.feature.search.ViewModels;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.feature.search.Services
 {
 	[TestClass]
 	public class SearchServiceTest
@@ -554,14 +554,14 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchService_QuerySafeTest()
 		{
-			var query = _search.QuerySafe("   d   ");
+			var query = SearchService.QuerySafe("   d   ");
 			Assert.AreEqual("d",query);
 		}
 
 		[TestMethod]
 		public void SearchService_QueryShortcutsInurlTest()
 		{
-			var query = _search.QueryShortcuts("-inurl");
+			var query = SearchService.QueryShortcuts("-inurl");
 			Assert.AreEqual("-FilePath",query);
 		}
 
@@ -588,13 +588,13 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchService_RoundDownTest()
 		{
-			Assert.AreEqual(10,_search.RoundDown(12));
+			Assert.AreEqual(10,SearchService.RoundDown(12));
 		}
         
 		[TestMethod]
 		public void SearchService_RoundUpTest()
 		{
-			Assert.AreEqual(120,_search.RoundUp(8)); // NumberOfResultsInView
+			Assert.AreEqual(120,SearchService.RoundUp(8)); // NumberOfResultsInView
 		}
 
 		[TestMethod]
@@ -842,7 +842,7 @@ namespace starskytest.Services
 			
 			model.SetAddSearchForOptions("=");
 
-			var result = model.NarrowSearch(model);
+			var result = SearchViewModel.NarrowSearch(model);
 			Assert.AreEqual(2,result.FileIndexItems.Count);
 
 			// Add extra NOT query			
@@ -850,7 +850,7 @@ namespace starskytest.Services
 			model.SetAddSearchFor("lelystadcentrum2"); // not query
 			model.SetAddSearchForOptions("-");
 
-			var result2 = model.NarrowSearch(model);
+			var result2 = SearchViewModel.NarrowSearch(model);
 
 			Assert.AreEqual("lelystadcentrum",result.FileIndexItems[0].Tags);
 		}
@@ -884,7 +884,7 @@ namespace starskytest.Services
 			model.SetAddSearchFor("test1"); 
 			model.SetAddSearchForOptions("=");
 
-			var result = model.NarrowSearch(model);
+			var result = SearchViewModel.NarrowSearch(model);
 			Assert.AreEqual(1,result.FileIndexItems?.Count);
 		}
 	    
@@ -922,7 +922,7 @@ namespace starskytest.Services
 			model.SetAddSearchFor("tiff"); // not query
 			model.SetAddSearchForOptions("-");
 
-			var result = model.NarrowSearch(model);
+			var result = SearchViewModel.NarrowSearch(model);
 
 			Assert.AreEqual(1,result.FileIndexItems?.Count);
 			Assert.AreEqual("lelystadcentrum2",result.FileIndexItems?[0].Tags);

@@ -38,9 +38,24 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.5.0 _(Unreleased)_ - 2022-??-??
 - [x]   (Changed) _Back-end_ Last Edited is updated when Single Sync a file (PR #916)
-- [x]   (Changed) _Back-end_ Code style quality (PR #917, #919)
- 
+- [x]   (Changed) _Back-end_ Code style quality, move search to feature, sealed classes (PR #917, #919, #922, #921)
+- [x]   __(Breaking Change)__ _Back-end_ Use Application Insights Connection String instead of Instrumentation Key (PR #920, Issue #908) 
+- [x]   (Added) _Back-end_ Use Country code in geo services (PR #923)
+
 - > Todo: https://github.com/qdraw/starsky/milestone/2
+
+## Summary of breaking changes in 0.5.0-beta.0-8 versions
+- [x]   (0.5.0-beta.4) _Back-end_ WebSocket Data Model is changed (PR #712)
+- [x]   (0.5.0-beta.4) _Back-end_ remove System messages and replaced it with type keyword (PR #712)
+- [x]   (0.5.0-beta.4) _Back-end_ Add types for web sockets (PR #712)
+- [x]   (0.5.0-beta.4) _Back-end_ for mysql: utf8mb4 is now used for the database and applied after the migrations are executed (PR #723)
+- [x]   (0.5.0-beta.3) _Back-end_ Upgrade to .NET 6
+- [x]   (0.5.0-beta.3) _Back-end_ Change mirror locations (exiftool/geonames) (PR #642)
+- [x]   (0.5.0-beta.1) _Back-end_ change default option in Thumbnail-er cli to scan directories to enabled (-t true default) (PR #601)
+- [x]   (0.5.0-beta.0) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
+- [x]   (0.5.0-beta.0) _Back-end_ rename "/api/sync/mkdir" to /api/disk/mkdir (PR #574)
+- [x]   (0.5.0-beta.0) _Back-end_ rename "/api/sync/rename" to /api/disk/rename (PR #574)
+- [x]   (0.5.0-beta.0) _Back-end_ Dropped support for older Mac OS version: now 10.15+ is required
 
 # version 0.5.0-beta.8 - 2022-10-11
 - [x]   (Security) _Back-end_ Upgrade Nuget packages (PR #878)
@@ -123,7 +138,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Change checks for WebSocket Messages to support new pattern (PR #712)
 - [x]   (Added) _Front-end_ Save server side datetime objects to query history notifications api (PR #712)
 - [x]   (Added) _Back-end_ Add cleanup job for old notifications in database (PR #712)
-- [x]   (Breaking Change) for mysql: utf8mb4 is now used for the database and applied after the migrations are executed (PR #723)
+- [x]   (Breaking Change) _Back-end_ for mysql: utf8mb4 is now used for the database and applied after the migrations are executed (PR #723)
 - [x]   (Added) _Back-end_ for mysql: AutoIncrement on Notifications table (PR #723)
 - [x]   (Removed) ImportQuery.NetFramework class is removed (PR #723)
 - [x]   (Change) _Back-end_ Retry when: Can't replace active reader (mysql) (PR #723)
@@ -189,9 +204,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Add ImageStabilisation and database migration (only add new field)  (PR #483)
 - [x]   (Fixed) _Back-end_ Fixed issue with Sony Lens Tamron lenses are diplaying dashes (PR #483)
 - [x]   (App) _Back-end_  UI update with storage folder is reverted after restart (PR #584 Issue #582)
-- [x]   (Breaking change) _Back_-end_ Dropped support for older Mac OS version: now 10.15+ is required see: 
+- [x]   (Breaking change) _Back-end_ Dropped support for older Mac OS version: now 10.15+ is required see: 
 - [x]   (Breaking change) Dropped support link: https://github.com/dotnet/core/blob/main/release-notes/3.1/3.1-supported-os.md
-- [x]   (Added) _Back-end_ Application Insights track events in DiskwatcherQueue (PR #583)
+- [x]   (Added) _Back-end_ Application Insights track events in DiskWatcherQueue (PR #583)
 - [x]   (Changed) _App_ Missing content length (PR #587)
 - [x]   (Changed) _App_ Use generic OSX id (PR #588)
 

@@ -317,13 +317,13 @@ namespace starskytest.starsky.foundation.platform.Models
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
 				WebFtp = "ftp://t:t@m.com",
-				ApplicationInsightsInstrumentationKey = "token"
+				ApplicationInsightsConnectionString = "token"
 			};
 			var display = appSettings.CloneToDisplay();
 			
 			Assert.AreEqual(display.DatabaseConnection,AppSettings.CloneToDisplaySecurityWarning);
 			Assert.AreEqual(display.WebFtp,AppSettings.CloneToDisplaySecurityWarning);
-			Assert.AreEqual(display.ApplicationInsightsInstrumentationKey,AppSettings.CloneToDisplaySecurityWarning);
+			Assert.AreEqual(display.ApplicationInsightsConnectionString,AppSettings.CloneToDisplaySecurityWarning);
 		}
 		
 		[TestMethod]

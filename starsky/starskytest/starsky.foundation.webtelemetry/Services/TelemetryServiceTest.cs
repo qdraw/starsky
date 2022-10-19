@@ -12,9 +12,10 @@ namespace starskytest.starsky.foundation.platform.Services
 		[TestMethod]
 		public void TelemetryService_WithContent()
 		{
+			var testGuid = Guid.NewGuid().ToString();
 			var result = new TelemetryService(new AppSettings
 			{
-				ApplicationInsightsInstrumentationKey = "_some"
+				ApplicationInsightsConnectionString = $"InstrumentationKey={testGuid}"
 			}).TrackException(new Exception("test"));
 			Assert.IsTrue(result);
 		}
@@ -24,7 +25,7 @@ namespace starskytest.starsky.foundation.platform.Services
 		{
 			var result = new TelemetryService(new AppSettings
 			{
-				ApplicationInsightsInstrumentationKey = null
+				ApplicationInsightsConnectionString = null
 			}).TrackException(new Exception("test"));
 			Assert.IsFalse(result);
 		}

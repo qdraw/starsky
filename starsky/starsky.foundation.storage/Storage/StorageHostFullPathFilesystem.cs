@@ -12,7 +12,7 @@ using starsky.foundation.storage.Models;
 namespace starsky.foundation.storage.Storage
 {
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class StorageHostFullPathFilesystem : IStorage
+	public sealed class StorageHostFullPathFilesystem : IStorage
 	{
 		private readonly IWebLogger _logger;
 

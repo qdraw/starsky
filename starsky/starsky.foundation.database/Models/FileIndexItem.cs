@@ -12,7 +12,7 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Models
 {
-	public class FileIndexItem
+	public sealed class FileIndexItem
 	{
 		/// <summary>
 		/// Default
@@ -441,6 +441,15 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		[MaxLength(40)] 
 		public string? LocationCountry { get; set; } = string.Empty;
+		
+		
+		/// <summary>
+		/// ISO-3166-1 alpha-3 (for example NLD for The Netherlands)
+		/// @see: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+		/// </summary>
+		[MaxLength(3)]
+		public string? LocationCountryCode { get; set; }
+
 
 		/// <summary>
 		/// Comma separated list of color class numbers to create a list of enums
@@ -1027,6 +1036,7 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		[NotMapped]
 		public List<string> LastChanged { get; set; } = new List<string>();
+
 	}
 
 	// end class

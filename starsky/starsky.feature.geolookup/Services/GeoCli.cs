@@ -18,6 +18,11 @@ using starsky.foundation.writemeta.Interfaces;
 
 namespace starsky.feature.geolookup.Services
 {
+	/// <summary>
+	/// GeoCLI is a command line interface for the GeoLookup
+	/// To test: exiftool image.jpg -Country-PrimaryLocationName="" -Country="" -State="" -Province-State=""
+	/// -City="" -xmp:City="" -XMP:CountryCode="" -Country-PrimaryLocationCode="" -overwrite_original
+	/// </summary>
 	public class GeoCli
 	{
 		private readonly AppSettings _appSettings;
@@ -59,7 +64,9 @@ namespace starsky.feature.geolookup.Services
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
 			
 			// Geo cities1000 download
-			await _geoFileDownload.Download();
+			await _geoFileDownload.DownloadAsync();
+			
+			// Set type of GeoReverseLookup
 			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
 			
 			if ( ArgsHelper.NeedHelp(args) ||
@@ -118,17 +125,18 @@ namespace starsky.feature.geolookup.Services
 			{
 				_console.WriteLine($"CameraTimeZone: {_appSettings.CameraTimeZone}");
 				_console.WriteLine($"Folder: {inputPath}");
-    
-				toMetaFilesUpdate = new GeoIndexGpx(_appSettings, 
-					_iStorage).LoopFolder(fileIndexList);
+
+				var geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage);
+				toMetaFilesUpdate = geoIndexGpx.LoopFolder(fileIndexList);
       
 				_console.Write("¬");
 				await _geoLocationWrite.LoopFolderAsync(toMetaFilesUpdate, false);
 				_console.Write("(gps added)");
 			}
     
-			fileIndexList = _geoReverseLookup.LoopFolderLookup(fileIndexList,
+			fileIndexList = await _geoReverseLookup.LoopFolderLookup(fileIndexList,
 					ArgsHelper.GetAll(args));
+			
 			if ( fileIndexList.Count >= 1 )
 			{
 				_console.Write("~ Add city, state and country info ~");
