@@ -18,6 +18,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 		/// <param name="zipInputFullPath">input e.g: /path/file.zip</param>
 		/// <param name="storeZipFolderFullPath">output e.g. /folder/</param>
 		/// <returns></returns>
+		[SuppressMessage("Usage", "S5042:Make sure that decompressing this archive file is safe")]
 		public bool ExtractZip( string zipInputFullPath, string storeZipFolderFullPath)
 		{
 			if ( !File.Exists(zipInputFullPath) ) return false;
