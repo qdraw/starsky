@@ -21,6 +21,7 @@ const baseConfig = {
     "import/no-import-module-exports": ["off"],
     "import/no-extraneous-dependencies": ["off"],
     "import/prefer-default-export": ["off"],
+    "@typescript-eslint/no-unsafe-return": ["off"],
     "no-console": ["off"],
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
