@@ -1,8 +1,12 @@
 import * as appConfig from "electron-settings";
-import { unfreezeImport } from "../../shared/unfreeze-import";
 import { GetBaseUrlFromSettings } from "./get-base-url-from-settings";
 
-unfreezeImport(appConfig, 'get');
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
 
 jest.mock('net', () => ({
   Socket() {
