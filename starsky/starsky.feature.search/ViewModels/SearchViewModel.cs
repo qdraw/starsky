@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -13,6 +14,7 @@ using System.Text.RegularExpressions;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.search.ViewModels
 {
     [SuppressMessage("ReSharper", "ArrangeAccessorOwnerBody")]
@@ -519,7 +521,7 @@ namespace starsky.feature.search.ViewModels
 	    /// <param name="searchForQuery">the query to search for (always string) </param>
 	    /// <param name="searchType">greater then, equal</param>
 	    /// <returns>search values</returns>
-	    private static SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string searchForQuery, SearchForOptionType searchType)
+	    internal static SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string searchForQuery, SearchForOptionType searchType)
 	    {
 
 		    if ( property.PropertyType == typeof(string) )

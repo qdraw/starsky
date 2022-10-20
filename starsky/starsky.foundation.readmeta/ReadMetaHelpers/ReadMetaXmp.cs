@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
@@ -105,7 +106,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             var refGps = gpsLatOrLong.Substring(gpsLatOrLong.Length-1, 1);
             return GeoParser.ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
         }
-                
+        
+        [SuppressMessage("Usage", "S125:Remove this commented out code")]
         private static FileIndexItem GetDataNullNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
         {
 	        
