@@ -39,8 +39,13 @@ jobs:
       - name: Unzip Windows bundle
         shell: bash
         working-directory: ./starsky
-        run: unzip starsky-win-x64.zip -d win-x64    
-            
+        run: unzip starsky-win-x64.zip -d win-x64
+
+      - name: ls && pwd
+        shell: bash
+        working-directory: ./starsky
+        run: ls -lah && pwd
+
       - name: NpmCi
         working-directory: ./starskyapp
         run: npm ci
