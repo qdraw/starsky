@@ -55,6 +55,7 @@ export default {
   testMatch: [
     '**/**/*.(spec|test).([jt]s?(x))',
   ],
+  testPathIgnorePatterns: ["/lib/", "/node_modules/"],
   collectCoverage: true,
   verbose: true,
 };

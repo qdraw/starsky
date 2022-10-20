@@ -1,6 +1,7 @@
-// import { dialog } from "electron";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { BrowserWindow } from "electron";
+import { BrowserWindow, dialog } from "electron";
+import { fileSelectorWindow } from "./file-selector-window";
 
 jest.mock("electron-settings", () => {
   return {
@@ -11,37 +12,41 @@ jest.mock("electron-settings", () => {
 
 jest.mock('electron', () => {
   return {
-    BrowserWindow: jest.fn(() => jest.fn().mockImplementation((_1) => {
+    // eslint-disable-next-line object-shorthand, func-names
+    BrowserWindow: function (_:object) {
       return {
-        loadFile: jest.fn(),
-        once: (_: string, func: Function) => {
-          return func();
+        setMenu(_2:object) {
         },
-        show: jest.fn(),
-        on: (_: string, func: Function) => {
-          return func();
+        close() {
         },
-        setMenu: jest.fn(),
-        close: jest.fn(),
-        __esModule: true,
       };
-    })),
+    },
+    dialog: {
+      showOpenDialog(_4:object, _5: object) {
+        return Promise.resolve({
+          canceled: false,
+        });
+      },
+    },
   };
-}, { virtual: true });
+});
 
 describe("create main window", () => {
   it("test mock", () => {
     const result = new BrowserWindow({});
-    console.log(result);
-
     result.setMenu(null);
     expect(result).toBeDefined();
   });
 
-  // it("create a new window", async () => {
-  //   const result = await fileSelectorWindow();
-  //   expect(result).toBeDefined();
-  // });
+  it("test mock 2", async () => {
+    const result = await dialog.showOpenDialog({} as BrowserWindow, {});
+    expect(result).toBeDefined();
+  });
+
+  it("create a new window", async () => {
+    const result = await fileSelectorWindow();
+    expect(result).toBeDefined();
+  });
 
   // it("canceled", async () => {
   //   jest
