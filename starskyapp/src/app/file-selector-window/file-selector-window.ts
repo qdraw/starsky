@@ -1,8 +1,8 @@
 import { BrowserWindow, dialog } from "electron";
 
 export async function fileSelectorWindow(): Promise<string[]> {
-  return new Promise(async function (resolve, reject) {
-    var newOpenedWindow = new BrowserWindow({
+  return new Promise(async (resolve, reject) => {
+    const newOpenedWindow = new BrowserWindow({
       height: 40,
       width: 500,
       title: "Open File",
@@ -11,15 +11,15 @@ export async function fileSelectorWindow(): Promise<string[]> {
       backgroundColor: "#ccc",
       webPreferences: {
         devTools: false,
-        contextIsolation: true
-      }
+        contextIsolation: true,
+      },
     });
 
     // for windows
     newOpenedWindow.setMenu(null);
 
-    var selected = dialog.showOpenDialog(newOpenedWindow, {
-      properties: ["openFile"]
+    const selected = dialog.showOpenDialog(newOpenedWindow, {
+      properties: ["openFile"],
     });
 
     selected
