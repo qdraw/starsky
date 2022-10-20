@@ -6,7 +6,26 @@ import { copyWithId } from "./copy-folder";
 exports.default = (context: {
   platform: { buildConfigurationKey: string };
 }) => {
+  console.log("context:");
   console.log(context);
+
+  const p1 = path.join(__dirname, "..", "..", "runtime-starsky-mac");
+  if (fs.existsSync(p1)) {
+    try {
+      fs.rmSync(p1, { recursive: true });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const p2 = path.join(__dirname, "..", "..", "runtime-starsky-win");
+  if (fs.existsSync(p2)) {
+    try {
+      fs.rmSync(p2, { recursive: true });
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   switch (context.platform.buildConfigurationKey) {
     case "mac":

@@ -1,18 +1,11 @@
 import * as fs from "fs";
 import * as path from "path";
 
-function htmlCopy() {
-  const srcFolder = path.join(__dirname, "..", "..", "src");
-  const buildFolder = path.join(__dirname, "..", "..", "build");
-
-  copyContent(srcFolder, buildFolder, /(.html|.css|.svg|.woff|.woff2)$/);
-}
-
 function copyContent(
   source: string,
   target: string,
   match: RegExp,
-  toRelativeFolder: string = null
+  toRelativeFolder: string = null,
 ) {
   const files = fs.readdirSync(source);
 
@@ -25,8 +18,9 @@ function copyContent(
     }
   }
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const file of files) {
-    var curSource = path.join(source, file);
+    const curSource = path.join(source, file);
     if (fs.lstatSync(curSource).isDirectory()) {
       let newToRelative = file;
       if (toRelativeFolder != null) {
@@ -40,6 +34,13 @@ function copyContent(
       fs.copyFileSync(curSource, targetFile);
     }
   }
+}
+
+function htmlCopy() {
+  const srcFolder = path.join(__dirname, "..", "..", "src");
+  const buildFolder = path.join(__dirname, "..", "..", "build");
+
+  copyContent(srcFolder, buildFolder, /(.html|.css|.svg|.woff|.woff2)$/);
 }
 
 htmlCopy();

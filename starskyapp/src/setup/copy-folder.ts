@@ -51,21 +51,23 @@ export function copyWithId(identifier: string, toName: string) {
 
   console.log(`copy from ${from} to ${to}`);
 
-  fs.readdir(from, (err, files) => {
-    files.forEach((file) => {
-      console.log(file);
-    });
-  });
+  // fs.readdir(from, (err, files) => {
+  //   files.forEach((file) => {
+  //     console.log(file);
+  //   });
+  // });
 
   copyFolderRecursiveSync(from, to);
 
   const afterCopyPath = path.join(__dirname, "..", "..", identifier);
   const afterCopyTo = path.join(__dirname, "..", "..", toName);
 
-  try {
-    fs.rmSync(afterCopyTo, { recursive: true });
-  } catch (err) {
-    console.log(err);
+  if (fs.existsSync(afterCopyTo)) {
+    try {
+      fs.rmSync(afterCopyTo, { recursive: true });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   fs.renameSync(afterCopyPath, afterCopyTo);
