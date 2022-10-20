@@ -49,6 +49,14 @@ export function copyWithId(identifier: string, toName: string) {
   const from = path.join(__dirname, "..", "..", "..", "starsky", identifier);
   const to = path.join(__dirname, "..", "..");
 
+  console.log(`copy from ${from} to ${to}`);
+
+  fs.readdir(from, (err, files) => {
+    files.forEach((file) => {
+      console.log(file);
+    });
+  });
+
   copyFolderRecursiveSync(from, to);
 
   const afterCopyPath = path.join(__dirname, "..", "..", identifier);
