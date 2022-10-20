@@ -9,29 +9,29 @@ import { isPackaged } from "../os-info/is-packaged";
 import { childProcessPath } from "./child-process-path";
 import { electronCacheLocation } from "./electron-cache-location";
 
-export let appPort: number = 9609;
+// eslint-disable-next-line import/no-mutable-exports
+export let appPort = 9609;
 
 export async function setupChildProcess() {
-  var thumbnailTempFolder = path.join(
+  const thumbnailTempFolder = path.join(
     electronCacheLocation(),
-    "thumbnailTempFolder"
+    "thumbnailTempFolder",
   );
   if (!fs.existsSync(thumbnailTempFolder)) {
     fs.mkdirSync(thumbnailTempFolder);
   }
 
-  var tempFolder = path.join(electronCacheLocation(), "tempFolder");
+  const tempFolder = path.join(electronCacheLocation(), "tempFolder");
   if (!fs.existsSync(tempFolder)) {
     fs.mkdirSync(tempFolder);
   }
 
-  var appSettingsPath = path.join(electronCacheLocation(), "appsettings.json");
-  var databaseConnection =
-    "Data Source=" + path.join(electronCacheLocation(), "starsky.db");
+  const appSettingsPath = path.join(electronCacheLocation(), "appsettings.json");
+  const databaseConnection = `Data Source=${path.join(electronCacheLocation(), "starsky.db")}`;
 
   appPort = await GetFreePort();
 
-  logger.info("next: port: " + appPort);
+  logger.info(`next: port: ${appPort}`);
 
   logger.info('-appSettingsPath >');
   logger.info(appSettingsPath);
@@ -44,20 +44,22 @@ export async function setupChildProcess() {
     app__NoAccountLocalhost: "true",
     app__databaseConnection: databaseConnection,
     app__AccountRegisterDefaultRole: "Administrator",
-    app__Verbose: !isPackaged() ? "true" : "false"
+    app__Verbose: !isPackaged() ? "true" : "false",
   };
-  process.env = {...process.env, ...env};
+  process.env = { ...process.env, ...env };
 
   logger.info("env settings ->");
   logger.info(env);
   logger.info(
-    "app data folder -> " + path.join(app.getPath("appData"), "starsky")
+    `app data folder -> ${path.join(app.getPath("appData"), "starsky")}`,
   );
 
   const appStarskyPath = childProcessPath();
   try {
     fs.chmodSync(appStarskyPath, 0o755);
-  } catch (error) {}
+  } catch (error) {
+    // nothing
+  }
 
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),
@@ -65,11 +67,11 @@ export async function setupChildProcess() {
     env: process.env,
   });
 
-  starskyChild.stdout.on("data", function (data) {
+  starskyChild.stdout.on("data", (data: object) => {
     logger.info(data.toString());
   });
 
-  starskyChild.stderr.on("data", function (data) {
+  starskyChild.stderr.on("data", (data : object) => {
     logger.warn(data.toString());
   });
 
@@ -93,7 +95,7 @@ export async function setupChildProcess() {
 
   setRawMode(true);
 
-  process.stdin.on("keypress", (str, key) => {
+  process.stdin.on("keypress", (str, key :{ name : string, ctrl: string }) => {
     if (key.ctrl && key.name === "c") {
       kill();
       logger.info("=> (pressed ctrl & c) to the end of starsky");
@@ -103,7 +105,7 @@ export async function setupChildProcess() {
     }
   });
 
-  app.on("before-quit", function (event) {
+  app.on("before-quit", (event) => {
     event.preventDefault();
     logger.info("=> end default");
     kill();

@@ -12,7 +12,7 @@ export function electronCacheLocation() {
         os.homedir(),
         "Library",
         "Application Support",
-        "starsky"
+        "starsky",
       );
     case "win32":
       // C:\Users\<user>\AppData\Roaming\starsky\Cache

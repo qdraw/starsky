@@ -27,6 +27,7 @@ function copyContent(
         newToRelative = path.join(toRelativeFolder, file);
       }
       copyContent(curSource, target, match, newToRelative);
+      // eslint-disable-next-line no-continue
       continue;
     }
     if (match.test(curSource)) {

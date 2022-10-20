@@ -3,7 +3,7 @@ import { isPackaged } from "../os-info/is-packaged";
 import OsBuildKey from "../os-info/os-build-key";
 
 export function childProcessPath(): string {
-  if (!isPackaged()) {   
+  if (!isPackaged()) {
     // dev
     switch (process.platform) {
       case "darwin":
@@ -13,7 +13,7 @@ export function childProcessPath(): string {
           "..",
           "starsky",
           "osx-x64",
-          "starsky"
+          "starsky",
         );
       case "win32":
         return path.join(
@@ -22,20 +22,19 @@ export function childProcessPath(): string {
           "..",
           "starsky",
           "win-x64",
-          "starsky.exe"
+          "starsky.exe",
         );
       default:
         throw new Error("not implemented");
     }
   }
 
-  var targetFilePath = path.join(
+  const targetFilePath = path.join(
     process.resourcesPath,
-    `runtime-starsky-${OsBuildKey()}`
+    `runtime-starsky-${OsBuildKey()}`,
   );
 
-  var exeFilePath = path.join(targetFilePath, "starsky");
-  if (process.platform === "win32")
-    exeFilePath = path.join(targetFilePath, "starsky.exe");
+  let exeFilePath = path.join(targetFilePath, "starsky");
+  if (process.platform === "win32") { exeFilePath = path.join(targetFilePath, "starsky.exe"); }
   return exeFilePath;
 }
