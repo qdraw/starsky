@@ -1,7 +1,7 @@
 import { BrowserWindow, dialog } from "electron";
 
 export async function fileSelectorWindow(): Promise<string[]> {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const newOpenedWindow = new BrowserWindow({
       height: 40,
       width: 500,
@@ -26,6 +26,7 @@ export async function fileSelectorWindow(): Promise<string[]> {
       .then((data) => {
         if (data.canceled) {
           newOpenedWindow.close();
+          // eslint-disable-next-line prefer-promise-reject-errors
           reject("canceled");
           return;
         }
