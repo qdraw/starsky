@@ -18,6 +18,7 @@ jest.mock('electron', () => {
         setMenu(_2:object) {
         },
         close() {
+          return jest.fn();
         },
       };
     },
@@ -25,6 +26,7 @@ jest.mock('electron', () => {
       showOpenDialog(_4:object, _5: object) {
         return Promise.resolve({
           canceled: false,
+          filePaths: ["test"],
         });
       },
     },
@@ -45,36 +47,38 @@ describe("create main window", () => {
 
   it("create a new window", async () => {
     const result = await fileSelectorWindow();
+
     expect(result).toBeDefined();
   });
 
-  // it("canceled", async () => {
-  //   jest
-  //     .spyOn(dialog, "showOpenDialog")
-  //     .mockImplementationOnce(() => Promise.resolve({ canceled: true, filePaths: [""] }));
+  it("canceled", async () => {
+    jest
+      .spyOn(dialog, "showOpenDialog")
+      .mockImplementationOnce(() => Promise.resolve({ canceled: true, filePaths: [""] }));
 
-  //   let error;
-  //   try {
-  //     await fileSelectorWindow();
-  //   } catch (err) {
-  //     error = err;
-  //   }
+    let error : string;
+    try {
+      await fileSelectorWindow();
+    } catch (err : unknown) {
+      error = err as string;
+    }
 
-  //   expect(error).toBe("canceled");
-  // });
+    expect(error).toBe("canceled");
+  });
 
-  // it("rejected by openFile", async () => {
-  //   jest
-  //     .spyOn(dialog, "showOpenDialog")
-  //     .mockImplementationOnce(() => Promise.reject("reason_rejected"));
+  it("rejected by openFile", async () => {
+    jest
+      .spyOn(dialog, "showOpenDialog")
+      // eslint-disable-next-line prefer-promise-reject-errors
+      .mockImplementationOnce(() => Promise.reject("reason_rejected"));
 
-  //   let error;
-  //   try {
-  //     await fileSelectorWindow();
-  //   } catch (err) {
-  //     error = err;
-  //   }
+    let error;
+    try {
+      await fileSelectorWindow();
+    } catch (err: unknown) {
+      error = err as string;
+    }
 
-  //   expect(error).toBe("reason_rejected");
-  // });
+    expect(error).toBe("reason_rejected");
+  });
 });
