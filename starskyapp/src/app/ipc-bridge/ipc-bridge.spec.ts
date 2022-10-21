@@ -26,7 +26,7 @@ jest.mock("electron-settings", () => {
     get: () => "http://localhost:9609",
     set: () => "data",
     has: () => true,
-    unSet: () => {},
+    unset: () => {},
     __esModule: true,
   };
 });
@@ -141,13 +141,21 @@ describe("ipc bridge", () => {
 
   describe("LocationUrlCallback", () => {
     it("get remote is off", async () => {
+      console.log("get remote is off");
+
       const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
       // is remote?
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(false);
+      }).mockImplementationOnce(() => {
+        return Promise.resolve(false);
       });
+
       await LocationUrlCallback(event, null);
+
       expect(event.reply).toHaveBeenCalled();
+      console.log("get remote is off");
+
       expect(event.reply).toHaveBeenCalledWith(LocationUrlIpcKey, {
         isLocal: true,
         isValid: null,
