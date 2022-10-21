@@ -92,37 +92,34 @@ stages:
       vmImage: 'ubuntu-22.04'
     container: electronuserland/builder:wine
     steps:
-    - task: DownloadBuildArtifacts@0
+    - task: DownloadPipelineArtifact@0
       inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'win-x64'
-        downloadPath: '$(Build.SourcesDirectory)'
+        source: 'current'
+        artifact: 'win-x64'
+        path: '$(Build.SourcesDirectory)'
 
-    - task: DownloadBuildArtifacts@0
+    - task: DownloadPipelineArtifact@0
       inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'osx-x64'
-        downloadPath: '$(Build.SourcesDirectory)'
+        source: 'current'
+        artifact: 'osx-x64'
+        path: '$(Build.SourcesDirectory)'
 
-    - task: DownloadBuildArtifacts@0
+    - task: DownloadPipelineArtifact@0
       inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'osx-arm64'
-        downloadPath: '$(Build.SourcesDirectory)'
+        source: 'current'
+        artifact: 'osx-arm64'
+        path: '$(Build.SourcesDirectory)'
 
     - template: /pipelines/azure/steps/electron_build.yml
 
-    - task: PublishBuildArtifacts@1
+    - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifact: starsky-win-desktop'
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-win-desktop.zip'
+        path: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-win-desktop.zip'
         ArtifactName: 'starsky-win-desktop'
 
-    - task: PublishBuildArtifacts@1
+    - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifact: starsky-mac-desktop'
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-mac-desktop.zip'
+        path: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-mac-desktop.zip'
         ArtifactName: 'starsky-mac-desktop'
