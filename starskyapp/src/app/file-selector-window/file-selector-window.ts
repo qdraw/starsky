@@ -2,6 +2,8 @@ import { BrowserWindow, dialog } from "electron";
 
 export async function fileSelectorWindow(): Promise<string[]> {
   return new Promise((resolve, reject) => {
+    console.log('---');
+
     const newOpenedWindow = new BrowserWindow({
       height: 40,
       width: 500,
