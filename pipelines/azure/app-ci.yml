@@ -92,22 +92,22 @@ stages:
       vmImage: 'ubuntu-22.04'
     container: electronuserland/builder:wine
     steps:
-    - task: DownloadPipelineArtifact@0
+    - task: DownloadPipelineArtifact@2
       inputs:
         source: 'current'
-        artifact: 'win-x64'
+        artifactName: 'win-x64'
         path: '$(Build.SourcesDirectory)'
 
-    - task: DownloadPipelineArtifact@0
+    - task: DownloadPipelineArtifact@2
       inputs:
         source: 'current'
-        artifact: 'osx-x64'
+        artifactName: 'osx-x64'
         path: '$(Build.SourcesDirectory)'
 
-    - task: DownloadPipelineArtifact@0
+    - task: DownloadPipelineArtifact@2
       inputs:
         source: 'current'
-        artifact: 'osx-arm64'
+        artifactName: 'osx-arm64'
         path: '$(Build.SourcesDirectory)'
 
     - template: /pipelines/azure/steps/electron_build.yml
