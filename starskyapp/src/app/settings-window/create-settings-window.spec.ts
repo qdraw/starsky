@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import * as windowStateKeeper from "../window-state-keeper/window-state-keeper";
 import { createSettingsWindow } from "./create-settings-window";
 

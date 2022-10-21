@@ -2,6 +2,18 @@ import * as appConfig from "electron-settings";
 import * as logger from "../logger/logger";
 import defaultAppSettings from "./app-settings";
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "http://localhost:9609",
+    set: () => "data",
+    has: () => true,
+    unset: () => {},
+    configure: () => {},
+    file: () => {},
+    __esModule: true,
+  };
+});
+
 jest.mock("electron", () => {
   return {
     app: {

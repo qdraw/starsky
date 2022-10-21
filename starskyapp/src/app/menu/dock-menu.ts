@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { app, Menu } from "electron";
 import { IsDutch } from "../i18n/i18n";
 import createMainWindow from "../main-window/create-main-window";

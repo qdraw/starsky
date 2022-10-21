@@ -3,6 +3,18 @@
 import * as appConfig from "electron-settings";
 import { willNavigateSecurity } from "./will-navigate-security";
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "http://localhost:9609",
+    set: () => "data",
+    has: () => true,
+    unset: () => {},
+    configure: () => {},
+    file: () => {},
+    __esModule: true,
+  };
+});
+
 describe("willNavigateSecurity", () => {
   it("stop random navigate", async () => {
     jest

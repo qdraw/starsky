@@ -1,6 +1,17 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import * as appConfig from "electron-settings";
 import * as createMainWindow from "./create-main-window";
 import { restoreMainWindow } from "./restore-main-window";
+
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "http://localhost:9609",
+    set: () => "data",
+    has: () => true,
+    unset: () => {},
+    __esModule: true,
+  };
+});
 
 jest.mock("electron", () => {
   return {
@@ -8,7 +19,8 @@ jest.mock("electron", () => {
       getVersion: () => "99.99.99",
       getPath: () => "tmp",
       getLocale: () => "en",
-      on: () => "en"
+      on: () => "en",
+      __esModule: true,
     },
     // eslint-disable-next-line object-shorthand, func-names
     BrowserWindow: function (_x:object, _y: number, _w: number, _h: number, _s: boolean, _w2: object) {
@@ -29,7 +41,8 @@ jest.mock("electron", () => {
           return func();
         }
       };
-    }
+    },
+    __esModule: true,
   };
 });
 

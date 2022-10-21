@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import * as appConfig from "electron-settings";
 import * as logger from "../logger/logger";
 import * as GetNetRequest from "../net-request/get-net-request";
@@ -7,6 +8,18 @@ import {
   SkipDisplayOfUpdate
 } from "./should-it-update";
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => Promise.resolve("http://localhost:9609"),
+    set: () => "data",
+    has: () => true,
+    unset: () => {},
+    configure: () => {},
+    file: () => {},
+    __esModule: true,
+  };
+});
+
 jest.mock("electron", () => {
   return {
     app: {
@@ -15,7 +28,8 @@ jest.mock("electron", () => {
       getLocale: () => "en",
       on: () => "en",
     },
-    BrowserWindow: () => {
+    // eslint-disable-next-line object-shorthand, func-names
+    BrowserWindow: function (_x:object, _y: number, _w: number, _h: number, _s: boolean, _w2: object) {
       return {
         loadFile: jest.fn(),
         once: (_: string, func: Function) => {

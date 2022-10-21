@@ -30,11 +30,12 @@ export function downloadNetRequest(
         return;
       }
 
-      fs.promises.writeFile(
+      fs.writeFileSync(
         `${toPath}.info`,
         response.headers["content-length"]?.toString()
       );
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       response.pipe(file);
 
@@ -44,12 +45,14 @@ export function downloadNetRequest(
       });
 
       file.on("finish", () => {
-        fs.promises.stat(toPath).then(async (stats) => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fs.promises.stat(toPath).then((stats) => {
           if (response.headers["content-length"] === stats.size.toString()) {
             resolve(toPath);
             return;
           }
-          fs.promises.unlink(`${toPath}.info`);
+          fs.unlinkSync(`${toPath}.info`);
+          // eslint-disable-next-line prefer-promise-reject-errors
           reject("byte size doesnt match");
         });
       });

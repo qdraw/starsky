@@ -1,6 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import * as appConfig from "electron-settings";
 import RememberUrl from "../config/remember-url-settings.const";
 import { removeRememberUrl, saveRememberUrl } from "./save-remember-url";
+
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "http://localhost:9609",
+    set: () => "data",
+    has: () => true,
+    unset: () => {},
+    __esModule: true,
+  };
+});
 
 describe("save remember url", () => {
   describe("saveRememberUrl", () => {
