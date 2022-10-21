@@ -13,11 +13,13 @@
     "lint": "eslint . --cache --ext js,jsx,cjs,mjs,ts,tsx",
     "test:ci": "echo Todo fix", 
     "test-ci": "npm run jest && npm run lint",
-    "win": "npm run prod && electron-builder build --win",
+    "windows": "npm run prod && electron-builder build --win",
     "mac": "npm run prod && electron-builder build --mac",
+    "macwindows" : "npm run prod && electron-builder build -mw",
     "dist": "npm run prod && electron-builder build",
     "build:win": "electron-builder build --win",
-    "build:mac": "electron-builder build --mac"
+    "build:mac": "electron-builder build --mac",
+    "build:runtime": "pwsh ../starsky/build.ps1 --runtime=osx-x64,win-x64"
   },
   "build": {
     "beforeBuild": "dist/setup/before-build.js",
