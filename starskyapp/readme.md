@@ -24,10 +24,10 @@ There are binaries available
 [Download App](https://qdraw.github.io/starsky/assets/download/download.html?classes=btn,btn-default)
 
 ### Windows 10 and newer
-- Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-win-desktop-x64.exe`
+- Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-win-x64-desktop.exe`
 
 ### Mac OS 10.15 or newer
-- Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-mac-desktop-x64.dmg`
+- Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-mac-x64-desktop.dmg`
 
 The application bundle can run without installer
 
