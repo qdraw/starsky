@@ -140,7 +140,7 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Logout the current HttpContext and redirect to login 
+        /// Logout the current HttpContext out
         /// </summary>
         /// <returns></returns>
         /// <response code="200">successful logout</response>
