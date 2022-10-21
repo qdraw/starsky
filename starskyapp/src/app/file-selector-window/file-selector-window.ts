@@ -24,6 +24,8 @@ export async function fileSelectorWindow(): Promise<string[]> {
 
     selected
       .then((data) => {
+        console.log(data);
+
         if (data.canceled) {
           newOpenedWindow.close();
           // eslint-disable-next-line prefer-promise-reject-errors
