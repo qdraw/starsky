@@ -12,7 +12,7 @@ import { UpdatePolicyIpcKey } from "../app/config/update-policy-ipc-key.const";
 export const exposeBrigde = {
   send: (channel: string, data: any) => {
     // whitelist channels
-    let validChannels = [
+    const validChannels = [
       LocationIsRemoteIpcKey,
       LocationUrlIpcKey,
       AppVersionIpcKey,
@@ -24,7 +24,7 @@ export const exposeBrigde = {
     }
   },
   receive: (channel: string, func: Function) => {
-    let validChannels = [
+    const validChannels = [
       LocationIsRemoteIpcKey,
       LocationUrlIpcKey,
       AppVersionIpcKey,

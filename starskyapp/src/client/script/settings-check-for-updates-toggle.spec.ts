@@ -39,10 +39,10 @@ describe("reload redirect", () => {
     settingsCheckForUpdatesToggle();
 
     // trigger to on
-    var event = new Event("change");
+    const event = new Event("change");
     document.querySelector(switchUpdatePolicyOnId).dispatchEvent(event);
 
-    expect(window.api.send).toBeCalled();
+    expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(
       1,
       UpdatePolicyIpcKey,
@@ -69,10 +69,10 @@ describe("reload redirect", () => {
     settingsCheckForUpdatesToggle();
 
     // trigger to on
-    var event = new Event("change");
+    const event = new Event("change");
     document.querySelector(switchUpdatePolicyOffId).dispatchEvent(event);
 
-    expect(window.api.send).toBeCalled();
+    expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(
       1,
       UpdatePolicyIpcKey,
@@ -102,11 +102,11 @@ describe("reload redirect", () => {
 
     const onToggleChecked = (document.querySelector(
       switchUpdatePolicyOnId
-    ) as HTMLInputElement).checked;
+    )).checked;
 
     const offToggleChecked = (document.querySelector(
       switchUpdatePolicyOffId
-    ) as HTMLInputElement).checked;
+    )).checked;
 
     expect(onToggleChecked).toBeTruthy();
     expect(offToggleChecked).toBeFalsy();
@@ -129,11 +129,11 @@ describe("reload redirect", () => {
 
     const onToggleChecked = (document.querySelector(
       switchUpdatePolicyOnId
-    ) as HTMLInputElement).checked;
+    )).checked;
 
     const offToggleChecked = (document.querySelector(
       switchUpdatePolicyOffId
-    ) as HTMLInputElement).checked;
+    )).checked;
 
     expect(onToggleChecked).toBeFalsy();
     expect(offToggleChecked).toBeTruthy();

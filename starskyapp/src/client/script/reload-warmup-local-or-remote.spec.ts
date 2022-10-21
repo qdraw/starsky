@@ -7,7 +7,9 @@ import { IPreloadApi } from "../../preload/IPreloadApi";
 import * as checkForUpdates from "./check-for-updates";
 import { warmupLocalOrRemote } from "./reload-warmup-local-or-remote";
 import * as warmupScript from "./reload-warmup-script";
+
 declare global {
+  // eslint-disable-next-line vars-on-top, no-var
   var api: IPreloadApi;
 }
 
@@ -54,7 +56,7 @@ describe("reload redirect", () => {
         receive: jest.fn()
       };
       warmupLocalOrRemote();
-      expect(window.api.send).toBeCalled();
+      expect(window.api.send).toHaveBeenCalled();
       expect(window.api.send).toHaveBeenNthCalledWith(
         1,
         LocationIsRemoteIpcKey,
@@ -72,7 +74,6 @@ describe("reload redirect", () => {
         .spyOn(warmupScript, "warmupScript")
         .mockImplementationOnce((_, c, m, func) => {
           func(true);
-          return;
         });
 
       // @ts-ignore
@@ -94,7 +95,7 @@ describe("reload redirect", () => {
         null
       );
 
-      expect(checkForUpdatesSpy).toBeCalled();
+      expect(checkForUpdatesSpy).toHaveBeenCalled();
     });
   });
 });

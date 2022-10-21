@@ -16,7 +16,7 @@ declare global {
 export function settingsDefaultImageApplicationSelect() {
   document
     .querySelector(defaultImageApplicationFileSelector)
-    .addEventListener("click", function () {
+    .addEventListener("click", () => {
       window.api.send(DefaultImageApplicationIpcKey, {
         showOpenDialog: true
       } as IDefaultImageApplicationProps);
@@ -24,7 +24,7 @@ export function settingsDefaultImageApplicationSelect() {
 
   document
     .querySelector(defaultImageApplicationReset)
-    .addEventListener("click", function () {
+    .addEventListener("click", () => {
       window.api.send(DefaultImageApplicationIpcKey, {
         reset: true
       } as IDefaultImageApplicationProps);
@@ -35,8 +35,7 @@ export function settingsDefaultImageApplicationSelect() {
       document.querySelector(defaultImageApplicationResult).innerHTML = data;
     }
     if (data === false || data === undefined) {
-      document.querySelector(defaultImageApplicationResult).innerHTML =
-        "Defined by system";
+      document.querySelector(defaultImageApplicationResult).innerHTML = "Defined by system";
     }
   });
 

@@ -43,12 +43,12 @@ describe("reload redirect", () => {
     settingsDefaultImageApplicationSelect();
 
     // trigger to on
-    var event = new Event("click");
+    const event = new Event("click");
     document
       .querySelector(defaultImageApplicationFileSelector)
       .dispatchEvent(event);
 
-    expect(window.api.send).toBeCalled();
+    expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(
       1,
       DefaultImageApplicationIpcKey,
@@ -78,10 +78,10 @@ describe("reload redirect", () => {
     settingsDefaultImageApplicationSelect();
 
     // trigger to on
-    var event = new Event("click");
+    const event = new Event("click");
     document.querySelector(defaultImageApplicationReset).dispatchEvent(event);
 
-    expect(window.api.send).toBeCalled();
+    expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(
       1,
       DefaultImageApplicationIpcKey,
@@ -118,7 +118,7 @@ describe("reload redirect", () => {
 
     const content = (document.querySelector(
       defaultImageApplicationResult
-    ) as HTMLInputElement).innerHTML;
+    )).innerHTML;
 
     expect(content).toBe("data_received");
   });

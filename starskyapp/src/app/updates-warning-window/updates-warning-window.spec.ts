@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import * as BrowserWindow from "electron";
 import * as appConfig from "electron-settings";
 import * as logger from "../logger/logger";
@@ -6,6 +7,18 @@ import * as shouldItUpdate from "./should-it-update";
 import createCheckForUpdatesContainerWindow, {
   checkForUpdatesWindow
 } from "./updates-warning-window";
+
+jest.mock("electron-settings", () => {
+  return {
+    get: () => Promise.resolve("http://localhost:9609"),
+    set: () => "data",
+    has: () => true,
+    unset: () => {},
+    configure: () => {},
+    file: () => {},
+    __esModule: true,
+  };
+});
 
 const mockBrowserWindow = {
   loadFile: jest.fn(),
@@ -16,7 +29,8 @@ const mockBrowserWindow = {
   on: (_: string, func: Function) => {
     return func();
   },
-  setMenu: jest.fn()
+  setMenu: jest.fn(),
+  __esModule: true,
 };
 
 const mockWindowStateKeeper = {
@@ -34,9 +48,13 @@ jest.mock("electron", () => {
       getVersion: () => "99.99.99",
       getPath: () => "tmp",
       getLocale: () => "en",
-      on: () => "en"
+      on: () => "en",
+      __esModule: true,
     },
-    BrowserWindow: () => mockBrowserWindow
+    // eslint-disable-next-line object-shorthand, func-names
+    BrowserWindow: function (_x:object, _y: number, _w: number, _h: number, _s: boolean, _w2: object) {
+      return mockBrowserWindow;
+    }
   };
 });
 
@@ -66,7 +84,7 @@ describe("create main window", () => {
 
       await checkForUpdatesWindow();
 
-      expect(browserWindowSpy).toBeCalled();
+      expect(browserWindowSpy).toHaveBeenCalled();
     });
   });
   describe("createCheckForUpdatesContainerWindow", () => {
@@ -89,12 +107,11 @@ describe("create main window", () => {
 
       const browserWindowSpy = jest
         .spyOn(BrowserWindow, "BrowserWindow")
-        .mockReset()
         .mockImplementationOnce(() => mockBrowserWindow as any);
 
       createCheckForUpdatesContainerWindow(1)
         .then(() => {
-          expect(browserWindowSpy).toBeCalled();
+          expect(browserWindowSpy).toHaveBeenCalled();
           done();
         })
         .catch((e) => {
@@ -102,7 +119,7 @@ describe("create main window", () => {
           throw e;
         });
     });
-    it("should not call browserWindow", (done) => {
+    it("should not call browserWindow", (done : Function) => {
       jest
         .spyOn(windowStateKeeper, "windowStateKeeper")
         .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
@@ -121,12 +138,11 @@ describe("create main window", () => {
 
       const browserWindowSpy = jest
         .spyOn(BrowserWindow, "BrowserWindow")
-        .mockReset()
         .mockImplementationOnce(() => mockBrowserWindow as any);
 
       createCheckForUpdatesContainerWindow(1)
         .then(() => {
-          expect(browserWindowSpy).toBeCalledTimes(0);
+          expect(browserWindowSpy).toHaveBeenCalledTimes(0);
           done();
         })
         .catch((e) => {
@@ -152,8 +168,6 @@ describe("create main window", () => {
         .spyOn(shouldItUpdate, "shouldItUpdate")
         .mockImplementationOnce(() => Promise.resolve(true));
 
-      jest.spyOn(BrowserWindow, "BrowserWindow").mockReset();
-
       const browserWindowSpy = jest
         .spyOn(BrowserWindow, "BrowserWindow")
         .mockImplementationOnce(() => mockBrowserWindow as any);
@@ -164,7 +178,7 @@ describe("create main window", () => {
           expect(true).toBeFalsy();
         })
         .catch((e) => {
-          expect(browserWindowSpy).toBeCalledTimes(0);
+          expect(browserWindowSpy).toHaveBeenCalledTimes(0);
           done();
         });
     });
@@ -193,8 +207,6 @@ describe("create main window", () => {
         .spyOn(shouldItUpdate, "shouldItUpdate")
         .mockImplementationOnce(() => Promise.reject(true));
 
-      jest.spyOn(BrowserWindow, "BrowserWindow").mockReset();
-
       const browserWindowSpy = jest
         .spyOn(BrowserWindow, "BrowserWindow")
         .mockImplementationOnce(() => mockBrowserWindow as any);
@@ -205,7 +217,7 @@ describe("create main window", () => {
           expect(true).toBeFalsy();
         })
         .catch((e) => {
-          expect(browserWindowSpy).toBeCalledTimes(0);
+          expect(browserWindowSpy).toHaveBeenCalledTimes(0);
           done();
         });
     });
@@ -220,7 +232,7 @@ describe("create main window", () => {
         .mockImplementationOnce(() => Promise.resolve(false));
 
       const result = createCheckForUpdatesContainerWindow();
-      expect(result).not.toBeUndefined();
+      expect(result).toBeDefined();
     });
   });
 });

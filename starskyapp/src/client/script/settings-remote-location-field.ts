@@ -27,7 +27,7 @@ export function settingsRemoteLocationField() {
   window.api.receive(LocationUrlIpcKey, (result: IlocationUrlSettings) => {
     const remoteLocation = document.querySelector(
       remoteLocationId
-    ) as HTMLInputElement;
+    );
 
     if (!result.isLocal) {
       remoteLocation.value = result.location;

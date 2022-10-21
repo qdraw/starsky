@@ -25,9 +25,9 @@ describe("settings", () => {
     // when change also update webpack and html
     require("./settings");
 
-    expect(checkSpy).toBeCalled();
-    expect(checkRemoteToggleSpy).toBeCalled();
-    expect(checkRemoteFieldSpy).toBeCalled();
-    expect(settingsDefaultImageApplicationSelectSpy).toBeCalled();
+    expect(checkSpy).toHaveBeenCalled();
+    expect(checkRemoteToggleSpy).toHaveBeenCalled();
+    expect(checkRemoteFieldSpy).toHaveBeenCalled();
+    expect(settingsDefaultImageApplicationSelectSpy).toHaveBeenCalled();
   });
 });

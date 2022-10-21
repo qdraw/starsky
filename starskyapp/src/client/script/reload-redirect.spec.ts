@@ -1,5 +1,6 @@
 import { IPreloadApi } from "../../preload/IPreloadApi";
 import * as warmupLocalOrRemote from "./reload-warmup-local-or-remote";
+
 declare global {
   var api: IPreloadApi;
 }
@@ -14,6 +15,6 @@ describe("reload redirect", () => {
     // when change also update webpack and html
     require("./reload-redirect");
 
-    expect(checkSpy).toBeCalled();
+    expect(checkSpy).toHaveBeenCalled();
   });
 });

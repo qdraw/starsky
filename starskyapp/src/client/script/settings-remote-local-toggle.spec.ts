@@ -6,6 +6,7 @@ import {
   switchLocalId,
   switchRemoteId
 } from "./settings.const";
+
 declare global {
   var api: IPreloadApi;
 }
@@ -42,10 +43,10 @@ describe("settings Remote Local Toggle", () => {
     settingsRemoteLocalToggle();
 
     // trigger to on
-    var event = new Event("change");
+    const event = new Event("change");
     document.querySelector(switchRemoteId).dispatchEvent(event);
 
-    expect(window.api.send).toBeCalled();
+    expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(
       1,
       LocationIsRemoteIpcKey,
@@ -72,10 +73,10 @@ describe("settings Remote Local Toggle", () => {
     settingsRemoteLocalToggle();
 
     // trigger to on
-    var event = new Event("change");
+    const event = new Event("change");
     document.querySelector(switchLocalId).dispatchEvent(event);
 
-    expect(window.api.send).toBeCalled();
+    expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(
       1,
       LocationIsRemoteIpcKey,
@@ -108,11 +109,11 @@ describe("settings Remote Local Toggle", () => {
 
     const onToggleChecked = (document.querySelector(
       switchRemoteId
-    ) as HTMLInputElement).checked;
+    )).checked;
 
     const offToggleChecked = (document.querySelector(
       switchLocalId
-    ) as HTMLInputElement).checked;
+    )).checked;
 
     expect(onToggleChecked).toBeTruthy();
     expect(offToggleChecked).toBeFalsy();
@@ -138,11 +139,11 @@ describe("settings Remote Local Toggle", () => {
 
     const onToggleChecked = (document.querySelector(
       switchRemoteId
-    ) as HTMLInputElement).checked;
+    )).checked;
 
     const offToggleChecked = (document.querySelector(
       switchLocalId
-    ) as HTMLInputElement).checked;
+    )).checked;
 
     expect(onToggleChecked).toBeFalsy();
     expect(offToggleChecked).toBeTruthy();

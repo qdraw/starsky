@@ -5,6 +5,7 @@ import { settingsRemoteLocalToggle } from "./settings-remote-local-toggle";
 import { settingsRemoteLocationField } from "./settings-remote-location-field";
 
 declare global {
+  // eslint-disable-next-line vars-on-top, no-var
   var api: IPreloadApi;
 }
 

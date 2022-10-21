@@ -1,5 +1,6 @@
 import { IPreloadApi } from "../../preload/IPreloadApi";
 import { warmupScript } from "./reload-warmup-script";
+
 declare global {
   var api: IPreloadApi;
 }
@@ -7,7 +8,7 @@ declare global {
 describe("reload redirect", () => {
   function mockFetch(status: number) {
     const mockFetchPromise = Promise.resolve({
-      status: status,
+      status,
       text: () => Promise.resolve("Health")
     });
     window.fetch = jest.fn().mockImplementation(() => mockFetchPromise);

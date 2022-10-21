@@ -3,7 +3,7 @@ import { checkForUpdates } from "./check-for-updates";
 describe("reload redirect", () => {
   function mockFetch(status: number) {
     const mockFetchPromise = Promise.resolve({
-      status: status
+      status
     });
     window.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
   }
@@ -26,12 +26,11 @@ describe("reload redirect", () => {
 
   it("status upgrade", async () => {
     mockFetch(400);
-    document.body.innerHTML =
-      "<div class='upgrade'></div><div class='preloader'></div>";
+    document.body.innerHTML = "<div class='upgrade'></div><div class='preloader'></div>";
     const result = await checkForUpdates("t", "1");
 
     expect(
-      (document.querySelector(".upgrade") as HTMLElement).style.display
+      (document.querySelector(".upgrade")).style.display
     ).toBe("block");
 
     document.body.innerHTML = "";

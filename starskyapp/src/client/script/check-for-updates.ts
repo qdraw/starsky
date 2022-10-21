@@ -4,7 +4,7 @@ export function checkForUpdates(
   domainUrl: string,
   apiVersion: string
 ): Promise<number> {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     fetch(domainUrl + new UrlQuery().HealthVersionApi(apiVersion), {
       method: "POST",
       headers: {
@@ -18,19 +18,19 @@ export function checkForUpdates(
         }
 
         if (
-          versionResponse.status === 400 &&
-          document.querySelectorAll(".upgrade").length === 1
+          versionResponse.status === 400
+          && document.querySelectorAll(".upgrade").length === 1
         ) {
           const upgradeElement = document.querySelector(
             ".upgrade"
-          ) as HTMLElement;
+          );
           if (upgradeElement) {
             upgradeElement.style.display = "block";
           }
 
           const preloaderElement = document.querySelector(
             ".preloader"
-          ) as HTMLElement;
+          );
           if (preloaderElement) {
             preloaderElement.style.display = "none";
           }

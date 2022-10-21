@@ -15,13 +15,13 @@ declare global {
 
 export function settingsRemoteLocalToggle() {
   /** Switch remote local */
-  document.querySelector(switchLocalId).addEventListener("change", function () {
+  document.querySelector(switchLocalId).addEventListener("change", () => {
     changeRemoteToggle(false);
   });
 
   document
     .querySelector(switchRemoteId)
-    .addEventListener("change", function () {
+    .addEventListener("change", () => {
       changeRemoteToggle(true);
     });
 
@@ -34,13 +34,13 @@ export function settingsRemoteLocalToggle() {
   window.api.receive(LocationIsRemoteIpcKey, (isRemote: boolean) => {
     const switchLocal = document.querySelector(
       switchLocalId
-    ) as HTMLInputElement;
+    );
     const switchRemote = document.querySelector(
       switchRemoteId
-    ) as HTMLInputElement;
+    );
     const remoteLocation = document.querySelector(
       remoteLocationId
-    ) as HTMLInputElement;
+    );
 
     if (isRemote) {
       switchLocal.checked = false;

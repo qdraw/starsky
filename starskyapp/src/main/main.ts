@@ -13,7 +13,6 @@ import { willNavigateSecurity } from "../app/startup/will-navigate-security";
 import { IsRemote } from "../app/warmup/is-remote";
 import { SetupSplash } from "../app/warmup/splash";
 
-
 MakeLogsPath();
 ipcBridge();
 defaultAppSettings();
@@ -29,11 +28,11 @@ app.on("ready", () => {
   DockMenu();
 
   const splashWindow = SetupSplash();
-  IsRemote().then((isRemote)=>{
+  IsRemote().then((isRemote) => {
     RestoreWarmupMainWindowAndCloseSplash(splashWindow, isRemote);
-  })
+  });
 
-  app.on("activate", function () {
+  app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {

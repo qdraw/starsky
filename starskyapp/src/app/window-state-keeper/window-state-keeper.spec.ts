@@ -1,6 +1,18 @@
 import * as appConfig from "electron-settings";
 import { windowStateKeeper } from "./window-state-keeper";
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => Promise.resolve("http://localhost:9609"),
+    set: () => "data",
+    has: () => true,
+    unset: () => {},
+    configure: () => {},
+    file: () => {},
+    __esModule: true,
+  };
+});
+
 jest.mock("electron", () => {
   return {
     app: {
@@ -23,12 +35,14 @@ describe("window state keeper", () => {
       expect(result.height).toBe(800);
     });
 
-    it("default output", async () => {
+    it("default output 2", async () => {
       jest.spyOn(appConfig, "has").mockImplementationOnce(() => {
         return Promise.resolve(true);
       });
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve({ x: 10, y: 11, width: 12, height: 13 });
+        return Promise.resolve({
+          x: 10, y: 11, width: 12, height: 13
+        });
       });
       const result = await windowStateKeeper("test");
       expect(result.x).toBe(10);
@@ -47,8 +61,8 @@ describe("window state keeper", () => {
         on: onMock
       } as any);
 
-      expect(onMock).toBeCalled();
-      expect(onMock).toBeCalledWith("resize", expect.anything());
+      expect(onMock).toHaveBeenCalled();
+      expect(onMock).toHaveBeenCalledWith("resize", expect.anything());
       expect(onMock).toHaveBeenNthCalledWith(1, "resize", expect.anything());
       expect(onMock).toHaveBeenNthCalledWith(2, "move", expect.anything());
       expect(onMock).toHaveBeenNthCalledWith(3, "close", expect.anything());
@@ -94,8 +108,8 @@ describe("window state keeper", () => {
         }
       } as any);
 
-      expect(appConfigSetSpy).toBeCalled();
-      expect(appConfigSetSpy).toBeCalledWith("windowState.test", {
+      expect(appConfigSetSpy).toHaveBeenCalled();
+      expect(appConfigSetSpy).toHaveBeenCalledWith("windowState.test", {
         height: 13,
         isMaximized: true,
         width: 12,

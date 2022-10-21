@@ -43,7 +43,7 @@ describe("settings Remote Local Toggle", () => {
     var event = new Event("change");
     document.querySelector(remoteLocationId).dispatchEvent(event);
 
-    expect(window.api.send).toBeCalled();
+    expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(1, LocationUrlIpcKey, null);
     expect(window.api.send).toHaveBeenNthCalledWith(
       2,
@@ -70,7 +70,7 @@ describe("settings Remote Local Toggle", () => {
     var event = new Event("change");
     document.querySelector(remoteLocationId).dispatchEvent(event);
 
-    expect(window.api.send).toBeCalled();
+    expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(1, LocationUrlIpcKey, null);
   });
 
@@ -85,16 +85,15 @@ describe("settings Remote Local Toggle", () => {
       }
     };
     const remoteLocationIdTag = remoteLocationId.replace("#", "");
-    document.body.innerHTML =
-      `<input id="${remoteLocationIdTag}" value="test123">` +
-      `<div id="${locationIsValidId.replace("#", "")}"></div>`;
+    document.body.innerHTML = `<input id="${remoteLocationIdTag}" value="test123">`
+      + `<div id="${locationIsValidId.replace("#", "")}"></div>`;
 
     settingsRemoteLocationField();
 
     // should update from window/api
     const remoteLocationValue = (document.querySelector(
       remoteLocationId
-    ) as HTMLInputElement).value;
+    )).value;
 
     expect(remoteLocationValue).toBe("test");
   });
@@ -110,16 +109,15 @@ describe("settings Remote Local Toggle", () => {
       }
     };
     const remoteLocationIdTag = remoteLocationId.replace("#", "");
-    document.body.innerHTML =
-      `<input id="${remoteLocationIdTag}" value="test123">` +
-      `<div id="${locationIsValidId.replace("#", "")}"></div>`;
+    document.body.innerHTML = `<input id="${remoteLocationIdTag}" value="test123">`
+      + `<div id="${locationIsValidId.replace("#", "")}"></div>`;
 
     settingsRemoteLocationField();
 
     // should ignore window/api
     const remoteLocationValue = (document.querySelector(
       remoteLocationId
-    ) as HTMLInputElement).value;
+    )).value;
 
     expect(remoteLocationValue).toBe("test123");
   });

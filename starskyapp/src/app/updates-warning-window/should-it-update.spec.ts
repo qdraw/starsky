@@ -46,12 +46,6 @@ jest.mock("electron", () => {
   };
 });
 
-jest.mock("electron-settings", () => {
-  return {
-    get: () => "99.99.99",
-  };
-});
-
 describe("SkipDisplayOfUpdate", () => {
   beforeAll(() => {
     jest.spyOn(logger, "default").mockImplementation(() => {
@@ -63,6 +57,7 @@ describe("SkipDisplayOfUpdate", () => {
   });
 
   describe("SkipDisplayOfUpdate", () => {
+    //
     it("should skip 1 second ago checked, it should be ignored", async () => {
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(Date.now().toString());
