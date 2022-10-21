@@ -115,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: starsky-mac-desktop
-          path: ./starskyapp/dist/starsky-mac-desktop.zip   
+          path: ./starskyapp/dist-prod/starsky-mac-desktop-x64.dmg   
  
   build_win:
     name: Update Windows Desktop app
@@ -292,26 +292,26 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  
-          asset_path: ./starskyapp/dist/starsky-win-desktop.zip
-          asset_name: starsky-win-desktop.zip
-          asset_content_type: application/zip     
+          asset_path: ./starskyapp/dist/starsky-win-desktop-x64.exe
+          asset_name: starsky-win-desktop-x64.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
  
-      - name: Download starsky-mac-desktop as build artifact
+      - name: Download starsky-mac-desktop-x64 as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: starsky-mac-desktop
+          name: starsky-mac-desktop-x64
           path: ./starskyapp/dist
      
-      - name: Upload Release Asset starsky-mac-desktop
-        id: upload-starsky-mac-desktop
+      - name: Upload Release Asset starsky-mac-desktop-x64
+        id: upload-starsky-mac-desktop-x64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  
-          asset_path: ./starskyapp/dist/starsky-mac-desktop.zip
-          asset_name: starsky-mac-desktop.zip
-          asset_content_type: application/zip    
+          asset_path: ./starskyapp/dist/starsky-mac-desktop-x64.dmg
+          asset_name: starsky-mac-desktop-x64.dmg
+          asset_content_type: application/octet-stream
 
       - name: Get tag name (needed for slack)
         id: get_tag_name
