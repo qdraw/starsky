@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { net } from "electron";
 import { GetNetRequest } from "./get-net-request";
+
 jest.mock("electron", () => {
   return {
     app: {
@@ -73,7 +75,7 @@ describe("get net request", () => {
       });
 
       const result = await GetNetRequest("");
-      expect(result.data).toStrictEqual("Healthy");
+      expect(result.data).toBe("Healthy");
       expect(result.statusCode).toBe(200);
     });
 
@@ -104,7 +106,7 @@ describe("get net request", () => {
       });
 
       const result = await GetNetRequest("");
-      expect(result.data).toStrictEqual("Healthy");
+      expect(result.data).toBe("Healthy");
       expect(result.statusCode).toBe(200);
     });
 
@@ -135,11 +137,11 @@ describe("get net request", () => {
 
       console.log("--> should give json parse error -->");
 
-      let error = undefined;
+      let error : { error: string, statusCode: number };
       try {
         await GetNetRequest("");
-      } catch (err) {
-        error = err;
+      } catch (err : unknown) {
+        error = err as { error: string, statusCode: number };
       }
 
       expect(error.error).toContain(

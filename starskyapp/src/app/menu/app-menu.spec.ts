@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Menu, shell } from "electron";
 import * as logger from "../logger/logger";
 import * as createMainWindow from "../main-window/create-main-window";
@@ -38,14 +41,14 @@ describe("menu", () => {
   });
 
   describe("AppMenu", () => {
-    it("it should inherit from template", () => {
+    it("should inherit from template", () => {
       const buildFromTemplateSpy = jest.spyOn(Menu, "buildFromTemplate");
       const setApplicationMenuSpy = jest.spyOn(Menu, "setApplicationMenu");
 
       AppMenu();
 
-      expect(buildFromTemplateSpy).toBeCalled();
-      expect(setApplicationMenuSpy).toBeCalled();
+      expect(buildFromTemplateSpy).toHaveBeenCalled();
+      expect(setApplicationMenuSpy).toHaveBeenCalled();
     });
 
     it("New Main window", () => {
@@ -54,14 +57,18 @@ describe("menu", () => {
         .mockImplementationOnce(() => Promise.resolve() as any);
 
       AppMenu();
+      // eslint-disable-next-line no-restricted-syntax
       for (const key in menuStorage) {
         if (Object.prototype.hasOwnProperty.call(menuStorage, key)) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
           const element = menuStorage[key];
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           if (element.label === "File") {
+            // eslint-disable-next-line no-restricted-syntax
             for (const subElement of element.submenu) {
               if (
-                subElement.accelerator &&
-                subElement.accelerator === "CmdOrCtrl+N"
+                subElement.accelerator
+                && subElement.accelerator === "CmdOrCtrl+N"
               ) {
                 subElement.click();
               }
@@ -69,7 +76,7 @@ describe("menu", () => {
           }
         }
       }
-      expect(createnewWindowSpy).toBeCalled();
+      expect(createnewWindowSpy).toHaveBeenCalled();
     });
 
     it("New settings window", () => {
@@ -84,8 +91,8 @@ describe("menu", () => {
           if (element.label === "Settings") {
             for (const subElement of element.submenu) {
               if (
-                subElement.accelerator &&
-                subElement.accelerator === "CmdOrCtrl+,"
+                subElement.accelerator
+                && subElement.accelerator === "CmdOrCtrl+,"
               ) {
                 subElement.click();
               }
@@ -93,7 +100,7 @@ describe("menu", () => {
           }
         }
       }
-      expect(createnewWindowSpy).toBeCalled();
+      expect(createnewWindowSpy).toHaveBeenCalled();
     });
 
     it("Help docs site", () => {
@@ -108,8 +115,8 @@ describe("menu", () => {
           if (element.role === "help") {
             for (const subElement of element.submenu) {
               if (
-                subElement.label &&
-                subElement.label === "Documentation website"
+                subElement.label
+                && subElement.label === "Documentation website"
               ) {
                 subElement.click();
               }
@@ -117,7 +124,7 @@ describe("menu", () => {
           }
         }
       }
-      expect(openExtSpy).toBeCalled();
+      expect(openExtSpy).toHaveBeenCalled();
     });
 
     it("Help Release overview", () => {
@@ -138,7 +145,7 @@ describe("menu", () => {
           }
         }
       }
-      expect(openExtSpy).toBeCalled();
+      expect(openExtSpy).toHaveBeenCalled();
     });
   });
 });

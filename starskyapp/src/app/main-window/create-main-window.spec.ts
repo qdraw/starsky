@@ -16,7 +16,8 @@ jest.mock("electron", () => {
       getLocale: () => "en",
       on: () => "en",
     },
-    BrowserWindow: () => {
+    // eslint-disable-next-line object-shorthand, func-names
+    BrowserWindow: function (_x:object, _y: number, _w: number, _h: number, _s: boolean, _w2: object) {
       return {
         id: 99,
         loadFile: jest.fn(),
@@ -37,6 +38,8 @@ jest.mock("electron", () => {
         },
       };
     },
+    __esModule: true,
+
   };
 });
 

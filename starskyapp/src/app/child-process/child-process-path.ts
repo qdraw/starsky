@@ -24,6 +24,15 @@ export function childProcessPath(): string {
           "win-x64",
           "starsky.exe",
         );
+      case "linux":
+        return path.join(
+          __dirname,
+          "..",
+          "..",
+          "starsky",
+          "linux-x64",
+          "starsky",
+        );
       default:
         throw new Error("not implemented");
     }

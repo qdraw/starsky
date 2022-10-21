@@ -1,5 +1,5 @@
 import * as appConfig from "electron-settings";
-import * as createMainWindow from "../main-window/create-main-window";
+import * as createMainWindow from "./create-main-window";
 import { restoreMainWindow } from "./restore-main-window";
 
 jest.mock("electron", () => {
@@ -10,7 +10,8 @@ jest.mock("electron", () => {
       getLocale: () => "en",
       on: () => "en"
     },
-    BrowserWindow: () => {
+    // eslint-disable-next-line object-shorthand, func-names
+    BrowserWindow: function (_x:object, _y: number, _w: number, _h: number, _s: boolean, _w2: object) {
       return {
         loadFile: jest.fn(),
         id: 103,
@@ -48,8 +49,8 @@ describe("restore main window", () => {
 
     await restoreMainWindow();
 
-    expect(createMainWindowSpy).toBeCalled();
-    expect(createMainWindowSpy).toBeCalledWith("?f=/", 0);
+    expect(createMainWindowSpy).toHaveBeenCalled();
+    expect(createMainWindowSpy).toHaveBeenCalledWith("?f=/", 0);
   });
 
   it("restore one window", async () => {
@@ -73,8 +74,8 @@ describe("restore main window", () => {
 
     await restoreMainWindow();
 
-    expect(createMainWindowSpy).toBeCalled();
-    expect(createMainWindowSpy).toBeCalledWith("url_get", 0);
+    expect(createMainWindowSpy).toHaveBeenCalled();
+    expect(createMainWindowSpy).toHaveBeenCalledWith("url_get", 0);
   });
 
   it("restore multiple windows", async () => {
@@ -98,7 +99,7 @@ describe("restore main window", () => {
 
     await restoreMainWindow();
 
-    expect(createMainWindowSpy).toBeCalled();
+    expect(createMainWindowSpy).toHaveBeenCalled();
     expect(createMainWindowSpy).toHaveBeenNthCalledWith(1, "url_get0", 0);
     expect(createMainWindowSpy).toHaveBeenNthCalledWith(2, "url_get1", 20);
   });

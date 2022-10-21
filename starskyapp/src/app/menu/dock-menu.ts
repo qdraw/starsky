@@ -12,12 +12,12 @@ export default function DockMenu() {
           createMainWindow("?f=/");
         }
       },
-        {
-          label: IsDutch() ? "Prullenmand" : "Trash",
-          click: () => {
-            createMainWindow("/trash");
-          }
+      {
+        label: IsDutch() ? "Prullenmand" : "Trash",
+        click: () => {
+          createMainWindow("/trash");
         }
+      }
     ]);
     app.dock.setMenu(dockMenu);
   }

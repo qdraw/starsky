@@ -7,13 +7,13 @@ export function downloadNetRequest(
   session: Electron.Session,
   toPath: string
 ) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (url.startsWith("[object ")) {
       throw new Error("please await promise first");
     }
 
     const file = fs.createWriteStream(toPath);
-    logger.info("> request: " + url + " -> " + toPath);
+    logger.info(`> request: ${url} -> ${toPath}`);
 
     const request = net.request({
       useSessionCookies: true,
@@ -31,25 +31,25 @@ export function downloadNetRequest(
       }
 
       fs.promises.writeFile(
-        toPath + ".info",
+        `${toPath}.info`,
         response.headers["content-length"]?.toString()
       );
 
       // @ts-ignore
       response.pipe(file);
 
-      file.on("error", function (err) {
+      file.on("error", (err) => {
         fs.unlink(toPath, () => { }); // Delete the file async. (But we don't check the result)
         reject(err.message);
       });
 
-      file.on("finish", function () {
+      file.on("finish", () => {
         fs.promises.stat(toPath).then(async (stats) => {
           if (response.headers["content-length"] === stats.size.toString()) {
             resolve(toPath);
             return;
           }
-          fs.promises.unlink(toPath + ".info");
+          fs.promises.unlink(`${toPath}.info`);
           reject("byte size doesnt match");
         });
       });

@@ -24,11 +24,11 @@ describe("save remember url", () => {
         }
       } as any);
 
-      expect(appSettingsSetSpy).toBeCalled();
-      expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, { "1": "/?f=t" });
+      expect(appSettingsSetSpy).toHaveBeenCalled();
+      expect(appSettingsSetSpy).toHaveBeenCalledWith(RememberUrl, { 1: "/?f=t" });
     });
 
-    it("should merge ", async () => {
+    it("should merge", async () => {
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve({ 0: "test" });
       });
@@ -49,10 +49,10 @@ describe("save remember url", () => {
         }
       } as any);
 
-      expect(appSettingsSetSpy).toBeCalled();
-      expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, {
-        "0": "test",
-        "1": "/?f=t"
+      expect(appSettingsSetSpy).toHaveBeenCalled();
+      expect(appSettingsSetSpy).toHaveBeenCalledWith(RememberUrl, {
+        0: "test",
+        1: "/?f=t"
       });
     });
 
@@ -77,7 +77,7 @@ describe("save remember url", () => {
         }
       } as any);
 
-      expect(appSettingsSetSpy).toBeCalledTimes(0);
+      expect(appSettingsSetSpy).toHaveBeenCalledTimes(0);
     });
   });
   describe("removeRememberUrl", () => {
@@ -97,8 +97,8 @@ describe("save remember url", () => {
         });
 
       await removeRememberUrl(0);
-      expect(appSettingsSetSpy).toBeCalled();
-      expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, {});
+      expect(appSettingsSetSpy).toHaveBeenCalled();
+      expect(appSettingsSetSpy).toHaveBeenCalledWith(RememberUrl, {});
     });
 
     it("should not existing it from list", async () => {
@@ -114,8 +114,8 @@ describe("save remember url", () => {
         });
 
       await removeRememberUrl(0);
-      expect(appSettingsSetSpy).toBeCalled();
-      expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, {});
+      expect(appSettingsSetSpy).toHaveBeenCalled();
+      expect(appSettingsSetSpy).toHaveBeenCalledWith(RememberUrl, {});
     });
   });
 });
