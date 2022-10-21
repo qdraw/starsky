@@ -15,7 +15,7 @@
     "test-ci": "npm run jest && npm run lint",
     "windows": "npm run prod && electron-builder build --win --publish never",
     "mac": "npm run prod && electron-builder build --mac --publish never",
-    "macwindows" : "npm run prod && echo prod-done && electron-builder build --mac --windows --publish never",
+    "macwindows" : "npm run prod && echo prod-done && electron-builder build --mac zip --windows --publish never",
     "linux": "npm run prod && electron-builder build --linux --publish never",
     "dist": "npm run prod && electron-builder build",
     "build:win": "electron-builder build --win",
