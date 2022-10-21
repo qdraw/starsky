@@ -56,18 +56,18 @@ stages:
     - template: /pipelines/azure/steps/build_clientapp.yml
       parameters:
         jest: false
-        runtimeArg: '--runtime="win-x64,win-x86,osx-x64"'
+        runtimeArg: '--runtime="win-x64,linux-x64,osx-x64,osx-arm64"'
         npmConfigCache: $(npm_config_cache)
 
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: false
-        runtimeArg: '--runtime "win-x64,win-x86,osx-x64,osx-arm64"'
+        runtimeArg: '--runtime "win-x64,linux-x64,osx-x64,osx-arm64"'
         nugetPackages: $(NUGET_PACKAGES)
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
       parameters:
-        runtimeArg: '--runtime "win-x64,win-x86,osx-x64,osx-arm64"'
+        runtimeArg: '--runtime "win-x64,linux-x64,osx-x64,osx-arm64"'
 
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
@@ -76,8 +76,8 @@ stages:
             value: '/starsky/starsky-osx-x64.zip' 
           - key: generic-netcore
             value: '/starsky/starsky-generic-netcore.zip'
-          - key: win-x86
-            value: '/starsky/starsky-win-x86.zip'
+          - key: linux-x64
+            value: '/starsky/starsky-linux-x64.zip'
           - key: win-x64
             value: '/starsky/starsky-win-x64.zip'
           - key: osx-arm64
