@@ -23,6 +23,7 @@ const baseConfig = {
     "import/prefer-default-export": ["off"],
     "@typescript-eslint/no-unsafe-return": ["off"],
     "no-console": ["off"],
+    "@typescript-eslint/comma-dangle": ["off"],
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
 };

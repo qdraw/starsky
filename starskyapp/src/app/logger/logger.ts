@@ -1,9 +1,9 @@
+import * as path from "path";
 import * as winston from "winston";
 import { electronCacheLocation } from "../child-process/electron-cache-location";
-import * as path from "path";
 
 const currentDate = new Date();
-var today = currentDate.toISOString().split("T")[0].replace(/-/gi, "");
+const today = currentDate.toISOString().split("T")[0].replace(/-/gi, "");
 
 const winstonLogger = winston.createLogger({
   level: "info",
@@ -23,17 +23,21 @@ const winstonLogger = winston.createLogger({
   ]
 });
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 class logger {
-  static info(message: any, ...meta: any[]) {
+  static info(message: unknown, ...meta: unknown[]) {
     try {
-      winstonLogger.info(message, meta);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      winstonLogger.info(message as any, meta);
     } catch (error) {
       // keep console log here
       console.log(message, meta);
     }
   }
+
   static warn(message: any, ...meta: any[]) {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       winstonLogger.warn(message, meta);
     } catch (error) {
       // keep console log here

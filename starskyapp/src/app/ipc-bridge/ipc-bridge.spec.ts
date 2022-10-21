@@ -131,9 +131,9 @@ describe("ipc bridge", () => {
   });
 
   describe("AppVersionCallback", () => {
-    it("check if version has output", async () => {
+    it("check if version has output", () => {
       const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
-      await AppVersionCallback(event);
+      AppVersionCallback(event);
       expect(event.reply).toHaveBeenCalled();
       expect(event.reply).toHaveBeenCalledWith(AppVersionIpcKey, ["99.99"]);
     });
@@ -459,6 +459,7 @@ describe("ipc bridge", () => {
 
       jest
         .spyOn(fileSelectorWindow, "fileSelectorWindow")
+        // eslint-disable-next-line prefer-promise-reject-errors
         .mockImplementationOnce(() => Promise.reject(["result_from_fileSelectorWindow"]));
 
       jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
