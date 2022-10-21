@@ -113,10 +113,10 @@ stages:
     - template: /pipelines/azure/steps/electron_build.yml
 
     - task: PublishPipelineArtifact@1
-      displayName: 'Publish Artifact: starsky-win-desktop'
+      displayName: 'Publish Artifact: starsky-win-x64-desktop'
       inputs:
         path: '$(Build.SourcesDirectory)/starskyapp/dist-prod/starsky-win-x64-desktop.exe'
-        ArtifactName: 'starsky-win-desktop'
+        ArtifactName: 'starsky-win-x64-desktop'
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifact: starsky-mac-x64-desktop'
