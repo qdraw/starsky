@@ -153,7 +153,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: starsky-win-desktop
-          path: ./starskyapp/dist/starsky-win-desktop.zip   
+          path: ./starskyapp/dist-prod/starsky-win-desktop.zip   
  
   
   create_release:
@@ -292,7 +292,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  
-          asset_path: ./starskyapp/dist/starsky-win-desktop-x64.exe
+          asset_path: ./starskyapp/dist-prod/starsky-win-desktop-x64.exe
           asset_name: starsky-win-desktop-x64.exe
           asset_content_type: application/vnd.microsoft.portable-executable
  
@@ -309,7 +309,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  
-          asset_path: ./starskyapp/dist/starsky-mac-desktop-x64.dmg
+          asset_path: ./starskyapp/dist-prod/starsky-mac-desktop-x64.dmg
           asset_name: starsky-mac-desktop-x64.dmg
           asset_content_type: application/octet-stream
 
