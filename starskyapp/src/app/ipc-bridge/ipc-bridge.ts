@@ -30,31 +30,53 @@ import { GetNetRequest } from "../net-request/get-net-request";
 import { settingsWindows } from "../settings-window/settings-windows.const";
 import { IsRemote } from "../warmup/is-remote";
 
+/**
+ * to avoid that the session is opened
+ */
+async function closeAndCreateNewWindow() {
+  await appConfig.set(RememberUrl, {});
+  mainWindows.forEach((window) => {
+    window.close();
+  });
+  const newWindow = await createMainWindow("");
+  newWindow.once("ready-to-show", () => {
+    settingsWindows.forEach((window) => {
+      window.show();
+    });
+  });
+}
+
+export async function LocationIsRemoteCallback(
+  event: Electron.IpcMainEvent,
+  args: boolean,
+) {
+  if (args !== undefined && args !== null) {
+    await closeAndCreateNewWindow();
+    await appConfig.set(LocationIsRemoteSettingsKey, args.toString());
+    // filewatcher need to be after update/set
+    await SetupFileWatcher();
+  }
+
+  event.reply(LocationIsRemoteIpcKey, await IsRemote());
+}
+
 function ipcBridge() {
   // When adding a new key also update preload-main.ts
 
-  ipcMain.on(LocationIsRemoteIpcKey, async (event, args) =>
-    LocationIsRemoteCallback(event, args)
-  );
+  ipcMain.on(LocationIsRemoteIpcKey, async (event, args) => LocationIsRemoteCallback(event, args));
 
   ipcMain.on(AppVersionIpcKey, async (event) => AppVersionCallback(event));
 
-  ipcMain.on(LocationUrlIpcKey, async (event, args: string) =>
-    LocationUrlCallback(event, args)
-  );
+  ipcMain.on(LocationUrlIpcKey, async (event, args: string) => LocationUrlCallback(event, args));
 
-  ipcMain.on(UpdatePolicyIpcKey, async (event, args) =>
-    UpdatePolicyCallback(event, args)
-  );
+  ipcMain.on(UpdatePolicyIpcKey, async (event, args) => UpdatePolicyCallback(event, args));
 
-  ipcMain.on(DefaultImageApplicationIpcKey, async (event, args) =>
-    DefaultImageApplicationCallback(event, args)
-  );
+  ipcMain.on(DefaultImageApplicationIpcKey, async (event, args) => DefaultImageApplicationCallback(event, args));
 }
 
 export async function DefaultImageApplicationCallback(
   event: Electron.IpcMainEvent,
-  args: IDefaultImageApplicationProps
+  args: IDefaultImageApplicationProps,
 ) {
   if (!args) {
     const currentSettings = await appConfig.get(DefaultImageApplicationSetting);
@@ -76,31 +98,17 @@ export async function DefaultImageApplicationCallback(
   }
 }
 
-export async function LocationIsRemoteCallback(
-  event: Electron.IpcMainEvent,
-  args: boolean
-) {
-  if (args !== undefined && args !== null) {
-    await closeAndCreateNewWindow();
-    await appConfig.set(LocationIsRemoteSettingsKey, args.toString());
-    // filewatcher need to be after update/set
-    await SetupFileWatcher();
-  }
-
-  event.reply(LocationIsRemoteIpcKey, await IsRemote());
-}
-
-export async function AppVersionCallback(event: Electron.IpcMainEvent) {
+export function AppVersionCallback(event: Electron.IpcMainEvent) {
   const appVersion = app
     .getVersion()
-    .match(new RegExp("^[0-9]+\\.[0-9]+", "ig"));
+    .match(/^[0-9]+\.[0-9]+/ig);
 
   event.reply(AppVersionIpcKey, appVersion);
 }
 
 export async function LocationUrlCallback(
   event: Electron.IpcMainEvent,
-  args: string
+  args: string,
 ) {
   // getting
   if (!args) {
@@ -109,28 +117,28 @@ export async function LocationUrlCallback(
   }
 
   if (
-    args.match(urlRegex) ||
-    args.match(ipRegex) ||
-    args.startsWith("http://localhost:")
+    args.match(urlRegex)
+    || args.match(ipRegex)
+    || args.startsWith("http://localhost:")
   ) {
     console.log("ipc-bridge start update");
 
     // to avoid errors
-    var locationUrl = args.replace(/\/$/, "");
+    const locationUrl = args.replace(/\/$/, "");
 
     try {
       const response = await GetNetRequest(
-        locationUrl + new UrlQuery().HealthApi()
+        locationUrl + new UrlQuery().HealthApi(),
       );
       const responseSettings = {
         location: locationUrl,
-        isLocal: false
+        isLocal: false,
       } as IlocationUrlSettings;
 
       logger.info("ipc-bridge response >");
       logger.info(response);
 
-      var locationOk = response.statusCode == 200 || response.statusCode == 503;
+      const locationOk = response.statusCode === 200 || response.statusCode === 503;
       if (locationOk) {
         await appConfig.set(LocationUrlSettingsKey, locationUrl);
 
@@ -147,12 +155,12 @@ export async function LocationUrlCallback(
       responseSettings.isValid = locationOk;
 
       event.reply(LocationUrlIpcKey, responseSettings);
-    } catch (error) {
+    } catch (error: unknown) {
       event.reply(LocationUrlIpcKey, {
         isValid: false,
         isLocal: false,
         location: args,
-        reason: error
+        reason: error,
       } as IlocationUrlSettings);
     }
     return;
@@ -162,34 +170,18 @@ export async function LocationUrlCallback(
   event.reply(LocationUrlIpcKey, {
     isValid: false,
     isLocal: false,
-    location: args
+    location: args,
   } as IlocationUrlSettings);
-}
-
-/**
- * to avoid that the session is opened
- */
-async function closeAndCreateNewWindow() {
-  await appConfig.set(RememberUrl, {});
-  mainWindows.forEach((window) => {
-    window.close();
-  });
-  const newWindow = await createMainWindow("");
-  newWindow.once("ready-to-show", () => {
-    settingsWindows.forEach((window) => {
-      window.show();
-    });
-  });
 }
 
 export async function UpdatePolicyCallback(
   event: Electron.IpcMainEvent,
-  args: boolean
+  args: boolean,
 ) {
   if (args === null || args === undefined) {
-    if (appConfig.has(UpdatePolicySettings)) {
+    if (await appConfig.has(UpdatePolicySettings)) {
       const updatePolicy = (await appConfig.get(
-        UpdatePolicySettings
+        UpdatePolicySettings,
       )) as boolean;
 
       if (updatePolicy !== null && updatePolicy !== undefined) {
@@ -201,7 +193,7 @@ export async function UpdatePolicyCallback(
     return;
   }
 
-  appConfig.set(UpdatePolicySettings, args);
+  await appConfig.set(UpdatePolicySettings, args);
   // reset check date for latest version
   // appConfig.delete(CheckForUpdatesLocalStorageName);
 
