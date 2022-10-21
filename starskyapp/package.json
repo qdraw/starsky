@@ -16,6 +16,7 @@
     "windows": "npm run prod && electron-builder build --win",
     "mac": "npm run prod && electron-builder build --mac",
     "macwindows" : "npm run prod && echo prod-done && electron-builder build --mac --windows",
+    "linux": "npm run prod && electron-builder build --linux",
     "dist": "npm run prod && electron-builder build",
     "build:win": "electron-builder build --win",
     "build:mac": "electron-builder build --mac",
@@ -50,11 +51,20 @@
     "win": {
       "target": [
         {
-          "target": "zip",
+          "target": "nsis",
           "arch": "x64"
         }
       ],
       "icon": "src/setup/icons/baseline-searcher-detective-263238__256px.ico"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": "x64"
+        }
+      ],
+      "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns"
     },
     "nsis": {
       "oneClick": false,

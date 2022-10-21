@@ -179,8 +179,8 @@ jobs:
           body: |
             ## Desktop app versions:
             _When you are not sure pick the Desktop App_
-            - starsky-mac-desktop.zip - __Starsky Desktop App for Mac OS *10.15* or newer (Intel)__
-            - starsky-win-desktop.zip - __Starsky Desktop App for Windows 10 1607+ or 11 (Intel 64 bits)__
+            - starsky-mac-desktop-x64.dmg - __Starsky Desktop App for Mac OS *10.15* or newer (Intel)__
+            - starsky-win-desktop-x64.exe - __Starsky Desktop App for Windows 10 1607+ or 11 (Intel 64 bits)__
 
             ## Server versions:
             - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
@@ -279,14 +279,14 @@ jobs:
           asset_name: starsky-linux-arm.zip
           asset_content_type: application/zip    
  
-      - name: Download starsky-win-desktop as build artifact
+      - name: Download starsky-win-desktop-x64 as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: starsky-win-desktop
+          name: starsky-win-desktop-x64
           path: ./starskyapp/dist
      
-      - name: Upload Release Asset starsky-win-desktop
-        id: upload-starsky-win-desktop
+      - name: Upload Release Asset starsky-win-desktop-x64
+        id: upload-starsky-win-desktop-x64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

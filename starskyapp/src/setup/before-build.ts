@@ -36,6 +36,15 @@ function removeOldRunTime(runtimeFolderName: string) {
   }
 }
 
+function removePackageJsons(runtimeFolderName: string) {
+  if (fs.existsSync(path.join(runtimeFolderName, "clientapp", "package.json"))) {
+    fs.rmSync(path.join(runtimeFolderName, "clientapp", "package.json"));
+  }
+  if (fs.existsSync(path.join(runtimeFolderName, "clientapp", "package-lock.json"))) {
+    fs.rmSync(path.join(runtimeFolderName, "clientapp", "package-lock.json"));
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 exports.default = (context: {
   platform: { buildConfigurationKey: string };
@@ -54,23 +63,17 @@ exports.default = (context: {
       removeOldRunTime("runtime-starsky-win-x64");
       copyWithId("win-x64", "runtime-starsky-win-x64");
       break;
+    case "linux":
+      runBuildIfNotExist("linux-x64")
+      removeOldRunTime("runtime-starsky-linux-x64");
+      copyWithId("linux-x64", "runtime-starsky-linux-x64");
+      break;
     default:
   }
 
-  if (fs.existsSync(path.join("runtime-starsky-mac-x64", "clientapp", "package.json"))) {
-    fs.rmSync(path.join("runtime-starsky-mac-x64", "clientapp", "package.json"));
-  }
-  if (fs.existsSync(path.join("runtime-starsky-mac-x64", "clientapp", "package-lock.json"))) {
-    fs.rmSync(path.join("runtime-starsky-mac-x64", "clientapp", "package-lock.json"));
-  }
-
-  if (fs.existsSync(path.join("runtime-starsky-win-x64", "clientapp", "package.json"))) {
-    fs.rmSync(path.join("runtime-starsky-win-x64", "clientapp", "package.json"));
-  }
-
-  if (fs.existsSync(path.join("runtime-starsky-win-x64", "clientapp", "package-lock.json"))) {
-    fs.rmSync(path.join("runtime-starsky-win-x64", "clientapp", "package-lock.json"));
-  }
+  removePackageJsons("runtime-starsky-mac-x64");
+  removePackageJsons("runtime-starsky-win-x64");
+  removePackageJsons("runtime-starsky-linux-x64");
 
   // eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle, @typescript-eslint/no-explicit-any
   const _promises: readonly any[] = [];
