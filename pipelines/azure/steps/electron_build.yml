@@ -7,8 +7,6 @@ steps:
         targetType: 'inline'
         script: |
           ls $(Build.SourcesDirectory)
-          echo "osx-x64"
-          ls $(Build.SourcesDirectory)/osx-x64
 
     - task: Bash@3
       enabled: true
@@ -16,7 +14,7 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          mv $(Build.SourcesDirectory)/osx-x64/starsky-osx-x64.zip $(Build.SourcesDirectory)/starsky/starsky-osx-x64.zip
+          mv $(Build.SourcesDirectory)/starsky-osx-x64.zip $(Build.SourcesDirectory)/starsky/starsky-osx-x64.zip
 
     - task: Bash@3
       enabled: true
@@ -24,7 +22,7 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          mv $(Build.SourcesDirectory)/win-x64/starsky-win-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win-x64.zip
+          mv $(Build.SourcesDirectory)/starsky-win-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win-x64.zip
 
     - task: Bash@3
       enabled: true
