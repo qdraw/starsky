@@ -2,6 +2,16 @@ steps:
 
     - task: Bash@3
       enabled: true
+      displayName: 'Debug show ls'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ls $(Build.SourcesDirectory)
+          echo "osx-x64"
+          ls $(Build.SourcesDirectory)/osx-x64
+
+    - task: Bash@3
+      enabled: true
       displayName: 'For Mac, move to expected location'
       inputs:
         targetType: 'inline'
