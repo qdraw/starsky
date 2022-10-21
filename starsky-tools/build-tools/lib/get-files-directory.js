@@ -13,9 +13,12 @@ async function getFiles(dir) {
 				dirent.name != "node_modules" &&
 				dirent.name != "obj" &&
 				dirent.name != "bin" &&
-				dirent.name != "osx.10.12-x64" &&
 				dirent.name != "linux-arm64" &&
-				dirent.name != "win7-x86" &&
+				dirent.name != "win-x86" &&
+				dirent.name != "win-x64" &&
+				dirent.name != "osx-x64" &&
+				dirent.name != "osx-arm64" &&
+				dirent.name != "linux-arm64" &&
 				dirent.name != "coverage" &&
 				dirent.name != "coverage-report" &&
 				dirent.name != "Cake" &&

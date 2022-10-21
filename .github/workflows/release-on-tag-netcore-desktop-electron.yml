@@ -39,7 +39,7 @@ jobs:
           name: linux-arm64
           path: ./starsky/starsky-linux-arm64.zip
  
-      - name: Upload Win7 as build artifact
+      - name: Upload win-x64 as build artifact
         uses: actions/upload-artifact@v2
         with:
           name: win-x64

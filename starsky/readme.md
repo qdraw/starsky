@@ -251,5 +251,5 @@ _Using bash_
 _Using powershell_
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-runtime="win7-x86"'
+powershell -File build.ps1 -ScriptArgs '-runtime="win-x64"'
 ```
