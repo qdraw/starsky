@@ -1,4 +1,5 @@
-import { net } from "electron";
+/* eslint-disable @typescript-eslint/ban-types */
+import { BrowserWindow, net } from "electron";
 import * as appConfig from "electron-settings";
 import { AppVersionIpcKey } from "../config/app-version-ipc-key.const";
 import { DefaultImageApplicationIpcKey } from "../config/default-image-application-settings-ipc-key.const";
@@ -20,6 +21,16 @@ import {
   UpdatePolicyCallback
 } from "./ipc-bridge";
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "http://localhost:9609",
+    set: () => "data",
+    has: () => true,
+    unSet: () => {},
+    __esModule: true,
+  };
+});
+
 jest.mock("electron", () => {
   return {
     app: {
@@ -31,6 +42,7 @@ jest.mock("electron", () => {
     net: {
       request: () => {},
     },
+    __esModule: true,
   };
 });
 
@@ -45,7 +57,7 @@ describe("ipc bridge", () => {
   });
   describe("LocationIsRemoteCallback", () => {
     it("getting with null input (LocationIsRemoteCallback)", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(null);
@@ -56,7 +68,7 @@ describe("ipc bridge", () => {
     });
 
     it("set to true", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(true);
@@ -86,7 +98,7 @@ describe("ipc bridge", () => {
     });
 
     it("set to false", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest
         .spyOn(appConfig, "set")
@@ -120,8 +132,8 @@ describe("ipc bridge", () => {
 
   describe("AppVersionCallback", () => {
     it("check if version has output", async () => {
-      const event = { reply: jest.fn() } as any;
-      AppVersionCallback(event);
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
+      await AppVersionCallback(event);
       expect(event.reply).toHaveBeenCalled();
       expect(event.reply).toHaveBeenCalledWith(AppVersionIpcKey, ["99.99"]);
     });
@@ -129,7 +141,7 @@ describe("ipc bridge", () => {
 
   describe("LocationUrlCallback", () => {
     it("get remote is off", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
       // is remote?
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(false);
@@ -145,7 +157,7 @@ describe("ipc bridge", () => {
 
     it("get remote is on but no url so its off", async () => {
       jest.spyOn(appConfig, "get").mockReset();
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
       // is remote?
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(true);
@@ -160,7 +172,7 @@ describe("ipc bridge", () => {
     });
 
     it("getting remote is on but no url so its off", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
       // is remote?
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(true);
@@ -180,7 +192,7 @@ describe("ipc bridge", () => {
     });
 
     it("update non valid url", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       await LocationUrlCallback(event, "__url_from_params__");
       expect(event.reply).toHaveBeenCalled();
@@ -236,9 +248,9 @@ describe("ipc bridge", () => {
         } as any;
       });
 
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
-      mainWindows.add({ close: jest.fn() } as any);
+      mainWindows.add({ close: jest.fn() } as undefined as BrowserWindow);
 
       console.log("update valid url");
 
@@ -283,7 +295,7 @@ describe("ipc bridge", () => {
           end: jest.fn(),
         } as any;
       });
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       await LocationUrlCallback(event, "https://fail.com");
 
@@ -312,7 +324,7 @@ describe("ipc bridge", () => {
           end: jest.fn(),
         } as any;
       });
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       await LocationUrlCallback(event, "https://nonexitingdomain.com");
 
@@ -331,7 +343,7 @@ describe("ipc bridge", () => {
 
   describe("UpdatePolicyCallback", () => {
     it("getting with null input (UpdatePolicyCallback)", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(null);
@@ -342,7 +354,7 @@ describe("ipc bridge", () => {
     });
 
     it("set to true", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(true);
@@ -359,7 +371,7 @@ describe("ipc bridge", () => {
     });
 
     it("set to false", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(false);
@@ -378,7 +390,7 @@ describe("ipc bridge", () => {
 
   describe("DefaultImageApplicationCallback", () => {
     it("getting with null input (DefaultImageApplicationCallback)", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest.spyOn(appConfig, "get").mockReset();
       jest
@@ -390,7 +402,7 @@ describe("ipc bridge", () => {
     });
 
     it("set reset of DefaultImageApplicationCallback", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(true);
@@ -407,7 +419,7 @@ describe("ipc bridge", () => {
     });
 
     it("should give successfull showOpenDialog", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(true);
@@ -431,7 +443,7 @@ describe("ipc bridge", () => {
     });
 
     it("should ignore failing showOpenDialog", async () => {
-      const event = { reply: jest.fn() } as any;
+      const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(true);
