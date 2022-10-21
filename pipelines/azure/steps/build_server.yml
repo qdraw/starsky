@@ -14,6 +14,7 @@ steps:
       arguments: "restore --tool-manifest starsky/.config/dotnet-tools.json"
 
   - template: /pipelines/azure/steps/cache_nuget_packages.yml
+  - template: /pipelines/azure/steps/cache_dependencies.yml
 
   - task: PowerShell@2
     displayName: "Cake SonarBuildTest (with tests) "
