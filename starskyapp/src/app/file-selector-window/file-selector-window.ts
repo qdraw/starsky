@@ -2,8 +2,6 @@ import { BrowserWindow, dialog } from "electron";
 
 export async function fileSelectorWindow(): Promise<string[]> {
   return new Promise((resolve, reject) => {
-    console.log('---');
-
     const newOpenedWindow = new BrowserWindow({
       height: 40,
       width: 500,
@@ -26,8 +24,6 @@ export async function fileSelectorWindow(): Promise<string[]> {
 
     selected
       .then((data) => {
-        console.log(data);
-
         if (data.canceled) {
           newOpenedWindow.close();
           // eslint-disable-next-line prefer-promise-reject-errors
@@ -38,7 +34,6 @@ export async function fileSelectorWindow(): Promise<string[]> {
         newOpenedWindow.close();
       })
       .catch((e) => {
-        console.log(e);
         newOpenedWindow.close();
         reject(e);
       });

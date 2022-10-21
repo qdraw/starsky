@@ -26,11 +26,11 @@ jest.mock("electron", () => {
       getVersion: () => "99.99.99",
       getPath: () => "tmp",
       getLocale: () => "en",
-      on: () => "en"
+      on: () => "en",
     },
     net: {
-      request: () => {}
-    }
+      request: () => {},
+    },
   };
 });
 
@@ -39,7 +39,7 @@ describe("ipc bridge", () => {
     jest.spyOn(logger, "default").mockImplementation(() => {
       return {
         warn: jest.fn(),
-        info: jest.fn()
+        info: jest.fn(),
       };
     });
   });
@@ -51,8 +51,8 @@ describe("ipc bridge", () => {
         return Promise.resolve(null);
       });
       await LocationIsRemoteCallback(event, null);
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationIsRemoteIpcKey, false);
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationIsRemoteIpcKey, false);
     });
 
     it("set to true", async () => {
@@ -73,9 +73,7 @@ describe("ipc bridge", () => {
 
       jest
         .spyOn(createMainWindow, "default")
-        .mockImplementationOnce(() =>
-          Promise.resolve({ once: jest.fn() } as any)
-        );
+        .mockImplementationOnce(() => Promise.resolve({ once: jest.fn() } as any));
 
       jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
@@ -83,8 +81,8 @@ describe("ipc bridge", () => {
 
       await LocationIsRemoteCallback(event, true);
 
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationIsRemoteIpcKey, true);
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationIsRemoteIpcKey, true);
     });
 
     it("set to false", async () => {
@@ -99,9 +97,7 @@ describe("ipc bridge", () => {
 
       jest
         .spyOn(createMainWindow, "default")
-        .mockImplementationOnce(() =>
-          Promise.resolve({ once: jest.fn() } as any)
-        );
+        .mockImplementationOnce(() => Promise.resolve({ once: jest.fn() } as any));
 
       jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
@@ -117,8 +113,8 @@ describe("ipc bridge", () => {
 
       await LocationIsRemoteCallback(event, false);
 
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationIsRemoteIpcKey, false);
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationIsRemoteIpcKey, false);
     });
   });
 
@@ -126,8 +122,8 @@ describe("ipc bridge", () => {
     it("check if version has output", async () => {
       const event = { reply: jest.fn() } as any;
       AppVersionCallback(event);
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(AppVersionIpcKey, ["99.99"]);
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(AppVersionIpcKey, ["99.99"]);
     });
   });
 
@@ -139,11 +135,11 @@ describe("ipc bridge", () => {
         return Promise.resolve(false);
       });
       await LocationUrlCallback(event, null);
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationUrlIpcKey, {
         isLocal: true,
         isValid: null,
-        location: "http://localhost:9609"
+        location: "http://localhost:9609",
       });
     });
 
@@ -155,11 +151,11 @@ describe("ipc bridge", () => {
         return Promise.resolve(true);
       });
       await LocationUrlCallback(event, null);
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationUrlIpcKey, {
         isLocal: true,
         isValid: null,
-        location: "http://localhost:9609"
+        location: "http://localhost:9609",
       });
     });
 
@@ -175,11 +171,11 @@ describe("ipc bridge", () => {
       });
 
       await LocationUrlCallback(event, null);
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationUrlIpcKey, {
         isLocal: false,
         isValid: null,
-        location: "__url_from_config__"
+        location: "__url_from_config__",
       });
     });
 
@@ -187,11 +183,11 @@ describe("ipc bridge", () => {
       const event = { reply: jest.fn() } as any;
 
       await LocationUrlCallback(event, "__url_from_params__");
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationUrlIpcKey, {
         isLocal: false,
         isValid: false,
-        location: "__url_from_params__"
+        location: "__url_from_params__",
       });
     });
 
@@ -210,9 +206,7 @@ describe("ipc bridge", () => {
 
       jest
         .spyOn(createMainWindow, "default")
-        .mockImplementationOnce(() =>
-          Promise.resolve({ once: jest.fn() } as any)
-        );
+        .mockImplementationOnce(() => Promise.resolve({ once: jest.fn() } as any));
 
       jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
@@ -234,11 +228,11 @@ describe("ipc bridge", () => {
                   console.log(param);
                 },
                 headers: {},
-                statusCode: 200
+                statusCode: 200,
               });
             }
           },
-          end: jest.fn()
+          end: jest.fn(),
         } as any;
       });
 
@@ -252,11 +246,11 @@ describe("ipc bridge", () => {
 
       console.log("update valid url ----- <<<<<< ");
 
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationUrlIpcKey, {
         isLocal: false,
         isValid: true,
-        location: "https://google.com"
+        location: "https://google.com",
       });
 
       mainWindows.clear();
@@ -282,22 +276,22 @@ describe("ipc bridge", () => {
                   console.log(param);
                 },
                 headers: {},
-                statusCode: 500
+                statusCode: 500,
               });
             }
           },
-          end: jest.fn()
+          end: jest.fn(),
         } as any;
       });
       const event = { reply: jest.fn() } as any;
 
       await LocationUrlCallback(event, "https://fail.com");
 
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationUrlIpcKey, {
         isLocal: false,
         isValid: false,
-        location: "https://fail.com"
+        location: "https://fail.com",
       });
       console.log("--end fail.com");
     });
@@ -315,22 +309,22 @@ describe("ipc bridge", () => {
               fun();
             }
           },
-          end: jest.fn()
+          end: jest.fn(),
         } as any;
       });
       const event = { reply: jest.fn() } as any;
 
       await LocationUrlCallback(event, "https://nonexitingdomain.com");
 
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(LocationUrlIpcKey, {
         isLocal: false,
         isValid: false,
         location: "https://nonexitingdomain.com",
         reason: {
           error: undefined,
-          statusCode: 999
-        }
+          statusCode: 999,
+        },
       });
     });
   });
@@ -343,8 +337,8 @@ describe("ipc bridge", () => {
         return Promise.resolve(null);
       });
       await UpdatePolicyCallback(event, null);
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, true);
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(UpdatePolicyIpcKey, true);
     });
 
     it("set to true", async () => {
@@ -360,8 +354,8 @@ describe("ipc bridge", () => {
 
       await UpdatePolicyCallback(event, true);
 
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, true);
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(UpdatePolicyIpcKey, true);
     });
 
     it("set to false", async () => {
@@ -377,8 +371,8 @@ describe("ipc bridge", () => {
 
       await UpdatePolicyCallback(event, false);
 
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, false);
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(UpdatePolicyIpcKey, false);
     });
   });
 
@@ -391,8 +385,8 @@ describe("ipc bridge", () => {
         .spyOn(appConfig, "get")
         .mockImplementationOnce(() => Promise.resolve(null));
       await DefaultImageApplicationCallback(event, null);
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(DefaultImageApplicationIpcKey, null);
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(DefaultImageApplicationIpcKey, null);
     });
 
     it("set reset of DefaultImageApplicationCallback", async () => {
@@ -408,8 +402,8 @@ describe("ipc bridge", () => {
 
       await DefaultImageApplicationCallback(event, { reset: true });
 
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(DefaultImageApplicationIpcKey, false);
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(DefaultImageApplicationIpcKey, false);
     });
 
     it("should give successfull showOpenDialog", async () => {
@@ -421,9 +415,7 @@ describe("ipc bridge", () => {
 
       jest
         .spyOn(fileSelectorWindow, "fileSelectorWindow")
-        .mockImplementationOnce(() =>
-          Promise.resolve(["result_from_fileSelectorWindow"])
-        );
+        .mockImplementationOnce(() => Promise.resolve(["result_from_fileSelectorWindow"]));
 
       jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
         return Promise.resolve();
@@ -431,10 +423,10 @@ describe("ipc bridge", () => {
 
       await DefaultImageApplicationCallback(event, { showOpenDialog: true });
 
-      expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(
+      expect(event.reply).toHaveBeenCalled();
+      expect(event.reply).toHaveBeenCalledWith(
         DefaultImageApplicationIpcKey,
-        "result_from_fileSelectorWindow"
+        "result_from_fileSelectorWindow",
       );
     });
 
@@ -447,19 +439,17 @@ describe("ipc bridge", () => {
 
       jest
         .spyOn(fileSelectorWindow, "fileSelectorWindow")
-        .mockImplementationOnce(() =>
-          Promise.reject(["result_from_fileSelectorWindow"])
-        );
+        .mockImplementationOnce(() => Promise.reject(["result_from_fileSelectorWindow"]));
 
       jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
         return Promise.resolve();
       });
 
       await DefaultImageApplicationCallback(event, {
-        showOpenDialog: true
+        showOpenDialog: true,
       });
 
-      expect(event.reply).toBeCalledTimes(0);
+      expect(event.reply).toHaveBeenCalledTimes(0);
     });
   });
 });
