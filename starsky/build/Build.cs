@@ -37,14 +37,17 @@ namespace build
 		[Parameter("Is SonarQube Disabled")]
 		readonly bool NoSonar;
 
-		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)")] 
+		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")] 
 		readonly bool NoUnitTest;
 		
-		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)")] 
+		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")] 
 		readonly bool NoUnitTests;
 		
-		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)")] 
+		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")] 
 		readonly bool NoTest;
+		
+		[Parameter("Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")] 
+		readonly bool NoTests;
 	
 		[Parameter("Skip clientside code")] 
 		readonly bool NoClient;
@@ -54,7 +57,8 @@ namespace build
 		
 		bool IsUnitTestDisabled()
 		{
-			return NoUnitTest || NoUnitTests || NoTest;
+			// --no-unit-test, --no-unit-tests, --no-test, --no-tests
+			return NoUnitTest || NoUnitTests || NoTest || NoTests;
 		}
 		
 		[Parameter("Overwrite branch name")] 

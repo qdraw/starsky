@@ -31,7 +31,7 @@ export function childProcessPath(): string {
 
   const targetFilePath = path.join(
     process.resourcesPath,
-    `runtime-starsky-${OsBuildKey()}`,
+    `runtime-starsky-${OsBuildKey()}-x64`,
   );
 
   let exeFilePath = path.join(targetFilePath, "starsky");
