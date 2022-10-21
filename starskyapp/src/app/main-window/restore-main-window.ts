@@ -19,7 +19,7 @@ export async function restoreMainWindow(): Promise<void> {
 
 async function runCreateWindow(rememberUrls: any) {
   let i = 0;
-  for (let key of Object.keys(rememberUrls)) {
+  for (const key of Object.keys(rememberUrls)) {
     await createMainWindow(rememberUrls[key], i * 20);
     i++;
   }

@@ -20,7 +20,7 @@ export function MakeTempPath(): string {
     fs.mkdirSync(tempPath);
   }
   try {
-    logger.info("tempPath => " + tempPath);
+    logger.info(`tempPath => ${tempPath}`);
   } catch (error) {}
 
   return tempPath;

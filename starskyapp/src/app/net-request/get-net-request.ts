@@ -11,7 +11,7 @@ export function GetNetRequest(
   url: string,
   session: Electron.Session = null
 ): Promise<IGetNetRequestResponse> {
-  return new Promise(function (resolve, reject) {   
+  return new Promise((resolve, reject) => {
     const request = net.request({
       url,
       useSessionCookies: session !== null,
@@ -23,7 +23,7 @@ export function GetNetRequest(
 
     let body = "";
     let statusCode = 999;
-    
+
     request.on("response", (response) => {
       statusCode = response.statusCode;
 
@@ -33,9 +33,9 @@ export function GetNetRequest(
 
       response.on("end", () => {
         if (
-          response.headers &&
-          response.headers["content-type"] &&
-          response.headers["content-type"].toString().startsWith("text/plain")
+          response.headers
+          && response.headers["content-type"]
+          && response.headers["content-type"].toString().startsWith("text/plain")
         ) {
           resolve({
             data: body,
@@ -60,16 +60,16 @@ export function GetNetRequest(
       });
 
       response.on("error", () => {
-          reject({
-            error: "error1",
-            statusCode: response.statusCode
-          } as IGetNetRequestResponse);
+        reject({
+          error: "error1",
+          statusCode: response.statusCode
+        } as IGetNetRequestResponse);
       });
     });
 
     request.on("error", (error) => {
       logger.info(error);
-      reject({ error: error, statusCode });
+      reject({ error, statusCode });
     });
 
     request.on("abort", () => {
@@ -78,7 +78,7 @@ export function GetNetRequest(
     });
 
     request.on("redirect", () => {
-      console.log('redirect')
+      console.log('redirect');
     });
 
     // request.on("finish", () => {
@@ -86,7 +86,7 @@ export function GetNetRequest(
     //     reject({ error: "rejected", statusCode });
     //   }
     // })
-    
+
     request.end();
   });
 }

@@ -10,12 +10,12 @@ export async function openPath(fullFilePath: string): Promise<void> {
   const overWriteDefaultApplication = (await appConfig.get(
     DefaultImageApplicationSetting
   )) as string;
-  return new Promise(async function (resolve, reject) {
+  return new Promise(async (resolve, reject) => {
     // add extra test for photoshop
     if (
-      overWriteDefaultApplication &&
-      OsBuildKey() === "mac" &&
-      overWriteDefaultApplication.includes("Adobe Photoshop")
+      overWriteDefaultApplication
+      && OsBuildKey() === "mac"
+      && overWriteDefaultApplication.includes("Adobe Photoshop")
     ) {
       const shouldRunFirst = await ShouldRunFirst();
       if (!shouldRunFirst) {
@@ -48,7 +48,7 @@ export async function openPath(fullFilePath: string): Promise<void> {
  * @see: https://community.adobe.com/t5/photoshop/problems-opening-photoshop-open-a/m-p/11541937?page=1
  */
 async function ShouldRunFirst() {
-  return await IsApplicationRunning(".app/Contents/MacOS/Adobe\\ Photoshop");
+  return IsApplicationRunning(".app/Contents/MacOS/Adobe\\ Photoshop");
 }
 
 function openWindows(
@@ -56,12 +56,12 @@ function openWindows(
   fullFilePath: string
 ) {
   // need to check if fullFilePath is file
-  var openWin = `"${overWriteDefaultApplication}" "${fullFilePath}"`;
+  const openWin = `"${overWriteDefaultApplication}" "${fullFilePath}"`;
   childProcess.exec(openWin);
 }
 
 function openMac(overWriteDefaultApplication: string, fullFilePath: string) {
-  var openFileOnMac = `open -a "${overWriteDefaultApplication}" "${fullFilePath}"`;
+  const openFileOnMac = `open -a "${overWriteDefaultApplication}" "${fullFilePath}"`;
 
   // // need to check if fullFilePath is directory
   childProcess.exec(openFileOnMac, {

@@ -11,6 +11,7 @@
     "jest-ci": "npm run jest -- --config jest.config.ci.mjs",
     "test": "npm run jest -- --watch",
     "lint": "eslint . --cache --ext js,jsx,cjs,mjs,ts,tsx",
+    "lint:fix": "eslint . --fix --cache --ext js,jsx,cjs,mjs,ts,tsx",
     "test:ci": "echo Todo fix", 
     "test-ci": "npm run jest && npm run lint",
     "windows": "npm run prod && electron-builder build --win --publish never",

@@ -15,7 +15,7 @@ import { updatesWarningWindows } from "./updates-warning-windows.const";
 async function createCheckForUpdatesContainerWindow(
   intervalSpeed = 1000
 ): Promise<boolean> {
-  return new Promise(async function (resolve, reject) {
+  return new Promise(async (resolve, reject) => {
     const policy = (await isPolicyDisabled()) || (await SkipDisplayOfUpdate());
     if (policy) {
       reject("disabled");
@@ -23,21 +23,20 @@ async function createCheckForUpdatesContainerWindow(
     }
 
     setTimeout(
-      () =>
-        shouldItUpdate()
-          .then(async (shouldItUpdate) => {
-            if (shouldItUpdate) {
-              await checkForUpdatesWindow();
-            }
-            resolve(shouldItUpdate);
-          })
-          .catch((error) => {
-            // fails for some random reason
-            try {
-              logger.warn(error);
-            } catch (error) {}
-            reject(error);
-          }),
+      () => shouldItUpdate()
+        .then(async (shouldItUpdate) => {
+          if (shouldItUpdate) {
+            await checkForUpdatesWindow();
+          }
+          resolve(shouldItUpdate);
+        })
+        .catch((error) => {
+          // fails for some random reason
+          try {
+            logger.warn(error);
+          } catch (error) {}
+          reject(error);
+        }),
       intervalSpeed
     );
   });

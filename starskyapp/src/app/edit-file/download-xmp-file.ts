@@ -18,15 +18,14 @@ export async function downloadXmpFile(
 
   const sidecarFileOnDisk = path.join(
     await GetParentDiskPath(fileIndexItem.parentDirectory),
-    fileIndexItem.fileCollectionName + "." + ext
+    `${fileIndexItem.fileCollectionName}.${ext}`
   );
 
-  const sideCarSubPath =
-    fileIndexItem.parentDirectory +
-    "/" +
-    fileIndexItem.fileCollectionName +
-    "." +
-    ext;
+  const sideCarSubPath = `${fileIndexItem.parentDirectory
+  }/${
+    fileIndexItem.fileCollectionName
+  }.${
+    ext}`;
 
   logger.info(sideCarSubPath);
 

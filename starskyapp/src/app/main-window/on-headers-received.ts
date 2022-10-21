@@ -3,7 +3,6 @@ import { BrowserWindow } from "electron";
 export function onHeaderReceived(newWindow: BrowserWindow) {
   newWindow.webContents.session.webRequest.onHeadersReceived(
     (res, callback) => {
-      
       // @TODO: re-enable
 
       // var currentSettings = appConfig.get("remote_settings_" + isPackaged());

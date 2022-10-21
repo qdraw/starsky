@@ -18,7 +18,7 @@ export async function SkipDisplayOfUpdate(): Promise<boolean> {
   )) as string;
   if (!localStorageItem) return false;
 
-  var getItem = parseInt(localStorageItem);
+  const getItem = parseInt(localStorageItem);
   if (isNaN(getItem)) return false;
   return DifferenceInDate(getItem) < 5760; // 4 days
 }
@@ -35,7 +35,7 @@ export async function isPolicyDisabled(): Promise<boolean> {
  * true when need to update
  */
 export async function shouldItUpdate(): Promise<boolean> {
-  return new Promise(async function (resolve, reject) {
+  return new Promise(async (resolve, reject) => {
     let url = (await GetBaseUrlFromSettings()).location;
     url += new UrlQuery().HealthCheckForUpdates(GetAppVersion());
 

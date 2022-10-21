@@ -13,8 +13,7 @@ export async function downloadBinary(
   session: Electron.Session
 ): Promise<string> {
   // get the last of the array
-  const lastSubPath =
-    fileIndexItem.collectionPaths[fileIndexItem.collectionPaths.length - 1];
+  const lastSubPath = fileIndexItem.collectionPaths[fileIndexItem.collectionPaths.length - 1];
   const fileName = new FileExtensions().GetFileName(lastSubPath);
 
   const fileOnDisk = path.join(
@@ -22,7 +21,7 @@ export async function downloadBinary(
     fileName
   );
 
-  logger.info("fileOnDisk > " + fileOnDisk);
+  logger.info(`fileOnDisk > ${fileOnDisk}`);
 
   try {
     await downloadNetRequest(
@@ -33,7 +32,7 @@ export async function downloadBinary(
       fileOnDisk
     );
   } catch (error) {
-    logger.info("retry > " + fileOnDisk);
+    logger.info(`retry > ${fileOnDisk}`);
 
     if (existsSync(fileOnDisk)) {
       rmSync(fileOnDisk);
@@ -47,7 +46,7 @@ export async function downloadBinary(
         fileOnDisk
       );
     } catch (error) {
-      logger.info("error > " + error);
+      logger.info(`error > ${error}`);
     }
   }
 

@@ -11,11 +11,10 @@ import { IsDetailViewResult } from "./is-detail-view-result";
 import { openPath } from "./open-path";
 
 export async function EditFile(fromMainWindow: BrowserWindow) {
-  const url =
-    (await GetBaseUrlFromSettings()).location +
-    new UrlQuery().Index(getFilePathFromWindow(fromMainWindow));
+  const url = (await GetBaseUrlFromSettings()).location
+    + new UrlQuery().Index(getFilePathFromWindow(fromMainWindow));
 
-  let result = undefined;
+  let result;
   try {
     result = await GetNetRequest(url, fromMainWindow.webContents.session);
   } catch (error) {
@@ -49,8 +48,8 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
 }
 
 function getFilePathFromWindow(fromMainWindow: BrowserWindow): string {
-  var latestPage = fromMainWindow.webContents.getURL();
-  var filePath = new URLSearchParams(new URL(latestPage).search).get("f");
+  const latestPage = fromMainWindow.webContents.getURL();
+  const filePath = new URLSearchParams(new URL(latestPage).search).get("f");
   if (!filePath) return null;
   return filePath;
 }

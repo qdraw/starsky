@@ -8,11 +8,11 @@ export function uploadNetRequest(
   fullFilePath: string,
   session: Session
 ): Promise<void> {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (url.startsWith("[object ")) {
       throw new Error("please await promise first");
     }
-    logger.info("> run upload " + url);
+    logger.info(`> run upload ${url}`);
 
     const request = net.request({
       useSessionCookies: true,
@@ -47,10 +47,10 @@ export function uploadNetRequest(
     });
 
     // And now Upload
-    fs.readFile(fullFilePath, function (err, data) {
+    fs.readFile(fullFilePath, (err, data) => {
       // skip error for now
       if (err) {
-        logger.info("skip due missing file: " + fullFilePath);
+        logger.info(`skip due missing file: ${fullFilePath}`);
         reject(err);
         return;
       }
@@ -58,14 +58,14 @@ export function uploadNetRequest(
       request.write(data);
       request.end();
       request.on("finish", () => {
-        logger.info("--finish doUploadRequest " + fullFilePath);
+        logger.info(`--finish doUploadRequest ${fullFilePath}`);
         fs.promises.stat(fullFilePath).then((stat) => {
-          fs.promises.writeFile(fullFilePath + ".info", stat.size.toString());
+          fs.promises.writeFile(`${fullFilePath}.info`, stat.size.toString());
         });
         resolve();
       });
       request.on("error", (err) => {
-        logger.info("error doUploadRequest " + fullFilePath);
+        logger.info(`error doUploadRequest ${fullFilePath}`);
         logger.info(err);
         reject(err);
       });

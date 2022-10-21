@@ -2,7 +2,7 @@ import { BrowserWindow, Menu, MenuItem } from "electron";
 
 export function spellCheck(newWindow: BrowserWindow) {
   // Spellcheck
-  const session = newWindow.webContents.session;
+  const { session } = newWindow.webContents;
   session.setSpellCheckerLanguages(["nl-NL", "en-GB"]);
 
   newWindow.webContents.on("context-menu", (_e, params) => {

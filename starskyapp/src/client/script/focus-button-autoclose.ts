@@ -1,8 +1,8 @@
 if (document.querySelectorAll("#autoclose").length === 1) {
-  const autoCloseElement = document.querySelector("#autoclose") as HTMLElement;
+  const autoCloseElement = document.querySelector("#autoclose");
   autoCloseElement.focus();
 
-  autoCloseElement.addEventListener("click", function () {
+  autoCloseElement.addEventListener("click", () => {
     window.close();
   });
 
@@ -12,7 +12,7 @@ if (document.querySelectorAll("#autoclose").length === 1) {
 }
 
 if (document.querySelectorAll(".error").length === 1) {
-  const errorElement = document.querySelector(".error") as HTMLElement;
+  const errorElement = document.querySelector(".error");
   const error = new URLSearchParams(window.location.search).get("error");
   if (error) {
     errorElement.innerText = error;

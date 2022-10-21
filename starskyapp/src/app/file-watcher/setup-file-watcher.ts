@@ -9,7 +9,7 @@ export async function SetupFileWatcher() {
   FileWatcherObjects.forEach(([watch, path]) => {
     watch.removeAllListeners();
     FileWatcherObjects.delete([watch, path]);
-    logger.info("[SetupFileWatcher] deleted:", path)
+    logger.info("[SetupFileWatcher] deleted:", path);
   });
 
   createParentFolders();
@@ -27,5 +27,5 @@ export async function SetupFileWatcher() {
     });
 
   FileWatcherObjects.add([watch, tempPathIncludingBaseUrl]);
-  logger.info("[SetupFileWatcher] add: " + tempPathIncludingBaseUrl)
+  logger.info(`[SetupFileWatcher] add: ${tempPathIncludingBaseUrl}`);
 }
