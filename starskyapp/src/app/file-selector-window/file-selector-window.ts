@@ -38,6 +38,7 @@ export async function fileSelectorWindow(): Promise<string[]> {
         newOpenedWindow.close();
       })
       .catch((e) => {
+        console.log(e);
         newOpenedWindow.close();
         reject(e);
       });
