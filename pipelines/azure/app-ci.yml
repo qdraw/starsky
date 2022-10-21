@@ -119,7 +119,7 @@ stages:
         ArtifactName: 'starsky-win-desktop'
 
     - task: PublishPipelineArtifact@1
-      displayName: 'Publish Artifact: starsky-mac-desktop'
+      displayName: 'Publish Artifact: starsky-mac-x64-desktop'
       inputs:
         path: '$(Build.SourcesDirectory)/starskyapp/dist-prod/starsky-mac-x64-desktop.zip'
-        ArtifactName: 'starsky-mac-desktop'
+        ArtifactName: 'starsky-mac-x64-desktop'

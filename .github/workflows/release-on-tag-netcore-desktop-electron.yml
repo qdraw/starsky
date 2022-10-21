@@ -111,10 +111,10 @@ jobs:
         working-directory: ./starskyapp
         run: npm run mac
    
-      - name: Upload starsky-mac-desktop as build artifact
+      - name: Upload starsky-mac-x64-desktop as build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: starsky-mac-desktop
+          name: starsky-mac-x64-desktop
           path: ./starskyapp/dist-prod/starsky-mac-x64-desktop.dmg   
  
   build_win:
@@ -149,11 +149,11 @@ jobs:
         working-directory: ./starskyapp
         run: npm run windows
      
-      - name: Upload starsky-win-desktop as build artifact
+      - name: Upload starsky-win-x64-desktop as build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: starsky-win-desktop
-          path: ./starskyapp/dist-prod/starsky-win-desktop.zip   
+          name: starsky-win-x64-desktop
+          path: ./starskyapp/dist-prod/starsky-win-x64-desktop.zip   
  
   
   create_release:
