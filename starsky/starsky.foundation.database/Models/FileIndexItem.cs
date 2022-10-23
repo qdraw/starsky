@@ -1029,6 +1029,12 @@ namespace starsky.foundation.database.Models
 			return toBeAddedKeywords;
 		}
 		
+		/// <summary>
+		/// Is ImageStabilisation unknown, on or off
+		/// Currently Sony only
+		/// </summary>
+		// newtonsoft uses: StringEnumConverter
+		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public ImageStabilisationType ImageStabilisation { get; set; }
 
 		/// <summary>
