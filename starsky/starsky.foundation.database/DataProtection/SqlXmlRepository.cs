@@ -29,7 +29,7 @@ public class SqlXmlRepository : IXmlRepository
 		try
 		{
 			var result = _dbContext.DataProtectionKeys
-				.Where(p => p.Xml != null).ToList()
+				.Where(p => p.Xml != null).AsEnumerable()
 				.Select(x => XElement.Parse(x.Xml!)).ToList();
 			
 			return result;
@@ -72,7 +72,7 @@ public class SqlXmlRepository : IXmlRepository
 		catch ( Microsoft.EntityFrameworkCore.DbUpdateException )
 		{
 			RetryHelper.Do(
-				LocalDefaultQuery, TimeSpan.FromSeconds(5), 3);
+				LocalDefaultQuery, TimeSpan.FromSeconds(5), 2);
 		}
 	}
 }
