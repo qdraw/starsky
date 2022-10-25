@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using MySqlConnector;
@@ -17,7 +18,6 @@ namespace starsky.foundation.database.Helpers
 		{
 			_connection = connection;
 			_appSettings = appSettings;
-		
 		}
 
 		/// <summary>
@@ -85,27 +85,36 @@ namespace starsky.foundation.database.Helpers
 			{
 				return;
 			}
-			await _connection.OpenAsync();
+
+			if ( _connection.State != ConnectionState.Open )
+			{
+				await _connection.OpenAsync();
+			}
 		}
 
-		public async Task<bool?> FixAutoIncrement( string tableName)
+		public async Task<bool?> FixAutoIncrement( string tableName, bool dispose = false)
 		{
 			if (_connection == null ||  _appSettings.DatabaseType != AppSettings.DatabaseTypeList.Mysql )
 			{
 				return null;
 			}
-		
 
 			var autoIncrementExist = await CheckAutoIncrementExist(tableName);
 			if (autoIncrementExist != false )
 			{
-				await _connection.DisposeAsync();
+				if ( dispose ) await _connection.DisposeAsync();
 				return autoIncrementExist;
 			}
 
 			await AlterTableAutoIncrement(tableName);
-			await _connection.DisposeAsync();
+			if ( dispose ) await _connection.DisposeAsync();
 			return true;
+		}
+
+		public async Task DisposeAsync()
+		{
+			if ( _connection == null ) return;
+			await _connection.DisposeAsync();
 		}
 
 		internal async Task<bool?> CheckAutoIncrementExist(string tableName, string columnName = "Id")

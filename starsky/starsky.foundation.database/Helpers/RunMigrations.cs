@@ -47,6 +47,8 @@ namespace starsky.foundation.database.Helpers
 					.ToList();
 				await databaseFixes.FixUtf8Encoding(tableNames);
 				await databaseFixes.FixAutoIncrement("Notifications");
+				await databaseFixes.FixAutoIncrement("DataProtectionKeys");
+				await databaseFixes.DisposeAsync();
 
 				return true;
 			}
