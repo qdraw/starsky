@@ -1,12 +1,73 @@
 #!/usr/bin/node
 
 const { spawnSync } = require('child_process');
-const fs = require("fs"); 
-const { join, dirname } = require("path");
+const { join } = require("path");
 const { exit } = require('process');
+const { httpsPost } = require('./lib/https-post.js');
 const { prefixPath } = require("./lib/prefix-path.const.js");
 
 let searchPath = join(__dirname, prefixPath);
+
+// Which company? and prefix for devops
+// set: System.CollectionUri 
+let systemCollectionUri = process.env.SYSTEM_COLLECTIONURI;
+// systemCollectionUri = "https://dev.azure.com/wea*****/";
+
+// System.CollectionUri = https://dev.azure.com/fabrikamfiber/
+if (!systemCollectionUri) {
+    console.log('SYSTEM_COLLECTIONURI is not defined');
+    exit(1);
+}
+
+// Which project name?
+// set: System.TeamProject
+let systemTeamProject = process.env.SYSTEM_TEAM_PROJECT;
+// systemTeamProject = "S***O***";
+
+if (!systemTeamProject) {
+    console.log('SYSTEM_TEAM_PROJECT is not defined');
+    exit(1);
+}
+
+
+// Which repo
+// set: Build.Repository.ID
+let buildRepositoryID = process.env.BUILD_REPOSITORY_ID; 
+// buildRepositoryID = "My******"
+// eg. 3411ebc1-d5aa-464f-9615-0b527bc66719
+if (!buildRepositoryID) {
+    console.log('BUILD_REPOSITORY_ID is not defined');
+    exit(1);
+}
+
+
+// Which branch it is from
+// set: Build.SourceBranch
+let buildSourceBranch = process.env.BUILD_SOURCE_BRANCH;
+// example: "refs/heads/feature/branch"
+// buildSourceBranch = "refs/heads/feature/202209_ocelot_external"
+
+if (!buildSourceBranch) {
+    console.log('BUILD_SOURCE_BRANCH is not defined');
+    exit(1);
+}
+
+
+// Where to branch name
+// set: name of master/main/dev branch -- refs/heads/ prefix needed
+let targetBranch = process.env.TARGET_BRANCH;
+// targetBranch = "refs/heads/development"
+
+if (!targetBranch) {
+    console.log('TARGET_BRANCH is not defined');
+    exit(1);
+}
+
+let personalAccessToken = process.env.WEAREYOU_DEVOPS_PAT;
+if (!personalAccessToken) {
+    console.log('PAT is not defined');
+    exit(1);
+}
 
 const argv = process.argv.slice(2);
 
@@ -44,200 +105,34 @@ if (!gitStatusPorcelain.stdout) {
     exit(0);
 }
 
+console.log("files that are changed");
 console.log(gitStatusPorcelain.stdout);
-console.error("git status not clean");
+
+const content = {
+  "sourceRefName": buildSourceBranch,
+  "targetRefName": targetBranch,
+  "title": "A new feature",
+  "description": "Updates",
+  "reviewers": []
+};
+
+const url = `${systemCollectionUri}${systemTeamProject}/_apis/git/repositories/${buildRepositoryID}/pullrequests?api-version=6.0`;
+// exampleurl https://dev.azure.com/fabrikam/_apis/git/repositories/3411ebc1-d5aa-464f-9615-0b527bc66719/pullrequests?api-version=6.0
+// POST https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/pullrequests?api-version=6.0
 
 
+console.log($`going to POST to: ${url}`);
+console.log(JSON.stringify(content));
+console.log("----");
 
-// const clientAppFolderPath = path.join(__dirname, "..", "..", "starsky", "starsky", "clientapp" );
+const base64authorizationHeader = 'Basic ' + Buffer.from(":" + personalAccessToken).toString('base64', 'utf8');
+httpsPost(url, JSON.stringify(content),base64authorizationHeader).then((data)=>{
+    if (!data.pullRequestId) {
+        console.log("PR creation FAILED");
+        console.log(data);
+        exit(1);
+    }
+    console.log("PR creation done");
+    console.log(data);
+});
 
-// if (!fs.existsSync(clientAppFolderPath)) {
-//     console.log('FAIL -clientAppFolderPath does not exists');
-//     exit(1)
-// }
-
-// deleteFolderRecursive = function(path) {
-//     var files = [];
-//     if( fs.existsSync(path) ) {
-//         files = fs.readdirSync(path);
-//         files.forEach(function(file,index){
-//             var curPath = path + "/" + file;
-//             if(fs.lstatSync(curPath).isDirectory()) { // recurse
-//                 deleteFolderRecursive(curPath);
-//             } else { // delete file
-//                 fs.unlinkSync(curPath);
-//             }
-//         });
-//         fs.rmdirSync(path);
-//     }
-// };
-
-
-// const createReactTempFolder = path.join(__dirname,'create-react-tmp-folder');
-// const myAppName = "my-app";
-// const createReactMyAppFolder = path.join(__dirname,'create-react-tmp-folder',myAppName);
-
-
-
-// console.log('npm config set fund false --global');
-// spawnSync('npm', ['config', 'set', 'fund', 'false', '--global'], {
-//   cwd: clientAppFolderPath,
-//   env: process.env,
-//   encoding: 'utf-8'
-// });
-
-
-// function getNpxCreateCreateApp() {
-//     console.log('check ' + createReactTempFolder);
-//     if (fs.existsSync(createReactTempFolder)) {
-//         deleteFolderRecursive(createReactTempFolder)
-//     }
-//     fs.mkdirSync(createReactTempFolder);
-    
-//     if (!fs.existsSync(createReactTempFolder)) {
-//         console.log('FAIL -directory creating failed');
-//         exit(1)
-//     }
-    
-//     console.log('--createReactTempFolder');
-//     console.log(createReactTempFolder);
-    
-//     console.log(`running --> npx create-react-app ${myAppName} --template typescript`);
-//     const updateSpawn = spawnSync('npx', ['create-react-app', myAppName, '--template', 'typescript'], {
-//         cwd: createReactTempFolder,
-//         env: process.env,
-//         encoding: 'utf-8'
-//     });
-        
-//     console.log('-result of npx');
-//     console.log(updateSpawn.stdout);
-//     console.log(updateSpawn.stout ? updateSpawn.stout : "");
-// }
-
-// if (process.env.DEBUG !== "true") {
-//   getNpxCreateCreateApp();
-// }
-
-
-// if (!fs.existsSync(path.join(createReactMyAppFolder, 'package.json')) || !fs.existsSync(path.join(createReactMyAppFolder, 'package-lock.json'))) {
-//     console.log('FAIL --- should include package json files');
-//     exit(1);
-// }
-
-// if (fs.existsSync(path.join(clientAppFolderPath, 'node_modules'))) {
-//     deleteFolderRecursive(path.join(clientAppFolderPath, 'node_modules'))
-// }
-
-// const myAppPackageJson = JSON.parse(fs.readFileSync(path.join(createReactMyAppFolder, 'package.json')).toString());
-// const myAppPackageLockJson = JSON.parse(fs.readFileSync(path.join(createReactMyAppFolder, 'package-lock.json')).toString());
-
-// // backup first
-// let toClientAppPackageJson = JSON.parse(fs.readFileSync(path.join(clientAppFolderPath, 'package.json')).toString());
-// fs.writeFileSync(path.join(clientAppFolderPath, 'package.json.bak'), JSON.stringify(toClientAppPackageJson, null, 2));
-
-// // overwrite 
-// fs.writeFileSync(path.join(clientAppFolderPath, 'package.json'), JSON.stringify(myAppPackageJson, null, 2));
-// fs.writeFileSync(path.join(clientAppFolderPath, 'package-lock.json'), JSON.stringify(myAppPackageLockJson, null, 2));
-
-// // npm ci
-// function npmCi() {
-//   console.log('run > npm ci --no-audit --legacy-peer-deps | in: ' + clientAppFolderPath);
-//   const npmCiOne = spawnSync('npm', ['ci', '--no-audit', '--legacy-peer-deps'], {
-//       cwd: clientAppFolderPath,
-//       env: process.env,
-//       encoding: 'utf-8'
-//   });
-
-//   console.log('-result of npmCiOne');
-//   console.log(npmCiOne.stdout);
-//   console.log(npmCiOne.stout ? updateSpawn.stout : "");
-// }
-// npmCi();
-
-// function npmUnInstall(packageName) {
-
-//   console.log(`run > npm uninstall ${packageName} --save --legacy-peer-deps`);
-//   const uninstall = spawnSync('npm', ['uninstall', packageName, '--no-audit', '--save', '--legacy-peer-deps'], {
-//       cwd: clientAppFolderPath,
-//       env: process.env,
-//       encoding: 'utf-8'
-//   });
-
-//   console.log('-result of package');
-//   console.log(uninstall.stdout);
-//   console.log(uninstall.stout ? updateSpawn.stout : "");
-// }
-
-// // web-vitals is not needed
-// npmUnInstall('web-vitals');
-// // install later again (newer version)
-// npmUnInstall('@testing-library/user-event');
-
-// // update packages in clientapp package json
-// console.log('next: overwrite package json file');
-// toClientAppPackageJson.dependencies = {...toClientAppPackageJson.dependencies, ...myAppPackageJson.dependencies};
-// fs.writeFileSync(path.join(clientAppFolderPath, 'package.json'), JSON.stringify(toClientAppPackageJson, null, 2));
-// fs.rmSync(path.join(clientAppFolderPath, 'package.json.bak'))
-
-// function npmInstall(packageName, force, dev) {
-//   let forceText = ""
-//   if (force) {
-//     forceText = "--force";
-//   }
-//   let saveText = "--save"
-//   if (dev) {
-//     saveText = "--save-dev";
-//   }
-//   console.log('npm'   + " " + 'install --no-audit'  + " " + packageName  + " " + saveText + " " +  forceText);
-//   const npmInstallSpawn = spawnSync('npm', ['install', '--no-audit', packageName, saveText, forceText], {
-//       cwd: clientAppFolderPath,
-//       env: process.env,
-//       encoding: 'utf-8'
-//   });
-
-//   console.log('-result of '+packageName);
-//   console.log(npmInstallSpawn.stdout);
-//   console.log(npmInstallSpawn.stout ? updateSpawn.stout : "");
-//   if (npmInstallSpawn.stout) {
-//     exit(1)
-//   }
-// }
-
-// npmUnInstall('web-vitals')
-// npmInstall('abortcontroller-polyfill', false, false);
-// npmInstall('@reach/router', true, false);
-// npmInstall('intersection-observer', false, false);
-// npmInstall('@types/reach__router', false, false);
-// npmInstall('abortcontroller-polyfill', false, false);
-// npmInstall('leaflet', false, false);
-// npmInstall('@types/storybook__react', false, false);
-// npmInstall('@storybook/react', true, true);
-// npmInstall('eslint-config-prettier', false), false;
-// npmInstall('eslint-plugin-prettier', false, false);
-// npmInstall('prettier', false, false);
-// npmInstall('eslint-plugin-prettier', false, false);
-// npmUnInstall('@types/node')
-// npmInstall('@types/node', false, false);
-// npmInstall('concurrently', false, true);
-// npmInstall('@testing-library/user-event',false, false);
-
-// npmCi();
-
-// // clean afterwards
-// if (process.env.DEBUG !== "true") {
-//   console.log('when exists rm ' + createReactTempFolder);
-//   if (fs.existsSync(createReactTempFolder)) {
-//       deleteFolderRecursive(createReactTempFolder)
-//   }
-// }
-
-
-// // run linter
-// const lintSpawn = spawnSync('npm', ['run', 'lint:fix'], {
-//   cwd: clientAppFolderPath,
-//   env: process.env,
-//   encoding: 'utf-8'
-// });
-// console.log(lintSpawn.output);
-
-console.log('done');
