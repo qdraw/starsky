@@ -12,7 +12,6 @@ let searchPath = join(__dirname, prefixPath);
 // set: System.CollectionUri 
 let systemCollectionUri = process.env.SYSTEM_COLLECTIONURI;
 // systemCollectionUri = "https://dev.azure.com/wea*****/";
-
 // System.CollectionUri = https://dev.azure.com/fabrikamfiber/
 if (!systemCollectionUri) {
     console.log('SYSTEM_COLLECTIONURI is not defined');
@@ -23,7 +22,6 @@ if (!systemCollectionUri) {
 // set: System.TeamProject
 let systemTeamProject = process.env.SYSTEM_TEAM_PROJECT;
 // systemTeamProject = "S***O***";
-
 if (!systemTeamProject) {
     console.log('SYSTEM_TEAM_PROJECT is not defined');
     exit(1);
