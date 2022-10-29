@@ -97,7 +97,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(), 
 				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
-			var result = await syncWatcherPreflight.Sync(
+			await syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Renamed));
 
@@ -122,7 +122,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			Assert.AreEqual(1, websockets.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
 			var value = websockets.FakeSendToAllAsync.FirstOrDefault(p =>
 					!p.StartsWith("[system]"));
-			Assert.IsTrue(value.Contains("filePath\":\"/test\""));
+			Assert.IsTrue(value?.Contains("filePath\":\"/test\""));
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
 		}
 
