@@ -51,7 +51,7 @@
   "Microsoft.NET.Test.Sdk 17.3.2",
   "MSTest.TestAdapter 2.2.10",
   "MSTest.TestFramework 2.2.10",
-  "coverlet.collector 3.1.2",
+  "coverlet.collector 3.2.0",
   "Microsoft.AspNetCore.Mvc.Formatters.Json 2.2.0",
   "Microsoft.AspNetCore.Identity 2.2.0"
 ]
