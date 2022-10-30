@@ -375,18 +375,11 @@ namespace starsky.foundation.database.Migrations
                         .HasAnnotation("Sqlite:Autoincrement", true);
 
                     b.Property<string>("Content")
-                        .IsConcurrencyToken()
                         .HasColumnType("mediumtext");
 
                     b.Property<DateTime>("DateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("LastEdited")
                         .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasColumnName("LastEdited");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

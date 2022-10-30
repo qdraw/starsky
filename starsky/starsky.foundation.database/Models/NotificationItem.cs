@@ -14,16 +14,14 @@ namespace starsky.foundation.database.Models
 		/// <summary>
 		/// Size: MediumText
 		/// </summary>
-		[ConcurrencyCheck]
 		public string? Content { get; set; }
 
+		/// <summary>
+		/// Last Edited/ Added DateTime
+		/// </summary>
+		[ConcurrencyCheck]
 		public DateTime DateTime { get; set; }
 
-		[Timestamp]
-		[JsonIgnore]
-		[Required(AllowEmptyStrings = false)]
-		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-		public byte[] LastEdited { get; set; } = Array.Empty<byte>();
 	}
 }
 
