@@ -17,9 +17,13 @@ namespace starsky.foundation.database.Models
 		[ConcurrencyCheck]
 		public string? Content { get; set; }
 
-		[Timestamp]
 		public DateTime DateTime { get; set; }
-		
+
+		[Timestamp]
+		[JsonIgnore]
+		[Required(AllowEmptyStrings = false)]
+		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+		public byte[] LastEdited { get; set; } = Array.Empty<byte>();
 	}
 }
 

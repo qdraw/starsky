@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -168,14 +169,13 @@ namespace starsky.foundation.database.Data
 						.HasAnnotation("Sqlite:Autoincrement", true)
 						.HasAnnotation("MySql:ValueGenerationStrategy",
 							MySqlValueGenerationStrategy.IdentityColumn);
-					
-					etb.Property(p => p.Content).HasColumnType("mediumtext")
-						.IsConcurrencyToken();
+
+					etb.Property(p => p.Content)
+						.HasColumnType("mediumtext");
 					
 					etb.Property(p => p.DateTime)
-						.HasColumnName("DateTime")
-						.IsRowVersion();
-					
+						.IsConcurrencyToken();
+						
 					etb.ToTable("Notifications");
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}
