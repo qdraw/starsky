@@ -171,9 +171,9 @@ namespace starsky.foundation.database.Data
 					
 					etb.Property(p => p.Content).HasColumnType("mediumtext")
 						.IsConcurrencyToken();
-
-					etb.Property(p => p.Timestamp)
-						.HasColumnName("Timestamp")
+					
+					etb.Property(p => p.DateTime)
+						.HasColumnName("DateTime")
 						.IsRowVersion();
 					
 					etb.ToTable("Notifications");

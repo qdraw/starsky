@@ -379,14 +379,10 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("mediumtext");
 
                     b.Property<DateTime>("DateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasColumnName("Timestamp");
+                        .HasColumnType("TEXT")
+                        .HasColumnName("DateTime");
 
                     b.HasKey("Id");
 
