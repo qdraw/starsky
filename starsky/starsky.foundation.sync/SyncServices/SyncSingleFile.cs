@@ -314,6 +314,7 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			await _query.UpdateItemAsync(updatedDbItem);
 			updatedDbItem.Status = FileIndexItem.ExifStatus.Ok;
+			AddDeleteStatus(updatedDbItem);
 			updatedDbItem.LastChanged =
 				new List<string> {nameof(FileIndexItem.LastEdited)};
 			return updatedDbItem;
