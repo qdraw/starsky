@@ -44,15 +44,5 @@ namespace starsky.foundation.storage.Helpers
 		    MemoryStream stream = new MemoryStream(byteArray);
 		    return stream;
 	    }
-	    
-	    /// <summary>
-	    /// String (UTF8) to Stream
-	    /// </summary>
-	    /// <param name="input"></param>
-	    /// <returns></returns>
-	    public static byte[] StringToByteArray(string input)
-	    {
-		    return Encoding.UTF8.GetBytes(input);
-	    }
     }
 }
