@@ -385,7 +385,8 @@ namespace starsky.foundation.database.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB");
+                        .HasColumnType("BLOB")
+                        .HasColumnName("Timestamp");
 
                     b.HasKey("Id");
 

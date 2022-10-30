@@ -173,6 +173,7 @@ namespace starsky.foundation.database.Data
 						.IsConcurrencyToken();
 
 					etb.Property(p => p.Timestamp)
+						.HasColumnName("Timestamp")
 						.IsRowVersion();
 					
 					etb.ToTable("Notifications");

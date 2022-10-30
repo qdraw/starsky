@@ -12,7 +12,7 @@ using starsky.foundation.database.Data;
 namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221030165914_ConcurrencyTokens")]
+    [Migration("20221030170918_ConcurrencyTokens")]
     partial class ConcurrencyTokens
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -387,7 +387,8 @@ namespace starsky.foundation.database.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB");
+                        .HasColumnType("BLOB")
+                        .HasColumnName("Timestamp");
 
                     b.HasKey("Id");
 
