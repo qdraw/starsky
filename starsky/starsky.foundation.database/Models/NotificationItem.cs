@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace starsky.foundation.database.Models
 {
@@ -13,9 +14,14 @@ namespace starsky.foundation.database.Models
 		/// <summary>
 		/// Size: MediumText
 		/// </summary>
+		[ConcurrencyCheck]
 		public string? Content { get; set; }
 
 		public DateTime DateTime { get; set; }
+
+		[Timestamp]
+		[JsonIgnore]
+		public byte[] Timestamp { get; set; } = Array.Empty<byte>();
 	}
 }
 
