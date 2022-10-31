@@ -5,6 +5,7 @@ import { IPreloadApi } from "../../preload/IPreloadApi";
 import { locationIsValidId, remoteLocationId } from "./settings.const";
 
 declare global {
+  // eslint-disable-next-line vars-on-top, no-var
   var api: IPreloadApi;
 }
 
@@ -19,7 +20,9 @@ export function settingsRemoteLocationField() {
 
   document
     .querySelector(remoteLocationId)
+    // eslint-disable-next-line func-names
     .addEventListener("change", function () {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       changeRemoteLocation(this.value);
     });
 
