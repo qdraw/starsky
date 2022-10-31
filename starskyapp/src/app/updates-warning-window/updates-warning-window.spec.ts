@@ -54,7 +54,7 @@ jest.mock("electron", () => {
       on: () => "en",
       __esModule: true,
     },
-    // eslint-disable-next-line object-shorthand, func-names
+    // eslint-disable-next-line object-shorthand, func-names, @typescript-eslint/no-unused-vars
     BrowserWindow: function (_x:object, _y: number, _w: number, _h: number, _s: boolean, _w2: object) {
       return mockBrowserWindow;
     }

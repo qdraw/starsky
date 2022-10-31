@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 if (document.querySelectorAll("#autoclose").length === 1) {
-  const autoCloseElement = document.querySelector("#autoclose");
+  const autoCloseElement = document.querySelector("#autoclose") as HTMLElement;
   autoCloseElement.focus();
 
   autoCloseElement.addEventListener("click", () => {
@@ -12,7 +13,7 @@ if (document.querySelectorAll("#autoclose").length === 1) {
 }
 
 if (document.querySelectorAll(".error").length === 1) {
-  const errorElement = document.querySelector(".error");
+  const errorElement = document.querySelector(".error") as HTMLElement;
   const error = new URLSearchParams(window.location.search).get("error");
   if (error) {
     errorElement.innerText = error;

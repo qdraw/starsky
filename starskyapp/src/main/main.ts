@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { app, BrowserWindow } from "electron";
 import { setupChildProcess } from "../app/child-process/setup-child-process";
 import { MakeLogsPath } from "../app/config/logs-path";
@@ -27,8 +28,8 @@ app.on("ready", () => {
   AppMenu();
   DockMenu();
 
-  const splashWindow = SetupSplash();
-  IsRemote().then((isRemote) => {
+  IsRemote().then(async (isRemote) => {
+    const splashWindow = await SetupSplash();
     RestoreWarmupMainWindowAndCloseSplash(splashWindow, isRemote);
   });
 
@@ -52,7 +53,7 @@ app.on("window-all-closed", () => {
 
 // https://github.com/electron/electron/blob/master/docs/tutorial/security.md
 app.on("web-contents-created", (_, contents) => {
-  contents.on("will-navigate", async (event, navigationUrl) => {
-    await willNavigateSecurity(event, navigationUrl);
+  contents.on("will-navigate", (event, navigationUrl) => {
+    willNavigateSecurity(event, navigationUrl);
   });
 });

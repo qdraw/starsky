@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { IlocationUrlSettings } from "../../app/config/IlocationUrlSettings";
 import { LocationUrlIpcKey } from "../../app/config/location-ipc-keys.const";
 import { IPreloadApi } from "../../preload/IPreloadApi";
@@ -27,7 +28,7 @@ export function settingsRemoteLocationField() {
   window.api.receive(LocationUrlIpcKey, (result: IlocationUrlSettings) => {
     const remoteLocation = document.querySelector(
       remoteLocationId
-    );
+    ) as HTMLInputElement;
 
     if (!result.isLocal) {
       remoteLocation.value = result.location;

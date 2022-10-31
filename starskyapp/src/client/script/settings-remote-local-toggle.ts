@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
@@ -10,10 +11,15 @@ import {
 } from "./settings.const";
 
 declare global {
+  // eslint-disable-next-line vars-on-top, no-var
   var api: IPreloadApi;
 }
 
 export function settingsRemoteLocalToggle() {
+  function changeRemoteToggle(isRemote: boolean) {
+    window.api.send(LocationIsRemoteIpcKey, isRemote);
+  }
+
   /** Switch remote local */
   document.querySelector(switchLocalId).addEventListener("change", () => {
     changeRemoteToggle(false);
@@ -27,20 +33,16 @@ export function settingsRemoteLocalToggle() {
 
   window.api.send(LocationIsRemoteIpcKey, null);
 
-  function changeRemoteToggle(isRemote: boolean) {
-    window.api.send(LocationIsRemoteIpcKey, isRemote);
-  }
-
   window.api.receive(LocationIsRemoteIpcKey, (isRemote: boolean) => {
     const switchLocal = document.querySelector(
       switchLocalId
-    );
+    ) as HTMLInputElement;
     const switchRemote = document.querySelector(
       switchRemoteId
-    );
+    ) as HTMLInputElement;
     const remoteLocation = document.querySelector(
       remoteLocationId
-    );
+    ) as HTMLInputElement;
 
     if (isRemote) {
       switchLocal.checked = false;

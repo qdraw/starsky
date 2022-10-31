@@ -17,6 +17,7 @@ export function spellCheck(newWindow: BrowserWindow) {
         type: "separator"
       });
       objMenu.append(objMenuSep);
+      // eslint-disable-next-line array-callback-return
       params.dictionarySuggestions.map((strSuggestion) => {
         const objMenuItem = new MenuItem({
           click(_this, objWindow) {

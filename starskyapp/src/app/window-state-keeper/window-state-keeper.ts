@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { BrowserWindow } from "electron";
 import * as appConfig from "electron-settings";
 
@@ -36,15 +38,18 @@ export async function windowStateKeeper(
 
   function saveState() {
     if (!windowState.isMaximized) {
-      windowState = window.getBounds();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      windowState = window.getBounds() as IWindowsState;
     }
-    windowState.isMaximized = window.isMaximized();
+    windowState.isMaximized = window.isMaximized() as boolean;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     appConfig.set(`windowState.${windowName}`, windowState as any);
   }
 
   function track(win: BrowserWindow) {
     window = win;
-    ["resize", "move", "close"].forEach((event) => {
+    ["resize", "move", "close"].forEach((event : string) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       win.on(event as any, saveState);
     });
   }
