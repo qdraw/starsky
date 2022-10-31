@@ -4,7 +4,6 @@ import * as windowStateKeeper from "../window-state-keeper/window-state-keeper";
 import createMainWindow from "./create-main-window";
 import * as getNewFocusedWindow from "./get-new-focused-window";
 import * as onHeaderReceived from "./on-headers-received";
-import * as removeRememberUrl from "./save-remember-url";
 import * as saveRememberUrl from "./save-remember-url";
 import * as spellCheck from "./spellcheck";
 
@@ -16,7 +15,7 @@ jest.mock("electron", () => {
       getLocale: () => "en",
       on: () => "en",
     },
-    // eslint-disable-next-line object-shorthand, func-names
+    // eslint-disable-next-line object-shorthand, func-names, @typescript-eslint/no-unused-vars
     BrowserWindow: function (_x:object, _y: number, _w: number, _h: number, _s: boolean, _w2: object) {
       return {
         id: 99,
@@ -64,7 +63,7 @@ describe("create main window", () => {
     jest.spyOn(spellCheck, "spellCheck").mockImplementationOnce(() => null);
 
     jest
-      .spyOn(removeRememberUrl, "removeRememberUrl")
+      .spyOn(saveRememberUrl, "removeRememberUrl")
       .mockImplementationOnce(() => null);
 
     jest

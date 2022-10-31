@@ -59,15 +59,18 @@ export function uploadNetRequest(
       request.end();
       request.on("finish", () => {
         logger.info(`--finish doUploadRequest ${fullFilePath}`);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         fs.promises.stat(fullFilePath).then((stat) => {
-          fs.promises.writeFile(`${fullFilePath}.info`, stat.size.toString());
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          fs.promises.writeFile(`${fullFilePath}.info`, stat.size.toString()).then(() => {
+            resolve();
+          });
         });
-        resolve();
       });
-      request.on("error", (err) => {
+      request.on("error", (err1) => {
         logger.info(`error doUploadRequest ${fullFilePath}`);
-        logger.info(err);
-        reject(err);
+        logger.info(err1);
+        reject(err1);
       });
     });
   });

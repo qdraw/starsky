@@ -19,7 +19,7 @@ export async function WarmupServer(
     verbose: false,
   };
   // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
-  return new Promise((resolve, _) => {
+  return new Promise((resolve) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     waitOn(opts)
       .then(() => {

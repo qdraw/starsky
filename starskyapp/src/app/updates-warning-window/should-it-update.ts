@@ -18,7 +18,8 @@ export async function SkipDisplayOfUpdate(): Promise<boolean> {
   )) as string;
   if (!localStorageItem) return false;
 
-  const getItem = parseInt(localStorageItem);
+  const getItem = parseInt(localStorageItem, 10);
+  // eslint-disable-next-line no-restricted-globals
   if (isNaN(getItem)) return false;
   return DifferenceInDate(getItem) < 5760; // 4 days
 }
@@ -35,6 +36,7 @@ export async function isPolicyDisabled(): Promise<boolean> {
  * true when need to update
  */
 export async function shouldItUpdate(): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     let url = (await GetBaseUrlFromSettings()).location;
     url += new UrlQuery().HealthCheckForUpdates(GetAppVersion());

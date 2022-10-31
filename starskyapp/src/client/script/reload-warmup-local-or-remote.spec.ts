@@ -18,7 +18,6 @@ describe("reload redirect", () => {
   describe("warmupLocalOrRemote", () => {
     const oldWindowLocation = window.location;
     const assignSpy = jest.fn();
-    let assignLocation = "";
 
     beforeAll(() => {
       delete window.location;
@@ -30,7 +29,6 @@ describe("reload redirect", () => {
           assign: {
             configurable: true,
             value: (e: string) => {
-              assignLocation = e;
               return assignSpy(e);
             }
           }

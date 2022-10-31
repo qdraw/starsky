@@ -12,7 +12,7 @@ export async function SetupFileWatcher() {
     logger.info("[SetupFileWatcher] deleted:", path);
   });
 
-  createParentFolders();
+  await createParentFolders();
   const tempPathIncludingBaseUrl = await GetParentDiskPath();
 
   const watch = chokidar
@@ -23,6 +23,7 @@ export async function SetupFileWatcher() {
       alwaysStat: true
     })
     .on("change", (path, stats) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       ActionWhenFileIsChanged(path, stats);
     });
 

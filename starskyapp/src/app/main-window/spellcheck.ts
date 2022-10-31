@@ -20,7 +20,9 @@ export function spellCheck(newWindow: BrowserWindow) {
       params.dictionarySuggestions.map((strSuggestion) => {
         const objMenuItem = new MenuItem({
           click(_this, objWindow) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             objWindow.webContents.insertText(strSuggestion);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             objMenu.closePopup(this);
           },
           label: strSuggestion

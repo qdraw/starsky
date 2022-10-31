@@ -12,36 +12,6 @@ import {
 } from "./should-it-update";
 import { updatesWarningWindows } from "./updates-warning-windows.const";
 
-async function createCheckForUpdatesContainerWindow(
-  intervalSpeed = 1000
-): Promise<boolean> {
-  return new Promise(async (resolve, reject) => {
-    const policy = (await isPolicyDisabled()) || (await SkipDisplayOfUpdate());
-    if (policy) {
-      reject("disabled");
-      return;
-    }
-
-    setTimeout(
-      () => shouldItUpdate()
-        .then(async (shouldItUpdate) => {
-          if (shouldItUpdate) {
-            await checkForUpdatesWindow();
-          }
-          resolve(shouldItUpdate);
-        })
-        .catch((error) => {
-          // fails for some random reason
-          try {
-            logger.warn(error);
-          } catch (error) {}
-          reject(error);
-        }),
-      intervalSpeed
-    );
-  });
-}
-
 export async function checkForUpdatesWindow() {
   const mainWindowStateKeeper = await windowStateKeeper("updates-warning");
 
@@ -70,7 +40,7 @@ export async function checkForUpdatesWindow() {
     "client/pages/updates-warning/updates-warning.html"
   );
 
-  newWindow.loadFile(location);
+  await newWindow.loadFile(location);
 
   newWindow.once("ready-to-show", () => {
     newWindow.show();
@@ -78,11 +48,45 @@ export async function checkForUpdatesWindow() {
 
   newWindow.on("closed", () => {
     updatesWarningWindows.delete(newWindow);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     appConfig.set(UpdatePolicyLastCheckedDateSettings, Date.now().toString());
     newWindow = null;
   });
 
   updatesWarningWindows.add(newWindow);
+}
+
+async function createCheckForUpdatesContainerWindow(
+  intervalSpeed = 1000
+): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    const policy = (await isPolicyDisabled()) || (await SkipDisplayOfUpdate());
+    if (policy) {
+      reject("disabled");
+      return;
+    }
+
+    setTimeout(
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      () => shouldItUpdate()
+        .then(async (shouldItUpdate1) => {
+          if (shouldItUpdate1) {
+            await checkForUpdatesWindow();
+          }
+          resolve(shouldItUpdate1);
+        })
+        .catch((error) => {
+          // fails for some random reason
+          try {
+            logger.warn(error);
+          } catch (error1 : unknown) { // nothing
+          }
+          reject(error);
+        }),
+      intervalSpeed
+    );
+  });
 }
 
 export default createCheckForUpdatesContainerWindow;

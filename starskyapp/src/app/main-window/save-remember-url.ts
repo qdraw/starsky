@@ -9,7 +9,7 @@ export async function saveRememberUrl(newWindow: BrowserWindow) {
     return;
   }
 
-  const currentObject = (await appConfig.get(RememberUrl)) as any;
+  const currentObject = (await appConfig.get(RememberUrl)) as object;
 
   const relativeUrl = url.pathname + url.search;
   const newlyAddedObject = {
@@ -27,7 +27,8 @@ export async function saveRememberUrl(newWindow: BrowserWindow) {
 }
 
 export async function removeRememberUrl(id: number) {
-  const currentObject = (await appConfig.get(RememberUrl)) as any;
+  const currentObject = (await appConfig.get(RememberUrl)) as object;
   delete currentObject[id];
-  await appConfig.set(RememberUrl, currentObject);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  await appConfig.set(RememberUrl, currentObject as any);
 }

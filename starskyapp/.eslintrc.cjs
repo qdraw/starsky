@@ -25,6 +25,8 @@ const baseConfig = {
     "no-console": ["off"],
     "@typescript-eslint/comma-dangle": ["off"],
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    "@typescript-eslint/no-explicit-any": ["off"],
+    "prefer-promise-reject-errors": ["off"],
   },
   ignorePatterns: ["dist/*", "dist-prod/*", "runtime-*/*"],
 };

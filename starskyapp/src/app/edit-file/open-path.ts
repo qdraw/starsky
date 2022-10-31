@@ -36,7 +36,7 @@ export async function openPath(fullFilePath: string): Promise<void> {
   const overWriteDefaultApplication = (await appConfig.get(
     DefaultImageApplicationSetting
   )) as string;
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     // add extra test for photoshop
     if (

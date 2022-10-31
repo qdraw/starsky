@@ -54,6 +54,7 @@ describe("window state keeper", () => {
     it("on change it should see callback", async () => {
       const result = await windowStateKeeper("test");
       const onMock = jest.fn();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       result.track({
         resize: jest.fn(),
         move: jest.fn(),
@@ -88,6 +89,7 @@ describe("window state keeper", () => {
         });
 
       const result = await windowStateKeeper("test");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       result.track({
         resize: jest.fn(),
         move: jest.fn(),
@@ -101,6 +103,7 @@ describe("window state keeper", () => {
         }),
         isMaximized: () => true,
 
+        // eslint-disable-next-line @typescript-eslint/ban-types
         on: (event: any, callback: Function) => {
           if (event === "resize") {
             callback();

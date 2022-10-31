@@ -31,7 +31,8 @@ export const createErrorWindow = async (error: string) => {
     "error",
     "error.html",
   );
-  newWindow.loadFile(errorPage, { query: { error } });
+
+  await newWindow.loadFile(errorPage, { query: { error } });
 
   newWindow.once("ready-to-show", () => {
     newWindow.show();

@@ -1,4 +1,4 @@
-import { net } from "electron";
+import { ClientRequestConstructorOptions, net } from "electron";
 import logger from "../logger/logger";
 
 export interface IGetNetRequestResponse {
@@ -19,7 +19,7 @@ export function GetNetRequest(
       headers: {
         Accept: "*/*"
       }
-    } as any);
+    } as ClientRequestConstructorOptions);
 
     let body = "";
     let statusCode = 999;
@@ -46,13 +46,14 @@ export function GetNetRequest(
 
         try {
           resolve({
-            data: JSON.parse(body),
+            data: JSON.parse(body) as object,
             statusCode: response.statusCode
           } as IGetNetRequestResponse);
-        } catch (error) {
+        } catch (error :any) {
           logger.warn("GetNetRequest error");
           logger.warn(error);
           reject({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             error: error.toString(),
             statusCode: response.statusCode
           } as IGetNetRequestResponse);
