@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/unbound-method */
 import { UpdatePolicyIpcKey } from "../../app/config/update-policy-ipc-key.const";
 import { settingsCheckForUpdatesToggle } from "./settings-check-for-updates-toggle";
 import {
@@ -10,6 +13,7 @@ describe("reload redirect", () => {
     document.body.innerHTML = "";
   });
 
+  // eslint-disable-next-line jest/expect-expect
   it("render component", () => {
     window.api = {
       send: jest.fn(),
@@ -102,11 +106,11 @@ describe("reload redirect", () => {
 
     const onToggleChecked = (document.querySelector(
       switchUpdatePolicyOnId
-    )).checked;
+    ) as HTMLInputElement).checked;
 
     const offToggleChecked = (document.querySelector(
       switchUpdatePolicyOffId
-    )).checked;
+    ) as HTMLInputElement).checked;
 
     expect(onToggleChecked).toBeTruthy();
     expect(offToggleChecked).toBeFalsy();
@@ -129,11 +133,11 @@ describe("reload redirect", () => {
 
     const onToggleChecked = (document.querySelector(
       switchUpdatePolicyOnId
-    )).checked;
+    ) as HTMLInputElement).checked;
 
     const offToggleChecked = (document.querySelector(
       switchUpdatePolicyOffId
-    )).checked;
+    ) as HTMLInputElement).checked;
 
     expect(onToggleChecked).toBeFalsy();
     expect(offToggleChecked).toBeTruthy();

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { AppVersionIpcKey } from "../../app/config/app-version-ipc-key.const";
 import {
   LocationIsRemoteIpcKey,
@@ -38,6 +39,7 @@ describe("reload redirect", () => {
     });
 
     beforeEach(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
       (window as any).api = {};
     });
 
@@ -76,6 +78,7 @@ describe("reload redirect", () => {
           func(true);
         });
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.api = {
         send: jest.fn(),

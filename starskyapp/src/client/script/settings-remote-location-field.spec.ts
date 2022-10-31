@@ -1,3 +1,7 @@
+/* eslint-disable no-var */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+/* eslint-disable @typescript-eslint/unbound-method */
+/* eslint-disable vars-on-top */
 import { LocationUrlIpcKey } from "../../app/config/location-ipc-keys.const";
 import { IPreloadApi } from "../../preload/IPreloadApi";
 import { settingsRemoteLocationField } from "./settings-remote-location-field";
@@ -12,6 +16,7 @@ describe("settings Remote Local Toggle", () => {
     document.body.innerHTML = "";
   });
 
+  // eslint-disable-next-line jest/expect-expect
   it("render component", () => {
     window.api = {
       send: jest.fn(),
@@ -34,14 +39,14 @@ describe("settings Remote Local Toggle", () => {
     document.body.innerHTML = `<input id="${remoteLocationTag}" value="test123">`;
 
     // trigger to on
-    var event = new Event("change");
+    const event = new Event("change");
     document.querySelector(remoteLocationId).dispatchEvent(event);
 
     // todo complete
     settingsRemoteLocationField();
 
-    var event = new Event("change");
-    document.querySelector(remoteLocationId).dispatchEvent(event);
+    const event1 = new Event("change");
+    document.querySelector(remoteLocationId).dispatchEvent(event1);
 
     expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(1, LocationUrlIpcKey, null);
@@ -61,14 +66,14 @@ describe("settings Remote Local Toggle", () => {
     document.body.innerHTML = `<input id="${remoteLocationTag}" value="">`;
 
     // trigger to on
-    var event = new Event("change");
+    const event = new Event("change");
     document.querySelector(remoteLocationId).dispatchEvent(event);
 
     console.log("-should give console.error");
     settingsRemoteLocationField();
 
-    var event = new Event("change");
-    document.querySelector(remoteLocationId).dispatchEvent(event);
+    const event1 = new Event("change");
+    document.querySelector(remoteLocationId).dispatchEvent(event1);
 
     expect(window.api.send).toHaveBeenCalled();
     expect(window.api.send).toHaveBeenNthCalledWith(1, LocationUrlIpcKey, null);
@@ -93,7 +98,7 @@ describe("settings Remote Local Toggle", () => {
     // should update from window/api
     const remoteLocationValue = (document.querySelector(
       remoteLocationId
-    )).value;
+    ) as HTMLInputElement).value;
 
     expect(remoteLocationValue).toBe("test");
   });
@@ -117,7 +122,7 @@ describe("settings Remote Local Toggle", () => {
     // should ignore window/api
     const remoteLocationValue = (document.querySelector(
       remoteLocationId
-    )).value;
+    ) as HTMLInputElement).value;
 
     expect(remoteLocationValue).toBe("test123");
   });

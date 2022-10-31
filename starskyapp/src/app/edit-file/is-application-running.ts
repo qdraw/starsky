@@ -26,7 +26,7 @@ export const IsApplicationRunning = (query: string) => {
 
     let stdOutData = "";
 
-    starskyChild.stdout.on("data", (stdout) => {
+    starskyChild.stdout.on("data", (stdout: object) => {
       stdOutData += stdout.toString();
     });
 
@@ -39,7 +39,7 @@ export const IsApplicationRunning = (query: string) => {
       resolve(matches.length >= 1);
     });
 
-    starskyChild.stderr.on("data", (data) => {
+    starskyChild.stderr.on("data", (data :object) => {
       logger.info("IsApplicationRunning");
       logger.info(`stderr: ${data.toString()}`);
       reject();

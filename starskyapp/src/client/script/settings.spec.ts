@@ -23,6 +23,7 @@ describe("settings", () => {
       .mockImplementationOnce(() => {});
 
     // when change also update webpack and html
+    // eslint-disable-next-line global-require
     require("./settings");
 
     expect(checkSpy).toHaveBeenCalled();

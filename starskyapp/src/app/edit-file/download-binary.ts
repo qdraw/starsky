@@ -45,8 +45,9 @@ export async function downloadBinary(
         session,
         fileOnDisk
       );
-    } catch (error) {
-      logger.info(`error > ${error}`);
+    } catch (error2: unknown) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      logger.info(`error > ${error2}`);
     }
   }
 

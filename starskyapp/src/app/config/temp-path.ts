@@ -15,13 +15,15 @@ export function TempPath(): string {
 
 export function MakeTempPath(): string {
   const tempPath = TempPath();
-  if (!tempPath) return;
+  if (!tempPath) return null;
   if (!fs.existsSync(tempPath)) {
     fs.mkdirSync(tempPath);
   }
   try {
     logger.info(`tempPath => ${tempPath}`);
-  } catch (error) {}
+  } catch (error) {
+    // nothing here
+  }
 
   return tempPath;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { checkForUpdates } from "./check-for-updates";
 
 describe("reload redirect", () => {
@@ -14,6 +15,7 @@ describe("reload redirect", () => {
   }
 
   afterEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     (global.fetch as any).mockClear();
     delete global.fetch;
   });
@@ -30,7 +32,7 @@ describe("reload redirect", () => {
     const result = await checkForUpdates("t", "1");
 
     expect(
-      (document.querySelector(".upgrade")).style.display
+      (document.querySelector(".upgrade") as HTMLElement).style.display
     ).toBe("block");
 
     document.body.innerHTML = "";
@@ -45,6 +47,7 @@ describe("reload redirect", () => {
     try {
       await checkForUpdates("t", "1");
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       errorMessage = error;
     }
     expect(errorMessage).toBeUndefined();
@@ -58,6 +61,7 @@ describe("reload redirect", () => {
     try {
       await checkForUpdates("t", "1");
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       errorMessage = error;
     }
     expect(errorMessage).toBeUndefined();

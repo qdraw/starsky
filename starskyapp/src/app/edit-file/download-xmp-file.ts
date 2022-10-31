@@ -11,7 +11,7 @@ export async function downloadXmpFile(
   session: Electron.Session
 ): Promise<string> {
   if (fileIndexItem.sidecarExtensionsList.length <= 0) {
-    return;
+    return null;
   }
 
   const ext = fileIndexItem.sidecarExtensionsList[0];

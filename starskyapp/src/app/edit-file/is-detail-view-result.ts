@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { IGetNetRequestResponse } from "../net-request/get-net-request";
 
 export function IsDetailViewResult(result: IGetNetRequestResponse) {

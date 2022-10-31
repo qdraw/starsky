@@ -9,6 +9,7 @@ import { checkForUpdates } from "./check-for-updates";
 import { warmupScript } from "./reload-warmup-script";
 
 declare global {
+  // eslint-disable-next-line vars-on-top, no-var
   var api: IPreloadApi;
 }
 
@@ -19,7 +20,7 @@ function redirecter(domainUrl: string) {
   );
 
   // https://stackoverflow.com/a/31431911
-  const regex = new RegExp("^[^/]+/[^/].*$|^/[^/].*$", "gmi");
+  const regex = /^[^/]+\/[^/].*$|^\/[^/].*$/gmi;
   if (rememberUrl && rememberUrl.match(regex)) {
     console.log(rememberUrl.match(regex)[0]);
     appendAfterDomainUrl = decodeURI(rememberUrl.match(regex)[0]);
@@ -31,7 +32,7 @@ export function warmupLocalOrRemote() {
   window.api.send(LocationIsRemoteIpcKey, null);
   window.api.send(AppVersionIpcKey, null);
 
-  window.api.receive(AppVersionIpcKey, (appVersion: any) => {
+  window.api.receive(AppVersionIpcKey, (appVersion: string) => {
     window.api.send(LocationUrlIpcKey, null);
 
     window.api.receive(
@@ -62,7 +63,8 @@ export function warmupLocalOrRemote() {
               notFoundWarning[0].innerHTML += "<br />This is a local service";
             }
           } else {
-            alert(`There was an error loading: ${locationData.location} isLocal:${locationData.isLocal}`);
+            // eslint-disable-next-line no-alert
+            alert(`There was an error loading: ${locationData.location} isLocal:${locationData.isLocal.valueOf.toString()}`);
           }
         });
       }

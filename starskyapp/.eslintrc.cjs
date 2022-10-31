@@ -26,6 +26,7 @@ const baseConfig = {
     "@typescript-eslint/comma-dangle": ["off"],
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
+  ignorePatterns: ["dist/*", "dist-prod/*", "runtime-*/*"],
 };
 
 const tsConfig = {

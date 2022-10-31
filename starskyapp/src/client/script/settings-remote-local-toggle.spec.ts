@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+/* eslint-disable @typescript-eslint/unbound-method */
+/* eslint-disable vars-on-top */
 import { LocationIsRemoteIpcKey } from "../../app/config/location-ipc-keys.const";
 import { IPreloadApi } from "../../preload/IPreloadApi";
 import { settingsRemoteLocalToggle } from "./settings-remote-local-toggle";
@@ -8,6 +11,7 @@ import {
 } from "./settings.const";
 
 declare global {
+  // eslint-disable-next-line no-var
   var api: IPreloadApi;
 }
 
@@ -16,6 +20,7 @@ describe("settings Remote Local Toggle", () => {
     document.body.innerHTML = "";
   });
 
+  // eslint-disable-next-line jest/expect-expect
   it("render component", () => {
     window.api = {
       send: jest.fn(),
@@ -109,11 +114,11 @@ describe("settings Remote Local Toggle", () => {
 
     const onToggleChecked = (document.querySelector(
       switchRemoteId
-    )).checked;
+    ) as HTMLInputElement).checked;
 
     const offToggleChecked = (document.querySelector(
       switchLocalId
-    )).checked;
+    ) as HTMLInputElement).checked;
 
     expect(onToggleChecked).toBeTruthy();
     expect(offToggleChecked).toBeFalsy();
@@ -139,11 +144,11 @@ describe("settings Remote Local Toggle", () => {
 
     const onToggleChecked = (document.querySelector(
       switchRemoteId
-    )).checked;
+    ) as HTMLInputElement).checked;
 
     const offToggleChecked = (document.querySelector(
       switchLocalId
-    )).checked;
+    ) as HTMLInputElement).checked;
 
     expect(onToggleChecked).toBeFalsy();
     expect(offToggleChecked).toBeTruthy();

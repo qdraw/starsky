@@ -1,3 +1,6 @@
+/* eslint-disable prefer-promise-reject-errors */
+/* eslint-disable jest/no-done-callback */
+/* eslint-disable jest/no-conditional-expect */
 /* eslint-disable @typescript-eslint/ban-types */
 import * as BrowserWindow from "electron";
 import * as appConfig from "electron-settings";
@@ -88,7 +91,8 @@ describe("create main window", () => {
     });
   });
   describe("createCheckForUpdatesContainerWindow", () => {
-    it("should call browserWindow", (done) => {
+    // eslint-disable-next-line jest/no-done-callback
+    it("should call browserWindow", (done: Function) => {
       jest
         .spyOn(windowStateKeeper, "windowStateKeeper")
         .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
@@ -111,6 +115,7 @@ describe("create main window", () => {
 
       createCheckForUpdatesContainerWindow(1)
         .then(() => {
+          // eslint-disable-next-line jest/no-conditional-expect
           expect(browserWindowSpy).toHaveBeenCalled();
           done();
         })
@@ -119,6 +124,7 @@ describe("create main window", () => {
           throw e;
         });
     });
+    // eslint-disable-next-line jest/no-done-callback
     it("should not call browserWindow", (done : Function) => {
       jest
         .spyOn(windowStateKeeper, "windowStateKeeper")
@@ -183,7 +189,7 @@ describe("create main window", () => {
         });
     });
 
-    it("should reject when shouldItUpdate fails", (done) => {
+    it("should reject when shouldItUpdate fails", (done: Function) => {
       jest.spyOn(logger, "default").mockImplementation(() => {
         return {
           warn: jest.fn()
@@ -214,9 +220,11 @@ describe("create main window", () => {
       createCheckForUpdatesContainerWindow(1)
         .then((e) => {
           // it should never call this 0>
+          // eslint-disable-next-line jest/no-conditional-expect
           expect(true).toBeFalsy();
         })
         .catch((e) => {
+          // eslint-disable-next-line jest/no-conditional-expect
           expect(browserWindowSpy).toHaveBeenCalledTimes(0);
           done();
         });

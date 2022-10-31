@@ -7,9 +7,9 @@ import {
 /**
  * string
  */
-export const LocationUrlSettingsKey = `${LocationUrlIpcKey}:${isPackaged()}`;
+export const LocationUrlSettingsKey = `${LocationUrlIpcKey}:${isPackaged().valueOf.toString()}`;
 
 /**
  * bool
  */
-export const LocationIsRemoteSettingsKey = `${LocationIsRemoteIpcKey}:${isPackaged()}`;
+export const LocationIsRemoteSettingsKey = `${LocationIsRemoteIpcKey}:${isPackaged().valueOf.toString()}`;

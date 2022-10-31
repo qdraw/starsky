@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 export default class UrlQuery {
   public HealthApi(): string {
     return "/api/health";

@@ -1,20 +1,28 @@
 import { BrowserWindow } from "electron";
+import { IFileIndexItem } from "src/shared/IFileindexItem";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
 import { createErrorWindow } from "../error-window/create-error-window";
 import logger from "../logger/logger";
-import { GetNetRequest } from "../net-request/get-net-request";
+import { GetNetRequest, IGetNetRequestResponse } from "../net-request/get-net-request";
 import { createParentFolders } from "./create-parent-folders";
 import { downloadBinary } from "./download-binary";
 import { downloadXmpFile } from "./download-xmp-file";
 import { IsDetailViewResult } from "./is-detail-view-result";
 import { openPath } from "./open-path";
 
+function getFilePathFromWindow(fromMainWindow: BrowserWindow): string {
+  const latestPage = fromMainWindow.webContents.getURL();
+  const filePath = new URLSearchParams(new URL(latestPage).search).get("f");
+  if (!filePath) return null;
+  return filePath;
+}
+
 export async function EditFile(fromMainWindow: BrowserWindow) {
   const url = (await GetBaseUrlFromSettings()).location
     + new UrlQuery().Index(getFilePathFromWindow(fromMainWindow));
 
-  let result;
+  let result :IGetNetRequestResponse;
   try {
     result = await GetNetRequest(url, fromMainWindow.webContents.session);
   } catch (error) {
@@ -27,29 +35,25 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
     return;
   }
 
-  await createParentFolders(result.data.fileIndexItem.parentDirectory);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
+  const fileIndexItem = ((result.data as any).fileIndexItem as IFileIndexItem);
+  await createParentFolders(fileIndexItem.parentDirectory);
 
   await downloadXmpFile(
-    result.data.fileIndexItem,
+    fileIndexItem,
     fromMainWindow.webContents.session
   );
   const filePathOnDisk = await downloadBinary(
-    result.data.fileIndexItem,
+    fileIndexItem,
     fromMainWindow.webContents.session
   );
 
   try {
     await openPath(filePathOnDisk);
-  } catch (error) {
-    createErrorWindow(error);
+  } catch (error :unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    createErrorWindow(error as string);
     logger.warn("openPath error");
     logger.warn(error);
   }
-}
-
-function getFilePathFromWindow(fromMainWindow: BrowserWindow): string {
-  const latestPage = fromMainWindow.webContents.getURL();
-  const filePath = new URLSearchParams(new URL(latestPage).search).get("f");
-  if (!filePath) return null;
-  return filePath;
 }
