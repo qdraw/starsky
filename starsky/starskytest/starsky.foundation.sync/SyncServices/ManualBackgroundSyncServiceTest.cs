@@ -160,15 +160,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public void FilterBefore_OkShouldPass()
 		{
-			var result=  new ManualBackgroundSyncService(
-					new FakeISynchronize(new List<FileIndexItem>()),
-					new FakeIQuery(),
-					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(
-						new Dictionary<string, object>()), 
-					new FakeIWebLogger(), new FakeIUpdateBackgroundTaskQueue(),
-					GetScope())
-				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+			var result=  ManualBackgroundSyncService.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 				{
 					Status = FileIndexItem.ExifStatus.Ok
 				}});
@@ -180,15 +172,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public void FilterBefore_NotFoundShouldPass()
 		{
-			var result=  new ManualBackgroundSyncService(
-					new FakeISynchronize(new List<FileIndexItem>()),
-					new FakeIQuery(),
-					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>()), 
-					new FakeIWebLogger(), 
-					new FakeIUpdateBackgroundTaskQueue(),
-					GetScope())
-				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+			var result=  ManualBackgroundSyncService.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 				{
 					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
 				}});
@@ -197,35 +181,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual("/test.jpg",result[0].FilePath);
 		}
 		
-		[TestMethod]
-		public void FilterBefore_OperationNotSupportedShouldIgnore()
-		{
-			var result=  new ManualBackgroundSyncService(
-					new FakeISynchronize(new List<FileIndexItem>()),
-					new FakeIQuery(),
-					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>()), 
-					new FakeIWebLogger(),
-					new FakeIUpdateBackgroundTaskQueue(),GetScope())
-				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
-				{
-					Status = FileIndexItem.ExifStatus.OperationNotSupported
-				}});
-
-			Assert.AreEqual(0,result.Count);
-		}
 		
 		[TestMethod]
 		public void FilterBefore_ShouldIgnoreHome()
 		{
-			var result=  new ManualBackgroundSyncService(
-					new FakeISynchronize(new List<FileIndexItem>()),
-					new FakeIQuery(),
-					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>()), 
-					new FakeIWebLogger(), 
-					new FakeIUpdateBackgroundTaskQueue(),GetScope())
-				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/")
+			var result=  ManualBackgroundSyncService.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/")
 				{
 					Status = FileIndexItem.ExifStatus.Ok
 				}});

@@ -168,9 +168,13 @@ namespace starsky.foundation.database.Data
 						.HasAnnotation("Sqlite:Autoincrement", true)
 						.HasAnnotation("MySql:ValueGenerationStrategy",
 							MySqlValueGenerationStrategy.IdentityColumn);
+
+					etb.Property(p => p.Content)
+						.HasColumnType("mediumtext");
 					
-					etb.Property(p => p.Content).HasColumnType("mediumtext");
-					
+					etb.Property(p => p.DateTime)
+						.IsConcurrencyToken();
+						
 					etb.ToTable("Notifications");
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}

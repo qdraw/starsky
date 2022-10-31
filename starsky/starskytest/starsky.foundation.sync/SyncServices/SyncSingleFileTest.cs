@@ -486,6 +486,40 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
+		public async Task SingleFile_DbItem_FileAlreadyExist_With_Different_LastEditedTime_AndDeleted()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = fileHash,
+				Size =
+					_iStorageFake.Info("/test.jpg").Size, // < right byte size
+				Tags =
+					"the tags should not be updated, !delete!", // <= the tags in /test.jpg is nothing,
+				LastEdited = new DateTime(1999, 01, 02)
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				item
+			});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, null, new FakeIWebLogger());
+			
+			var result = await sync.SingleFile("/test.jpg", item);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result.Status);
+			Assert.AreEqual(1, result.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
+			
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
+
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated, !delete!", fileIndexItem?.Tags);
+			Assert.AreEqual(_lastEditedDateTime, fileIndexItem?.LastEdited);
+		}
+		
+		[TestMethod]
 		public async Task SingleFile_DbItem_FileAlreadyExist_With_Different_LastEditedTime_AppSettingsIgnore()
 		{
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");

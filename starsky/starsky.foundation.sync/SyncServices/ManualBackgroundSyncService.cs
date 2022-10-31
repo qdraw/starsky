@@ -72,7 +72,7 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				await BackgroundTaskExceptionWrapper(fileIndexItem.FilePath,
 					operationId);
-			}, fileIndexItem.FilePath);
+			}, fileIndexItem.FilePath!);
 
 			return FileIndexItem.ExifStatus.Ok;
 		}
@@ -80,7 +80,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task PushToSockets(List<FileIndexItem> updatedList)
 		{
 			var webSocketResponse =
-				new ApiNotificationResponseModel<List<FileIndexItem>>(updatedList, ApiNotificationType.ManualBackgroundSync);
+				new ApiNotificationResponseModel<List<FileIndexItem>>(FilterBefore(updatedList), ApiNotificationType.ManualBackgroundSync);
 			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 		}
 
@@ -130,16 +130,9 @@ namespace starsky.foundation.sync.SyncServices
 			operationHolder.SetData(_scopeFactory, updatedList);
 		}
 		
-		[SuppressMessage("Performance", "CA1822:Mark members as static")]
-		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
+		internal static List<FileIndexItem> FilterBefore(IEnumerable<FileIndexItem> syncData)
 		{
-			return syncData.Where(p => (
-				p.Status == FileIndexItem.ExifStatus.Ok ||
-				p.Status == FileIndexItem.ExifStatus.OkAndSame ||
-				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
-				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing ||
-				p.Status == FileIndexItem.ExifStatus.Deleted) && 
-			    p.FilePath != "/" ).ToList();
+			return syncData.Where(p => p.FilePath != "/" ).ToList();
 		}
 	}
 }
