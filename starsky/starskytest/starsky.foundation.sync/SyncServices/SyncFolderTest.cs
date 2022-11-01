@@ -281,8 +281,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-			Assert.AreEqual(folderPath, result?.FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result?.Status);
+			Assert.AreEqual(folderPath, result.FirstOrDefault()?.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
@@ -301,7 +301,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await syncFolder.AddParentFolder(folderPath,null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-			Assert.AreEqual(folderPath, result?.FilePath);
+			Assert.AreEqual(folderPath, result.FirstOrDefault()?.FilePath);
 
 			// should not add duplicate content
 			var allItems = await query.GetAllRecursiveAsync();
@@ -324,8 +324,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await syncFolder.AddParentFolder(folderPath, null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-			Assert.AreEqual(folderPath, result!.FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.Status);
+			Assert.AreEqual(folderPath, result.FirstOrDefault()!.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.FirstOrDefault()!.Status);
 
 			// should not add content
 			var allItems = await query.GetAllRecursiveAsync();

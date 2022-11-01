@@ -107,7 +107,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns>Gives only back the files that are deleted</returns>
 		public async Task<List<FileIndexItem>> Remove(
 			IEnumerable<FileIndexItem> databaseItems,
-			ISynchronize.SocketUpdateDelegate updateDelegate)
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			var deleted = databaseItems
 				.Where(p =>
