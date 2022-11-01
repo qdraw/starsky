@@ -33,6 +33,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
     -    `/bin/Debug/net6.0/appsettings.computername.patch.json`
     -    `/bin/Debug/net6.0/appsettings.json`
     -    `/bin/Debug/net6.0/appsettings.computername.json`
+    -    `/bin/Debug/net6.0/appsettings.demodata.json`
 
 2.  Use Environment variables to overwrite those base settings
    For `ThumbnailTempFolder` use `app__ThumbnailTempFolder`

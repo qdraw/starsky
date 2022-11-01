@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.platform.Helpers
@@ -74,10 +75,29 @@ namespace starsky.foundation.platform.Helpers
 		            CompareListPublishProfiles(propertyB.Name, sourceIndexItem, oldListPublishProfilesValue,
 			            newListPublishProfilesValue, differenceList);
 	            }
+	            
+	            if ( propertyB.PropertyType == typeof(List<AppSettingsKeyValue>) )
+	            {
+		            var oldKeyValuePairStringStringValue = (List<AppSettingsKeyValue>?)propertyInfoFromA.GetValue(sourceIndexItem, null);
+		            var newKeyValuePairStringStringValue = (List<AppSettingsKeyValue>?)propertyB.GetValue(updateObject, null);
+		            CompareKeyValuePairStringString(propertyB.Name, sourceIndexItem, oldKeyValuePairStringStringValue!, 
+			            newKeyValuePairStringStringValue!, differenceList);
+	            }
             }
             return differenceList;
         }
- 
+
+	    private static void CompareKeyValuePairStringString(string propertyName, AppSettings sourceIndexItem, 
+		    List<AppSettingsKeyValue>? oldKeyValuePairStringStringValue, 
+		    List<AppSettingsKeyValue>? newKeyValuePairStringStringValue, List<string> differenceList)
+	    {
+		    if ( oldKeyValuePairStringStringValue == null || newKeyValuePairStringStringValue?.Count == 0 ) return;
+		    if ( oldKeyValuePairStringStringValue.Equals(newKeyValuePairStringStringValue)) return;
+
+		    sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newKeyValuePairStringStringValue, null);
+		    differenceList.Add(propertyName.ToLowerInvariant());
+	    }
+
 	    /// <summary>
 	    /// Compare DatabaseTypeList type 
 	    /// </summary>

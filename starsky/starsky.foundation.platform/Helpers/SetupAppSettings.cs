@@ -62,6 +62,7 @@ namespace starsky.foundation.platform.Helpers
 				Path.Combine(baseDirectoryProject, "appsettings.patch.json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "patch.json"),
+				Path.Combine(baseDirectoryProject, "appsettings.demodata.json"),
 				Environment.GetEnvironmentVariable("app__appsettingspath")
 			};
 		}
@@ -90,6 +91,7 @@ namespace starsky.foundation.platform.Helpers
 			if ( !appSettingsList.Any() ) return new AppSettings();
 
 			var appSetting = appSettingsList.FirstOrDefault();
+			if ( appSetting == null ) return new AppSettings();
 			
 			for ( var i = 1; i < appSettingsList.Count; i++ )
 			{

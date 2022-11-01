@@ -54,6 +54,7 @@ namespace starsky.foundation.http.Services
         {
             "dl.dropboxusercontent.com", 
             "qdraw.nl", // < used by test
+            "media.qdraw.nl", // < used by demo
             "locker.ifttt.com",
 			"download.geonames.org",
 			"exiftool.org",

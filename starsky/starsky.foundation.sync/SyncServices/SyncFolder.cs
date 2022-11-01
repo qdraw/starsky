@@ -106,9 +106,9 @@ namespace starsky.foundation.sync.SyncServices
 			await CompareFolderListAndFixMissingFolders(subPaths, folderList);
 
 			var parentItems = await AddParentFolder(inputSubPath, allResults);
-			if ( parentItems != null )
+			if ( parentItems.Any() )
 			{
-				allResults.Add(parentItems);
+				allResults.AddRange(parentItems);
 			}
 
 			var socketUpdates = allResults.Where(p =>
@@ -139,43 +139,46 @@ namespace starsky.foundation.sync.SyncServices
 			}
 		}
 	
-		internal async Task<FileIndexItem?> AddParentFolder(string subPath, List<FileIndexItem>? allResults)
+		internal async Task<List<FileIndexItem>> AddParentFolder(string subPath, List<FileIndexItem>? allResults)
 		{
-			// Skip when parent Item is already in the result list
-			if ( allResults != null && allResults.Any(p => p.FilePath == subPath) )
+			if ( allResults == null) return new List<FileIndexItem>();
+
+			var parentDirectories = allResults
+				.Select(p => p.ParentDirectory)
+				.Where(p => p != null).Distinct().ToList();
+			var itemsInDatabase = await _query.GetObjectsByFilePathAsync(parentDirectories!, false);
+
+			foreach ( var databaseItem in itemsInDatabase )
 			{
-				return null;
-			}
-		
-			var item = await _query.GetObjectByFilePathAsync(subPath);
-			
-			// Current item exist
-			if ( item != null )
-			{
-				item.Status = FileIndexItem.ExifStatus.Ok;
-				return item;
+				parentDirectories.Remove(databaseItem.FilePath);
 			}
 
-			// Not on disk
-			if ( !_subPathStorage.ExistFolder(subPath) )
+			var newItems = new List<FileIndexItem>();
+
+			foreach ( var parentDirectory in parentDirectories )
 			{
-				return new FileIndexItem(subPath)
+				var item = new FileIndexItem(parentDirectory!)
 				{
-					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+					Status = FileIndexItem.ExifStatus.Default,
+					IsDirectory = true,
+					LastEdited = DateTime.UtcNow,
+					ImageFormat = ExtensionRolesHelper.ImageFormat.unknown
 				};
+				
+				if ( !_subPathStorage.ExistFolder(subPath) )
+				{
+					item.Status = FileIndexItem.ExifStatus.Ok;
+					newItems.Add(item);
+					continue;
+				}
+
+				item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+				newItems.Add(item);
 			}
 			
-			// not in db but should add this
-			item = await _query.AddItemAsync(new FileIndexItem(subPath){
-				IsDirectory = true
-			});
-			item.SetLastEdited();
-			item.Status = FileIndexItem.ExifStatus.Ok;
-			item.ImageFormat = ExtensionRolesHelper.ImageFormat.unknown;
-			
-			// also add the parent of this folder 
-			await _query.AddParentItemsAsync(subPath);
-			return item;
+			await _query.AddRangeAsync(newItems.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList());
+
+			return newItems;
 		}
 
 		private async Task<List<FileIndexItem>> LoopOverFolder(
@@ -203,7 +206,7 @@ namespace starsky.foundation.sync.SyncServices
 				
 					await new SyncRemove(_appSettings, _setupDatabaseTypes,
 							query, _memoryCache, _logger)
-						.Remove(databaseItems);
+						.Remove(databaseItems, updateDelegate);
 
 					foreach ( var item in databaseItems )
 					{

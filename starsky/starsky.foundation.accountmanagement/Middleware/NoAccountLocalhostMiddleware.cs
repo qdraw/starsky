@@ -2,8 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.platform.Models;
 
 // ReSharper disable once IdentifierTypo
 [assembly: InternalsVisibleTo("starskytest")]
@@ -12,15 +14,16 @@ namespace starsky.foundation.accountmanagement.Middleware
     /// <summary>
     /// Auto login when use is on localhost
     /// </summary>
-    public sealed class NoAccountLocalhostMiddleware
+    public sealed class NoAccountMiddleware
     {
-       
-        public NoAccountLocalhostMiddleware(RequestDelegate next)
+        public NoAccountMiddleware(RequestDelegate next, AppSettings appSettings)
         {
             _next = next;
+            _appSettings = appSettings;
         }
 
         private readonly RequestDelegate _next;
+        private readonly AppSettings _appSettings;
 
         internal const string Identifier = "mail@localhost";
 
@@ -30,16 +33,19 @@ namespace starsky.foundation.accountmanagement.Middleware
         /// <param name="context"></param>
         public async Task Invoke(HttpContext context)
         {
-	        var isHostLocal = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress, context.Connection.RemoteIpAddress);
+	        
+	        var isHostAllowed = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress,
+		        context.Connection.RemoteIpAddress) || _appSettings.Demo == true;
+
 	        var isApiCall = context.Request.Path.HasValue && (context.Request.Path.Value.StartsWith("/api") || 
-		        context.Request.Path.Value.StartsWith("/realtime"));
+	                                                          context.Request.Path.Value.StartsWith("/realtime"));
 	        
 	        var isFromLogoutCall = context.Request.QueryString.HasValue && 
-	                               context.Request.QueryString.Value.Contains("fromLogout");
+	                               context.Request.QueryString.Value!.Contains("fromLogout");
 	        
-	        if ( isHostLocal && !context.User.Identity.IsAuthenticated && !isApiCall && !isFromLogoutCall)
+	        if ( isHostAllowed && !context.User.Identity!.IsAuthenticated && !isApiCall && !isFromLogoutCall)
 	        {
-		        var userManager = (IUserManager) context.RequestServices.GetService(typeof(IUserManager));
+		        var userManager = (IUserManager) context.RequestServices.GetRequiredService(typeof(IUserManager));
 
 		        var user = userManager.GetUser("email", Identifier);
 		        if ( user == null )

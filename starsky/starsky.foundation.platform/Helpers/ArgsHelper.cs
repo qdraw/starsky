@@ -362,8 +362,9 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine( $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}");
 			_console.WriteLine( $"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")}");
 			_console.WriteLine( $"4. {Path.Combine(_appSettings.BaseDirectoryProject,  "appsettings." + machineName + ".patch.json")}");
-			_console.WriteLine( $"5. Environment variable: app__appsettingspath: {Environment.GetEnvironmentVariable("app__appsettingspath")}");
-			_console.WriteLine("6. Specific environment variables for example app__storageFolder");
+			_console.WriteLine( $"5. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.demodata.json")}");
+			_console.WriteLine( $"6. Environment variable: app__appsettingspath: {Environment.GetEnvironmentVariable("app__appsettingspath")}");
+			_console.WriteLine("7. Specific environment variables for example app__storageFolder");
 			
 			switch ( _appSettings.ApplicationType )
 			{

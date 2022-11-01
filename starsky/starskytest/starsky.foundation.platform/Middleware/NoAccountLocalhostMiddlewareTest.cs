@@ -68,12 +68,12 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task OnHomePageNotLoginShouldAutoLogin()
 		{
 			var invoked = false;
-			var middleware = new NoAccountLocalhostMiddleware(next:
+			var middleware = new NoAccountMiddleware(next:
 				(_) =>
 				{
 					invoked = true;
 					return Task.FromResult(0);
-				});
+				}, new AppSettings());
 			
 			var services = new ServiceCollection();
 			services.AddSingleton<IUserManager, FakeUserManagerActiveUsers>();
@@ -91,7 +91,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			await middleware.Invoke(httpContext);
 
 			var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
-			Assert.IsTrue(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountLocalhostMiddleware.Identifier)));
+			Assert.IsTrue(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountMiddleware.Identifier)));
 			
 			Assert.IsTrue(invoked);
 		}
@@ -100,12 +100,12 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task OnApiPageNotLoginShouldIgnore()
 		{
 			var invoked = false;
-			var middleware = new NoAccountLocalhostMiddleware(next:
+			var middleware = new NoAccountMiddleware(next:
 				(_) =>
 				{
 					invoked = true;
 					return Task.FromResult(0);
-				});
+				},new AppSettings());
 			
 			var services = new ServiceCollection();
 			services.AddSingleton<IUserManager, FakeUserManagerActiveUsers>();
@@ -123,7 +123,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			await middleware.Invoke(httpContext);
 
 			var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
-			Assert.IsFalse(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountLocalhostMiddleware.Identifier)));
+			Assert.IsFalse(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountMiddleware.Identifier)));
 			
 			Assert.IsTrue(invoked);
 		}
@@ -132,12 +132,12 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task NullNotLoginShouldCreate()
 		{
 			var invoked = false;
-			var middleware = new NoAccountLocalhostMiddleware(next:
+			var middleware = new NoAccountMiddleware(next:
 				(_) =>
 				{
 					invoked = true;
 					return Task.FromResult(0);
-				});
+				}, new AppSettings());
 			
 			var services = new ServiceCollection();
 			services.AddSingleton<IUserManager, FakeUserManagerActiveUsers>();
@@ -152,7 +152,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			await middleware.Invoke(httpContext);
 
 			var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
-			Assert.IsTrue(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountLocalhostMiddleware.Identifier)));
+			Assert.IsTrue(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountMiddleware.Identifier)));
 			
 			Assert.IsTrue(invoked);
 		}
@@ -161,17 +161,17 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task HasClaim_AndAuthenticated()
 		{
 			var invoked = false;
-			var middleware = new NoAccountLocalhostMiddleware(next:
+			var middleware = new NoAccountMiddleware(next:
 				(_) =>
 				{
 					invoked = true;
 					return Task.FromResult(0);
-				});
+				},new AppSettings());
 
 			var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
 			var userManager = _serviceProvider.GetRequiredService<IUserManager>();
 
-			var result = await userManager.SignUpAsync("test", "email", NoAccountLocalhostMiddleware.Identifier, "test");
+			var result = await userManager.SignUpAsync("test", "email", NoAccountMiddleware.Identifier, "test");
 			
 			await userManager.SignIn(httpContextAccessor.HttpContext, result.User);
 			
@@ -186,12 +186,12 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task OnHomePageNotLoginShouldIgnoreDueOffNetwork()
 		{
 			var invoked = false;
-			var middleware = new NoAccountLocalhostMiddleware(next:
+			var middleware = new NoAccountMiddleware(next:
 				(_) =>
 				{
 					invoked = true;
 					return Task.FromResult(0);
-				});
+				},new AppSettings());
 			
 			var services = new ServiceCollection();
 			services.AddSingleton<IUserManager, FakeUserManagerActiveUsers>();
@@ -210,7 +210,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 
 			var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
 			// false due off network
-			Assert.IsFalse(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountLocalhostMiddleware.Identifier)));
+			Assert.IsFalse(userManager!.Users.Any(p => p.Credentials!.Any(p => p.Identifier == NoAccountMiddleware.Identifier)));
 			
 			Assert.IsTrue(invoked);
 		}

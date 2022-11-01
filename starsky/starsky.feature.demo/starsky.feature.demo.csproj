@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <!-- SonarQube needs this -->
+    <ProjectGuid>{34d46dc0-f965-46bf-9178-b83a9a6627e7}</ProjectGuid>
+    <Version>0.5.0-beta.8</Version>
+    <Nullable>enable</Nullable>
+    <RootNamespace>starsky.feature.demo</RootNamespace>
+
+</PropertyGroup>
+
+<ItemGroup>
+    <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+    <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
+</ItemGroup>
+
+</Project>

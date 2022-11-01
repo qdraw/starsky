@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using starsky.feature.demo.Services;
 using starsky.feature.health.HealthCheck;
 using starsky.feature.packagetelemetry.Services;
 using starsky.feature.syncbackground.Services;
@@ -46,7 +47,7 @@ namespace starsky
         public Startup()
 		{
 			Console.WriteLine("app__appsettingspath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
-			_configuration = SetupAppSettings.AppSettingsToBuilder().Result;
+			_configuration = SetupAppSettings.AppSettingsToBuilder().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -144,6 +145,8 @@ namespace starsky
 			// Reference due missing links between services
 			services.AddSingleton<PackageTelemetryBackgroundService>();
 			services.AddSingleton<OnStartupSyncBackgroundService>();
+			services.AddSingleton<CleanDemoDataService>();
+
         }
 
         /// <summary>
@@ -277,7 +280,7 @@ namespace starsky
 
 			app.UseAuthentication();
             app.UseBasicAuthentication();
-            app.UseNoAccountLocalhost(_appSettings?.NoAccountLocalhost == true);
+            app.UseNoAccount(_appSettings?.NoAccountLocalhost == true || env.IsEnvironment("demo"));
             app.UseCheckIfAccountExist();
             
 			app.UseAuthorization();
