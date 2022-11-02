@@ -769,7 +769,7 @@ namespace starsky.foundation.platform.Models
 		public AppSettings CloneToDisplay()
 		{
 			var userProfileFolder = Environment.GetFolderPath(
-				Environment.SpecialFolder.UserProfile);
+				Environment.SpecialFolder.UserProfile); // can be null on azure webapp
 
 			var appSettings = this.CloneViaJson();
 		    
@@ -778,7 +778,7 @@ namespace starsky.foundation.platform.Models
 				appSettings.DatabaseConnection = CloneToDisplaySecurityWarning;
 			}
 			
-			if ( appSettings.DatabaseType == DatabaseTypeList.Sqlite )
+			if ( appSettings.DatabaseType == DatabaseTypeList.Sqlite && !string.IsNullOrEmpty(userProfileFolder) )
 			{
 				appSettings.DatabaseConnection = appSettings.DatabaseConnection.
 					Replace(userProfileFolder, "~");
@@ -794,7 +794,7 @@ namespace starsky.foundation.platform.Models
 				appSettings._webFtp = CloneToDisplaySecurityWarning;
 			}
 			
-			if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) )
+			if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) && !string.IsNullOrEmpty(userProfileFolder))
 			{
 				appSettings.AppSettingsPath =
 					appSettings.AppSettingsPath.Replace(userProfileFolder, "~");

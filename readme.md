@@ -24,9 +24,9 @@
 ## Demo app
 Starsky has a demo application online.
 
-[See the online demo](https://demostarsky.herokuapp.com?classes=btn,btn-default)
+[See the online demo](https://demostarsky.azurewebsites.net?classes=btn,btn-default)
 
-> Use the username: `demo@qdraw.nl` and Password: `demo@qdraw.nl` to access the demo
+> Is not needed to login, but you can create a new account
 
 ## Project Readme   
 
