@@ -90,12 +90,12 @@ namespace starsky.feature.demo.Services
 			subStorage.CreateDirectory("/");
 		}
 
-		internal async Task PushToSockets(List<FileIndexItem> updatedList)
+		internal async Task<bool> PushToSockets(List<FileIndexItem> updatedList)
 		{
 			var filtered = updatedList.Where(p => p.FilePath != "/").ToList();
 			if ( !filtered.Any() )
 			{
-				return;
+				return false;
 			}
 
 			using var scope = _serviceScopeFactory.CreateScope();
@@ -107,6 +107,7 @@ namespace starsky.feature.demo.Services
 					ApiNotificationType.CleanDemoData);
 			await connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 			await notificationQuery.AddNotification(webSocketResponse);
+			return true;
 		}
 		
 		private const string DemoFolderName = "demo";

@@ -8,10 +8,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.demo.Services;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Services;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starskytest.FakeMocks;
@@ -24,6 +27,7 @@ public class CleanDemoDataServiceTest
 	private readonly IServiceScopeFactory _serviceScopeFactory;
 	private readonly AppSettings _appSettings;
 	private readonly FakeIHttpProvider _fakeProvider;
+	private FakeIWebSocketConnectionsService _fakeIWebSocketConnectionsService;
 
 	public CleanDemoDataServiceTest()
 	{
@@ -34,11 +38,14 @@ public class CleanDemoDataServiceTest
 		services.AddSingleton<ISynchronize, FakeISynchronize>();
 		services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
 		services.AddSingleton<IHttpProvider, FakeIHttpProvider>();
+		services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+		services.AddSingleton<INotificationQuery, FakeINotificationQuery>();
 
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 		_fakeProvider = serviceProvider.GetRequiredService<IHttpProvider>() as FakeIHttpProvider;
+		_fakeIWebSocketConnectionsService = serviceProvider.GetRequiredService<IWebSocketConnectionsService>() as FakeIWebSocketConnectionsService;
 	}
 	
 	[TestMethod]
@@ -114,5 +121,35 @@ public class CleanDemoDataServiceTest
 		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
 		
 		Assert.IsFalse(storage.ExistFolder("/test"));
+	}
+	
+	[TestMethod]
+	public async Task PushToSockets_Nothing()
+	{
+		var updatedList = new List<FileIndexItem>();
+		var result = await new CleanDemoDataService(_serviceScopeFactory).PushToSockets(updatedList);
+		
+		Assert.IsFalse(result);
+	}
+	
+		
+	[TestMethod]
+	public async Task PushToSockets_PushData()
+	{
+		_fakeIWebSocketConnectionsService.FakeSendToAllAsync =
+			new List<string>();
+		var updatedList = new List<FileIndexItem>
+		{
+			new FileIndexItem("/test.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.Ok
+			}
+		};
+		var result = await new CleanDemoDataService(_serviceScopeFactory).PushToSockets(updatedList);
+		
+		Assert.IsTrue(result);
+
+		Assert.AreEqual(1,_fakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+		Assert.IsTrue(_fakeIWebSocketConnectionsService.FakeSendToAllAsync.FirstOrDefault()!.Contains("/test.jpg"));
 	}
 }
