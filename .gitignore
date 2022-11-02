@@ -333,6 +333,7 @@ starsky/starsky/.sonarqube*
 **/appsettings.*
 !**/appsettings.cs
 !**/appsettings.json
+!**/appsettings.default.json
 starsky/starskytest/coverag*.xml
 starskyapp/ios/main.jsbundle
 **/.env
