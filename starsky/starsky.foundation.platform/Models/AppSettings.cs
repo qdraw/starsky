@@ -794,7 +794,7 @@ namespace starsky.foundation.platform.Models
 				appSettings._webFtp = CloneToDisplaySecurityWarning;
 			}
 			
-			if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) )
+			if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) && !string.IsNullOrEmpty(userProfileFolder))
 			{
 				appSettings.AppSettingsPath =
 					appSettings.AppSettingsPath.Replace(userProfileFolder, "~");
