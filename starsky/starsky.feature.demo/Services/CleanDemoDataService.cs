@@ -45,10 +45,14 @@ namespace starsky.feature.demo.Services
 		/// <returns>CompletedTask</returns>
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
+			await RunAsync();
+		}
+
+		public async Task RunAsync()
+		{
 			using var scope = _serviceScopeFactory.CreateScope();
 			var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
-			var environment = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
 
 			if ( Environment.GetEnvironmentVariable("app__storageFolder") == null)
 			{
@@ -56,7 +60,7 @@ namespace starsky.feature.demo.Services
 				return;
 			}
 
-			if (!environment.IsEnvironment("demo") || appSettings.ApplicationType != AppSettings.StarskyAppType.WebController )
+			if (appSettings.Demo != true || appSettings.ApplicationType != AppSettings.StarskyAppType.WebController )
 			{
 				return;
 			}
@@ -68,6 +72,13 @@ namespace starsky.feature.demo.Services
 
 			var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
 
+			CleanData(subStorage, logger);
+			await DownloadAsync(appSettings, httpClientHelper,hostStorage,subStorage, logger);
+			await sync.Sync("/",PushToSockets);
+		}
+
+		private static void CleanData(IStorage subStorage, IWebLogger logger)
+		{
 			if ( subStorage.ExistFolder("/.stfolder") )
 			{
 				logger.LogError("stfolder exists so exit");
@@ -77,15 +88,8 @@ namespace starsky.feature.demo.Services
 			// Clean folder
 			subStorage.FolderDelete("/");
 			subStorage.CreateDirectory("/");
-		
-			Console.WriteLine("download start");
-			await DownloadAsync(appSettings, httpClientHelper,hostStorage,subStorage);
-			Console.WriteLine("download done");
-
-			await sync.Sync("/",PushToSockets);
-
 		}
-		
+
 		internal async Task PushToSockets(List<FileIndexItem> updatedList)
 		{
 			var filtered = updatedList.Where(p => p.FilePath != "/").ToList();
@@ -107,9 +111,12 @@ namespace starsky.feature.demo.Services
 		
 		private const string DemoFolderName = "demo";
 
-		private static async Task DownloadAsync(AppSettings appSettings, 
-			IHttpClientHelper httpClientHelper, IStorage hostStorage, IStorage subStorage)
+		private static async Task DownloadAsync(AppSettings appSettings,
+			IHttpClientHelper httpClientHelper, IStorage hostStorage,
+			IStorage subStorage, IWebLogger webLogger)
 		{
+			webLogger.LogInformation("Download demo data");
+
 			var cacheFolder = Path.Combine(appSettings.TempFolder, DemoFolderName);
 			hostStorage.CreateDirectory(cacheFolder);
 			
@@ -152,6 +159,7 @@ namespace starsky.feature.demo.Services
 				}
 			}
 			
+			webLogger.LogInformation("Download demo data done");
 		}
 	}
 }
