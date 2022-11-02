@@ -14,6 +14,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
@@ -105,7 +106,8 @@ namespace starsky.foundation.sync.SyncServices
 
 			await CompareFolderListAndFixMissingFolders(subPaths, folderList);
 
-			var parentItems = await AddParentFolder(inputSubPath, allResults);
+			var parentItems = (await AddParentFolder(inputSubPath, allResults))
+				.Where( p => p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
 			if ( parentItems.Any() )
 			{
 				allResults.AddRange(parentItems);
@@ -141,38 +143,65 @@ namespace starsky.foundation.sync.SyncServices
 	
 		internal async Task<List<FileIndexItem>> AddParentFolder(string subPath, List<FileIndexItem>? allResults)
 		{
-			if ( allResults == null) return new List<FileIndexItem>();
+			allResults ??= new List<FileIndexItem>();
+			// used to check later if the item already exists, to avoid duplicates
+			var filePathsAllResults = allResults.Select(p => p.FilePath).ToList();
 
-			var parentDirectories = allResults
-				.Select(p => p.ParentDirectory)
-				.Where(p => p != null).Distinct().ToList();
-			var itemsInDatabase = await _query.GetObjectsByFilePathAsync(parentDirectories!, false);
-
-			foreach ( var databaseItem in itemsInDatabase )
+			if ( allResults.All(p => p.FilePath != subPath))
 			{
-				parentDirectories.Remove(databaseItem.FilePath);
+				var subPathStatus = _subPathStorage.IsFolderOrFile(subPath);
+				var exifStatus = subPathStatus ==
+					FolderOrFileModel.FolderOrFileTypeList.Deleted
+						? FileIndexItem.ExifStatus.NotFoundSourceMissing : FileIndexItem.ExifStatus.Ok;
+				// if the status is not found, we assume its a folder, but that can't be checked
+				var isDirectory = subPathStatus ==
+					FolderOrFileModel.FolderOrFileTypeList.Folder || exifStatus == FileIndexItem.ExifStatus.NotFoundSourceMissing;
+				
+				allResults.Add(new FileIndexItem(subPath){
+					IsDirectory = isDirectory, 
+					Status = exifStatus});
 			}
+
+			List<string> Merge(IReadOnlyCollection<FileIndexItem> allResults1)
+			{
+				var parentDirectoriesStart = allResults1
+					.Where(p => p.FilePath != null)
+					.Select(p => p.ParentDirectory).ToList();
+				parentDirectoriesStart.AddRange(allResults1
+					.Where(p => p.IsDirectory == true)
+					.Select(p => p.FilePath));
+				return  parentDirectoriesStart.Where(p => !string.IsNullOrEmpty(p)).Distinct().ToList()!;
+			}
+
+			var parentDirectories = Merge(allResults);
+
+			var itemsInDatabase = await _query.GetObjectsByFilePathAsync(parentDirectories, false);
 
 			var newItems = new List<FileIndexItem>();
 
+			foreach ( var databaseItem in itemsInDatabase )
+			{
+				parentDirectories.Remove(databaseItem.FilePath!);
+			}
+
 			foreach ( var parentDirectory in parentDirectories )
 			{
-				var item = new FileIndexItem(parentDirectory!)
+				var status = _subPathStorage.ExistFolder(parentDirectory)
+					? FileIndexItem.ExifStatus.Ok
+					: FileIndexItem.ExifStatus.NotFoundSourceMissing;
+				var item = new FileIndexItem(parentDirectory)
 				{
-					Status = FileIndexItem.ExifStatus.Default,
+					Status = status,
 					IsDirectory = true,
 					LastEdited = DateTime.UtcNow,
 					ImageFormat = ExtensionRolesHelper.ImageFormat.unknown
 				};
-				
-				if ( !_subPathStorage.ExistFolder(subPath) )
-				{
-					item.Status = FileIndexItem.ExifStatus.Ok;
-					newItems.Add(item);
-					continue;
-				}
 
-				item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+				if ( filePathsAllResults.Contains(item.FilePath!) )
+				{
+					item.Status = FileIndexItem.ExifStatus.OkAndSame;
+				}
+				
 				newItems.Add(item);
 			}
 			

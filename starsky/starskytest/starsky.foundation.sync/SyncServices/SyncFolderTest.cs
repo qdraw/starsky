@@ -258,7 +258,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
-			var result = await syncFolder.Folder(folderPath);
+			var result = (await syncFolder.Folder(folderPath)).Where(p => p.FilePath != "/").ToList();
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
@@ -273,32 +273,40 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var storage = GetStorage();
 			var folderPath = "/should_add_root2";
 			storage.CreateDirectory(folderPath);
+			storage.CreateDirectory("/");
 
 			var query = new FakeIQuery();
+			await query.AddItemAsync(new FileIndexItem("/") { IsDirectory = true });
+			
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
 			var result = await syncFolder.AddParentFolder(folderPath, null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-			Assert.AreEqual(folderPath, result.FirstOrDefault()?.FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.FirstOrDefault()?.Status);
+			var item = result.FirstOrDefault(p =>
+				p.FilePath == folderPath &&
+				p.Status == FileIndexItem.ExifStatus.Ok);
+			
+			Assert.AreEqual(folderPath, item?.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, item?.Status);
 		}
 		
 		[TestMethod]
 		public async Task AddParentFolder_ExistingFolder()
 		{
 			var storage = GetStorage();
+			storage.CreateDirectory("/exist2");
+			storage.CreateDirectory("/");
+
 			var folderPath = "/exist2";
 			
-			var query = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/exist2")
-			{
-				IsDirectory = true
-			}});
+			var query = new FakeIQuery();
 			
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
-			var result = await syncFolder.AddParentFolder(folderPath,null);
+			var result = (await syncFolder.AddParentFolder(folderPath,null))
+				.Where(p => p.FilePath != "/").ToList();
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
 			Assert.AreEqual(folderPath, result.FirstOrDefault()?.FilePath);
@@ -317,15 +325,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var storage = GetStorage();
 			var folderPath = "/not-found";
 			
-			var query = new FakeIQuery();
+			var query = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/")});
 			
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
 			var result = await syncFolder.AddParentFolder(folderPath, null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-			Assert.AreEqual(folderPath, result.FirstOrDefault()!.FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.FirstOrDefault()!.Status);
+			var item = result.FirstOrDefault(p => p.FilePath == folderPath);
+			
+			Assert.IsNotNull(item);
+			Assert.AreEqual(folderPath, item.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, item.Status);
 
 			// should not add content
 			var allItems = await query.GetAllRecursiveAsync();
@@ -335,12 +346,12 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task AddParentFolder_InListSoSkip()
 		{
-			var query = new FakeIQuery();
+			var query = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/")});
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(GetStorage()),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
 			var result = await syncFolder.AddParentFolder("/test", 
 				new List<FileIndexItem>{new FileIndexItem("/test")});
-			Assert.IsNull(result);
+			Assert.AreEqual(0,result.Where(p => p.Status != FileIndexItem.ExifStatus.OkAndSame).Count());
 		}
 
 		[TestMethod]

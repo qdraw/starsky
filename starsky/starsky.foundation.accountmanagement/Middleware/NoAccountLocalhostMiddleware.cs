@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -16,14 +17,14 @@ namespace starsky.foundation.accountmanagement.Middleware
     /// </summary>
     public sealed class NoAccountMiddleware
     {
-        public NoAccountMiddleware(RequestDelegate next, AppSettings appSettings)
+        public NoAccountMiddleware(RequestDelegate next, AppSettings? appSettings = null)
         {
             _next = next;
             _appSettings = appSettings;
         }
 
         private readonly RequestDelegate _next;
-        private readonly AppSettings _appSettings;
+        private readonly AppSettings? _appSettings;
 
         internal const string Identifier = "mail@localhost";
 
@@ -35,7 +36,7 @@ namespace starsky.foundation.accountmanagement.Middleware
         {
 	        
 	        var isHostAllowed = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress,
-		        context.Connection.RemoteIpAddress) || _appSettings.Demo == true;
+		        context.Connection.RemoteIpAddress) || _appSettings?.Demo == true;
 
 	        var isApiCall = context.Request.Path.HasValue && (context.Request.Path.Value.StartsWith("/api") || 
 	                                                          context.Request.Path.Value.StartsWith("/realtime"));

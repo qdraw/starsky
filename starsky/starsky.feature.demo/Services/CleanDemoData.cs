@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.SyncInterfaces;
@@ -30,8 +32,6 @@ namespace starsky.feature.demo.Services
 	public sealed class CleanDemoDataService : BackgroundService
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
-		private IWebSocketConnectionsService? _connectionsService;
-		private INotificationQuery? _notificationQuery;
 
 		public CleanDemoDataService(IServiceScopeFactory serviceScopeFactory)
 		{
@@ -67,26 +67,22 @@ namespace starsky.feature.demo.Services
 			var hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
 			var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
-			_connectionsService = scope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
-			_notificationQuery = scope.ServiceProvider.GetRequiredService<INotificationQuery>();
 
 			if ( subStorage.ExistFolder("/.stfolder") )
 			{
 				logger.LogError("stfolder exists so exit");
 				return;
 			}
-			
+		
+			// Clean folder
 			subStorage.FolderDelete("/");
 			subStorage.CreateDirectory("/");
-
-			await sync.Sync("/",PushToSockets);
-			
-
+		
 			Console.WriteLine("download start");
-			await Download(appSettings, httpClientHelper,hostStorage,subStorage);
+			await DownloadAsync(appSettings, httpClientHelper,hostStorage,subStorage);
 			Console.WriteLine("download done");
 
-			var t = await sync.Sync("/",PushToSockets);
+			await sync.Sync("/",PushToSockets);
 
 		}
 		
@@ -97,17 +93,21 @@ namespace starsky.feature.demo.Services
 			{
 				return;
 			}
+
+			using var scope = _serviceScopeFactory.CreateScope();
+			var connectionsService = scope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
+			var notificationQuery = scope.ServiceProvider.GetRequiredService<INotificationQuery>();
 			
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(filtered,
 					ApiNotificationType.CleanDemoData);
-			await _connectionsService!.SendToAllAsync(webSocketResponse, CancellationToken.None);
-			await _notificationQuery!.AddNotification(webSocketResponse);
+			await connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
+			await notificationQuery.AddNotification(webSocketResponse);
 		}
 		
 		private const string DemoFolderName = "demo";
 
-		private static async Task Download(AppSettings appSettings, IHttpClientHelper httpClientHelper, IStorage hostStorage, IStorage subStorage)
+		private static async Task DownloadAsync(AppSettings appSettings, IHttpClientHelper httpClientHelper, IStorage hostStorage, IStorage subStorage)
 		{
 
 			var cacheFolder = Path.Combine(appSettings.TempFolder, DemoFolderName);
@@ -115,18 +115,30 @@ namespace starsky.feature.demo.Services
 			
 			foreach ( var (jsonUrl, dir) in appSettings.DemoData )
 			{
-				var readString = await httpClientHelper.ReadString(jsonUrl);
-				if ( !readString.Key ) continue;
-				var data = 	JsonSerializer.Deserialize<PublishManifestDemo>(readString.Value);
+				hostStorage.CreateDirectory(Path.Combine(cacheFolder, dir));
+				
+				var settingsJsonFullPath =
+					Path.Combine(cacheFolder, dir, "_settings.json");
+				if ( !hostStorage.ExistFile(settingsJsonFullPath) )
+				{
+					if ( !await httpClientHelper.Download(jsonUrl, settingsJsonFullPath) )
+					{
+						continue;
+					}
+				}
+				var result = await PlainTextFileHelper.StreamToStringAsync(
+					hostStorage.ReadStream(settingsJsonFullPath));
+				var data = 	JsonSerializer.Deserialize<PublishManifestDemo>(result);
 				if ( data == null ) continue;
 
 				var baseUrl = jsonUrl.Replace("_settings.json", string.Empty); // ends with slash
 				
 				foreach ( var keyValuePair in data.Copy.Where(p => p.Value && p.Key.Contains("1000")) )
 				{
+					var regex = new Regex("\\?.+$");
 					var fileName =
-						FilenamesHelper.GetFileName(keyValuePair.Key);
-					var cacheFilePath = Path.Combine(cacheFolder,fileName);
+						FilenamesHelper.GetFileName(regex.Replace(keyValuePair.Key, string.Empty));
+					var cacheFilePath = Path.Combine(cacheFolder,dir, fileName);
 
 					if ( !hostStorage.ExistFile(cacheFilePath) )
 					{
