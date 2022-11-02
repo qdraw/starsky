@@ -15,7 +15,7 @@ namespace starsky.feature.packagetelemetry.Services
 {
 
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class PackageTelemetryBackgroundService : BackgroundService
+	public sealed class PackageTelemetryBackgroundService : BackgroundService
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 

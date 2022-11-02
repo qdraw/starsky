@@ -151,6 +151,63 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
+		public void AppSettingsKeyValue_Compare()
+		{
+			var source = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "2",
+						Value = "1"
+					}
+				}
+			};
+			
+			var to = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "1",
+						Value = "1"
+					}
+				}
+			};
+
+			AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
+		}
+		
+		[TestMethod]
+		public void AppSettingsKeyValue_Compare_Same()
+		{
+			var source = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "same",
+						Value = "1"
+					}
+				}
+			};
+			
+			var to = new AppSettings
+			{
+				DemoData = source.DemoData
+			};
+
+			AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
+		}
+		
+		[TestMethod]
 		public void ListAppSettingsPublishProfilesCompare_Same()
 		{
 			var source = new AppSettings

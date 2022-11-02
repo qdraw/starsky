@@ -11,6 +11,7 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
 {
@@ -45,18 +46,22 @@ namespace starsky.foundation.sync.SyncServices
 		/// remove path from database
 		/// </summary>
 		/// <param name="subPath">subPath</param>
+		/// <param name="updateDelegate"></param>
 		/// <returns></returns>
-		public async Task<List<FileIndexItem>> Remove(string subPath)
+		public async Task<List<FileIndexItem>> Remove(string subPath,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
-			return await Remove(new List<string> {subPath});
+			return await Remove(new List<string> {subPath}, updateDelegate);
 		}
 
 		/// <summary>
 		/// Remove list from database, Does not check if the file exist on disk
 		/// </summary>
 		/// <param name="subPaths">list of sub paths</param>
+		/// <param name="updateDelegate">SocketUpdateDelegate</param>
 		/// <returns>file with status</returns>
-		public async Task<List<FileIndexItem>> Remove(List<string> subPaths)
+		public async Task<List<FileIndexItem>> Remove(List<string> subPaths,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			// Get folders
 			var toDeleteList = await _query.GetAllRecursiveAsync(subPaths);
@@ -85,23 +90,31 @@ namespace starsky.foundation.sync.SyncServices
 					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
 				});
 			}
+
+			if ( updateDelegate != null && toDeleteList.Any() )
+			{
+				await updateDelegate(toDeleteList);
+			}
 			
 			return toDeleteList.OrderBy(p => p.FilePath).ToList();
 		}
-		
+
 		/// <summary>
 		/// Remove from database and Gives only back the files that are deleted
 		/// </summary>
 		/// <param name="databaseItems">input of files with deleted status (NotFoundSourceMissing)</param>
+		/// <param name="updateDelegate"></param>
 		/// <returns>Gives only back the files that are deleted</returns>
-		public async Task<List<FileIndexItem>> Remove(IEnumerable<FileIndexItem> databaseItems)
+		public async Task<List<FileIndexItem>> Remove(
+			IEnumerable<FileIndexItem> databaseItems,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			var deleted = databaseItems
 				.Where(p =>
 					p.Status is FileIndexItem.ExifStatus
 						.NotFoundSourceMissing).Select(p => p.FilePath).ToList();
 			
-			return await Remove(deleted);
+			return await Remove(deleted, updateDelegate);
 		}
 		
 		private async Task LoopOverSidecarFiles(List<string> subPaths)

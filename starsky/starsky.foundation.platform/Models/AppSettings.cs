@@ -87,7 +87,8 @@ namespace starsky.foundation.platform.Models
 			.Replace("starskywebhtmlcli", "starsky")
 			.Replace("starskygeocli", "starsky")
 			.Replace("starskytest", "starsky")
-			.Replace("starskydiskwatcherworkerservice", "starsky");
+			.Replace("starskydiskwatcherworkerservice", "starsky")
+			.Replace("starskydemoseedcli", "starsky");
 
 		/// <summary>
 		/// Application Type, defaults to WebController
@@ -141,7 +142,12 @@ namespace starsky.foundation.platform.Models
 			/// <summary>
 			/// DiskWatcherWorkerService
 			/// </summary>
-			DiskWatcherWorkerService = 9
+			DiskWatcherWorkerService = 9,
+			
+			/// <summary>
+			/// Seed application for demos
+			/// </summary>
+			DemoSeed = 10
 		}
 		
 		/// <summary>
@@ -524,9 +530,19 @@ namespace starsky.foundation.platform.Models
 		public bool? MetaThumbnailOnImport { get; set; } = true;
 		
 		/// <summary>
+		/// When enabled the storage folder is deleted on startup
+		/// Should use: app__storageFolder environment variable
+		/// </summary>
+		[PackageTelemetry]
+		public bool? DemoUnsafeDeleteStorageFolder { get; set; } = false;
+
+		
+		public List<AppSettingsKeyValue> DemoData { get; set; } = new List<AppSettingsKeyValue>();
+		
+		/// <summary>
 		/// Internal location for webFtp credentials
 		/// </summary>
-		private string _webFtp; 
+		private string _webFtp;
 		
 		public string WebFtp
 		{
@@ -943,5 +959,4 @@ namespace starsky.foundation.platform.Models
 		}
 
 	}
-
 }

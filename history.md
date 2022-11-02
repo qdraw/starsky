@@ -41,6 +41,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Code style quality, move search to feature, sealed classes (PR #917, #919, #922, #921)
 - [x]   __(Breaking Change)__ _Back-end_ Use Application Insights Connection String instead of Instrumentation Key (PR #920, Issue #908) 
 - [x]   (Added) _Back-end_ Use Country code in geo services (PR #923)
+- [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.402 (Runtime: 6.0.10)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.10/6.0.10.md) (PR #931)
 
 - > Todo: https://github.com/qdraw/starsky/milestone/2
 

@@ -6,9 +6,9 @@ namespace starsky.foundation.accountmanagement.Extensions
 {
     public static class UseNoAccountLocalhostExtensions
     {
-        public static IApplicationBuilder UseNoAccountLocalhost(this IApplicationBuilder builder, bool enable)
+        public static IApplicationBuilder UseNoAccount(this IApplicationBuilder builder, bool enable)
         {
-	        return !enable ? builder : builder.UseMiddleware<NoAccountLocalhostMiddleware>();
+	        return !enable ? builder : builder.UseMiddleware<NoAccountMiddleware>();
         }
     }
 }

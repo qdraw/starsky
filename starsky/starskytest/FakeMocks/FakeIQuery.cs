@@ -69,9 +69,15 @@ namespace starskytest.FakeMocks
 
 		public List<FileIndexItem> GetAllRecursive(string subPath = "")
 		{
-			return _content.Where
+			var result = _content.Where
 					(p => p.ParentDirectory!.StartsWith(subPath))
 				.OrderBy(r => r.FileName).ToList();
+			foreach ( var item in result )
+			{
+				item.Status = FileIndexItem.ExifStatus.Ok;
+			}
+
+			return result;
 		}
 
 		public Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/")

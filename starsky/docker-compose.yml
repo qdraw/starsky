@@ -37,15 +37,17 @@ services:
       context: .
       dockerfile: Dockerfile
       cache_from:
-        - qdraw/starsky:latest
+        - ghcr.io/qdraw/starsky:master
       args:
-        - I__SDEMO=true # arg name is ISDEMO
+        - IS__DEMO=true # arg name is ISDEMO 
+        - TEST=false
     environment:
       - PORT=${STARSKY_PORT}
       - app__verbose=true
       - app__databaseType=mysql
       - app__IsAccountRegisterOpen=true
       - app__addSwagger=true
+      - app__DemoUnsafeDeleteStorageFolder=false
       - app__storageFolder=/app/storageFolderLocal
       - app__databaseConnection=Server=host.docker.internal;port=${MARIA_DB_PORT};database=${MYSQL_DATABASE};uid=${MYSQL_USER};pwd=${MYSQL_PASSWORD};
     ports:
