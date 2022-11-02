@@ -118,6 +118,7 @@ namespace starsky.feature.demo.Services
 		{
 			if ( !appSettings.DemoData.Any() )
 			{
+				webLogger.LogError("DemoData is empty");
 				return false;
 			}
 			
@@ -165,7 +166,7 @@ namespace starsky.feature.demo.Services
 				}
 			}
 			
-			webLogger.LogInformation("Download demo data done");
+			webLogger.LogInformation("Demo data seed done");
 			return true;
 		}
 	}
