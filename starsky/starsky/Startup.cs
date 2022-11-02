@@ -280,7 +280,7 @@ namespace starsky
 
 			app.UseAuthentication();
             app.UseBasicAuthentication();
-            app.UseNoAccount(_appSettings?.NoAccountLocalhost == true || env.IsEnvironment("demo"));
+            app.UseNoAccount(_appSettings?.NoAccountLocalhost == true || _appSettings?.Demo == true);
             app.UseCheckIfAccountExist();
             
 			app.UseAuthorization();
