@@ -106,9 +106,6 @@
         <Content Include="gatekeeper-mac-os-helper.command">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Update="appsettings.default.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">
@@ -165,6 +162,12 @@
     <ItemGroup>
         <None Remove="clientapp\node_modules\**" />
         <None Remove="clientapp\coverage\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Remove="appsettings.default.json" />
+      <AdditionalFiles Include="appsettings.default.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </AdditionalFiles>
     </ItemGroup>
     <PropertyGroup>
         <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
