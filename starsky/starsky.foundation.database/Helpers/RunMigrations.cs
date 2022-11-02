@@ -14,14 +14,6 @@ namespace starsky.foundation.database.Helpers
 {
 	public static class RunMigrations
 	{
-		public static async Task Run(IServiceScope serviceScope, int retryCount = 2)
-		{
-			var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var logger = serviceScope.ServiceProvider.GetRequiredService<IWebLogger>();
-			var appSettings = serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
-
-			await Run(dbContext,logger,appSettings,retryCount);
-		}
 
 		internal static async Task<bool> MigrateAsync(AppSettings appSettings, ApplicationDbContext dbContext)
 		{
@@ -58,6 +50,15 @@ namespace starsky.foundation.database.Helpers
 			return true;
 		}
 
+		public static async Task Run(IServiceScope serviceScope, int retryCount = 2)
+		{
+			var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			var logger = serviceScope.ServiceProvider.GetRequiredService<IWebLogger>();
+			var appSettings = serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
+
+			await Run(dbContext,logger,appSettings,retryCount);
+		}
+		
 		public static async Task Run(ApplicationDbContext dbContext, IWebLogger logger, AppSettings appSettings, int retryCount = 2)
 		{
 			async Task<bool> Migrate()
