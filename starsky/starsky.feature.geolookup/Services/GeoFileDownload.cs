@@ -10,7 +10,7 @@ using starsky.foundation.storage.Storage;
 namespace starsky.feature.geolookup.Services
 {
 	[Service(typeof(IGeoFileDownload), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class GeoFileDownload : IGeoFileDownload
+	public sealed class GeoFileDownload : IGeoFileDownload
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IHttpClientHelper _httpClientHelper;

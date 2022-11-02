@@ -22,7 +22,7 @@ namespace starsky.feature.geolookup.Services
 {
 	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Scoped)]
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
-	public class GeoReverseLookup : IGeoReverseLookup
+	public sealed class GeoReverseLookup : IGeoReverseLookup
     {
         private ReverseGeoCode<ExtendedGeoName>? _reverseGeoCode;
         private IEnumerable<Admin1Code>? _admin1CodesAscii;

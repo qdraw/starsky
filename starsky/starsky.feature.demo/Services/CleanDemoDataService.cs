@@ -77,6 +77,14 @@ namespace starsky.feature.demo.Services
 			return true;
 		}
 
+		public static async Task SeedCli(AppSettings appSettings,
+			IHttpClientHelper httpClientHelper, IStorage hostStorage,
+			IStorage subStorage, IWebLogger webLogger, ISynchronize sync)
+		{
+			await DownloadAsync(appSettings, httpClientHelper, hostStorage, subStorage, webLogger);
+			await sync.Sync("/");
+		}
+
 		internal static void CleanData(IStorage subStorage, IWebLogger logger)
 		{
 			if ( subStorage.ExistFolder("/.stfolder") )
