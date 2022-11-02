@@ -30,10 +30,10 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 1.  You can use `appsettings.json` inside the application folder to set base settings.
     The order of this files is used to get the values from the appsettings
     -    `/bin/Debug/net6.0/appsettings.patch.json`
+    -    `/bin/Debug/net6.0/appsettings.base.json`
     -    `/bin/Debug/net6.0/appsettings.computername.patch.json`
     -    `/bin/Debug/net6.0/appsettings.json`
     -    `/bin/Debug/net6.0/appsettings.computername.json`
-    -    `/bin/Debug/net6.0/appsettings.demodata.json`
 
 2.  Use Environment variables to overwrite those base settings
    For `ThumbnailTempFolder` use `app__ThumbnailTempFolder`

@@ -59,10 +59,10 @@ namespace starsky.foundation.platform.Helpers
 			return new List<string>
 			{
 				Path.Combine(baseDirectoryProject, "appsettings.json"),
+				Path.Combine(baseDirectoryProject, "appsettings.base.json"),
 				Path.Combine(baseDirectoryProject, "appsettings.patch.json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "patch.json"),
-				Path.Combine(baseDirectoryProject, "appsettings.demodata.json"),
 				Environment.GetEnvironmentVariable("app__appsettingspath")
 			};
 		}
