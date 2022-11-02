@@ -107,9 +107,9 @@ namespace starsky.feature.demo.Services
 		
 		private const string DemoFolderName = "demo";
 
-		private static async Task DownloadAsync(AppSettings appSettings, IHttpClientHelper httpClientHelper, IStorage hostStorage, IStorage subStorage)
+		private static async Task DownloadAsync(AppSettings appSettings, 
+			IHttpClientHelper httpClientHelper, IStorage hostStorage, IStorage subStorage)
 		{
-
 			var cacheFolder = Path.Combine(appSettings.TempFolder, DemoFolderName);
 			hostStorage.CreateDirectory(cacheFolder);
 			
@@ -119,13 +119,11 @@ namespace starsky.feature.demo.Services
 				
 				var settingsJsonFullPath =
 					Path.Combine(cacheFolder, dir, "_settings.json");
-				if ( !hostStorage.ExistFile(settingsJsonFullPath) )
+				if ( !hostStorage.ExistFile(settingsJsonFullPath) && !await httpClientHelper.Download(jsonUrl, settingsJsonFullPath))
 				{
-					if ( !await httpClientHelper.Download(jsonUrl, settingsJsonFullPath) )
-					{
-						continue;
-					}
+					continue;
 				}
+				
 				var result = await PlainTextFileHelper.StreamToStringAsync(
 					hostStorage.ReadStream(settingsJsonFullPath));
 				var data = 	JsonSerializer.Deserialize<PublishManifestDemo>(result);
@@ -133,24 +131,24 @@ namespace starsky.feature.demo.Services
 
 				var baseUrl = jsonUrl.Replace("_settings.json", string.Empty); // ends with slash
 				
-				foreach ( var keyValuePair in data.Copy.Where(p => p.Value && p.Key.Contains("1000")) )
+				foreach ( var keyValuePairKey in data.Copy.Where(p => p.Value 
+					         && p.Key.Contains("1000")).Select(p => p.Key) )
 				{
 					var regex = new Regex("\\?.+$");
 					var fileName =
-						FilenamesHelper.GetFileName(regex.Replace(keyValuePair.Key, string.Empty));
+						FilenamesHelper.GetFileName(regex.Replace(keyValuePairKey, string.Empty));
 					var cacheFilePath = Path.Combine(cacheFolder,dir, fileName);
 
 					if ( !hostStorage.ExistFile(cacheFilePath) )
 					{
-						await httpClientHelper.Download(baseUrl+ keyValuePair.Key,cacheFilePath);
+						await httpClientHelper.Download(baseUrl+ keyValuePairKey,cacheFilePath);
 					}
 
 					subStorage.CreateDirectory(dir);
 					
 					await subStorage.WriteStreamAsync(
 							hostStorage.ReadStream(cacheFilePath),
-							dir + "/" + fileName);
-
+							PathHelper.AddSlash(dir) + fileName);
 				}
 			}
 			
