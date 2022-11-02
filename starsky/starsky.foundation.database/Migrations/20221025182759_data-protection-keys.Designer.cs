@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Data;
 
@@ -11,15 +12,16 @@ using starsky.foundation.database.Data;
 namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221025182759_data-protection-keys")]
+    partial class dataprotectionkeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "6.0.10");
+                .HasAnnotation("ProductVersion", "6.0.9");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -398,7 +400,6 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("mediumtext");
 
                     b.Property<DateTime>("DateTime")
-                        .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

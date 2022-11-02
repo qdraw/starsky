@@ -10,6 +10,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -24,6 +25,7 @@ using starsky.feature.packagetelemetry.Services;
 using starsky.feature.syncbackground.Services;
 using starsky.foundation.accountmanagement.Extensions;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.DataProtection;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
@@ -70,7 +72,9 @@ namespace starsky
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName?.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
-	            
+			EfCoreMigrationsOnProject(services).ConfigureAwait(false);
+			services.SetupDataProtection();
+
             // Enable Dual Authentication 
             services
                 .AddAuthentication(sharedOptions =>
@@ -300,9 +304,7 @@ namespace starsky
 			
 			app.UseWebSockets();
 			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings?.UseRealtime);
-
-	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
-
+			
 	        if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings
 		        .ApplicationInsightsConnectionString) )
 	        {
@@ -320,11 +322,9 @@ namespace starsky
         /// To start over with a SQLite database please remove it and
         /// it will add a new one
         /// </summary>
-        private static async Task EfCoreMigrationsOnProject(IApplicationBuilder app)
+        private static async Task EfCoreMigrationsOnProject(IServiceCollection serviceCollection)
         {
-	        using var serviceScope = app.ApplicationServices
-		        .GetRequiredService<IServiceScopeFactory>()
-		        .CreateScope();
+	        using var serviceScope = serviceCollection.BuildServiceProvider().CreateScope();
 	        await RunMigrations.Run(serviceScope);
         }
     }
