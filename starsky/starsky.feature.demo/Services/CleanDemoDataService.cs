@@ -78,10 +78,10 @@ namespace starsky.feature.demo.Services
 		}
 
 		public static async Task SeedCli(AppSettings appSettings,
-			ISynchronize sync, IStorage subStorage, IStorage hostStorage,
-			IWebLogger logger, IHttpClientHelper httpClientHelper)
+			IHttpClientHelper httpClientHelper, IStorage hostStorage,
+			IStorage subStorage, IWebLogger webLogger, ISynchronize sync)
 		{
-			await DownloadAsync(appSettings, httpClientHelper, hostStorage, subStorage, logger);
+			await DownloadAsync(appSettings, httpClientHelper, hostStorage, subStorage, webLogger);
 			await sync.Sync("/");
 		}
 

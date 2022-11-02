@@ -46,10 +46,10 @@ namespace starskydemoseedcli
 			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(), webLogger,appSettings);
 
 			// Help and other Command Line Tools args are NOT included in the tools 
-			await CleanDemoDataService.SeedCli(appSettings, sync, 
+			await CleanDemoDataService.SeedCli(appSettings, httpClientHelper,
 				selectorStorage.Get(SelectorStorage.StorageServices.SubPath), 
 				selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem), 
-				webLogger, httpClientHelper );
+				webLogger, sync );
 
 			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}
