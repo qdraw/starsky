@@ -37,15 +37,14 @@ node starsky-tools/build-tools/app-version-update.js
 ```
 
 # version 0.5.0 _(Unreleased)_ - 2022-??-??
-- [x]   (Changed) _Back-end_ Last Edited is updated when Single Sync a file (PR #916)
-- [x]   (Changed) _Back-end_ Code style quality, move search to feature, sealed classes (PR #917, #919, #922, #921)
-- [x]   __(Breaking Change)__ _Back-end_ Use Application Insights Connection String instead of Instrumentation Key (PR #920, Issue #908) 
-- [x]   (Added) _Back-end_ Use Country code in geo services (PR #923)
-- [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.402 (Runtime: 6.0.10)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.10/6.0.10.md) (PR #931)
+- nothing yet
 
 - > Todo: https://github.com/qdraw/starsky/milestone/2
 
-## Summary of breaking changes in 0.5.0-beta.0-8 versions
+
+## Summary of breaking changes in 0.5.0-beta.0-9 versions
+- [x]   (0.5.0-beta.9) _Back-end_ Use Application Insights Connection String (PR #920)
+- [x]   (0.5.0-beta.9) _Back-end_ Use Data Protection Keys in Database instead of on disk (PR #933)
 - [x]   (0.5.0-beta.4) _Back-end_ WebSocket Data Model is changed (PR #712)
 - [x]   (0.5.0-beta.4) _Back-end_ remove System messages and replaced it with type keyword (PR #712)
 - [x]   (0.5.0-beta.4) _Back-end_ Add types for web sockets (PR #712)
@@ -57,6 +56,17 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (0.5.0-beta.0) _Back-end_ rename "/api/sync/mkdir" to /api/disk/mkdir (PR #574)
 - [x]   (0.5.0-beta.0) _Back-end_ rename "/api/sync/rename" to /api/disk/rename (PR #574)
 - [x]   (0.5.0-beta.0) _Back-end_ Dropped support for older Mac OS version: now 10.15+ is required
+
+
+# version 0.5.0-beta.9 _(Unreleased)_ - 2022-??-??
+- [x]   (Changed) _Back-end_ Last Edited is updated when Single Sync a file (PR #916)
+- [x]   (Changed) _Back-end_ Code style quality, move search to feature, sealed classes (PR #917, #919, #922, #921)
+- [x]   __(Breaking Change)__ _Back-end_ Use Application Insights Connection String instead of Instrumentation Key (PR #920, Issue #908) 
+- [x]   (Added) _Back-end_ Use Country code in geo services (PR #923)
+- [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.402 (Runtime: 6.0.10)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.10/6.0.10.md) (PR #931)
+- [x]   __(Breaking Change)__ _Back-end_ Use Data Protection Keys in Database instead of on disk (PR #933)
+- [x]   (Added) _Back-end_ Demo mode in application (PR #943, #944, #945, #946)
+- hope to include electron upgrade!
 
 # version 0.5.0-beta.8 - 2022-10-11
 - [x]   (Security) _Back-end_ Upgrade Nuget packages (PR #878)
