@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +30,7 @@ public class CleanDemoDataServiceTest
 	private readonly AppSettings _appSettings;
 	private readonly FakeIHttpProvider _fakeProvider;
 	private FakeIWebSocketConnectionsService _fakeIWebSocketConnectionsService;
+	private readonly FakeIWebLogger _logger;
 
 	public CleanDemoDataServiceTest()
 	{
@@ -46,6 +49,30 @@ public class CleanDemoDataServiceTest
 		_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 		_fakeProvider = serviceProvider.GetRequiredService<IHttpProvider>() as FakeIHttpProvider;
 		_fakeIWebSocketConnectionsService = serviceProvider.GetRequiredService<IWebSocketConnectionsService>() as FakeIWebSocketConnectionsService;
+		_logger = serviceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
+	}
+	
+	[TestMethod]
+	[Timeout(300)]
+	public void ExecuteAsync_StartAsync_Test()
+	{
+		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+		var service = new CleanDemoDataService(_serviceScopeFactory);
+			
+		CancellationTokenSource source = new CancellationTokenSource();
+		CancellationToken token = source.Token;
+		source.Cancel(); // <- cancel before start
+
+		MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
+			BindingFlags.NonPublic | BindingFlags.Instance);
+		if ( dynMethod == null )
+			throw new Exception("missing ExecuteAsync");
+		dynMethod.Invoke(service, new object[]
+		{
+			token
+		});
+			
+		Assert.IsTrue(_logger.TrackedExceptions.LastOrDefault().Item2.Contains("app__storageFolder"));
 	}
 	
 	[TestMethod]
