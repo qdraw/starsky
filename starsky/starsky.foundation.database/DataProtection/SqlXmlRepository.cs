@@ -71,8 +71,10 @@ public class SqlXmlRepository : IXmlRepository
 		}
 		catch ( Microsoft.EntityFrameworkCore.DbUpdateException )
 		{
+			var retryInterval = _dbContext.GetType().FullName?.Contains("test") == true ? 
+				TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(5);
 			RetryHelper.Do(
-				LocalDefaultQuery, TimeSpan.FromSeconds(5), 2);
+				LocalDefaultQuery, retryInterval, 2);
 		}
 	}
 }

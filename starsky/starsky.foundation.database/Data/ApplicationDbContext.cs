@@ -203,7 +203,7 @@ namespace starsky.foundation.database.Data
 		/// <summary>
 		/// Store secure keys to generate cookies
 		/// </summary>
-		public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+		public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 		
 		
 	}
