@@ -101,10 +101,17 @@
         <None Remove="service-deploy-systemd.sh" />
         <Content Include="service-deploy-systemd.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>        
+        </Content>
+        <None Remove="gatekeeper-mac-os-helper.command" />
+        <Content Include="gatekeeper-mac-os-helper.command">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="appsettings.base.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
