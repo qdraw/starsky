@@ -524,9 +524,19 @@ namespace starsky.foundation.platform.Models
 		public bool? MetaThumbnailOnImport { get; set; } = true;
 		
 		/// <summary>
+		/// When enabled the storage folder is deleted on startup
+		/// Should use: app__storageFolder environment variable
+		/// </summary>
+		[PackageTelemetry]
+		public bool? DemoUnsafeDeleteStorageFolder { get; set; } = false;
+
+		
+		public List<AppSettingsKeyValue> DemoData { get; set; } = new List<AppSettingsKeyValue>();
+		
+		/// <summary>
 		/// Internal location for webFtp credentials
 		/// </summary>
-		private string _webFtp; 
+		private string _webFtp;
 		
 		public string WebFtp
 		{
@@ -943,5 +953,4 @@ namespace starsky.foundation.platform.Models
 		}
 
 	}
-
 }

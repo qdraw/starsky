@@ -60,7 +60,7 @@ namespace starsky.foundation.sync.SyncServices
 					var item = await _syncSingleFile.SingleFile(subPath, updateDelegate);
 					return new List<FileIndexItem>{item};
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					return await _syncRemove.Remove(subPath);
+					return await _syncRemove.Remove(subPath, updateDelegate);
 				default:
 					throw new AggregateException("enum is not valid");
 			}
