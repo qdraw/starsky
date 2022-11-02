@@ -112,10 +112,15 @@ namespace starsky.feature.demo.Services
 		
 		private const string DemoFolderName = "demo";
 
-		private static async Task DownloadAsync(AppSettings appSettings,
+		internal static async Task<bool> DownloadAsync(AppSettings appSettings,
 			IHttpClientHelper httpClientHelper, IStorage hostStorage,
 			IStorage subStorage, IWebLogger webLogger)
 		{
+			if ( !appSettings.DemoData.Any() )
+			{
+				return false;
+			}
+			
 			webLogger.LogInformation("Download demo data");
 
 			var cacheFolder = Path.Combine(appSettings.TempFolder, DemoFolderName);
@@ -161,6 +166,7 @@ namespace starsky.feature.demo.Services
 			}
 			
 			webLogger.LogInformation("Download demo data done");
+			return true;
 		}
 	}
 }

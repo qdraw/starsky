@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.SyncInterfaces;
 using starskytest.FakeMocks;
 
@@ -31,6 +33,7 @@ public class CleanDemoDataServiceTest
 	private readonly FakeIHttpProvider _fakeProvider;
 	private FakeIWebSocketConnectionsService _fakeIWebSocketConnectionsService;
 	private readonly FakeIWebLogger _logger;
+	private readonly IStorage _storage;
 
 	public CleanDemoDataServiceTest()
 	{
@@ -50,6 +53,7 @@ public class CleanDemoDataServiceTest
 		_fakeProvider = serviceProvider.GetRequiredService<IHttpProvider>() as FakeIHttpProvider;
 		_fakeIWebSocketConnectionsService = serviceProvider.GetRequiredService<IWebSocketConnectionsService>() as FakeIWebSocketConnectionsService;
 		_logger = serviceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
+		_storage = serviceProvider.GetRequiredService<ISelectorStorage>().Get(SelectorStorage.StorageServices.SubPath) as FakeIStorage;
 	}
 	
 	[TestMethod]
@@ -179,4 +183,51 @@ public class CleanDemoDataServiceTest
 		Assert.AreEqual(1,_fakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
 		Assert.IsTrue(_fakeIWebSocketConnectionsService.FakeSendToAllAsync.FirstOrDefault()!.Contains("/test.jpg"));
 	}
+	
+	
+	[TestMethod]
+	public async Task DownloadAsync_AppSettingsMissing()
+	{
+		var appSettings = new AppSettings();
+		var fakeIHttpClientHelper =
+			new FakeIHttpProvider(new Dictionary<string, HttpContent>());
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var storage = new FakeIStorage();
+		
+		var result = await CleanDemoDataService.DownloadAsync(appSettings, httpClientHelper, storage, storage, _logger);
+		Assert.IsFalse(result);
+	}
+	
+	[TestMethod]
+	public async Task DownloadAsync_IsDownloading()
+	{
+		var appSettings = new AppSettings{DemoData = new List<AppSettingsKeyValue>
+		{
+			new AppSettingsKeyValue{Key = "https://qdraw.nl/_settings.json", Value = "1"}
+		}};
+
+		var content = "{" +
+		              "\"Copy\": {" +
+		              "\"1000/20211117_091926_dsc00514_e_kl1k.jpg\": true" +
+		              "}" +
+		              "}";
+		var fakeIHttpClientHelper = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+		{
+			{"https://qdraw.nl/_settings.json",new StringContent(content)},
+			{"https://qdraw.nl/1000/20211117_091926_dsc00514_e_kl1k.jpg",new StringContent("test")}
+		});
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		
+		var result = await CleanDemoDataService.DownloadAsync(appSettings, httpClientHelper, _storage, _storage, _logger);
+		
+		Assert.IsTrue(result);
+		
+		var c1 = fakeIHttpClientHelper.UrlCalled.Count(p => p == "https://qdraw.nl/_settings.json");
+		Assert.AreEqual(1,c1);
+		
+		var c1A = fakeIHttpClientHelper.UrlCalled.Count(p => p == "https://qdraw.nl/1000/20211117_091926_dsc00514_e_kl1k.jpg");
+		Assert.AreEqual(1,c1A);
+	}
+
 }
