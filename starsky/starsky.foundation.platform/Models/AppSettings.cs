@@ -87,7 +87,8 @@ namespace starsky.foundation.platform.Models
 			.Replace("starskywebhtmlcli", "starsky")
 			.Replace("starskygeocli", "starsky")
 			.Replace("starskytest", "starsky")
-			.Replace("starskydiskwatcherworkerservice", "starsky");
+			.Replace("starskydiskwatcherworkerservice", "starsky")
+			.Replace("starskydemoseedcli", "starsky");
 
 		/// <summary>
 		/// Application Type, defaults to WebController
@@ -141,7 +142,12 @@ namespace starsky.foundation.platform.Models
 			/// <summary>
 			/// DiskWatcherWorkerService
 			/// </summary>
-			DiskWatcherWorkerService = 9
+			DiskWatcherWorkerService = 9,
+			
+			/// <summary>
+			/// Seed application for demos
+			/// </summary>
+			DemoSeed = 10
 		}
 		
 		/// <summary>

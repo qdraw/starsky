@@ -37,9 +37,9 @@ services:
       context: .
       dockerfile: Dockerfile
       cache_from:
-        - qdraw/starsky:latest
+        - ghcr.io/qdraw/starsky:master
       args:
-        - I__SDEMO=true # arg name is ISDEMO
+        - IS__DEMO=true # arg name is ISDEMO 
     environment:
       - PORT=${STARSKY_PORT}
       - app__verbose=true
