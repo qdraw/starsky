@@ -54,15 +54,15 @@ namespace starsky.feature.demo.Services
 			var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
 
+			if (appSettings.DemoUnsafeDeleteStorageFolder != true || appSettings.ApplicationType != AppSettings.StarskyAppType.WebController )
+			{
+				return false;
+			}
+			
 			if ( Environment.GetEnvironmentVariable("app__storageFolder") == null)
 			{
 				logger.LogError("[demo mode on] Environment variable app__storageFolder is not set");
 				return null;
-			}
-
-			if (appSettings.DemoUnsafeDeleteStorageFolder != true || appSettings.ApplicationType != AppSettings.StarskyAppType.WebController )
-			{
-				return false;
 			}
 		
 			var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
