@@ -523,8 +523,12 @@ namespace starsky.foundation.platform.Models
 		[PackageTelemetry]
 		public bool? MetaThumbnailOnImport { get; set; } = true;
 		
+		/// <summary>
+		/// When enabled the storage folder is deleted on startup
+		/// Should use: app__storageFolder environment variable
+		/// </summary>
 		[PackageTelemetry]
-		public bool? Demo { get; set; } = false;
+		public bool? DemoUnsafeDeleteStorageFolder { get; set; } = false;
 
 		
 		public List<AppSettingsKeyValue> DemoData { get; set; } = new List<AppSettingsKeyValue>();

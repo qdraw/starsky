@@ -36,7 +36,7 @@ namespace starsky.foundation.accountmanagement.Middleware
         {
 	        
 	        var isHostAllowed = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress,
-		        context.Connection.RemoteIpAddress) || _appSettings?.Demo == true;
+		        context.Connection.RemoteIpAddress) || _appSettings?.DemoUnsafeDeleteStorageFolder == true;
 
 	        var isApiCall = context.Request.Path.HasValue && (context.Request.Path.Value.StartsWith("/api") || 
 	                                                          context.Request.Path.Value.StartsWith("/realtime"));

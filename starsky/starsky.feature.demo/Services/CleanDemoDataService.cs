@@ -48,7 +48,7 @@ namespace starsky.feature.demo.Services
 			await RunAsync();
 		}
 
-		public async Task RunAsync()
+		public async Task<bool?> RunAsync()
 		{
 			using var scope = _serviceScopeFactory.CreateScope();
 			var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
@@ -57,27 +57,27 @@ namespace starsky.feature.demo.Services
 			if ( Environment.GetEnvironmentVariable("app__storageFolder") == null)
 			{
 				logger.LogError("[demo mode on] Environment variable app__storageFolder is not set");
-				return;
+				return null;
 			}
 
-			if (appSettings.Demo != true || appSettings.ApplicationType != AppSettings.StarskyAppType.WebController )
+			if (appSettings.DemoUnsafeDeleteStorageFolder != true || appSettings.ApplicationType != AppSettings.StarskyAppType.WebController )
 			{
-				return;
+				return false;
 			}
 		
 			var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
 			var sync = scope.ServiceProvider.GetRequiredService<ISynchronize>();
 			var subStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			var hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-
 			var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
 
 			CleanData(subStorage, logger);
 			await DownloadAsync(appSettings, httpClientHelper,hostStorage,subStorage, logger);
 			await sync.Sync("/",PushToSockets);
+			return true;
 		}
 
-		private static void CleanData(IStorage subStorage, IWebLogger logger)
+		internal static void CleanData(IStorage subStorage, IWebLogger logger)
 		{
 			if ( subStorage.ExistFolder("/.stfolder") )
 			{

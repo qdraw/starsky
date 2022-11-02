@@ -105,7 +105,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				{
 					invoked = true;
 					return Task.FromResult(0);
-				}, new AppSettings{Demo = true});
+				}, new AppSettings{DemoUnsafeDeleteStorageFolder = true});
 			
 			var services = new ServiceCollection();
 			services.AddSingleton<IUserManager, FakeUserManagerActiveUsers>();
