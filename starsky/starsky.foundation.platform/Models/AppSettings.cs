@@ -778,7 +778,7 @@ namespace starsky.foundation.platform.Models
 				appSettings.DatabaseConnection = CloneToDisplaySecurityWarning;
 			}
 			
-			if ( appSettings.DatabaseType == DatabaseTypeList.Sqlite )
+			if ( appSettings.DatabaseType == DatabaseTypeList.Sqlite && string.IsNullOrEmpty(userProfileFolder) )
 			{
 				appSettings.DatabaseConnection = appSettings.DatabaseConnection.
 					Replace(userProfileFolder, "~");
