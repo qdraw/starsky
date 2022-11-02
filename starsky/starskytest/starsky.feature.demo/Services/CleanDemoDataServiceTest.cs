@@ -76,12 +76,13 @@ public class CleanDemoDataServiceTest
 			token
 		});
 			
-		Assert.IsTrue(_logger.TrackedExceptions.LastOrDefault().Item2.Contains("app__storageFolder"));
+		Assert.IsTrue(!_logger.TrackedExceptions.Any());
 	}
 	
 	[TestMethod]
 	public async Task RunAsync_MissingEnvVariable()
 	{
+		_appSettings.DemoUnsafeDeleteStorageFolder = true;
 		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
 
 		var result = await new CleanDemoDataService(_serviceScopeFactory).RunAsync();

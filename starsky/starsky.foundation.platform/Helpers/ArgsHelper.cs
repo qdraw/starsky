@@ -359,7 +359,7 @@ namespace starsky.foundation.platform.Helpers
 			
 			_console.WriteLine("Config is read in this order: (latest is applied over lower numbers)");
 			_console.WriteLine( $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}");
-			_console.WriteLine( $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.base.json")}");
+			_console.WriteLine( $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.default.json")}");
 			_console.WriteLine( $"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}");
 			_console.WriteLine( $"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")}");
 			_console.WriteLine( $"5. {Path.Combine(_appSettings.BaseDirectoryProject,  "appsettings." + machineName + ".patch.json")}");
