@@ -2,7 +2,7 @@
 /* eslint-disable jest/no-done-callback */
 /* eslint-disable jest/no-conditional-expect */
 /* eslint-disable @typescript-eslint/ban-types */
-import * as BrowserWindow from "electron";
+import BrowserWindow from "electron";
 import * as appConfig from "electron-settings";
 import * as logger from "../logger/logger";
 import * as windowStateKeeper from "../window-state-keeper/window-state-keeper";
@@ -143,7 +143,7 @@ describe("create main window", () => {
         .mockImplementationOnce(() => Promise.resolve(false));
 
       const browserWindowSpy = jest
-        .spyOn(BrowserWindow, "BrowserWindow")
+        .spyOn(BrowserWindow, "BrowserWindow").mockClear()
         .mockImplementationOnce(() => mockBrowserWindow as any);
 
       createCheckForUpdatesContainerWindow(1)
