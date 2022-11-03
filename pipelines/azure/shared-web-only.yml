@@ -27,7 +27,7 @@ trigger:
     include:
     - starsky/*
     exclude:
-    - starskyapp/*
+    - starskydesktop/*
     - starsky-tools/*
     - starsky.netframework/*
     - starsky/readme.md

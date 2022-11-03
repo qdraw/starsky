@@ -15,14 +15,14 @@ trigger:
     - feature/*
   paths:
       include:
-      - starskyapp/*
+      - starskydesktop/*
       exclude:
       - starsky/*
       - starsky-tools/*
       - starsky.netframework/*
       - /*.md
-      - starskyapp/*.md
-      - starskyapp/readme.md
+      - starskydesktop/*.md
+      - starskydesktop/readme.md
 
 # specific path build
 pr:
@@ -31,7 +31,7 @@ pr:
     - master
   paths:
     include:
-    - starskyapp/*
+    - starskydesktop/*
     exclude:
     - starsky/*
     - starsky-tools/*
@@ -115,11 +115,11 @@ stages:
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifact: starsky-win-x64-desktop'
       inputs:
-        path: '$(Build.SourcesDirectory)/starskyapp/dist-prod/starsky-win-x64-desktop.exe'
+        path: '$(Build.SourcesDirectory)/starskydesktop/dist-prod/starsky-win-x64-desktop.exe'
         ArtifactName: 'starsky-win-x64-desktop'
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifact: starsky-mac-x64-desktop'
       inputs:
-        path: '$(Build.SourcesDirectory)/starskyapp/dist-prod/starsky-mac-x64-desktop.zip'
+        path: '$(Build.SourcesDirectory)/starskydesktop/dist-prod/starsky-mac-x64-desktop.zip'
         ArtifactName: 'starsky-mac-x64-desktop'
