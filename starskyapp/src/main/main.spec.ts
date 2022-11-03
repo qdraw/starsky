@@ -1,3 +1,5 @@
+/* eslint-disable jest/no-test-prefixes */
+/* eslint-disable jest/no-disabled-tests */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable global-require */
@@ -20,27 +22,6 @@ import * as IsRemote from "../app/warmup/is-remote";
 import * as SetupSplash from "../app/warmup/splash";
 import * as WarmupServer from "../app/warmup/warmup-server";
 
-jest.mock("electron", () => {
-  return {
-    app: {
-      allowRendererProcessReuse: true,
-      getVersion: () => "99.99.99",
-      getPath: () => "tmp",
-      getLocale: () => "en",
-      on: () => "en",
-      quit: () => "en",
-      getName: () => "test"
-    },
-    ipcMain: {
-      on: () => "en"
-    },
-    BrowserWindow: {
-      id: 801,
-      getAllWindows: () => [] as any[]
-    }
-  };
-});
-
 const mockBrowserWindow = {
   loadFile: jest.fn(),
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -52,7 +33,14 @@ const mockBrowserWindow = {
   on: (_: string, func: Function) => {
     return func();
   },
-  getAllWindows: [],
+  // eslint-disable-next-line object-shorthand, func-names, @typescript-eslint/no-unused-vars
+  getAllWindows: function () {
+    return [];
+  },
+  // eslint-disable-next-line object-shorthand, func-names, @typescript-eslint/no-unused-vars
+  center: function () {
+    return [];
+  },
   setMenu: jest.fn(),
   __esModule: true,
 };
@@ -64,6 +52,7 @@ jest.mock("electron", () => {
       getPath: () => "tmp",
       getLocale: () => "en",
       on: () => "en",
+      quit: () => "en",
       __esModule: true,
     },
     // eslint-disable-next-line object-shorthand, func-names, @typescript-eslint/no-unused-vars
@@ -128,7 +117,7 @@ describe("main", () => {
 
     jest
       .spyOn(WarmupServer, "WarmupServer")
-      .mockImplementationOnce(() => Promise.resolve(true));
+      .mockImplementation(() => Promise.resolve(true));
 
     // this excuted only once
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
@@ -160,11 +149,17 @@ describe("main", () => {
 
     jest
       .spyOn(SetupSplash, "SetupSplash")
-      .mockImplementationOnce(() => {
+      .mockImplementation(() => {
         return {} as any;
       });
 
-    jest.spyOn(app, "on").mockImplementation((name: any, func) => {
+    jest
+      .spyOn(SetupSplash, "CloseSplash")
+      .mockImplementation(() => {
+        return {} as any;
+      });
+
+    jest.spyOn(app, "on").mockImplementation((_: any, _2) => {
       return null;
     });
 
@@ -177,24 +172,36 @@ describe("main", () => {
       .spyOn(updatesWarningWindow, "default")
       .mockImplementationOnce(() => Promise.resolve(true));
 
-    const restoreMainWindowSpy = jest
+    jest
       .spyOn(restoreMainWindow, "restoreMainWindow")
-      .mockReset()
       .mockImplementationOnce(() => Promise.resolve() as any);
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
     jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
 
-    const createMainWindowSpy = jest
+    jest
       .spyOn(createMainWindow, "default")
-      .mockReset()
       .mockImplementationOnce(() => Promise.resolve() as any);
+
+    jest.spyOn(RestoreWarmupMainWindowAndCloseSplash, "RestoreMainWindowAndCloseSplash")
+      .mockImplementationOnce(() => {}).mockImplementationOnce(() => { });
+
+    jest
+      .spyOn(SetupSplash, "CloseSplash")
+      .mockImplementation(() => {
+        return {} as any;
+      });
+
+    jest
+      .spyOn(WarmupServer, "WarmupServer")
+      .mockImplementation(() => Promise.resolve(true));
 
     jest
       .spyOn(SetupSplash, "SetupSplash")
-      .mockImplementationOnce(() => Promise.resolve({}) as any);
+      .mockImplementation(() => Promise.resolve({}) as any);
 
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       if (name === "activate") {
+        BrowserWindow.getAllWindows = () => [];
         func();
       }
       return null;
