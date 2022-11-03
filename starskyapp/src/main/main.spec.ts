@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable global-require */
 import { app, BrowserWindow } from "electron";
 import * as setupChildProcess from "../app/child-process/setup-child-process";
 import * as MakeLogsPath from "../app/config/logs-path";
@@ -34,6 +37,38 @@ jest.mock("electron", () => {
     BrowserWindow: {
       id: 801,
       getAllWindows: () => [] as any[]
+    }
+  };
+});
+
+const mockBrowserWindow = {
+  loadFile: jest.fn(),
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  once: (_: string, func: Function) => {
+    return func();
+  },
+  show: jest.fn(),
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  on: (_: string, func: Function) => {
+    return func();
+  },
+  getAllWindows: [],
+  setMenu: jest.fn(),
+  __esModule: true,
+};
+
+jest.mock("electron", () => {
+  return {
+    app: {
+      getVersion: () => "99.99.99",
+      getPath: () => "tmp",
+      getLocale: () => "en",
+      on: () => "en",
+      __esModule: true,
+    },
+    // eslint-disable-next-line object-shorthand, func-names, @typescript-eslint/no-unused-vars
+    BrowserWindow: function (_x:object, _y: number, _w: number, _h: number, _s: boolean, _w2: object) {
+      return mockBrowserWindow;
     }
   };
 });
@@ -117,7 +152,7 @@ describe("main", () => {
   });
 
   it("should create main window", () => {
-    const restoreMainWindowSpy = jest
+    jest
       .spyOn(restoreMainWindow, "restoreMainWindow")
       .mockImplementationOnce(() => Promise.resolve() as any);
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
@@ -156,13 +191,7 @@ describe("main", () => {
 
     jest
       .spyOn(SetupSplash, "SetupSplash")
-      .mockImplementationOnce(() => {
-        return {} as any;
-      });
-
-    jest
-      .spyOn(BrowserWindow, "getAllWindows")
-      .mockImplementation(() => [] as any);
+      .mockImplementationOnce(() => Promise.resolve({}) as any);
 
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       if (name === "activate") {
@@ -184,7 +213,7 @@ describe("main", () => {
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
     jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
 
-    const restoreMainWindowSpy = jest
+    jest
       .spyOn(restoreMainWindow, "restoreMainWindow")
       .mockReset()
       .mockImplementationOnce(() => Promise.resolve() as any);
@@ -245,6 +274,7 @@ describe("main", () => {
       });
 
     const props = {
+      // eslint-disable-next-line @typescript-eslint/ban-types
       on: (_: string, func: Function) => {
         func();
       }
