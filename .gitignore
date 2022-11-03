@@ -340,6 +340,8 @@ starskyapp/ios/main.jsbundle
 **/.starskyenv
 starskyapp/dist-prod/*
 starskyapp/tmp/settings.json
+starskydesktop/dist-prod/*
+starskydesktop/tmp/settings.json
 
 starsky-tools/docs/*.yml
 starsky-tools/docs/*.sh
