@@ -34,9 +34,9 @@ steps:
 
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
-      name: "starskyapp_vulnerabilities"
-      displayName: 'StarskyApp vulnerabilities check'
-      targetFolder: "$(Build.SourcesDirectory)/starskyapp"
+      name: "starskydesktop_vulnerabilities"
+      displayName: 'starskydesktop vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starskydesktop"
       action: 'find-vulnerabilities'
 
   - template: /pipelines/azure/steps/audit_npm.yml
@@ -49,9 +49,9 @@ steps:
 
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
-      name: "starskyapp_outdated"
-      displayName: 'StarskyApp outdated check'
-      targetFolder: "$(Build.SourcesDirectory)/starskyapp"
+      name: "starskydesktop_outdated"
+      displayName: 'starskydesktop outdated check'
+      targetFolder: "$(Build.SourcesDirectory)/starskydesktop"
       action: 'outdated'
       depth: 0
       
@@ -64,9 +64,9 @@ steps:
 
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
-      name: "starskyapp_license"
-      displayName: 'StarskyApp license check'
-      targetFolder: "$(Build.SourcesDirectory)/starskyapp"
+      name: "starskydesktop_license"
+      displayName: 'starskydesktop license check'
+      targetFolder: "$(Build.SourcesDirectory)/starskydesktop"
       action: 'check-licenses'
 
   # Tools

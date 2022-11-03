@@ -63,11 +63,11 @@ steps:
       enabled: true
       inputs:
         command: 'ci'
-        workingDir: '$(Build.SourcesDirectory)/starskyapp'
+        workingDir: '$(Build.SourcesDirectory)/starskydesktop'
 
     - task: Npm@1
       displayName: 'Electron run macwindows'
       inputs:
         command: 'custom'
-        workingDir: '$(Build.SourcesDirectory)/starskyapp'
+        workingDir: '$(Build.SourcesDirectory)/starskydesktop'
         customCommand: 'run macwindows'

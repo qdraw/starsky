@@ -104,11 +104,11 @@ jobs:
         run: ls -lah       
         
       - name: NpmCi
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm ci
 
       - name: NpmDist
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm run mac
    
       - name: Upload starsky-mac-x64-desktop as build artifact
@@ -142,11 +142,11 @@ jobs:
         run: ls -lah           
                 
       - name: NpmCi
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm ci
 
       - name: NpmDist
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm run windows
      
       - name: Upload starsky-win-x64-desktop as build artifact
@@ -166,7 +166,7 @@ jobs:
       - name: Create parent directories
         shell: bash
         working-directory: ./
-        run: mkdir -p starsky && mkdir -p starskyapp && mkdir -p starskydesktop/dist     
+        run: mkdir -p starsky && mkdir -p starskydesktop && mkdir -p starskydesktop/dist     
            
       - name: Create Release
         id: create_release

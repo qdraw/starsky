@@ -1,4 +1,4 @@
-name: StarskyApp Electron PR (Missing .NET dependency)
+name: starskyDesktop Electron PR (Missing .NET dependency)
 
 on:
   push:
@@ -47,13 +47,13 @@ jobs:
         run: ls -lah && pwd
 
       - name: NpmCi
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm ci
 
       - name: Test
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm run test:ci
 
       - name: NpmDist
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm run dist
