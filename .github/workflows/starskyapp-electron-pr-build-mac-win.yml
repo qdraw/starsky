@@ -4,11 +4,11 @@ on:
   push:
     branches: [ master ]
     paths:
-    - 'starskyapp/**'
+    - 'starskydesktop/**'
   pull_request:
     branches: [ master ]
     paths:
-    - 'starskyapp/**'
+    - 'starskydesktop/**'
     - '.github/workflows/**'
 
 jobs:

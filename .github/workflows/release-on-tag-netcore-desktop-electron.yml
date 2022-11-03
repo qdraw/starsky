@@ -115,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: starsky-mac-x64-desktop
-          path: ./starskyapp/dist-prod/starsky-mac-x64-desktop.dmg   
+          path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg   
  
   build_win:
     name: Update Windows Desktop app
@@ -153,7 +153,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: starsky-win-x64-desktop
-          path: ./starskyapp/dist-prod/starsky-win-x64-desktop.zip   
+          path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.zip   
  
   
   create_release:
@@ -166,7 +166,7 @@ jobs:
       - name: Create parent directories
         shell: bash
         working-directory: ./
-        run: mkdir -p starsky && mkdir -p starskyapp && mkdir -p starskyapp/dist     
+        run: mkdir -p starsky && mkdir -p starskyapp && mkdir -p starskydesktop/dist     
            
       - name: Create Release
         id: create_release
@@ -283,7 +283,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: starsky-win-x64-desktop
-          path: ./starskyapp/dist
+          path: ./starskydesktop/dist
      
       - name: Upload Release Asset starsky-win-x64-desktop
         id: upload-starsky-win-x64-desktop
@@ -292,7 +292,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  
-          asset_path: ./starskyapp/dist-prod/starsky-win-x64-desktop.exe
+          asset_path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
           asset_name: starsky-win-x64-desktop.exe
           asset_content_type: application/vnd.microsoft.portable-executable
  
@@ -300,7 +300,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: starsky-mac-x64-desktop
-          path: ./starskyapp/dist
+          path: ./starskydesktop/dist
      
       - name: Upload Release Asset starsky-mac-x64-desktop
         id: upload-starsky-mac-x64-desktop
@@ -309,7 +309,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  
-          asset_path: ./starskyapp/dist-prod/starsky-mac-x64-desktop.dmg
+          asset_path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg
           asset_name: starsky-mac-x64-desktop.dmg
           asset_content_type: application/octet-stream
 
