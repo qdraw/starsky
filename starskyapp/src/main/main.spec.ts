@@ -159,6 +159,7 @@ describe("main", () => {
         return {} as any;
       });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     jest.spyOn(app, "on").mockImplementation((_: any, _2) => {
       return null;
     });

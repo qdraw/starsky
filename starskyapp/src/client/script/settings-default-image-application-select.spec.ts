@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { DefaultImageApplicationIpcKey } from "../../app/config/default-image-application-settings-ipc-key.const";
 import { settingsDefaultImageApplicationSelect } from "./settings-default-image-application-select";
 import {
@@ -25,6 +26,8 @@ describe("reload redirect", () => {
     )}'></div>`;
 
     settingsDefaultImageApplicationSelect();
+
+    expect(document.body.innerHTML).not.toBeNull();
   });
 
   it("trigger open element", () => {

@@ -183,7 +183,7 @@ describe("create main window", () => {
           // it should never call this 0>
           expect(true).toBeFalsy();
         })
-        .catch((e) => {
+        .catch(() => {
           expect(browserWindowSpy).toHaveBeenCalledTimes(0);
           done();
         });
@@ -218,12 +218,12 @@ describe("create main window", () => {
         .mockImplementationOnce(() => mockBrowserWindow as any);
 
       createCheckForUpdatesContainerWindow(1)
-        .then((e) => {
+        .then(() => {
           // it should never call this 0>
           // eslint-disable-next-line jest/no-conditional-expect
           expect(true).toBeFalsy();
         })
-        .catch((e) => {
+        .catch(() => {
           // eslint-disable-next-line jest/no-conditional-expect
           expect(browserWindowSpy).toHaveBeenCalledTimes(0);
           done();

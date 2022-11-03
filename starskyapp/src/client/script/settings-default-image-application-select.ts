@@ -10,6 +10,7 @@ import {
 } from "./settings.const";
 
 declare global {
+  // eslint-disable-next-line vars-on-top, no-var
   var api: IPreloadApi;
 }
 

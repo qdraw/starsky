@@ -23,6 +23,7 @@ export const exposeBrigde = {
       ipcRenderer.send(channel, data);
     }
   },
+  // eslint-disable-next-line @typescript-eslint/ban-types
   receive: (channel: string, func: Function) => {
     const validChannels = [
       LocationIsRemoteIpcKey,
@@ -33,6 +34,7 @@ export const exposeBrigde = {
     ];
     if (validChannels.includes(channel)) {
       // Deliberately strip event as it includes `sender`
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       ipcRenderer.on(channel, (_, ...args) => func(...args));
     }
   }

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 
 function App(): JSX.Element {
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     window.ipcAPI?.rendererReady();
   }, []);
 

@@ -1,7 +1,9 @@
+/* eslint-disable jest/no-done-callback */
 import { IPreloadApi } from "../../preload/IPreloadApi";
 import { warmupScript } from "./reload-warmup-script";
 
 declare global {
+  // eslint-disable-next-line vars-on-top, no-var
   var api: IPreloadApi;
 }
 
@@ -20,6 +22,7 @@ describe("reload redirect", () => {
   }
 
   afterEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     (global.fetch as any).mockClear();
     delete global.fetch;
   });
