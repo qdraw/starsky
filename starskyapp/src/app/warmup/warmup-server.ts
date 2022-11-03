@@ -1,4 +1,4 @@
-import * as waitOn from "wait-on";
+import waitOn from "wait-on";
 
 export async function WarmupServer(
   port: number
