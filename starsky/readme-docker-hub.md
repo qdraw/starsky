@@ -12,9 +12,9 @@ You could add how to add users, set up your archives, upload content, control me
 ## Online demo
 There is an demo environment on heroku, please wait a few seconds before the app is started
 
-[See the online demo on heroku](https://demostarsky.herokuapp.com?classes=btn,btn-default)
+[See the online demo on heroku](https://demostarsky.azurewebsites.net?classes=btn,btn-default)
 
-> Use the username: `demo@qdraw.nl` and Password: `demo@qdraw.nl` to access the demo
+> There is no need to login to the demo environment, you can browse the content.
 
 ## Pull latest stable release with docker
 

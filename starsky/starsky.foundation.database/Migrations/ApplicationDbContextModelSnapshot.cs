@@ -206,6 +206,26 @@ namespace starsky.foundation.database.Migrations
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
 
+            modelBuilder.Entity("starsky.foundation.database.Models.DataProtectionKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+
+                    b.Property<string>("FriendlyName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Xml")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataProtectionKeys");
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
             modelBuilder.Entity("starsky.foundation.database.Models.FileIndexItem", b =>
                 {
                     b.Property<int>("Id")

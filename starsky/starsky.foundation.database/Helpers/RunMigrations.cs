@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,42 @@ namespace starsky.foundation.database.Helpers
 {
 	public static class RunMigrations
 	{
+
+		internal static async Task<bool> MigrateAsync(AppSettings appSettings, ApplicationDbContext dbContext)
+		{
+			if ( appSettings.DatabaseType == AppSettings.DatabaseTypeList.InMemoryDatabase )
+			{
+				return true;
+			}
+				
+			await dbContext.Database.MigrateAsync();
+
+			if ( appSettings.DatabaseType !=
+			     AppSettings.DatabaseTypeList.Mysql ) return true;
+				
+			var connection = new MySqlConnection(appSettings.DatabaseConnection);
+			await MysqlFixes(connection, appSettings, dbContext);
+			return true;
+		}
+
+		internal static async Task<bool> MysqlFixes(MySqlConnection connection, AppSettings appSettings, ApplicationDbContext dbContext)
+		{
+			
+			var databaseFixes =
+				new MySqlDatabaseFixes(connection, appSettings);
+			await databaseFixes.OpenConnection();
+					
+			var tableNames = dbContext.Model.GetEntityTypes()
+				.Select(t => t.GetTableName())
+				.Distinct()
+				.ToList();
+			await databaseFixes.FixUtf8Encoding(tableNames);
+			await databaseFixes.FixAutoIncrement("Notifications");
+			await databaseFixes.FixAutoIncrement("DataProtectionKeys");
+			await databaseFixes.DisposeAsync();
+			return true;
+		}
+
 		public static async Task Run(IServiceScope serviceScope, int retryCount = 2)
 		{
 			var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -26,29 +63,7 @@ namespace starsky.foundation.database.Helpers
 		{
 			async Task<bool> Migrate()
 			{
-				if ( appSettings.DatabaseType == AppSettings.DatabaseTypeList.InMemoryDatabase )
-				{
-					return true;
-				}
-				
-				await dbContext.Database.MigrateAsync();
-
-				if ( appSettings.DatabaseType !=
-				     AppSettings.DatabaseTypeList.Mysql ) return true;
-				
-				var connection = new MySqlConnection(appSettings.DatabaseConnection);
-				var databaseFixes =
-					new MySqlDatabaseFixes(connection, appSettings);
-				await databaseFixes.OpenConnection();
-					
-				var tableNames = dbContext.Model.GetEntityTypes()
-					.Select(t => t.GetTableName())
-					.Distinct()
-					.ToList();
-				await databaseFixes.FixUtf8Encoding(tableNames);
-				await databaseFixes.FixAutoIncrement("Notifications");
-
-				return true;
+				return await MigrateAsync(appSettings, dbContext);
 			}
 			
 			try
@@ -63,7 +78,5 @@ namespace starsky.foundation.database.Helpers
 				logger.LogError("[RunMigrations] end catch-ed");
 			}
 		}
-		
-
 	}
 }

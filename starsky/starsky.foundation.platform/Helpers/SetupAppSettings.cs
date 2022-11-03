@@ -59,6 +59,7 @@ namespace starsky.foundation.platform.Helpers
 			return new List<string>
 			{
 				Path.Combine(baseDirectoryProject, "appsettings.json"),
+				Path.Combine(baseDirectoryProject, "appsettings.default.json"),
 				Path.Combine(baseDirectoryProject, "appsettings.patch.json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "patch.json"),
@@ -83,13 +84,12 @@ namespace starsky.foundation.platform.Helpers
 							new JsonBoolQuotedConverter(),
 						},
 					});
-					appSettingsList.Add(appSettings.App);
+					appSettingsList.Add(appSettings!.App);
 				}
 			}
 
 			if ( !appSettingsList.Any() ) return new AppSettings();
-
-			var appSetting = appSettingsList.FirstOrDefault();
+			var appSetting = appSettingsList.FirstOrDefault()!;
 			
 			for ( var i = 1; i < appSettingsList.Count; i++ )
 			{

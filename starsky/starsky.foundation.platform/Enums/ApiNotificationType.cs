@@ -60,7 +60,12 @@ namespace starsky.foundation.platform.Enums
 		/// <summary>
 		/// On Startup Sync
 		/// </summary>
-		OnStartupSyncBackgroundSync
+		OnStartupSyncBackgroundSync,
+		
+		/// <summary>
+		/// When clean and adding demo data in application
+		/// </summary>
+		CleanDemoData
 	}
 }
 

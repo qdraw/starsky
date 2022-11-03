@@ -148,6 +148,15 @@ namespace starskytest.FakeMocks
 			if ( !ExistFolder(path) ) return false;
 			var index = _outputSubPathFolders.IndexOf(path);
 			_outputSubPathFolders[index] = null;
+
+			// recursive delete all files
+			for ( var i = 0; i < _outputSubPathFolders.Count; i++ )
+			{
+				if ( _outputSubPathFolders[i] != null && _outputSubPathFolders[i].StartsWith(path) )
+				{
+					_outputSubPathFolders[i] = null;
+				}
+			}
 			return true;
 		}
 

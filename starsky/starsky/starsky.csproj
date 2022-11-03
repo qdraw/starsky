@@ -101,7 +101,14 @@
         <None Remove="service-deploy-systemd.sh" />
         <Content Include="service-deploy-systemd.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>        
+        </Content>
+        <None Remove="gatekeeper-mac-os-helper.command" />
+        <Content Include="gatekeeper-mac-os-helper.command">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="appsettings.default.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">
@@ -113,6 +120,7 @@
         <PreserveCompilationReferences>true</PreserveCompilationReferences>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.demo\starsky.feature.demo.csproj" />
         <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj" />
         <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
         <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj" />

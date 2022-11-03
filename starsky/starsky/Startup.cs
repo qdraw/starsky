@@ -10,6 +10,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -18,11 +19,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using starsky.feature.demo.Services;
 using starsky.feature.health.HealthCheck;
 using starsky.feature.packagetelemetry.Services;
 using starsky.feature.syncbackground.Services;
 using starsky.foundation.accountmanagement.Extensions;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.DataProtection;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
@@ -46,7 +49,7 @@ namespace starsky
         public Startup()
 		{
 			Console.WriteLine("app__appsettingspath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
-			_configuration = SetupAppSettings.AppSettingsToBuilder().Result;
+			_configuration = SetupAppSettings.AppSettingsToBuilder().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -69,7 +72,9 @@ namespace starsky
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName?.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
-	            
+			EfCoreMigrationsOnProject(services).ConfigureAwait(false);
+			services.SetupDataProtection();
+
             // Enable Dual Authentication 
             services
                 .AddAuthentication(sharedOptions =>
@@ -144,6 +149,8 @@ namespace starsky
 			// Reference due missing links between services
 			services.AddSingleton<PackageTelemetryBackgroundService>();
 			services.AddSingleton<OnStartupSyncBackgroundService>();
+			services.AddSingleton<CleanDemoDataService>();
+
         }
 
         /// <summary>
@@ -277,7 +284,7 @@ namespace starsky
 
 			app.UseAuthentication();
             app.UseBasicAuthentication();
-            app.UseNoAccountLocalhost(_appSettings?.NoAccountLocalhost == true);
+            app.UseNoAccount(_appSettings?.NoAccountLocalhost == true || _appSettings?.DemoUnsafeDeleteStorageFolder == true);
             app.UseCheckIfAccountExist();
             
 			app.UseAuthorization();
@@ -297,9 +304,7 @@ namespace starsky
 			
 			app.UseWebSockets();
 			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings?.UseRealtime);
-
-	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
-
+			
 	        if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings
 		        .ApplicationInsightsConnectionString) )
 	        {
@@ -317,11 +322,9 @@ namespace starsky
         /// To start over with a SQLite database please remove it and
         /// it will add a new one
         /// </summary>
-        private static async Task EfCoreMigrationsOnProject(IApplicationBuilder app)
+        private static async Task EfCoreMigrationsOnProject(IServiceCollection serviceCollection)
         {
-	        using var serviceScope = app.ApplicationServices
-		        .GetRequiredService<IServiceScopeFactory>()
-		        .CreateScope();
+	        using var serviceScope = serviceCollection.BuildServiceProvider().CreateScope();
 	        await RunMigrations.Run(serviceScope);
         }
     }

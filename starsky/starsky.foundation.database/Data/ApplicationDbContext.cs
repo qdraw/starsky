@@ -189,7 +189,22 @@ namespace starsky.foundation.database.Data
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}
 			);
-			
+			modelBuilder.Entity<DataProtectionKey>(etb =>
+			{
+				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+				etb.HasKey(e => e.Id);
+				etb.Property(e => e.Id)
+					.ValueGeneratedOnAdd()
+					.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+				}
+			);
 		}
+
+		/// <summary>
+		/// Store secure keys to generate cookies
+		/// </summary>
+		public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+		
+		
 	}
 }
