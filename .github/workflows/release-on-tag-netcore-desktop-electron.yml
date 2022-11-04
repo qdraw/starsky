@@ -244,6 +244,7 @@ jobs:
             ./starsky/starsky-win-x64.zip
           name: Release ${{ steps.get_tag_name.outputs.VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: true
           body: |
             ## Desktop app versions:
             _When you are not sure pick the Desktop App_
