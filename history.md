@@ -43,6 +43,7 @@ node starsky-tools/build-tools/app-version-update.js
 
 
 ## Summary of breaking changes in 0.5.0-beta.0-9 versions
+- [x]   (0.5.0-beta.9) _App_  Rename StarskyApp to StarskyDesktop
 - [x]   (0.5.0-beta.9) _Back-end_ Use Application Insights Connection String (PR #920)
 - [x]   (0.5.0-beta.9) _Back-end_ Use Data Protection Keys in Database instead of on disk (PR #933)
 - [x]   (0.5.0-beta.4) _Back-end_ WebSocket Data Model is changed (PR #712)
@@ -66,7 +67,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.402 (Runtime: 6.0.10)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.10/6.0.10.md) (PR #931)
 - [x]   __(Breaking Change)__ _Back-end_ Use Data Protection Keys in Database instead of on disk (PR #933)
 - [x]   (Added) _Back-end_ Demo mode in application (PR #943, #944, #945, #946)
-- hope to include electron upgrade!
+- [x]   (Changed) _App_ Upgrade Electron to 21.x (PR #887) 
+- [x]   __(Breaking Change)__ _App_ Rename StarskyApp to StarskyDesktop
 
 # version 0.5.0-beta.8 - 2022-10-11
 - [x]   (Security) _Back-end_ Upgrade Nuget packages (PR #878)
