@@ -42,6 +42,14 @@ export async function windowStateKeeper(
       windowState = window.getBounds() as IWindowsState;
     }
     windowState.isMaximized = window.isMaximized() as boolean;
+
+    if (windowState.width <= 40) {
+      windowState.width = 20;
+    }
+    if (windowState.height <= 40) {
+      windowState.height = 40;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     appConfig.set(`windowState.${windowName}`, windowState as any);
   }
