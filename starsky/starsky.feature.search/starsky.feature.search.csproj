@@ -3,7 +3,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{c9e6cec6-c453-4c61-a955-ec65765afe0a}</ProjectGuid>
-        <Version>0.5.0-beta.8</Version>
+        <Version>0.5.0-beta.9</Version>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.feature.search</RootNamespace>
     </PropertyGroup>

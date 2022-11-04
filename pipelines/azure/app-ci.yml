@@ -15,14 +15,14 @@ trigger:
     - feature/*
   paths:
       include:
-      - starskyapp/*
+      - starskydesktop/*
       exclude:
       - starsky/*
       - starsky-tools/*
       - starsky.netframework/*
       - /*.md
-      - starskyapp/*.md
-      - starskyapp/readme.md
+      - starskydesktop/*.md
+      - starskydesktop/readme.md
 
 # specific path build
 pr:
@@ -31,7 +31,7 @@ pr:
     - master
   paths:
     include:
-    - starskyapp/*
+    - starskydesktop/*
     exclude:
     - starsky/*
     - starsky-tools/*
@@ -56,18 +56,18 @@ stages:
     - template: /pipelines/azure/steps/build_clientapp.yml
       parameters:
         jest: false
-        runtimeArg: '--runtime="win7-x64,win7-x86,osx-x64"'
+        runtimeArg: '--runtime="win-x64,linux-x64,osx-x64,osx-arm64"'
         npmConfigCache: $(npm_config_cache)
 
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: false
-        runtimeArg: '--runtime "win7-x64,win7-x86,osx-x64,osx-arm64"'
+        runtimeArg: '--runtime "win-x64,linux-x64,osx-x64,osx-arm64"'
         nugetPackages: $(NUGET_PACKAGES)
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
       parameters:
-        runtimeArg: '--runtime "win7-x64,win7-x86,osx-x64,osx-arm64"'
+        runtimeArg: '--runtime "win-x64,linux-x64,osx-x64,osx-arm64"'
 
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
@@ -76,10 +76,10 @@ stages:
             value: '/starsky/starsky-osx-x64.zip' 
           - key: generic-netcore
             value: '/starsky/starsky-generic-netcore.zip'
-          - key: win7-x86
-            value: '/starsky/starsky-win7-x86.zip'
-          - key: win7-x64
-            value: '/starsky/starsky-win7-x64.zip'
+          - key: linux-x64
+            value: '/starsky/starsky-linux-x64.zip'
+          - key: win-x64
+            value: '/starsky/starsky-win-x64.zip'
           - key: osx-arm64
             value: '/starsky/starsky-osx-arm64.zip'
 
@@ -92,37 +92,34 @@ stages:
       vmImage: 'ubuntu-22.04'
     container: electronuserland/builder:wine
     steps:
-    - task: DownloadBuildArtifacts@0
+    - task: DownloadPipelineArtifact@2
       inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'win7-x64'
-        downloadPath: '$(Build.SourcesDirectory)'
+        source: 'current'
+        artifactName: 'win-x64'
+        path: '$(Build.SourcesDirectory)'
 
-    - task: DownloadBuildArtifacts@0
+    - task: DownloadPipelineArtifact@2
       inputs:
-        buildType: 'current'
-        downloadType: 'single'
+        source: 'current'
         artifactName: 'osx-x64'
-        downloadPath: '$(Build.SourcesDirectory)'
+        path: '$(Build.SourcesDirectory)'
 
-    - task: DownloadBuildArtifacts@0
+    - task: DownloadPipelineArtifact@2
       inputs:
-        buildType: 'current'
-        downloadType: 'single'
+        source: 'current'
         artifactName: 'osx-arm64'
-        downloadPath: '$(Build.SourcesDirectory)'
+        path: '$(Build.SourcesDirectory)'
 
     - template: /pipelines/azure/steps/electron_build.yml
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: starsky-win-desktop'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: starsky-win-x64-desktop'
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-win-desktop.zip'
-        ArtifactName: 'starsky-win-desktop'
+        path: '$(Build.SourcesDirectory)/starskydesktop/dist-prod/starsky-win-x64-desktop.exe'
+        ArtifactName: 'starsky-win-x64-desktop'
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: starsky-mac-desktop'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: starsky-mac-x64-desktop'
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-mac-desktop.zip'
-        ArtifactName: 'starsky-mac-desktop'
+        path: '$(Build.SourcesDirectory)/starskydesktop/dist-prod/starsky-mac-x64-desktop.zip'
+        ArtifactName: 'starsky-mac-x64-desktop'

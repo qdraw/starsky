@@ -9,6 +9,7 @@ on:
     - 'starsky-tools/mail/**'
     - 'starsky-tools/mock/**'
     - 'starsky-tools/thumbnail/**'
+    - 'starsky-tools/docs/**'
   pull_request:
     branches: [ master ]
     paths:
@@ -18,6 +19,7 @@ on:
     - 'starsky-tools/mock/**'
     - 'starsky-tools/thumbnail/**'
     - '.github/workflows/**'
+    - 'starsky-tools/docs/**'
 
 jobs:
   build:
@@ -38,6 +40,7 @@ jobs:
     - name: NpmCi Mock
       working-directory: ./starsky-tools/mock
       run: npm ci
+
     - name: Node Run Mock SetRouter
       working-directory: ./starsky-tools/mock
       run: node set-router.js
@@ -58,3 +61,6 @@ jobs:
       working-directory: ./starsky-tools/thumbnail
       run: npm ci  
       
+    - name: Node run docs
+      working-directory: ./starsky-tools/docs
+      run: npm run build

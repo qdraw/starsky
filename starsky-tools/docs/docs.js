@@ -40,7 +40,7 @@ var filePathList = [
 	"starsky/starskytest/readme.md",
 	"starsky/starskywebftpcli/readme.md",
 	"starsky/starskywebhtmlcli/readme.md",
-	"starskyapp/readme.md",
+	"starskydesktop/readme.md",
 	"starsky-tools/docs/readme.md",
 	"starsky-tools/mail/readme.md",
 	"starsky-tools/thumbnail/readme.md",
@@ -56,9 +56,9 @@ var filePathList = [
 var blobPathList = [
 	"starsky/starsky/pm2-new-instance.sh",
 	"starsky/docs/starsky-mac-v043-home-nl.jpg",
-	"starskyapp/docs-assets/starskyapp-versions.jpg",
-	"starskyapp/docs-assets/starskyapp-remote-options-v040.jpg",
-	"starskyapp/docs-assets/starskyapp-mac-gatekeeper.jpg",
+	"starskydesktop/docs-assets/starskyapp-versions.jpg",
+	"starskydesktop/docs-assets/starskyapp-remote-options-v040.jpg",
+	"starskydesktop/docs-assets/starskyapp-mac-gatekeeper.jpg",
 ];
 
 

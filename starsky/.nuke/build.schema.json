@@ -65,15 +65,19 @@
         },
         "NoTest": {
           "type": "boolean",
-          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)"
+          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
+        },
+        "NoTests": {
+          "type": "boolean",
+          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
         },
         "NoUnitTest": {
           "type": "boolean",
-          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)"
+          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
         },
         "NoUnitTests": {
           "type": "boolean",
-          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests and NoTest)"
+          "description": "Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)"
         },
         "Partition": {
           "type": "string",

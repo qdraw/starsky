@@ -121,8 +121,8 @@ fetch("https://api.github.com/repos/qdraw/starsky/releases").then((result)=>{
         document.querySelector("#latest_version").innerHTML = firstItem.tag_name
       }
 
-      const windowsItem = firstItem.assets.find(item => item.name === "starsky-win-desktop.zip");
-      const macItem = firstItem.assets.find(item => item.name === "starsky-mac-desktop.zip");
+      const windowsItem = firstItem.assets.find(item => item.name === "starsky-win-x64-desktop.exe");
+      const macItem = firstItem.assets.find(item => item.name === "starsky-mac-x64-desktop.dmg");
 
       if (detectOS() === "Windows") {
         if (document.querySelector("#browser_download_url")) {

@@ -340,6 +340,8 @@ starskyapp/ios/main.jsbundle
 **/.starskyenv
 starskyapp/dist-prod/*
 starskyapp/tmp/settings.json
+starskydesktop/dist-prod/*
+starskydesktop/tmp/settings.json
 
 starsky-tools/docs/*.yml
 starsky-tools/docs/*.sh
@@ -379,6 +381,8 @@ starsky-win7-x86.zip
 starsky-win7-x64.zip
 starsky-win-x64.zip
 starsky-win-arm64.zip
+starsky-linux-arm64.zip
+starsky-linux-x64.zip
 starsky-generic-netcore*.zip
 starsky-netframework-msbuild.zip
 

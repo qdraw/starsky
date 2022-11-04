@@ -27,7 +27,7 @@ trigger:
     include:
     - starsky/*
     exclude:
-    - starskyapp/*
+    - starskydesktop/*
     - starsky-tools/*
     - starsky.netframework/*
     - starsky/readme.md
@@ -60,8 +60,7 @@ steps:
 
 - template: /pipelines/azure/steps/publish_end2end_container.yml
 
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)//starsky/starsky/generic-site'
+    path: '$(Build.SourcesDirectory)//starsky/starsky/generic-site'
     ArtifactName: 'generic-site'
-    publishLocation: 'Container'

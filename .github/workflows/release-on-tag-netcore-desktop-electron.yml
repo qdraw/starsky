@@ -22,10 +22,10 @@ jobs:
         with:
           dotnet-version: 6.0.402
 
-      - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64
+      - name: Build  --no-unit-test  linux-arm,linux-arm64,win-x64,osx-x64,linux-x64
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --runtime "linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test    
+        run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test    
    
       - name: Upload linux-arm as build artifact
         uses: actions/upload-artifact@v2
@@ -39,11 +39,11 @@ jobs:
           name: linux-arm64
           path: ./starsky/starsky-linux-arm64.zip
  
-      - name: Upload Win7 as build artifact
+      - name: Upload win-x64 as build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: win7-x64
-          path: ./starsky/starsky-win7-x64.zip
+          name: win-x64
+          path: ./starsky/starsky-win-x64.zip
   
       - name: Upload linux-x64 as build artifact
         uses: actions/upload-artifact@v2
@@ -104,18 +104,18 @@ jobs:
         run: ls -lah       
         
       - name: NpmCi
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm ci
 
       - name: NpmDist
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm run mac
    
-      - name: Upload starsky-mac-desktop as build artifact
+      - name: Upload starsky-mac-x64-desktop as build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: starsky-mac-desktop
-          path: ./starskyapp/dist/starsky-mac-desktop.zip   
+          name: starsky-mac-x64-desktop
+          path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg   
  
   build_win:
     name: Update Windows Desktop app
@@ -125,16 +125,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download starsky-win7-x64 as build artifact
+      - name: Download starsky-win-x64 as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: win7-x64
+          name: win-x64
           path: ./starsky
 
       - name: Unzip Windows bundle
         shell: bash
         working-directory: ./starsky
-        run: unzip starsky-win7-x64.zip -d win7-x64    
+        run: unzip starsky-win-x64.zip -d win-x64    
 
       - name: List
         shell: bash
@@ -142,52 +142,57 @@ jobs:
         run: ls -lah           
                 
       - name: NpmCi
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm ci
 
       - name: NpmDist
-        working-directory: ./starskyapp
+        working-directory: ./starskydesktop
         run: npm run windows
      
-      - name: Upload starsky-win-desktop as build artifact
+      - name: Upload starsky-win-x64-desktop as build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: starsky-win-desktop
-          path: ./starskyapp/dist/starsky-win-desktop.zip   
+          name: starsky-win-x64-desktop
+          path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe   
  
   
   create_release:
     name: Create Release
-    if: startsWith(github.ref, 'refs/tags/v')
     needs: [build_core, build_mac, build_win]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      discussions: write
     steps:
        
       - name: Create parent directories
         shell: bash
         working-directory: ./
-        run: mkdir -p starsky && mkdir -p starskyapp && mkdir -p starskyapp/dist     
+        run: mkdir -p starsky && mkdir -p starskydesktop && mkdir -p starskydesktop/dist     
            
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          # release_name: Release ${{ github.ref }}
+          name: Release ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ## Desktop app versions:
             _When you are not sure pick the Desktop App_
-            - starsky-mac-desktop.zip - __Starsky Desktop App for Mac OS *10.15* or newer (Intel)__
-            - starsky-win-desktop.zip - __Starsky Desktop App for Windows 10 1607+ or 11 (Intel 64 bits)__
+            - starsky-mac-x64-desktop.dmg - __Starsky Desktop App for Mac OS *10.15* or newer (Intel)__
+            - starsky-win-x64-desktop.exe - __Starsky Desktop App for Windows 10 1607+ or 11 (Intel 64 bits)__
 
             ## Server versions:
             - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
             - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's 
             - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *10.15* or newer
             - starsky-osx-arm64.zip - Starsky as Web Application (start from command line) only for Apple Silicon (newer then end of 2020) Mac OS *12* or newer
-            - starsky-win7-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 (Intel 64 bits)
+            - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 (Intel 64 bits)
 
             ## Changelog
             [There is an changelog to see the recent changes](https://qdraw.github.io/starsky/history.html)
@@ -202,6 +207,7 @@ jobs:
            
       - name: Upload Release Asset osx-x64
         id: upload-osx-x64
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -219,6 +225,7 @@ jobs:
            
       - name: Upload Release Asset osx-arm64
         id: upload-osx-arm64
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -228,21 +235,22 @@ jobs:
           asset_name: starsky-osx-arm64.zip
           asset_content_type: application/zip      
 
-      - name: Download win7-x64 as build artifact
+      - name: Download win-x64 as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: win7-x64
+          name: win-x64
           path: ./starsky
 
-      - name: Upload Release Asset win7-x64
-        id: upload-win7-x64
+      - name: Upload Release Asset win-x64
+        id: upload-win-x64
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./starsky/starsky-win7-x64.zip
-          asset_name: starsky-win7-x64.zip
+          asset_path: ./starsky/starsky-win-x64.zip
+          asset_name: starsky-win-x64.zip
           asset_content_type: application/zip      
           
       - name: Download linux-arm64 as build artifact
@@ -253,6 +261,7 @@ jobs:
   
       - name: Upload Release Asset linux-arm64
         id: upload-linux-arm64
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -270,6 +279,7 @@ jobs:
     
       - name: Upload Release Asset linux-arm
         id: upload-linux-arm
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -279,42 +289,45 @@ jobs:
           asset_name: starsky-linux-arm.zip
           asset_content_type: application/zip    
  
-      - name: Download starsky-win-desktop as build artifact
+      - name: Download starsky-win-x64-desktop as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: starsky-win-desktop
-          path: ./starskyapp/dist
+          name: starsky-win-x64-desktop
+          path: ./starskydesktop/dist
      
-      - name: Upload Release Asset starsky-win-desktop
-        id: upload-starsky-win-desktop
+      - name: Upload Release Asset starsky-win-x64-desktop
+        id: upload-starsky-win-x64-desktop
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  
-          asset_path: ./starskyapp/dist/starsky-win-desktop.zip
-          asset_name: starsky-win-desktop.zip
-          asset_content_type: application/zip     
+          asset_path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
+          asset_name: starsky-win-x64-desktop.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
  
-      - name: Download starsky-mac-desktop as build artifact
+      - name: Download starsky-mac-x64-desktop as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: starsky-mac-desktop
-          path: ./starskyapp/dist
+          name: starsky-mac-x64-desktop
+          path: ./starskydesktop/dist
      
-      - name: Upload Release Asset starsky-mac-desktop
-        id: upload-starsky-mac-desktop
+      - name: Upload Release Asset starsky-mac-x64-desktop
+        id: upload-starsky-mac-x64-desktop
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  
-          asset_path: ./starskyapp/dist/starsky-mac-desktop.zip
-          asset_name: starsky-mac-desktop.zip
-          asset_content_type: application/zip    
+          asset_path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg
+          asset_name: starsky-mac-x64-desktop.dmg
+          asset_content_type: application/octet-stream
 
       - name: Get tag name (needed for slack)
         id: get_tag_name
+        if: startsWith(github.ref, 'refs/tags/v')
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       - name: Download slack-notification as build artifact
@@ -328,12 +341,13 @@ jobs:
         run: ls
 
       - name: Run Slack Notification
+        if: startsWith(github.ref, 'refs/tags/v')
         working-directory: ./starsky-tools-slack-notification
         run: node slack-notification
         env:
            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-           SLACK_TITLE: 'Release ${{ steps.get_tag_name.outputs.VERSION }} is ready'
-           SLACK_MESSAGE: 'The release is ready https://github.com/qdraw/starsky/releases/edit/${{ steps.get_tag_name.outputs.VERSION }}'
+           SLACK_TITLE: 'Release  ${{ steps.create_release.outputs.url }} is ready'
+           SLACK_MESSAGE: 'The release is ready ${{ steps.create_release.outputs.url }}'
 
   trigger_pipe:
     runs-on: ubuntu-latest

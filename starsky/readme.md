@@ -245,11 +245,11 @@ powershell -File build.ps1 -ScriptArgs '-runtime="osx-x64,osx-arm64"'
 _Using bash_
 
 ```sh
-./build.sh --runtime="win7-x64"
+./build.sh --runtime="win-x64"
 ```
 
 _Using powershell_
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-runtime="win7-x86"'
+powershell -File build.ps1 -ScriptArgs '-runtime="win-x64"'
 ```

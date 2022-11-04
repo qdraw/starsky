@@ -26,14 +26,14 @@ case $(uname -m) in
 
   "arm64")
     if [ $(uname) = "Darwin" ]; then
-        RUNTIME="starsky-mac-desktop" #for now only intel, but this changes
+        RUNTIME="osx-arm64" # got some gatekeeper issues
     fi
     ;;
 
   "x86_64")
     if [ $(uname) = "Darwin" ]; then
-        # server: RUNTIME="osx-x64"
-        RUNTIME="starsky-mac-desktop"
+        # desktop starsky-mac-x64-desktop
+        RUNTIME="osx-x64"
     fi
     # there is no linux desktop
     if [ $(uname) = "Linux" ]; then
