@@ -153,7 +153,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: starsky-win-x64-desktop
-          path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.zip   
+          path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe   
  
   
   create_release:
