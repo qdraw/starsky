@@ -160,6 +160,9 @@ jobs:
     name: Create Release
     needs: [build_core, build_mac, build_win]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      discussions: write
     steps:
        
       - name: Create parent directories
