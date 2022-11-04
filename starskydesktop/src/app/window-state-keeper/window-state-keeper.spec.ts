@@ -116,6 +116,58 @@ describe("window state keeper", () => {
         height: 13,
         isMaximized: true,
         width: 12,
+        x: 40,
+        y: 40
+      });
+    });
+
+    it("trigger onSave min sizes callback Maximized", async () => {
+      jest.spyOn(appConfig, "has").mockImplementationOnce(() => {
+        return Promise.resolve(true);
+      });
+      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        return Promise.resolve({
+          x: 10,
+          y: 11,
+          width: 41,
+          height: 41,
+          isMaximized: false
+        });
+      });
+      const appConfigSetSpy = jest
+        .spyOn(appConfig, "set")
+        .mockImplementationOnce(() => {
+          return Promise.resolve();
+        });
+
+      const result = await windowStateKeeper("test");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      result.track({
+        resize: jest.fn(),
+        move: jest.fn(),
+        close: jest.fn(),
+        getBounds: () => ({
+          x: 10,
+          y: 11,
+          width: 12,
+          height: 13,
+          isMaximized: false
+        }),
+        isMaximized: () => true,
+
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        on: (event: any, callback: Function) => {
+          if (event === "resize") {
+            callback();
+          }
+        }
+      } as any);
+
+      expect(appConfigSetSpy).toHaveBeenCalled();
+      expect(appConfigSetSpy).toHaveBeenCalledWith("windowState.test", {
+        height: 13,
+        isMaximized: true,
+        width: 12,
         x: 10,
         y: 11
       });
