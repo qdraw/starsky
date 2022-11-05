@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 using starsky.foundation.platform.Attributes;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
-using TimeZoneConverter;
 
 namespace starsky.foundation.platform.Models
 {
@@ -345,7 +344,7 @@ namespace starsky.foundation.platform.Models
 					CameraTimeZoneInfo = TimeZoneInfo.Local;
 					return;
 				}
-				CameraTimeZoneInfo = TZConvert.GetTimeZoneInfo(value); 
+				CameraTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(value); 
 			}
 		}
 
