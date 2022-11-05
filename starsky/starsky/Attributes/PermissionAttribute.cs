@@ -8,8 +8,8 @@ using starsky.foundation.accountmanagement.Services;
 
 namespace starsky.Attributes
 {
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-	public class PermissionAttribute : AuthorizeAttribute, IAuthorizationFilter
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
+	public sealed class PermissionAttribute : AuthorizeAttribute, IAuthorizationFilter
 	{
 		private readonly UserManager.AppPermissions[] _permissions;
 		public PermissionAttribute(params UserManager.AppPermissions[] permission)
@@ -21,7 +21,7 @@ namespace starsky.Attributes
 		{
 			var user = context.HttpContext.User;
 
-			if (!user.Identity.IsAuthenticated)
+			if (user.Identity?.IsAuthenticated == false)
 			{
 				context.Result = new UnauthorizedResult();
 			}

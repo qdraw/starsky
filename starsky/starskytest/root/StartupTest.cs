@@ -16,7 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.root
 {
 	[TestClass]
-	public class StartupTest
+	public sealed class StartupTest
 	{
 		[TestMethod]
 		public void Startup_ConfigureServices()

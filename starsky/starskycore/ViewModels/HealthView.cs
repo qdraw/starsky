@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace starskycore.ViewModels
 {
-	public class HealthView
+	public sealed class HealthView
 	{
 		public bool IsHealthy { get; set; } = false;
 		public List<HealthEntry> Entries { get; set; } = new List<HealthEntry>();
@@ -13,7 +13,7 @@ namespace starskycore.ViewModels
 		public TimeSpan TotalDuration { get; set; }
 	}
 	
-	public class HealthEntry {
+	public sealed class HealthEntry {
 		public string Name { get; set; }
 		
 		[JsonConverter(typeof(JsonTimeSpanConverter))]

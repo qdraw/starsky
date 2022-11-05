@@ -4,7 +4,7 @@ using starsky.foundation.storage.Models;
 namespace starskytest.Models
 {
 	[TestClass]
-	public class FolderOrFileModelTest
+	public sealed class FolderOrFileModelTest
 	{
 		[TestMethod]
 		public void FolderOrFileModelFolderOrFileTypeListTest()

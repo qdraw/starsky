@@ -19,7 +19,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class DownloadPhotoControllerTest
+	public sealed class DownloadPhotoControllerTest
 	{
 		private readonly IQuery _query;
 

@@ -14,7 +14,7 @@ namespace build
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S2386:Use an immutable collection or reduce " +
 		"the accessibility of the non-private readonly field", Justification = "Not production code.")]
 	[ShutdownDotNetAfterServerBuild]
-	public class Build : NukeBuild
+	public sealed class Build : NukeBuild
 	{
 		/// Support plugins are available for:
 		///   - JetBrains ReSharper        https://nuke.build/resharper
