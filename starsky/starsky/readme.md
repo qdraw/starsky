@@ -178,14 +178,13 @@ Starsky has a Json restful API. Please read the documentation
 
 > Tip: Breaking changes are documented in `./history.md`
 
-
 | Path                               | Type  | Description                                                                |
 |------------------------------------|-------|----------------------------------------------------------------------------|
 | /api/account/status                | GET   | Check the account status of the login                                      |
 | /account/login                     | GET   | Login form page (HTML)                                                     |
 | /account/login                     | HEAD  | Login form page (HTML)                                                     |
 | /api/account/login                 | POST  | Login the current HttpContext in                                           |
-| /api/account/logout                | POST  | Logout the current HttpContext and redirect to login                       |
+| /api/account/logout                | POST  | Logout the current HttpContext out                                         |
 | /account/logout                    | GET   | Logout the current HttpContext and redirect to login                       |
 | /api/account/change-secret         | POST  | Update password for current user                                           |
 | /api/account/register              | POST  | Create a new user (you need a AF-token first)                              |
@@ -201,6 +200,8 @@ Starsky has a Json restful API. Please read the documentation
 | /api/remove-cache                  | GET   | Delete Database Cache (only the cache)                                     |
 | /api/remove-cache                  | POST  | Delete Database Cache (only the cache)                                     |
 | /api/delete                        | DELETE| Remove files from the disk, but the file must contain the !delete! tag     |
+| /api/disk/mkdir                    | POST  | Make a directory (-p)                                                      |
+| /api/disk/rename                   | POST  | Rename file/folder and update it in the database                           |
 | /api/download-sidecar              | GET   | Download sidecar file for example image.xmp                                |
 | /api/download-photo                | GET   | Select manually the original or thumbnail                                  |
 | /error                             | GET   | Return Error page                                                          |
@@ -209,6 +210,7 @@ Starsky has a Json restful API. Please read the documentation
 | /api/geo/status                    | GET   | Get Geo sync status                                                        |
 | /api/geo/sync                      | POST  | Reverse lookup for Geo Information and/or add Geo location based on a GP...|
 | /api/health                        | GET   | Check if the service has any known errors and return only a stringPublic...|
+| /api/health                        | HEAD  | Check if the service has any known errors and return only a stringPublic...|
 | /api/health/details                | GET   | Check if the service has any known errorsFor Authorized Users only         |
 | /api/health/application-insights   | GET   | Add Application Insights script to user context                            |
 | /api/health/version                | POST  | Check if Client/App version has a match with the API-versionthe paramete...|
@@ -224,9 +226,11 @@ Starsky has a Json restful API. Please read the documentation
 | /api/import/fromUrl                | POST  | Import file from web-url (only whitelisted domains) and import this file...|
 | /api/import/history                | GET   | Today's imported files                                                     |
 | /api/index                         | GET   | The database-view of a directory                                           |
+| /api/memory-cache-debug            | GET   | Missing summary                                                            |
 | /api/info                          | GET   | Get realtime (cached a few minutes) about the file                         |
-| /api/update                        | POST  | Update Exif and Rotation API                                               |
 | /api/replace                       | POST  | Search and Replace text in meta information                                |
+| /api/update                        | POST  | Update Exif and Rotation API                                               |
+| /api/notification/notification     | GET   | Get recent notificationsUse dateTime 2022-04-16T17:33:10.323974Z to get ...|
 | /api/publish                       | GET   | Get all publish profilesTo see the entire config check appSettings         |
 | /api/publish/create                | POST  | Publish                                                                    |
 | /api/publish/exist                 | GET   | To give the user UI feedback when submitting the itemNameTrue is not to ...|
@@ -238,9 +242,6 @@ Starsky has a Json restful API. Please read the documentation
 | /api/suggest                       | GET   | Gets the list of search results (cached)                                   |
 | /api/suggest/all                   | GET   | Show all items in the search suggest cache                                 |
 | /api/suggest/inflate               | GET   | To fill the cache with the data (only if cache is not already filled)      |
-| /api/sync/mkdir                    | POST  | Make a directory (-p)                                                      |
-| /api/sync                          | POST  | Do a file sync in a background process (replace with /api/synchronize)     |
-| /api/sync/rename                   | POST  | Rename file/folder and update it in the database                           |
 | /api/synchronize                   | POST  | Faster API to Check if directory is changed (not recursive)                |
 | /api/synchronize                   | GET   | Faster API to Check if directory is changed (not recursive)                |
 | /api/thumbnail/small/{f}           | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on whats...|
@@ -250,6 +251,7 @@ Starsky has a Json restful API. Please read the documentation
 | /api/thumbnail-generation          | POST  | Create thumbnails for a folder in the background                           |
 | /api/upload                        | POST  | Upload to specific folder (does not check if already has been imported)U...|
 | /api/upload-sidecar                | POST  | Upload sidecar file to specific folder (does not check if already has be...|
+
 
 ### Swagger / OpenAPI
 Swagger is an open-source software framework backed by a large ecosystem

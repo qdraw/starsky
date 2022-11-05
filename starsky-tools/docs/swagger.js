@@ -33,14 +33,16 @@ function parseSwagger() {
       const rightPathSpace = ' '.repeat(pathLen - path.length)
       const rightOperationSpace = ' '.repeat(operationLen - operation.length)
 
-      const summary = pathObject.Operations[operation].Summary.replace(/(\n|\r\n)/ig,"");
+      let summary = "Missing summary"
+      if (pathObject.Operations[operation].Summary) {
+        summary = pathObject.Operations[operation].Summary.replace(/(\n|\r\n)/ig,"");
+      }
 
       const trimmedSummary = trimString(summary, summaryLen);
-      const rightSummarySpace = ' '.repeat(summaryLen - trimmedSummary.length)
+      const rightSummarySpace = ' '.repeat(summaryLen - trimmedSummary.length);
 
       output += `| ${path}${rightPathSpace}| ${operation.toUpperCase()}${rightOperationSpace}` +
       `| ${trimmedSummary}${rightSummarySpace}|\r\n`;
-
     }
   }
   return output;
