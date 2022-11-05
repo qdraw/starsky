@@ -5728,6 +5728,7 @@
               "UnresolvedReference": false
             }
           ],
+          "Summary": "View data from the memory cache - use to debug",
           "Parameters": [],
           "Responses": {
             "200": {
