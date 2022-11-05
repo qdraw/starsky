@@ -4,7 +4,7 @@ using starsky.foundation.database.Models.Account;
 namespace starskytest.Models.Account
 {
 	[TestClass]
-	public class PermissionTest
+	public sealed class PermissionTest
 	{
 		[TestMethod]
 		public void CredentialSetupTest()

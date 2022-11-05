@@ -11,7 +11,7 @@
 //namespace starskytests
 //{
 //    [TestClass]
-//    public class MigrationsTest
+//    public sealed class MigrationsTest
 //    {
 //        public MigrationsTest()
 //        {

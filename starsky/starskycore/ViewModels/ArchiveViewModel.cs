@@ -6,7 +6,7 @@ using starsky.foundation.platform.Helpers;
 namespace starskycore.ViewModels
 {
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
-    public class ArchiveViewModel
+    public sealed class ArchiveViewModel
     {
         public IEnumerable<FileIndexItem> FileIndexItems { get; set; }
         public List<string> Breadcrumb { get; set; }

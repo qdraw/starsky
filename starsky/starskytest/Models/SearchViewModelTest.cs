@@ -5,7 +5,7 @@ using starsky.foundation.database.Models;
 namespace starskytest.Models
 {
 	[TestClass]
-	public class SearchViewModelTest
+	public sealed class SearchViewModelTest
 	{
 		[TestMethod]
 		public void SearchViewModel_ElapsedSeconds_Test()

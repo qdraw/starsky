@@ -11,7 +11,7 @@ namespace starskytest.Helpers
 	/// Also known as BreadcrumbsTest
 	/// </summary>
 	[TestClass]
-	public class BreadcrumbHelperTest
+	public sealed class BreadcrumbHelperTest
 	{
 		[TestMethod]
 		[ExcludeFromCoverage]
