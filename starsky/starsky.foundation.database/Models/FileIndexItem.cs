@@ -358,9 +358,7 @@ namespace starsky.foundation.database.Models
 		/// The DateTime object
 		/// </value>
 		public DateTime DateTime { get; set; }
-
-		public TimeSpan DateTimeOffset { get; set; }
-
+		
 		/// <summary>
 		/// Datetime of when this item is added to the database
 		/// </summary>
