@@ -20,6 +20,10 @@ namespace starsky.Controllers
 			_logger = logger;
 		}
 		
+		/// <summary>
+		/// View data from the memory cache - use to debug
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet("/api/memory-cache-debug")]
 		public IActionResult MemoryCacheDebug()
 		{
