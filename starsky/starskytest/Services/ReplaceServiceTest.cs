@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Services
 {
 	[TestClass]
-	public class ReplaceServiceTest
+	public sealed class ReplaceServiceTest
 	{
 		
 		private readonly MetaReplaceService _metaReplace;

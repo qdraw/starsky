@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 {
 	[TestClass]
-	public class ThumbnailCliTest
+	public sealed class ThumbnailCliTest
 	{
 		[TestMethod]
 		public async Task Thumbnail_NoArgs_Assume_T_True()

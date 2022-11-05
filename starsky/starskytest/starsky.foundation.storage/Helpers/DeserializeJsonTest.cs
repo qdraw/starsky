@@ -6,7 +6,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.storage.Helpers
 {
 	[TestClass]
-	public class DeserializeJsonTest
+	public sealed class DeserializeJsonTest
 	{
 		[TestMethod]
 		public void ReadTest_FromCopiedText_T_Model()

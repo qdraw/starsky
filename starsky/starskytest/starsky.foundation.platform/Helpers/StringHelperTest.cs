@@ -4,7 +4,7 @@ using starsky.foundation.platform.Helpers;
 namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
-	public class StringHelperTest
+	public sealed class StringHelperTest
 	{
 		[TestMethod]
 		public void AsciiNullReplacer_01()

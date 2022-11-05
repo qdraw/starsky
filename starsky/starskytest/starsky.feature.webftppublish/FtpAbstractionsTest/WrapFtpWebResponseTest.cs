@@ -9,7 +9,7 @@ using starsky.feature.webftppublish.FtpAbstractions.Helpers;
 namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 {
 	[TestClass]
-	public class WrapFtpWebResponseTest
+	public sealed class WrapFtpWebResponseTest
 	{
 
 		[TestMethod]

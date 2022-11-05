@@ -13,7 +13,7 @@ using starsky.foundation.storage.Storage;
 namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
-	public class SetupAppSettingsTest
+	public sealed class SetupAppSettingsTest
 	{
 		private  readonly StorageHostFullPathFilesystem _hostStorage;
 

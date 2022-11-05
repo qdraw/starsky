@@ -6,7 +6,7 @@ using starsky.feature.webftppublish.FtpAbstractions.Helpers;
 namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 {
 	[TestClass]
-	public class WrapFtpWebRequestTest
+	public sealed class WrapFtpWebRequestTest
 	{
 		// Use abstraction
 		// These are all null because WebRequest has no public ctor

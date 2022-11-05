@@ -17,7 +17,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.geolookup.Services
 {
 	[TestClass]
-	public class GeoBackgroundTaskTest
+	public sealed class GeoBackgroundTaskTest
 	{
 		private AppSettings _appSettings;
 		private readonly IGeoLocationWrite _geoLocationWrite;

@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.realtime.Middleware
 {
 	[TestClass]
-	public class DisabledWebSocketsMiddlewareTest
+	public sealed class DisabledWebSocketsMiddlewareTest
 	{
 		[TestMethod]
 		public async Task DisabledWebSocketsMiddleware_Invoke()

@@ -5,7 +5,7 @@ using starskyimportercli;
 namespace starskytest.starskyImporterCli
 {
 	[TestClass]
-	public class starskyImporterCliProgramTest
+	public sealed class starskyImporterCliProgramTest
 	{
 		[TestMethod]
 		public void StarskyCliHelpVerbose()

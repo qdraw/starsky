@@ -4,7 +4,7 @@ using starsky.foundation.accountmanagement.Middleware;
 namespace starskytest.Middleware
 {
 	[TestClass]
-	public class MiddlewareBasicAuthenticationHeaderValueTest
+	public sealed class MiddlewareBasicAuthenticationHeaderValueTest
 	{
 		[TestMethod]
 		public void MiddlewareBasicAuthenticationHeaderValueCtorTest()

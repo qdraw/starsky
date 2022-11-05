@@ -9,7 +9,7 @@ using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
-	public class ExtensionRolesHelperTest
+	public sealed class ExtensionRolesHelperTest
 	{
 		
 		[TestMethod]

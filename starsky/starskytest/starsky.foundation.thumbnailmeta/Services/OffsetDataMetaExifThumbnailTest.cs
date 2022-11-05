@@ -12,7 +12,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.readmeta.Services
 {
 	[TestClass]
-	public class OffsetDataMetaExifThumbnailTest
+	public sealed class OffsetDataMetaExifThumbnailTest
 	{
 		[TestMethod]
 		public void ParseMetaThumbnail_Null()

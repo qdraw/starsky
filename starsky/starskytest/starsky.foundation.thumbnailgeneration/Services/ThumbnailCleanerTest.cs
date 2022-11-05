@@ -19,7 +19,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 {
 	[TestClass]
-	public class ThumbnailCleanerTest
+	public sealed class ThumbnailCleanerTest
 	{
 		private readonly Query _query;
 

@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.search.Services
 {
 	[TestClass]
-	public class SearchSuggestionsInflateHostedServiceTest
+	public sealed class SearchSuggestionsInflateHostedServiceTest
 	{
 		private readonly IMemoryCache _memoryCache;
 		private IServiceScopeFactory _scopeFactory;

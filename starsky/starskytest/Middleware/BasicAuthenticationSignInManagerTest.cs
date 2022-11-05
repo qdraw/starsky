@@ -15,7 +15,7 @@ namespace starskytest.Middleware
 {
 
 	[TestClass]
-	public class BasicAuthenticationSignInManagerTest
+	public sealed class BasicAuthenticationSignInManagerTest
 	{
 		private IUserManager _userManager;
 		public IServiceProvider Services { get; set; }

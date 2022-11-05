@@ -7,7 +7,7 @@ using starsky.feature.health.HealthCheck;
 namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
-	public class DateAssemblyHealthCheckTest
+	public sealed class DateAssemblyHealthCheckTest
 	{
 		[TestMethod]
 		public async Task RunCheckHealthAsync()

@@ -18,7 +18,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class SearchSuggestControllerTest
+	public sealed class SearchSuggestControllerTest
 	{
 		private SearchSuggestionsService _searchSuggest;
 		private Query _query;

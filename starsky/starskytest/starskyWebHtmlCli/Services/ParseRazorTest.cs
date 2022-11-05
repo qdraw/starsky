@@ -7,7 +7,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starskyWebHtmlCli.Services
 {
 	[TestClass]
-	public class ParseRazorTest
+	public sealed class ParseRazorTest
 	{
 		[TestMethod]
 		public async Task ParseRazorTestNotFound()

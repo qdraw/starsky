@@ -8,7 +8,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
-	public class PathExistHealthCheckTest
+	public sealed class PathExistHealthCheckTest
 	{
 		[TestMethod]
 		public async Task RunSuccessful()

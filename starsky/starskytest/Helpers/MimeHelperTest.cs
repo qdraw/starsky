@@ -4,7 +4,7 @@ using starskycore.Helpers;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class MimeHelperTest
+	public sealed class MimeHelperTest
 	{
 		[TestMethod]
 		public void GetMimeTypeByFileNameTest()

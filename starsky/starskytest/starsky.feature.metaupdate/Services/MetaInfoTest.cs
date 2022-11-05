@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.metaupdate.Services
 {
 	[TestClass]
-	public class MetaInfoTest
+	public sealed class MetaInfoTest
 	{
 		[TestMethod]
 		public void FileNotInIndex()

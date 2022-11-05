@@ -8,7 +8,7 @@ using starsky.foundation.sync.WatcherServices;
 namespace starskytest.starsky.foundation.sync.WatcherServices
 {
 	[TestClass]
-	public class BufferingFileSystemWatcherTest
+	public sealed class BufferingFileSystemWatcherTest
 	{
 		private readonly string _tempFolder;
 		private readonly string _tempExistingFilesFolder;

@@ -23,7 +23,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Middleware
 {
 	[TestClass]
-	public class BasicAuthenticationMiddlewareTest
+	public sealed class BasicAuthenticationMiddlewareTest
 	{
 		private IUserManager _userManager;
 		private readonly IServiceProvider _serviceProvider;

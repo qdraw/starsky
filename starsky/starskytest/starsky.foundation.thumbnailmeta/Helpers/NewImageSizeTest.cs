@@ -5,7 +5,7 @@ using starsky.foundation.metathumbnail.Helpers;
 namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 {
 	[TestClass]
-	public class NewImageSizeTest
+	public sealed class NewImageSizeTest
 	{
 	
 		[TestMethod]

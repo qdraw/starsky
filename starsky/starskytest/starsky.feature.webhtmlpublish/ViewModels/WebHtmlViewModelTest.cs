@@ -8,7 +8,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.feature.webhtmlpublish.ViewModels
 {
 	[TestClass]
-	public class WebHtmlViewModelTest
+	public sealed class WebHtmlViewModelTest
 	{
 		[TestMethod]
 		public void WebHtmlViewModel1()

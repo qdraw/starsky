@@ -18,7 +18,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.syncbackground.Helpers
 {
 	[TestClass]
-	public class OnStartupSyncTest
+	public sealed class OnStartupSyncTest
 	{
 		private static IServiceScopeFactory GetNewScope()
 		{

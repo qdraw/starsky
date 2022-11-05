@@ -6,7 +6,7 @@ using starskyAdminCli;
 namespace starskytest.starskyAdminCli
 {
 	[TestClass]
-	public class StarskyAdminCliProgramTest
+	public sealed class StarskyAdminCliProgramTest
 	{
 		[TestMethod]
 		public void StarskyAdminCliProgramTest_Help()

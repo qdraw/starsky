@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 {
 	[TestClass]
-	public class CopyPublishedContentTest
+	public sealed class CopyPublishedContentTest
 	{
 		[TestMethod]
 		public void CopyContent_Test()

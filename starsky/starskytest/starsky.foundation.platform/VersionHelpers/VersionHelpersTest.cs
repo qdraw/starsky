@@ -7,7 +7,7 @@ using starsky.foundation.platform.VersionHelpers;
 namespace starskytest.starsky.foundation.platform.VersionHelpers
 {
 	[TestClass]
-	public class VersionHelpersTest
+	public sealed class VersionHelpersTest
 	{
 
 		[TestMethod]

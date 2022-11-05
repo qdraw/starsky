@@ -18,7 +18,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.foundation.accountmangement.Services
 {
 	[TestClass]
-	public class UserManagerTest
+	public sealed class UserManagerTest
 	{
 		private readonly IMemoryCache _memoryCache;
 		private readonly ApplicationDbContext _dbContext;

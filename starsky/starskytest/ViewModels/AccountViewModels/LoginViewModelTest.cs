@@ -4,7 +4,7 @@ using starsky.foundation.accountmanagement.Models.Account;
 namespace starskytest.ViewModels.AccountViewModels
 {
 	[TestClass]
-	public class LoginViewModelTest
+	public sealed class LoginViewModelTest
 	{
 		[TestMethod]
 		public void LoginViewModelTestLoadAll()

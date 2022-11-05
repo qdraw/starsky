@@ -16,7 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.health.Helpers
 {
 	[TestClass]
-	public class CheckForUpdatesHelperTest
+	public sealed class CheckForUpdatesHelperTest
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 

@@ -23,7 +23,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.rename.Services
 {
 	[TestClass]
-	public class RenameServiceTest
+	public sealed class RenameServiceTest
 	{
 		private readonly Query _query;
 		private readonly AppSettings _appSettings;

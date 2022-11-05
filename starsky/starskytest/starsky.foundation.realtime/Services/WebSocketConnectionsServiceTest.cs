@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.realtime.Services
 {
 	[TestClass]
-	public class WebSocketConnectionsServiceTest 
+	public sealed class WebSocketConnectionsServiceTest 
 	{
 		[TestMethod]
 		public async Task SendToAllAsync_success()

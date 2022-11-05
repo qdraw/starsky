@@ -11,7 +11,7 @@ namespace starskytest.starsky.foundation.http.Services
 {
 
 	[TestClass]
-	public class HttpProviderTest
+	public sealed class HttpProviderTest
 	{
 		[TestMethod]
 		public void PostAsync_Ok()

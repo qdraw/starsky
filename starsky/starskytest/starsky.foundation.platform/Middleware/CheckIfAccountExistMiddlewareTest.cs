@@ -15,7 +15,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.foundation.platform.Middleware
 {
 	[TestClass]
-	public class CheckIfAccountExistMiddlewareTest
+	public sealed class CheckIfAccountExistMiddlewareTest
 	{
 		private readonly ServiceProvider _serviceProvider;
 

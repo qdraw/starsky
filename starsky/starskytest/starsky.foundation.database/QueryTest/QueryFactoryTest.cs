@@ -7,7 +7,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	[TestClass]
-	public class QueryFactoryTest
+	public sealed class QueryFactoryTest
 	{
 		[TestMethod]
 		public void QueryFactoryTest_Null()

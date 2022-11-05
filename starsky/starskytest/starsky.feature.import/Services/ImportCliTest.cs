@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.import.Services
 {
 	[TestClass]
-	public class ImportCliTest
+	public sealed class ImportCliTest
 	{
 		private readonly HttpClientHelper _httpClientHelper;
 

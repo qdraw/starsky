@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 {
 	
 	[TestClass]
-	public class PackageTelemetryTest
+	public sealed class PackageTelemetryTest
 	{
 		[TestMethod]
 		public void GetCurrentOsPlatformTest()

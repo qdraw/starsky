@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class HealthControllerTest
+	public sealed class HealthControllerTest
 	{
 		
 		[TestMethod]

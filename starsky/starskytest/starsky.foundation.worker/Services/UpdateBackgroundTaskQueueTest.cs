@@ -23,7 +23,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.worker.Services
 {
 	[TestClass]
-	public class UpdateBackgroundTaskQueueTest
+	public sealed class UpdateBackgroundTaskQueueTest
 	{
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 

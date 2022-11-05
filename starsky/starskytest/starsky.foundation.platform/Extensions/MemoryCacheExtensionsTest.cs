@@ -8,7 +8,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.platform.Extensions
 {
 	[TestClass]
-	public class MemoryCacheExtensionsTest
+	public sealed class MemoryCacheExtensionsTest
 	{
 		[TestMethod]
 		public void NoContentInCache()

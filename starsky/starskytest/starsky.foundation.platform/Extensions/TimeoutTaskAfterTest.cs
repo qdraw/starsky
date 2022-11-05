@@ -6,7 +6,7 @@ using starsky.foundation.platform.Extensions;
 namespace starskytest.starsky.foundation.platform.Extensions
 {
 	[TestClass]
-	public class TimeoutTaskAfterTest
+	public sealed class TimeoutTaskAfterTest
 	{
 		private async Task<bool> EndlessTest(int duration = 10000)
 		{

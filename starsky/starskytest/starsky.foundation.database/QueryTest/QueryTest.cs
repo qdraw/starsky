@@ -21,7 +21,7 @@ using starskytest.starsky.foundation.platform.Services;
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	[TestClass]
-	public class QueryTest
+	public sealed class QueryTest
 	{
 		public QueryTest()
 		{

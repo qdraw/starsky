@@ -24,7 +24,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class ThumbnailControllerTest
+	public sealed class ThumbnailControllerTest
 	{
 		private readonly IQuery _query;
 

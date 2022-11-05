@@ -7,7 +7,7 @@ using starsky.Controllers;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class AllowedTypesControllerTest
+	public sealed class AllowedTypesControllerTest
 	{
 		private readonly HttpContext _httpContext = new DefaultHttpContext();
 

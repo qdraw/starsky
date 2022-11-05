@@ -25,7 +25,7 @@ namespace starskytest.starsky.feature.import.Services
 	/// ImportTest.cs
 	/// </summary>
 	[TestClass]
-	public class ImportTest
+	public sealed class ImportTest
 	{
 		private readonly FakeIStorage _iStorageFake;
 		private readonly string _exampleHash;

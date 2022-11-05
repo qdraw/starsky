@@ -5,7 +5,7 @@ using starskywebftpcli;
 namespace starskytest.starskyWebFtpCli
 {
 	[TestClass]
-	public class StarskyWebFtpCliTest
+	public sealed class StarskyWebFtpCliTest
 	{
 		[TestMethod]
 		public void StarskyCliHelpVerbose()

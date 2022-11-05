@@ -11,7 +11,7 @@ using starsky.foundation.webtelemetry.Extensions;
 namespace starskytest.starsky.foundation.webtelemetry.Extensions
 {
 	[TestClass]
-	public class ApplicationInsightsExtensionTests
+	public sealed class ApplicationInsightsExtensionTests
 	{
 		[TestMethod]
 		public void TestIfServiceIsEnabled()

@@ -7,7 +7,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starskySynchronizeCli
 {
 	[TestClass]
-	public class SynchronizeCliTest
+	public sealed class SynchronizeCliTest
 	{
 		[TestMethod]
 		[Timeout(5000)]

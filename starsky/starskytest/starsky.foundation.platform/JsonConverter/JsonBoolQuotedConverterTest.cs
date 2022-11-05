@@ -6,7 +6,7 @@ using starsky.foundation.platform.JsonConverter;
 namespace starskytest.starsky.foundation.platform.JsonConverter
 {
 	[TestClass]
-	public class JsonBoolQuotedConverterTest
+	public sealed class JsonBoolQuotedConverterTest
 	{
 		[TestMethod]
 		public void Write_Serialize()

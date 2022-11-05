@@ -8,7 +8,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.Helpers
 {
 	[TestClass]
-	public class SyncIgnoreCheckTest
+	public sealed class SyncIgnoreCheckTest
 	{
 		[TestMethod]
 		public void With_No_config()

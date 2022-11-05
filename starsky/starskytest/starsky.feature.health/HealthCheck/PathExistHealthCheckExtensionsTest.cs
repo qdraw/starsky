@@ -8,7 +8,7 @@ using starsky.feature.health.HealthCheck;
 namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
-	public class PathExistHealthCheckExtensionsTest
+	public sealed class PathExistHealthCheckExtensionsTest
 	{
 		[TestMethod]
 		public void CheckIfServiceExist()

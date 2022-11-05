@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Services
 {
 	[TestClass]
-	public class FileHashTest
+	public sealed class FileHashTest
 	{
 		[TestMethod]
 		public void FileHashGenerateRandomBytesTest()

@@ -9,7 +9,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.foundation.consoletelemetry.Extensions
 {
 	[TestClass]
-	public class ApplicationInsightsWorkerExtensionTest
+	public sealed class ApplicationInsightsWorkerExtensionTest
 	{
 		[TestMethod]
 		public void TestIfServiceIsEnabled()

@@ -12,7 +12,7 @@ using starskytest.Models;
 namespace starskytest.starsky.feature.geolookup.Services
 {
 	[TestClass]
-	public class GeoLocationWriteTest
+	public sealed class GeoLocationWriteTest
 	{
 		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;

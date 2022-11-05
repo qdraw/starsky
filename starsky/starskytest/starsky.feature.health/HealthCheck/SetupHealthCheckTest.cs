@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
-	public class SetupHealthCheckTest
+	public sealed class SetupHealthCheckTest
 	{
 	
 		[TestMethod]

@@ -4,7 +4,7 @@ using starsky.foundation.database.Models;
 namespace starskytest.starsky.foundation.database.Models
 {
 	[TestClass]
-	public class NotificationItemTest
+	public sealed class NotificationItemTest
 	{
 		[TestMethod]
 		public void NotificationItemIdTest()

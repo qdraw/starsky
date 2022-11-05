@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.writemeta.Helpers
 {
 	[TestClass]
-	public class ExifToolTest
+	public sealed class ExifToolTest
 	{
 
 		[TestMethod]

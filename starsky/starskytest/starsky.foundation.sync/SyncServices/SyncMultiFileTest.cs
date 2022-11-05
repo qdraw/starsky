@@ -16,7 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
 	[TestClass]
-	public class SyncMultiFileTest
+	public sealed class SyncMultiFileTest
 	{
 		private readonly IStorage _iStorageFake;
 		private readonly DateTime _lastEditedDateTime;

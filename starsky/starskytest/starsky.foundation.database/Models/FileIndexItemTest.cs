@@ -9,7 +9,7 @@ using starskycore.Helpers;
 namespace starskytest.starsky.foundation.database.Models
 {
 	[TestClass]
-	public class FileIndexItemTest
+	public sealed class FileIndexItemTest
 	{
 		[TestMethod]
 		public void FileIndexItemTest_SetTagsToNull()

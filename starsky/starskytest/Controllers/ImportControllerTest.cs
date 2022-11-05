@@ -34,7 +34,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class ImportControllerTest
+	public sealed class ImportControllerTest
 	{
 		private readonly IImport _import;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;

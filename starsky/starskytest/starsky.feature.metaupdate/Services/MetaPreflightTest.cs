@@ -22,7 +22,7 @@ using starskytest.Models;
 namespace starskytest.starsky.feature.metaupdate.Services
 {
 	[TestClass]
-	public class MetaPreflightTest
+	public sealed class MetaPreflightTest
 	{
 		private readonly IMemoryCache _memoryCache;
 		private readonly IQuery _query;

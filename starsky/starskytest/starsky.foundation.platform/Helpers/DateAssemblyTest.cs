@@ -6,7 +6,7 @@ using starsky.foundation.platform.Helpers;
 namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
-	public class DateAssemblyTest
+	public sealed class DateAssemblyTest
 	{
 				
 		[TestMethod]

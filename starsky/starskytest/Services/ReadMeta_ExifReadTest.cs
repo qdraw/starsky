@@ -37,7 +37,7 @@ namespace starskytest.Services
 	}
 
 	[TestClass]
-	public class ExifReadTest
+	public sealed class ExifReadTest
 	{
 
 		[TestMethod]

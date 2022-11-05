@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Extensions
 {
 	[TestClass]
-	public class TestConnectionTest
+	public sealed class TestConnectionTest
 	{
 		[TestMethod]
 		public void TestConnection_Default()

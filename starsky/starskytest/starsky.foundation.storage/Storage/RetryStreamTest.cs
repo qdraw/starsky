@@ -6,7 +6,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starsky.foundation.storage.Storage
 {
 	[TestClass]
-	public class RetryStreamTest
+	public sealed class RetryStreamTest
 	{
 		[TestMethod]
 		public void ReturnedThe3TimeAnStream()

@@ -6,7 +6,7 @@ using starskythumbnailmetacli;
 namespace starskytest.starskythumbnailmetacli
 {
 	[TestClass]
-	public class ProgramTest
+	public sealed class ProgramTest
 	{
 		[TestMethod]
 		public async Task ProgramTest_default()

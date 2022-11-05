@@ -38,7 +38,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class ExportControllerTest
+	public sealed class ExportControllerTest
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;

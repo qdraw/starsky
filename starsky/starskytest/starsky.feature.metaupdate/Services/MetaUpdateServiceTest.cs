@@ -24,7 +24,7 @@ using starskytest.Models;
 namespace starskytest.starsky.feature.metaupdate.Services
 {
 	[TestClass]
-	public class MetaUpdateServiceTest
+	public sealed class MetaUpdateServiceTest
 	{
 		private readonly IMemoryCache _memoryCache;
 		private readonly IQuery _query;

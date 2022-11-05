@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webftppublish.Services
 {
 	[TestClass]
-	public class FtpServiceTest
+	public sealed class FtpServiceTest
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _storage;

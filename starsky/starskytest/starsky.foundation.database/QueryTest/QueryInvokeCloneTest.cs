@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	[TestClass]
-	public class QueryInvokeCloneTest
+	public sealed class QueryInvokeCloneTest
 	{
 		private IServiceScopeFactory CreateNewScope()
 		{

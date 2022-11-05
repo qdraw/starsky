@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class HomeControllerTest
+	public sealed class HomeControllerTest
 	{
 		private readonly IAntiforgery _antiForgery;
 		private readonly HttpContext _httpContext;

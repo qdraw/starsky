@@ -15,7 +15,7 @@ namespace starskytest.starsky.feature.realtime.Services
 {
 
 	[TestClass]
-	public class CleanUpConnectionBackgroundServiceTest
+	public sealed class CleanUpConnectionBackgroundServiceTest
 	{
 		private readonly IRealtimeConnectionsService _realtimeConnectionsService;
 		private readonly FakeIWebLogger _console;

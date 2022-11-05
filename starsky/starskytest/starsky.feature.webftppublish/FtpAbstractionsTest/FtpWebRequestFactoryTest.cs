@@ -5,7 +5,7 @@ using starsky.feature.webftppublish.FtpAbstractions.Services;
 namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 {
 	[TestClass]
-	public class FtpWebRequestFactoryTest
+	public sealed class FtpWebRequestFactoryTest
 	{
 		[TestMethod]
 		[ExpectedException(typeof(System.UriFormatException))]

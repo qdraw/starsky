@@ -6,7 +6,7 @@ using starsky.foundation.platform.Helpers;
 namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
-	public class RetryHelperTest
+	public sealed class RetryHelperTest
 	{
 		[TestMethod]
 		public void RetrySucceed()

@@ -18,7 +18,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
 	[TestClass]
-	public class SyncFolderTest
+	public sealed class SyncFolderTest
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IQuery _query;

@@ -8,7 +8,7 @@ using starsky.Health;
 namespace starskytest.Health
 {
 	[TestClass]
-	public class HealthResponseWriterTest
+	public sealed class HealthResponseWriterTest
 	{
 		
 		[TestMethod]

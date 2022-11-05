@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.storage.Storage
 {
 	[TestClass]
-	public class StorageFilesystemTest
+	public sealed class StorageFilesystemTest
 	{
 		private  readonly StorageSubPathFilesystem _storage;
 		private  readonly CreateAnImage _newImage;

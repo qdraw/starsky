@@ -36,7 +36,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class UploadControllerTest
+	public sealed class UploadControllerTest
 	{
 		private readonly IQuery _query;
 		private readonly IStorage _iStorage;

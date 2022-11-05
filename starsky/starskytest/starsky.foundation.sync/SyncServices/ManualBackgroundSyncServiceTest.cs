@@ -17,7 +17,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
 	[TestClass]
-	public class ManualBackgroundSyncServiceTest
+	public sealed class ManualBackgroundSyncServiceTest
 	{
 
 		private static IServiceScopeFactory GetScope()

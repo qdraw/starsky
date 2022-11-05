@@ -9,7 +9,7 @@ using starskytest.Helpers;
 namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 {
 	[TestClass]
-	public class TelemetryConfigurationHelperTest
+	public sealed class TelemetryConfigurationHelperTest
 	{
 		[TestMethod]
 		public void InitTelemetryClientTest()

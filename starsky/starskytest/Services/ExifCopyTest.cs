@@ -11,7 +11,7 @@ using starskytest.Models;
 namespace starskytest.Services
 {
 	[TestClass]
-	public class ExifCopyTest
+	public sealed class ExifCopyTest
 	{
 		private readonly AppSettings _appSettings;
 

@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class NotificationControllerTest
+	public sealed class NotificationControllerTest
 	{
 		[TestMethod]
 		public async Task NotificationController_Get_Test_Null()

@@ -20,7 +20,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class IndexControllerTest
+	public sealed class IndexControllerTest
 	{
 		private readonly IQuery _query;
 

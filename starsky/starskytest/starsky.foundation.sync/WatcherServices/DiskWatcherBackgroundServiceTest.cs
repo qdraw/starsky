@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.WatcherServices
 {
 	[TestClass]
-	public class DiskWatcherBackgroundServiceTest
+	public sealed class DiskWatcherBackgroundServiceTest
 	{
 		[TestMethod]
 		public void StartAsync_Enabled()

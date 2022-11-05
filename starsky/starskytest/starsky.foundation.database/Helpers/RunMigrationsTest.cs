@@ -22,7 +22,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.Helpers
 {
 	[TestClass]
-	public class RunMigrationsTest
+	public sealed class RunMigrationsTest
 	{
 		[TestMethod]
 		public async Task Test()

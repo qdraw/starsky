@@ -13,7 +13,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Services
 {
 	[TestClass]
-	public class ReadGpxFromFileTest
+	public sealed class ReadGpxFromFileTest
 	{
 		[TestMethod]
 		public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile_Null()

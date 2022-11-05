@@ -4,7 +4,7 @@ using starsky.foundation.database.Models.Account;
 namespace starskytest.starsky.foundation.database.Models.Account
 {
 	[TestClass]
-	public class RolePermissionTest
+	public sealed class RolePermissionTest
 	{
 		[TestMethod]
 		public void RolePermission_Role_Permission()

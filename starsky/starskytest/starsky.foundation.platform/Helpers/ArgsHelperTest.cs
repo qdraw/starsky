@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
-	public class ArgsHelperTest
+	public sealed class ArgsHelperTest
 	{
 		private readonly AppSettings _appSettings;
 

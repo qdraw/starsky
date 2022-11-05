@@ -6,7 +6,7 @@ using starsky.foundation.storage.Services;
 namespace starskytest.starsky.foundation.storage.Services
 {
 	[TestClass]
-	public class Base32Test
+	public sealed class Base32Test
 	{
 		[TestMethod]
 		public void Base32EncodeDecodeTest()

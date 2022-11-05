@@ -12,7 +12,7 @@ using starsky.foundation.accountmanagement.Services;
 namespace starskytest.Attributes
 {
 	[TestClass]
-	public class PermissionAttributeTest
+	public sealed class PermissionAttributeTest
 	{
 		[TestMethod]
 		public void NotLoggedIn()

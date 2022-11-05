@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.storage.ArchiveFormats
 {
 	[TestClass]
-	public class TarBalTest
+	public sealed class TarBalTest
 	{
 		private readonly StorageHostFullPathFilesystem _hostStorageProvider;
 

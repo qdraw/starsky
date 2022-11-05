@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.search.Services
 {
 	[TestClass]
-	public class SearchSuggestionsServiceTest
+	public sealed class SearchSuggestionsServiceTest
 	{
 		private SearchSuggestionsService _suggest;
 		private Query _query;

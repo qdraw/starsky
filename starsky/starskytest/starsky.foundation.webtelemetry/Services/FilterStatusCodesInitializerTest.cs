@@ -6,7 +6,7 @@ using starsky.foundation.webtelemetry.Services;
 namespace starskytest.starsky.foundation.platform.Services
 {
 	[TestClass]
-	public class FilterStatusCodesInitializerTest
+	public sealed class FilterStatusCodesInitializerTest
 	{
 		[TestMethod]
 		public void Overwrite401ResultToSuccess()

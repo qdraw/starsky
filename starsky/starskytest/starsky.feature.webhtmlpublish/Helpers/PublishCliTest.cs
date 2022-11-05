@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 {
 	[TestClass]
-	public class PublishCliTest
+	public sealed class PublishCliTest
 	{
 		[TestMethod]
 		public async Task Publisher_Help()

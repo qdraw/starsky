@@ -14,7 +14,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.readmeta.Services
 {
 	[TestClass]
-	public class WriteMetaThumbnailServiceTest
+	public sealed class WriteMetaThumbnailServiceTest
 	{
 		[TestMethod]
 		public async Task WriteAndCropFile_Fail_BufferNull()

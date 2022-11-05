@@ -10,7 +10,7 @@ using starsky.foundation.databasetelemetry.Services;
 namespace starskytest.starsky.foundation.databasetelemetry.Services
 {
 	[TestClass]
-	public class DatabaseTelemetryInterceptorTest
+	public sealed class DatabaseTelemetryInterceptorTest
 	{
 		[TestMethod]
 		public void DatabaseTelemetryInterceptor_GetSqlName_Ok()

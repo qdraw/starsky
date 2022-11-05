@@ -6,7 +6,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 {
 	[TestClass]
-	public class ToCreateSubfolderTest
+	public sealed class ToCreateSubfolderTest
 	{
 		[TestMethod]
 		public void Create()

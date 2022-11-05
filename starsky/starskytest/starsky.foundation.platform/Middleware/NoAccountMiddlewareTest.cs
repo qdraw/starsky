@@ -16,7 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.platform.Middleware
 {
 	[TestClass]
-	public class NoAccountMiddlewareTest
+	public sealed class NoAccountMiddlewareTest
 	{
 		private readonly ServiceProvider _serviceProvider;
 

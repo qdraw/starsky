@@ -66,7 +66,7 @@ namespace starskytest.Helpers
 
 
 	[TestClass]
-	public class ApplicationInsightsJsHelperTest
+	public sealed class ApplicationInsightsJsHelperTest
 	{
 		private ServiceProvider _serviceProvider;
 		private TelemetryClient _telemetryClient;

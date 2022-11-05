@@ -17,7 +17,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starsky.foundation.database.Models
 {
 	[TestClass]
-	public class ImportIndexItemTest
+	public sealed class ImportIndexItemTest
 	{
 		private readonly AppSettings _appSettings;
 

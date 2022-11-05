@@ -4,7 +4,7 @@ using starsky.foundation.readmeta.Helpers;
 namespace starskytest.starsky.foundation.readmeta.Helpers
 {
 	[TestClass]
-	public class MathFractionTest
+	public sealed class MathFractionTest
 	{
 		[TestMethod]
 		public void MathFraction_Fraction1()

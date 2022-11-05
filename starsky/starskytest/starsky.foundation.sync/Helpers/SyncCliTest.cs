@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.Helpers
 {
 	[TestClass]
-	public class SyncCliTest
+	public sealed class SyncCliTest
 	{
 		[TestMethod]
 		public async Task Sync_NoArgs_Assume_DefaultCheck()

@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Services
 {
 	[TestClass]
-	public class ReadMeta_ReadMetaBoth_Cache_Test
+	public sealed class ReadMeta_ReadMetaBoth_Cache_Test
 	{
 
         

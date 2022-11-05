@@ -13,7 +13,7 @@ using starsky.Attributes;
 namespace starskytest.Attributes
 {
 	[TestClass]
-	public class DisableFormValueModelBindingAttributeTest
+	public sealed class DisableFormValueModelBindingAttributeTest
 	{
 		[TestMethod]
 		public void DisableFormValueModelBindingAttribute_RemoveTest()

@@ -27,7 +27,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.WatcherHelpers
 {
 	[TestClass]
-	public class SyncWatcherConnectorTest
+	public sealed class SyncWatcherConnectorTest
 	{
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]

@@ -8,7 +8,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starskyGeoCli
 {
 	[TestClass]
-	public class starskyGeoCliTest
+	public sealed class starskyGeoCliTest
 	{
 		[ExcludeFromCoverage]
 		[TestMethod]

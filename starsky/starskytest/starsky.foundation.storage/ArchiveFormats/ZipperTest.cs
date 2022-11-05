@@ -4,7 +4,7 @@ using starsky.foundation.storage.ArchiveFormats;
 namespace starskytest.starsky.foundation.storage.ArchiveFormats
 {
 	[TestClass]
-	public class ZipperTest
+	public sealed class ZipperTest
 	{
 		[TestMethod]
 		public void NotFound()

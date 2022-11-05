@@ -12,7 +12,7 @@ using starsky.foundation.webtelemetry.Models;
 namespace starskytest.starsky.foundation.webtelemetry.Helpers
 {
 	[TestClass]
-	public class RequestTelemetryHelperTest
+	public sealed class RequestTelemetryHelperTest
 	{
 		[TestMethod]
 		public void GetOperationIdNull()

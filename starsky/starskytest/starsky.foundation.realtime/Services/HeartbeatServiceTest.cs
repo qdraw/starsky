@@ -8,7 +8,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.realtime.Services
 {
 	[TestClass]
-	public class HeartbeatServiceTest 
+	public sealed class HeartbeatServiceTest 
 	{
 		[TestMethod]
 		public async Task StartAsync()

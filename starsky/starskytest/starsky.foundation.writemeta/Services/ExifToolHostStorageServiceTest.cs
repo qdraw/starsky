@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.writemeta.Services
 {
 	[TestClass]
-	public class ExifToolHostStorageServiceTest
+	public sealed class ExifToolHostStorageServiceTest
 	{
 		private readonly CreateAnImage _createAnImage;
 

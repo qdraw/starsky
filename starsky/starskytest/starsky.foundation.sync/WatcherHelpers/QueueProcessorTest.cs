@@ -12,7 +12,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.WatcherHelpers
 {
 	[TestClass]
-	public class QueueProcessorTest
+	public sealed class QueueProcessorTest
 	{
 		[TestMethod]
 		public async Task QueueProcessorTest_QueueInput()

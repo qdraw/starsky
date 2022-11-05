@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
-	public class AppSettingsCompareHelperTest
+	public sealed class AppSettingsCompareHelperTest
 	{
 		[TestMethod]
 		public void NewObject()

@@ -6,7 +6,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class AntiForgeryCookieTest
+	public sealed class AntiForgeryCookieTest
 	{
 		private string GetCookieValueFromResponse(HttpResponse response, string cookieName)
 		{
