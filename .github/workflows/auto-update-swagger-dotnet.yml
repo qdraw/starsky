@@ -54,4 +54,24 @@ jobs:
         app__AddSwaggerExportExitAfter: "true"
       run: dotnet run --no-launch-profile
 
+    - name: Copy
+      shell: bash
+      run: cp starsky/starsky/bin/Debug/net6.0/temp/starsky.json starsky-tools/docs/assets/config/starsky.json
+
+    - name: Generate swagger
+      shell: bash
+      working-directory: ./starsky-tools/docs
+      run: node swagger.js
+
+    - name: Commit changes
+      uses: EndBug/add-and-commit@v4
+      with:
+        author_name: DocsUpdateBot
+        author_email: qdraw@users.noreply.github.com
+        message: "[NugetPackagesListUpdate] Auto commited swager list"
+        add: "starsky-tools/docs/assets/config/starsky.json"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
 
