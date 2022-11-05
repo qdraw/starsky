@@ -188,6 +188,8 @@ namespace starskytest.starsky.foundation.platform.Models
 				CameraTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Europe/Amsterdam")
 			};
 
+			Console.WriteLine(appSettings.CameraTimeZone);
+			
 			// Linux: Europe/Amsterdam
 			// Windows: W. Europe Standard Time
 
