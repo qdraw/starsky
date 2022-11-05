@@ -21,6 +21,7 @@ namespace starsky.foundation.readmeta.Services
 		private readonly IStorage _iStorage;
 		private readonly ReadMetaExif _readExif;
 		private readonly ReadMetaXmp _readXmp;
+		private readonly ReadMetaGpx _readMetaGpx;
 
 		/// <summary>
 		/// Used to get from all locations
@@ -36,6 +37,7 @@ namespace starsky.foundation.readmeta.Services
 			_iStorage = iStorage;
 			_readExif = new ReadMetaExif(_iStorage, appSettings,logger);
 			_readXmp = new ReadMetaXmp(_iStorage, memoryCache);
+			_readMetaGpx = new ReadMetaGpx(logger);
 		}
 
 		private FileIndexItem ReadExifAndXmpFromFileDirect(string subPath)
@@ -43,7 +45,7 @@ namespace starsky.foundation.readmeta.Services
 			if ( _iStorage.ExistFile(subPath) 
 			     && ExtensionRolesHelper.IsExtensionForceGpx(subPath) )
 			{
-				return ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(subPath), subPath);
+				return _readMetaGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(subPath), subPath);
 			}
 	        
 			var fileIndexItemWithPath = new FileIndexItem(subPath);

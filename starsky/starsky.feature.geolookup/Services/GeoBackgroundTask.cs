@@ -40,7 +40,7 @@ namespace starsky.feature.geolookup.Services
 			_readMeta = new ReadMeta(_iStorage, appSettings, memoryCache, logger);
 			_geoLocationWrite = geoLocationWrite;
 			_logger = logger;
-			_geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, memoryCache);
+			_geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, logger, memoryCache);
 			_geoReverseLookup = geoReverseLookup;
 		}
 		

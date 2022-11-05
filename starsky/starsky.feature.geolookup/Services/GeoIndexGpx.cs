@@ -7,6 +7,7 @@ using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
@@ -21,12 +22,15 @@ namespace starsky.feature.geolookup.Services
 	    private readonly AppSettings _appSettings;
 	    private readonly IStorage _iStorage;
 	    private readonly IMemoryCache _cache;
+	    private readonly IWebLogger _logger;
 
-	    public GeoIndexGpx(AppSettings appSettings, IStorage iStorage, IMemoryCache memoryCache = null )
+	    public GeoIndexGpx(AppSettings appSettings, IStorage iStorage, 
+		    IWebLogger logger = null, IMemoryCache memoryCache = null )
         {
             _appSettings = appSettings;
 	        _iStorage = iStorage;
 	        _cache = memoryCache;
+	        _logger = logger;
         }
         
         private static List<FileIndexItem> GetNoLocationItems(IEnumerable<FileIndexItem> metaFilesInDirectory)
@@ -50,7 +54,7 @@ namespace starsky.feature.geolookup.Services
 	            
 	            using ( var stream = _iStorage.ReadStream(metaFileItem.FilePath) )
 	            {
-		            geoList.AddRange(ReadMetaGpx.ReadGpxFile(stream, geoList));
+		            geoList.AddRange(new ReadMetaGpx(_logger).ReadGpxFile(stream, geoList));
 	            }
             }
             return geoList;

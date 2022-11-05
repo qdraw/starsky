@@ -8,6 +8,7 @@ using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Helpers;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.Services
 {
@@ -17,7 +18,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile_Null()
 		{
-			var returnItem = ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(null,"/test.gpx");
+			var returnItem = new ReadMetaGpx(new FakeIWebLogger()).ReadGpxFromFileReturnAfterFirstField(null,"/test.gpx");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,returnItem.Status);
 			Assert.AreEqual("/test.gpx",returnItem.FilePath);
 		}
@@ -28,7 +29,7 @@ namespace starskytest.Services
 			var gpxBytes = CreateAnGpx.Bytes;
 			MemoryStream stream = new MemoryStream(gpxBytes);
 	        
-			var returnItem = ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
+			var returnItem = new ReadMetaGpx(new FakeIWebLogger()).ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
 			Assert.AreEqual(5.485941,returnItem.Longitude,0.001);
 			Assert.AreEqual(51.809360,returnItem.Latitude,0.001);
 			Assert.AreEqual("_20180905-fietsen-oss",returnItem.Title);
@@ -50,7 +51,7 @@ namespace starskytest.Services
 			var gpxBytes = Array.Empty<byte>();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 	        
-			var returnItem = ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
+			var returnItem = new ReadMetaGpx(new FakeIWebLogger()).ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
 			Assert.AreEqual(new DateTime(),returnItem.DateTime );
 			Assert.AreEqual("/test.gpx",returnItem.FilePath);
 		}
@@ -62,7 +63,7 @@ namespace starskytest.Services
 			MemoryStream stream = new MemoryStream(gpxBytes);
 
 			var returnItem =
-				ReadMetaGpx.ReadGpxFromFileReturnAfterFirstField(stream, "/test.gpx");
+				new ReadMetaGpx(new FakeIWebLogger()).ReadGpxFromFileReturnAfterFirstField(stream, "/test.gpx");
 			Assert.AreEqual("test.gpx",returnItem.FileName);
 			Assert.AreEqual("/",returnItem.ParentDirectory);
 		}
@@ -72,9 +73,9 @@ namespace starskytest.Services
 		{
 			var gpxBytes = CreateAnGpx.Bytes;
 			MemoryStream stream = new MemoryStream(gpxBytes);
-			var returnItem = ReadMetaGpx.ReadGpxFile(stream);
-			Assert.AreEqual(5.485941,returnItem.FirstOrDefault().Longitude,0.001);
-			Assert.AreEqual(51.809360,returnItem.FirstOrDefault().Latitude,0.001);
+			var returnItem = new ReadMetaGpx(new FakeIWebLogger()).ReadGpxFile(stream);
+			Assert.AreEqual(5.485941,returnItem.FirstOrDefault()!.Longitude,0.001);
+			Assert.AreEqual(51.809360,returnItem.FirstOrDefault()!.Latitude,0.001);
 			DateTime.TryParseExact("2018-09-05T17:31:53Z", 
 				"yyyy-MM-ddTHH:mm:ssZ", 
 				CultureInfo.InvariantCulture, 
@@ -82,9 +83,9 @@ namespace starskytest.Services
 				out var expectDateTime);
 	        
 			// gpx is always utc
-			Assert.AreEqual(expectDateTime,returnItem.FirstOrDefault().DateTime);
-			Assert.AreEqual("_20180905-fietsen-oss",returnItem.FirstOrDefault().Title);
-			Assert.AreEqual(7.263,returnItem.FirstOrDefault().Altitude,0.001);
+			Assert.AreEqual(expectDateTime,returnItem.FirstOrDefault()!.DateTime);
+			Assert.AreEqual("_20180905-fietsen-oss",returnItem.FirstOrDefault()!.Title);
+			Assert.AreEqual(7.263,returnItem.FirstOrDefault()!.Altitude,0.001);
 		}
 
 		[TestMethod]
@@ -96,7 +97,7 @@ namespace starskytest.Services
 
 			var returnItem = ReadMetaGpx.ParseXml(xxeExample);
 
-			Assert.AreEqual(string.Empty, returnItem.ChildNodes[1].InnerText);
+			Assert.AreEqual(string.Empty, returnItem.ChildNodes[1]!.InnerText);
 		}
 
 	}

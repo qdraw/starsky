@@ -8,20 +8,31 @@ using System.Text;
 using System.Xml;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Helpers;
 
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
-    public static class ReadMetaGpx
+    public sealed class ReadMetaGpx
     {
+	    private readonly IWebLogger _logger;
+
+	    public ReadMetaGpx(IWebLogger logger)
+	    {
+		    _logger = logger;
+	    }
+	    
 	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
 	    
-        public static FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream? stream, string subPath)
+        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream? stream, string subPath)
         {
 	        if ( stream == null )
 	        {
-		        var returnItem = new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.OperationNotSupported};
+		        var returnItem = new FileIndexItem(subPath)
+		        {
+			        Status = FileIndexItem.ExifStatus.OperationNotSupported
+		        };
 		        return returnItem;
 	        }
 
@@ -29,6 +40,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 	        if ( !readGpxFile.Any() )
 	        {
+		        _logger.LogInformation($"SystemXmlXmlException for {subPath}");
 		        return new FileIndexItem(subPath)
 		        {
 			        Tags = "SystemXmlXmlException",
@@ -78,7 +90,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <param name="geoList"></param>
 	    /// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
 	    /// <returns></returns>
-	    public static List<GeoListItem> ReadGpxFile(Stream stream, List<GeoListItem>? geoList = null, int returnAfter = int.MaxValue)
+	    public List<GeoListItem> ReadGpxFile(Stream stream, 
+		    List<GeoListItem>? geoList = null, int returnAfter = int.MaxValue)
         {
             if (geoList == null) geoList = new List<GeoListItem>();
 
@@ -91,7 +104,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
 	        catch ( XmlException e )
 	        {
-		        Console.WriteLine($"XmlException>>\n{e}\n <<XmlException");
+		        _logger.LogInformation($"XmlException for {e}");
 		        return geoList;
 	        }
 
