@@ -192,18 +192,8 @@ namespace starskytest.starsky.foundation.platform.Models
 			
 			// Linux: Europe/Amsterdam
 			// Windows: W. Europe Standard Time
-
-			bool isWindows = RuntimeInformation
-				.IsOSPlatform(OSPlatform.Windows);
-			if ( isWindows )
-			{
-				Assert.IsTrue(appSettings.CameraTimeZone.Contains("W. Europe Standard Time"));
-			}
-			else
-			{
-				Assert.IsTrue(appSettings.CameraTimeZone.Contains("Europe/Amsterdam"));
-			}
-
+			
+			Assert.AreEqual("Europe/Amsterdam", appSettings.CameraTimeZone);
 		}
 
 		[TestMethod]
