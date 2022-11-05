@@ -95,11 +95,13 @@ namespace starsky.feature.geolookup.Services
             new GeoCacheStatusService(_cache).StatusUpdate(subPath,
 	            metaFilesInDirectory.Count, StatusType.Total);
             
-            foreach (var metaFileItem in metaFilesInDirectory.Select((value, index) => new { value, index }))
+            foreach (var metaFileItem in metaFilesInDirectory.Select(
+	                     (value, index) => new { value, index }))
             {
-	            var dateTimeCameraUtc = ConvertTimeZone(metaFileItem.value.DateTime, metaFileItem.value.FilePath);
+	            var dateTimeCameraUtc = ConvertTimeZone(metaFileItem.value.DateTime, 
+		            metaFileItem.value.FilePath);
                 
-                var fileGeoData = gpxList.OrderBy(p => Math.Abs((p.DateTime - dateTimeCameraUtc).Ticks)).FirstOrDefault();
+                var fileGeoData = gpxList.MinBy(p => Math.Abs((p.DateTime - dateTimeCameraUtc).Ticks));
                 if(fileGeoData == null) continue;
 
                 var minutesDifference = (dateTimeCameraUtc - fileGeoData.DateTime).TotalMinutes;

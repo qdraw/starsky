@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using GeoTimeZone;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -25,7 +26,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    
 	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
 	    
-        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream? stream, string subPath)
+        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream? stream, 
+	        string subPath, bool useLocal = true)
         {
 	        if ( stream == null )
 	        {
@@ -40,7 +42,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 	        if ( !readGpxFile.Any() )
 	        {
-		        _logger.LogInformation($"SystemXmlXmlException for {subPath}");
+		        _logger.LogInformation($"[ReadMetaGpx] SystemXmlXmlException for {subPath}");
 		        return new FileIndexItem(subPath)
 		        {
 			        Tags = "SystemXmlXmlException",
@@ -57,13 +59,24 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return new FileIndexItem(subPath)
 	        {
 		        Title = title,
-		        DateTime = dateTime,
+		        DateTime = ConvertDateTime(dateTime, useLocal, latitude, longitude),
 		        Latitude = latitude,
 		        Longitude = longitude,
 		        LocationAltitude = altitude,
 		        ColorClass = ColorClassParser.Color.None,
 		        ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
 	        };
+        }
+
+        internal static DateTime ConvertDateTime(DateTime dateTime, bool useLocal, 
+	        double latitude, double longitude)
+        {
+	        if ( !useLocal ) return dateTime;
+	        var localTimeZoneNameResult = TimeZoneLookup
+		        .GetTimeZone(latitude, longitude).Result;
+	        var localTimeZone =
+		        TimeZoneInfo.FindSystemTimeZoneById(localTimeZoneNameResult);
+	        return TimeZoneInfo.ConvertTimeFromUtc(dateTime, localTimeZone);
         }
 
         private static string GetTrkName(XmlNode? gpxDoc, XmlNamespaceManager namespaceManager)

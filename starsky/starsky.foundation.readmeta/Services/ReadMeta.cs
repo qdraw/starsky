@@ -45,7 +45,10 @@ namespace starsky.foundation.readmeta.Services
 			if ( _iStorage.ExistFile(subPath) 
 			     && ExtensionRolesHelper.IsExtensionForceGpx(subPath) )
 			{
-				return _readMetaGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(subPath), subPath);
+				// Get the item back with DateTime as Camera local datetime
+				return _readMetaGpx.ReadGpxFromFileReturnAfterFirstField(
+					_iStorage.ReadStream(subPath), 
+					subPath); // use local
 			}
 	        
 			var fileIndexItemWithPath = new FileIndexItem(subPath);
