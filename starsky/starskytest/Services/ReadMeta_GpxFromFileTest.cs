@@ -35,6 +35,29 @@ namespace starskytest.Services
 			Assert.AreEqual("_20180905-fietsen-oss",returnItem.Title);
 			Assert.AreEqual(7.263,returnItem.LocationAltitude,0.001);
 
+			DateTime.TryParseExact("2018-09-05T19:31:53Z", 
+				"yyyy-MM-ddTHH:mm:ssZ", 
+				CultureInfo.InvariantCulture, 
+				DateTimeStyles.AdjustToUniversal, 
+				out var expectDateTime);
+			
+			Assert.AreEqual(expectDateTime,returnItem.DateTime);
+			Assert.AreEqual("/test.gpx",returnItem.FilePath);
+		}
+		
+		[TestMethod]
+		public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile_Utc_UseLocalFalse()
+		{
+			var gpxBytes = CreateAnGpx.Bytes;
+			MemoryStream stream = new MemoryStream(gpxBytes);
+	        
+			var returnItem = new ReadMetaGpx(new FakeIWebLogger())
+				.ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx",false);
+			Assert.AreEqual(5.485941,returnItem.Longitude,0.001);
+			Assert.AreEqual(51.809360,returnItem.Latitude,0.001);
+			Assert.AreEqual("_20180905-fietsen-oss",returnItem.Title);
+			Assert.AreEqual(7.263,returnItem.LocationAltitude,0.001);
+
 			DateTime.TryParseExact("2018-09-05T17:31:53Z", 
 				"yyyy-MM-ddTHH:mm:ssZ", 
 				CultureInfo.InvariantCulture, 
