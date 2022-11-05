@@ -482,6 +482,36 @@
               "Extensions": {},
               "UnresolvedReference": false
             },
+            "405": {
+              "Description": "ValidateAntiForgeryToken",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "string",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
             "423": {
               "Description": "login failed due lock",
               "Headers": {},
@@ -520,7 +550,7 @@
               "UnresolvedReference": false
             }
           ],
-          "Summary": "Logout the current HttpContext and redirect to login",
+          "Summary": "Logout the current HttpContext out",
           "Parameters": [],
           "Responses": {
             "200": {
@@ -3944,6 +3974,84 @@
           "Security": [],
           "Servers": [],
           "Extensions": {}
+        },
+        "Head": {
+          "Tags": [
+            {
+              "Name": "Health",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Check if the service has any known errors and return only a string\r\nPublic API",
+          "Parameters": [],
+          "Responses": {
+            "200": {
+              "Description": "Ok",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "string",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "503": {
+              "Description": "503 Service Unavailable",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "string",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
         }
       },
       "Servers": [],
@@ -5610,7 +5718,7 @@
       "Parameters": [],
       "Extensions": {}
     },
-    "/api/MemoryCacheDebug": {
+    "/api/memory-cache-debug": {
       "Operations": {
         "Get": {
           "Tags": [
@@ -5829,6 +5937,301 @@
             },
             "203": {
               "Description": "you are not allowed to edit this item",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "array",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Items": {
+                      "ReadOnly": false,
+                      "WriteOnly": false,
+                      "AllOf": [],
+                      "OneOf": [],
+                      "AnyOf": [],
+                      "Required": [],
+                      "Properties": {},
+                      "AdditionalPropertiesAllowed": true,
+                      "Enum": [],
+                      "Nullable": false,
+                      "Deprecated": false,
+                      "Extensions": {},
+                      "UnresolvedReference": false,
+                      "Reference": {
+                        "Type": 0,
+                        "Id": "FileIndexItem",
+                        "IsExternal": false,
+                        "IsLocal": true,
+                        "ReferenceV3": "#/components/schemas/FileIndexItem",
+                        "ReferenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "401": {
+              "Description": "User unauthorized",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        }
+      },
+      "Servers": [],
+      "Parameters": [],
+      "Extensions": {}
+    },
+    "/api/replace": {
+      "Operations": {
+        "Post": {
+          "Tags": [
+            {
+              "Name": "MetaReplace",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Search and Replace text in meta information",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "f",
+              "In": 0,
+              "Description": "subPath filepath to file, split by dot comma (;)",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "fieldName",
+              "In": 0,
+              "Description": "name of fileIndexItem field e.g. Tags",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "search",
+              "In": 0,
+              "Description": "text to search for",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "replace",
+              "In": 0,
+              "Description": "replace [search] with this text",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "collections",
+              "In": 0,
+              "Description": "enable collections",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "boolean",
+                "Default": {
+                  "PrimitiveType": 7,
+                  "AnyType": 0,
+                  "Value": true
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
+          "Responses": {
+            "200": {
+              "Description": "Initialized replace job",
+              "Headers": {},
+              "Content": {
+                "application/json": {
+                  "Schema": {
+                    "Type": "array",
+                    "ReadOnly": false,
+                    "WriteOnly": false,
+                    "AllOf": [],
+                    "OneOf": [],
+                    "AnyOf": [],
+                    "Required": [],
+                    "Items": {
+                      "ReadOnly": false,
+                      "WriteOnly": false,
+                      "AllOf": [],
+                      "OneOf": [],
+                      "AnyOf": [],
+                      "Required": [],
+                      "Properties": {},
+                      "AdditionalPropertiesAllowed": true,
+                      "Enum": [],
+                      "Nullable": false,
+                      "Deprecated": false,
+                      "Extensions": {},
+                      "UnresolvedReference": false,
+                      "Reference": {
+                        "Type": 0,
+                        "Id": "FileIndexItem",
+                        "IsExternal": false,
+                        "IsLocal": true,
+                        "ReferenceV3": "#/components/schemas/FileIndexItem",
+                        "ReferenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "Properties": {},
+                    "AdditionalPropertiesAllowed": true,
+                    "Enum": [],
+                    "Nullable": false,
+                    "Deprecated": false,
+                    "Extensions": {},
+                    "UnresolvedReference": false
+                  },
+                  "Examples": {},
+                  "Encoding": {},
+                  "Extensions": {}
+                }
+              },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "404": {
+              "Description": "item(s) not found",
               "Headers": {},
               "Content": {
                 "application/json": {
@@ -6516,6 +6919,36 @@
             },
             {
               "UnresolvedReference": false,
+              "Name": "LocationCountryCode",
+              "In": 0,
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "MaxLength": 3,
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
               "Name": "ColorClass",
               "In": 0,
               "Required": false,
@@ -7136,6 +7569,51 @@
             },
             {
               "UnresolvedReference": false,
+              "Name": "LastChanged",
+              "In": 0,
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "array",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Items": {
+                  "Type": "string",
+                  "ReadOnly": false,
+                  "WriteOnly": false,
+                  "AllOf": [],
+                  "OneOf": [],
+                  "AnyOf": [],
+                  "Required": [],
+                  "Properties": {},
+                  "AdditionalPropertiesAllowed": true,
+                  "Enum": [],
+                  "Nullable": false,
+                  "Deprecated": false,
+                  "Extensions": {},
+                  "UnresolvedReference": false
+                },
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
               "Name": "f",
               "In": 0,
               "Description": "subPath filepath to file, split by dot comma (;)",
@@ -7393,23 +7871,22 @@
       "Parameters": [],
       "Extensions": {}
     },
-    "/api/replace": {
+    "/api/notification/notification": {
       "Operations": {
-        "Post": {
+        "Get": {
           "Tags": [
             {
-              "Name": "MetaUpdate",
+              "Name": "Notification",
               "Extensions": {},
               "UnresolvedReference": false
             }
           ],
-          "Summary": "Search and Replace text in meta information",
+          "Summary": "Get recent notifications\r\nUse dateTime 2022-04-16T17:33:10.323974Z to get the latest notifications\r\nor use numbers to get hours from now (e.g. 1 for last hour)",
           "Parameters": [
             {
               "UnresolvedReference": false,
-              "Name": "f",
+              "Name": "dateTime",
               "In": 0,
-              "Description": "subPath filepath to file, split by dot comma (;)",
               "Required": false,
               "Deprecated": false,
               "AllowEmptyValue": false,
@@ -7417,131 +7894,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            },
-            {
-              "UnresolvedReference": false,
-              "Name": "fieldName",
-              "In": 0,
-              "Description": "name of fileIndexItem field e.g. Tags",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "string",
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            },
-            {
-              "UnresolvedReference": false,
-              "Name": "search",
-              "In": 0,
-              "Description": "text to search for",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "string",
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            },
-            {
-              "UnresolvedReference": false,
-              "Name": "replace",
-              "In": 0,
-              "Description": "replace [search] with this text",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "string",
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": false,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            },
-            {
-              "UnresolvedReference": false,
-              "Name": "collections",
-              "In": 0,
-              "Description": "enable collections",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "boolean",
-                "Default": {
-                  "PrimitiveType": 7,
-                  "AnyType": 0,
-                  "Value": true
-                },
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -7563,107 +7915,17 @@
           ],
           "Responses": {
             "200": {
-              "Description": "Initialized replace job",
+              "Description": "list of recent items",
               "Headers": {},
-              "Content": {
-                "application/json": {
-                  "Schema": {
-                    "Type": "array",
-                    "ReadOnly": false,
-                    "WriteOnly": false,
-                    "AllOf": [],
-                    "OneOf": [],
-                    "AnyOf": [],
-                    "Required": [],
-                    "Items": {
-                      "ReadOnly": false,
-                      "WriteOnly": false,
-                      "AllOf": [],
-                      "OneOf": [],
-                      "AnyOf": [],
-                      "Required": [],
-                      "Properties": {},
-                      "AdditionalPropertiesAllowed": true,
-                      "Enum": [],
-                      "Nullable": false,
-                      "Deprecated": false,
-                      "Extensions": {},
-                      "UnresolvedReference": false,
-                      "Reference": {
-                        "Type": 0,
-                        "Id": "FileIndexItem",
-                        "IsExternal": false,
-                        "IsLocal": true,
-                        "ReferenceV3": "#/components/schemas/FileIndexItem",
-                        "ReferenceV2": "#/definitions/FileIndexItem"
-                      }
-                    },
-                    "Properties": {},
-                    "AdditionalPropertiesAllowed": true,
-                    "Enum": [],
-                    "Nullable": false,
-                    "Deprecated": false,
-                    "Extensions": {},
-                    "UnresolvedReference": false
-                  },
-                  "Examples": {},
-                  "Encoding": {},
-                  "Extensions": {}
-                }
-              },
+              "Content": {},
               "Links": {},
               "Extensions": {},
               "UnresolvedReference": false
             },
-            "404": {
-              "Description": "item(s) not found",
+            "400": {
+              "Description": "Longer than 1 dag ago requested, or null",
               "Headers": {},
-              "Content": {
-                "application/json": {
-                  "Schema": {
-                    "Type": "array",
-                    "ReadOnly": false,
-                    "WriteOnly": false,
-                    "AllOf": [],
-                    "OneOf": [],
-                    "AnyOf": [],
-                    "Required": [],
-                    "Items": {
-                      "ReadOnly": false,
-                      "WriteOnly": false,
-                      "AllOf": [],
-                      "OneOf": [],
-                      "AnyOf": [],
-                      "Required": [],
-                      "Properties": {},
-                      "AdditionalPropertiesAllowed": true,
-                      "Enum": [],
-                      "Nullable": false,
-                      "Deprecated": false,
-                      "Extensions": {},
-                      "UnresolvedReference": false,
-                      "Reference": {
-                        "Type": 0,
-                        "Id": "FileIndexItem",
-                        "IsExternal": false,
-                        "IsLocal": true,
-                        "ReferenceV3": "#/components/schemas/FileIndexItem",
-                        "ReferenceV2": "#/definitions/FileIndexItem"
-                      }
-                    },
-                    "Properties": {},
-                    "AdditionalPropertiesAllowed": true,
-                    "Enum": [],
-                    "Nullable": false,
-                    "Deprecated": false,
-                    "Extensions": {},
-                    "UnresolvedReference": false
-                  },
-                  "Examples": {},
-                  "Encoding": {},
-                  "Extensions": {}
-                }
-              },
+              "Content": {},
               "Links": {},
               "Extensions": {},
               "UnresolvedReference": false
@@ -10432,6 +10694,22 @@
             "Extensions": {},
             "UnresolvedReference": false
           },
+          "dependenciesFolder": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
           "appSettingsPath": {
             "Type": "string",
             "ReadOnly": false,
@@ -10608,6 +10886,61 @@
             "Extensions": {},
             "UnresolvedReference": false
           },
+          "demoUnsafeDeleteStorageFolder": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "demoData": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false,
+              "Reference": {
+                "Type": 0,
+                "Id": "AppSettingsKeyValue",
+                "IsExternal": false,
+                "IsLocal": true,
+                "ReferenceV3": "#/components/schemas/AppSettingsKeyValue",
+                "ReferenceV2": "#/definitions/AppSettingsKeyValue"
+              }
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
           "webFtp": {
             "Type": "string",
             "ReadOnly": false,
@@ -10668,7 +11001,7 @@
               "Properties": {},
               "AdditionalPropertiesAllowed": true,
               "Enum": [],
-              "Nullable": false,
+              "Nullable": true,
               "Deprecated": false,
               "Extensions": {},
               "UnresolvedReference": false
@@ -10734,7 +11067,7 @@
               "ReferenceV2": "#/definitions/AppAccountRoles"
             }
           },
-          "applicationInsightsInstrumentationKey": {
+          "applicationInsightsConnectionString": {
             "Type": "string",
             "ReadOnly": false,
             "WriteOnly": false,
@@ -10800,6 +11133,22 @@
             "UnresolvedReference": false
           },
           "useHttpsRedirection": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "httpsOn": {
             "Type": "boolean",
             "ReadOnly": false,
             "WriteOnly": false,
@@ -10895,6 +11244,22 @@
             "Extensions": {},
             "UnresolvedReference": false
           },
+          "syncOnStartup": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
           "importIgnore": {
             "Type": "array",
             "ReadOnly": false,
@@ -10958,6 +11323,120 @@
                 "ReferenceV2": "#/definitions/CameraMakeModel"
               }
             },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "enablePackageTelemetry": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "enablePackageTelemetryDebug": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "useDiskWatcherIntervalInMilliseconds": {
+            "Type": "number",
+            "Format": "double",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "syncAlwaysUpdateLastEditedTime": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          }
+        },
+        "AdditionalPropertiesAllowed": false,
+        "Enum": [],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
+      "AppSettingsKeyValue": {
+        "Type": "object",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {
+          "key": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "value": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
@@ -12008,6 +12487,23 @@
             "Extensions": {},
             "UnresolvedReference": false
           },
+          "locationCountryCode": {
+            "Type": "string",
+            "MaxLength": 3,
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
           "colorClass": {
             "ReadOnly": false,
             "WriteOnly": false,
@@ -12364,6 +12860,38 @@
               "ReferenceV3": "#/components/schemas/ImageStabilisationType",
               "ReferenceV2": "#/definitions/ImageStabilisationType"
             }
+          },
+          "lastChanged": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "Type": "string",
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           }
         },
         "AdditionalPropertiesAllowed": false,
@@ -12844,6 +13372,45 @@
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
+          },
+          "dateTimeFromFileName": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "colorClass": {
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false,
+            "Reference": {
+              "Type": 0,
+              "Id": "Color",
+              "IsExternal": false,
+              "IsLocal": true,
+              "ReferenceV3": "#/components/schemas/Color",
+              "ReferenceV2": "#/definitions/Color"
+            }
           }
         },
         "AdditionalPropertiesAllowed": false,
@@ -13545,6 +14112,11 @@
             "PrimitiveType": 0,
             "AnyType": 0,
             "Value": 9
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 10
           }
         ],
         "Nullable": false,
@@ -13690,7 +14262,7 @@
           "days": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": false,
+            "ReadOnly": true,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -13707,7 +14279,7 @@
           "hours": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": false,
+            "ReadOnly": true,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -13724,7 +14296,7 @@
           "milliseconds": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": false,
+            "ReadOnly": true,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -13741,7 +14313,7 @@
           "minutes": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": false,
+            "ReadOnly": true,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],
@@ -13758,7 +14330,7 @@
           "seconds": {
             "Type": "integer",
             "Format": "int32",
-            "ReadOnly": false,
+            "ReadOnly": true,
             "WriteOnly": false,
             "AllOf": [],
             "OneOf": [],

@@ -425,7 +425,7 @@ To be sure that the application is warm before someone arrives, please check <co
 <tr>
 <td>/api/account/logout</td>
 <td>POST</td>
-<td>Logout the current HttpContext and redirect to login</td>
+<td>Logout the current HttpContext out</td>
 </tr>
 <tr>
 <td>/account/logout</td>
@@ -503,6 +503,16 @@ To be sure that the application is warm before someone arrives, please check <co
 <td>Remove files from the disk, but the file must contain the !delete! tag</td>
 </tr>
 <tr>
+<td>/api/disk/mkdir</td>
+<td>POST</td>
+<td>Make a directory (-p)</td>
+</tr>
+<tr>
+<td>/api/disk/rename</td>
+<td>POST</td>
+<td>Rename file/folder and update it in the database</td>
+</tr>
+<tr>
 <td>/api/download-sidecar</td>
 <td>GET</td>
 <td>Download sidecar file for example image.xmp</td>
@@ -540,6 +550,11 @@ To be sure that the application is warm before someone arrives, please check <co
 <tr>
 <td>/api/health</td>
 <td>GET</td>
+<td>Check if the service has any known errors and return only a stringPublic...</td>
+</tr>
+<tr>
+<td>/api/health</td>
+<td>HEAD</td>
 <td>Check if the service has any known errors and return only a stringPublic...</td>
 </tr>
 <tr>
@@ -618,9 +633,19 @@ To be sure that the application is warm before someone arrives, please check <co
 <td>The database-view of a directory</td>
 </tr>
 <tr>
+<td>/api/memory-cache-debug</td>
+<td>GET</td>
+<td>Missing summary</td>
+</tr>
+<tr>
 <td>/api/info</td>
 <td>GET</td>
 <td>Get realtime (cached a few minutes) about the file</td>
+</tr>
+<tr>
+<td>/api/replace</td>
+<td>POST</td>
+<td>Search and Replace text in meta information</td>
 </tr>
 <tr>
 <td>/api/update</td>
@@ -628,9 +653,9 @@ To be sure that the application is warm before someone arrives, please check <co
 <td>Update Exif and Rotation API</td>
 </tr>
 <tr>
-<td>/api/replace</td>
-<td>POST</td>
-<td>Search and Replace text in meta information</td>
+<td>/api/notification/notification</td>
+<td>GET</td>
+<td>Get recent notificationsUse dateTime 2022-04-16T17:33:10.323974Z to get ...</td>
 </tr>
 <tr>
 <td>/api/publish</td>
@@ -686,21 +711,6 @@ To be sure that the application is warm before someone arrives, please check <co
 <td>/api/suggest/inflate</td>
 <td>GET</td>
 <td>To fill the cache with the data (only if cache is not already filled)</td>
-</tr>
-<tr>
-<td>/api/sync/mkdir</td>
-<td>POST</td>
-<td>Make a directory (-p)</td>
-</tr>
-<tr>
-<td>/api/sync</td>
-<td>POST</td>
-<td>Do a file sync in a background process (replace with /api/synchronize)</td>
-</tr>
-<tr>
-<td>/api/sync/rename</td>
-<td>POST</td>
-<td>Rename file/folder and update it in the database</td>
 </tr>
 <tr>
 <td>/api/synchronize</td>
