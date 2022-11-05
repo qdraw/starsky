@@ -7,7 +7,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 {
 	[TestClass]
-	public class ThumbnailServiceTest
+	public sealed class ThumbnailServiceTest
 	{
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]

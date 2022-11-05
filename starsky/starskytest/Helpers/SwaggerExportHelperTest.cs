@@ -18,7 +18,7 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace starskytest.Helpers
 {
-	public class FakeISwaggerProvider : ISwaggerProvider
+	public sealed class FakeISwaggerProvider : ISwaggerProvider
 	{
 		public OpenApiDocument GetSwagger(string documentName, string host = null, string basePath = null)
 		{
@@ -27,7 +27,7 @@ namespace starskytest.Helpers
 	}
 	
 	[TestClass]
-	public class SwaggerExportHelperTest
+	public sealed class SwaggerExportHelperTest
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly ServiceProvider _serviceProvider;

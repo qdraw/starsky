@@ -11,7 +11,7 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 	/// ClassLibraries/Macross.Json.Extensions/Test/JsonTimeSpanConverterTests.cs
 	/// </summary>
 	[TestClass]
-	public class JsonTimeSpanConverterTests
+	public sealed class JsonTimeSpanConverterTests
 	{
 		[TestMethod]
 		public void TimeSpanSerializationTest()

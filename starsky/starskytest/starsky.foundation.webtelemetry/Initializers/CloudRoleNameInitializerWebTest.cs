@@ -6,7 +6,7 @@ using starsky.foundation.webtelemetry.Initializers;
 namespace starskytest.starsky.foundation.webtelemetry.Initializers
 {
 	[TestClass]
-	public class CloudRoleNameInitializerWebTest
+	public sealed class CloudRoleNameInitializerWebTest
 	{
 		[TestMethod]
 		public void CloudRoleNameInitializerTestKeyword()

@@ -6,7 +6,7 @@ using starskycore.ViewModels;
 namespace starskytest.ViewModels
 {
 	[TestClass]
-	public class SyncViewModelTest
+	public sealed class SyncViewModelTest
 	{
 		[TestMethod]
 		public void SyncViewModelSyncViewModelTest()

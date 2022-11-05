@@ -6,7 +6,7 @@ using starsky.foundation.platform.Extensions;
 namespace starskytest.starsky.foundation.platform.Extensions
 {
 	[TestClass]
-	public class ChunkHelperTest
+	public sealed class ChunkHelperTest
 	{
 		[TestMethod]
 		public void ChunkTestNull()

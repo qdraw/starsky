@@ -12,7 +12,7 @@ namespace starskytest.Middleware
 {
 
 	[TestClass]
-	public class MiddlewareExtensionsTest
+	public sealed class MiddlewareExtensionsTest
 	{
 		private readonly IUserManager _userManager;
 

@@ -5,7 +5,7 @@ using starsky.foundation.accountmanagement.Helpers;
 namespace starskytest.starsky.foundation.accountmangement.Helpers
 {
 	[TestClass]
-	public class IsLocalhostTest
+	public sealed class IsLocalhostTest
 	{
 		[TestMethod]
 		public void Null()

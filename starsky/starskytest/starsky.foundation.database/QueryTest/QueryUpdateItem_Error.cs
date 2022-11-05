@@ -24,7 +24,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	/// QueryUpdateItem_Error
 	/// </summary>
 	[TestClass]
-	public class QueryUpdateItemError
+	public sealed class QueryUpdateItemError
 	{
 		private IServiceScopeFactory? _serviceScopeFactory;
 

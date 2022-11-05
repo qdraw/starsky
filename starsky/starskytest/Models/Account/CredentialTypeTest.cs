@@ -5,7 +5,7 @@ using starsky.foundation.database.Models.Account;
 namespace starskytest.Models.Account
 {
 	[TestClass]
-	public class CredentialTypeTest
+	public sealed class CredentialTypeTest
 	{
 		[TestMethod]
 		public void CredentialTypeSetup_Test()

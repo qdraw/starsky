@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class SynchronizeControllerTest
+	public sealed class SynchronizeControllerTest
 	{
 		[TestMethod]
 		public async Task Index_Result_200()

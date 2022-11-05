@@ -19,7 +19,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.writemeta.Helpers
 {
 	[TestClass]
-	public class ExifToolDownloadTest
+	public sealed class ExifToolDownloadTest
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly AppSettings _appSettings;

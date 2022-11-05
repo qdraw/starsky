@@ -9,6 +9,7 @@
     </PropertyGroup>
     
     <ItemGroup>
+        <PackageReference Include="GeoTimeZone" Version="5.1.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
         <PackageReference Include="XmpCore" Version="6.1.10.1" />

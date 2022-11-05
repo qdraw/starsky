@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	[TestClass]
-	public class QueryTestNoCacheTest
+	public sealed class QueryTestNoCacheTest
 	{
 		public QueryTestNoCacheTest()
 		{

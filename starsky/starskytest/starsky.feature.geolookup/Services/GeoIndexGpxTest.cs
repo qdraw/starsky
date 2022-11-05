@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starskyGeoCore.Services
 {
 	[TestClass]
-	public class GeoIndexGpxTest
+	public sealed class GeoIndexGpxTest
 	{
 		private readonly AppSettings _appSettings;
 		private readonly ReadMeta _readMeta;

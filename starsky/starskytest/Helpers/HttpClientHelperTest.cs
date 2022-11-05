@@ -14,7 +14,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class HttpClientHelperTest
+	public sealed class HttpClientHelperTest
 	{
 		[TestMethod]
 		public async Task Download_HttpClientHelperBadDomainDownload()

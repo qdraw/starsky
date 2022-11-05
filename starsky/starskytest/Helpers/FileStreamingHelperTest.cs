@@ -20,7 +20,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Helpers 
 {
 	[TestClass]
-	public class FileStreamingHelperTest
+	public sealed class FileStreamingHelperTest
 	{
 		private readonly AppSettings _appSettings;
 

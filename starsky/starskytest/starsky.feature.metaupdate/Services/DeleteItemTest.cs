@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.metaupdate.Services
 {
 	[TestClass]
-	public class DeleteItemTest
+	public sealed class DeleteItemTest
 	{
 		[TestMethod]
 		public void Delete_FileNotFound_Ignore()

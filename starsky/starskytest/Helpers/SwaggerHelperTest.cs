@@ -22,7 +22,7 @@ using Swashbuckle.AspNetCore.Swagger;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class SwaggerHelperTest
+	public sealed class SwaggerHelperTest
 	{
 		private readonly AppSettings _appSettings;
 

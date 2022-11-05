@@ -15,7 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	[TestClass]
-	public class QueryGetAllRecursiveTest
+	public sealed class QueryGetAllRecursiveTest
 	{
 		private readonly IMemoryCache _memoryCache;
 		private readonly IQuery _query;

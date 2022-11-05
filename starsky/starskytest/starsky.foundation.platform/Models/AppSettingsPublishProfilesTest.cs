@@ -6,7 +6,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.foundation.platform.Models
 {
 	[TestClass]
-	public class AppSettingsPublishProfilesTest
+	public sealed class AppSettingsPublishProfilesTest
 	{
 		[TestMethod]
 		public void AppSettingsPublishProfilesTest_OverlayMaxWidthTestLessThan100()

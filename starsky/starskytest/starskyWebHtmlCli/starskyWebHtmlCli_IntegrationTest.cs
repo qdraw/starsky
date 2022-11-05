@@ -6,7 +6,7 @@ using starskywebhtmlcli;
 namespace starskytest.starskyWebHtmlCli
 {
 	[TestClass]
-	public class starskyWebHtmlCli_IntegrationTest
+	public sealed class starskyWebHtmlCli_IntegrationTest
 	{
 		[TestMethod]
 		public void starskyWebHtmlCli_IntegrationTest_NotFoundTest()

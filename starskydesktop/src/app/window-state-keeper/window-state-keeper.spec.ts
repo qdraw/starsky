@@ -113,11 +113,11 @@ describe("window state keeper", () => {
 
       expect(appConfigSetSpy).toHaveBeenCalled();
       expect(appConfigSetSpy).toHaveBeenCalledWith("windowState.test", {
-        height: 13,
+        height: 40,
         isMaximized: true,
-        width: 12,
-        x: 40,
-        y: 40
+        width: 20,
+        x: 10,
+        y: 11
       });
     });
 
@@ -136,6 +136,7 @@ describe("window state keeper", () => {
       });
       const appConfigSetSpy = jest
         .spyOn(appConfig, "set")
+        .mockClear()
         .mockImplementationOnce(() => {
           return Promise.resolve();
         });
@@ -165,9 +166,9 @@ describe("window state keeper", () => {
 
       expect(appConfigSetSpy).toHaveBeenCalled();
       expect(appConfigSetSpy).toHaveBeenCalledWith("windowState.test", {
-        height: 13,
+        height: 40,
         isMaximized: true,
-        width: 12,
+        width: 20,
         x: 10,
         y: 11
       });

@@ -16,7 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Services
 {
 	[TestClass]
-	public class ReadMetaTest
+	public sealed class ReadMetaTest
 	{
 		[TestMethod]
 		public void ReadMetaTest_HalfCompleteFile()

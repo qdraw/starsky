@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.thumbnailmeta.Services
 {
 	[TestClass]
-	public class MetaExifThumbnailServiceTest
+	public sealed class MetaExifThumbnailServiceTest
 	{
 		private readonly FakeIStorage _iStorageFake;
 		private readonly string _exampleHash;

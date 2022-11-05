@@ -14,7 +14,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
 	[TestClass]
-	public class SyncRemoveTest
+	public sealed class SyncRemoveTest
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly AppSettings _appSettings;

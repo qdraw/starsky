@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webftppublish.Helpers
 {
 	[TestClass]
-	public class WebFtpCliTest
+	public sealed class WebFtpCliTest
 	{
 		private readonly AppSettings _appSettings;
 		private readonly FakeIFtpWebRequestFactory _webRequestFactory;

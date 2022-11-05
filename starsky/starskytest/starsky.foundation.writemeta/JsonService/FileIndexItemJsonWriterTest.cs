@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.writemeta.JsonService
 {
 	[TestClass]
-	public class FileIndexItemJsonParserTest
+	public sealed class FileIndexItemJsonParserTest
 	{
 		[TestMethod]
 		public async Task Json_Write()

@@ -9,7 +9,7 @@ using starsky.foundation.platform.Helpers;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class FileIndexCompareHelperTest
+	public sealed class FileIndexCompareHelperTest
 	{
 		[TestMethod]
 		public void FileIndexCompareHelperTest_String_Compare()

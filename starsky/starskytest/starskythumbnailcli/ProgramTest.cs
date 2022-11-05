@@ -5,7 +5,7 @@ using starskythumbnailcli;
 namespace starskytest.starskythumbnailcli
 {
 	[TestClass]
-	public class ProgramTest
+	public sealed class ProgramTest
 	{
 		[TestMethod]
 		public void ProgramTest_default()

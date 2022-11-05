@@ -12,7 +12,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class MemoryCacheDebugControllerTest
+	public sealed class MemoryCacheDebugControllerTest
 	{
 		[TestMethod]
 		public void CatchFakeCacheDebug()

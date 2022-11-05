@@ -352,12 +352,13 @@ namespace starsky.foundation.database.Models
 
 		/// <summary>
 		/// Date/Time Digitized or Date/Time Original
+		/// Assumes localTime
 		/// </summary>
 		/// <value>
 		/// The DateTime object
 		/// </value>
 		public DateTime DateTime { get; set; }
-
+		
 		/// <summary>
 		/// Datetime of when this item is added to the database
 		/// </summary>

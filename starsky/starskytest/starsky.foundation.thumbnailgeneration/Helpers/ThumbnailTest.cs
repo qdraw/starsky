@@ -13,7 +13,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 {
 	[TestClass]
-	public class ThumbnailTest
+	public sealed class ThumbnailTest
 	{
 		private readonly FakeIStorage _iStorage;
 		private readonly string _fakeIStorageImageSubPath;

@@ -13,7 +13,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.realtime.Extensions
 {
 	[TestClass]
-	public class WebSocketConnectionsMiddlewareExtensionsTest
+	public sealed class WebSocketConnectionsMiddlewareExtensionsTest
 	{
 		
 		[TestMethod]

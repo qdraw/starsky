@@ -29,7 +29,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 	}
 
 	[TestClass]
-	public class PackageTelemetryBackgroundServiceTest
+	public sealed class PackageTelemetryBackgroundServiceTest
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 

@@ -9,7 +9,7 @@ using starsky.foundation.platform.Helpers;
 namespace starskytest.starsky.foundation.database.Helpers
 {
 	[TestClass]
-	public class SortHelperTest
+	public sealed class SortHelperTest
 	{
 		[TestMethod]
 		public void ImageFormatOrder()

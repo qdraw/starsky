@@ -37,7 +37,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class MetaReplaceControllerTest
+	public sealed class MetaReplaceControllerTest
 	{
 		private readonly IQuery _query;
 		private readonly IExifTool _exifTool;

@@ -9,7 +9,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class HealthCheckForUpdatesControllerTest
+	public sealed class HealthCheckForUpdatesControllerTest
 	{
 		// or CheckForUpdatesTest
 		

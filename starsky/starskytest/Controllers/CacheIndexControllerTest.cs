@@ -30,7 +30,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class CacheIndexControllerTest
+	public sealed class CacheIndexControllerTest
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;

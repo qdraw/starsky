@@ -13,7 +13,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.storage.Storage
 {
 	[TestClass]
-	public class StorageHostFullPathFilesystemTest
+	public sealed class StorageHostFullPathFilesystemTest
 	{
 		[TestMethod]
 		public void Files_GetFilesRecursiveTest()

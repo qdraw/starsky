@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.storage.Storage
 {
 	[TestClass]
-	public class StorageThumbnailFilesystemTest
+	public sealed class StorageThumbnailFilesystemTest
 	{
 		private readonly StorageThumbnailFilesystem _thumbnailStorage;
 		private readonly string _fileNameWithoutExtension;

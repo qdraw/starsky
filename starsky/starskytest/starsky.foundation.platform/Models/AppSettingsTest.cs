@@ -8,12 +8,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn;
-using TimeZoneConverter;
 
 namespace starskytest.starsky.foundation.platform.Models
 {
 	[TestClass]
-	public class AppSettingsTest
+	public sealed class AppSettingsTest
 	{
 		private readonly AppSettings _appSettings;
 
@@ -186,23 +185,15 @@ namespace starskytest.starsky.foundation.platform.Models
 		{
 			var appSettings = new AppSettings
 			{
-				CameraTimeZoneInfo = TZConvert.GetTimeZoneInfo("Europe/Amsterdam")
+				CameraTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Europe/Amsterdam")
 			};
 
+			Console.WriteLine(appSettings.CameraTimeZone);
+			
 			// Linux: Europe/Amsterdam
 			// Windows: W. Europe Standard Time
-
-			bool isWindows = System.Runtime.InteropServices.RuntimeInformation
-				.IsOSPlatform(OSPlatform.Windows);
-			if ( isWindows )
-			{
-				Assert.IsTrue(appSettings.CameraTimeZone.Contains("W. Europe Standard Time"));
-			}
-			else
-			{
-				Assert.IsTrue(appSettings.CameraTimeZone.Contains("Europe/Amsterdam"));
-			}
-
+			
+			Assert.AreEqual("Europe/Amsterdam", appSettings.CameraTimeZone);
 		}
 
 		[TestMethod]

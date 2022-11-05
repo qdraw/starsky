@@ -16,7 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.Import
 {
 	[TestClass]
-	public class ImportQueryTest
+	public sealed class ImportQueryTest
 	{
 		private readonly IMemoryCache _memoryCache;
 		private readonly ImportQuery _importQuery;

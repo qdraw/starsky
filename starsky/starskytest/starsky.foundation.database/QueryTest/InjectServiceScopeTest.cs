@@ -6,7 +6,7 @@ using starsky.foundation.database.Query;
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	[TestClass]
-	public class InjectServiceScopeTest
+	public sealed class InjectServiceScopeTest
 	{
 		[TestMethod]
 		public void NoScope()

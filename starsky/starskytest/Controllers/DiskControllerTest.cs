@@ -31,7 +31,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class DiskControllerTest
+	public sealed class DiskControllerTest
 	{
 		private readonly IQuery _query;
 		private readonly IExifTool _exifTool;

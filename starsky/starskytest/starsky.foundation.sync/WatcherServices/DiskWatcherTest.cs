@@ -20,7 +20,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.WatcherServices
 {
 	[TestClass]
-	public class DiskWatcherTest
+	public sealed class DiskWatcherTest
 	{
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly CreateAnImage _createAnImage;

@@ -8,7 +8,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.Helpers
 {
 	[TestClass]
-	public class DuplicateTest
+	public sealed class DuplicateTest
 	{
 		[TestMethod]
 		public async Task DuplicateItems()

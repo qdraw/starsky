@@ -8,7 +8,7 @@ using starsky.foundation.sync.WatcherHelpers;
 namespace starskytest.starsky.foundation.sync.WatcherHelpers
 {
 	[TestClass]
-	public class EventQueueOverflowExceptionTest
+	public sealed class EventQueueOverflowExceptionTest
 	{
 		[TestMethod]
 		public void EventQueueOverflowException()

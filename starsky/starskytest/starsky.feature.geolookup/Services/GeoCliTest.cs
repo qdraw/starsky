@@ -18,7 +18,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.geolookup.Services
 {
 	[TestClass]
-	public class GeoCliTest
+	public sealed class GeoCliTest
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 

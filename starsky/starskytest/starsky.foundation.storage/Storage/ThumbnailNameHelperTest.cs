@@ -4,7 +4,7 @@ using starsky.foundation.storage.Storage;
 namespace starskytest.starsky.foundation.storage.Storage
 {
 	[TestClass]
-	public class ThumbnailNameHelperTest
+	public sealed class ThumbnailNameHelperTest
 	{
 		[TestMethod]
 		public void GetSize_TinyMeta_Enum()

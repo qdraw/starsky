@@ -27,7 +27,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class PublishControllerTest
+	public sealed class PublishControllerTest
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;

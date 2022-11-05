@@ -9,7 +9,7 @@ using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.webhtmlpublish.Helpers
 {
-	public class CopyPublishedContent
+	public sealed class CopyPublishedContent
 	{
 		private readonly IStorage _hostStorage;
 		private readonly ToCreateSubfolder _toCreateSubfolder;

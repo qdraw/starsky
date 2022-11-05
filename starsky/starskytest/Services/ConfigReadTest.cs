@@ -7,7 +7,7 @@ using starskycore.Helpers;
 namespace starskytest.Services
 {
 	[TestClass]
-	public class ConfigReadTest
+	public sealed class ConfigReadTest
 	{
 
 		[ExcludeFromCoverage]

@@ -12,7 +12,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.metaupdate.Helpers
 {
 	[TestClass]
-	public class AddParentCacheIfNotExistTest
+	public sealed class AddParentCacheIfNotExistTest
 	{
 		
 		[TestMethod]

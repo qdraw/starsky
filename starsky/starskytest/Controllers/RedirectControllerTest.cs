@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class RedirectControllerTest
+	public sealed class RedirectControllerTest
 	{
 		private readonly FakeSelectorStorage _fakeSelectorStorage;
 		public RedirectControllerTest()

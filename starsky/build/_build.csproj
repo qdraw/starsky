@@ -16,5 +16,17 @@
     <PackageReference Include="ReportGenerator.Core" Version="5.1.10" />
     <PackageReference Include="SimpleExec" Version="11.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="logs\**" />
+  </ItemGroup>
     
 </Project>

@@ -5,7 +5,7 @@ using starsky.feature.search.ViewModels;
 namespace starskytest.starsky.feature.search.ViewModels
 {
 	[TestClass]
-	public class SearchViewModelTest
+	public sealed class SearchViewModelTest
 	{
 		[TestMethod]
 		public void SearchViewModelTest_TestIfTrash()

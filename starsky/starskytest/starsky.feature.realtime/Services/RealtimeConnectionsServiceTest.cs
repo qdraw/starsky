@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.realtime.Services
 {
 	[TestClass]
-	public class RealtimeConnectionsServiceTest
+	public sealed class RealtimeConnectionsServiceTest
 	{
 	
 		[TestMethod]

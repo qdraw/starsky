@@ -17,7 +17,7 @@ using starskytest.Models;
 namespace starskytest.starsky.feature.webhtmlpublish.Services
 {
 	[TestClass]
-	public class WebHtmlPublishServiceTest
+	public sealed class WebHtmlPublishServiceTest
 	{
 		[TestMethod]
 		public async Task RenderCopy_NoConfigItems()

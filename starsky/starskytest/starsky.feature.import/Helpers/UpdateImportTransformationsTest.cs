@@ -14,7 +14,7 @@ using starskytest.Models;
 namespace starskytest.starsky.feature.import.Helpers
 {
 	[TestClass]
-	public class UpdateImportTransformationsTest
+	public sealed class UpdateImportTransformationsTest
 	{
 		[TestMethod]
 		public async Task UpdateTransformations_ShouldUpdate_ColorClass_IndexModeOn()

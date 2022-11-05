@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.storage.Services
 {
 	[TestClass]
-	public class StructureServiceTest
+	public sealed class StructureServiceTest
 	{
 		
 		[TestMethod]

@@ -13,7 +13,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.Extensions
 {
 	[TestClass]
-	public class TestConnectionTest
+	public sealed class TestConnectionTest
 	{
 		private class AppDbMySqlException : ApplicationDbContext
 		{

@@ -4,7 +4,7 @@ using starsky.feature.health.UpdateCheck.Models;
 namespace starskytest.starsky.feature.health.Models
 {
 	[TestClass]
-	public class ReleaseModelTest
+	public sealed class ReleaseModelTest
 	{
 		[TestMethod]
 		public void TagNameNoNull()

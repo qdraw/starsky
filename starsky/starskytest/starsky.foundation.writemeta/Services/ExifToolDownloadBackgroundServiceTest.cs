@@ -14,7 +14,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.writemeta.Services
 {
 	[TestClass]
-	public class ExifToolDownloadBackgroundServiceTest
+	public sealed class ExifToolDownloadBackgroundServiceTest
 	{
 		private  readonly IServiceScopeFactory _serviceScopeFactory;
 

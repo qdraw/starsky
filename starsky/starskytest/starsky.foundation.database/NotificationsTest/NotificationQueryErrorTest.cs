@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 {
 	
 	[TestClass]
-	public class NotificationQueryErrorTest
+	public sealed class NotificationQueryErrorTest
 	{
 		private static bool IsCalledDbUpdateConcurrency { get; set; }
 

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace starskycore.ViewModels
 {
-	public class SyncViewModel
+	public sealed class SyncViewModel
 	{
 		public string FilePath { get; set; }
 

@@ -8,7 +8,7 @@ using starsky.foundation.storage.Exceptions;
 namespace starskytest.starsky.foundation.storage.Exceptions
 {
 	[TestClass]
-	public class DecodingExceptionTest
+	public sealed class DecodingExceptionTest
 	{
 		[TestMethod]
 		[ExpectedException(typeof(DecodingException))]

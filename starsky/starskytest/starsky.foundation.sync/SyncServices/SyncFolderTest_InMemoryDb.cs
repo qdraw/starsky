@@ -21,7 +21,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	/// SyncFolderTest_InMemoryDb.cs
 	/// </summary>
 	[TestClass]
-	public class SyncFolderTestInMemoryDb
+	public sealed class SyncFolderTestInMemoryDb
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;

@@ -5,7 +5,7 @@ using starsky.foundation.database.Models.Account;
 namespace starskytest.Interfaces
 {
 	[TestClass]
-	public class UserManagerTest
+	public sealed class UserManagerTest
 	{
 		[TestMethod]
 		public void UserManagerTestSuccessFalse()

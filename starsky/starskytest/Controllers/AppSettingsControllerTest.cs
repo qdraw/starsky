@@ -16,7 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class AppSettingsControllerTest
+	public sealed class AppSettingsControllerTest
 	{
 
 		[TestMethod]

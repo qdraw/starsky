@@ -10,7 +10,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 {
 	
 	[TestClass]
-	public class MySqlDatabaseFixesTest
+	public sealed class MySqlDatabaseFixesTest
 	{
 
 		[TestMethod]

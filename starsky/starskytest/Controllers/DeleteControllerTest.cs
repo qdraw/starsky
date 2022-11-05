@@ -31,7 +31,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class DeleteControllerTest
+	public sealed class DeleteControllerTest
 	{
 		
 		private readonly IQuery _query;

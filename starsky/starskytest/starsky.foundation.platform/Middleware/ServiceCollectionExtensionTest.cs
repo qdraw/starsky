@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.Middleware
 {
 	[TestClass]
-	public class ServiceCollectionExtensionTest
+	public sealed class ServiceCollectionExtensionTest
 	{
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]

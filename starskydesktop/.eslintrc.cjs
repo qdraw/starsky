@@ -27,6 +27,7 @@ const baseConfig = {
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     "@typescript-eslint/no-explicit-any": ["off"],
     "prefer-promise-reject-errors": ["off"],
+    "linebreak-style": ["off"],
   },
   ignorePatterns: ["dist/*", "dist-prod/*", "runtime-*/*"],
 };

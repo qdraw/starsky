@@ -9,7 +9,7 @@ using starsky.feature.search.ViewModels;
 namespace starskytest.starsky.feature.search.Services
 {
 	[TestClass]
-	public class SearchWideDateTimeTest
+	public sealed class SearchWideDateTimeTest
 	{
 
 		[TestMethod]

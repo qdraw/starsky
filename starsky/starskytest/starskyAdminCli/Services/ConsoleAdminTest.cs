@@ -10,7 +10,7 @@ namespace starskytest.starskyAdminCli.Services
 {
 	
 	[TestClass]
-	public class ConsoleAdminTest
+	public sealed class ConsoleAdminTest
 	{
 		[TestMethod]
 		public void StarskyAdminCliProgramTest_UserDoesNotExist_AndCreateAccount()

@@ -62,7 +62,6 @@ ProjectSection(SolutionItems) = preProject
 	readme.md = readme.md
 	readme-docker-development.md = readme-docker-development.md
 	readme-upgrade-net-core.md = readme-upgrade-net-core.md
-	docker_demo_setup.sh = docker_demo_setup.sh
 	Dockerfile = Dockerfile
 	readme-docker-hub.md = readme-docker-hub.md
 	docs\migrations.md = docs\migrations.md

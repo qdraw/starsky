@@ -9,7 +9,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
-	public class DiskStorageHealthCheckExtensionsTest
+	public sealed class DiskStorageHealthCheckExtensionsTest
 	{
 		[TestMethod]
 		public void CheckIfServiceExist()

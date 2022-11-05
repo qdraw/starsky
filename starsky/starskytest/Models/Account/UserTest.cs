@@ -6,7 +6,7 @@ using starsky.foundation.database.Models.Account;
 namespace starskytest.Models.Account
 {
 	[TestClass]
-	public class UserTest
+	public sealed class UserTest
 	{
 		[TestMethod]
 		public void UserTestSetupTest()

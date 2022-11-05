@@ -7,7 +7,7 @@ using starsky.foundation.webtelemetry.Services;
 namespace starskytest.starsky.foundation.platform.Services
 {
 	[TestClass]
-	public class TelemetryServiceTest
+	public sealed class TelemetryServiceTest
 	{
 		[TestMethod]
 		public void TelemetryService_WithContent()

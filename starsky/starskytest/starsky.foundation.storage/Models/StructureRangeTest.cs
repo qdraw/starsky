@@ -4,7 +4,7 @@ using starsky.foundation.storage.Models;
 namespace starskytest.starsky.foundation.storage.Models
 {
 	[TestClass]
-	public class StructureRangeTest
+	public sealed class StructureRangeTest
 	{
 		[TestMethod]
 		public void StructureRangePattern()

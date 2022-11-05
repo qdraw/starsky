@@ -6,7 +6,7 @@ using starskycore.Models;
 namespace starskytest.starsky.feature.import.Models
 {
 	[TestClass]
-	public class ImportSettingsModelTest
+	public sealed class ImportSettingsModelTest
 	{
 		[TestMethod]
 		public void ImportSettingsModel_toDefaults_Test()

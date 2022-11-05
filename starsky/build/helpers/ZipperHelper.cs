@@ -8,7 +8,7 @@ using build;
 namespace helpers
 {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1118:Add a 'protected' constructor or the 'static' keyword to the class declaration", Justification = "Not production code.")]
-	public class ZipperHelper
+	public sealed class ZipperHelper
 	{
 
 		public const string ZipPrefix = "starsky-";

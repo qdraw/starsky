@@ -8,7 +8,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 {
 	[TestClass]
-	public class ExportManifestTest
+	public sealed class ExportManifestTest
 	{
 
 		[TestMethod]

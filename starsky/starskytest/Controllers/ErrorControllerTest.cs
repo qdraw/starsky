@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class ErrorControllerTest
+	public sealed class ErrorControllerTest
 	{
 		
 		[TestMethod]

@@ -30,7 +30,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class AccountControllerTest
+	public sealed class AccountControllerTest
 	{
 		private readonly IUserManager _userManager;
 		private readonly IServiceProvider _serviceProvider;

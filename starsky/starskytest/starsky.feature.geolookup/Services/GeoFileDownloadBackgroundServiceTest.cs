@@ -13,7 +13,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.geolookup.Services
 {
 	[TestClass]
-	public class GeoFileDownloadBackgroundServiceTest
+	public sealed class GeoFileDownloadBackgroundServiceTest
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly IGeoFileDownload _geoFileDownload;

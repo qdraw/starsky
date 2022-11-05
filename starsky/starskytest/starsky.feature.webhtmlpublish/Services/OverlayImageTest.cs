@@ -13,7 +13,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webhtmlpublish.Services
 {
 	[TestClass]
-	public class OverlayImageTest
+	public sealed class OverlayImageTest
 	{
 		private readonly IStorage _storage;
 		private readonly ISelectorStorage _selectorStorage;

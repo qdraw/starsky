@@ -6,7 +6,7 @@ using starskycore.Helpers;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class HashSetHelperTest
+	public sealed class HashSetHelperTest
 	{
 		[TestMethod]
 		public void HashSetHelperTest_HashSetDuplicateContent()

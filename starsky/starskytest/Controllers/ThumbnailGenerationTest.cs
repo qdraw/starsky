@@ -17,7 +17,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class ThumbnailGenerationTest
+	public sealed class ThumbnailGenerationTest
 	{
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 

@@ -9,7 +9,7 @@ using starsky.foundation.writemeta.Interfaces;
 
 namespace starskytest.Models
 {
-	public class FakeExifTool : IExifTool, IExifToolHostStorage
+	public sealed class FakeExifTool : IExifTool, IExifToolHostStorage
 	{
 		private AppSettings _appSettings;
 		private readonly IStorage _iStorage;

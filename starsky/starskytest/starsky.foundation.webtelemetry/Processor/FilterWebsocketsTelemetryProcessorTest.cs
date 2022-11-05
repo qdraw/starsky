@@ -7,7 +7,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.webtelemetry.Processor
 {
 	[TestClass]
-	public class FilterWebsocketsTelemetryProcessorTest
+	public sealed class FilterWebsocketsTelemetryProcessorTest
 	{
 		[TestMethod]
 		public void IgnoreWhenWebsocket()

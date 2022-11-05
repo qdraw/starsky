@@ -12,7 +12,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.Helpers
 {
 	[TestClass]
-	public class SetupDatabaseTypesTest
+	public sealed class SetupDatabaseTypesTest
 	{
 		[TestMethod]
 		public void CheckIfMysqlScopeIsThere()

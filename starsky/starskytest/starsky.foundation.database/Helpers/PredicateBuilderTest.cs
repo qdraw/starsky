@@ -8,7 +8,7 @@ using starsky.foundation.database.Helpers;
 namespace starskytest.starsky.foundation.database.Helpers
 {
 	[TestClass]
-	public class PredicateBuilderTest
+	public sealed class PredicateBuilderTest
 	{
 		public class TestClass
 		{

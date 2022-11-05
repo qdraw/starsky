@@ -13,7 +13,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	[TestClass]
-	public class Query_AddParentItemsAsyncTest
+	public sealed class Query_AddParentItemsAsyncTest
 	{
 		private readonly IMemoryCache _memoryCache;
 		private Query _query;

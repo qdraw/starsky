@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.realtime.Helpers
 {
 	[TestClass]
-	public class WebSocketConnectionTest
+	public sealed class WebSocketConnectionTest
 	{
 		[TestMethod]
 		public void Id_IsNotNull()

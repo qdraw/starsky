@@ -13,7 +13,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 {
 	[TestClass]
-	public class MetaThumbnailCommandLineHelperTest
+	public sealed class MetaThumbnailCommandLineHelperTest
 	{
 		
 		[TestMethod]

@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 	/// NotificationQuery
 	/// </summary>
 	[TestClass]
-	public class NotificationQueryTest
+	public sealed class NotificationQueryTest
 	{
 		private readonly NotificationQuery _notificationQuery;
 		private readonly FakeIWebLogger _logger;

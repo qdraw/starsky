@@ -11,7 +11,7 @@ using starsky.foundation.platform.Middleware;
 namespace starskytest.starsky.foundation.platform.Middleware
 {
 	[TestClass]
-	public class ContentSecurityPolicyMiddlewareTest
+	public sealed class ContentSecurityPolicyMiddlewareTest
 	{
 		[TestMethod]
 		public async Task MiddlewareExtensionsTest_CSPBasicSetupTest()

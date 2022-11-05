@@ -12,7 +12,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
 	[TestClass]
-	public class SynchronizeTest
+	public sealed class SynchronizeTest
 	{
 		private readonly AppSettings _appSettings;
 		public SynchronizeTest()

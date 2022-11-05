@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
-	public class DiskOptionsPercentageSetupTest
+	public sealed class DiskOptionsPercentageSetupTest
 	{
 		
 		[TestMethod]

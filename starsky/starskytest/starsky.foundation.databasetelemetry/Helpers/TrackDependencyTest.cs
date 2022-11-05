@@ -9,7 +9,7 @@ using starsky.foundation.databasetelemetry.Helpers;
 namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 {
 	[TestClass]
-	public class TrackDependencyTest
+	public sealed class TrackDependencyTest
 	{
 		/// <summary>
 		/// Test code --> scroll down

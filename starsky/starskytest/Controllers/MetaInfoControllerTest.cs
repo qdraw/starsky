@@ -14,7 +14,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class MetaInfoControllerTest
+	public sealed class MetaInfoControllerTest
 	{
 		private readonly IMetaInfo _metaInfo;
 		private readonly FakeIStorage _iStorage;

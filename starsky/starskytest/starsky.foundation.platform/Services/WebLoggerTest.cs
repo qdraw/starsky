@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.platform.Services
 {
 	[TestClass]
-	public class WebLoggerTest
+	public sealed class WebLoggerTest
 	{
 		private readonly IServiceScopeFactory _scopeFactory;
 

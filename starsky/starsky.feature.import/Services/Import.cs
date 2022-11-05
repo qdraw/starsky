@@ -265,21 +265,40 @@ namespace starsky.feature.import.Services
 			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
 			     !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
 			{
-				if ( _appSettings.IsVerbose() ) _console.WriteLine($"❌ extension not supported: {inputFileFullPath.Key}");
-				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key, SourceFullFilePath = inputFileFullPath.Key};
+				if ( _appSettings.IsVerbose() )
+				{
+					_console.WriteLine($"❌ extension not supported: {inputFileFullPath.Key}");
+				}
+				return new ImportIndexItem
+				{
+					Status = ImportStatus.FileError, 
+					FilePath = inputFileFullPath.Key, 
+					SourceFullFilePath = inputFileFullPath.Key
+				};
 			}
 			
 			var hashList = await 
 				new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath.Key);
 			if ( !hashList.Value )
 			{
-				if ( _appSettings.IsVerbose() ) _console.WriteLine($"❌ FileHash error {inputFileFullPath.Key}");
-				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key, SourceFullFilePath = inputFileFullPath.Key};
+				if ( _appSettings.IsVerbose() )
+				{
+					_console.WriteLine($"❌ FileHash error {inputFileFullPath.Key}");
+				}
+				return new ImportIndexItem
+				{
+					Status = ImportStatus.FileError, 
+					FilePath = inputFileFullPath.Key,
+					SourceFullFilePath = inputFileFullPath.Key
+				};
 			}
 			
 			if (importSettings.IndexMode && await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
 			{
-				if ( _appSettings.IsVerbose() ) _console.WriteLine($"🤷 Ignored, exist already {inputFileFullPath.Key}");
+				if ( _appSettings.IsVerbose() )
+				{
+					_console.WriteLine($"🤷 Ignored, exist already {inputFileFullPath.Key}");
+				}
 				return new ImportIndexItem
 				{
 					Status = ImportStatus.IgnoredAlreadyImported, 
@@ -489,7 +508,8 @@ namespace starsky.feature.import.Services
 				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
 		    }
 		    
-		    importIndexItem.FileIndexItem = await _updateImportTransformations.UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
+		    importIndexItem.FileIndexItem = await _updateImportTransformations
+			    .UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
 			    importSettings.ColorClass, importIndexItem.DateTimeFromFileName, importSettings.IndexMode);
 
 		    DeleteFileAfter(importSettings,importIndexItem);
@@ -508,7 +528,10 @@ namespace starsky.feature.import.Services
 		{
 			// to move files
 			if ( !importSettings.DeleteAfter ) return;
-			if ( _appSettings.IsVerbose() ) _console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
+			if ( _appSettings.IsVerbose() )
+			{
+				_console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
+			}
 			_filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
 		}
 

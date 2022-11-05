@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 {
 	[TestClass]
-	public class DiskWatcherQueuedHostedServiceTest
+	public sealed class DiskWatcherQueuedHostedServiceTest
 	{
 		[TestMethod]
 		[Timeout(300)]

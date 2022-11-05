@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class ImportHistoryControllerTest
+	public sealed class ImportHistoryControllerTest
 	{
 		private readonly FakeIImportQuery _fakeImportQuery;
 

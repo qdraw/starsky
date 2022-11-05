@@ -8,7 +8,7 @@ using starskycore.ViewModels;
 namespace starskytest.ViewModels
 {
 	[TestClass]
-	public class ArchiveViewModelTest
+	public sealed class ArchiveViewModelTest
 	{
 		[TestMethod]
 		public void ArchiveViewModelPageTypeTest()

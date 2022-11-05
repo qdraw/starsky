@@ -6,7 +6,7 @@ using starskycore.Helpers;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class FilenameHelpersTest
+	public sealed class FilenameHelpersTest
 	{
 		[TestMethod]
 		public void FilenamesHelper_ValidFileName()

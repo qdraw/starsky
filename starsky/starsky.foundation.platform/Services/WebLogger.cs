@@ -16,11 +16,11 @@ namespace starsky.foundation.platform.Services
 		/// Trace = 0, Debug = 1, Information = 2, Warning = 3, Error = 4, Critical = 5, and None = 6.
 		/// @see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-6.0
 		/// </summary>
-		/// <param name="logger">ILoggerFactory</param>
+		/// <param name="loggerFactory">ILoggerFactory</param>
 		/// <param name="scopeFactory">optional scopeFactory</param>
-		public WebLogger(ILoggerFactory logger = null, IServiceScopeFactory scopeFactory = null)
+		public WebLogger(ILoggerFactory loggerFactory = null, IServiceScopeFactory scopeFactory = null)
 		{
-			_logger = logger?.CreateLogger("app");
+			_logger = loggerFactory?.CreateLogger("app");
 			var scopeProvider = scopeFactory?.CreateScope().ServiceProvider;
 			if ( scopeProvider != null ) _console = scopeProvider.GetService<IConsole>();
 		}

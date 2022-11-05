@@ -13,7 +13,7 @@ using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper
 namespace starskytest.starsky.foundation.writemeta.Helpers
 {
 	[TestClass]
-	public class ExifToolCmdHelperTest
+	public sealed class ExifToolCmdHelperTest
 	{
 		private readonly AppSettings _appSettings;
 

@@ -25,7 +25,7 @@ namespace starskytest.starsky.feature.import.Services
 	/// Also known as ImportServiceTest (Also check the FakeDb version)
 	/// </summary>
 	[TestClass]
-	public class ImportTestInMemoryDb
+	public sealed class ImportTestInMemoryDb
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;

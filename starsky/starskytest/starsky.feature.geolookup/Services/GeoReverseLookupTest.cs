@@ -14,7 +14,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.geolookup.Services
 {
 	[TestClass]
-	public class GeoReverseLookupTest
+	public sealed class GeoReverseLookupTest
 	{
 		private AppSettings _appSettings;
 

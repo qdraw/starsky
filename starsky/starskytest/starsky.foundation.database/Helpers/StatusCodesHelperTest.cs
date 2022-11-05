@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.Helpers
 {
 	[TestClass]
-	public class StatusCodesHelperTest
+	public sealed class StatusCodesHelperTest
 	{
 		[TestMethod] 
 		public void IsDeletedStatus_Null_Default()

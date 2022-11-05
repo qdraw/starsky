@@ -11,7 +11,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webhtmlpublish.Services
 {
 	[TestClass]
-	public class ToBase64DataUriListTest
+	public sealed class ToBase64DataUriListTest
 	{
 		[TestMethod]
 		public async Task TestIfContainsDataImageBaseHash()

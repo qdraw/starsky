@@ -7,7 +7,7 @@ using starskycore.Helpers;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class Base64HelperTest
+	public sealed class Base64HelperTest
 	{
 		[TestMethod]
 		public void Base64HelperTest_ToBase64ToStringEmpty()

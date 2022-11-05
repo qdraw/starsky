@@ -16,7 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Services
 {
 	[TestClass]
-	public class XmpReadHelperTest
+	public sealed class XmpReadHelperTest
 	{
 		private const string Input = "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP Core 5.1.2\"> <rdf:RDF xmlns:rdf=\""+
 		                             "http://www.w3.org/1999/02/22-rdf-syntax-ns#\"> <rdf:Description rdf:about=\"\" "+

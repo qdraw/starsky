@@ -6,7 +6,7 @@ using starsky.foundation.http.Streaming;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class MultipartRequestHelperTest
+	public sealed class MultipartRequestHelperTest
 	{
 
 		[TestMethod]

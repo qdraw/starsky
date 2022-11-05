@@ -11,7 +11,7 @@ using starskytest.starsky.foundation.platform.Services;
 namespace starskytest.starsky.foundation.webtelemetry.Helpers
 {
 	[TestClass]
-	public class FlushOnApplicationStoppingTest
+	public sealed class FlushOnApplicationStoppingTest
 	{
 		[TestMethod]
 		public void ApplicationBuilder_FlushOnApplicationStopping1()

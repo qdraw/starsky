@@ -6,7 +6,7 @@ using starsky.foundation.consoletelemetry.Initializers;
 namespace starskytest.starsky.foundation.consoletelemetry.Initializers
 {
 	[TestClass]
-	public class CloudRoleNameInitializerConsoleTest
+	public sealed class CloudRoleNameInitializerConsoleTest
 	{
 		[TestMethod]
 		public void CloudRoleNameInitializerTestKeyword()

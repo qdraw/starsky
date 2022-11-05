@@ -10,7 +10,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.webhtmlpublish.Services
 {
 	[TestClass]
-	public class PublishPreflightTest
+	public sealed class PublishPreflightTest
 	{
 		private AppSettings _testAppSettings = new AppSettings{
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>

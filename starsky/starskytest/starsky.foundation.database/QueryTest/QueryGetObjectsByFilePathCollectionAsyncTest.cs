@@ -14,7 +14,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	[TestClass]
-	public class QueryGetObjectsByFilePathCollectionAsyncTest
+	public sealed class QueryGetObjectsByFilePathCollectionAsyncTest
 	{
 		private readonly Query _query;
 

@@ -27,7 +27,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class GeoControllerTest
+	public sealed class GeoControllerTest
 	{
 		private readonly IQuery _query;
 		private readonly IExifTool _exifTool;

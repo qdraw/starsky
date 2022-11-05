@@ -8,7 +8,7 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
-	public class DiskStorageHealthCheckTest
+	public sealed class DiskStorageHealthCheckTest
 	{
 		[TestMethod]
 		public async Task RunSuccessful()
