@@ -43,7 +43,7 @@ jobs:
     - name: BuildNetCore
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target=BuildNetCore --no-sonar --no-client
+      run: bash build.sh --Target=BuildNetCore --no-sonar --no-client --no-test
      
     - name: Run With Exit
       shell: bash
