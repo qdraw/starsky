@@ -39,12 +39,7 @@ jobs:
         key: ${{ runner.os }}-build-netcore-${{ hashFiles('./starsky/starsky/nuget-packages-list.json') }}
         restore-keys: |
           ${{ runner.os }}-build-netcore-
- 
-    - name: BuildNetCore
-      shell: bash
-      working-directory: ./starsky
-      run: bash build.sh --Target=BuildNetCore --no-sonar --no-client --no-test --no-dependencies
-     
+
     - name: Run With Exit
       shell: bash
       working-directory: ./starsky/starsky
