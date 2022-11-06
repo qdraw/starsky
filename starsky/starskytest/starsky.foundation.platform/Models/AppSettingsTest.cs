@@ -197,8 +197,14 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
-		public void ConvertTimeZoneId_ForNonWindows_IanaId()
+		public void ConvertTimeZoneId_ForNonWindows_IanaId__UnixOnly()
 		{
+			if ( _appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Unix Only");
+				return;
+			}
+			
 			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin");
 			
 			// Linux: Europe/Amsterdam
@@ -208,7 +214,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 				
 		[TestMethod]
-		public void ConvertTimeZoneId_WindowsId_WindowsOnly()
+		public void ConvertTimeZoneId_WindowsId__WindowsOnly()
 		{
 			if ( !_appSettings.IsWindows )
 			{
@@ -225,7 +231,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
-		public void ConvertTimeZoneId_Antarctica_IanaId_UnixOnly()
+		public void ConvertTimeZoneId_Antarctica_IanaId__UnixOnly()
 		{
 			if ( _appSettings.IsWindows )
 			{
