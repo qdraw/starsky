@@ -340,7 +340,7 @@ namespace starsky.foundation.platform.Models
 			set => CameraTimeZoneInfo = ConvertTimeZoneId(value);
 		}
 
-		private TimeZoneInfo ConvertTimeZoneId(string value)
+		internal TimeZoneInfo ConvertTimeZoneId(string value)
 		{
 			if (string.IsNullOrEmpty(value))
 			{

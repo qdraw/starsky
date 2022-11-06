@@ -195,6 +195,43 @@ namespace starskytest.starsky.foundation.platform.Models
 			
 			Assert.AreEqual("Europe/Amsterdam", appSettings.CameraTimeZone);
 		}
+		
+		[TestMethod]
+		public void ConvertTimeZoneId_Unix()
+		{
+			if ( _appSettings.IsWindows )
+			{
+				Console.WriteLine("This test is for unix only");
+				Assert.Inconclusive("This test if for Unix Only");
+				return;
+			}
+			
+			var value = new AppSettings().ConvertTimeZoneId("Europe/Berlin");
+			
+			// Linux: Europe/Amsterdam
+			// Windows: W. Europe Standard Time
+			
+			Assert.AreEqual("Europe/Berlin", value.Id);
+		}
+		
+				
+		[TestMethod]
+		public void ConvertTimeZoneId_Windows()
+		{
+			if ( !_appSettings.IsWindows )
+			{
+				Console.WriteLine("This test is for Windows only");
+				Assert.Inconclusive("This test if for Windows Only");
+				return;
+			}
+			
+			var value = new AppSettings().ConvertTimeZoneId("Europe/Berlin");
+			
+			// Linux: Europe/Amsterdam
+			// Windows: W. Europe Standard Time
+			
+			Assert.AreEqual("W. Europe Standard Time", value.Id);
+		}
 
 		[TestMethod]
 		public void AppSettingsGenerateSlugLengthCheck()
