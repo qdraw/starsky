@@ -39,6 +39,7 @@
   "Microsoft.Extensions.Logging.Abstractions 6.0.2",
   "System.Buffers 4.5.1",
   "System.Threading.Tasks.Dataflow 6.0.0",
+  "TimeZoneConverter 6.0.1",
   "GeoTimeZone 5.1.0",
   "XmpCore 6.1.10.1",
   "MetadataExtractor 2.7.2",
