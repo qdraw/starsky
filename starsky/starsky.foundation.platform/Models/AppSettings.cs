@@ -337,17 +337,17 @@ namespace starsky.foundation.platform.Models
 				if (CameraTimeZoneInfo == null) return string.Empty; 
 				return CameraTimeZoneInfo.Id; 
 			}
-			set => CameraTimeZoneInfo = ConvertTimeZoneId(value);
+			set => CameraTimeZoneInfo = ConvertTimeZoneId(value, IsWindows);
 		}
 
-		internal TimeZoneInfo ConvertTimeZoneId(string value)
+		internal static TimeZoneInfo ConvertTimeZoneId(string value, bool isWindows)
 		{
 			if (string.IsNullOrEmpty(value))
 			{
 				return TimeZoneInfo.Local;
 			}
 			
-			if ( IsWindows && TimeZoneInfo.TryConvertIanaIdToWindowsId(value, 
+			if ( isWindows && TimeZoneInfo.TryConvertIanaIdToWindowsId(value, 
 				out var windowsId) && !string.IsNullOrEmpty(windowsId) )
 			{
 				value = windowsId;

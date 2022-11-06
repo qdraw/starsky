@@ -197,35 +197,20 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
-		public void ConvertTimeZoneId_UnixOnly()
+		public void ConvertTimeZoneId_ForNonWindows()
 		{
-			if ( _appSettings.IsWindows )
-			{
-				Console.WriteLine("This test is for unix only");
-				Assert.Inconclusive("This test if for Unix Only");
-				return;
-			}
-			
-			var value = new AppSettings().ConvertTimeZoneId("Europe/Berlin");
+			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin", false);
 			
 			// Linux: Europe/Amsterdam
 			// Windows: W. Europe Standard Time
 			
 			Assert.AreEqual("Europe/Berlin", value.Id);
 		}
-		
 				
 		[TestMethod]
-		public void ConvertTimeZoneId_WindowsOnly()
+		public void ConvertTimeZoneId_ForWindows()
 		{
-			if ( !_appSettings.IsWindows )
-			{
-				Console.WriteLine("This test is for Windows only");
-				Assert.Inconclusive("This test if for Windows Only");
-				return;
-			}
-			
-			var value = new AppSettings().ConvertTimeZoneId("Europe/Berlin");
+			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin", true);
 			
 			// Linux: Europe/Amsterdam
 			// Windows: W. Europe Standard Time
