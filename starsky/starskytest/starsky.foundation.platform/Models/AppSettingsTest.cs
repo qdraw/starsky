@@ -195,6 +195,75 @@ namespace starskytest.starsky.foundation.platform.Models
 			
 			Assert.AreEqual("Europe/Amsterdam", appSettings.CameraTimeZone);
 		}
+		
+		[TestMethod]
+		public void ConvertTimeZoneId_ForNonWindows_IanaId__UnixOnly()
+		{
+			if ( _appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Unix Only");
+				return;
+			}
+			
+			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin");
+			
+			// Linux: Europe/Amsterdam
+			// Windows: W. Europe Standard Time
+			
+			Assert.AreEqual("Europe/Berlin", value.Id);
+		}
+				
+		[TestMethod]
+		public void ConvertTimeZoneId_WindowsId__WindowsOnly()
+		{
+			if ( !_appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Windows Only");
+				return;
+			}
+			
+			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin");
+			
+			// Linux: Europe/Amsterdam
+			// Windows: W. Europe Standard Time
+			
+			Assert.AreEqual("W. Europe Standard Time", value.Id);
+		}
+		
+		[TestMethod]
+		public void ConvertTimeZoneId_Antarctica_IanaId__UnixOnly()
+		{
+			if ( _appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Unix Only");
+				return;
+			}
+			
+			var value = AppSettings.ConvertTimeZoneId("Antarctica/Troll");
+			
+			// Linux: Antarctica/Troll
+			// Windows: Does not exist at the moment
+			
+			Assert.AreEqual("Antarctica/Troll", value.Id);
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(TimeZoneNotFoundException))]
+		public void ConvertTimeZoneId_Antarctica_WindowsId_WindowsOnly()
+		{
+			if ( !_appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Windows Only");
+				return;
+			}
+			
+			AppSettings.ConvertTimeZoneId("Antarctica/Troll");
+			
+			// Expect exception
+			
+			// Linux: Antarctica/Troll
+			// Windows: Does not exist at the moment
+		}
 
 		[TestMethod]
 		public void AppSettingsGenerateSlugLengthCheck()

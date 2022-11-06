@@ -37,7 +37,8 @@ node starsky-tools/build-tools/app-version-update.js
 ```
 
 # version 0.5.0 _(Unreleased)_ - 2022-??-??
-- [x]   (Changed) _App_ Save minimum size for windows (PR #948)
+- [x]   (Changed) _App_ Save minimum size for windows (all platforms) (PR #948)
+- [x]   (Changed) _Back-end_ Windows OS Camera Timezone issues and SQLite startup issues (PR #952)
 
 - > Todo: https://github.com/qdraw/starsky/milestone/2
   

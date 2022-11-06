@@ -311,7 +311,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		
 				
 		[TestMethod]
-		public async Task DownloadExifTool_Unix_existVerbose()
+		public async Task DownloadExifTool_existVerbose_UnixOnly()
 		{
 			if ( _appSettings.IsWindows )
 			{

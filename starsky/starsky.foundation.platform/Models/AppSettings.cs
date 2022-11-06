@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using starsky.foundation.platform.Attributes;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
+using TimeZoneConverter;
 
 namespace starsky.foundation.platform.Models
 {
@@ -337,15 +338,19 @@ namespace starsky.foundation.platform.Models
 				if (CameraTimeZoneInfo == null) return string.Empty; 
 				return CameraTimeZoneInfo.Id; 
 			}
-			set
+			set => CameraTimeZoneInfo = ConvertTimeZoneId(value);
+		}
+
+		internal static TimeZoneInfo ConvertTimeZoneId(string value)
+		{
+			if (string.IsNullOrEmpty(value))
 			{
-				if (string.IsNullOrEmpty(value))
-				{
-					CameraTimeZoneInfo = TimeZoneInfo.Local;
-					return;
-				}
-				CameraTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(value); 
+				return TimeZoneInfo.Local;
 			}
+			
+			// when windows 2019 is more common: TimeZoneInfo FindSystemTimeZoneById
+			// Windows 10 May 2019 https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
+			return TZConvert.GetTimeZoneInfo(value);
 		}
 
 		[JsonIgnore]

@@ -205,6 +205,5 @@ namespace starsky.foundation.database.Data
 		/// </summary>
 		public virtual DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 		
-		
 	}
 }
