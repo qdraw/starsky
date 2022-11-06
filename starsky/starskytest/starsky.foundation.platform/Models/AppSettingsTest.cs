@@ -199,7 +199,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		[TestMethod]
 		public void ConvertTimeZoneId_ForNonWindows_IanaId()
 		{
-			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin", false);
+			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin");
 			
 			// Linux: Europe/Amsterdam
 			// Windows: W. Europe Standard Time
@@ -208,9 +208,15 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 				
 		[TestMethod]
-		public void ConvertTimeZoneId_WindowsId()
+		public void ConvertTimeZoneId_WindowsId_WindowsOnly()
 		{
-			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin", true);
+			if ( !_appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Windows Only");
+				return;
+			}
+			
+			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin");
 			
 			// Linux: Europe/Amsterdam
 			// Windows: W. Europe Standard Time
@@ -219,7 +225,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
-		public void ConvertTimeZoneId_Antarctica_WindowsId_UnixOnly()
+		public void ConvertTimeZoneId_Antarctica_IanaId_UnixOnly()
 		{
 			if ( _appSettings.IsWindows )
 			{
@@ -227,7 +233,7 @@ namespace starskytest.starsky.foundation.platform.Models
 				return;
 			}
 			
-			var value = AppSettings.ConvertTimeZoneId("Antarctica/Troll", true);
+			var value = AppSettings.ConvertTimeZoneId("Antarctica/Troll");
 			
 			// Linux: Antarctica/Troll
 			// Windows: Does not exist at the moment
@@ -245,7 +251,7 @@ namespace starskytest.starsky.foundation.platform.Models
 				return;
 			}
 			
-			AppSettings.ConvertTimeZoneId("Antarctica/Troll", true);
+			AppSettings.ConvertTimeZoneId("Antarctica/Troll");
 			
 			// Expect exception
 			
