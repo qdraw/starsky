@@ -349,6 +349,7 @@ namespace starsky.foundation.platform.Models
 			}
 			
 			// when windows 2019 is more common: TimeZoneInfo FindSystemTimeZoneById
+			// Windows 10 May 2019 https://learn.microsoft.com/en-us/dotnet/core/extensions/globalization-icu
 			return TZConvert.GetTimeZoneInfo(value);
 		}
 
