@@ -197,7 +197,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
-		public void ConvertTimeZoneId_ForNonWindows()
+		public void ConvertTimeZoneId_ForNonWindows_IanaId()
 		{
 			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin", false);
 			
@@ -208,7 +208,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 				
 		[TestMethod]
-		public void ConvertTimeZoneId_ForWindows()
+		public void ConvertTimeZoneId_WindowsId()
 		{
 			var value = AppSettings.ConvertTimeZoneId("Europe/Berlin", true);
 			
@@ -219,14 +219,38 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
-		public void ConvertTimeZoneId_Antarctica_ForWindows()
+		public void ConvertTimeZoneId_Antarctica_WindowsId_UnixOnly()
 		{
+			if ( _appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Unix Only");
+				return;
+			}
+			
 			var value = AppSettings.ConvertTimeZoneId("Antarctica/Troll", true);
 			
 			// Linux: Antarctica/Troll
 			// Windows: Does not exist at the moment
 			
 			Assert.AreEqual("Antarctica/Troll", value.Id);
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(TimeZoneNotFoundException))]
+		public void ConvertTimeZoneId_Antarctica_WindowsId_WindowsOnly()
+		{
+			if ( !_appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Windows Only");
+				return;
+			}
+			
+			AppSettings.ConvertTimeZoneId("Antarctica/Troll", true);
+			
+			// Expect exception
+			
+			// Linux: Antarctica/Troll
+			// Windows: Does not exist at the moment
 		}
 
 		[TestMethod]
