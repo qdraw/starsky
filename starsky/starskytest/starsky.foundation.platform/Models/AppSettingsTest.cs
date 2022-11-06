@@ -197,7 +197,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
-		public void ConvertTimeZoneId_Unix()
+		public void ConvertTimeZoneId_UnixOnly()
 		{
 			if ( _appSettings.IsWindows )
 			{
@@ -216,7 +216,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		
 				
 		[TestMethod]
-		public void ConvertTimeZoneId_Windows()
+		public void ConvertTimeZoneId_WindowsOnly()
 		{
 			if ( !_appSettings.IsWindows )
 			{
