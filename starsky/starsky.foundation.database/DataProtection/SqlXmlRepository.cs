@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -41,7 +42,7 @@ namespace starsky.foundation.database.DataProtection
     			
 				// MySqlConnector.MySqlException (0x80004005): Table 'starsky.DataProtectionKeys' doesn't exist
 				// or Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: DataProtectionKeys
-				if ( exception.Message.Contains("0x80004005") && exception.Message.Contains("DataProtectionKeys") )
+				if ( exception.Message.Contains("0x80004005") || exception.Message.Contains("no such table: DataProtectionKeys") )
 				{
 					_dbContext.Database.Migrate();
 				}
