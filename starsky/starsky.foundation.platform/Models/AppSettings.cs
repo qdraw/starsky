@@ -337,15 +337,22 @@ namespace starsky.foundation.platform.Models
 				if (CameraTimeZoneInfo == null) return string.Empty; 
 				return CameraTimeZoneInfo.Id; 
 			}
-			set
+			set => CameraTimeZoneInfo = ConvertTimeZoneId(value);
+		}
+
+		private TimeZoneInfo ConvertTimeZoneId(string value)
+		{
+			if (string.IsNullOrEmpty(value))
 			{
-				if (string.IsNullOrEmpty(value))
-				{
-					CameraTimeZoneInfo = TimeZoneInfo.Local;
-					return;
-				}
-				CameraTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(value); 
+				return TimeZoneInfo.Local;
 			}
+			
+			if ( IsWindows && TimeZoneInfo.TryConvertIanaIdToWindowsId(value, 
+				out var windowsId) && !string.IsNullOrEmpty(windowsId) )
+			{
+				value = windowsId;
+			}
+			return TimeZoneInfo.FindSystemTimeZoneById(value); 
 		}
 
 		[JsonIgnore]
