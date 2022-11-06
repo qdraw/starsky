@@ -54,6 +54,14 @@ public class SqlXmlRepositoryTest
 		Assert.AreEqual(0, result.Count);
 	}
 	
+	[TestMethod]
+	[ExpectedException(typeof(NullReferenceException))]
+	public void SqlXmlRepositoryTest_ExpectedException_NullReferenceException()
+	{
+		new SqlXmlRepository(null!,null!).GetAllElements();
+		// ExpectedException NullReferenceException
+	}
+	
 	private static MySqlException CreateMySqlException(string message)
 	{
 		var info = new SerializationInfo(typeof(Exception),
