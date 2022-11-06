@@ -217,6 +217,17 @@ namespace starskytest.starsky.foundation.platform.Models
 			
 			Assert.AreEqual("W. Europe Standard Time", value.Id);
 		}
+		
+		[TestMethod]
+		public void ConvertTimeZoneId_Antarctica_ForWindows()
+		{
+			var value = AppSettings.ConvertTimeZoneId("Antarctica/Troll", true);
+			
+			// Linux: Antarctica/Troll
+			// Windows: Does not exist at the moment
+			
+			Assert.AreEqual("Antarctica/Troll", value.Id);
+		}
 
 		[TestMethod]
 		public void AppSettingsGenerateSlugLengthCheck()
