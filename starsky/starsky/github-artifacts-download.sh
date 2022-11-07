@@ -57,6 +57,7 @@ for ((i = 1; i <= $#; i++ )); do
   then
     echo "--runtime linux-arm OR --runtime osx-x64 OR --runtime win-x64"
     echo "     (or as fallback:) --runtime "$RUNTIME
+    echo "Desktop versions:  --runtime starsky-mac-x64-desktop OR --runtime starsky-win-x64-desktop"
     echo "--branch master"
     echo "--token anything"
     echo "--output output_dir default folder_of_this_file"
@@ -97,9 +98,10 @@ VERSION=$RUNTIME
 
 if [[ $VERSION != *desktop ]]
 then
-    VERSION_ZIP="starsky-"$RUNTIME".zip"
+    VERSION_ZIP_ARRAY=("starsky-"$RUNTIME".zip")
 else
-   VERSION_ZIP=$RUNTIME".zip"
+   # for desktop
+   VERSION_ZIP_ARRAY=($RUNTIME".zip" $RUNTIME".dmg" $RUNTIME".exe")
 fi 
 
 if [ ! -d $OUTPUT_DIR ]; then
@@ -136,7 +138,7 @@ elif [[ "$API_GATEWAY_STATUS_CODE" -eq 404 ]] ; then
   exit 1
 fi
 
-echo "V: "$VERSION " zip: " $VERSION_ZIP
+echo "V: "$VERSION
 echo "OUT" $OUTPUT_DIR
 echo ">: "$ACTIONS_WORKFLOW_URL
 RESULT_ACTIONS_WORKFLOW=$(curl --user :$STARSKY_GITHUB_PAT -sS $ACTIONS_WORKFLOW_URL)
@@ -185,7 +187,8 @@ GITHUB_HEAD_SHA=$(echo "$GITHUB_HEAD_SHA" | sed "s/\"head_sha\": \"//")
 GITHUB_HEAD_SHA=($GITHUB_HEAD_SHA) # make array
 GITHUB_HEAD_SHA="${GITHUB_HEAD_SHA[0]}" # first of array
 
-GITHUB_HEAD_SHA_CACHE_FILE="${OUTPUT_DIR}${VERSION_ZIP}.sha-cache.txt"
+VERSION_NAME=$(echo "${VERSION_ZIP_ARRAY[0]}" | sed "s/.zip//")
+GITHUB_HEAD_SHA_CACHE_FILE="${OUTPUT_DIR}${VERSION_NAME}.sha-cache.txt"
 
 if [ "$FORCE" = false ] ; then
 
@@ -200,7 +203,7 @@ if [ "$FORCE" = false ] ; then
         echo "SKIP: not downloaded again"
         exit 0;
     else 
-        echo "CONTINUE: '" $GITHUB_HEAD_SHA"' does not exists in "$GITHUB_HEAD_SHA_CACHE_FILE
+        echo "CONTINUE: '"$GITHUB_HEAD_SHA"' does not exists in "$GITHUB_HEAD_SHA_CACHE_FILE
     fi
       
     # set the new hash
@@ -210,38 +213,55 @@ fi
 
 mkdir -p $OUTPUT_DIR
 
-OUTPUT_ZIP_PATH="${OUTPUT_DIR}${VERSION_ZIP}"
+OUTPUT_ZIP_PATH="${OUTPUT_DIR}${VERSION_NAME}_tmp.zip"
 echo "Next: download output file: "$OUTPUT_ZIP_PATH
  
-curl -sS -L --user :$STARSKY_GITHUB_PAT $DOWNLOAD_URL -o "${OUTPUT_ZIP_PATH}_tmp.zip"
-if [ ! -f "${OUTPUT_ZIP_PATH}_tmp.zip" ]; then
-    echo "FAIL: ${OUTPUT_ZIP_PATH}_tmp.zip" " is NOT downloaded"
+curl -sS -L --user :$STARSKY_GITHUB_PAT $DOWNLOAD_URL -o "${OUTPUT_ZIP_PATH}"
+if [ ! -f "${OUTPUT_ZIP_PATH}" ]; then
+    echo "FAIL: ${OUTPUT_ZIP_PATH}" " is NOT downloaded"
     rm $GITHUB_HEAD_SHA_CACHE_FILE || true
     exit 1
 fi
 
-if [ -f "$OUTPUT_ZIP_PATH" ]; then
-    rm ${OUTPUT_ZIP_PATH}
-fi
+# remove already downloaded outputs
+for VERSION_ZIP in "${VERSION_ZIP_ARRAY[@]}";
+do
+    if [ -f "${OUTPUT_DIR}/${VERSION_ZIP}" ]; then
+        rm ${OUTPUT_ZIP_PATH}
+    fi
+done    
 
 # contains an zip in a zip
-unzip -q -o -j "${OUTPUT_ZIP_PATH}_tmp.zip" -d "${OUTPUT_DIR}temp"
+unzip -q -o -j "${OUTPUT_ZIP_PATH}" -d "${OUTPUT_DIR}temp"
 
-if [ ! -f "${OUTPUT_DIR}temp/${VERSION_ZIP}" ]; then
-    echo "FAIL: ${OUTPUT_DIR}temp/${VERSION_ZIP}" " is NOT unpacked"
+echo ${VERSION_ZIP_ARRAY[*]}
 
+OUTPUT_APP_PATH=false
+for VERSION_ZIP in "${VERSION_ZIP_ARRAY[@]}";
+do
+    if [ -f "${OUTPUT_DIR}temp/${VERSION_ZIP}" ]; then
+        # move file 
+        OUTPUT_APP_PATH="${OUTPUT_DIR}${VERSION_ZIP}"
+        mv "${OUTPUT_DIR}temp/${VERSION_ZIP}" "${OUTPUT_APP_PATH}"
+        rm "${OUTPUT_ZIP_PATH}"
+        rm -rf "${OUTPUT_DIR}temp"
+        echo "SUCCESS: ${OUTPUT_APP_PATH} is downloaded"  
+    fi
+done    
+
+if [ $OUTPUT_APP_PATH == false ]; then
+    rm "${OUTPUT_ZIP_PATH}"
     rm -rf "${OUTPUT_DIR}temp"
     rm $GITHUB_HEAD_SHA_CACHE_FILE || true
-
     exit 1
 fi
 
-# move file 
-mv "${OUTPUT_DIR}temp/${VERSION_ZIP}" $OUTPUT_ZIP_PATH
-rm -rf "${OUTPUT_DIR}temp"
-rm "${OUTPUT_ZIP_PATH}_tmp.zip"
-
-echo "zip is downloaded "$OUTPUT_ZIP_PATH
+if [[ $VERSION == *zip ]]
+then
+    echo "zip is downloaded "$OUTPUT_APP_PATH
+else    
+    echo "binary is downloaded "$OUTPUT_APP_PATH
+fi
 
 if [[ $VERSION != *desktop ]]
 then
@@ -254,7 +274,7 @@ then
     NEW_INSTANCE_TEMP_FILE="${OUTPUT_DIR}__pm2-new-instance.sh"
     NEW_INSTANCE_OUTPUT_FILE="${OUTPUT_DIR}pm2-new-instance.sh"
 
-    unzip -p $OUTPUT_ZIP_PATH "pm2-new-instance.sh" > $NEW_INSTANCE_TEMP_FILE
+    unzip -p $OUTPUT_APP_PATH "pm2-new-instance.sh" > $NEW_INSTANCE_TEMP_FILE
     
     if [ -f $NEW_INSTANCE_TEMP_FILE ]; then
         # check if file contains something
@@ -270,6 +290,7 @@ then
             # output dir should have slash at end
             echo $OUTPUT_DIR"pm2-new-instance.sh"
         else 
+            echo "WARNING: pm2-new-instance.sh is not downloaded so show dir"
             ls $OUTPUT_DIR
         fi
 
