@@ -63,20 +63,37 @@ namespace starsky.foundation.metathumbnail.Services
 			var jpegTags = allExifItems.FirstOrDefault(p =>
 				p.Name == "JPEG")?.Tags;
 
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(
-				allExifItems.FirstOrDefault(p => p.Name == "Exif IFD0"));
+			var heightPixels = jpegTags?.FirstOrDefault(p => p.Name == "Image Height")?.Description;
+			var widthPixels = jpegTags?.FirstOrDefault(p => p.Name == "Image Width")?.Description;
+
+			if ( string.IsNullOrEmpty(heightPixels) && string.IsNullOrEmpty(widthPixels) )
+			{
+				var exifSubIfdDirectories = allExifItems.OfType<ExifSubIfdDirectory>().ToList();
+				foreach ( var exifSubIfdDirectory in exifSubIfdDirectories )
+				{
+					var value =  exifSubIfdDirectory.Tags.FirstOrDefault(p => p.Name == "Image Height")?.Description;
+					if ( value != null )
+					{
+						heightPixels = value;
+					}
+					var value2 =  exifSubIfdDirectory.Tags.FirstOrDefault(p => p.Name == "Image Width")?.Description;
+					if ( value2 != null )
+					{
+						widthPixels = value2;
+					}
+				}
+			}
+
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault());
 					
-			var heightParseResult = int.TryParse(
-				jpegTags?.FirstOrDefault(p => p.Name == "Image Height")?
-					.Description?.Replace(" pixels",string.Empty), out var height);
+			var heightParseResult = int.TryParse(heightPixels?.Replace(
+				" pixels",string.Empty), out var height);
 				
-			var widthParseResult =int.TryParse(
-				jpegTags?.FirstOrDefault(p => p.Name == "Image Width")?
-					.Description?.Replace(" pixels",string.Empty), out var width);
-				
+			var widthParseResult =int.TryParse(widthPixels?.Replace(" pixels",string.Empty), out var width);
+			
 			if ( !heightParseResult || !widthParseResult || height == 0||  width == 0)
 			{
-				_logger.LogInformation($"[] ${reference} has no height or width {width}x{height} ");
+				_logger.LogInformation($"[ParseMetaThumbnail] ${reference} has no height or width {width}x{height} ");
 			}
 			return (exifThumbnailDir, width, height, rotation);
 		}
@@ -85,11 +102,11 @@ namespace starsky.foundation.metathumbnail.Services
 		{
 			if ( exifThumbnailDir == null )  return new OffsetModel {Success = false, Reason = "ExifThumbnailDirectory null"};
 
-			long thumbnailOffset = long.Parse(exifThumbnailDir.GetDescription(
-				ExifThumbnailDirectory.TagThumbnailOffset).Split(' ')[0]);
+			long thumbnailOffset = long.Parse(exifThumbnailDir!.GetDescription(
+				ExifThumbnailDirectory.TagThumbnailOffset)!.Split(' ')[0]);
 			const int maxIssue35Offset = 12;
 			int thumbnailLength = int.Parse(exifThumbnailDir.GetDescription(
-				ExifThumbnailDirectory.TagThumbnailLength).Split(' ')[0]) + maxIssue35Offset;
+				ExifThumbnailDirectory.TagThumbnailLength)!.Split(' ')[0]) + maxIssue35Offset;
 			byte[] thumbnail = new byte[thumbnailLength];
 			
 			using (var imageStream = _iStorage.ReadStream(subPath))

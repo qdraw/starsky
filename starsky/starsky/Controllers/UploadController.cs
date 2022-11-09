@@ -100,9 +100,13 @@ namespace starsky.Controllers
 
 			for ( var i = 0; i < fileIndexResultsList.Count; i++ )
 			{
-				if(fileIndexResultsList[i].Status != ImportStatus.Ok) continue;
+				if ( fileIndexResultsList[i].Status != ImportStatus.Ok )
+				{
+					continue;
+				}
 			
 				var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
+				
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
 				// subPath is always unix style
@@ -110,8 +114,8 @@ namespace starsky.Controllers
 				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
 
 				// to get the output in the result right
-				fileIndexResultsList[i].FileIndexItem.FileName = fileName;
-				fileIndexResultsList[i].FileIndexItem.ParentDirectory =  parentDirectory;
+				fileIndexResultsList[i].FileIndexItem!.FileName = fileName;
+				fileIndexResultsList[i].FileIndexItem!.ParentDirectory =  parentDirectory;
 				fileIndexResultsList[i].FilePath = subPath;
 				// Do sync action before writing it down
 				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem);
@@ -123,7 +127,7 @@ namespace starsky.Controllers
 				// to avoid partly written stream to be read by an other application
 				_iStorage.FileDelete(subPath);
 				_iStorage.FileMove(subPath + ".tmp", subPath);
-				_logger.LogInformation($"write {subPath} is {writeStatus}");
+				_logger.LogInformation($"[UploadController] write {subPath} is {writeStatus}");
 				
 				// clear directory cache
 				_query.RemoveCacheParentItem(subPath);
@@ -138,7 +142,7 @@ namespace starsky.Controllers
 				}
 
 				await _metaExifThumbnailService.AddMetaThumbnail(subPath,
-					fileIndexResultsList[i].FileIndexItem.FileHash);
+					fileIndexResultsList[i].FileIndexItem!.FileHash);
 			}
 
 			// send all uploads as list

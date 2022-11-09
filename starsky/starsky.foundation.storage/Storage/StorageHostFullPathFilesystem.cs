@@ -337,9 +337,9 @@ namespace starsky.foundation.storage.Storage
 					FileOptions.Asynchronous | FileOptions.SequentialScan))
 				{
 					await stream.CopyToAsync(fileStream);
-					fileStream.Dispose();
+					await fileStream.DisposeAsync();
 				}
-				stream.Dispose();
+				await stream.DisposeAsync();
 				return true;
 			}
 
