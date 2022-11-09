@@ -1,6 +1,6 @@
 /**
  * Update the project versions to have the same version
- * Use parameter to match version and the path. it defaults to the solutio
+ * Use parameter to match version and the path. it defaults to the solution
  */
 
 const { join, dirname } = require("path");
