@@ -26,6 +26,7 @@ const argv = process.argv.slice(2);
 
 let searchPath = join(__dirname, prefixPath);
 
+// it checks if the parameter matches a semver string or a valid path on disk
 if (argv) {
 	// regex: ^(\d+\.)?(\d+\.)?(\*|x|\d+)$
 	for (const argItem of argv) {
