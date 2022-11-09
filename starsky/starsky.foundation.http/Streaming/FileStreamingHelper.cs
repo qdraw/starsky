@@ -48,14 +48,13 @@ namespace starsky.foundation.http.Streaming
 	        AppSettings appSettings, ISelectorStorage selectorStorage)
         {
             // The Header 'filename' is for uploading on file without a form.
-            return await StreamFile(request.ContentType, request.ContentLength, 
-	            request.Body, 
+            return await StreamFile(request.ContentType, request.Body, 
 	            appSettings, 
 	            selectorStorage, HeaderFileName(request, appSettings));            
         }
 
         [SuppressMessage("Usage", "S125:Remove this commented out code")]
-        public static async Task<List<string>> StreamFile(string contentType, long? contentLength, Stream requestBody, AppSettings appSettings, 
+        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, 
 	        ISelectorStorage selectorStorage, string headerFileName = null)
         {
             // headerFileName is for uploading on a single file without a multi part form.

@@ -93,8 +93,11 @@ namespace starsky.foundation.metathumbnail.Services
 		{
 			var first50BytesStream = _iStorage.ReadStream(subPath,50);
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(first50BytesStream);
-			if ( imageFormat != ExtensionRolesHelper.ImageFormat.jpg )
+			
+			if ( imageFormat != ExtensionRolesHelper.ImageFormat.jpg && 
+			     imageFormat != ExtensionRolesHelper.ImageFormat.tiff )
 			{
+				_logger.LogDebug($"[AddMetaThumbnail] {subPath} is not a jpg or tiff file");
 				return false;
 			}
 
