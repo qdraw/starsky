@@ -29,16 +29,7 @@ function FirstJsonValue {
     perl -nle 'print $1 if m{"'"$1"'": "([^"]+)",?}' <<< "${@:2}"
 }
 
-# If dotnet CLI is installed globally and it matches requested version, use for execution
-if [ -x "$(command -v dotnet)" ] && dotnet --version &>/dev/null; then
-    export DOTNET_EXE="$(command -v dotnet)"
-else
-    # Download install script
-    DOTNET_INSTALL_FILE="$TEMP_DIRECTORY/dotnet-install.sh"
-    mkdir -p "$TEMP_DIRECTORY"
-    curl -Lsfo "$DOTNET_INSTALL_FILE" "$DOTNET_INSTALL_URL"
-    chmod +x "$DOTNET_INSTALL_FILE"
-
+function SET_DOTNET_VERSION_TO_VAR {
     # If global.json exists, load expected version
     if [[ -f "$DOTNET_GLOBAL_FILE" ]]; then
         DOTNET_VERSION=$(FirstJsonValue "version" "$(cat "$DOTNET_GLOBAL_FILE")")
@@ -46,6 +37,43 @@ else
             unset DOTNET_VERSION
         fi
     fi
+}
+
+# install dotnet via homebrew
+if [[ -x "$(command -v brew)" && $CI != true && $TF_BUILD != true ]]; then
+    SET_DOTNET_VERSION_TO_VAR
+    if [ -x "$(command -v dotnet)" ]; then
+        if [[ $(dotnet --info) != *$DOTNET_VERSION* ]]; then
+            DASHED_VERSION=$(sed "s/\./-/g" <<< $DOTNET_VERSION)
+            DASHED_VERSION=${DASHED_VERSION:0:$((${#DASHED_VERSION}-2))}00
+
+            echo "next: set cask ready for $DASHED_VERSION via homebrew"
+            brew tap isen-ng/dotnet-sdk-versions
+
+            if [[ $(brew tap-info isen-ng/dotnet-sdk-versions --json) == *dotnet-sdk$DASHED_VERSION* ]]; then
+                echo "next: install dotnet $DOTNET_VERSION via homebrew"
+                echo "> may ask for PASSWORD"
+                brew install --cask dotnet-sdk$DASHED_VERSION
+            else 
+                echo "skip install dotnet-sdk$DASHED_VERSION does not exists yet"
+            fi
+        fi
+    fi
+fi
+
+# If dotnet CLI is installed globally and it matches requested version, use for execution
+if [ -x "$(command -v dotnet)" ] && dotnet --version &>/dev/null; then
+    export DOTNET_EXE="$(command -v dotnet)"
+else
+    SET_DOTNET_VERSION_TO_VAR
+
+    echo "next: install dotnet $DOTNET_VERSION via dotnet-install.sh"
+
+    # Download install script
+    DOTNET_INSTALL_FILE="$TEMP_DIRECTORY/dotnet-install.sh"
+    mkdir -p "$TEMP_DIRECTORY"
+    curl -Lsfo "$DOTNET_INSTALL_FILE" "$DOTNET_INSTALL_URL"
+    chmod +x "$DOTNET_INSTALL_FILE"
 
     # Install by channel or version
     DOTNET_DIRECTORY="$TEMP_DIRECTORY/dotnet-unix"
@@ -62,8 +90,15 @@ echo "Microsoft (R) .NET SDK version $("$DOTNET_EXE" --version)"
 "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
 
 if [[ ! -f $SCRIPT_DIR"/build/bin/Debug/_build.deps.json" ]]; then
-    echo "file not found"
+    echo "Retry: File not found: $SCRIPT_DIR/build/bin/Debug/_build.deps.json"
     "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
 fi
+
 "$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- --no-logo "$@"
-echo "end"
+
+if [ $? -eq 0 ] 
+then 
+  echo "End" 
+else 
+  exit $?
+fi

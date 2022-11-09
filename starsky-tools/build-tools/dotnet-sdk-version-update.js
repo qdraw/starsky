@@ -90,6 +90,7 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 			await updateGithubYmlFile(filePathList, sdkVersion);
 
 			await updateMcrDockerFile(filePathList);
+			await updateGlobalJsonFiles(filePathList, sdkVersion);
 		})
 		.catch((err) => {
 			console.log(err);
@@ -647,4 +648,23 @@ function sortFilterOnExeCSproj(filePathList) {
 		
 	}
 	return [...libsFilePathList,...exeFilePathList];
+}
+
+async function updateGlobalJsonFiles(filePathList, sdkVersionInput) {
+	const sdkVersion = sdkVersionInput.replace(".x", "");
+
+	const globalJsonPathList = filePathList.filter(p => p.endsWith("global.json"));
+	for (const filePath of globalJsonPathList) {
+		let globalJsonFile = {};
+		try {
+			globalJsonFile = JSON.parse(readFileSync(filePath).toString("utf8"));
+		} catch (error) {
+			console.log("✖ " + filePath + " - " + error);
+		}
+		
+		if (globalJsonFile?.sdk?.version !== sdkVersion) {
+			globalJsonFile.sdk.version = sdkVersion;
+			await writeFile(filePath, JSON.stringify(globalJsonFile, null, 4));
+		}
+	}
 }
