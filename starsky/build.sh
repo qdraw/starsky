@@ -54,6 +54,12 @@ if [[ -x "$(command -v brew)" && $CI != true && $TF_BUILD != true ]]; then
                 echo "next: install dotnet $DOTNET_VERSION via homebrew"
                 echo "> may ask for PASSWORD"
                 brew install --cask dotnet-sdk$DASHED_VERSION
+                if [[ -f $HOME"/.zprofile" ]]; then
+                    source ~/.zprofile
+                fi
+                if [[ -f $HOME"/.zshrc" ]]; then
+                    source ~/.zshrc
+                fi 
             else 
                 echo "skip install dotnet-sdk$DASHED_VERSION does not exists yet"
             fi
@@ -86,6 +92,7 @@ else
 fi
 
 echo "Microsoft (R) .NET SDK version $("$DOTNET_EXE" --version)"
+echo "        next: _build project"
 
 "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
 
@@ -94,6 +101,7 @@ if [[ ! -f $SCRIPT_DIR"/build/bin/Debug/_build.deps.json" ]]; then
     "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
 fi
 
+echo "        next: run _build project"
 "$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- --no-logo "$@"
 
 if [ $? -eq 0 ] 
