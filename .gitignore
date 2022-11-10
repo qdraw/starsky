@@ -406,3 +406,5 @@ starsky-netframework-msbuild.zip
 bundle.min.js
 bundle.min.js.map
 .eslintcache
+
+starsky/.nuke/temp
