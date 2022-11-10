@@ -21,6 +21,9 @@ export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 export DOTNET_MULTILEVEL_LOOKUP=0
 export DOTNET_NOLOGO=1
 
+DOTNET_MAC_OS_PKG_X64="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-SDK_VERSION-macos-x64-installer"
+DOTNET_MAC_OS_PKG_ARM64="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-SDK_VERSION-macos-arm64-installer"
+
 ###########################################################################
 # EXECUTION
 ###########################################################################
@@ -39,33 +42,46 @@ function SET_DOTNET_VERSION_TO_VAR {
     fi
 }
 
-# install dotnet via homebrew
-if [[ -x "$(command -v brew)" && $CI != true && $TF_BUILD != true ]]; then
+# install dotnet via website
+if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]]; then
     SET_DOTNET_VERSION_TO_VAR
     if [ -x "$(command -v dotnet)" ]; then
         if [[ $(dotnet --info) != *$DOTNET_VERSION* ]]; then
-            DASHED_VERSION=$(sed "s/\./-/g" <<< $DOTNET_VERSION)
-            DASHED_VERSION=${DASHED_VERSION:0:$((${#DASHED_VERSION}-2))}00
-
-            echo "next: set cask ready for $DASHED_VERSION via homebrew"
-            brew tap isen-ng/dotnet-sdk-versions
-
-            if [[ $(brew tap-info isen-ng/dotnet-sdk-versions --json) == *dotnet-sdk$DASHED_VERSION* ]]; then
-                echo "next: install dotnet $DOTNET_VERSION via homebrew"
-                echo "> may ask for PASSWORD"
-                brew install --cask dotnet-sdk$DASHED_VERSION
-                if [[ -f $HOME"/.zprofile" ]]; then
-                    source ~/.zprofile
-                fi
-                if [[ -f $HOME"/.zshrc" ]]; then
-                    source ~/.zshrc
-                fi 
-            else 
-                echo "skip install dotnet-sdk$DASHED_VERSION does not exists yet"
-            fi
+        
+             if [[ "$(uname -m)" == "x86_64" ]]; then
+                 DOTNET_MAC_OS_PKG_X64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_X64)
+                 RESULT=$(curl -s $DOTNET_MAC_OS_PKG_X64_VERSION -X GET | grep 'window.open("')
+             else 
+                 DOTNET_MAC_OS_PKG_ARM64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_ARM64)
+                 RESULT=$(curl -s $DOTNET_MAC_OS_PKG_ARM64_VERSION -X GET | grep 'window.open("')          
+             fi
+        
+             RESULT1=$(sed "s/\window.open(\"//g" <<< $RESULT)
+             RESULT2=$(sed "s/\", \"_self\");//g" <<< $RESULT1)
+             RESULT3=`echo $RESULT2 | sed 's/ *$//g'`
+             URL=${RESULT3%$'\r'}
+              
+             if [[ "$URL" == https* && "$URL" == *.pkg* ]]; then 
+                echo "next download from: "$URL
+                mkdir -p $SCRIPT_DIR"/.nuke/temp/installer/"
+                curl -s -o $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" $URL
+                echo "downloaded"
+                echo installer -pkg $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" -target 
+                sudo installer -pkg $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" -target /
+                rm -rf $SCRIPT_DIR"/.nuke/temp/installer/"
+             else 
+                echo "SKIP: mis match in url"             
+             fi
+             if [[ -f $HOME"/.zprofile" ]]; then
+                source ~/.zprofile
+             fi
+             if [[ -f $HOME"/.zshrc" ]]; then
+                source ~/.zshrc
+             fi 
         fi
     fi
 fi
+
 
 # If dotnet CLI is installed globally and it matches requested version, use for execution
 if [ -x "$(command -v dotnet)" ] && dotnet --version &>/dev/null; then
