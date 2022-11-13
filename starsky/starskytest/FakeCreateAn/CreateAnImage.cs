@@ -26,18 +26,21 @@ namespace starskytest.FakeCreateAn
 		/// Full path of the image
 		/// </summary>
 		public readonly string FullFilePath = 
-			(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar).Replace("./",string.Empty) + _fileName;
+			(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + 
+			 Path.DirectorySeparatorChar).Replace("./",string.Empty) + _fileName;
 		/// <summary>
 		/// The FullFile Path of the Directory of the Assemblies
 		/// </summary>
 		public readonly string BasePath =
-			(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar).Replace("./",string.Empty);
+			(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + 
+			 Path.DirectorySeparatorChar).Replace("./",string.Empty);
 
 		/// <summary>
 		/// @see: https://superuser.com/a/1467266 and 80 chars
 		/// </summary>
 		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
-		private static readonly string Base64JpgString = "/9j/4AAQSkZJRgABAQABXgFeAAD/4QQgRXhpZgAATU0AKgAAAAgACwEOAAIAAAAg" +
+		private static readonly string Base64JpgString = "/9j/4AAQSkZJRgABAQABXgF" +
+			"eAAD/4QQgRXhpZgAATU0AKgAAAAgACwEOAAIAAAAg" +
 			"AAAAkgEPAAIAAAAFAAAAsgEQAAIAAAAIAAAAuAESAAMAAAABAAEAAAEaAAUAAAAB" +
 			"AAAAwAEbAAUAAAABAAAAyAEoAAMAAAABAAIAAAExAAIAAAAOAAAA0AEyAAIAAAAU" +
 			"AAAA3odpAAQAAAABAAAA8oglAAQAAAABAAADNgAAAAAgICAgICAgICAgICAgICAg" +

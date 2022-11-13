@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using MetadataExtractor.Formats.Jpeg;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Interfaces;
@@ -60,23 +61,34 @@ namespace starsky.foundation.metathumbnail.Services
 				return ( null, 0, 0, FileIndexItem.Rotation.DoNotChange );
 			}
 				
-			var jpegTags = allExifItems.FirstOrDefault(p =>
-				p.Name == "JPEG")?.Tags;
+			var jpegTags = allExifItems.OfType<JpegDirectory>().FirstOrDefault()?.Tags;
 
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(
-				allExifItems.FirstOrDefault(p => p.Name == "Exif IFD0"));
+			var heightPixels = jpegTags?.FirstOrDefault(p => p.Type == JpegDirectory.TagImageHeight)?.Description;
+			var widthPixels = jpegTags?.FirstOrDefault(p => p.Type == JpegDirectory.TagImageWidth)?.Description;
+
+			if ( string.IsNullOrEmpty(heightPixels) && string.IsNullOrEmpty(widthPixels) )
+			{
+				var exifSubIfdDirectories = allExifItems.OfType<ExifSubIfdDirectory>().ToList();
+				foreach ( var exifSubIfdDirectoryTags in exifSubIfdDirectories.Select(p => p.Tags) )
+				{
+					var heightValue =  exifSubIfdDirectoryTags.FirstOrDefault(p => p.Type == ExifDirectoryBase.TagImageHeight)?.Description;
+					var widthValue =  exifSubIfdDirectoryTags.FirstOrDefault(p => p.Type == ExifDirectoryBase.TagImageWidth)?.Description;
+					if ( heightValue == null || widthValue == null ) continue;
+					heightPixels = heightValue;
+					widthPixels = widthValue;
+				}
+			}
+
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault());
 					
-			var heightParseResult = int.TryParse(
-				jpegTags?.FirstOrDefault(p => p.Name == "Image Height")?
-					.Description?.Replace(" pixels",string.Empty), out var height);
+			var heightParseResult = int.TryParse(heightPixels?.Replace(
+				" pixels",string.Empty), out var height);
 				
-			var widthParseResult =int.TryParse(
-				jpegTags?.FirstOrDefault(p => p.Name == "Image Width")?
-					.Description?.Replace(" pixels",string.Empty), out var width);
-				
+			var widthParseResult = int.TryParse(widthPixels?.Replace(" pixels",string.Empty), out var width);
+			
 			if ( !heightParseResult || !widthParseResult || height == 0||  width == 0)
 			{
-				_logger.LogInformation($"[] ${reference} has no height or width {width}x{height} ");
+				_logger.LogInformation($"[ParseMetaThumbnail] ${reference} has no height or width {width}x{height} ");
 			}
 			return (exifThumbnailDir, width, height, rotation);
 		}
@@ -85,11 +97,11 @@ namespace starsky.foundation.metathumbnail.Services
 		{
 			if ( exifThumbnailDir == null )  return new OffsetModel {Success = false, Reason = "ExifThumbnailDirectory null"};
 
-			long thumbnailOffset = long.Parse(exifThumbnailDir.GetDescription(
-				ExifThumbnailDirectory.TagThumbnailOffset).Split(' ')[0]);
+			long thumbnailOffset = long.Parse(exifThumbnailDir!.GetDescription(
+				ExifThumbnailDirectory.TagThumbnailOffset)!.Split(' ')[0]);
 			const int maxIssue35Offset = 12;
 			int thumbnailLength = int.Parse(exifThumbnailDir.GetDescription(
-				ExifThumbnailDirectory.TagThumbnailLength).Split(' ')[0]) + maxIssue35Offset;
+				ExifThumbnailDirectory.TagThumbnailLength)!.Split(' ')[0]) + maxIssue35Offset;
 			byte[] thumbnail = new byte[thumbnailLength];
 			
 			using (var imageStream = _iStorage.ReadStream(subPath))

@@ -700,5 +700,105 @@ namespace starskytest.Services
 
 			return directory;
 		}
+		
+		// ExifDirectoryBase.TagOrientation
+		// "Top, left side (Horizontal / normal)", -- 1
+		// "Top, right side (Mirror horizontal)", -- 2
+		// "Bottom, right side (Rotate 180)", -- 3
+		// "Bottom, left side (Mirror vertical)", -- 4
+		// "Left side, top (Mirror horizontal and rotate 270 CW)", -- 5
+		// "Right side, top (Rotate 90 CW)", --6
+		// "Right side, bottom (Mirror horizontal and rotate 90 CW)", --7
+		// "Left side, bottom (Rotate 270 CW)" --8
+
+		[TestMethod]
+		public void GetOrientationFromExifItem_1()
+		{
+
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 1);
+			// "Top, left side (Horizontal / normal)", -- 1
+
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
+		}
+		
+		[TestMethod]
+		public void GetOrientationFromExifItem_2()
+		{
+
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 2);
+
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			// 2 = unsuppored yet
+			// "Top, right side (Mirror horizontal)",
+			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
+		}
+		
+		[TestMethod]
+		public void GetOrientationFromExifItem_3()
+		{
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 3);
+			// "Bottom, right side (Rotate 180)"
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate180,rotation);
+		}
+		
+		[TestMethod]
+		public void GetOrientationFromExifItem_4()
+		{
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 4);
+
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			// Bottom, left side (Mirror vertical)
+			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
+		}
+				
+		[TestMethod]
+		public void GetOrientationFromExifItem_5()
+		{
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 5);
+			// "Left side, top (Mirror horizontal and rotate 270 CW)",
+			
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
+		}
+				
+		[TestMethod]
+		public void GetOrientationFromExifItem_6()
+		{
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 6);
+			// "Right side, top (Rotate 90 CW)", --6
+			
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw,rotation);
+		}
+		
+		[TestMethod]
+		public void GetOrientationFromExifItem_7()
+		{
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 7);
+			// "Right side, bottom (Mirror horizontal and rotate 90 CW)", --7
+			
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
+		}
+		
+		[TestMethod]
+		public void GetOrientationFromExifItem_8()
+		{
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 8);
+			// "Left side, bottom (Rotate 270 CW)") --8
+			
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw,rotation);
+		}
 	}
 }

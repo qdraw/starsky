@@ -12,6 +12,7 @@ SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 BUILD_PROJECT_FILE="$SCRIPT_DIR/build/_build.csproj"
 TEMP_DIRECTORY="$SCRIPT_DIR//.nuke/temp"
 
+# for CI installs
 DOTNET_GLOBAL_FILE="$SCRIPT_DIR//global.json"
 DOTNET_INSTALL_URL="https://dot.net/v1/dotnet-install.sh"
 DOTNET_CHANNEL="Current"
@@ -20,6 +21,9 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 export DOTNET_MULTILEVEL_LOOKUP=0
 export DOTNET_NOLOGO=1
+
+DOTNET_MAC_OS_PKG_X64="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-SDK_VERSION-macos-x64-installer"
+DOTNET_MAC_OS_PKG_ARM64="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-SDK_VERSION-macos-arm64-installer"
 
 ###########################################################################
 # EXECUTION
@@ -39,27 +43,48 @@ function SET_DOTNET_VERSION_TO_VAR {
     fi
 }
 
-# install dotnet via homebrew
-if [[ -x "$(command -v brew)" && $CI != true && $TF_BUILD != true ]]; then
+# install dotnet via website
+if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]]; then
     SET_DOTNET_VERSION_TO_VAR
     if [ -x "$(command -v dotnet)" ]; then
         if [[ $(dotnet --info) != *$DOTNET_VERSION* ]]; then
-            DASHED_VERSION=$(sed "s/\./-/g" <<< $DOTNET_VERSION)
-            DASHED_VERSION=${DASHED_VERSION:0:$((${#DASHED_VERSION}-2))}00
-
-            echo "next: set cask ready for $DASHED_VERSION via homebrew"
-            brew tap isen-ng/dotnet-sdk-versions
-
-            if [[ $(brew tap-info isen-ng/dotnet-sdk-versions --json) == *dotnet-sdk$DASHED_VERSION* ]]; then
-                echo "next: install dotnet $DOTNET_VERSION via homebrew"
-                echo "> may ask for PASSWORD"
-                brew install --cask dotnet-sdk$DASHED_VERSION
-            else 
-                echo "skip install dotnet-sdk$DASHED_VERSION does not exists yet"
-            fi
+             echo "dotnet version mismatch, installing $DOTNET_VERSION" $(uname -m)
+             
+             if [[ "$(uname -m)" == "x86_64" ]]; then
+                 DOTNET_MAC_OS_PKG_X64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_X64)
+                 RESULT=$(curl -s $DOTNET_MAC_OS_PKG_X64_VERSION -X GET | grep 'window.open("')
+             else 
+                 DOTNET_MAC_OS_PKG_ARM64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_ARM64)
+                 RESULT=$(curl -s $DOTNET_MAC_OS_PKG_ARM64_VERSION -X GET | grep 'window.open("')          
+             fi
+        
+             RESULT1=$(sed "s/\window.open(\"//g" <<< $RESULT)
+             RESULT2=$(sed "s/\", \"_self\");//g" <<< $RESULT1)
+             RESULT3=`echo $RESULT2 | sed 's/ *$//g'`
+             URL=${RESULT3%$'\r'}
+              
+             if [[ "$URL" == https* && "$URL" == *.pkg* ]]; then 
+                echo "next download from: "$URL
+                echo "   afterwards you will be asked for a password to install dotnet"
+                mkdir -p $SCRIPT_DIR"/.nuke/temp/installer/"
+                curl -s -o $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" $URL
+                echo "package is downloaded, next install dotnet"
+                echo "sudo installer -pkg "$SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg -target /"
+                sudo installer -pkg $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" -target /
+                rm -rf $SCRIPT_DIR"/.nuke/temp/installer/"
+             else 
+                echo "SKIP: mis match in url"             
+             fi
+             if [[ -f $HOME"/.zprofile" ]]; then
+                source ~/.zprofile
+             fi
+             if [[ -f $HOME"/.zshrc" ]]; then
+                source ~/.zshrc
+             fi 
         fi
     fi
 fi
+
 
 # If dotnet CLI is installed globally and it matches requested version, use for execution
 if [ -x "$(command -v dotnet)" ] && dotnet --version &>/dev/null; then
@@ -86,6 +111,7 @@ else
 fi
 
 echo "Microsoft (R) .NET SDK version $("$DOTNET_EXE" --version)"
+echo "        next: _build project"
 
 "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
 
@@ -94,11 +120,12 @@ if [[ ! -f $SCRIPT_DIR"/build/bin/Debug/_build.deps.json" ]]; then
     "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
 fi
 
+echo "        next: run _build project"
 "$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- --no-logo "$@"
 
 if [ $? -eq 0 ] 
 then 
-  echo "End" 
+  echo "OK" 
 else 
   exit $?
 fi

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -47,8 +48,9 @@ namespace starsky.foundation.http.Streaming
 	        AppSettings appSettings, ISelectorStorage selectorStorage)
         {
             // The Header 'filename' is for uploading on file without a form.
-            return await StreamFile(request.ContentType, request.Body, appSettings, 
-	            selectorStorage, HeaderFileName(request,appSettings));            
+            return await StreamFile(request.ContentType, request.Body, 
+	            appSettings, 
+	            selectorStorage, HeaderFileName(request, appSettings));            
         }
 
         [SuppressMessage("Usage", "S125:Remove this commented out code")]
@@ -92,12 +94,13 @@ namespace starsky.foundation.http.Streaming
             var reader = new MultipartReader(boundary, requestBody);
 
             var section = await reader.ReadNextSectionAsync();
+            
             while (section != null)
             {
 	            var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(
 		            section.ContentDisposition, out var contentDisposition);
-
-                if (hasContentDispositionHeader && MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
+	            
+	            if (hasContentDispositionHeader && MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                 {
                     var sourceFileName = contentDisposition.FileName.ToString().Replace("\"", string.Empty);
                     var inputExtension = Path.GetExtension(sourceFileName).Replace("\n",string.Empty);
@@ -113,6 +116,7 @@ namespace starsky.foundation.http.Streaming
 	                    selectorStorage.Get(SelectorStorage.StorageServices
 		                    .HostFilesystem);
                     hostFileSystemStorage.CreateDirectory(Path.Combine(appSettings.TempFolder, randomFolderName));
+                    
                     await hostFileSystemStorage
 	                    .WriteStreamAsync(section.Body, fullFilePath);
                 }
@@ -121,7 +125,7 @@ namespace starsky.foundation.http.Streaming
                 // reads the headers for the next section.
                 section = await reader.ReadNextSectionAsync();
             }
-
+            
             return tempPaths;
         }
 

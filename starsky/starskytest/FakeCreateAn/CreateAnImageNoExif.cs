@@ -11,7 +11,8 @@ namespace starskytest.FakeCreateAn
 	{
 
 		public readonly string FullFilePathWithDate = 
-			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + FileNameWithDate;
+			Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) +
+			Path.DirectorySeparatorChar + FileNameWithDate;
 
 		private const string FileNameWithDate = "123300_20120101.jpg";
 		// HHmmss_yyyyMMdd > not very logical but used to test features
@@ -19,7 +20,8 @@ namespace starskytest.FakeCreateAn
 		public readonly string FileName = FileNameWithDate;
 
 		public readonly string BasePath =
-			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+			Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + 
+			Path.DirectorySeparatorChar;
 
 		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		private static readonly string Base64JpgString =	"/9j/4AAQSkZJRgABAQAAAQABAAD/2wDFAAEBAQEB"+

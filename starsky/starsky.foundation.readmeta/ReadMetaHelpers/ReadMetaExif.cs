@@ -300,15 +300,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		}
 
 		public static FileIndexItem.Rotation GetOrientationFromExifItem(Directory exifItem)
-        {
-            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Orientation");
-            if (tCounts < 1) return FileIndexItem.Rotation.DoNotChange;
-            
-            var caption = exifItem.Tags.FirstOrDefault(
-                p => p.DirectoryName == "Exif IFD0" 
-                     && p.Name == "Orientation")?.Description;
+		{
 
-            // Not unit tested :(
+			var caption = exifItem.Tags
+				.FirstOrDefault(p => p.Type == ExifDirectoryBase.TagOrientation)
+				?.Description;
+            if (caption == null) return FileIndexItem.Rotation.DoNotChange;
+            
             switch (caption)
             {
                 case "Top, left side (Horizontal / normal)":

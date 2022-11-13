@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using MetadataExtractor.Formats.Iptc;
+using MetadataExtractor.Formats.Jpeg;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.metathumbnail.Services;
@@ -66,6 +69,66 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(150, width);
 			Assert.AreEqual(100, height);
 			Assert.AreEqual(rotation, FileIndexItem.Rotation.Horizontal);
+		}
+
+		[TestMethod]
+		public void OffsetDataMetaExifThumbnail_ExifSubIfdDirectory()
+		{
+			var container = new List<Directory>();
+			var dir2 = new ExifSubIfdDirectory();
+			dir2.Set(ExifDirectoryBase.TagImageHeight, "10");
+			dir2.Set(ExifDirectoryBase.TagImageWidth, "12");
+			container.Add(dir2);
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 6);
+			container.Add(dir3);
+			var storage = new FakeIStorage();
+			
+			var (_,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory());
+
+			Assert.AreEqual(12,width);
+			Assert.AreEqual(10,height);
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw,rotation);
+		}
+		
+		[TestMethod]
+		public void OffsetDataMetaExifThumbnail_JpegDirectory()
+		{
+			var container = new List<Directory>();
+			var dir2 = new JpegDirectory();
+			dir2.Set(JpegDirectory.TagImageHeight, "10");
+			dir2.Set(JpegDirectory.TagImageWidth, "12");
+			container.Add(dir2);
+			var dir3 = new ExifIfd0Directory();
+			dir3.Set(ExifDirectoryBase.TagOrientation, 6);
+			container.Add(dir3);
+			var storage = new FakeIStorage();
+			
+			var (_,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory());
+
+			Assert.AreEqual(12,width);
+			Assert.AreEqual(10,height);
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw,rotation);
+		}
+		
+		[TestMethod]
+		public void OffsetDataMetaExifThumbnail_MissingJpegDirectory()
+		{
+			var container = new List<Directory>();
+			var dir2 = new JpegDirectory();
+			container.Add(dir2);
+			var dir3 = new ExifIfd0Directory();
+			container.Add(dir3);
+			var storage = new FakeIStorage();
+			
+			var (_,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory());
+
+			Assert.AreEqual(0,width);
+			Assert.AreEqual(0,height);
+			Assert.AreEqual(FileIndexItem.Rotation.DoNotChange,rotation);
 		}
 		
 		[TestMethod]

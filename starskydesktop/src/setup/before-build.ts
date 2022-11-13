@@ -9,7 +9,7 @@ function runBuildIfNotExist(identifier : string) {
     const rootPath = path.join(__dirname, "..", "..", "..", "starsky");
 
     console.log(`try to build for ${identifier} --  ${rootPath} -- with powershell core`);
-    console.log(`there is a bash version avaiable in ${rootPath}`);
+    console.log(`> if this fails: there is a bash version avaiable in ${rootPath}`);
 
     const script = path.join(__dirname, "..", "..", "..", "starsky", "build.ps1");
     const spawn = spawnSync("pwsh", [script, "--runtime", identifier, "--no-unit-tests"], {
@@ -46,6 +46,7 @@ function removePackageJsons(runtimeFolderName: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 exports.default = (context: {
+  arch: string,
   platform: { buildConfigurationKey: string };
 }) => {
   console.log("context:");
@@ -53,9 +54,11 @@ exports.default = (context: {
 
   switch (context.platform.buildConfigurationKey) {
     case "mac":
-      runBuildIfNotExist("osx-x64");
-      removeOldRunTime("runtime-starsky-mac-x64");
-      copyWithId("osx-x64", "runtime-starsky-mac-x64");
+      if (context.arch === "x64" || context.arch === "arm64") {
+        runBuildIfNotExist(`osx-${context.arch}`);
+        removeOldRunTime(`runtime-starsky-mac-${context.arch}`);
+        copyWithId(`osx-${context.arch}`, `runtime-starsky-mac-${context.arch}`);
+      }
       break;
     case "win":
       runBuildIfNotExist("win-x64");
@@ -70,6 +73,7 @@ exports.default = (context: {
     default:
   }
 
+  removePackageJsons("runtime-starsky-mac-arm64");
   removePackageJsons("runtime-starsky-mac-x64");
   removePackageJsons("runtime-starsky-win-x64");
   removePackageJsons("runtime-starsky-linux-x64");

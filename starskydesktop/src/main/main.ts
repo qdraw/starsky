@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { app, BrowserWindow } from "electron";
+import * as os from "os";
 import { setupChildProcess } from "../app/child-process/setup-child-process";
 import { MakeLogsPath } from "../app/config/logs-path";
 import { MakeTempPath } from "../app/config/temp-path";
@@ -20,6 +21,8 @@ defaultAppSettings();
 setupChildProcess();
 MakeTempPath();
 SetupFileWatcher();
+
+console.log(`running in: :${os.arch()}`);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
