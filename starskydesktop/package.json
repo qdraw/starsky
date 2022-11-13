@@ -16,6 +16,7 @@
     "test-ci": "npm run jest && npm run lint",
     "windows": "npm run prod && electron-builder build --win --publish never",
     "mac": "npm run prod && electron-builder build --mac --publish never",
+    "macarm64": "npm run prod && electron-builder build --mac --arm64 true --x64 false --publish never",
     "macwindows": "npm run prod && echo prod-done && electron-builder build --mac zip --windows --publish never",
     "linux": "npm run prod && electron-builder build --linux --publish never",
     "dist": "npm run prod && electron-builder build",
@@ -32,7 +33,7 @@
       "output": "./dist-prod/"
     },
     "extraResources": [
-      "runtime-starsky-${os}-x64/**"
+      "runtime-starsky-${os}-${arch}/**"
     ],
     "artifactName": "starsky-${os}-${arch}-desktop.${ext}",
     "mac": {

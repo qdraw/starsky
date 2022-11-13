@@ -1,3 +1,4 @@
+import * as os from "os";
 import * as path from "path";
 import { isPackaged } from "../os-info/is-packaged";
 import OsBuildKey from "../os-info/os-build-key";
@@ -38,9 +39,10 @@ export function childProcessPath(): string {
     }
   }
 
+  // runtime-starsky-mac-x64
   const targetFilePath = path.join(
     process.resourcesPath,
-    `runtime-starsky-${OsBuildKey()}-x64`,
+    `runtime-starsky-${OsBuildKey()}-${os.arch()}`,
   );
 
   let exeFilePath = path.join(targetFilePath, "starsky");

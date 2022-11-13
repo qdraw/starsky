@@ -10,7 +10,8 @@ namespace starskytest.FakeCreateAn
 		/// @see: https://superuser.com/a/1467266 and 80 chars
 		/// </summary>
 		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
-		private static readonly string Base64JpgString = "/9j/4AAQSkZJRgABAQABLAEsAAD/4QPORXhpZgAATU0AKgAAAAgACgEPAAIAAAAFAAAAhgEQAAIAAAAK"+
+		private static readonly string Base64JpgString = "/9j/4AAQSkZJRgABAQABLAEsAAD/4QPORXhp" +
+			"ZgAATU0AKgAAAAgACgEPAAIAAAAFAAAAhgEQAAIAAAAK"+
 			"AAAAjAESAAMAAAABAAEAAAEaAAUAAAABAAAAlgEbAAUAAAABAAAAngEoAAMAAAABAAIAAAExAAIAAAAI"+
 			"AAAApgEyAAIAAAAUAAAArodpAAQAAAABAAAAwoglAAQAAAABAAADQAAAAABTb255AABJTENFLTY2MDAA"+
 			"AAABLAAAAAEAAAEsAAAAAVN0YXJza3kAMjAyMDowODoyMiAxMToxNDowOAAAJYKaAAUAAAABAAAChIKd"+

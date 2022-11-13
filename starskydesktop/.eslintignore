@@ -3,3 +3,9 @@ dist
 coverage
 out
 public
+runtime-starsky-linux-x64
+runtime-starsky-linux-arm64
+runtime-starsky-mac-x64
+runtime-starsky-mac-arm64
+runtime-starsky-win-x64
+runtime-starsky-win-arm64
