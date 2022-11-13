@@ -50,11 +50,11 @@ steps:
   clean: true
   fetchDepth: 1
 
+- template: /pipelines/azure/steps/use_dotnet_version.yml
+
 - template: /pipelines/azure/steps/build_clientapp.yml
   parameters:
     jest: false
-
-- template: /pipelines/azure/steps/use_dotnet_version.yml
 
 - template: /pipelines/azure/steps/build_server_shared_runtime.yml
   parameters:
