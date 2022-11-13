@@ -114,6 +114,24 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		}
 		
 		[TestMethod]
+		public void OffsetDataMetaExifThumbnail_MissingJpegDirectory()
+		{
+			var container = new List<Directory>();
+			var dir2 = new JpegDirectory();
+			container.Add(dir2);
+			var dir3 = new ExifIfd0Directory();
+			container.Add(dir3);
+			var storage = new FakeIStorage();
+			
+			var (_,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory());
+
+			Assert.AreEqual(0,width);
+			Assert.AreEqual(0,height);
+			Assert.AreEqual(FileIndexItem.Rotation.DoNotChange,rotation);
+		}
+		
+		[TestMethod]
 		public void ParseOffsetData_TagThumbnailLengthWrongData()
 		{
 			var storage = new FakeIStorage(
