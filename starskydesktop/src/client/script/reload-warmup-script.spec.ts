@@ -7,6 +7,13 @@ declare global {
   var api: IPreloadApi;
 }
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("reload redirect", () => {
   function mockFetch(status: number) {
     const mockFetchPromise = Promise.resolve({
