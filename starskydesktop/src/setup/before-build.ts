@@ -54,14 +54,10 @@ exports.default = (context: {
 
   switch (context.platform.buildConfigurationKey) {
     case "mac":
-      if (context.arch === "x64") {
-        runBuildIfNotExist("osx-x64");
-        removeOldRunTime("runtime-starsky-mac-x64");
-        copyWithId("osx-x64", "runtime-starsky-mac-x64");
-      } else if (context.arch === "arm64") {
-        runBuildIfNotExist("osx-arm64");
-        removeOldRunTime("runtime-starsky-mac-arm64");
-        copyWithId("osx-arm64", "runtime-starsky-mac-arm64");
+      if (context.arch === "x64" || context.arch === "arm64") {
+        runBuildIfNotExist(`osx-${context.arch}`);
+        removeOldRunTime(`runtime-starsky-mac-${context.arch}`);
+        copyWithId(`osx-${context.arch}`, `runtime-starsky-mac-${context.arch}`);
       }
       break;
     case "win":
