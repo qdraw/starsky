@@ -301,10 +301,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 		public static FileIndexItem.Rotation GetOrientationFromExifItem(Directory exifItem)
         {
-            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Orientation");
+            var tCounts = exifItem?.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Orientation");
             if (tCounts < 1) return FileIndexItem.Rotation.DoNotChange;
             
-            var caption = exifItem.Tags.FirstOrDefault(
+            var caption = exifItem!.Tags.FirstOrDefault(
                 p => p.DirectoryName == "Exif IFD0" 
                      && p.Name == "Orientation")?.Description;
 

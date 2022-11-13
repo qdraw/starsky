@@ -69,18 +69,13 @@ namespace starsky.foundation.metathumbnail.Services
 			if ( string.IsNullOrEmpty(heightPixels) && string.IsNullOrEmpty(widthPixels) )
 			{
 				var exifSubIfdDirectories = allExifItems.OfType<ExifSubIfdDirectory>().ToList();
-				foreach ( var exifSubIfdDirectory in exifSubIfdDirectories )
+				foreach ( var exifSubIfdDirectoryTags in exifSubIfdDirectories.Select(p => p.Tags) )
 				{
-					var value =  exifSubIfdDirectory.Tags.FirstOrDefault(p => p.Name == "Image Height")?.Description;
-					if ( value != null )
-					{
-						heightPixels = value;
-					}
-					var value2 =  exifSubIfdDirectory.Tags.FirstOrDefault(p => p.Name == "Image Width")?.Description;
-					if ( value2 != null )
-					{
-						widthPixels = value2;
-					}
+					var heightValue =  exifSubIfdDirectoryTags.FirstOrDefault(p => p.Name == "Image Height")?.Description;
+					var widthValue =  exifSubIfdDirectoryTags.FirstOrDefault(p => p.Name == "Image Width")?.Description;
+					if ( heightValue == null || widthValue == null ) continue;
+					heightPixels = heightValue;
+					widthPixels = widthValue;
 				}
 			}
 
@@ -89,7 +84,7 @@ namespace starsky.foundation.metathumbnail.Services
 			var heightParseResult = int.TryParse(heightPixels?.Replace(
 				" pixels",string.Empty), out var height);
 				
-			var widthParseResult =int.TryParse(widthPixels?.Replace(" pixels",string.Empty), out var width);
+			var widthParseResult = int.TryParse(widthPixels?.Replace(" pixels",string.Empty), out var width);
 			
 			if ( !heightParseResult || !widthParseResult || height == 0||  width == 0)
 			{
