@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using MetadataExtractor.Formats.Jpeg;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Interfaces;
@@ -60,19 +61,18 @@ namespace starsky.foundation.metathumbnail.Services
 				return ( null, 0, 0, FileIndexItem.Rotation.DoNotChange );
 			}
 				
-			var jpegTags = allExifItems.FirstOrDefault(p =>
-				p.Name == "JPEG")?.Tags;
+			var jpegTags = allExifItems.OfType<JpegDirectory>().FirstOrDefault()?.Tags;
 
-			var heightPixels = jpegTags?.FirstOrDefault(p => p.Name == "Image Height")?.Description;
-			var widthPixels = jpegTags?.FirstOrDefault(p => p.Name == "Image Width")?.Description;
+			var heightPixels = jpegTags?.FirstOrDefault(p => p.Type == JpegDirectory.TagImageHeight)?.Description;
+			var widthPixels = jpegTags?.FirstOrDefault(p => p.Type == JpegDirectory.TagImageWidth)?.Description;
 
 			if ( string.IsNullOrEmpty(heightPixels) && string.IsNullOrEmpty(widthPixels) )
 			{
 				var exifSubIfdDirectories = allExifItems.OfType<ExifSubIfdDirectory>().ToList();
 				foreach ( var exifSubIfdDirectoryTags in exifSubIfdDirectories.Select(p => p.Tags) )
 				{
-					var heightValue =  exifSubIfdDirectoryTags.FirstOrDefault(p => p.Name == "Image Height")?.Description;
-					var widthValue =  exifSubIfdDirectoryTags.FirstOrDefault(p => p.Name == "Image Width")?.Description;
+					var heightValue =  exifSubIfdDirectoryTags.FirstOrDefault(p => p.Type == ExifDirectoryBase.TagImageHeight)?.Description;
+					var widthValue =  exifSubIfdDirectoryTags.FirstOrDefault(p => p.Type == ExifDirectoryBase.TagImageWidth)?.Description;
 					if ( heightValue == null || widthValue == null ) continue;
 					heightPixels = heightValue;
 					widthPixels = widthValue;
