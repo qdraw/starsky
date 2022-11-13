@@ -49,6 +49,7 @@ namespace starsky.foundation.platform.Middleware
 					"base-uri 'none'; " +
 					"form-action 'self'; " +
 					"object-src 'none'; " +
+					"media-src 'self'; " +
 					"manifest-src 'self'; " +
 					"block-all-mixed-content; ";
 
