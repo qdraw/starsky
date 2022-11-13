@@ -12,6 +12,7 @@ SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 BUILD_PROJECT_FILE="$SCRIPT_DIR/build/_build.csproj"
 TEMP_DIRECTORY="$SCRIPT_DIR//.nuke/temp"
 
+# for CI installs
 DOTNET_GLOBAL_FILE="$SCRIPT_DIR//global.json"
 DOTNET_INSTALL_URL="https://dot.net/v1/dotnet-install.sh"
 DOTNET_CHANNEL="Current"
@@ -47,7 +48,8 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]]; then
     SET_DOTNET_VERSION_TO_VAR
     if [ -x "$(command -v dotnet)" ]; then
         if [[ $(dotnet --info) != *$DOTNET_VERSION* ]]; then
-        
+             echo "dotnet version mismatch, installing $DOTNET_VERSION" $(uname -m)
+             
              if [[ "$(uname -m)" == "x86_64" ]]; then
                  DOTNET_MAC_OS_PKG_X64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_X64)
                  RESULT=$(curl -s $DOTNET_MAC_OS_PKG_X64_VERSION -X GET | grep 'window.open("')
@@ -63,10 +65,11 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]]; then
               
              if [[ "$URL" == https* && "$URL" == *.pkg* ]]; then 
                 echo "next download from: "$URL
+                echo "   afterwards you will be asked for a password to install dotnet"
                 mkdir -p $SCRIPT_DIR"/.nuke/temp/installer/"
                 curl -s -o $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" $URL
-                echo "downloaded"
-                echo installer -pkg $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" -target 
+                echo "package is downloaded, next install dotnet"
+                echo "sudo installer -pkg "$SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg -target /"
                 sudo installer -pkg $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" -target /
                 rm -rf $SCRIPT_DIR"/.nuke/temp/installer/"
              else 
@@ -122,7 +125,7 @@ echo "        next: run _build project"
 
 if [ $? -eq 0 ] 
 then 
-  echo "End" 
+  echo "OK" 
 else 
   exit $?
 fi
