@@ -54,6 +54,8 @@ steps:
   parameters:
     jest: false
 
+- template: /pipelines/azure/steps/use_dotnet_version.yml
+
 - template: /pipelines/azure/steps/build_server_shared_runtime.yml
   parameters:
     nugetPackages: $(NUGET_PACKAGES)
