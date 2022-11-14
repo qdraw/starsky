@@ -14,6 +14,7 @@ export async function ActionWhenFileIsChanged(
   if (
     filePathOnDisk.endsWith(".info")
     || filePathOnDisk.endsWith(".DS_Store")
+    || filePathOnDisk.endsWith(".tmp")
   ) {
     return;
   }

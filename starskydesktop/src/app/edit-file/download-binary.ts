@@ -1,4 +1,4 @@
-import { existsSync, rmSync } from "fs";
+import { existsSync, renameSync, rmSync } from "fs";
 import * as path from "path";
 import { FileExtensions } from "../../shared/file-extensions";
 import { IFileIndexItem } from "../../shared/IFileindexItem";
@@ -29,13 +29,13 @@ export async function downloadBinary(
         lastSubPath
       )}`,
       session,
-      fileOnDisk
+      `${fileOnDisk}.tmp`
     );
   } catch (error) {
-    logger.info(`retry > ${fileOnDisk}`);
+    logger.info(`retry > ${fileOnDisk}.tmp`);
 
-    if (existsSync(fileOnDisk)) {
-      rmSync(fileOnDisk);
+    if (existsSync(`${fileOnDisk}.tmp`)) {
+      rmSync(`${fileOnDisk}.tmp`);
     }
     try {
       await downloadNetRequest(
@@ -43,7 +43,7 @@ export async function downloadBinary(
           lastSubPath
         )}`,
         session,
-        fileOnDisk
+        `${fileOnDisk}.tmp`
       );
     } catch (error2: unknown) {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -51,5 +51,10 @@ export async function downloadBinary(
     }
   }
 
+  if (!existsSync(`${fileOnDisk}.tmp`)) {
+    return null;
+  }
+
+  renameSync(`${fileOnDisk}.tmp`, fileOnDisk);
   return fileOnDisk;
 }
