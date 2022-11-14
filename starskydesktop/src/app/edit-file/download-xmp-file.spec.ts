@@ -22,6 +22,6 @@ describe("downloadXmpFile", () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     } as any, {} as any);
 
-    expect(result).toBe(`test${path.sep}undefined.test"`);
+    expect(result).toBe(`test${path.sep}undefined.test`);
   });
 });
