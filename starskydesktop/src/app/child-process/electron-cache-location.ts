@@ -4,7 +4,7 @@ import * as path from "path";
  * App Data folder
  * @returns AppData
  */
-export function electronCacheLocation() {
+export function electronCacheLocation() : string {
   switch (process.platform) {
     case "darwin":
       // ~/Library/Application\ Support/starsky/Cache

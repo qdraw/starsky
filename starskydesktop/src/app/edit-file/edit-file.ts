@@ -18,9 +18,20 @@ function getFilePathFromWindow(fromMainWindow: BrowserWindow): string {
   return filePath;
 }
 
+async function openWindow(filePathOnDisk: string) {
+  try {
+    await openPath(filePathOnDisk);
+  } catch (error :unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    createErrorWindow(error as string);
+    logger.warn("openPath error");
+    logger.warn(error);
+  }
+}
+
 export async function EditFile(fromMainWindow: BrowserWindow) {
-  const url = (await GetBaseUrlFromSettings()).location
-    + new UrlQuery().Index(getFilePathFromWindow(fromMainWindow));
+  const subPath = new UrlQuery().Index(getFilePathFromWindow(fromMainWindow));
+  const url = (await GetBaseUrlFromSettings()).location + subPath;
 
   let result :IGetNetRequestResponse;
   try {
@@ -37,6 +48,7 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
   const fileIndexItem = ((result.data as any).fileIndexItem as IFileIndexItem);
+
   await createParentFolders(fileIndexItem.parentDirectory);
 
   await downloadXmpFile(
@@ -47,13 +59,5 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
     fileIndexItem,
     fromMainWindow.webContents.session
   );
-
-  try {
-    await openPath(filePathOnDisk);
-  } catch (error :unknown) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    createErrorWindow(error as string);
-    logger.warn("openPath error");
-    logger.warn(error);
-  }
+  await openWindow(filePathOnDisk);
 }
