@@ -1,3 +1,4 @@
+import * as path from "path";
 import * as GetBaseUrlFromSettings from "../config/get-base-url-from-settings";
 import { IlocationUrlSettings } from "../config/IlocationUrlSettings";
 import * as downloadNetRequest from "../net-request/download-net-request";
@@ -21,6 +22,6 @@ describe("downloadXmpFile", () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     } as any, {} as any);
 
-    expect(result).toBe("test/undefined.test");
+    expect(result).toBe(`test${path.sep}undefined.test"`);
   });
 });
