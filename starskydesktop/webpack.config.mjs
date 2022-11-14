@@ -1,5 +1,4 @@
 import CopyPlugin from 'copy-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import { fileURLToPath } from 'url';
@@ -97,6 +96,7 @@ const preloadConfig = merge(commonConfig, {
   output: { filename: 'preload-main.bundle.js' },
 });
 
+// import HtmlWebpackPlugin from 'html-webpack-plugin';
 // const rendererConfig = merge(commonConfig, {
 //   entry: './src/renderer/renderer.tsx',
 //   target: 'electron-renderer',
