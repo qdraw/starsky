@@ -97,16 +97,16 @@ const preloadConfig = merge(commonConfig, {
   output: { filename: 'preload-main.bundle.js' },
 });
 
-const rendererConfig = merge(commonConfig, {
-  entry: './src/renderer/renderer.tsx',
-  target: 'electron-renderer',
-  output: { filename: 'renderer.bundle.js' },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './public/index.html'),
-    }),
-  ],
-});
+// const rendererConfig = merge(commonConfig, {
+//   entry: './src/renderer/renderer.tsx',
+//   target: 'electron-renderer',
+//   output: { filename: 'renderer.bundle.js' },
+//   plugins: [
+//     new HtmlWebpackPlugin({
+//       template: path.resolve(__dirname, './public/index.html'),
+//     }),
+//   ],
+// });
 
 const clientConfig = merge(commonConfig, {
   entry: {
@@ -155,4 +155,4 @@ const clientConfig = merge(commonConfig, {
   ],
 });
 
-export default [mainConfig, preloadConfig, rendererConfig, clientConfig];
+export default [mainConfig, preloadConfig, clientConfig];
