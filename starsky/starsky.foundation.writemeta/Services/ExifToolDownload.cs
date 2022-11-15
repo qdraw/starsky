@@ -185,9 +185,11 @@ namespace starsky.foundation.writemeta.Services
 				_logger.LogError($"[DownloadForUnix] ExifTool folder does not exists");
 				return false;
 			}
+
+			_hostFileSystemStorage.FileDelete(tarGzArchiveFullFilePath);
 			
 			var exifToolExePath = Path.Combine(_appSettings.DependenciesFolder, "exiftool-unix","exiftool");
-			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {exifToolExePath}");
+			_logger.LogInformation($"[DownloadForUnix] ExifTool is just downloaded: {exifToolExePath}");
 			return await RunChmodOnExifToolUnixExe();
 		}
 
