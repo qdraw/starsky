@@ -1,0 +1,8 @@
+workflows:
+  my-workflow:
+    instance_type: mac_mini_m1
+    environment:
+      node: 18.12.1
+      npm: latest
+    scripts:
+      - ./starsky/build.sh
