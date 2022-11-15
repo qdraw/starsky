@@ -186,6 +186,7 @@ namespace starsky.foundation.writemeta.Services
 				return false;
 			}
 
+			// remove tar.gz file afterwards
 			_hostFileSystemStorage.FileDelete(tarGzArchiveFullFilePath);
 			
 			var exifToolExePath = Path.Combine(_appSettings.DependenciesFolder, "exiftool-unix","exiftool");
