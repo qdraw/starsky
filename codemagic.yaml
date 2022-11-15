@@ -11,7 +11,6 @@ workflows:
       node: 18.12.1
       npm: latest
       xcode: latest
-      python: latest
     scripts:
       - name: ls starskydesktop
         working_directory: starskydesktop
@@ -20,8 +19,11 @@ workflows:
         working_directory: starsky
         script: ls -lah        
       - name: which npm
-        working_directory: starskydesktop
         script: which npm && npm -v
+      - name: which python
+        script: which python
+      - name: which python3
+        script: which python3        
       - name: build .net
         script: ./starsky/build.sh --runtime osx-arm64,osx-x64
       - name: npm ci
