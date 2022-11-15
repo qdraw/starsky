@@ -1,19 +1,7 @@
 workflows:
-  build-mac-m1:
-    instance_type: mac_mini_m1
-    triggering:
-      events:
-        - push
-      branch_patterns: 
-        - pattern: master
-      cancel_previous_builds: true
-    environment:
-      node: 18.12.1
-      npm: latest
-    scripts:
-      - ./build.sh --no-dependencies --no-publish
   desktop-app-mac-m1:
     instance_type: mac_mini_m1
+    working_directory: starskydeskop
     triggering:
       events:
         - push
@@ -24,4 +12,6 @@ workflows:
       node: 18.12.1
       npm: latest
     scripts:
-      -  cd ./starskydeskop && npm run macarm64
+      - name: npm run macarm64
+        working_directory: starskydeskop
+        script: npm run macarm64 
