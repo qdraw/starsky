@@ -24,5 +24,4 @@ workflows:
       node: 18.12.1
       npm: latest
     scripts:
-      -  ./starsky/build.sh --runtime osx-arm64,osx-x64
-      -  cd starskydeskop && npm run macarm64
+      -  cd ./starskydeskop && npm run macarm64
