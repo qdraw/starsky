@@ -11,4 +11,18 @@ workflows:
       node: 18.12.1
       npm: latest
     scripts:
-      - cd starsky && ./build.sh --no-dependencies
+      - ./build.sh --no-dependencies --no-publish
+  desktop-app-mac-m1:
+    instance_type: mac_mini_m1
+    triggering:
+      events:
+        - push
+      branch_patterns: 
+        - pattern: master
+      cancel_previous_builds: true
+    environment:
+      node: 18.12.1
+      npm: latest
+    scripts:
+      -  ./starsky/build.sh --runtime osx-arm64,osx-x64
+      -  cd starskydeskop && npm run macarm64
