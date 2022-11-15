@@ -1,7 +1,6 @@
 workflows:
   desktop-app-mac-m1:
     instance_type: mac_mini_m1
-    working_directory: starskydeskop
     triggering:
       events:
         - push
@@ -12,6 +11,12 @@ workflows:
       node: 18.12.1
       npm: latest
     scripts:
+      - name: ls
+        working_directory: starskydeskop
+        script: ls -lah
+      - name: ls
+        working_directory: starskydeskop
+        script: which npm
       - name: npm run macarm64
         working_directory: starskydeskop
         script: npm run macarm64 
