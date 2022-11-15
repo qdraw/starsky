@@ -12,11 +12,11 @@ workflows:
       npm: latest
     scripts:
       - name: ls
-        working_directory: starskydeskop
+        working_directory: starskydesktop
         script: ls -lah
       - name: ls
-        working_directory: starskydeskop
+        working_directory: starskydesktop
         script: which npm
       - name: npm run macarm64
-        working_directory: starskydeskop
+        working_directory: starskydesktop
         script: npm run macarm64 
