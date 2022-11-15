@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -9,7 +10,8 @@ using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.ArchiveFormats
 {
-    public sealed class TarBal
+	[SuppressMessage("Usage", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync")]
+	public sealed class TarBal
     {
 	    private readonly IStorage _storage;
 	    public TarBal(IStorage storage)
@@ -47,6 +49,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 	    /// <param name="stream">The <i>.tar</i> to extract.</param>
 	    /// <param name="outputDir">Output directory to write the files.</param>
 	    /// <param name="cancellationToken">cancellationToken</param>
+	    [SuppressMessage("ReSharper", "MustUseReturnValue")]
 	    public async Task ExtractTar(Stream stream, string outputDir,
 		    CancellationToken cancellationToken)
         {

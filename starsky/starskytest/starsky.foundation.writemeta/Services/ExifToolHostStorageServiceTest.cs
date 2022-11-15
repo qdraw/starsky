@@ -79,7 +79,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			{
 				hostFileSystemStorage.FolderDelete(outputPath);
 			}
-			new TarBal(hostFileSystemStorage).ExtractTarGz(memoryStream, outputPath, CancellationToken.None);
+			await new TarBal(hostFileSystemStorage).ExtractTarGz(memoryStream, outputPath, CancellationToken.None);
 			var imageExifToolVersionFolder = hostFileSystemStorage.GetDirectories(outputPath)
 				.FirstOrDefault(p => p.StartsWith(Path.Combine(outputPath, "Image-ExifTool-")))?.Replace("./", string.Empty);
 
