@@ -9,7 +9,7 @@ workflows:
       cancel_previous_builds: true
     environment:
       node: 18.12.1
-      npm: latest
+      npm: 8.19.2
       xcode: latest
     scripts:
       - name: ls starskydesktop
