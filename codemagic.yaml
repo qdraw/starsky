@@ -5,4 +5,4 @@ workflows:
       node: 18.12.1
       npm: latest
     scripts:
-      - ./starsky/build.sh
+      - cd starsky && ./build.sh
