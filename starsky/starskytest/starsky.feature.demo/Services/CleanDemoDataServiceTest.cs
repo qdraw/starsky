@@ -184,6 +184,16 @@ public class CleanDemoDataServiceTest
 	}
 	
 	[TestMethod]
+	public void CleanData_Remove_Nothing()
+	{
+		var storage = new FakeIStorage();
+		
+		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
+		
+		Assert.IsFalse(storage.ExistFile("/test.jpg"));
+	}
+	
+	[TestMethod]
 	public async Task PushToSockets_Nothing()
 	{
 		var updatedList = new List<FileIndexItem>();

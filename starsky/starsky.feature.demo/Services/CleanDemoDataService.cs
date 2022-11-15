@@ -94,15 +94,14 @@ namespace starsky.feature.demo.Services
 			}
 			
 			// parent directories
-			var directories = (subStorage.GetDirectories("/") ??
-			                   new List<string>()).ToList();
+			var directories = subStorage.GetDirectories("/");
 			foreach ( var directory in directories )
 			{
 				subStorage.FolderDelete(directory);
 			}
 			
 			// clean files in root
-			var getAllFiles = (subStorage.GetAllFilesInDirectory("/")?? Array.Empty<string>())
+			var getAllFiles = subStorage.GetAllFilesInDirectory("/")
 				.Where(p => p != "/.gitkeep" && p != "/.gitignore").ToList();
 			foreach ( var filePath in getAllFiles )
 			{
