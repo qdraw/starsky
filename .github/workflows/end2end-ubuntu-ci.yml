@@ -66,7 +66,7 @@ jobs:
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         with:
-          install-command: npm ci --legacy-peer-deps
+          install-command: npm ci --legacy-peer-deps --no-fund --no-audit
           command: npm run e2e:env:record -- --tag "ubuntu-ci"
           working-directory: starsky-tools/end2end  
 

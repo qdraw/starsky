@@ -15,7 +15,7 @@ ENV INLINE_RUNTIME_CHUNK=false
 ENV IMAGE_INLINE_SIZE_LIMIT=1
 ENV DISABLE_ESLINT_PLUGIN=true
 COPY starsky/starsky/clientapp/. ./
-RUN npm ci --legacy-peer-deps --prefer-offline --no-audit
+RUN npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund
 RUN npm run build
 RUN echo "react done"
 
