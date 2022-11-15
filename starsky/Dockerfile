@@ -43,7 +43,7 @@ COPY . ./
 
 WORKDIR /app/starsky
 
-RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+RUN \
     if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
         echo $TARGETPLATFORM ; \
         dotnet restore --runtime linux-x64 starsky.csproj ; \
@@ -55,7 +55,7 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
         dotnet restore starsky.csproj ; \
     fi
 
-RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+RUN \
     if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
         echo $TARGETPLATFORM ; \
         dotnet publish -c release -o out --runtime linux-x64 --self-contained false --no-restore ; \
