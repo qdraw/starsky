@@ -10,6 +10,8 @@ workflows:
     environment:
       node: 18.12.1
       npm: latest
+      xcode: latest
+      python: latest
     scripts:
       - name: ls starskydesktop
         working_directory: starskydesktop
@@ -28,3 +30,7 @@ workflows:
       - name: npm run macarm64
         working_directory: starskydesktop
         script: npm run macarm64 
+    artifacts:
+      - starskydesktop/dist-prod/*.dmg
+      - starsky/starsky-osx-x64.zip
+      - starsky/starsky-osx-arm64.zip
