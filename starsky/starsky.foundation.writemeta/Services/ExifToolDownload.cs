@@ -165,7 +165,7 @@ namespace starsky.foundation.writemeta.Services
 				throw new HttpRequestException($"checksum for {tarGzArchiveFullFilePath} is not valid");
 			}
 			
-			new TarBal(_hostFileSystemStorage).ExtractTarGz(
+			await new TarBal(_hostFileSystemStorage).ExtractTarGz(
 				_hostFileSystemStorage.ReadStream(tarGzArchiveFullFilePath), _appSettings.DependenciesFolder);
 			
 			var imageExifToolVersionFolder = _hostFileSystemStorage.GetDirectories(_appSettings.DependenciesFolder)

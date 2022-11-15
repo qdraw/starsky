@@ -69,11 +69,11 @@ RUN \
 
 WORKDIR /app
 
-RUN --mount=type=cache,id=dependencies,target=/app/out/dependencies \
+RUN \
     mkdir -p "/app/out/dependencies" && \
     dotnet run --project "/app/starskygeocli/starskygeocli.csproj" --configuration Release -- --dependencies "/app/out/dependencies" -h -v
 
-RUN --mount=type=cache,id=dependencies,target=/app/out/dependencies \
+RUN \
     if [ "$ISDEMO" != "" ]; then \
         # it should cache faster \
         dotnet build starsky/starsky.csproj --configuration Release ;\
