@@ -5,7 +5,7 @@ workflows:
       events:
         - push
       branch_patterns: 
-        - pattern: master
+        - pattern: master_disabled
       cancel_previous_builds: true
     environment:
       node: 18.12.1
