@@ -1,8 +1,14 @@
 workflows:
-  my-workflow:
+  build-mac-m1:
     instance_type: mac_mini_m1
+    triggering:
+      events:
+        - push
+      branch_patterns: 
+        - pattern: master
+      cancel_previous_builds: true
     environment:
       node: 18.12.1
       npm: latest
     scripts:
-      - cd starsky && ./build.sh
+      - cd starsky && ./build.sh --no-dependencies
