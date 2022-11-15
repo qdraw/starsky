@@ -61,6 +61,15 @@ namespace build
 			return NoUnitTest || NoUnitTests || NoTest || NoTests;
 		}
 		
+		[Parameter("Skip Publish step")] 
+		readonly bool NoPublish;
+		
+		bool IsPublishDisabled()
+		{
+			// --no-publish
+			return NoPublish;
+		}
+		
 		[Parameter("Overwrite branch name")] 
 		readonly string Branch;
 		string GetBranchName()
@@ -183,7 +192,7 @@ namespace build
 					"generic-netcore");
 				MergeCoverageFiles.Merge(IsUnitTestDisabled());
 				SonarQube.SonarEnd(IsUnitTestDisabled(),NoSonar);
-				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration);
+				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration, IsPublishDisabled());
 			});
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
@@ -203,8 +212,14 @@ namespace build
 			.DependsOn(SonarBuildTest)
 			.Executes(() =>
 			{
-				if ( !GetRuntimesWithoutGeneric().Any() )
+				if ( !GetRuntimesWithoutGeneric().Any() || IsPublishDisabled() )
 				{
+					if ( IsPublishDisabled() )
+					{
+						Console.WriteLine("Publish is disabled " + IsPublishDisabled());
+						return;
+					}
+
 					Console.WriteLine("There are no runtime specific items selected");
 					return;
 				}
@@ -247,7 +262,7 @@ namespace build
 			.Executes(() =>
 			{
 				ShowSettingsInfo();
-				DocsGenerateHelper.Docs(GetRuntimesWithoutGeneric());
+				DocsGenerateHelper.Docs(GetRuntimesWithoutGeneric(), IsPublishDisabled());
 			});
 		
 		Target Zip => _ => _
@@ -256,6 +271,12 @@ namespace build
 			.DependsOn(BuildNetCoreRuntimeSpecific)
 			.Executes(() =>
 			{
+				if ( IsPublishDisabled() )
+				{
+					Console.WriteLine("Publish is disabled " + IsPublishDisabled());
+					return;
+				}
+				
 				ShowSettingsInfo();
 				ZipperHelper.ZipGeneric();
 				ZipperHelper.ZipRuntimes(GetRuntimesWithoutGeneric());

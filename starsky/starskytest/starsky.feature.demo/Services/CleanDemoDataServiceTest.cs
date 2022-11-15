@@ -147,12 +147,50 @@ public class CleanDemoDataServiceTest
 	}
 	
 	[TestMethod]
-	public void CleanData_Remove()
+	public void CleanData_Remove_Folder()
 	{
 		var storage = new FakeIStorage(new List<string> { "/",  "/test" });
 		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
 		
 		Assert.IsFalse(storage.ExistFolder("/test"));
+	}
+	
+	[TestMethod]
+	public void CleanData_Remove_File()
+	{
+		var storage = new FakeIStorage(new List<string> { "/",  "/test", "/t2" }, new List<string>
+		{
+			"/test.jpg"
+		});
+		
+		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
+		
+		Assert.IsFalse(storage.ExistFile("/test.jpg"));
+	}
+	
+	[TestMethod]
+	public void CleanData_Remove_File_KeepGitIgnore()
+	{
+		var storage = new FakeIStorage(new List<string> { "/",  "/test", "/t2" }, new List<string>
+		{
+			"/.gitignore",
+			"/.gitkeep"
+		});
+		
+		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
+		
+		Assert.IsTrue(storage.ExistFile("/.gitignore"));
+		Assert.IsTrue(storage.ExistFile("/.gitkeep"));
+	}
+	
+	[TestMethod]
+	public void CleanData_Remove_Nothing()
+	{
+		var storage = new FakeIStorage();
+		
+		CleanDemoDataService.CleanData(storage, new FakeIWebLogger());
+		
+		Assert.IsFalse(storage.ExistFile("/test.jpg"));
 	}
 	
 	[TestMethod]

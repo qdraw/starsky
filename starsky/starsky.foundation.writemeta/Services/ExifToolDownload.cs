@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using starsky.foundation.http.Interfaces;
@@ -165,8 +166,8 @@ namespace starsky.foundation.writemeta.Services
 				throw new HttpRequestException($"checksum for {tarGzArchiveFullFilePath} is not valid");
 			}
 			
-			new TarBal(_hostFileSystemStorage).ExtractTarGz(
-				_hostFileSystemStorage.ReadStream(tarGzArchiveFullFilePath), _appSettings.DependenciesFolder);
+			await new TarBal(_hostFileSystemStorage).ExtractTarGz(
+				_hostFileSystemStorage.ReadStream(tarGzArchiveFullFilePath), _appSettings.DependenciesFolder, CancellationToken.None);
 			
 			var imageExifToolVersionFolder = _hostFileSystemStorage.GetDirectories(_appSettings.DependenciesFolder)
 				.FirstOrDefault(p => p.StartsWith(Path.Combine(_appSettings.DependenciesFolder, "Image-ExifTool-")));
@@ -185,9 +186,12 @@ namespace starsky.foundation.writemeta.Services
 				_logger.LogError($"[DownloadForUnix] ExifTool folder does not exists");
 				return false;
 			}
+
+			// remove tar.gz file afterwards
+			_hostFileSystemStorage.FileDelete(tarGzArchiveFullFilePath);
 			
 			var exifToolExePath = Path.Combine(_appSettings.DependenciesFolder, "exiftool-unix","exiftool");
-			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {exifToolExePath}");
+			_logger.LogInformation($"[DownloadForUnix] ExifTool is just downloaded: {exifToolExePath}");
 			return await RunChmodOnExifToolUnixExe();
 		}
 

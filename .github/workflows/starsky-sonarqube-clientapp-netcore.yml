@@ -81,9 +81,5 @@ jobs:
           STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
           STARSKY_SONAR_URL:  ${{ secrets.STARSKY_SONAR_URL }}
         working-directory: ./starsky
-        run: bash build.sh --no-logo
+        run: bash build.sh --no-logo --no-publish
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: starsky-generic-netcore
-          path: ./starsky/starsky-generic-netcore.zip

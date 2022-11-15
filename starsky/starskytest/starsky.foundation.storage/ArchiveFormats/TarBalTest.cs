@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Storage;
@@ -19,26 +21,26 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 		}
 		
 		[TestMethod]
-		public void ExtractTar()
+		public async Task ExtractTar()
 		{
 			// Non Gz Tar
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string>{});
 
 			var memoryStream = new MemoryStream(CreateAnExifToolTar.Bytes);
-			new TarBal(storage).ExtractTar(memoryStream,"/test");
+			await new TarBal(storage).ExtractTar(memoryStream,"/test", CancellationToken.None);
 			Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
 		}
 		
 		[TestMethod]
-		public void ExtractTarGz()
+		public async Task ExtractTarGz()
 		{
 			// Gz Tar!
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string>{});
 
 			var memoryStream = new MemoryStream(CreateAnExifToolTarGz.Bytes);
-			new TarBal(storage).ExtractTarGz(memoryStream,"/test");
+			await new TarBal(storage).ExtractTarGz(memoryStream,"/test", CancellationToken.None);
 			Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
 		}
 	}

@@ -9,8 +9,14 @@ namespace helpers
 
 	public static class DocsGenerateHelper
 	{
-		public static void Docs(List<string> runtimes)
+		public static void Docs(List<string> runtimes, bool isPublishDisabled)
 		{
+			if ( isPublishDisabled )
+			{
+				Console.WriteLine($"Docs generation disabled due --no-publish flag");
+				return;
+			}
+			
 			if (!Directory.Exists(DocsPath))
 			{
 				Console.WriteLine($"Docs generation disabled (folder does not exist)");

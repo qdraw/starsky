@@ -1,8 +1,38 @@
 workflows:
-  my-workflow:
+  desktop-app-mac-m1:
     instance_type: mac_mini_m1
+    triggering:
+      events:
+        - push
+      branch_patterns: 
+        - pattern: master_disabled
+      cancel_previous_builds: true
     environment:
       node: 18.12.1
-      npm: latest
+      npm: 8.19.2
+      xcode: latest
     scripts:
-      - cd starsky && ./build.sh
+      - name: ls starskydesktop
+        working_directory: starskydesktop
+        script: ls -lah
+      - name: ls starsky
+        working_directory: starsky
+        script: ls -lah        
+      - name: which npm
+        script: which npm && npm -v
+      - name: which python
+        script: which python
+      - name: which python3
+        script: which python3        
+      - name: build .net
+        script: ./starsky/build.sh --runtime osx-arm64,osx-x64
+      - name: npm install
+        working_directory: starskydesktop
+        script: npm install --no-fund --no-audit
+      - name: npm run macarm64
+        working_directory: starskydesktop
+        script: npm run macarm64 
+    artifacts:
+      - starskydesktop/dist-prod/*.dmg
+      - starsky/starsky-osx-x64.zip
+      - starsky/starsky-osx-arm64.zip

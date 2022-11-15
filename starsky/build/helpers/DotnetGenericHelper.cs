@@ -81,8 +81,14 @@ namespace helpers
 		}
 
 		public static void PublishNetCoreGenericCommand(Solution solution,
-			Configuration configuration)
+			Configuration configuration, bool isPublishDisabled)
 		{
+			if ( isPublishDisabled )
+			{
+				Console.WriteLine("Skip: PublishNetCoreGenericCommand isPublishDisabled");
+				return;
+			}
+			
 			ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
 
 			foreach ( var publishProject in PublishProjectsList )

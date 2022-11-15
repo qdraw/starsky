@@ -43,7 +43,8 @@ COPY . ./
 
 WORKDIR /app/starsky
 
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+RUN \
+    if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
         echo $TARGETPLATFORM ; \
         dotnet restore --runtime linux-x64 starsky.csproj ; \
     elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
@@ -54,23 +55,26 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
         dotnet restore starsky.csproj ; \
     fi
 
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+RUN \
+    if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
         echo $TARGETPLATFORM ; \
-        dotnet publish -c release -o out --runtime linux-x64 --self-contained false ; \
+        dotnet publish -c release -o out --runtime linux-x64 --self-contained false --no-restore ; \
     elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-        dotnet publish -c release -o out --runtime linux-arm64 --self-contained false ; \
+        dotnet publish -c release -o out --runtime linux-arm64 --self-contained false --no-restore ; \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-        dotnet publish -c release -o out --runtime linux-arm --self-contained false ; \
+        dotnet publish -c release -o out --runtime linux-arm --self-contained false --no-restore ; \
     else \
        dotnet publish -c release -o out  ; \
     fi
 
 WORKDIR /app
 
-RUN mkdir -p "/app/out/dependencies" && \
+RUN \
+    mkdir -p "/app/out/dependencies" && \
     dotnet run --project "/app/starskygeocli/starskygeocli.csproj" --configuration Release -- --dependencies "/app/out/dependencies" -h -v
 
-RUN if [ "$ISDEMO" != "" ]; then \
+RUN \
+    if [ "$ISDEMO" != "" ]; then \
         # it should cache faster \
         dotnet build starsky/starsky.csproj --configuration Release ;\
         DEMO_SEED_CLI_PATH="/app/starskydemoseedcli/starskydemoseedcli.csproj" ;\

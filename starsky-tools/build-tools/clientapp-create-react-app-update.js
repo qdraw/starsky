@@ -113,7 +113,7 @@ npmCi();
 function npmUnInstall(packageName) {
 
   console.log(`run > npm uninstall ${packageName} --save --legacy-peer-deps`);
-  const uninstall = spawnSync('npm', ['uninstall', packageName, '--no-audit', '--save', '--legacy-peer-deps'], {
+  const uninstall = spawnSync('npm', ['uninstall', packageName, '--no-audit', '--save', '--legacy-peer-deps', '--no-fund'], {
       cwd: clientAppFolderPath,
       env: process.env,
       encoding: 'utf-8'
