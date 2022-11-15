@@ -113,6 +113,9 @@ fi
 echo "Microsoft (R) .NET SDK version $("$DOTNET_EXE" --version)"
 echo "        next: _build project"
 
+CURRENT_PWD="$(pwd)"
+cd $SCRIPT_DIR
+
 "$DOTNET_EXE" build "$BUILD_PROJECT_FILE" /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet
 
 if [[ ! -f $SCRIPT_DIR"/build/bin/Debug/_build.deps.json" ]]; then
@@ -122,6 +125,8 @@ fi
 
 echo "        next: run _build project"
 "$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- --no-logo "$@"
+
+cd $CURRENT_PWD
 
 if [ $? -eq 0 ] 
 then 

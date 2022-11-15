@@ -59,6 +59,10 @@
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
+        "NoPublish": {
+          "type": "boolean",
+          "description": "Skip Publish step"
+        },
         "NoSonar": {
           "type": "boolean",
           "description": "Is SonarQube Disabled"
