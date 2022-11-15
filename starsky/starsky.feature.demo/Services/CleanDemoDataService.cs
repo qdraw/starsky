@@ -103,7 +103,7 @@ namespace starsky.feature.demo.Services
 			
 			// clean files in root
 			var getAllFiles = (subStorage.GetAllFilesInDirectory("/")?? Array.Empty<string>())
-				.Where(p => p != ".gitkeep" && p != ".gitignore").ToList();
+				.Where(p => p != "/.gitkeep" && p != "/.gitignore").ToList();
 			foreach ( var filePath in getAllFiles )
 			{
 				subStorage.FileDelete(filePath);
