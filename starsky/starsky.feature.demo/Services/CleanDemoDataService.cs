@@ -92,10 +92,22 @@ namespace starsky.feature.demo.Services
 				logger.LogError("stfolder exists so exit");
 				return;
 			}
-		
-			// Clean folder
-			subStorage.FolderDelete("/");
-			subStorage.CreateDirectory("/");
+			
+			// parent directories
+			var directories = (subStorage.GetDirectories("/") ??
+			                   new List<string>()).ToList();
+			foreach ( var directory in directories )
+			{
+				subStorage.FolderDelete(directory);
+			}
+			
+			// clean files in root
+			var getAllFiles = (subStorage.GetAllFilesInDirectory("/")?? Array.Empty<string>())
+				.Where(p => p != ".gitkeep" && p != ".gitignore").ToList();
+			foreach ( var filePath in getAllFiles )
+			{
+				subStorage.FileDelete(filePath);
+			}
 		}
 
 		internal async Task<bool> PushToSockets(List<FileIndexItem> updatedList)
