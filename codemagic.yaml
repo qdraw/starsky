@@ -11,12 +11,20 @@ workflows:
       node: 18.12.1
       npm: latest
     scripts:
-      - name: ls
+      - name: ls starskydesktop
         working_directory: starskydesktop
         script: ls -lah
-      - name: ls
+      - name: ls starsky
+        working_directory: starsky
+        script: ls -lah        
+      - name: which npm
         working_directory: starskydesktop
-        script: which npm
+        script: which npm && npm -v
+      - name: build .net
+        script: ./starsky/build.sh --runtime osx-arm64,osx-x64
+      - name: npm ci
+        working_directory: starskydesktop
+        script: npm ci
       - name: npm run macarm64
         working_directory: starskydesktop
         script: npm run macarm64 
