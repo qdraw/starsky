@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -78,7 +79,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			{
 				hostFileSystemStorage.FolderDelete(outputPath);
 			}
-			new TarBal(hostFileSystemStorage).ExtractTarGz(memoryStream, outputPath);
+			new TarBal(hostFileSystemStorage).ExtractTarGz(memoryStream, outputPath, CancellationToken.None);
 			var imageExifToolVersionFolder = hostFileSystemStorage.GetDirectories(outputPath)
 				.FirstOrDefault(p => p.StartsWith(Path.Combine(outputPath, "Image-ExifTool-")))?.Replace("./", string.Empty);
 

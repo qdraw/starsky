@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.ArchiveFormats;
@@ -27,7 +28,7 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 				new List<string>{});
 
 			var memoryStream = new MemoryStream(CreateAnExifToolTar.Bytes);
-			await new TarBal(storage).ExtractTar(memoryStream,"/test");
+			await new TarBal(storage).ExtractTar(memoryStream,"/test", CancellationToken.None);
 			Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
 		}
 		
@@ -39,7 +40,7 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 				new List<string>{});
 
 			var memoryStream = new MemoryStream(CreateAnExifToolTarGz.Bytes);
-			await new TarBal(storage).ExtractTarGz(memoryStream,"/test");
+			await new TarBal(storage).ExtractTarGz(memoryStream,"/test", CancellationToken.None);
 			Assert.IsTrue(storage.ExistFile("/test/Image-ExifTool-11.99/exiftool"));
 		}
 	}
