@@ -26,9 +26,9 @@ workflows:
         script: which python3        
       - name: build .net
         script: ./starsky/build.sh --runtime osx-arm64,osx-x64
-      - name: npm ci
+      - name: npm install
         working_directory: starskydesktop
-        script: npm ci
+        script: npm install --no-fund --no-audit
       - name: npm run macarm64
         working_directory: starskydesktop
         script: npm run macarm64 
