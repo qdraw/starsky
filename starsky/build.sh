@@ -89,6 +89,7 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
     else
         echo "dotnet not installed, installing $DOTNET_VERSION"
         INSTALL_DOTNET_VIA_WEBSITE_PKG
+        echo path $PATH
     fi
 fi
 
