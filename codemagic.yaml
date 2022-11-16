@@ -51,4 +51,4 @@ workflows:
     scripts:      
       - name: build.sh
         working_directory: starsky
-        script: export CI=false && ./build.sh --no-publish --no-dependencies --no-tests
+        script: export FORCE_INSTALL_CHECK=true && ./build.sh --no-publish --no-dependencies --no-tests

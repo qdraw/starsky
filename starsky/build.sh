@@ -43,6 +43,12 @@ function SET_DOTNET_VERSION_TO_VAR {
     fi
 }
 
+if [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
+    CI=false
+    TF_BUILD=false
+    echo "FORCE_INSTALL_CHECK true"
+fi
+
 # install dotnet via website
 if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]]; then
     SET_DOTNET_VERSION_TO_VAR
