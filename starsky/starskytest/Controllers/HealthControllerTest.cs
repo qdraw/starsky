@@ -164,7 +164,7 @@ namespace starskytest.Controllers
 			// the beta is before the 0.3 release
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = beta;
 			var noVersion = controller.Version() as ObjectResult;
-			Assert.AreEqual(202, noVersion.StatusCode);
+			Assert.AreEqual(202, noVersion?.StatusCode);
 		}
 		
 		[TestMethod]

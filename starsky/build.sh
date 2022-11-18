@@ -133,12 +133,13 @@ fi
 
 echo "        next: run _build project"
 "$DOTNET_EXE" run --project "$BUILD_PROJECT_FILE" --no-build -- --no-logo "$@"
+DOTNET_EXE_EXIT_CODE=$?
 
 cd $CURRENT_PWD
 
-if [ $? -eq 0 ] 
+if [ $DOTNET_EXE_EXIT_CODE -eq 0 ] 
 then 
   echo "OK" 
 else 
-  exit $?
+  exit $DOTNET_EXE_EXIT_CODE
 fi

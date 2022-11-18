@@ -36,14 +36,20 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 
-# version 0.5.0 _(Unreleased)_ - 2022-??-??
-- [x]   (Changed) _App_ Save minimum size for windows (all platforms) (PR #948)
+# version 0.5.1 _(Unreleased)_ - 2022-??-??
+- nothing yet
+
+# version 0.5.0 - 2022-11-18
+- [x]   (Changed) _Desktop_ Save minimum size for windows (all platforms) (PR #948)
 - [x]   (Changed) _Back-end_ Windows OS Camera Timezone issues and SQLite startup issues (PR #952)
 - [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.403 (Runtime: 6.0.11)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.11/6.0.11.md) (PR #958)
+- [x]   (Changed) _Back-end_ GlobalJson for specific version .NET (PR #957)
+- [x]   (Changed) _Back-end_ Get thumbnail files from raw files, now shown yet (PR #959)
+- [x]   (Changed) _Desktop_ Download first to tmp file and then rename (PR #961)
+- [x]   (Changed) _Front-end_ Upgrade ClientApp to latest versions (PR #963)
+- [x]   __(Breaking Change)__ _Back-end_ Only allow 0.5.x desktop apps to connect (PR #966)
+- [x]   (Changed) _General_ Milestone 2 is closed: https://github.com/qdraw/starsky/milestone/2
 
-
-- > Todo: https://github.com/qdraw/starsky/milestone/2
-  
 ## Summary of breaking changes in 0.5.0-beta.0-9 versions
 - [x]   (0.5.0-beta.9) _App_  Rename StarskyApp to StarskyDesktop (PR #887)
 - [x]   (0.5.0-beta.9) _Back-end_ Use Application Insights Connection String (PR #920)
