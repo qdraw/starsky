@@ -49,7 +49,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Get thumbnail files from raw files, now shown yet (PR #959)
 - [x]   (Changed) _Desktop_ Download first to tmp file and then rename (PR #961)
 - [x]   (Changed) _Front-end_ Upgrade ClientApp to latest versions (PR #963)
-  
+- [x]   __(Breaking Change)__ _Back-end_ Only allow 0.5.x desktop apps to connect (PR #966)
+
 ## Summary of breaking changes in 0.5.0-beta.0-9 versions
 - [x]   (0.5.0-beta.9) _App_  Rename StarskyApp to StarskyDesktop (PR #887)
 - [x]   (0.5.0-beta.9) _Back-end_ Use Application Insights Connection String (PR #920)
