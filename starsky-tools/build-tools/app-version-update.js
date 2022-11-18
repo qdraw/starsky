@@ -37,7 +37,7 @@ getFiles(join(__dirname, prefixPath, "starsky")).then(async (filePathList) => {
   console.log(err);
 });
 
-getFiles(join(__dirname, prefixPath, "starskyapp")).then(async (filePathList) => {
+getFiles(join(__dirname, prefixPath, "starskydesktop")).then(async (filePathList) => {
   await updateVersions(filePathList);
 }).catch((err) => {
   console.log(err);
