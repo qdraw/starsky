@@ -36,3 +36,19 @@ workflows:
       - starskydesktop/dist-prod/*.dmg
       - starsky/starsky-osx-x64.zip
       - starsky/starsky-osx-arm64.zip
+      
+  build:
+    instance_type: mac_mini_m1
+    triggering:
+      events:
+        - push
+      branch_patterns: 
+        - pattern: master_disabled
+      cancel_previous_builds: true
+    environment:
+      node: 18.12.1
+      npm: 8.19.2
+    scripts:      
+      - name: build.sh
+        working_directory: starsky
+        script: export FORCE_INSTALL_CHECK=true && ./build.sh --no-publish --no-dependencies --no-tests

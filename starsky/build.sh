@@ -43,45 +43,53 @@ function SET_DOTNET_VERSION_TO_VAR {
     fi
 }
 
-# install dotnet via website
-if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]]; then
+function INSTALL_DOTNET_VIA_WEBSITE_PKG {
+     if [[ "$(uname -m)" == "x86_64" ]]; then
+         DOTNET_MAC_OS_PKG_X64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_X64)
+         RESULT=$(curl -s $DOTNET_MAC_OS_PKG_X64_VERSION -X GET | grep 'window.open("')
+     else 
+         DOTNET_MAC_OS_PKG_ARM64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_ARM64)
+         RESULT=$(curl -s $DOTNET_MAC_OS_PKG_ARM64_VERSION -X GET | grep 'window.open("')          
+     fi
+
+     RESULT1=$(sed "s/\window.open(\"//g" <<< $RESULT)
+     RESULT2=$(sed "s/\", \"_self\");//g" <<< $RESULT1)
+     RESULT3=`echo $RESULT2 | sed 's/ *$//g'`
+     URL=${RESULT3%$'\r'}
+      
+     if [[ "$URL" == https* && "$URL" == *.pkg* ]]; then 
+        echo "next download from: "$URL
+        echo "   afterwards you will be asked for a password to install dotnet"
+        mkdir -p $SCRIPT_DIR"/.nuke/temp/installer/"
+        curl -s -o $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" $URL
+        echo "package is downloaded, next install dotnet"
+        echo "sudo installer -pkg "$SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg -target /"
+        sudo installer -pkg $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" -target /
+        rm -rf $SCRIPT_DIR"/.nuke/temp/installer/"
+     else 
+        echo "SKIP: mis match in url"             
+     fi
+     if [[ -f $HOME"/.zprofile" ]]; then
+        source ~/.zprofile
+     fi
+     if [[ -f $HOME"/.zshrc" ]]; then
+        source ~/.zshrc
+     fi 
+}
+
+echo "     os: " "$(uname)" "ci: " $CI "tf: "  $TF_BUILD  "install check: " $FORCE_INSTALL_CHECK
+# install dotnet via website   
+if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
     SET_DOTNET_VERSION_TO_VAR
     if [ -x "$(command -v dotnet)" ]; then
         if [[ $(dotnet --info) != *$DOTNET_VERSION* ]]; then
              echo "dotnet version mismatch, installing $DOTNET_VERSION" $(uname -m)
-             
-             if [[ "$(uname -m)" == "x86_64" ]]; then
-                 DOTNET_MAC_OS_PKG_X64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_X64)
-                 RESULT=$(curl -s $DOTNET_MAC_OS_PKG_X64_VERSION -X GET | grep 'window.open("')
-             else 
-                 DOTNET_MAC_OS_PKG_ARM64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_ARM64)
-                 RESULT=$(curl -s $DOTNET_MAC_OS_PKG_ARM64_VERSION -X GET | grep 'window.open("')          
-             fi
-        
-             RESULT1=$(sed "s/\window.open(\"//g" <<< $RESULT)
-             RESULT2=$(sed "s/\", \"_self\");//g" <<< $RESULT1)
-             RESULT3=`echo $RESULT2 | sed 's/ *$//g'`
-             URL=${RESULT3%$'\r'}
-              
-             if [[ "$URL" == https* && "$URL" == *.pkg* ]]; then 
-                echo "next download from: "$URL
-                echo "   afterwards you will be asked for a password to install dotnet"
-                mkdir -p $SCRIPT_DIR"/.nuke/temp/installer/"
-                curl -s -o $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" $URL
-                echo "package is downloaded, next install dotnet"
-                echo "sudo installer -pkg "$SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg -target /"
-                sudo installer -pkg $SCRIPT_DIR"/.nuke/temp/installer/"$DOTNET_VERSION".pkg" -target /
-                rm -rf $SCRIPT_DIR"/.nuke/temp/installer/"
-             else 
-                echo "SKIP: mis match in url"             
-             fi
-             if [[ -f $HOME"/.zprofile" ]]; then
-                source ~/.zprofile
-             fi
-             if [[ -f $HOME"/.zshrc" ]]; then
-                source ~/.zshrc
-             fi 
+             INSTALL_DOTNET_VIA_WEBSITE_PKG
         fi
+    else
+        echo "dotnet not installed, installing $DOTNET_VERSION"
+        INSTALL_DOTNET_VIA_WEBSITE_PKG
+        echo path $PATH
     fi
 fi
 
