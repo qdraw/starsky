@@ -36,12 +36,12 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 
-# version 0.5.1 _(Unreleased)_ - 2022-11-15
+# version 0.5.1 _(Unreleased)_ - 2022-??-??
 - nothing yet
 
 - > Todo: https://github.com/qdraw/starsky/milestone/2
 
-# version 0.5.0 _(Unreleased)_ - 2022-11-15
+# version 0.5.0 - 2022-11-18
 - [x]   (Changed) _Desktop_ Save minimum size for windows (all platforms) (PR #948)
 - [x]   (Changed) _Back-end_ Windows OS Camera Timezone issues and SQLite startup issues (PR #952)
 - [x]   (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.403 (Runtime: 6.0.11)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.11/6.0.11.md) (PR #958)
