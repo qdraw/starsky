@@ -173,8 +173,9 @@ namespace starsky.Controllers
 
 		/// <summary>
 		/// Check if min version is matching
+		/// keywords: MinVersion or Version( or SemVersion(
 		/// </summary>
-		internal const string MinimumVersion = "0.5"; // only insert 0.4 or 0.5
+		internal const string MinimumVersion = "0.5"; // only insert 0.5 or 0.6
 		
 		/// <summary>
 		/// Name of the header for api version
@@ -205,7 +206,7 @@ namespace starsky.Controllers
 
 			if ( string.IsNullOrEmpty(version))
 			{
-				return BadRequest("Missing version data");
+				return BadRequest($"Missing version data, Add {ApiVersionHeaderName} header with value");
 			}
 
 			try
@@ -215,7 +216,7 @@ namespace starsky.Controllers
 					return Ok(version);
 				}
 				return StatusCode(StatusCodes.Status202Accepted,
-					$"please upgrade to {MinimumVersion} or newer");
+					$"Please Upgrade ClientApp to {MinimumVersion} or newer");
 			}
 			catch ( ArgumentException )
 			{
