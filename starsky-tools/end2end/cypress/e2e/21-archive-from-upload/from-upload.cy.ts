@@ -67,6 +67,8 @@ describe('Archive (from upload)', () => {
 
       cy.log('next step: background update')
 
+      const keyword = `realtime-update-test${Math.floor(Math.random() * 100)}`
+
       cy.request({
         method: 'POST',
         url: config.updateApi, // baseUrl is prepend to URL
@@ -74,7 +76,7 @@ describe('Archive (from upload)', () => {
         body: {
           append: false,
           collections: true,
-          tags: 'realtime-update-test',
+          tags: keyword,
           f: '/starsky-end2end-test/20200822_111408.jpg'
         }
       })
@@ -85,7 +87,7 @@ describe('Archive (from upload)', () => {
         cy.log('next step: check api')
 
         const sourceTags2 = response2.body.fileIndexItem.tags
-        expect(sourceTags2).eq('realtime-update-test')
+        expect(sourceTags2).eq(keyword)
 
         cy.request({
           url: (config.notificationApi as string)
@@ -94,20 +96,19 @@ describe('Archive (from upload)', () => {
 
           const dataObjects: any[] = []
           for (const item1 of notification) {
-            if (item1.content.includes('realtime-update-test') &&
+            if (item1.content.includes(keyword) &&
               item1.content.includes('/starsky-end2end-test/20200822_111408.jpg') &&
               item1.content.includes('"type":"MetaUpdate"')) {
-              cy.log('next step: check notification')
               dataObjects.push(item1.content)
+              cy.log('found notification: ' + item1.content)
             }
           }
+          cy.log('next step: check notification')
 
           if (dataObjects.length === 0) {
             resetAfterwards(sourceTags)
             throw new Error('No realtime update found')
           }
-
-          cy.reload()
 
           cy.log('next step: check DOM')
 
@@ -116,7 +117,7 @@ describe('Archive (from upload)', () => {
           cy.get('[data-filepath="/starsky-end2end-test/20200822_111408.jpg"] .tags').should('have.length', 1)
 
           try {
-            cy.get('[data-filepath="/starsky-end2end-test/20200822_111408.jpg"] .tags').contains('test')
+            cy.get('[data-filepath="/starsky-end2end-test/20200822_111408.jpg"] .tags').contains(keyword)
           } catch (error) {
             resetAfterwards(sourceTags)
             throw error
