@@ -55,6 +55,7 @@ ProjectSection(SolutionItems) = preProject
 	..\index.md = ..\index.md
 	..\readme.md = ..\readme.md
 	..\SECURITY.md = ..\SECURITY.md
+	..\HACKING.md = ..\HACKING.md
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starsky.sln", "starsky.sln", "{0F47FD1D-CE79-4069-AFD4-252ED9D9445E}"
@@ -121,6 +122,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build-tools", "Build-tools", "{52237C88-FC6B-4DE3-BB27-8D2F9FF45F25}"
 	ProjectSection(SolutionItems) = preProject
 		..\starsky-tools\build-tools\app-version-update.js = ..\starsky-tools\build-tools\app-version-update.js
+		..\starsky-tools\build-tools\dotnet-sdk-version-update.js = ..\starsky-tools\build-tools\dotnet-sdk-version-update.js
+		..\starsky-tools\build-tools\clientapp-create-react-app-update.js = ..\starsky-tools\build-tools\clientapp-create-react-app-update.js
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.packagetelemetry", "starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj", "{7AB42607-88DF-427C-823B-033A224A73A6}"
