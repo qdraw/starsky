@@ -7,7 +7,8 @@
         "mkdirPath": "/starsky-end2end-test",
         "urlMkdir": "/api/index/?f=/starsky-end2end-test",
         "updateApi": "/api/update",
-        "indexApi": "/api/index"
+        "indexApi": "/api/index",
+        "notificationApi": "/api/notification/notification?dateTime=1"
       },
       "heroku-demo" : {
         "isEnabled": true,
@@ -16,7 +17,8 @@
         "mkdirPath": "/starsky-end2end-test",
         "urlMkdir": "/api/index/?f=/starsky-end2end-test",
         "updateApi": "/api/update",
-        "indexApi": "/api/index"
+        "indexApi": "/api/index",
+        "notificationApi": "/api/notification/notification?dateTime=1"
       },
       "no-create-account": {
         "isEnabled": true,
@@ -25,7 +27,8 @@
         "mkdirPath": "/starsky-end2end-test",
         "urlMkdir": "/api/index/?f=/starsky-end2end-test",
         "updateApi": "/api/update",
-        "indexApi": "/api/index"
+        "indexApi": "/api/index",
+        "notificationApi": "/api/notification/notification?dateTime=1"
       }
     }
   }
