@@ -52,7 +52,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readme", "Readme", "{C757587F-8490-4815-97CE-9BE39A6C82C6}"
 ProjectSection(SolutionItems) = preProject
 	..\history.md = ..\history.md
-	..\index.md = ..\index.md
 	..\readme.md = ..\readme.md
 	..\SECURITY.md = ..\SECURITY.md
 	..\HACKING.md = ..\HACKING.md

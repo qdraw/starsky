@@ -1,4 +1,4 @@
-# Starsky App
+# Build Desktop Application
 ## List of [Starsky](../readme.md) Projects
  * [starsky (sln)](../starsky/readme.md) _database photo index & import index project)_
     * [starsky](../starsky/starsky/readme.md) _web api application / interface_

@@ -1,8 +1,8 @@
-# General Starsky (sln) docs
+# By App build documentation
 
 ## List of [Starsky](../readme.md) Projects
 
--   **[starsky (sln)](../starsky/readme.md) database photo index & import index project**
+-   **[By App documentation](../starsky/readme.md) database photo index & import index project**
     -   [starsky](../starsky/starsky/readme.md) _web api application / interface_
         -   [clientapp](../starsky/starsky/clientapp/readme.md) _react front-end application_
     -   [starskyImporterCli](../starsky/starskyimportercli/readme.md) _import command line interface_
@@ -15,7 +15,7 @@
     -   [Starsky Business Logic](../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     -   [starskyTest](../starsky/starskytest/readme.md) _mstest unit tests_
 -   [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
--   [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+-   [starskydesktop](../starskydesktop/readme.md) _Desktop Application (Pre-alpha code)_
     * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
 -   [Changelog](../history.md) _Release notes and history_
 
