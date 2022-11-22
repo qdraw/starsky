@@ -75,7 +75,7 @@ Technically, a story is a function that returns something that can be rendered t
 
 ## Project structure
 
-The clientapp uses the following folder structure
+The client app uses the following folder structure
 
 ```
 •
@@ -119,6 +119,23 @@ The clientapp uses the following folder structure
 ```
 
 ### Upgrade `Create React App` to a newer version
+
+#### Auto upgrade
+
+In this project there is a script that auto upgrades the `Create React App` to the latest version
+It replaces the `package.json` and `package-lock.json` from the output of the `npx create-react-app . --template typescript`
+
+```
+node starsky-tools/build-tools/clientapp-create-react-app-update.js
+```
+
+Run the tests afterwards to check if everything is working
+
+```
+npm ci && npm test:ci
+```
+
+#### Manual Upgrade
 
 The default Create React App package is used to keep future upgrades less painfull.
 In the repository of [Create React App releases](https://github.com/facebook/create-react-app/releases) you can find if we are using the latest version.

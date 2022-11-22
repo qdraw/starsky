@@ -134,7 +134,7 @@ http://localhost:5000/account/register
 
 ### Optional steps
 
-10. The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+10. The script [`pm2-new-instance.sh`](https://raw.githubusercontent.com/qdraw/starsky/master/starsky/starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 
 ```sh
     export ASPNETCORE_URLS="http://localhost:4823/"
@@ -195,7 +195,7 @@ It uses the following default parameters
 
 #### pm2 `./pm2-new-instance.sh`
 
-The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+The script [`pm2-new-instance.sh`](https://raw.githubusercontent.com/qdraw/starsky/master/starsky/starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 
 You should install pm2 before running this script
 
