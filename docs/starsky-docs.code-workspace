@@ -1,0 +1,39 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": true,
+			"source.fixAll": true,
+			"source.fixAll.eslint": true
+		},
+		"editor.formatOnPaste": true,
+		"editor.tabSize": 2,
+		"editor.detectIndentation": false,
+		"editor.insertSpaces": true,
+		"html.format.wrapLineLength": 100,
+		"html.format.wrapAttributes": "force-aligned",
+		"html.format.contentUnformatted": "pre,code,textarea, span",
+		"html.format.endWithNewline": true,
+		"javascript.preferences.quoteStyle": "double",
+		"javascript.updateImportsOnFileMove.enabled": "always",
+		"jest.disabledWorkspaceFolders": [
+			"node_modules",
+			"mock",
+			"history.md"
+		],
+		"typescript.preferences.quoteStyle": "double",
+		"typescript.updateImportsOnFileMove.enabled": "always",
+		"cSpell.words": [
+			"Exif",
+			"Starsky",
+			"colorclass",
+			"unmount"
+		],
+		"typescript.tsdk": "clientapp/node_modules/typescript/lib",
+		"editor.formatOnSave": true,
+	}
+}
