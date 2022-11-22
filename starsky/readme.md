@@ -21,12 +21,12 @@
 
 ## Run pre-build binaries (fastest)
 
-See the [How use prebuild images](readme-docker-hub.md) for more details about how to run docker
+See the [How use prebuild images](starsky/readme-docker-hub.md) for more details about how to run docker
 
 
 ## Build instructions for docker
 
-See the [Docker instructions](readme-docker-development.md) for more details about how 
+See the [Docker instructions](starsky/readme-docker-development.md) for more details about how 
 to compile the application for development
 
 ## Build instructions (without docker)

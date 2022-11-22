@@ -1,6 +1,6 @@
-[< readme](readme.md)
+# Docker build instructions
 
-# Docker instructions
+[< readme](readme.md)
 
 One of the build options is to run Starsky from a docker container
 

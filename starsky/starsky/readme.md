@@ -1,4 +1,4 @@
-# Starsky Web API application
+# Web API application
 ## List of [Starsky](../../readme.md) Projects
  * [By App documentation](../../starsky/readme.md) _database photo index & import index project_
     * __[starsky](../../starsky/starsky/readme.md) web api application / interface__

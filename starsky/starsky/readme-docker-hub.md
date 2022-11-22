@@ -1,6 +1,6 @@
-[< readme](readme.md)
+# Dockerhub
 
-# Starsky photo management app on dockerhub
+[< readme](readme.md)
 
 Starsky is a free photo-management tool, which runs on your server or web-space.
 Installing is a matter of running the application.

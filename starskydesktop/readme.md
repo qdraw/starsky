@@ -13,7 +13,7 @@
     * [Starsky Business Logic](../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * __[starskyapp](../starskyapp/readme.md) Desktop Application__
+ * __[starskydesktop](../starskydesktop/readme.md) Desktop Application__
     * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
  * [Changelog](../history.md) _Release notes and history_
 
