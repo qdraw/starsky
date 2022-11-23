@@ -1,0 +1,17 @@
+trigger:
+  - master
+
+variables:
+  CI: true
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+
+pool:
+  vmImage: ubuntu-20.04
+
+steps:
+  - checkout: self
+    persistCredentials: true
+
+    - template: /pipelines/azure/steps/build_documenation.yml
+      parameters:
+        npmConfigCache: $(npm_config_cache)

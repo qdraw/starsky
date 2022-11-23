@@ -1,0 +1,31 @@
+parameters:
+  npmConfigCache: $(Pipeline.Workspace)/.npm
+
+steps:
+
+  - task: Cache@2
+    inputs:
+      key: 'npm | documenation | "$(Agent.OS)" | $(Build.SourcesDirectory)/documenation/package-lock.json'
+      restoreKeys: |
+        npm | clientapp | "$(Agent.OS)"
+      path: ${{ parameters.npmConfigCache }}
+    displayName: Cache npm
+
+  - task: PowerShell@2
+    displayName: "npm ci"
+    workingDirectory: documenation
+    inputs:
+      targetType: "inline"
+      script: |
+        npm ci --no-audit --no-fund --prefer-offline
+
+  - task: PowerShell@2
+    displayName: "[Cake/clientapp] dotnet tool restore"
+    workingDirectory: documenation
+    inputs:
+      targetType: "inline"
+      script: |
+        npm run build
+        
+
+
