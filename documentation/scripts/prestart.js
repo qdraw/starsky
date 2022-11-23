@@ -119,6 +119,7 @@ copyFileSync(
 );
 
 copyFileSync("starskydesktop/readme.md", "starskydesktop/readme.md");
+
 touchSync("starskydesktop/__do_not_edit_this__folder");
 
 copyFileSync(
