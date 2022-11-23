@@ -16,4 +16,5 @@ steps:
       password: ${{ parameters.password }}
       rootDirectory: ${{ parameters.rootDirectory }}
       remoteDirectory: ${{ parameters.remoteDirectory }}
+      preservePaths: true
       cleanContents: true
