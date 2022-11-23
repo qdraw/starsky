@@ -51,7 +51,7 @@ jobs:
 
     - name: Copy
       shell: bash
-      run: cp starsky/starsky/bin/Debug/net6.0/temp/starsky.json starsky-tools/docs/assets/config/starsky.json
+      run: cp starsky/starsky/bin/Debug/net6.0/temp/starsky.json documentation/static/openapi/openapi.json
 
     - name: Generate swagger
       shell: bash
