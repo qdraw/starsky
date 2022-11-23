@@ -5,12 +5,21 @@ variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
 
-pool:
-  vmImage: ubuntu-20.04
+stages:
+- stage: builddocumentation
+  displayName: 'Build Documentation'
+  jobs:
+  - job: builddocumentation
+    displayName: 'Build Documentation'
+    timeoutInMinutes: 10 # how long to run the job before automatically cancelling
+    cancelTimeoutInMinutes: 2 # how much time to give 'run always even if cancelled tasks' before stopping them
+    pool:
+      vmImage: 'ubuntu-22.04'
 
-steps:
-  - checkout: self
-    persistCredentials: true
+    steps:
+    - checkout: self
+      clean: true
+      fetchDepth: 1
 
     - template: /pipelines/azure/steps/build_documenation.yml
       parameters:
