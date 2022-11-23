@@ -171,7 +171,6 @@ namespace build
 			.DependsOn(Client)
 			.DependsOn(SonarBuildTest)
 			.DependsOn(BuildNetCoreRuntimeSpecific)
-			.DependsOn(DocsGenerate)
 			.DependsOn(CoverageReport)
 			.DependsOn(Zip);
 		
@@ -255,14 +254,6 @@ namespace build
 			{
 				ShowSettingsInfo();
 				DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
-			});
-		
-		Target DocsGenerate => _ => _
-			.DependsOn(SonarBuildTest)
-			.Executes(() =>
-			{
-				ShowSettingsInfo();
-				DocsGenerateHelper.Docs(GetRuntimesWithoutGeneric(), IsPublishDisabled());
 			});
 		
 		Target Zip => _ => _
