@@ -21,6 +21,6 @@ stages:
       clean: true
       fetchDepth: 1
 
-    - template: /pipelines/azure/steps/build_documenation.yml
+    - template: /pipelines/azure/steps/build_documentation.yml
       parameters:
         npmConfigCache: $(npm_config_cache)
