@@ -174,84 +174,10 @@ __All text (not number or date) driven search queries use a contain search__
 | __software__         | -software:"photoshop"              | Last edited this app          |
 
 ### Rest API documentation
-Starsky has a Json restful API. Please read the documentation
+Starsky has a Json restful API. There is a Swagger documentation available at `/swagger/index.html` 
+and in the documentation there is a API chapter
 
 > Tip: Breaking changes are documented in `./history.md`
-
-| Path                               | Type  | Description                                                                |
-|------------------------------------|-------|----------------------------------------------------------------------------|
-| /api/account/status                | GET   | Check the account status of the login                                      |
-| /account/login                     | GET   | Login form page (HTML)                                                     |
-| /account/login                     | HEAD  | Login form page (HTML)                                                     |
-| /api/account/login                 | POST  | Login the current HttpContext in                                           |
-| /api/account/logout                | POST  | Logout the current HttpContext out                                         |
-| /account/logout                    | GET   | Logout the current HttpContext and redirect to login                       |
-| /api/account/change-secret         | POST  | Update password for current user                                           |
-| /api/account/register              | POST  | Create a new user (you need a AF-token first)                              |
-| /api/account/register/status       | GET   | Is the register form open                                                  |
-| /api/account/permissions           | GET   | List of current permissions                                                |
-| /api/allowed-types/mimetype/sync   | GET   | A (string) list of allowed MIME-types ExtensionSyncSupportedList           |
-| /api/allowed-types/mimetype/thumb  | GET   | A (string) list of allowed ExtensionThumbSupportedList MimeTypes           |
-| /api/allowed-types/thumb           | GET   | Check if IsExtensionThumbnailSupported                                     |
-| /api/env                           | HEAD  | Show the runtime settings (dont allow AllowAnonymous)                      |
-| /api/env                           | GET   | Show the runtime settings (dont allow AllowAnonymous)                      |
-| /api/env                           | POST  | Show the runtime settings (dont allow AllowAnonymous)                      |
-| /api/cache/list                    | GET   | Get Database Cache (only the cache)                                        |
-| /api/remove-cache                  | GET   | Delete Database Cache (only the cache)                                     |
-| /api/remove-cache                  | POST  | Delete Database Cache (only the cache)                                     |
-| /api/delete                        | DELETE| Remove files from the disk, but the file must contain the !delete! tag     |
-| /api/disk/mkdir                    | POST  | Make a directory (-p)                                                      |
-| /api/disk/rename                   | POST  | Rename file/folder and update it in the database                           |
-| /api/download-sidecar              | GET   | Download sidecar file for example image.xmp                                |
-| /api/download-photo                | GET   | Select manually the original or thumbnail                                  |
-| /error                             | GET   | Return Error page                                                          |
-| /api/export/create-zip             | POST  | Export source files to an zip archive                                      |
-| /api/export/zip/{f}.zip            | GET   | Get the exported zip, but first call 'createZip'use for example this url...|
-| /api/geo/status                    | GET   | Get Geo sync status                                                        |
-| /api/geo/sync                      | POST  | Reverse lookup for Geo Information and/or add Geo location based on a GP...|
-| /api/health                        | GET   | Check if the service has any known errors and return only a stringPublic...|
-| /api/health                        | HEAD  | Check if the service has any known errors and return only a stringPublic...|
-| /api/health/details                | GET   | Check if the service has any known errorsFor Authorized Users only         |
-| /api/health/application-insights   | GET   | Add Application Insights script to user context                            |
-| /api/health/version                | POST  | Check if Client/App version has a match with the API-versionthe paramete...|
-| /api/health/check-for-updates      | GET   | Check if Client/App version has a match with the API-version               |
-| /search                            | POST  | Redirect to search GET page (HTML)                                         |
-| /search                            | GET   | Search GET page (HTML)                                                     |
-| /trash                             | GET   | Trash page (HTML)                                                          |
-| /import                            | GET   | Import page (HTML)                                                         |
-| /preferences                       | GET   | Preferences page (HTML)                                                    |
-| /account/register                  | GET   | View the Register form (HTML)                                              |
-| /api/import                        | POST  | Import a file using the structure format                                   |
-| /api/import/thumbnail              | POST  | Upload thumbnail to ThumbnailTempFolderMake sure that the filename is co...|
-| /api/import/fromUrl                | POST  | Import file from web-url (only whitelisted domains) and import this file...|
-| /api/import/history                | GET   | Today's imported files                                                     |
-| /api/index                         | GET   | The database-view of a directory                                           |
-| /api/memory-cache-debug            | GET   | Missing summary                                                            |
-| /api/info                          | GET   | Get realtime (cached a few minutes) about the file                         |
-| /api/replace                       | POST  | Search and Replace text in meta information                                |
-| /api/update                        | POST  | Update Exif and Rotation API                                               |
-| /api/notification/notification     | GET   | Get recent notificationsUse dateTime 2022-04-16T17:33:10.323974Z to get ...|
-| /api/publish                       | GET   | Get all publish profilesTo see the entire config check appSettings         |
-| /api/publish/create                | POST  | Publish                                                                    |
-| /api/publish/exist                 | GET   | To give the user UI feedback when submitting the itemNameTrue is not to ...|
-| /redirect/sub-path-relative        | GET   | Redirect or view path to relative paths using the structure-config (see ...|
-| /api/search                        | GET   | Gets the list of search results (cached)                                   |
-| /api/search/relative-objects       | GET   | Get relative paths in a search queryDoes not cover multiple pages (so it...|
-| /api/search/trash                  | GET   | List of files with the tag: !delete!Caching is disabled on this api call   |
-| /api/search/remove-cache           | POST  | Clear search cache to show the correct results                             |
-| /api/suggest                       | GET   | Gets the list of search results (cached)                                   |
-| /api/suggest/all                   | GET   | Show all items in the search suggest cache                                 |
-| /api/suggest/inflate               | GET   | To fill the cache with the data (only if cache is not already filled)      |
-| /api/synchronize                   | POST  | Faster API to Check if directory is changed (not recursive)                |
-| /api/synchronize                   | GET   | Faster API to Check if directory is changed (not recursive)                |
-| /api/thumbnail/small/{f}           | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on whats...|
-| /api/thumbnail/list-sizes/{f}      | GET   | Get overview of what exists by name                                        |
-| /api/thumbnail/{f}                 | GET   | Get thumbnail with fallback to original source image.Return source image...|
-| /api/thumbnail/zoom/{f}@{z}        | GET   | Get zoomed in image by fileHash.At the moment this is the source image     |
-| /api/thumbnail-generation          | POST  | Create thumbnails for a folder in the background                           |
-| /api/upload                        | POST  | Upload to specific folder (does not check if already has been imported)U...|
-| /api/upload-sidecar                | POST  | Upload sidecar file to specific folder (does not check if already has be...|
-
 
 ### Swagger / OpenAPI
 Swagger is an open-source software framework backed by a large ecosystem

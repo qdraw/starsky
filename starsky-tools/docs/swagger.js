@@ -24,18 +24,18 @@ function parseSwagger() {
   output += "|" + '-'.repeat(pathLen +1) + "|" + '-'.repeat(operationLen +1)  + "|" + '-'.repeat(summaryLen+1) + "|\r\n";
 
 
-  for (var path in swagger.Paths) {
+  for (var path in swagger.paths) {
 
-    const pathObject = swagger.Paths[path]
+    const pathObject = swagger.paths[path]
 
-    for (var operation in pathObject.Operations) {
+    for (var operation in pathObject.operations) {
 
       const rightPathSpace = ' '.repeat(pathLen - path.length)
       const rightOperationSpace = ' '.repeat(operationLen - operation.length)
 
       let summary = "Missing summary"
-      if (pathObject.Operations[operation].Summary) {
-        summary = pathObject.Operations[operation].Summary.replace(/(\n|\r\n)/ig,"");
+      if (pathObject.operations[operation].summary) {
+        summary = pathObject.operations[operation].summary.replace(/(\n|\r\n)/ig,"");
       }
 
       const trimmedSummary = trimString(summary, summaryLen);

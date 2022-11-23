@@ -64,7 +64,7 @@ const config = {
 					},
 					{
 						type: "doc",
-						docId: "starsky/readme",
+						docId: "advanced-options/readme",
 						position: "left",
 						label: "Advanced options",
 					},
@@ -74,6 +74,10 @@ const config = {
 						position: "left",
 						label: "API",
 					},
+					{
+						label: 'Download',
+						href: '/download',
+					  },
 					{
 						href: "https://github.com/qdraw/starsky",
 						label: "GitHub",

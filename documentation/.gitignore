@@ -1,16 +1,16 @@
 # own docs
 
-docs/history.md
-docs/starsky/readme.md
-docs/starsky/**/readme.md
-docs/starsky/_category_.json
-docs/starsky/__do_not_edit_this__folder
-docs/starskydesktop/**/readme.md
-docs/starskydesktop/__do_not_edit_this__folder
-docs/starskydesktop/**/*.jpg
-docs/starsky
-docs/starskydesktop
-docs/starsky-tools
+docs/advanced-options/history.md
+docs/advanced-options/starsky/readme.md
+docs/advanced-options/starsky/**/readme.md
+docs/advanced-options/starsky/_category_.json
+docs/advanced-options/starsky/__do_not_edit_this__folder
+docs/advanced-options/starskydesktop/**/readme.md
+docs/advanced-options/starskydesktop/__do_not_edit_this__folder
+docs/advanced-options/starskydesktop/**/*.jpg
+docs/advanced-options/starsky
+docs/advanced-options/starskydesktop
+docs/advanced-options/starsky-tools
 build
 
 # Logs
