@@ -16,7 +16,7 @@
   - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests_
 - [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
 - [starskydesktop](starskydesktop/readme.md) _Desktop Application_
-  - [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
+  - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
 - **[Changelog](history.md) Release notes and history**
 
 ## Release notes of Starsky
