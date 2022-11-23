@@ -20,13 +20,10 @@ function defaultHeader() {
 var defaultHeaderContent = defaultHeader();
 
 var filePathList = [
-	"index.md",
 	"readme.md",
 	"history.md",
 	"starsky-tools/readme.md",
 	"starsky/readme.md",
-	"starsky/readme-docker-development.md",
-	"starsky/readme-docker-hub.md",
 	"starsky/starsky/readme.md",
 	"starsky/starsky/clientapp/readme.md",
 	"starsky/starskybusinesslogic/readme.md",

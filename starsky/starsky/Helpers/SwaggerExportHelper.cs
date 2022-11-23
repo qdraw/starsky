@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -106,13 +107,15 @@ namespace starsky.Helpers
 		internal static string GenerateSwagger(ISwaggerProvider swaggerProvider, string docName)
 		{
 			if ( swaggerProvider == null ) return string.Empty;
-
 			var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");
 			return JsonConvert.SerializeObject(swaggerDocument, Formatting.Indented,
 				new JsonSerializerSettings
 				{
 					NullValueHandling = NullValueHandling.Ignore,
-					ContractResolver = new DefaultContractResolver()
+					ContractResolver = new DefaultContractResolver
+					{
+						NamingStrategy = new CamelCaseNamingStrategy()
+					}
 				});
 		}
 	}

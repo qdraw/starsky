@@ -1,0 +1,54 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - documentation
+    - starsky/readme.md
+    - starsky/starsky/readme.md
+    - starsky/starsky/readme-docker-hub.md
+    - starsky/starsky/readme-docker-development.md
+    - starsky/starsky/clientapp/readme.md
+    - starsky/**/readme.md
+    - starskydesktop/readme.md
+    - starskydesktop/docs-assets/
+    - starsky/starskytest/readme.md
+    - starsky-tools/readme.md
+    - starsky-tools/**/readme.md
+
+variables:
+  CI: true
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  DOCS_SERVER_URL: $(serverUrl)
+  DOCS_USERNAME: $(username)
+  DOCS_PASSWORD: $(password)
+
+stages:
+- stage: builddocumentation
+  displayName: 'Build Documentation'
+  jobs:
+  - job: builddocumentation
+    displayName: 'Build Documentation'
+    timeoutInMinutes: 10 # how long to run the job before automatically cancelling
+    cancelTimeoutInMinutes: 2 # how much time to give 'run always even if cancelled tasks' before stopping them
+    pool:
+      vmImage: 'ubuntu-22.04'
+
+    steps:
+    - checkout: self
+      clean: true
+      fetchDepth: 1
+
+    - template: /pipelines/azure/steps/build_documentation.yml
+      parameters:
+        npmConfigCache: $(npm_config_cache)
+
+    - template: /pipelines/azure/steps/upload_documentation.yml
+      parameters:
+        serverUrl: $(DOCS_SERVER_URL)
+        username: $(DOCS_USERNAME)
+        password: $(DOCS_PASSWORD)
+        rootDirectory: 'documentation/build'
+        remoteDirectory: '/'

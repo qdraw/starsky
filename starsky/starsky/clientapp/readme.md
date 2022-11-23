@@ -2,7 +2,7 @@
 
 ## List of [Starsky](../../../readme.md) Projects
 
-- [starsky (sln)](../../../starsky/readme.md) _database photo index & import index project_
+- [By App documentation](../../../starsky/readme.md) _database photo index & import index project_
   - [starsky](../../../starsky/starsky/readme.md) _web api application / interface_
     - **[clientapp](../../../starsky/starsky/clientapp/readme.md) react front-end application**
   - [starskyImporterCli](../../../starsky/starskyimportercli/readme.md) _import command line interface_
@@ -15,8 +15,8 @@
   - [Starsky Business Logic](../../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
   - [starskyTest](../../../starsky/starskytest/readme.md) _mstest unit tests_
 - [starsky-tools](../../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
-- [starskyapp](../../../starskyapp/readme.md) _Desktop Application_
-  - [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
+- [starskydesktop](../../../starskydesktop/readme.md) _Desktop Application_
+  - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
 - [Changelog](../../../history.md) _Release notes and history_
 
 ## starsky/starsky/clientapp docs
@@ -29,17 +29,17 @@ In the project directory, you can run:
 
 ### `npm start`
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Runs the app in the development mode.
+Open http://localhost:3000 to view it in the browser.
 
-The page will reload if you make edits.<br>
+The page will reload if you make edits.
 You will also see any lint errors in the console.
 
 Make sure you run the Starsky API on http://localhost:4000 or us a local tunnel proxy (which you can find in `./starsky-tools/localtunnel`)
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.<br>
+Launches the test runner in the interactive watch mode.
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `npm test:ci`
@@ -48,10 +48,10 @@ Run all unittests and check if there are any errors
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.<br>
+Builds the app for production to the `build` folder.<br/>
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.<br>
+The build is minified and the filenames include the hashes.<br/>
 Your app is ready to be deployed!
 
 In this application we use the `build.sh` or `build.ps1` to combine the frontend application with the .NET Core backend.
@@ -75,7 +75,7 @@ Technically, a story is a function that returns something that can be rendered t
 
 ## Project structure
 
-The clientapp uses the following folder structure
+The client app uses the following folder structure
 
 ```
 •
@@ -120,6 +120,23 @@ The clientapp uses the following folder structure
 
 ### Upgrade `Create React App` to a newer version
 
+#### Auto upgrade
+
+In this project there is a script that auto upgrades the `Create React App` to the latest version
+It replaces the `package.json` and `package-lock.json` from the output of the `npx create-react-app . --template typescript`
+
+```
+node starsky-tools/build-tools/clientapp-create-react-app-update.js
+```
+
+Run the tests afterwards to check if everything is working
+
+```
+npm ci && npm test:ci
+```
+
+#### Manual Upgrade
+
 The default Create React App package is used to keep future upgrades less painfull.
 In the repository of [Create React App releases](https://github.com/facebook/create-react-app/releases) you can find if we are using the latest version.
 
@@ -162,7 +179,7 @@ npm install concurrently --save-dev
 
 #### Update the name of the project
 
-```json
+```
  "name": "clientapp",
 ```
 
@@ -170,7 +187,7 @@ npm install concurrently --save-dev
 
 Used when running `npm start`
 
-```json
+```
 "proxy": "http://localhost:4000",
 "homepage": "/starsky/",
 ```
@@ -179,7 +196,7 @@ Used when running `npm start`
 
 This is added to the `package.json`
 
-```json
+```
 "dev": "concurrently --kill-others \"npm run mock\" \"npm run start\"",
 "mock": "node ../../../starsky-tools/mock/mock.js",
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 715",
@@ -195,7 +212,7 @@ This is added to the `package.json`
 
 With jest `collectCoverageFrom` and `coverageReporters` are used to get the right output
 
-```json
+```
 "jest": {
   "collectCoverageFrom": [
     "**/*.{ts,tsx}",
@@ -230,7 +247,7 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
 
 You should replace the existing eslintConfig chapter
 
-```json
+```
   "eslintConfig": {
     "extends": [
       "react-app",

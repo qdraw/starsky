@@ -1,4 +1,4 @@
-# Development Guide
+# Hacking and Development Guide
 
 Welcome, soon-to-be contributor 🙂! This document sums up
 what you need to know to get started hacking on Starsky.

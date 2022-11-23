@@ -1,8 +1,8 @@
-# General Starsky (sln) docs
+# By App build documentation
 
 ## List of [Starsky](../readme.md) Projects
 
--   **[starsky (sln)](../starsky/readme.md) database photo index & import index project**
+-   **[By App documentation](../starsky/readme.md) database photo index & import index project**
     -   [starsky](../starsky/starsky/readme.md) _web api application / interface_
         -   [clientapp](../starsky/starsky/clientapp/readme.md) _react front-end application_
     -   [starskyImporterCli](../starsky/starskyimportercli/readme.md) _import command line interface_
@@ -15,18 +15,18 @@
     -   [Starsky Business Logic](../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     -   [starskyTest](../starsky/starskytest/readme.md) _mstest unit tests_
 -   [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
--   [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
-    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
+-   [starskydesktop](../starskydesktop/readme.md) _Desktop Application (Pre-alpha code)_
+    * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
 -   [Changelog](../history.md) _Release notes and history_
 
 ## Run pre-build binaries (fastest)
 
-See the [How use prebuild images](readme-docker-hub.md) for more details about how to run docker
+See the [How use prebuild images](starsky/readme-docker-hub.md) for more details about how to run docker
 
 
 ## Build instructions for docker
 
-See the [Docker instructions](readme-docker-development.md) for more details about how 
+See the [Docker instructions](starsky/readme-docker-development.md) for more details about how 
 to compile the application for development
 
 ## Build instructions (without docker)
@@ -134,7 +134,7 @@ http://localhost:5000/account/register
 
 ### Optional steps
 
-10. The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+10. The script [`pm2-new-instance.sh`](https://raw.githubusercontent.com/qdraw/starsky/master/starsky/starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 
 ```sh
     export ASPNETCORE_URLS="http://localhost:4823/"
@@ -195,7 +195,7 @@ It uses the following default parameters
 
 #### pm2 `./pm2-new-instance.sh`
 
-The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+The script [`pm2-new-instance.sh`](https://raw.githubusercontent.com/qdraw/starsky/master/starsky/starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 
 You should install pm2 before running this script
 

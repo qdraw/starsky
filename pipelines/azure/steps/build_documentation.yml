@@ -1,0 +1,31 @@
+parameters:
+  npmConfigCache: $(Pipeline.Workspace)/.npm
+
+steps:
+
+  - task: Cache@2
+    inputs:
+      key: 'npm | documentation | "$(Agent.OS)" | $(Build.SourcesDirectory)/documentation/package-lock.json'
+      restoreKeys: |
+        npm | clientapp | "$(Agent.OS)"
+      path: ${{ parameters.npmConfigCache }}
+    displayName: "[doc..] Cache npm"
+
+  - task: PowerShell@2
+    displayName: "[doc..] npm ci"
+    inputs:
+      targetType: "inline"
+      workingDirectory: documentation
+      script: |
+        npm ci --no-audit --no-fund --prefer-offline
+
+  - task: PowerShell@2
+    displayName: "[doc..] npm run build"
+    inputs:
+      targetType: "inline"
+      workingDirectory: documentation
+      script: |
+        npm run build
+        
+
+

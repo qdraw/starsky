@@ -1,7 +1,7 @@
 # [Starsky](https://qdraw.github.io/starsky/) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](../LICENSE.md) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) ![GitHub all releases](https://img.shields.io/github/downloads/qdraw/starsky/total?label=release%20downloads) ![Docker](https://img.shields.io/docker/pulls/qdraw/starsky.svg) ![GitHub Repo stars](https://img.shields.io/github/stars/qdraw/starsky?label=Give%20me%20a%20star%20please&style=social) ![GitHub issues](https://img.shields.io/github/issues-raw/qdraw/starsky) [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/qdraw/starsky?include_prereleases)](https://github.com/qdraw/starsky/releases/)
 
 ## List of __[Starsky](readme.md)__ Projects
- * [starsky (sln)](starsky/readme.md) _database photo index & import index project_
+ * [By App documentation](starsky/readme.md) _database photo index & import index project_
     * [starsky](starsky/starsky/readme.md) _web api application / interface_
       *  [clientapp](starsky/starsky/clientapp/readme.md) _react front-end application_
     * [starskyImporterCli](starsky/starskyimportercli/readme.md)  _import command line interface_
@@ -14,8 +14,8 @@
     * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](starskyapp/readme.md) _Desktop Application_
-    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
+ * [starskydesktop](starskydesktop/readme.md) _Desktop Application_
+    * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
  * [Changelog](history.md) _Release notes and history_
 
 ## What is Starsky?
