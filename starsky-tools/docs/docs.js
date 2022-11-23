@@ -20,7 +20,6 @@ function defaultHeader() {
 var defaultHeaderContent = defaultHeader();
 
 var filePathList = [
-	"index.md",
 	"readme.md",
 	"history.md",
 	"starsky-tools/readme.md",
