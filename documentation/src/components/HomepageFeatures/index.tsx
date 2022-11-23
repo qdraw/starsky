@@ -19,24 +19,22 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: '100% Privacy 🔒',
         Svg: null,
     // Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+         Your data will never be shared with Google, Amazon, Microsoft or Apple unless you intentionally upload files to one of their services.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Search and find',
             Svg: null,
     // Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+       Easily find specific pictures using powerful search filters
       </>
     ),
   },
