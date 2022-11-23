@@ -1,5 +1,22 @@
 trigger:
-  - master
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - documentation
+    - starsky/readme.md
+    - starsky/starsky/readme.md
+    - starsky/starsky/readme-docker-hub.md
+    - starsky/starsky/readme-docker-development.md
+    - starsky/starsky/clientapp/readme.md
+    - starsky/**/readme.md
+    - starskydesktop/readme.md
+    - starskydesktop/docs-assets/
+    - starsky/starskytest/readme.md
+    - starsky-tools/readme.md
+    - starsky-tools/**/readme.md
 
 variables:
   CI: true
