@@ -4,6 +4,9 @@ trigger:
 variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
+  DOCS_SERVER_URL: $(serverUrl)
+  DOCS_USERNAME: $(username)
+  DOCS_PASSWORD: $(password)
 
 stages:
 - stage: builddocumentation
@@ -24,3 +27,11 @@ stages:
     - template: /pipelines/azure/steps/build_documentation.yml
       parameters:
         npmConfigCache: $(npm_config_cache)
+
+    - template: /pipelines/azure/steps/upload_documentation.yml
+      parameters:
+        serverUrl: $(DOCS_SERVER_URL)
+        username: $(DOCS_USERNAME)
+        password: $(DOCS_PASSWORD)
+        rootDirectory: 'documentation/build'
+        remoteDirectory: '/'

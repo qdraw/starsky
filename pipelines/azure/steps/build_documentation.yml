@@ -9,10 +9,10 @@ steps:
       restoreKeys: |
         npm | clientapp | "$(Agent.OS)"
       path: ${{ parameters.npmConfigCache }}
-    displayName: Cache npm
+    displayName: "[doc..] Cache npm"
 
   - task: PowerShell@2
-    displayName: "[docum..] npm ci"
+    displayName: "[doc..] npm ci"
     inputs:
       targetType: "inline"
       workingDirectory: documentation
@@ -20,7 +20,7 @@ steps:
         npm ci --no-audit --no-fund --prefer-offline
 
   - task: PowerShell@2
-    displayName: "[docum..] npm run build"
+    displayName: "[doc..] npm run build"
     inputs:
       targetType: "inline"
       workingDirectory: documentation
