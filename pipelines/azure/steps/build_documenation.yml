@@ -12,18 +12,18 @@ steps:
     displayName: Cache npm
 
   - task: PowerShell@2
-    displayName: "npm ci"
-    workingDirectory: documenation
+    displayName: "[documenation] npm ci"
     inputs:
       targetType: "inline"
+      workingDirectory: documenation
       script: |
         npm ci --no-audit --no-fund --prefer-offline
 
   - task: PowerShell@2
-    displayName: "[Cake/clientapp] dotnet tool restore"
-    workingDirectory: documenation
+    displayName: "[documenation] npm run build"
     inputs:
       targetType: "inline"
+      workingDirectory: documenation
       script: |
         npm run build
         
