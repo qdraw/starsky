@@ -34,7 +34,7 @@ function Feature({ title, type, src, description }: FeatureItem) {
 
 export default function DownloadFeatures(): JSX.Element {
 	const [downloadUrl, setDownloadUrl] = useState("https://github.com/qdraw/starsky/releases/latest/");
-	const [downloadButtonText, setDownloadButtonText] = useState("Download");
+	const [downloadButtonText, setDownloadButtonText] = useState("Download App on Github");
 	const [systemDiscription, setSystemDiscription] = useState("");
 
 	useEffect(() => {
