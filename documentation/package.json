@@ -8,6 +8,7 @@
     "start": "docusaurus start",
     "prebuild": "node scripts/prestart.js",
     "build": "docusaurus build",
+    "postbuild": "node scripts/postbuild.js",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "preclear": "node scripts/clear.js",
