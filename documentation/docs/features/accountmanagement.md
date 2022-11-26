@@ -1,3 +1,3 @@
 # Account management
 
-For the web application it is posible to manage users
+For the web application it is possible to manage users
