@@ -29,19 +29,18 @@ public class TestMiddleware
 			return;
 		}
 
-		if ( context.Request.Method.ToLowerInvariant() == "get" || context.Request.Method.ToLowerInvariant() == "options")
+		if ( context.Request.Method.ToLowerInvariant() == "get" || 
+		     context.Request.Method.ToLowerInvariant() == "options" || 
+		     context.Request.Method.ToLowerInvariant() == "head" )
 		{
 			context.Response.Headers.Add("DAV", "1,2, access-control");
 			context.Response.Headers.Add("MS-Author-Via", "DAV");
-			context.Response.Headers.Add("WWW-Authenticate",$"WWW-Authenticate: Basic realm=\"server\"");
-			context.Response.StatusCode = 401;
-			await context.Response.BodyWriter.WriteAsync(Array.Empty<byte>());
-			return;
-		}
-
-		if ( context.Request.Method.ToLowerInvariant() == "head"  )
-		{
+			
 			var login = await BasicAuthenticationMiddleware.Authenticate(context);
+			if ( login )
+			{
+				context.Response.Headers.Add("WWW-Authenticate",$"Basic realm=\"WebDAV\"");
+			}
 			context.Response.StatusCode = login == false ? 401 : 200;
 			
 			await context.Response.BodyWriter.WriteAsync(Array.Empty<byte>());
