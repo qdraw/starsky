@@ -18,6 +18,8 @@ trigger:
     - starsky-tools/readme.md
     - starsky-tools/**/readme.md
 
+pr: none
+
 variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
