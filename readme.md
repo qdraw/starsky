@@ -57,9 +57,11 @@ This policy is in place to avoid bugs being drowned out in a pile of sensible su
 
 If a feature request is actually going to be built, it will get its own issue with the tag: Feature Request
 
-## Release status
+## Latest stable release
 
 [![Release](https://img.shields.io/github/v/release/qdraw/starsky)](https://github.com/qdraw/starsky/releases/)
+
+## Latest prerelease
 
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/qdraw/starsky?include_prereleases)](https://github.com/qdraw/starsky/releases/)
 
