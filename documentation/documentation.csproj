@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="docs\advanced-options\starsky\**" />
+      <Compile Remove="docs\advanced-options\starsky-tools\**" />
+      <Compile Remove="docs\advanced-options\starskydesktop\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="docs\advanced-options\starsky\**" />
+      <EmbeddedResource Remove="docs\advanced-options\starsky-tools\**" />
+      <EmbeddedResource Remove="docs\advanced-options\starskydesktop\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="docs\advanced-options\starsky\**" />
+      <None Remove="docs\advanced-options\starsky-tools\**" />
+      <None Remove="docs\advanced-options\starskydesktop\**" />
+      <None Remove="docs\advanced-options\history.md" />
+    </ItemGroup>
+
+</Project>
