@@ -5,7 +5,8 @@
   height: calc(100% - 50px);
   width: 100%;
   background-color: #000;
-  overflow: hidden; /*for edge*/
+  overflow: hidden;
+  /*for edge*/
 }
 
 .detailview .main {
@@ -39,7 +40,7 @@
   cursor: grabbing;
 }
 
-.pan-zoom-image-container > div {
+.pan-zoom-image-container>div {
   height: 100%;
   width: 100%;
 }
@@ -59,22 +60,19 @@
 .detailview .image--default.Rotate180 {
   max-width: 100%;
   max-height: 100vh;
-  transform: translatex(calc(50vw - 50%)) translatey(calc(50vh - 25px - 50%))
-    rotate(180deg);
+  transform: translatex(calc(50vw - 50%)) translatey(calc(50vh - 25px - 50%)) rotate(180deg);
 }
 
 .detailview .image--default.Rotate90Cw {
   max-width: calc(100vh - 50px);
   max-height: calc(100vw);
-  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%))
-    rotate(90deg);
+  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(90deg);
 }
 
 .detailview .image--default.Rotate270Cw {
   max-width: calc(100vh - 50px);
   max-height: calc(100vw);
-  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%))
-    rotate(270deg);
+  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(270deg);
 }
 
 .detailview .main .nextprev:focus {
@@ -103,6 +101,7 @@
     display: none;
   }
 }
+
 .detailview.detailview--edit .main .nextprev.nextprev--next {
   left: calc(90% - 320px);
 }
@@ -114,6 +113,7 @@
 .detailview .main .nextprev.nextprev--prev:hover {
   background-image: linear-gradient(-90deg, transparent, rgba(54, 56, 57, 0.4));
 }
+
 .detailview .main .nextprev.nextprev--next:hover {
   background-image: linear-gradient(90deg, transparent, rgba(54, 56, 57, 0.4));
 }
@@ -159,22 +159,19 @@
 }
 
 .detailview .main.main--gpx .nextprev.nextprev--prev {
-  background-image: linear-gradient(
-    -90deg,
-    transparent,
-    rgba(54, 56, 57, 0.4),
-    rgba(54, 56, 57, 0.4),
-    rgba(54, 56, 57, 0.4)
-  );
+  background-image: linear-gradient(-90deg,
+      transparent,
+      rgba(54, 56, 57, 0.4),
+      rgba(54, 56, 57, 0.4),
+      rgba(54, 56, 57, 0.4));
 }
+
 .detailview .main.main--gpx .nextprev.nextprev--next {
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    rgba(54, 56, 57, 0.4),
-    rgba(54, 56, 57, 0.4),
-    rgba(54, 56, 57, 0.4)
-  );
+  background-image: linear-gradient(90deg,
+      transparent,
+      rgba(54, 56, 57, 0.4),
+      rgba(54, 56, 57, 0.4),
+      rgba(54, 56, 57, 0.4));
 }
 
 .detailview .main--gpx .leaflet-control-zoom {
@@ -236,6 +233,7 @@
     width: 200px;
     height: 70px;
   }
+
   .gpx-controls--button {
     margin-left: 0px;
     float: right;
@@ -290,9 +288,11 @@
 .gpx-controls .icon.icon--zoom_in,
 .gpx-controls .icon.icon--zoom_out {
   text-indent: -9999px;
-  padding-left: 37px; /* needed for safari instead of 40 */
+  padding-left: 37px;
+  /* needed for safari instead of 40 */
   background-position: 12px;
   max-width: 40px;
+  mask-repeat: no-repeat;
 }
 
 .current-location.icon.icon--location_on {

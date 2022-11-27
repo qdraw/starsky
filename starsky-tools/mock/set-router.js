@@ -1,3 +1,6 @@
+const express = require('express');
+const path = require('path');
+
 var apiAccountChangeSecretIndex = require('./api/account/change-secret/index.json')
 var apiAccountPermissionsIndex = require('./api/account/permissions/index.json');
 
@@ -32,6 +35,8 @@ var githubComReposQdrawStarskyReleaseIndex = require('./github.com/repos/qdraw/s
 
 function setRouter(app) {
   var prefix = "/starsky";
+
+  app.use(prefix + '/api/thumbnail', express.static(path.join(__dirname, 'api', 'thumbnail')))
 
   app.get(prefix + '/', (_, res) => res.send('Mock of backend api!, also run clientapp'));
   app.get('/', (_, res) => res.send('Mock of backend api!, also run clientapp'));
