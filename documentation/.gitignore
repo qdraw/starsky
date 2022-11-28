@@ -1,5 +1,4 @@
-# own docs
-
+# the following files are copied by the prebuild.js script
 docs/advanced-options/history.md
 docs/advanced-options/starsky/readme.md
 docs/advanced-options/starsky/**/readme.md
@@ -11,7 +10,15 @@ docs/advanced-options/starskydesktop/**/*.jpg
 docs/advanced-options/starsky
 docs/advanced-options/starskydesktop
 docs/advanced-options/starsky-tools
+
+# the output of the build step
 build
+
+# Docusaurus files
+.docusaurus/**
+.docusaurus
+
+# -------------------------------- Default NodeJS files --------------------------------
 
 # Logs
 logs
@@ -118,5 +125,3 @@ dist
 # TernJS port file
 .tern-port
 
-.docusaurus/**
-.docusaurus

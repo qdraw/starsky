@@ -106,6 +106,7 @@ namespace build
 		/// Npm and node are required for preflight checks and building frontend code
 		/// </summary>
 		public const string NpmBaseCommand = "npm";
+		public const string NodeBaseCommand = "node";
 		public const string ClientAppFolder = "starsky/clientapp";
 		
 		/// <summary>
@@ -139,6 +140,8 @@ namespace build
 
 		void ShowSettingsInfo()
 		{
+			Console.WriteLine("SolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
+			
 			Console.WriteLine("---");
 			Console.WriteLine(IsUnitTestDisabled()
 				? "Unit test disabled"

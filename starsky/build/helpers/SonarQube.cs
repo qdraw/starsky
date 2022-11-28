@@ -113,9 +113,9 @@ namespace helpers
 			IsJavaInstalled();
 
 			// Current branch name
-			var parent = Directory.GetParent(".")?.FullName;
+			var mainRepoPath = Directory.GetParent(".")?.FullName;
         
-			var (gitBranchName,_) = ReadAsync(GitCommand, " branch --show-current", parent!).Result;
+			var (gitBranchName,_) = ReadAsync(GitCommand, " branch --show-current", mainRepoPath!).Result;
 		
 			// allow to overwrite the branch name
 			if (branchName == "" && !string.IsNullOrEmpty(gitBranchName)) {
@@ -129,6 +129,7 @@ namespace helpers
         
 			/* this should fix No inputs were found in config file 'tsconfig.json'.  */
 			var tsconfig = Path.Combine(clientAppProject,"tsconfig.json");
+			Information(">> tsconfig: " + tsconfig);
 
 			// For Pull Requests  
 			var isPrBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && 
@@ -140,6 +141,9 @@ namespace helpers
 			var githubRepoSlug = EnvironmentVariable("GITHUB_REPOSITORY"); 
         
 			Information($">> Selecting Branch: {branchName}");
+			
+			var sonarQubeCoverageFile = Path.Combine(WorkingDirectory.GetSolutionParentFolder(), coverageFile);
+			Information(">> SonarQubeCoverageFile: " + sonarQubeCoverageFile);
 
 			var sonarArguments = new StringBuilder()
 				.Append($"sonarscanner ")
@@ -151,13 +155,15 @@ namespace helpers
 				.Append($"/d:sonar.login=\"{login}\" ")
 				.Append($"/o:" + organisation +" ")
 				.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
-				.Append($"/d:sonar.coverageReportPaths={coverageFile} ")
+				.Append($"/d:sonar.coverageReportPaths={sonarQubeCoverageFile} ")
 				.Append($"/d:sonar.exclusions=\"**/build/*,**/build/helpers/*," +
+				        "**/documentation/*,"+
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
 				        $"**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
 				        $"**/_bigimages-helper.js\" ")
 				.Append($"/d:sonar.coverage.exclusions=\"**/build/*,**/build/helpers/*," +
+				        "**/documentation/*,"+
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
 				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*," +
