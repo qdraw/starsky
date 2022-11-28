@@ -11,8 +11,8 @@
     * [starskyAdminCli](starsky/starskyadmincli/readme.md)  _manage user accounts_
     * [starskySynchronizeCli](starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
     * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
-    * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
-    * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
+    * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (.NET)_
+    * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskydesktop](starskydesktop/readme.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_

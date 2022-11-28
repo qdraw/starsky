@@ -248,6 +248,9 @@
 .gpx-controls .icon {
   height: 40px;
   width: 40px;
+  /* fixes for webkit */
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;	
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: 28px 28px;

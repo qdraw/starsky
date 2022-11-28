@@ -160,11 +160,11 @@
 .content > form > .content--error-true:before {
   content: "";
   background-color: white;
-  mask-repeat: no-repeat;
-  mask-position: center;
   /* fixes for webkit */
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
+  mask-repeat: no-repeat;
+  mask-position: center;
   height: 24px;
   padding-left: 24px;
   margin-right: 7px;

@@ -183,12 +183,8 @@
   mask-position: center;
   mask-size: 100%;
   margin-right: 5px;
-
-  padding-right: 4px;
-  padding-left: 20px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-
+  /*left = 20px*/
+  padding: 4px 4px 4px 20px;
   line-height: 50px;
 }
 

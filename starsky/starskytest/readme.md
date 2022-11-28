@@ -10,7 +10,7 @@
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
     * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
-    * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
+    * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (.NET)_
     * __[starskyTest](../../starsky/starskytest/readme.md)  mstest unit tests__
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskydesktop](../../starskydesktop/readme.md) _Desktop Application_
