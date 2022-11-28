@@ -15,11 +15,12 @@ namespace helpers
 		{
 			if ( noUnitTest )
 			{
-				Information(
-					$">> MergeCoverageFiles is disable due the --no-unit-test flag");
+				Information(">> MergeCoverageFiles is disable due the --no-unit-test flag");
 				return null;
 			}
 		
+			Information(">> Next: MergeCoverageFiles ");
+
 			var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
 				.BaseDirectory).Parent.Parent.Parent.FullName;
 			var outputCoverageFile = Path.Combine(rootDirectory,
@@ -40,8 +41,10 @@ namespace helpers
 				$"-targetdir:{reportFolder}",
 				$"-reporttypes:HtmlInline"
 			};
+
 			Palmmedia.ReportGenerator.Core.Program.Main(args);
-		
+			Information(">> ReportGenerator done");
+
 			return reportFolder;
 		}
 
