@@ -79,6 +79,14 @@ namespace helpers
 			// And rename it
 			MoveFile($"{rootDirectory}/starskytest/Cobertura.xml", outputCoverageFile);
 			MoveFile($"{rootDirectory}/starskytest/SonarQube.xml", outputCoverageSonarQubeFile);
+			
+			if (!FileExists(outputCoverageSonarQubeFile)) {
+				throw new FileNotFoundException($"Missing Sonarqube coverage file {outputCoverageSonarQubeFile}");
+			}
+			
+			if (!FileExists(outputCoverageFile)) {
+				throw new FileNotFoundException($"Missing Cobertura coverage file {outputCoverageFile}");
+			}
 		}
 	}
 	
