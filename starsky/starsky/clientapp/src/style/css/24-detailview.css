@@ -250,14 +250,15 @@
   width: 40px;
   /* fixes for webkit */
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;	
-  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-repeat: initial;
   mask-position: center;
-  mask-size: 28px 28px;
+  -webkit-mask-size: 40px 40px;
+  mask-size: 40px 40px;
   background-color: white;
-  padding-left: 20px;
-  padding-right: 7px;
-  margin-bottom: 5px;
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 0;
   cursor: pointer;
   text-indent: -9999px;
 }
@@ -268,40 +269,29 @@
 }
 
 .gpx-controls .icon.icon--lock {
-  mask-image: url("../images/baseline-lock-24px.svg");
+  mask-image: url("../images/baseline-lock-24px-small-13px.svg");
 }
 
 .gpx-controls .icon.icon--lock_open {
-  mask-image: url("../images/baseline-lock_open-24px.svg");
+  mask-image: url("../images/baseline-lock_open-24px-small-13px.svg");
 }
 
 .gpx-controls .icon.icon--zoom_in {
-  mask-image: url("../images/baseline-zoom_in-24px.svg");
+  mask-image: url("../images/baseline-zoom_in-24px-small-13px.svg");
 }
 
 .gpx-controls .icon.icon--zoom_out {
-  mask-image: url("../images/baseline-zoom_out-24px.svg");
+  mask-image: url("../images/baseline-zoom_out-24px-small-13px.svg");
 }
 
 .gpx-controls .icon.icon--zoom_reset {
-  mask-image: url("../images/baseline-zoom_reset-24px.svg");
-}
-
-.gpx-controls .icon.icon--zoom_reset,
-.gpx-controls .icon.icon--zoom_in,
-.gpx-controls .icon.icon--zoom_out {
-  text-indent: -9999px;
-  padding-left: 37px;
-  /* needed for safari instead of 40 */
-  background-position: 12px;
-  max-width: 40px;
-  mask-repeat: no-repeat;
+  mask-image: url("../images/baseline-zoom_reset-24px-small-13px.svg");
 }
 
 .current-location.icon.icon--location_on {
-  mask-image: url("../images/baseline-location_on-24px.svg");
+  mask-image: url("../images/baseline-location_on-24px-small-13px.svg");
 }
 
 .current-location.icon.icon--wrong_location {
-  mask-image: url("../images/baseline-wrong_location-24px.svg");
+  mask-image: url("../images/baseline-wrong_location-24px-small-13px.svg");
 }
