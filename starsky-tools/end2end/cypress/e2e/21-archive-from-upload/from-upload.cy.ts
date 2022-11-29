@@ -109,6 +109,7 @@ describe('Archive (from upload)', () => {
     const sourceTags = 'something'
     const keyword = `realtime-update-test${Math.floor(Math.random() * 100)}`
 
+    cy.sendAuthenticationHeader()
     cy.request({
       method: 'POST',
       url: config.updateApi, // baseUrl is prepend to URL
