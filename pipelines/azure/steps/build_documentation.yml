@@ -1,5 +1,7 @@
 parameters:
   npmConfigCache: $(Pipeline.Workspace)/.npm
+  url: "/"
+  baseUrl: "/"
 
 steps:
 
@@ -25,6 +27,11 @@ steps:
       targetType: "inline"
       workingDirectory: documentation
       script: |
+        $env:DOCS_URL = ${{ parameters.url }}
+        $env:DOCS_BASE_URL = ${{ parameters.baseUrl }}
+        Write-Host "DOCS_URL $Env:DOCS_URL"
+        Write-Host "DOCS_BASE_URL $Env:DOCS_BASE_URL"
+
         npm run build
         
 

@@ -26,6 +26,8 @@ variables:
   DOCS_SERVER_URL: $(serverUrl)
   DOCS_USERNAME: $(username)
   DOCS_PASSWORD: $(password)
+  DOCS_URL: $(url) # public url/domain
+  DOCS_BASE_URL: $(baseUrl) # dir in domain
 
 stages:
 - stage: builddocumentation
@@ -46,6 +48,8 @@ stages:
     - template: /pipelines/azure/steps/build_documentation.yml
       parameters:
         npmConfigCache: $(npm_config_cache)
+        url: $(DOCS_URL)
+        baseUrl: $(DOCS_BASE_URL)
 
     - template: /pipelines/azure/steps/upload_documentation.yml
       parameters:

@@ -4,12 +4,25 @@
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
+let url = "/";
+if (process.env.DOCS_URL && process.env.DOCS_URL.startsWith("https://")) {
+	url = process.env.DOCS_URL;
+}
+
+let baseUrl = "/"
+if (process.env.DOCS_BASE_URL && process.env.DOCS_BASE_URL.startsWith("/")) {
+	baseUrl = process.env.DOCS_BASE_URL;
+}
+
+console.log(`url ${url}`);
+console.log(`baseUrl ${baseUrl}`);
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "Starsky",
 	tagline: "Self-hosted photo-management done right",
-	url: "https://docs.qdraw.eu",
-	baseUrl: "/",
+	url,
+	baseUrl,
 	onBrokenLinks: "throw",
 	onBrokenMarkdownLinks: "warn",
 	favicon: "img/favicon.ico",
