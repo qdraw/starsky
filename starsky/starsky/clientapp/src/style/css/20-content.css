@@ -240,3 +240,10 @@
 .publish .warning-box {
   margin-top: 4px;
 }
+
+/*for password gui*/
+@media (prefers-color-scheme: dark) {
+	.preferences-username-text {
+		color: #fff;
+	}
+}
