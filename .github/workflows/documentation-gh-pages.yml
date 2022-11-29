@@ -48,7 +48,10 @@ jobs:
       
       - name: NpmBuild
         working-directory: ./documentation
-        run: npm run build
+        run: |
+          export DOCS_URL="https://docs.qdraw.nl"
+          export DOCS_BASE_URL="/starsky"
+          npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v2
