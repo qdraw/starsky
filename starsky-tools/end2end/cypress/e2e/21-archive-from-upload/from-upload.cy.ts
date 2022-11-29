@@ -68,7 +68,7 @@ describe('Archive (from upload)', () => {
     return new Cypress.Promise((resolve) => {
       if (!config.isEnabled) return
 
-      const sourceTags = 'something'
+      const sourceTags = 'tete de balacha, bergtop, mist, flaine'
       const url = Cypress.config().baseUrl
       const socketUrl =
 				url
@@ -106,7 +106,7 @@ describe('Archive (from upload)', () => {
   it('test realtime update notification api 3', () => {
     if (!config.isEnabled) return
 
-    const sourceTags = 'something'
+    const sourceTags = 'tete de balacha, bergtop, mist, flaine'
     const keyword = `realtime-update-test${Math.floor(Math.random() * 100)}`
 
     cy.sendAuthenticationHeader()
@@ -157,7 +157,7 @@ describe('Archive (from upload)', () => {
     return await new Cypress.Promise((resolve) => {
       if (!config.isEnabled) return
 
-      const sourceTags = 'something'
+      const sourceTags = 'tete de balacha, bergtop, mist, flaine'
       const keyword = `realtime-update-test${Math.floor(Math.random() * 100)}`
 
       cy.window().should(({ window }) => {
