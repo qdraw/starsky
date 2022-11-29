@@ -221,6 +221,13 @@ namespace starsky.foundation.accountmanagement.Services
 				return new SignUpResult(success: false, error: SignUpResultError.NullString);
 			}
 	        
+			// Add first user as admin to avoid editing issues with storage location
+			var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
+			if (_appSettings.AccountRegisterFirstRoleAdmin == true && !_dbContext.Users.Any() )
+			{
+				roleToAddToUser = AccountRoles.AppAccountRoles.Administrator.ToString();
+			}
+			
 			// The email is stored in the Credentials database
 			var user = Exist(identifier);
 			if ( user == null )
@@ -244,7 +251,7 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 
 			// Add a user role based on a user id
-			AddToRole(user, roles.FirstOrDefault( p=> p.Code == _appSettings.AccountRegisterDefaultRole.ToString()));
+			AddToRole(user, roles.FirstOrDefault( p=> p.Code == roleToAddToUser));
 
 			if (credentialType == null)
 			{
