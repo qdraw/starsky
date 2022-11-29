@@ -145,8 +145,6 @@ copyFileSync(
   "advanced-options/starsky-tools/build-tools/readme.md"
 );
 
-copyFileSync("starsky-tools/docs/readme.md", "advanced-options/starsky-tools/docs/readme.md");
-
 copyFileSync(
   "starsky-tools/dropbox-import/readme.md",
   "advanced-options/starsky-tools/dropbox-import/readme.md"

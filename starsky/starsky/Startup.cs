@@ -48,7 +48,10 @@ namespace starsky
 
         public Startup()
 		{
-			Console.WriteLine("app__appsettingspath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
+			if ( !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__appsettingspath")) )
+			{
+				Console.WriteLine("app__appsettingspath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
+			}
 			_configuration = SetupAppSettings.AppSettingsToBuilder().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 

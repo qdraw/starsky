@@ -26,7 +26,6 @@
 'Starsky Tools' are tools that you could use on the side and are helpers to use in combination with the starsky (mvc) application
 
 -   [build-tools](build-tools/readme.md) validation scripts
--   [docs](docs/readme.md) convert markdown to html
 -   [dropbox import](dropbox-import/readme.md) import from dropbox to the starskyImporterCli
 -   [end2end](end2end/readme.md) Cypress end2end testing
 -   [localtunnel](localtunnel/readme.md) debug clientapp (port 3000 + 5000) on mobile
