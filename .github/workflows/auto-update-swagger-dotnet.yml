@@ -15,7 +15,7 @@ on:
     branches: [ master ]
     paths:
     - '.github/workflows/auto-update-swagger-dotnet.yml'
-    - 'starsky-tools/docs/assets/config/starsky.json'
+    - 'documentation/static/openapi/openapi.json'
 
  
 jobs:
