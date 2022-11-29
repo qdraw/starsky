@@ -1,5 +1,6 @@
 # the following files are copied by the prebuild.js script
 docs/advanced-options/history.md
+docs/advanced-options/__do_not_edit_history_md
 docs/advanced-options/starsky/readme.md
 docs/advanced-options/starsky/**/readme.md
 docs/advanced-options/starsky/_category_.json

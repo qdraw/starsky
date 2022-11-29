@@ -23,11 +23,13 @@ pr: none
 variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
-  DOCS_SERVER_URL: $(serverUrl)
-  DOCS_USERNAME: $(username)
+  DOCS_SERVER_URL: $(serverUrl) # starts with ftp:// 
+              # use: serverUrl, username etc. as variable name is devops
+  DOCS_USERNAME: $(username) # ftp user name
   DOCS_PASSWORD: $(password)
   DOCS_URL: $(url) # public url/domain
   DOCS_BASE_URL: $(baseUrl) # dir in domain
+  
 
 stages:
 - stage: builddocumentation

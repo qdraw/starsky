@@ -4,7 +4,7 @@
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
-let url = "/";
+let url = "http://localhost:3000";
 if (process.env.DOCS_URL && process.env.DOCS_URL.startsWith("https://")) {
 	url = process.env.DOCS_URL;
 }
