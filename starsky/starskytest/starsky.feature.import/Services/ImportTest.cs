@@ -1057,6 +1057,11 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(1,logger.TrackedInformation.Count(p => p.Item2.Contains("AddToQueryAndImportDatabaseAsync")));
 		}
 
+		private static string DefaultPath()
+		{
+			return new AppSettings().IsWindows ? Directory.GetCurrentDirectory().Split("\\").FirstOrDefault() + "\\" : "/";
+		}
+
 		[TestMethod]
 		public void CheckForReadOnlyFileSystems_1()
 		{
@@ -1077,8 +1082,7 @@ namespace starskytest.starsky.feature.import.Services
 			}});
 
 			Assert.AreEqual(1,readOnlyFileSystems.Count);
-			var path = appSettings.IsWindows ? Directory.GetCurrentDirectory().Split("\\").FirstOrDefault() : "/";
-			Assert.AreEqual(path,readOnlyFileSystems[0].Item1);
+			Assert.AreEqual(DefaultPath(),readOnlyFileSystems[0].Item1);
 
 		}
 		
