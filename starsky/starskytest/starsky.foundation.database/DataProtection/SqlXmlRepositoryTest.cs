@@ -158,21 +158,24 @@ public class SqlXmlRepositoryTest
 	}
 	
 	[TestMethod]
-	[ExpectedException(typeof(AggregateException))]
 	public void SqlXmlRepositoryTest_StoreElement_Exception()
 	{
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
 
-		var logger=  new FakeIWebLogger();
+		var logger =  new FakeIWebLogger();
 		var repo =
 			new SqlXmlRepository(
 				new StoreElementException(options), null!, logger);
 		
 		repo.StoreElement(new XElement("x1", "x1"), "hi");
+
+		var error = logger.TrackedExceptions.FirstOrDefault(p =>
+			p.Item2.Contains("AggregateException"));
 		
-		
+		Assert.IsNotNull(error);
+
 	}
 	
 }
