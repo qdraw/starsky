@@ -219,7 +219,7 @@ namespace starsky.foundation.sync.WatcherServices
 		public void Dispose()
 		{
 			_fileSystemWatcherWrapper.EnableRaisingEvents = false;
-			_fileSystemWatcherWrapper?.Dispose();
+			_fileSystemWatcherWrapper.Dispose();
 		}
 
 	}

@@ -43,7 +43,11 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.5.1 _(Unreleased)_ - 2022-??-??
 
-- nothing yet
+- [x] (Added) _Docs_ New documentation site (PR #971)
+- [x] (Changed) _Back-end_ First user after registration is Admin to avoid issues with editing storage folder (PR #977)
+- [x] (Fixed) _Back-end_ when importing --move false is fixed (PR #978)
+- [x] (Fixed) _Back-end_ DiskWatcher with a non-existing folder does not crash (PR #978)
+- [x] (Fixed) _Back-end_ Import from read only folder does not partly import files and crash (PR #978)
 
 # version 0.5.0 - 2022-11-18
 

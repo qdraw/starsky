@@ -343,5 +343,29 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			Assert.AreEqual(0, processor.Data.Count);
 		}
+
+		[TestMethod]
+		public void Dispose()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(),null!);
+			watcher.Dispose();
+			
+			Assert.IsTrue(fakeIFileSystemWatcher.IsDisposed);
+		}
+		
+		[TestMethod]
+		public void Dispose_default()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+			
+			Assert.IsFalse(fakeIFileSystemWatcher.IsDisposed);
+		}
 	}
 }

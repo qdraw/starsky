@@ -62,9 +62,11 @@ namespace starskytest.FakeMocks
 		public string Path { get; set; }
 		public string Filter { get; set; }
 		public NotifyFilters NotifyFilter { get; set; }
-		
+
+		public bool IsDisposed { get; set; }
 		void IDisposable.Dispose()
 		{
+			IsDisposed = true;
 		}
 	}
 }
