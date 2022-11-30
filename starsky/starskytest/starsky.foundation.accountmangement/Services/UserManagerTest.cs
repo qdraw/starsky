@@ -343,7 +343,49 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var result = userManager.GetRole("email", "login@mail2.us");
 			Assert.AreEqual(AccountRoles.AppAccountRoles.User.ToString(), result.Code);
 		}
+
+		[TestMethod]
+		public async Task UserManager_LoginNull_Identifier()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings
+			{
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+				AccountRegisterFirstRoleAdmin = true
+			},_memoryCache);
+			
+			var result = await userManager.SignUpAsync("user01", "email", string.Empty, "pass");
+			
+			Assert.AreEqual(result.Error, SignUpResultError.NullString);
+		}
 		
+		[TestMethod]
+		public async Task UserManager_LoginNull_Secret()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings
+			{
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+				AccountRegisterFirstRoleAdmin = true
+			},_memoryCache);
+			
+			var result = await userManager.SignUpAsync("user01", "email", "dont@mail.me", string.Empty);
+			
+			Assert.AreEqual(result.Error, SignUpResultError.NullString);
+		}
+		
+		[TestMethod]
+		public async Task UserManager_Login_CredentialTypeNotFound()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings
+			{
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+				AccountRegisterFirstRoleAdmin = true
+			},_memoryCache);
+			
+			var result = await userManager.SignUpAsync("user01", "wrong-type1", "dont@mail.me", "122344");
+			
+			Assert.AreEqual(result.Error, SignUpResultError.CredentialTypeNotFound);
+		}
+
 		[TestMethod]
 		public async Task UserManager_ChangePassword_ChangeSecret()
 		{
@@ -409,8 +451,18 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			Assert.AreEqual(AccountRoles.AppAccountRoles.Administrator.ToString(), result.Code);
 		}
-		
-		
+
+
+		[TestMethod]
+		public void AddToRole_WrongCode()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var count = _dbContext.Roles.Count();
+			userManager.AddToRole(new User(),"dsfnlksdfn");
+			
+			Assert.AreEqual(count, _dbContext.Roles.Count());
+		}
+
 		[TestMethod]
 		public async Task RemoveFromRole()
 		{
@@ -425,6 +477,17 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var result = userManager.GetRole("email", "RemoveFromRole@mail.us");
 			
 			Assert.IsNull(result.Code);
+		}
+		
+		
+		[TestMethod]
+		public void RemoveFromRole_WrongCode()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var count = _dbContext.Roles.Count();
+			userManager.AddToRole(new User(),"dsfnlksdfn");
+			
+			Assert.AreEqual(count, _dbContext.Roles.Count());
 		}
 
 		[TestMethod]
