@@ -708,6 +708,7 @@ namespace starsky.foundation.platform.Helpers
 					&& (arg + 1) != args.Count && bool.TryParse(args[arg + 1], out var getMove2))
 				{
 					getMove = getMove2;
+					continue;
 				}
 				
 				if ((args[arg].ToLower() == "--move" || args[arg].ToLower() == "-m"))
