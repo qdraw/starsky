@@ -28,7 +28,8 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>StorageInfo object</returns>
 		public StorageInfo Info(string path)
 		{
-			if ( !ExistFile(path) )
+			var type = IsFolderOrFile(path);
+			if ( type == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				// when NOT found
 				return new StorageInfo
@@ -37,13 +38,44 @@ namespace starsky.foundation.storage.Storage
 					Size = -1
 				};
 			}
+
+			var lastWrite = type == FolderOrFileModel.FolderOrFileTypeList.File ? 
+				File.GetLastWriteTime(path).ToUniversalTime() : Directory.GetLastWriteTime(path).ToUniversalTime();
+			
+			var size = type == FolderOrFileModel.FolderOrFileTypeList.File ? 
+				new FileInfo(path).Length : -1;
 			
 			return new StorageInfo
 			{
-				IsFolderOrFile = IsFolderOrFile(path),
-				Size = new FileInfo(path).Length,
-				LastWriteTime = File.GetLastWriteTime(path).ToUniversalTime()
+				IsFolderOrFile = type,
+				IsDirectory = type == FolderOrFileModel.FolderOrFileTypeList.Folder,
+				Size = size,
+				LastWriteTime = lastWrite,
+				IsFileSystemReadOnly = TestIfFileSystemIsReadOnly(path, type)
 			};
+		}
+
+		internal static bool? TestIfFileSystemIsReadOnly(string folderPath, FolderOrFileModel.FolderOrFileTypeList type )
+		{
+			if ( type != FolderOrFileModel.FolderOrFileTypeList.Folder )
+			{
+				return null;
+			}
+
+			try
+			{
+				var testFilePath = Path.Combine(folderPath, ".test");
+				var myFileStream = File.Open(testFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+				myFileStream.Close();
+				myFileStream.Dispose();
+				File.Delete(testFilePath);
+			}
+			catch ( IOException  )
+			{
+				return true;
+			}
+
+			return false;
 		}
 		
 		public void CreateDirectory(string path)
