@@ -221,7 +221,7 @@ namespace starsky.foundation.accountmanagement.Services
 				return new SignUpResult(success: false, error: SignUpResultError.NullString);
 			}
 	        
-			// Add first user as admin to avoid editing issues with storage location
+			// Add first user as admin to avoid editing issues editing the storage location
 			var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
 			if (_appSettings.AccountRegisterFirstRoleAdmin == true && !_dbContext.Users.Any() )
 			{

@@ -25,5 +25,6 @@ namespace starsky.foundation.database.Models.Account
 		// menu settings in the future
 		
 		public virtual ICollection<Credential>? Credentials { get; set; }
+
 	}
 }

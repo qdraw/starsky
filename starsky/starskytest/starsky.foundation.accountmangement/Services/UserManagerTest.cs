@@ -189,7 +189,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userObject = _dbContext.Users.FirstOrDefault(p =>
 				p.Name == "lockout@google.com");
 			
-			userObject.LockoutEnabled = true;
+			userObject!.LockoutEnabled = true;
 			userObject.LockoutEnd = DateTime.UtcNow.AddDays(1);
 			await _dbContext.SaveChangesAsync();
 
@@ -209,7 +209,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userObject = _dbContext.Users.FirstOrDefault(p =>
 				p.Name == "try3@google.com");
 			
-			userObject.AccessFailedCount = 2;
+			userObject!.AccessFailedCount = 2;
 			await _dbContext.SaveChangesAsync();
 
 			var result = await userManager.ValidateAsync("email", "try3@google.com", "--does not matter--");
@@ -229,7 +229,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userObject = _dbContext.Users.FirstOrDefault(p =>
 				p.Name == "reset@google.com");
 			
-			userObject.AccessFailedCount = 2;
+			userObject!.AccessFailedCount = 2;
 			await _dbContext.SaveChangesAsync();
 
 			var result = await userManager.ValidateAsync("email", "reset@google.com", "pass");
@@ -254,7 +254,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userObject = _dbContext.Users.FirstOrDefault(p =>
 				p.Name == "lockout2@google.com");
 			
-			userObject.LockoutEnabled = true;
+			userObject!.LockoutEnabled = true;
 			userObject.LockoutEnd = DateTime.UtcNow.AddDays(-2);
 			await _dbContext.SaveChangesAsync();
 
@@ -276,7 +276,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 		
 		[TestMethod]
-		public async Task UserManager_LoginPassword()
+		public async Task UserManager_LoginPassword_DefaultFlow()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 
@@ -287,11 +287,69 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 		
 		[TestMethod]
-		public void UserManager_ChangePassword_ChangeSecret()
+		public async Task UserManager_LoginPassword_ShouldBeUser()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings
+			{
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+				AccountRegisterFirstRoleAdmin = false
+			},_memoryCache);
+
+			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
+
+			var result = userManager.GetRole("email", "login@mail.us");
+			Assert.AreEqual(AccountRoles.AppAccountRoles.User.ToString(), result.Code);
+		}
+		
+		[TestMethod]
+		public async Task UserManager_LoginPassword_ShouldBeAdminDueFirstPolicy()
+		{
+
+			var userManager = new UserManager(_dbContext, new AppSettings
+			{
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+				AccountRegisterFirstRoleAdmin = true
+			},_memoryCache);
+			
+			foreach ( var user in _dbContext.Users.ToList() )
+			{
+				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier);
+			}
+
+			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
+
+			var result = userManager.GetRole("email", "login@mail.us");
+			Assert.AreEqual(AccountRoles.AppAccountRoles.Administrator.ToString(), result.Code);
+		}
+		
+				
+		[TestMethod]
+		public async Task UserManager_LoginPassword_ShouldUser_second()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings
+			{
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+				AccountRegisterFirstRoleAdmin = true
+			},_memoryCache);
+			
+			foreach ( var user in _dbContext.Users.ToList() )
+			{
+				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier);
+			}
+			
+			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
+			await userManager.SignUpAsync("user02", "email", "login@mail2.us", "pass");
+
+			var result = userManager.GetRole("email", "login@mail2.us");
+			Assert.AreEqual(AccountRoles.AppAccountRoles.User.ToString(), result.Code);
+		}
+		
+		[TestMethod]
+		public async Task UserManager_ChangePassword_ChangeSecret()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
-			userManager.SignUpAsync("user01", "email", "dont@mail.us", "pass123456789");
+			await userManager.SignUpAsync("user01", "email", "dont@mail.us", "pass123456789");
 
 			var result = userManager.ChangeSecret("email", "dont@mail.us", "pass123456789");
 			
@@ -334,10 +392,10 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 		
 		[TestMethod]
-		public void AddToRole()
+		public async Task AddToRole()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
-			userManager.SignUpAsync("AddToRole", "email", "AddToRole@mail.us", "pass123456789");
+			await userManager.SignUpAsync("AddToRole", "email", "AddToRole@mail.us", "pass123456789");
 			
 			var user = userManager.GetUser("email", "AddToRole@mail.us");
 			
@@ -354,10 +412,10 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		
 		
 		[TestMethod]
-		public void RemoveFromRole()
+		public async Task RemoveFromRole()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
-			userManager.SignUpAsync("RemoveFromRole", "email", "RemoveFromRole@mail.us", "pass123456789");
+			await userManager.SignUpAsync("RemoveFromRole", "email", "RemoveFromRole@mail.us", "pass123456789");
 			
 			var user = userManager.GetUser("email", "RemoveFromRole@mail.us");
 			
@@ -370,10 +428,10 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 
 		[TestMethod]
-		public void GetUser()
+		public async Task GetUser()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
-			userManager.SignUpAsync("GetUser", "email", "GetUser@mail.us", "pass123456789");
+			await userManager.SignUpAsync("GetUser", "email", "GetUser@mail.us", "pass123456789");
 
 			var user = userManager.GetUser("email", "GetUser@mail.us");
 
@@ -390,10 +448,10 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 				
 		[TestMethod]
-		public void GetUser_IdDoesNotExist()
+		public async Task GetUser_IdDoesNotExist()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
-			userManager.AddDefaultCredentialType("email");
+			await userManager.AddDefaultCredentialType("email");
 			
 			var user = userManager.GetUser("email", "sfkknfdlknsdfl@mail.us");
 			Assert.IsNull(user);
@@ -449,7 +507,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var cred =
 				_dbContext.Credentials.FirstOrDefault(p =>
 					p.Identifier == "test_cache_add");
-			cred.Identifier = "test_cache_add_1";
+			cred!.Identifier = "test_cache_add_1";
 			var expectSecret = cred.Secret;
 			_dbContext.Credentials.Update(cred);
 			await _dbContext.SaveChangesAsync();
