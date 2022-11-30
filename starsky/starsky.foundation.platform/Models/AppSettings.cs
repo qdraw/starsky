@@ -613,6 +613,13 @@ namespace starsky.foundation.platform.Models
 		[PackageTelemetry]
 		public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
 		
+		
+		/// <summary>
+		/// Add the default account as admin, other accounts as AccountRegisterDefaultRole
+		/// </summary>
+		[PackageTelemetry]
+		public bool? AccountRegisterFirstRoleAdmin { get; set; } = true;
+		
 		/// <summary>
 		/// Private storage for Application Insights InstrumentationKey
 		/// </summary>
