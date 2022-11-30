@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.import.Interfaces;
+using starsky.feature.import.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starskycore.Models;
 
 namespace starskytest.FakeMocks
 {

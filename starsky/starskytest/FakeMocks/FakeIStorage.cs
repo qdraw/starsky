@@ -13,7 +13,7 @@ using starsky.foundation.storage.Models;
 
 namespace starskytest.FakeMocks
 {
-	class FakeIStorage : IStorage
+	public class FakeIStorage : IStorage
 	{
 		private List<string> _outputSubPathFolders = new List<string>();
 		private List<string> _outputSubPathFiles  = new List<string>();
@@ -328,7 +328,7 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(WriteStream(stream, path));
 		}
 
-		public StorageInfo Info(string path)
+		public virtual StorageInfo Info(string path)
 		{
 			if ( ExistFolder(path) )
 			{

@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.import.Interfaces;
+using starsky.feature.import.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.writemeta.Interfaces;
-using starskycore.Models;
 
 namespace starsky.feature.import.Services
 {

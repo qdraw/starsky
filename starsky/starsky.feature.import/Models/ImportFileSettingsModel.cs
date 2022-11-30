@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using starsky.foundation.platform.Models;
 
-namespace starskycore.Models
+namespace starsky.feature.import.Models
 {
     public class ImportSettingsModel
     {
@@ -42,7 +42,7 @@ namespace starskycore.Models
         }
 
 
-        // This is optinal, when not in use ignore this setting
+        // This is optional, when not in use ignore this setting
         private string _structure;
         public string Structure
         {
@@ -86,12 +86,7 @@ namespace starskycore.Models
 	    ///         default true
 	    /// </summary>
 	    public bool IndexMode { get; set; }
-
-	    /// <summary>
-	    /// Default false, when Exiftool need to sync content
-	    /// </summary>
-	    public bool NeedExiftoolSync { get; set; } = false;
-
+	    
 	    public ConsoleOutputMode ConsoleOutputMode { get; set; }
 
 	    public bool IsConsoleOutputModeDefault()

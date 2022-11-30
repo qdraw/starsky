@@ -264,6 +264,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			args = new List<string> {"-m","true"}.ToArray();
 			Assert.IsTrue(ArgsHelper.GetMove(args));
 		}
+		
+		[TestMethod]
+		public void ArgsHelper_GetMoveTest2()
+		{
+			// Bool parse check
+			var args = new List<string> {"-m","false"}.ToArray();
+			Assert.IsFalse(ArgsHelper.GetMove(args));
+		}
         
 		[TestMethod]
 		[ExcludeFromCoverage]

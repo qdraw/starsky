@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.platform.Models;
-using starskycore.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers

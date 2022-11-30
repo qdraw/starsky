@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.feature.import.Models;
 using starsky.foundation.database.Models;
-using starskycore.Models;
 
 namespace starsky.feature.import.Interfaces
 {
