@@ -66,6 +66,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, info.IsFolderOrFile );
 			Assert.AreEqual(false, info.IsFileSystemReadOnly );
+			Assert.AreEqual(true, info.IsDirectory );
 		}
 		
 		[TestMethod]

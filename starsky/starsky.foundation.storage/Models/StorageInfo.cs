@@ -19,7 +19,7 @@ namespace starsky.foundation.storage.Models
 		/// <summary>
 		/// Is the object a directory
 		/// </summary>
-		public bool IsDirectory { get; set; }
+		public bool? IsDirectory { get; set; }
 		
 		/// <summary>
 		/// Is the filesystem readonly (**NOT** the setting in appSettings)

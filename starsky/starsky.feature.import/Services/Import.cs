@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.import.Helpers;
 using starsky.feature.import.Interfaces;
+using starsky.feature.import.Models;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Import;
 using starsky.foundation.database.Interfaces;
@@ -22,11 +24,11 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
-using starskycore.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.import.Services
@@ -107,16 +109,61 @@ namespace starsky.feature.import.Services
 			// When Directory is Empty
 			if ( !includedDirectoryFilePaths.Any() ) return new List<ImportIndexItem>();
 			
-			var importIndexItemsIEnumerable = await includedDirectoryFilePaths
+			var importIndexItemsList = (await includedDirectoryFilePaths
 				.ForEachAsync(
 					async (includedFilePath) 
 						=> await PreflightPerFile(includedFilePath, importSettings),
-					_appSettings.MaxDegreesOfParallelism);
-
-			var importIndexItemsList = importIndexItemsIEnumerable.ToList();
+					_appSettings.MaxDegreesOfParallelism)).ToList();
+			
 			var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
+
 			importIndexItemsList = CheckForDuplicateNaming(importIndexItemsList.ToList(), directoriesContent);
+			CheckForReadOnlyFileSystems(importIndexItemsList, importSettings.DeleteAfter);
+
 			return importIndexItemsList;
+		}
+
+		internal List<Tuple<string?, List<string>>> CheckForReadOnlyFileSystems( List<ImportIndexItem> importIndexItemsList, bool deleteAfter = true)
+		{
+			if ( !deleteAfter ) return new List<Tuple<string?, List<string>>>();
+			
+			var parentFolders = new List<Tuple<string?, List<string>>>();
+			foreach ( var item in importIndexItemsList )
+			{
+				var parentFolder = Directory.GetParent(item.SourceFullFilePath)
+					?.FullName;
+
+				if ( parentFolders.All(p => p.Item1 != parentFolder) )
+				{
+					parentFolders.Add(new Tuple<string?, List<string>>(parentFolder, new List<string>{item.SourceFullFilePath}));
+					continue;
+				}
+
+				var item2 = parentFolders.First(p => p.Item1 == parentFolder);
+				parentFolders[parentFolders.IndexOf(item2)].Item2.Add(item.SourceFullFilePath);
+			}
+
+			foreach ( var parentFolder in parentFolders )
+			{
+				var fileStorageInfo = _filesystemStorage.Info(parentFolder.Item1);
+				if ( fileStorageInfo.IsFolderOrFile !=
+				     FolderOrFileModel.FolderOrFileTypeList.Folder ||
+				     fileStorageInfo.IsFileSystemReadOnly != true ) continue;
+				
+				foreach ( var item in parentFolder.Item2.Select(parentItem => importIndexItemsList.FirstOrDefault(p =>
+					         p.SourceFullFilePath == parentItem)).Where(item => item != null).Cast<ImportIndexItem>() )
+				{
+					importIndexItemsList[importIndexItemsList.IndexOf(item)]
+						.Status = ImportStatus.ReadOnlyFileSystem;
+					
+					if ( _appSettings.IsVerbose() )
+					{
+						_console.WriteLine($"🤷🗜️ Ignored, source file system is readonly try without move to copy {item.SourceFullFilePath}");
+					}
+				}
+			}
+
+			return parentFolders;
 		}
 
 		/// <summary>
@@ -440,8 +487,6 @@ namespace starsky.feature.import.Services
 					async (preflightItem) 
 						=> await Importer(preflightItem, importSettings),
 					_appSettings.MaxDegreesOfParallelism)).ToList();
-
-			await CreateMataThumbnail(importIndexItemsList,importSettings);
 			
 			return importIndexItemsList;
 		}
@@ -512,7 +557,9 @@ namespace starsky.feature.import.Services
 			    .UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
 			    importSettings.ColorClass, importIndexItem.DateTimeFromFileName, importSettings.IndexMode);
 
-		    DeleteFileAfter(importSettings,importIndexItem);
+		    DeleteFileAfter(importSettings, importIndexItem);
+		    
+		    await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
 		    
             if ( _appSettings.IsVerbose() ) _console.Write("+");
             return importIndexItem;

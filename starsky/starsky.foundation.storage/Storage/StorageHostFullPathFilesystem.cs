@@ -35,7 +35,8 @@ namespace starsky.foundation.storage.Storage
 				return new StorageInfo
 				{
 					IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted,
-					Size = -1
+					Size = -1,
+					IsDirectory = null
 				};
 			}
 

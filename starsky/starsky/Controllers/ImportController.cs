@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic;
 using starsky.Attributes;
 using starsky.feature.import.Interfaces;
+using starsky.feature.import.Models;
 using starsky.feature.import.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -24,7 +25,6 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
-using starskycore.Models;
 
 namespace starsky.Controllers
 {

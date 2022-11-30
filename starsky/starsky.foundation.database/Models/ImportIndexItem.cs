@@ -25,7 +25,8 @@ namespace starsky.foundation.database.Models
 		FileError,
 		NotFound,
 		Ignore,
-		ParentDirectoryNotFound
+		ParentDirectoryNotFound,
+		ReadOnlyFileSystem
 	}
 	
     [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]

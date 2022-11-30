@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.import.Models;
 using starsky.feature.import.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -13,8 +14,8 @@ using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
-using starskycore.Models;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
@@ -1037,7 +1038,7 @@ namespace starskytest.starsky.feature.import.Services
 		}
 		
 		[TestMethod]
-		public void AddToQueryAndImportDatabaseAsync_NoConnection_YesVerbose()
+		public async Task AddToQueryAndImportDatabaseAsync_NoConnection_YesVerbose()
 		{
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
@@ -1050,11 +1051,111 @@ namespace starskytest.starsky.feature.import.Services
 				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
 				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
 			
-			importService.AddToQueryAndImportDatabaseAsync(
+			await importService.AddToQueryAndImportDatabaseAsync(
 				new ImportIndexItem(), new ImportSettingsModel{ IndexMode = false});
 
 			Assert.AreEqual(1,logger.TrackedInformation.Count(p => p.Item2.Contains("AddToQueryAndImportDatabaseAsync")));
 		}
 
+		[TestMethod]
+		public void CheckForReadOnlyFileSystems_1()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes}, new List<DateTime>{DateTime.Now,DateTime.Now});
+			var appSettings = new AppSettings{Verbose = true};
+			var logger = new FakeIWebLogger();
+
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
+			
+			var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(new List<ImportIndexItem>{new ImportIndexItem
+			{
+				SourceFullFilePath = "/test.jpg"
+			}});
+
+			Assert.AreEqual(1,readOnlyFileSystems.Count);
+			Assert.AreEqual("/",readOnlyFileSystems[0].Item1);
+
+		}
+		
+		private class FakeReadOnlyStorage : FakeIStorage
+		{
+			public override StorageInfo Info(string path)
+			{
+				return new StorageInfo { 
+					IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Folder,
+					IsFileSystemReadOnly = true 
+				};
+			}
+		}
+
+		
+		[TestMethod]
+		public void CheckForReadOnlyFileSystems_2()
+		{
+			var storage = new FakeReadOnlyStorage();
+			var appSettings = new AppSettings{Verbose = true};
+			var logger = new FakeIWebLogger();
+
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
+
+			var importIndexItems = new List<ImportIndexItem>
+			{
+				new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					SourceFullFilePath = "/test.jpg",
+				},
+				new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					SourceFullFilePath = "/test/test/test.jpg",
+				}
+			};
+			var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(importIndexItems);
+
+			Assert.AreEqual(2,readOnlyFileSystems.Count);
+			Assert.AreEqual("/",readOnlyFileSystems[0].Item1);
+			var testItem = importIndexItems.FirstOrDefault(p =>
+					p.SourceFullFilePath == "/test.jpg");
+			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
+
+		}
+		
+		[TestMethod]
+		public void CheckForReadOnlyFileSystems_3()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes}, new List<DateTime>{DateTime.Now,DateTime.Now});
+			var appSettings = new AppSettings{Verbose = true};
+			var logger = new FakeIWebLogger();
+
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
+
+			var importIndexItems = new List<ImportIndexItem>
+			{
+				new ImportIndexItem
+				{
+					SourceFullFilePath = "/not-found.jpg"
+				}
+			};
+			var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(importIndexItems);
+
+			Assert.AreEqual(1,readOnlyFileSystems.Count);
+			Assert.AreEqual("/",readOnlyFileSystems[0].Item1);
+			var testItem = importIndexItems.FirstOrDefault(p =>
+				p.SourceFullFilePath == "/not-found.jpg");
+			Assert.AreEqual(ImportStatus.Default,testItem?.Status);
+		}
+		
 	}
 }
