@@ -46,6 +46,12 @@ namespace starsky.foundation.sync.WatcherServices
 		/// </summary>
 		public void Watcher(string fullFilePath)
 		{
+			if ( !Directory.Exists(fullFilePath) )
+			{
+				_webLogger.LogError($"[DiskWatcher] FAIL can't find directory: {fullFilePath} so watcher is not started");
+				return;
+			}
+			
 			_webLogger.LogInformation($"[DiskWatcher] started {fullFilePath}" +
 			        $"{DateTimeDebug()}");
 			
@@ -59,7 +65,6 @@ namespace starsky.foundation.sync.WatcherServices
 			                                         | NotifyFilters.Attributes
 			                                         | NotifyFilters.Size
 			                                         | NotifyFilters.LastWrite
-			                                         // NotifyFilters.LastAccess is removed
 			                                         | NotifyFilters.CreationTime
 			                                         | NotifyFilters.Security;
 
@@ -209,6 +214,12 @@ namespace starsky.foundation.sync.WatcherServices
 			}
 
 			_queueProcessor.QueueInput(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed).ConfigureAwait(false);
+		}
+		
+		public void Dispose()
+		{
+			_fileSystemWatcherWrapper.EnableRaisingEvents = false;
+			_fileSystemWatcherWrapper?.Dispose();
 		}
 
 	}

@@ -46,8 +46,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		public void Watcher_ExpectPath()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
-			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Watcher("/test");
-			Assert.AreEqual("/test",fakeIFileSystemWatcher.Path);
+			var watcher= new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+			var path = new CreateAnImage().BasePath;
+			watcher.Watcher(new CreateAnImage().BasePath);
+			watcher.Dispose();
+			Assert.AreEqual(path,fakeIFileSystemWatcher.Path);
 		}
 		
 		[TestMethod]
@@ -56,7 +59,9 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 			
-			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Watcher("/test");
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+			watcher.Watcher(_createAnImage.BasePath);
+			
 			var autoResetEvent = new AutoResetEvent(false);
 
 			using var scope = _scopeFactory.CreateScope();
@@ -76,17 +81,32 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			fakeIFileSystemWatcher.TriggerOnError(new ErrorEventArgs(new InternalBufferOverflowException("test") ));
 
 			var wasSignaled = autoResetEvent.WaitOne(TimeSpan.FromSeconds(200));
+			watcher.Dispose();
 			
 			Assert.IsTrue(wasSignaled);
 			Assert.IsTrue(message.Contains("test"));
 		}
-		
+
+		[TestMethod]
+		public void Watcher_DirNotFound()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+			watcher.Watcher("C:\\not-found");
+			
+			using var scope = _scopeFactory.CreateScope();
+			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
+
+			Assert.IsTrue(logger.TrackedExceptions.LastOrDefault().Item2.Contains("is not started"));
+		}
+
 		[TestMethod]
 		[Timeout(400)]
 		public void Watcher_Changed()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
-			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Watcher("/test");
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+			watcher.Watcher(new CreateAnImage().BasePath);
 
 			using var scope = _scopeFactory.CreateScope();
 			// ISynchronize is a scoped service
@@ -99,7 +119,9 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			fakeIFileSystemWatcher.TriggerOnChanged(new FileSystemEventArgs(WatcherChangeTypes.Changed, "/","test.jpg"));
 
-			Console.WriteLine(logger.TrackedDebug.LastOrDefault().Item2);
+			watcher.Dispose();
+
+			Console.WriteLine(logger!.TrackedDebug.LastOrDefault().Item2);
 			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2.Contains("/test"));
 			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2.Contains("Changed"));
 		}
@@ -111,7 +133,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 
-			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Watcher("/test");
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+			watcher.Watcher(_createAnImage.BasePath);
 
 			using var scope = _scopeFactory.CreateScope();
 			// ISynchronize is a scoped service
@@ -124,9 +147,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
 
 			fakeIFileSystemWatcher.TriggerOnRename(new RenamedEventArgs(WatcherChangeTypes.Renamed, 
-				"/",_createAnImage.FileName,"test"));
+				_createAnImage.BasePath,_createAnImage.FileName,"test"));
 			
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains(_createAnImage.FileName));
+			watcher.Dispose();
+			
+			Assert.IsTrue(logger!.TrackedInformation.LastOrDefault().Item2.Contains(_createAnImage.FileName));
 			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("OnRenamed to"));
 			
 		}
@@ -137,7 +162,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 
-			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry(fakeIFileSystemWatcher);
+			var watcher =
+				new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+			var result = watcher.Retry(fakeIFileSystemWatcher);
+			watcher.Dispose();
 			
 			Assert.IsTrue(result);	
 		}
@@ -149,13 +177,17 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
 			{
-				CrashOnEnableRaisingEvents = true
+				CrashOnEnableRaisingEvents = true,
+				Path = new CreateAnImage().BasePath
 			};
 			
 			fakeIFileSystemWatcher.EnableRaisingEvents = false;
 			
-			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry(fakeIFileSystemWatcher,1,0);
+			var watcher =
+				new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
 			
+			var result = watcher.Retry(fakeIFileSystemWatcher,1,0);
+			watcher.Dispose();
 			Assert.IsFalse(result);	
 		}
 
@@ -170,8 +202,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			var event1 = new FileSystemEventArgs(WatcherChangeTypes.Changed,
 				"t", "test.jpg");
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null);
+			watcher.OnChanged(null, event1);
 			
-			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null).OnChanged(null, event1);
+			watcher.Dispose();
 		}
 		
 		[TestMethod]
@@ -187,7 +221,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			QueueProcessor processor = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnChanged(null, event1);
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor);
+			watcher.OnChanged(null, event1);
 			
 			Assert.IsNull(processor);
 		}
@@ -205,7 +240,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			QueueProcessor processor = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnChanged(null, event1);
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor);
+			watcher.OnChanged(null, event1);
 			
 			Assert.IsNull(processor);
 		}
