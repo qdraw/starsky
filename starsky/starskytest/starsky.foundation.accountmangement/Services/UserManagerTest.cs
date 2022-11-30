@@ -414,13 +414,15 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
 			_dbContext.CredentialTypes.Add(
-				new CredentialType { Code = "email", Name = "email" });
+				new CredentialType { Code = "email", Name = "email", Id = 99});
 			await _dbContext.SaveChangesAsync();
 			
 			var result = userManager.ChangeSecret("email", "fdksdnfdsfl@sdnklffsd.com", "pass123456789");
 
+			
 			var emailType = _dbContext.CredentialTypes.FirstOrDefault(p => p.Code == "email");
 			_dbContext.Remove(emailType!);
+			
 			await _dbContext.SaveChangesAsync();
 
 			Assert.AreEqual(ChangeSecretResultError.CredentialNotFound, result.Error);
@@ -584,11 +586,15 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public async Task CachedCredential_CheckCache()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
-			var credType = new CredentialType { Id = 1 };
+			var credType = new CredentialType { Id = 15, Code = "email1", Name = "1"};
 
 			_memoryCache.Remove(UserManager.CredentialCacheKey(credType,"test_cache_add"));
 
-			await userManager.SignUpAsync("test", "email", "test_cache_add",
+			await _dbContext.CredentialTypes.AddAsync(credType);
+			await _dbContext.SaveChangesAsync();
+			
+			
+			await userManager.SignUpAsync("test", "email1", "test_cache_add",
 				"secret");
 
 			// set cache with values 
