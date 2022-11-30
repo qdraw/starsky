@@ -409,13 +409,21 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 				
 		[TestMethod]
-		public void ChangeSecret_Credential_NotFound()
+		public async Task ChangeSecret_Credential_NotFound()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
-			var result = userManager.ChangeSecret("email", "fdksdnfdsfl@sdnklffsd.com", "pass123456789");
+			_dbContext.CredentialTypes.Add(
+				new CredentialType { Code = "email", Name = "email" });
+			await _dbContext.SaveChangesAsync();
 			
-			Assert.AreEqual(result.Error, ChangeSecretResultError.CredentialTypeNotFound);
+			var result = userManager.ChangeSecret("email", "fdksdnfdsfl@sdnklffsd.com", "pass123456789");
+
+			var emailType = _dbContext.CredentialTypes.FirstOrDefault(p => p.Code == "email");
+			_dbContext.Remove(emailType!);
+			await _dbContext.SaveChangesAsync();
+
+			Assert.AreEqual(ChangeSecretResultError.CredentialNotFound, result.Error);
 		}
 
 		
