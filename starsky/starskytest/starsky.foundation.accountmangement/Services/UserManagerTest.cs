@@ -397,7 +397,28 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			Assert.AreEqual(true, result.Success);
 		}
+		
+		[TestMethod]
+		public void ChangeSecret_Credential_WrongTypeCode()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
+			var result = userManager.ChangeSecret("wrongtype", "dont@mail.us", "pass123456789");
+			
+			Assert.AreEqual(result.Error, ChangeSecretResultError.CredentialTypeNotFound);
+		}
+				
+		[TestMethod]
+		public void ChangeSecret_Credential_NotFound()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+
+			var result = userManager.ChangeSecret("email", "fdksdnfdsfl@sdnklffsd.com", "pass123456789");
+			
+			Assert.AreEqual(result.Error, ChangeSecretResultError.CredentialTypeNotFound);
+		}
+
+		
 		[TestMethod]
 		public async Task UserManager_NoPassword_ExistingAccount()
 		{
