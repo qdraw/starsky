@@ -1150,9 +1150,8 @@ namespace starskytest.starsky.feature.import.Services
 			var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(importIndexItems);
 
 			Assert.AreEqual(2,readOnlyFileSystems.Count);
-			var path = appSettings.IsWindows ? Directory.GetCurrentDirectory().Split("\\").FirstOrDefault() : "/";
 
-			Assert.AreEqual(path,readOnlyFileSystems[0].Item1);
+			Assert.AreEqual(DefaultPath(),readOnlyFileSystems[0].Item1);
 			var testItem = importIndexItems.FirstOrDefault(p =>
 					p.SourceFullFilePath == "/test.jpg");
 			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
@@ -1186,7 +1185,7 @@ namespace starskytest.starsky.feature.import.Services
 			var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(importIndexItems);
 
 			Assert.AreEqual(1,readOnlyFileSystems.Count);
-			Assert.AreEqual("/test/test",readOnlyFileSystems[0].Item1);
+			Assert.AreEqual(DefaultPath()+ "test/test",readOnlyFileSystems[0].Item1);
 			var testItem = importIndexItems.FirstOrDefault(p =>
 				p.SourceFullFilePath == "/test/test/test.jpg");
 			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
@@ -1217,9 +1216,8 @@ namespace starskytest.starsky.feature.import.Services
 			var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(importIndexItems);
 
 			Assert.AreEqual(1,readOnlyFileSystems.Count);
-			var path = appSettings.IsWindows ? Directory.GetCurrentDirectory().Split("\\").FirstOrDefault() : "/";
 
-			Assert.AreEqual(path,readOnlyFileSystems[0].Item1);
+			Assert.AreEqual(DefaultPath(),readOnlyFileSystems[0].Item1);
 			var testItem = importIndexItems.FirstOrDefault(p =>
 				p.SourceFullFilePath == "/not-found.jpg");
 			Assert.AreEqual(ImportStatus.Default,testItem?.Status);
