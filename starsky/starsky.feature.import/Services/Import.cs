@@ -128,19 +128,19 @@ namespace starsky.feature.import.Services
 			if ( !deleteAfter ) return new List<Tuple<string?, List<string>>>();
 			
 			var parentFolders = new List<Tuple<string?, List<string>>>();
-			foreach ( var item in importIndexItemsList )
+			foreach ( var itemSourceFullFilePath in importIndexItemsList.Select(item => item.SourceFullFilePath) )
 			{
-				var parentFolder = Directory.GetParent(item.SourceFullFilePath)
+				var parentFolder = Directory.GetParent(itemSourceFullFilePath)
 					?.FullName;
 
 				if ( parentFolders.All(p => p.Item1 != parentFolder) )
 				{
-					parentFolders.Add(new Tuple<string?, List<string>>(parentFolder, new List<string>{item.SourceFullFilePath}));
+					parentFolders.Add(new Tuple<string?, List<string>>(parentFolder, new List<string>{itemSourceFullFilePath}));
 					continue;
 				}
 
 				var item2 = parentFolders.First(p => p.Item1 == parentFolder);
-				parentFolders[parentFolders.IndexOf(item2)].Item2.Add(item.SourceFullFilePath);
+				parentFolders[parentFolders.IndexOf(item2)].Item2.Add(itemSourceFullFilePath);
 			}
 
 			foreach ( var parentFolder in parentFolders )

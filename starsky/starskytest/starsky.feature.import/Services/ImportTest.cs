@@ -1081,6 +1081,31 @@ namespace starskytest.starsky.feature.import.Services
 
 		}
 		
+		[TestMethod]
+		public void CheckForReadOnlyFileSystems_1_DirectoryGetParentNull()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes}, new List<DateTime>{DateTime.Now,DateTime.Now});
+			var appSettings = new AppSettings{Verbose = true};
+			var logger = new FakeIWebLogger();
+
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
+			
+			var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(new List<ImportIndexItem>{new ImportIndexItem
+			{
+				SourceFullFilePath = "/"
+			}});
+
+			// Directory.GetParent returns null
+			Assert.AreEqual(1,readOnlyFileSystems.Count);
+			Assert.AreEqual(null,readOnlyFileSystems[0].Item1);
+
+		}
+		
 		private class FakeReadOnlyStorage : FakeIStorage
 		{
 			public override StorageInfo Info(string path)
@@ -1123,6 +1148,40 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual("/",readOnlyFileSystems[0].Item1);
 			var testItem = importIndexItems.FirstOrDefault(p =>
 					p.SourceFullFilePath == "/test.jpg");
+			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
+
+		}
+		
+		[TestMethod]
+		public void CheckForReadOnlyFileSystems_2a_same_folder()
+		{
+			var storage = new FakeReadOnlyStorage();
+			var appSettings = new AppSettings{Verbose = true};
+			var logger = new FakeIWebLogger();
+
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(new List<string>(),false), new FakeExifTool(storage, appSettings),new FakeIQuery(),
+				_console,new FakeIMetaExifThumbnailService(), logger, new FakeMemoryCache());
+
+			var importIndexItems = new List<ImportIndexItem>
+			{
+				new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					SourceFullFilePath = "/test/test/test2.jpg",
+				},
+				new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					SourceFullFilePath = "/test/test/test.jpg",
+				}
+			};
+			var readOnlyFileSystems = importService.CheckForReadOnlyFileSystems(importIndexItems);
+
+			Assert.AreEqual(1,readOnlyFileSystems.Count);
+			Assert.AreEqual("/test/test",readOnlyFileSystems[0].Item1);
+			var testItem = importIndexItems.FirstOrDefault(p =>
+				p.SourceFullFilePath == "/test/test/test.jpg");
 			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
 
 		}
