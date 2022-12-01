@@ -23,4 +23,5 @@ console.log("-result of npm ci");
 console.log(updateSpawn.stdout);
 console.log(updateSpawn.stout ? updateSpawn.stout : "");
 
-process.env.NODE_OPTIONS = "--openssl-legacy-provider";
+process.env.NODE_OPTIONS =
+  "--openssl-legacy-provider --max_old_space_size=8192";
