@@ -10,7 +10,7 @@ module.exports = {
   },
   webpackFinal: async (config) => {
     // build-storybook url
-    config.output.publicPath = "/storybook/";
+    config.output.publicPath = "/";
     return config;
   }
 };
