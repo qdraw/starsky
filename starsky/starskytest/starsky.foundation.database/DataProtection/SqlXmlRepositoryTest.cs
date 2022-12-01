@@ -165,11 +165,14 @@ public class SqlXmlRepositoryTest
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
 
+		var logger=  new FakeIWebLogger();
 		var repo =
 			new SqlXmlRepository(
-				new StoreElementException(options), null!, new FakeIWebLogger());
+				new StoreElementException(options), null!, logger);
 		
 		repo.StoreElement(new XElement("x1", "x1"), "hi");
+		
+		
 	}
 	
 }
