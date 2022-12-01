@@ -10,6 +10,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.DataProtection
 {
@@ -18,11 +19,13 @@ namespace starsky.foundation.database.DataProtection
 	{
 		private readonly ApplicationDbContext _dbContext;
 		private readonly IServiceScopeFactory _scopeFactory;
-    
-		public SqlXmlRepository(ApplicationDbContext dbContext, IServiceScopeFactory scopeFactory)
+		private readonly IWebLogger _logger;
+
+		public SqlXmlRepository(ApplicationDbContext dbContext, IServiceScopeFactory scopeFactory, IWebLogger logger)
 		{
 			_dbContext = dbContext;
 			_scopeFactory = scopeFactory;
+			_logger = logger;
 		}
     
 		public IReadOnlyCollection<XElement> GetAllElements()
@@ -42,10 +45,13 @@ namespace starsky.foundation.database.DataProtection
     			
 				// MySqlConnector.MySqlException (0x80004005): Table 'starsky.DataProtectionKeys' doesn't exist
 				// or Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: DataProtectionKeys
-				if ( exception.Message.Contains("0x80004005") || exception.Message.Contains("no such table: DataProtectionKeys") )
-				{
-					_dbContext.Database.Migrate();
-				}
+				if ( !exception.Message.Contains("0x80004005") &&
+				     !exception.Message.Contains(
+					     "no such table: DataProtectionKeys") )
+					return new List<XElement>();
+				
+				_logger.LogInformation("run migration: dotnet ef database update");
+				_dbContext.Database.Migrate();
 				return new List<XElement>();
 			}
 		}
@@ -77,8 +83,16 @@ namespace starsky.foundation.database.DataProtection
 			{
 				var retryInterval = _dbContext.GetType().FullName?.Contains("test") == true ? 
 					TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(5);
-				RetryHelper.Do(
-					LocalDefaultQuery, retryInterval, 2);
+				try
+				{
+					RetryHelper.Do(
+						LocalDefaultQuery, retryInterval, 2);
+				}
+				catch ( AggregateException aggregateException )
+				{
+					_logger.LogError(aggregateException, "[SqlXmlRepository] catch-ed AggregateException");
+				}
+
 			}
 		}
 	}

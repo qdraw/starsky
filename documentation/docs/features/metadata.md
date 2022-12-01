@@ -1,10 +1,10 @@
-# Metadata usage
+# Super compatible with other tools
 
-Starsky uses iptc and xmp metadata to read and write. 
+Starsky uses IPTC and XMP metadata to read and write. 
+That are two standards that every photo organizer should use
 So when you remove the database a single rescan will restore the metadata since it is stored inside the images.
 
 When you use other tools to edit XMP or IPTC metadata, Starsky will able to read the changes and display them in the application.
-
 
 ![Meta data usage](../assets/metadata_usage_v0410.jpg)
 _Left Exiftool viewing image and right Starsky with the same info_
@@ -14,7 +14,7 @@ _Left Exiftool viewing image and right Starsky with the same info_
 Starsky uses IPTC or XMP metadata to read and write. 
 
 - Keywords / Tags 
-  - where to find the image
+  - where to find the image - used by the search engine to find the image
 - Description 
   - what is the image about
 - Title

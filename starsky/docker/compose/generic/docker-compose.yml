@@ -1,0 +1,94 @@
+version: '3.5'
+
+# Example Docker Compose config file for Starsky Generic
+#
+# Note:
+# - Running Starsky on a server with less than 4 GB of swap space or setting a memory/swap limit can cause unexpected
+#   restarts ("Starsky"), for example, when the indexer temporarily needs more memory to process large files.
+# - If you install PhotoPrism on a public server outside your home network, please always run it behind a secure
+#   HTTPS reverse proxy such as Traefik or Caddy. Your files and passwords will otherwise be transmitted
+#   in clear text and can be intercepted by anyone, including your provider, hackers, and governments
+#
+# Setup Guides:
+# - https://docs.qdraw.nl/getting-started/docker-compose/
+#
+# Troubleshooting Checklists:
+# - https://docs.qdraw.nl/getting-started/troubleshooting/
+# - https://docs.qdraw.nl/getting-started/troubleshooting/docker/
+# - https://docs.qdraw.nl/getting-started/troubleshooting/mariadb/
+#
+# CLI Commands:
+# - https://docs.qdraw.nl/getting-started/docker-compose/#command-line-interface
+#
+# All commands may have to be prefixed with "sudo" when not running as root.
+# This will point the home directory shortcut ~ to /root in volume mounts.
+
+services:
+  starsky:
+    ## Use ghcr.io/qdraw/starsky:master for testing preview builds:
+    image: qdraw/starsky:latest
+    depends_on:
+      - mariadb
+    ## Don't enable automatic restarts until Starsky has been properly configured and tested!
+    ## If the service gets stuck in a restart loop, this points to a memory, filesystem, network, or database issue:
+    ## https://docs.qdraw.nl/getting-started/troubleshooting/#fatal-server-errors
+    # restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
+    ports:
+      - "6470:6470" # HTTP port (host:container)
+    environment:
+      PORT: 6470
+      app__databaseType: "mysql"
+      app__IsAccountRegisterOpen: "false"
+      app__addSwagger: "false"
+      app__useDiskWatcher: "false"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE: "false"
+      app__databaseConnection: "Server=host.docker.internal;port=6499;database=starsky_db;uid=starsky_sql;pwd=change__this__password__please_this_unsafe"
+    ## Storage Folders: "~" is a shortcut for your home directory, "." for the current directory
+    volumes:
+      # "/host/folder:/photoprism/folder"                # Example
+      - "~/Pictures:/app/storageFolderLocal"               # Original media files (DO NOT REMOVE)
+      # - "/example/family:/photoprism/originals/family" # *Additional* media folders can be mounted like this
+      # - "~/Import:/photoprism/import"                  # *Optional* base folder from which files can be imported to originals
+      - "./storage:/photoprism/storage"                  # *Writable* storage folder for cache, database, and sidecar files (DO NOT REMOVE)
+
+  ## Database Server (recommended)
+  ## see https://docs.qdraw.nl/getting-started/faq/#should-i-use-sqlite-mariadb-or-mysql
+  mariadb:
+    ## If MariaDB gets stuck in a restart loop, this points to a memory or filesystem issue:
+    ## https://docs.qdraw.nl/getting-started/troubleshooting/#fatal-server-errors
+    restart: unless-stopped
+    image: mariadb:10.9
+    security_opt: # see https://github.com/MariaDB/mariadb-docker/issues/434#issuecomment-1136151239
+      - seccomp:unconfined
+      - apparmor:unconfined
+    command: mysqld --innodb-buffer-pool-size=512M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
+    ## Never store database files on an unreliable device such as a USB flash drive, an SD card, or a shared network folder:
+    volumes:
+      - "./database:/var/lib/mysql" # DO NOT REMOVE
+    ports:
+      - "6499:3306"      
+    environment:
+      MARIADB_AUTO_UPGRADE: "1"
+      MARIADB_INITDB_SKIP_TZINFO: "1"
+      MARIADB_DATABASE: "starsky_db"
+      MARIADB_USER: "starsky_sql"
+      MARIADB_PASSWORD: "change__this__password__please_this_unsafe"
+      MARIADB_ROOT_PASSWORD: "change__this__password__please_this_unsafe"
+
+  ## Watchtower upgrades services automatically (optional)
+  ## see https://docs.qdraw.nl/getting-started/updates/#watchtower
+  ## activate via "COMPOSE_PROFILES=update docker compose up -d"
+  watchtower:
+    restart: unless-stopped
+    image: containrrr/watchtower
+    profiles: ["update"]
+    environment:
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_POLL_INTERVAL: 7200 # checks for updates every two hours
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "~/.docker/config.json:/config.json" # optional, for authentication if you have a Docker Hub account
