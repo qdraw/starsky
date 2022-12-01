@@ -1,4 +1,8 @@
 on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky/starsky/clientapp/**'
   workflow_dispatch:
     
 name: storybook clientapp netlify
