@@ -36,6 +36,7 @@
     "fix": "npm run lint:fix",
     "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
     "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
+    "prestorybook": "node scripts/prestorybook.js",
     "storybook": "start-storybook"
   },
   "jest": {
@@ -118,7 +119,11 @@
     ]
   },
   "devDependencies": {
+    "@storybook/builder-webpack5": "^6.5.13",
+    "@storybook/manager-webpack5": "^6.5.13",
+    "@storybook/preset-create-react-app": "^4.1.2",
     "@storybook/react": "^6.5.13",
-    "concurrently": "^7.1.0"
+    "concurrently": "^7.1.0",
+    "webpack": "^5.75.0"
   }
 }
