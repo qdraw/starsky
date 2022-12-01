@@ -122,9 +122,13 @@ namespace starsky.foundation.storage.Storage
 			{
 				 allFiles = Directory.GetFiles(path);
 			}
-			catch ( UnauthorizedAccessException e )
+			catch ( Exception exception )
 			{
-				_logger?.LogError(e, "[GetAllFilesInDirectory] catch-ed UnauthorizedAccessException");
+				if ( exception is not (UnauthorizedAccessException
+				    or DirectoryNotFoundException) ) throw;
+				
+				_logger?.LogError(exception, "[GetAllFilesInDirectory] " +
+				                             "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
 				return Array.Empty<string>();
 			}
 
@@ -187,9 +191,12 @@ namespace starsky.foundation.storage.Storage
 						}
 					}
 				}
-				catch(UnauthorizedAccessException e) 
+				catch(Exception exception) 
 				{
-					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed UnauthorizedAccessException => " + e.Message);
+					if ( exception is not (UnauthorizedAccessException
+					    or DirectoryNotFoundException) ) throw;
+					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed " +
+					                  "DirectoryNotFoundException/UnauthorizedAccessException => " + exception.Message);
 				}
 			}
 
