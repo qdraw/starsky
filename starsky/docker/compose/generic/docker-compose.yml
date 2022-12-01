@@ -26,7 +26,7 @@ version: '3.5'
 services:
   starsky:
     ## Use ghcr.io/qdraw/starsky:master for testing preview builds:
-    image: ghcr.io/qdraw/starsky:master
+    image: qdraw/starsky:latest
     depends_on:
       - mariadb
     ## Don't enable automatic restarts until Starsky has been properly configured and tested!

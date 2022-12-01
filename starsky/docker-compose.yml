@@ -56,7 +56,8 @@ services:
     ports:
       - "${STARSKY_PORT}:${STARSKY_PORT}"
     volumes:
-      - "~/Pictures:/app/pictures"
+      - "./docker/storageFolder:/app/pictures"    
+      #- "~/Pictures:/app/pictures"       # switch two options to use with local home Pictures folder
     depends_on:
       - "mariadb"
     networks:
