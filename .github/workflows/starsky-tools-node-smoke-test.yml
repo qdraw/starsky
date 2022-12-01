@@ -9,7 +9,7 @@ on:
     - 'starsky-tools/mail/**'
     - 'starsky-tools/mock/**'
     - 'starsky-tools/thumbnail/**'
-    - 'starsky-tools/docs/**'
+    - 'documentation/**'
   pull_request:
     branches: [ master ]
     paths:
@@ -19,7 +19,7 @@ on:
     - 'starsky-tools/mock/**'
     - 'starsky-tools/thumbnail/**'
     - '.github/workflows/**'
-    - 'starsky-tools/docs/**'
+    - 'documentation/**'
 
 jobs:
   build:
@@ -60,7 +60,11 @@ jobs:
     - name: NpmCi thumbnail
       working-directory: ./starsky-tools/thumbnail
       run: npm ci  
-      
-    - name: Node run docs
-      working-directory: ./starsky-tools/docs
+
+    - name: Node ci documentation
+      working-directory: ./documentation'
+      run: npm ci
+
+    - name: Node run documentation
+      working-directory: ./documentation'
       run: npm run build
