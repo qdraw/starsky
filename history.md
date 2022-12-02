@@ -51,6 +51,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Back-end_ Docker compose issues with file rights on Mac OS (PR #980)
 - [x] (Added) _Back-end_ More docs about how use the software (PR #981)
 - [x] (Fixed) _Back-end_ Publish on read-only files gives 0 items back (PR #938)
+- [x] (Fixed) _Front-end_ Move file button out of screen iOS (Issue #859 PR #984)
 
 # version 0.5.0 - 2022-11-18
 
