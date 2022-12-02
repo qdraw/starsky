@@ -26,7 +26,7 @@ SHOW GLOBAL STATUS LIKE 'Innodb_buffer%';
 Advanced users may adjust additional parameters to further improve performance. Tools such as the [mysqltuner.pl](https://github.com/major/MySQLTuner-perl) script can provide helpful recommendations for this.
 
 !!! info "Windows and macOS"
-    If you are using *Docker Desktop* on Windows or macOS, remember to increase the [total memory available](../img/docker-resources-advanced.jpg) for Docker services. Otherwise, they may run out of resources and cannot benefit from a larger cache size. In case Starsky and MariaDB are running in a virtual machine, its memory size should be increased as well. Restart for changes to take effect.
+    If you are using *Docker Desktop* on Windows or macOS, remember to increase the [total memory available](../../assets/getting-started-docker-resources-advanced.jpg) for Docker services. Otherwise, they may run out of resources and cannot benefit from a larger cache size. In case Starsky and MariaDB are running in a virtual machine, its memory size should be increased as well. Restart for changes to take effect.
 
 ## Windows ##
 
