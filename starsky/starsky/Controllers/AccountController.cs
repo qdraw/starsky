@@ -113,7 +113,9 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),401)]
         [ProducesResponseType(typeof(string),405)]
+#if ! DEBUG
         [ValidateAntiForgeryToken]
+#endif
         [Produces("application/json")]
         public async Task<IActionResult> LoginPost(LoginViewModel model)
         {
