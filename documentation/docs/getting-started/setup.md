@@ -31,7 +31,7 @@ Having said that, funding really has the highest impact. [So users can do their 
 
 ## System Requirements
 
-You should host PhotoPrism on a server with at least 2 cores, 3 GB of physical memory, 1 and a 64-bit operating system. Beyond these minimum requirements, the amount of RAM should match the number of CPU cores. Indexing large photo and video collections also benefits greatly from local SSD storage, especially for the database and cache files.
+You should host Starsky on a server with at least 2 cores, 3 GB of physical memory, 1 and a 64-bit operating system. Beyond these minimum requirements, the amount of RAM should match the number of CPU cores. Indexing large photo and video collections also benefits greatly from local SSD storage, especially for the database and cache files.
 
 If your server has less than 4 GB of swap space or a manual memory/swap limit is set, this can cause unexpected restarts, for example, when the indexer temporarily needs more memory to process large files. High-resolution panoramic images may require additional swap space and/or physical memory above the recommended minimum.
 
@@ -39,7 +39,7 @@ If your server has less than 4 GB of swap space or a manual memory/swap limit is
 
 ### Databases
 
-PhotoPrism is compatible with SQLite 3 and MariaDB 10.5.12+.2 Note that SQLite is generally not a good choice for users who require scalability and high performance, and that support for MySQL 8 has been discontinued due to low demand and missing features.
+Starsky is compatible with SQLite 3 and MariaDB 10.5.12+.2 Note that SQLite is generally not a good choice for users who require scalability and high performance, and that support for MySQL 8 has been discontinued due to low demand and missing features.
 
 ### Browsers
 
