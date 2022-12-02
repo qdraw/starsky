@@ -41,14 +41,16 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 
-# version 0.5.1 _(Unreleased)_ - 2022-??-??
+# version 0.5.1 _(Unreleased)_ - 2022-12-??
 
 - [x] (Added) _Docs_ New documentation site (PR #971)
 - [x] (Changed) _Back-end_ First user after registration is Admin to avoid issues with editing storage folder (PR #977)
 - [x] (Fixed) _Back-end_ when importing --move false is fixed (PR #978)
 - [x] (Fixed) _Back-end_ DiskWatcher with a non-existing folder does not crash (PR #978)
 - [x] (Fixed) _Back-end_ Import from read only folder does not partly import files and crash (PR #978)
-- [x] (Fixed) _Back-end_ Docker compose issues with filerights on Mac OS (PR #980)
+- [x] (Fixed) _Back-end_ Docker compose issues with file rights on Mac OS (PR #980)
+- [x] (Added) _Back-end_ More docs about how use the software (PR #981)
+- [x] (Fixed) _Back-end_ Publish on read-only files gives 0 items back (PR #938)
 
 # version 0.5.0 - 2022-11-18
 

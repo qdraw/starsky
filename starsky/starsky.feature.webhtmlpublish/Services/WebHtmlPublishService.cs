@@ -127,7 +127,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    /// <param name="outputParentFullFilePathFolder">path on host disk where to publish to</param>
 	    /// <param name="moveSourceFiles">include source files (false by default)</param>
 	    /// <returns></returns>
-	    public async Task<Dictionary<string,bool>> Render(List<FileIndexItem> fileIndexItemsList,
+	    private async Task<Dictionary<string,bool>> Render(List<FileIndexItem> fileIndexItemsList,
 		    string[] base64ImageArray, string publishProfileName, string itemName, 
 		    string outputParentFullFilePathFolder, bool moveSourceFiles = false)
 	    {
@@ -148,12 +148,13 @@ namespace starsky.feature.webhtmlpublish.Services
 			    _hostFileSystemStorage.CreateDirectory(outputParentFullFilePathFolder);
 		    }
             
-		    if(base64ImageArray == null) base64ImageArray = new string[fileIndexItemsList.Count];
+		    base64ImageArray ??= new string[fileIndexItemsList.Count];
             
 		    // Order alphabetically
 		    // Ignore Items with Errors
 		    fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName)
-			    .Where(p=> p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+			    .Where(p=> p.Status == FileIndexItem.ExifStatus.Ok || 
+			               p.Status == FileIndexItem.ExifStatus.ReadOnly).ToList();
 
 		    var copyResult = new Dictionary<string,bool>();
             
