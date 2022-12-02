@@ -44,16 +44,16 @@ services:
       app__IsAccountRegisterOpen: "false"
       app__addSwagger: "false"
       app__useDiskWatcher: "false"
+      app__storageFolder: "/app/pictures"
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
       DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE: "false"
       app__databaseConnection: "Server=host.docker.internal;port=6499;database=starsky_db;uid=starsky_sql;pwd=change__this__password__please_this_unsafe"
     ## Storage Folders: "~" is a shortcut for your home directory, "." for the current directory
     volumes:
-      # "/host/folder:/photoprism/folder"                # Example
-      - "~/Pictures:/app/storageFolderLocal"               # Original media files (DO NOT REMOVE)
-      # - "/example/family:/photoprism/originals/family" # *Additional* media folders can be mounted like this
-      # - "~/Import:/photoprism/import"                  # *Optional* base folder from which files can be imported to originals
-      - "./storage:/photoprism/storage"                  # *Writable* storage folder for cache, database, and sidecar files (DO NOT REMOVE)
+      - "~/Pictures:/app/pictures"               # Original media files (DO NOT REMOVE)
+      # - "/example/family:/app/pictures/family" # *Additional* media folders can be mounted like this
+      # - "~/Import:/app/import"                  # *Optional* base folder from which files can be imported to originals
+      - "./storage:/app/storage"                  # *Writable* storage folder for cache, database, and sidecar files (DO NOT REMOVE)
 
   ## Database Server (recommended)
   ## see https://docs.qdraw.nl/getting-started/faq/#should-i-use-sqlite-mariadb-or-mysql
@@ -68,7 +68,7 @@ services:
     command: mysqld --innodb-buffer-pool-size=512M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
     ## Never store database files on an unreliable device such as a USB flash drive, an SD card, or a shared network folder:
     volumes:
-      - "./database:/var/lib/mysql" # DO NOT REMOVE
+      - mariadbsqldata:/var/lib/mysql # DO NOT REMOVE
     ports:
       - "6499:3306"      
     environment:
@@ -92,3 +92,6 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "~/.docker/config.json:/config.json" # optional, for authentication if you have a Docker Hub account
+
+volumes:
+  mariadbsqldata:

@@ -36,7 +36,7 @@ public class SqlXmlRepositoryTest
 		var serviceScope = CreateNewScope();
 		var scope = serviceScope.CreateScope();
 		_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-		_repository = new SqlXmlRepository(_dbContext,serviceScope);
+		_repository = new SqlXmlRepository(_dbContext,serviceScope, new FakeIWebLogger());
 	}
 	
 	[TestMethod]
@@ -58,7 +58,7 @@ public class SqlXmlRepositoryTest
 	[ExpectedException(typeof(NullReferenceException))]
 	public void SqlXmlRepositoryTest_ExpectedException_NullReferenceException()
 	{
-		new SqlXmlRepository(null!,null!).GetAllElements();
+		new SqlXmlRepository(null!,null!, new FakeIWebLogger()).GetAllElements();
 		// ExpectedException NullReferenceException
 	}
 	
@@ -110,7 +110,7 @@ public class SqlXmlRepositoryTest
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
 
-		new SqlXmlRepository(new AppDbMySqlException(options), null!)
+		new SqlXmlRepository(new AppDbMySqlException(options), null!, new FakeIWebLogger())
 			.GetAllElements();
 		// EnsureCreated is trowed as exception
 	}
@@ -131,7 +131,7 @@ public class SqlXmlRepositoryTest
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
 
-		var readOnlyCollection = new SqlXmlRepository(new GetAllElementsAppDbMySqlException2(options), null!)
+		var readOnlyCollection = new SqlXmlRepository(new GetAllElementsAppDbMySqlException2(options), null!, new FakeIWebLogger())
 			.GetAllElements();
 		Assert.AreEqual(0,readOnlyCollection.Count);
 	}
@@ -158,18 +158,24 @@ public class SqlXmlRepositoryTest
 	}
 	
 	[TestMethod]
-	[ExpectedException(typeof(AggregateException))]
 	public void SqlXmlRepositoryTest_StoreElement_Exception()
 	{
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 			.Options;
 
+		var logger =  new FakeIWebLogger();
 		var repo =
 			new SqlXmlRepository(
-				new StoreElementException(options), null!);
+				new StoreElementException(options), null!, logger);
 		
 		repo.StoreElement(new XElement("x1", "x1"), "hi");
+
+		var error = logger.TrackedExceptions.FirstOrDefault(p =>
+			p.Item2.Contains("AggregateException"));
+		
+		Assert.IsNotNull(error);
+
 	}
 	
 }
