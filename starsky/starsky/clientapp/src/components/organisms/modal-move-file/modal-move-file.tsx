@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useFileList, { IFileList } from "../../../hooks/use-filelist";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
