@@ -30,3 +30,10 @@ There is a online demo of the Starsky Application.
 > Azure quits the application after 30 minutes of inactivity.
 
 > Content changes in the demo environment are not stored.
+
+## Say Goodbye to Digital Clutter.
+
+An organized flow is a smooth flow. 
+Why shouldn’t photo management be the same? With Starsky’s unrivalled 
+Digital Asset Management (DAM), you’ll find a powerful, 
+versatile, and easy to use system that will leave your files feeling seen and adored.
