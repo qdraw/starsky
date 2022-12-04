@@ -69,14 +69,16 @@ steps:
       targetFolder: "$(Build.SourcesDirectory)/starskydesktop"
       action: 'check-licenses'
 
-  # Tools
+  # documentation
   
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
-      name: "starsky_tools_docs_vulnerabilities"
-      displayName: 'Tools/Docs vulnerabilities check'
-      targetFolder: "$(Build.SourcesDirectory)/starsky-tools/docs"
+      name: "documentation_vulnerabilities"
+      displayName: 'documentation vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/documentation"
       action: 'find-vulnerabilities'
+
+  # Tools
 
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
