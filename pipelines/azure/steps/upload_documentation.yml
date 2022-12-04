@@ -7,22 +7,28 @@ parameters:
 
 steps:
 
-  - task: Bash@3
-    enabled: true
+  - task: PowerShell@2
     displayName: "[doc..] Upload"
     inputs:
-      targetType: 'inline'
+      targetType: "inline"
+      workingDirectory: documentation
       script: |
-        find ${{ parameters.rootDirectory }} -type f -exec curl -u ${{ parameters.username }}:${{ parameters.password }} --ftp-create-dirs -T {} ${{ parameters.serverUrl }}${{ parameters.remoteDirectory }}{} \;
+        $env:DOCS_URL = "${{ parameters.url }}"
+        $env:DOCS_BASE_URL = "${{ parameters.baseUrl }}"
+        Write-Host "DOCS_URL $Env:DOCS_URL"
+        Write-Host "DOCS_BASE_URL $Env:DOCS_BASE_URL"
 
-  - task: FtpUpload@2
-    displayName: "[doc..] Upload"
-    inputs:
-      credentialsOption: inputs
-      serverUrl: ${{ parameters.serverUrl }}
-      username: ${{ parameters.username }}
-      password: ${{ parameters.password }}
-      rootDirectory: ${{ parameters.rootDirectory }}
-      remoteDirectory: ${{ parameters.remoteDirectory }}
-      preservePaths: true
-      cleanContents: true
+        npm run build
+
+
+  # - task: FtpUpload@2
+  #   displayName: "[doc..] Upload"
+  #   inputs:
+  #     credentialsOption: inputs
+  #     serverUrl: ${{ parameters.serverUrl }}
+  #     username: ${{ parameters.username }}
+  #     password: ${{ parameters.password }}
+  #     rootDirectory: ${{ parameters.rootDirectory }}
+  #     remoteDirectory: ${{ parameters.remoteDirectory }}
+  #     preservePaths: true
+  #     cleanContents: true

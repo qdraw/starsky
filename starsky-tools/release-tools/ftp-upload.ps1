@@ -1,7 +1,7 @@
 # Parameters
 param(
     [Parameter(Mandatory=$true)][String]$ftpUrl,
-	[Parameter(Mandatory=$true)][String]$ftpBasePath,
+	[Parameter(Mandatory=$false)][String]$ftpBasePath,
 	[Parameter(Mandatory=$true)][String]$ftpUser,
 	[Parameter(Mandatory=$true)][String]$ftpPwd,
 	[Parameter(Mandatory=$true)][String]$pathToDeploy
@@ -12,7 +12,7 @@ $files = Get-ChildItem -Path $pathToDeploy -recurse
 # Get ftp object
 $ftp_client = New-Object System.Net.WebClient
 $ftp_client.Credentials = new-object System.Net.NetworkCredential($ftpUser, $ftpPwd) 
-$ftp_address = "ftp://" + $ftpUrl +"/" + $ftpBasePath
+$ftp_address = $ftpUrl +"/" + $ftpBasePath
 # Make uploads
 foreach($file in $files)
 {
