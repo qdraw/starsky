@@ -7,6 +7,14 @@ parameters:
 
 steps:
 
+  - task: Bash@3
+    enabled: true
+    displayName: "[doc..] Upload"
+    inputs:
+      targetType: 'inline'
+      script: |
+        find ${{ parameters.rootDirectory }} -type f -exec curl -u ${{ parameters.username }}:${{ parameters.password }} --ftp-create-dirs -T {} ftp://${{ parameters.serverUrl }}${{ parameters.remoteDirectory }}{} \;
+
   - task: FtpUpload@2
     displayName: "[doc..] Upload"
     inputs:
