@@ -5,46 +5,46 @@ import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import { errorWindows } from "./error-windows.const";
 
 export const createErrorWindow = async (error: string) => {
-	const mainWindowStateKeeper = await windowStateKeeper("error");
+  const mainWindowStateKeeper = await windowStateKeeper("error");
 
-	let newWindow = new BrowserWindow({
-		x: mainWindowStateKeeper.x,
-		y: mainWindowStateKeeper.y,
-		width: 350,
-		height: 300,
-		show: true,
-		resizable: !isPackaged(),
-		webPreferences: {
-			contextIsolation: true,
-		},
-	});
+  let newWindow = new BrowserWindow({
+    x: mainWindowStateKeeper.x,
+    y: mainWindowStateKeeper.y,
+    width: 350,
+    height: 300,
+    show: true,
+    resizable: !isPackaged(),
+    webPreferences: {
+      contextIsolation: true,
+    },
+  });
 
-	// hides the menu for windows
-	newWindow.setMenu(null);
+  // hides the menu for windows
+  newWindow.setMenu(null);
 
-	mainWindowStateKeeper.track(newWindow);
+  mainWindowStateKeeper.track(newWindow);
 
-	const errorPage = path.join(
-		__dirname,
-		"client",
-		"pages",
-		"error",
-		"error.html"
-	);
+  const errorPage = path.join(
+    __dirname,
+    "client",
+    "pages",
+    "error",
+    "error.html"
+  );
 
-	await newWindow.loadFile(errorPage, { query: { error } });
+  await newWindow.loadFile(errorPage, { query: { error } });
 
-	newWindow.once("ready-to-show", () => {
-		newWindow.show();
-	});
+  newWindow.once("ready-to-show", () => {
+    newWindow.show();
+  });
 
-	newWindow.on("closed", () => {
-		errorWindows.delete(newWindow);
-		newWindow = null;
-	});
+  newWindow.on("closed", () => {
+    errorWindows.delete(newWindow);
+    newWindow = null;
+  });
 
-	errorWindows.add(newWindow);
-	return newWindow;
+  errorWindows.add(newWindow);
+  return newWindow;
 };
 
 export default createErrorWindow;

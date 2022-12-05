@@ -1,7 +1,7 @@
 import { isPackaged } from "../os-info/is-packaged";
 import {
-	LocationIsRemoteIpcKey,
-	LocationUrlIpcKey,
+  LocationIsRemoteIpcKey,
+  LocationUrlIpcKey,
 } from "./location-ipc-keys.const";
 
 /**
