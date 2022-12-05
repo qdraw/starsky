@@ -57,10 +57,11 @@ stages:
       enabled: true
       displayName: 'Double zip docs folder'
       inputs:
-        workingDirectory: 'documentation'
+        workingDirectory: 'documentation/build'
         targetType: 'inline'
         script: |
           zip -r documentation.zip *
+          ls -lah
 
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
