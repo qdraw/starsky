@@ -53,10 +53,8 @@ stages:
         url: $(DOCS_URL)
         baseUrl: $(DOCS_BASE_URL)
 
-    - template: /pipelines/azure/steps/upload_documentation.yml
+    - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
-        serverUrl: $(DOCS_SERVER_URL)
-        username: $(DOCS_USERNAME)
-        password: $(DOCS_PASSWORD)
-        rootDirectory: 'documentation/build'
-        remoteDirectory: '/'
+        publish:
+          - key: docs
+            value: '/documentation/build'
