@@ -1,15 +1,15 @@
 import { isPackaged } from "../os-info/is-packaged";
 import {
-  LocationIsRemoteIpcKey,
-  LocationUrlIpcKey
+	LocationIsRemoteIpcKey,
+	LocationUrlIpcKey,
 } from "./location-ipc-keys.const";
 
 /**
  * string
  */
-export const LocationUrlSettingsKey = `${LocationUrlIpcKey}:${isPackaged().valueOf.toString()}`;
+export const LocationUrlSettingsKey = `${LocationUrlIpcKey}:${isPackaged().toString()}`;
 
 /**
  * bool
  */
-export const LocationIsRemoteSettingsKey = `${LocationIsRemoteIpcKey}:${isPackaged().valueOf.toString()}`;
+export const LocationIsRemoteSettingsKey = `${LocationIsRemoteIpcKey}:${isPackaged().toString()}`;
