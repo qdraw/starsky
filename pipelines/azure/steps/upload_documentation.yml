@@ -7,28 +7,16 @@ parameters:
 
 steps:
 
-  - task: PowerShell@2
+  - task: FtpUpload@2
     displayName: "[doc..] Upload"
     inputs:
-      targetType: "inline"
-      workingDirectory: documentation
-      script: |
-        $env:DOCS_URL = "${{ parameters.url }}"
-        $env:DOCS_BASE_URL = "${{ parameters.baseUrl }}"
-        Write-Host "DOCS_URL $Env:DOCS_URL"
-        Write-Host "DOCS_BASE_URL $Env:DOCS_BASE_URL"
-
-        npm run build
-
-
-  # - task: FtpUpload@2
-  #   displayName: "[doc..] Upload"
-  #   inputs:
-  #     credentialsOption: inputs
-  #     serverUrl: ${{ parameters.serverUrl }}
-  #     username: ${{ parameters.username }}
-  #     password: ${{ parameters.password }}
-  #     rootDirectory: ${{ parameters.rootDirectory }}
-  #     remoteDirectory: ${{ parameters.remoteDirectory }}
-  #     preservePaths: true
-  #     cleanContents: true
+      credentialsOption: inputs
+      trustSSL: true
+      enableUtf8: true
+      serverUrl: ${{ parameters.serverUrl }}
+      username: ${{ parameters.username }}
+      password: ${{ parameters.password }}
+      rootDirectory: ${{ parameters.rootDirectory }}
+      remoteDirectory: ${{ parameters.remoteDirectory }}
+      preservePaths: true
+      cleanContents: true
