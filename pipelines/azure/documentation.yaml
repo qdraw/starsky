@@ -67,4 +67,4 @@ stages:
       parameters:
         publish:
           - key: documentation
-            value: '/documentation/documentation.zip'
+            value: '/documentation/build/documentation.zip'
