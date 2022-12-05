@@ -53,8 +53,17 @@ stages:
         url: $(DOCS_URL)
         baseUrl: $(DOCS_BASE_URL)
 
+    - task: Bash@3
+      enabled: true
+      displayName: 'Double zip docs folder'
+      inputs:
+        workingDirectory: '/documentation'
+        targetType: 'inline'
+        script: |
+          zip -r documentation.zip *
+
     - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
         publish:
-          - key: docs
-            value: '/documentation/build'
+          - key: documentation
+            value: '/documentation/documentation.zip'
