@@ -52,6 +52,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Added) _Back-end_ More docs about how use the software (PR #981)
 - [x] (Fixed) _Back-end_ Publish on read-only files gives 0 items back (PR #938)
 - [x] (Fixed) _Front-end_ Move file button out of screen iOS (Issue #859 PR #984)
+- [x] (Fixed) _Desktop_ Update window of desktop again works again (Issue #987 PR #987)
+- [x] (Fixed) _Front-end_ Add display of sorting option (Issue #985 PR #987)
+- [x] (Fixed) _Desktop_ Fix settings names remove valueOf (PR #987)
 
 # version 0.5.0 - 2022-11-18
 
