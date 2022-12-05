@@ -57,7 +57,7 @@ stages:
       enabled: true
       displayName: 'Double zip docs folder'
       inputs:
-        workingDirectory: '/documentation'
+        workingDirectory: 'documentation'
         targetType: 'inline'
         script: |
           zip -r documentation.zip *

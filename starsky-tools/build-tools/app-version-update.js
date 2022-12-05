@@ -49,6 +49,12 @@ getFiles(join(__dirname, prefixPath, "starsky-tools")).then(async (filePathList)
   console.log(err);
 });
 
+getFiles(join(__dirname, prefixPath, "documentation")).then(async (filePathList) => {
+  await updateVersions(filePathList);
+}).catch((err) => {
+  console.log(err);
+});
+
 async function updateVersions(filePathList) {
   checkNewVersion();
   await filePathList.forEach(async filePath => {
