@@ -1,5 +1,4 @@
 import { storiesOf } from "@storybook/react";
-import React from "react";
 import ColorClassFilter from "./color-class-filter";
 
 storiesOf("components/molecules/color-class-filter", module).add(
@@ -11,6 +10,7 @@ storiesOf("components/molecules/color-class-filter", module).add(
         subPath={"/test"}
         colorClassActiveList={[1, 2, 3, 4, 5, 6, 7, 8]}
         colorClassUsage={[1, 2, 3, 4, 5, 6, 7, 8]}
+        sticky={true}
       ></ColorClassFilter>
     );
   }

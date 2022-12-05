@@ -29,7 +29,7 @@ export const createErrorWindow = async (error: string) => {
     "client",
     "pages",
     "error",
-    "error.html",
+    "error.html"
   );
 
   await newWindow.loadFile(errorPage, { query: { error } });
