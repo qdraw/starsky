@@ -170,6 +170,10 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
             <span key={item} />
           )
         )}
+        <div className="btn btn--default sort">
+          <span className="text">{!state.sort ? "fileName" : state.sort}</span>
+          <span className="icon"></span>
+        </div>
       </div>
     );
   }

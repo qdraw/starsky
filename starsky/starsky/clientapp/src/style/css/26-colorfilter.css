@@ -24,6 +24,68 @@
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  .colorclass.colorclass--sticky {
+    background-color: #37474f;
+  }
+}
+
+.colorclass.colorclass--filter .sort {
+  float: right;
+  margin-left: 10px;
+  height: 35px;
+  margin-top: 10px;
+  background-color: #eceff1;
+  padding: 0px;
+  padding-left: 5px;
+  padding-right: 5px;
+  cursor: default;
+}
+
+@media (prefers-color-scheme: dark) {
+  .colorclass.colorclass--filter .sort {
+    background-color: #546e7a;
+  }
+}
+
+/* .colorclass.colorclass--filter .sort:hover {
+  background-color: #90a4ae;
+}
+
+.colorclass.colorclass--filter .sort:hover .icon {
+  background-color: white;
+} */
+
+.colorclass.colorclass--filter .sort .icon {
+  mask-image: url("../images/baseline-sort-24px.svg");
+  mask-size: 24px 24px;
+  height: 34px;
+  width: 24px;
+  display: inline-block;
+
+  mask-position: center;
+  mask-repeat: no-repeat;
+  background-color: #263238;
+}
+
+@media (prefers-color-scheme: dark) {
+  .colorclass.colorclass--filter .sort .icon {
+    background-color: #fff;
+  }
+}
+
+.colorclass.colorclass--filter .sort .text {
+  float: left;
+  margin-top: 7px;
+  padding-right: 5px;
+  color: #263238;
+}
+
+@media (prefers-color-scheme: dark) {
+  .colorclass.colorclass--filter .sort .text {
+    color: #fff;
+  }
+}
 .colorclass > div.colorclass,
 .colorclass > .btn.colorclass {
   text-decoration: none;
