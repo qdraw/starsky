@@ -17,7 +17,7 @@ We recommend not using the `:latest` tag for the MariaDB Docker image and to upg
 services:
   mariadb:
     image: mariadb:10.9
-    ...
+    # ... etc...
 ```
 
 ## Cannot Connect

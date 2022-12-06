@@ -6,7 +6,7 @@ Problems with the user interface can be caused by a bug or an incompatible brows
 - not all [video and audio formats](https://caniuse.com/?search=video%20format) can be played with every browser, device, and operating system
 - for example, [AAC](https://caniuse.com/aac "Advanced Audio Coding") - the default audio codec for [MPEG-4 AVC / H.264](https://caniuse.com/avc "Advanced Video Coding") - is supported natively in Chrome, Safari, and Edge, while it is only optionally supported by the OS in Firefox and Opera
 
-!!! note ""
+> **Note<br />**
     If the user interface doesn't load at all, our [*App Not Loading*](index.md#app-not-loading) checklist helps you identify and resolve the cause.
 
 ## Try Another Browser ##
@@ -19,7 +19,7 @@ To test if you have a general problem that is not browser-specific, [open the We
 - otherwise, the issue may not be specific to the browser version
 - make a note in which browsers the problem occurs, as this will be helpful when submitting a support request
 
-!!! tldr ""
+> **TL;DR<br />**
     The user interface works with most modern browsers, and runs best on [Chrome](https://www.google.com/chrome/), [Chromium](https://www.chromium.org/getting-involved/download-chromium), [Safari](https://www.apple.com/safari/), [Firefox](https://www.mozilla.org/en-US/firefox/all/#product-desktop-release), and [Edge](https://www.microsoft.com/en-us/edge).
     Opera and Samsung Internet have been reported to be compatible as well. Due to limited resources, we can
     not test every release with all browser types and versions.
