@@ -3,7 +3,7 @@
 # For insiders only - requires token
 
 # Script goal:
-# Download docs from Azure Devops
+# Download documentation from Azure Devops
 
 # Filename: docs-azure-devops-download.sh
 
@@ -21,6 +21,7 @@ OUTPUT_DIR=$CURRENT_DIR
 
 # get arguments
 ARGUMENTS=("$@")
+CLEAN_OUTPUT=false
 
 for ((i = 1; i <= $#; i++ )); do
   CURRENT=$(($i-1))
@@ -34,6 +35,11 @@ for ((i = 1; i <= $#; i++ )); do
       exit 0
   fi
   
+  if [[ ${ARGUMENTS[CURRENT]} == "--clean" ]];
+  then
+    CLEAN_OUTPUT=true
+  fi
+
   if [ $i -gt 1 ]; then
     PREV=$(($i-2))
 
@@ -59,6 +65,8 @@ for ((i = 1; i <= $#; i++ )); do
     fi
   fi
 done
+
+echo "CLEAN_OUTPUT"$CLEAN_OUTPUT
 
 # add slash if not exists
 LAST_CHAR_OUTPUT_DIR=${OUTPUT_DIR:length-1:1}
@@ -132,6 +140,11 @@ GET_DATA () {
     return 1
   fi
 
+  if [[ $CLEAN_OUTPUT == true ]]; then
+    echo "clean "$OUTPUT_DIR
+    rm -rf *  
+  fi
+
   echo "Download > "$DOWNLOADJSONURL
   curl -sS --user :$STARSKY_DEVOPS_PAT $DOWNLOADJSONURL -o "temp_docs.zip"
 
@@ -140,12 +153,15 @@ GET_DATA () {
   unzip -q -o -j "temp_docs.zip"
   rm "temp_docs.zip"
 
-  if [ -f "index.html" ]; then
-    echo "index.html and docs is downloaded"
+  unzip -q -o "documentation.zip"
+
+  if [ -f "documentation.zip" ]; then
+    echo "> OK documentation.zip downloaded and extracted"
+    rm "documentation.zip"
     return 0
   fi
 
-  echo "FAIL output file: index.html and docs not found"
+  echo "FAIL output file: documentation.zip and docs not found"
   exit 1
 }
 
