@@ -126,5 +126,8 @@ COPY --from=react-build /app/starsky/clientapp ./clientapp
 # Makes sure the test stage is run when using docker buildkit
 COPY --from=test /testresults /tmp
 
+# you could mount this location
+RUN mkdir -p /app/photos
+
 ENV ASPNETCORE_Environment=Production
 CMD ASPNETCORE_URLS=http://*:$PORT dotnet starsky.dll
