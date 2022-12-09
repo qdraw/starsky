@@ -141,7 +141,7 @@ namespace starsky.feature.demo.Services
 			}
 			catch ( JsonException exception)
 			{
-				webLogger.LogError("catch-ed", exception);
+				webLogger.LogError("[Deserialize] catch-ed", exception);
 				// and delete to retry
 				hostStorage.FileDelete(settingsJsonFullPath);
 			}
@@ -182,7 +182,7 @@ namespace starsky.feature.demo.Services
 				var data = Deserialize(result, webLogger, hostStorage, settingsJsonFullPath); 
 				if ( data == null )
 				{
-					webLogger.LogError("data is null");
+					webLogger.LogError("[DownloadAsync] data is null");
 					continue;
 				}
 

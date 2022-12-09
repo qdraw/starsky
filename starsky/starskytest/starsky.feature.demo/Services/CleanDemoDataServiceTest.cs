@@ -270,6 +270,34 @@ public class CleanDemoDataServiceTest
 	}
 	
 	[TestMethod]
+	public async Task DownloadAsync_IsDownloading_InvalidData()
+	{
+		var appSettings = new AppSettings{DemoData = new List<AppSettingsKeyValue>
+		{
+			new AppSettingsKeyValue{Key = "https://qdraw.nl/_settings.json", Value = "1"}
+		}};
+
+		var content = "{{{";
+		var fakeIHttpClientHelper = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+		{
+			{"https://qdraw.nl/_settings.json",new StringContent(content)},
+			{"https://qdraw.nl/1000/20211117_091926_dsc00514_e_kl1k.jpg",new StringContent("test")}
+		});
+
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		
+		var result = await CleanDemoDataService.DownloadAsync(appSettings, httpClientHelper, _storage, _storage, _logger);
+		
+		Assert.IsTrue(result);
+		
+		var c1 = fakeIHttpClientHelper.UrlCalled.Count(p => p == "https://qdraw.nl/_settings.json");
+		Assert.AreEqual(1,c1);
+		
+		var c1A = fakeIHttpClientHelper.UrlCalled.Count(p => p == "https://qdraw.nl/1000/20211117_091926_dsc00514_e_kl1k.jpg");
+		Assert.AreEqual(0,c1A);
+	}
+	
+	[TestMethod]
 	public async Task SeedCli_IsDownloading()
 	{
 		var appSettings = new AppSettings{DemoData = new List<AppSettingsKeyValue>
@@ -320,5 +348,5 @@ public class CleanDemoDataServiceTest
 		
 		Assert.AreEqual("1000/20211117_091926_dsc00514_e_kl1k.jpg", result!.Copy.FirstOrDefault().Key);
 	}
-	
+
 }
