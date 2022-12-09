@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.consoletelemetry.Extensions;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -47,6 +48,9 @@ namespace starskyGeoCli
 			var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
 			var logger = serviceProvider.GetRequiredService<IWebLogger>();
 
+			// Migrations before geo-tools (not needed for this specific app, but helps the process)
+			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), logger,appSettings);
+			
 			// Help and other Command Line Tools args are included in the Geo tools 
 			await new GeoCli(geoReverseLookup, geoLocationWrite, selectorStorage,
 				appSettings, console, geoFileDownload, exifToolDownload,logger).CommandLineAsync(args);

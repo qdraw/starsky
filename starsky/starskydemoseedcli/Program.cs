@@ -18,8 +18,11 @@ namespace starskydemoseedcli
 {
 	public static class Program
 	{
-		public static async Task Main()
+		public static async Task Main(string[] args)
 		{
+			// Use args in application
+			new ArgsHelper().SetEnvironmentByArgs(args);
+			
 			var services = new ServiceCollection();
 
 			// Setup AppSettings
@@ -47,8 +50,8 @@ namespace starskydemoseedcli
 
 			// Help and other Command Line Tools args are NOT included in the tools 
 			await CleanDemoDataService.SeedCli(appSettings, httpClientHelper,
-				selectorStorage.Get(SelectorStorage.StorageServices.SubPath), 
 				selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem), 
+				selectorStorage.Get(SelectorStorage.StorageServices.SubPath), 
 				webLogger, sync );
 
 			await new FlushApplicationInsights(serviceProvider).FlushAsync();

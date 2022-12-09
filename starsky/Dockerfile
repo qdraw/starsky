@@ -70,17 +70,21 @@ RUN \
 WORKDIR /app
 
 RUN \
-    mkdir -p "/app/out/dependencies" && \
-    dotnet run --project "/app/starskygeocli/starskygeocli.csproj" --configuration Release -- --dependencies "/app/out/dependencies" -h -v
+    mkdir -p "/app/dependencies" && \
+    mkdir -p "/app/temp" && \
+    touch /app/temp/.gitkeep && \
+    dotnet run --project "/app/starskygeocli/starskygeocli.csproj" --configuration Release -- --connection "Data Source=/app/data.db" --dependencies "/app/dependencies" --tempfolder "/app/temp" -h -v
 
 RUN \
     if [ "$ISDEMO" != "" ]; then \
         # it should cache faster \
         dotnet build starsky/starsky.csproj --configuration Release ;\
         DEMO_SEED_CLI_PATH="/app/starskydemoseedcli/starskydemoseedcli.csproj" ;\
-        DEPS_FOLDER="/app/out/dependencies" ;\
+        DEPS_FOLDER="/app/dependencies" ;\
+        TEMP_FOLDER="/app/temp" ;\
         mkdir -p $DEPS_FOLDER ;\
-        dotnet run --project $DEMO_SEED_CLI_PATH --configuration Release -- --dependencies $DEPS_FOLDER -h -v ;\
+        mkdir -p $TEMP_FOLDER ;\
+        dotnet run --project $DEMO_SEED_CLI_PATH --configuration Release -- --dependencies $DEPS_FOLDER --tempfolder $TEMP_FOLDER -h -v ;\
     fi
 
 # no alpine build since there is no support for multi-arch
@@ -107,12 +111,20 @@ RUN if [ "$TEST" = "true" ]; then \
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:3.1
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS release
 WORKDIR /app
+
+# copy dlls
 COPY --from=build-env /app/starsky/out .
+
+# copy dependencies & demo content
+COPY --from=build-env /app/dependencies /app/dependencies
+COPY --from=build-env /app/temp /app/temp
+COPY --from=build-env /app/data.db /app/app__data.db
+
+# copy react build
 COPY --from=react-build /app/starsky/clientapp ./clientapp
 
 # Makes sure the test stage is run when using docker buildkit
 COPY --from=test /testresults /tmp
 
 ENV ASPNETCORE_Environment=Production
-
 CMD ASPNETCORE_URLS=http://*:$PORT dotnet starsky.dll

@@ -131,6 +131,24 @@ namespace starsky.feature.demo.Services
 		
 		private const string DemoFolderName = "demo";
 
+		
+		internal static PublishManifestDemo? Deserialize(string result, IWebLogger webLogger, IStorage hostStorage, string settingsJsonFullPath)
+		{
+			PublishManifestDemo? data = null;
+			try
+			{
+				data = 	JsonSerializer.Deserialize<PublishManifestDemo?>(result);
+			}
+			catch ( JsonException exception)
+			{
+				webLogger.LogError("[Deserialize] catch-ed", exception);
+				// and delete to retry
+				hostStorage.FileDelete(settingsJsonFullPath);
+			}
+
+			return data;
+		}
+		
 		internal static async Task<bool> DownloadAsync(AppSettings appSettings,
 			IHttpClientHelper httpClientHelper, IStorage hostStorage,
 			IStorage subStorage, IWebLogger webLogger)
@@ -149,18 +167,24 @@ namespace starsky.feature.demo.Services
 			foreach ( var (jsonUrl, dir) in appSettings.DemoData )
 			{
 				hostStorage.CreateDirectory(Path.Combine(cacheFolder, dir));
-				
+
 				var settingsJsonFullPath =
 					Path.Combine(cacheFolder, dir, "_settings.json");
 				if ( !hostStorage.ExistFile(settingsJsonFullPath) && !await httpClientHelper.Download(jsonUrl, settingsJsonFullPath))
 				{
+					webLogger.LogInformation("Skip due not exists: " + settingsJsonFullPath);
 					continue;
 				}
 				
 				var result = await PlainTextFileHelper.StreamToStringAsync(
 					hostStorage.ReadStream(settingsJsonFullPath));
-				var data = 	JsonSerializer.Deserialize<PublishManifestDemo>(result);
-				if ( data == null ) continue;
+
+				var data = Deserialize(result, webLogger, hostStorage, settingsJsonFullPath); 
+				if ( data == null )
+				{
+					webLogger.LogError("[DownloadAsync] data is null");
+					continue;
+				}
 
 				var baseUrl = jsonUrl.Replace("_settings.json", string.Empty); // ends with slash
 				
