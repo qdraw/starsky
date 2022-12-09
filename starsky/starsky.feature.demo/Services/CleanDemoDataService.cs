@@ -131,6 +131,24 @@ namespace starsky.feature.demo.Services
 		
 		private const string DemoFolderName = "demo";
 
+		
+		internal static PublishManifestDemo? Deserialize(string result, IWebLogger webLogger, IStorage hostStorage, string settingsJsonFullPath)
+		{
+			PublishManifestDemo? data = null;
+			try
+			{
+				data = 	JsonSerializer.Deserialize<PublishManifestDemo?>(result);
+			}
+			catch ( JsonException exception)
+			{
+				webLogger.LogError("catch-ed", exception);
+				// and delete to retry
+				hostStorage.FileDelete(settingsJsonFullPath);
+			}
+
+			return data;
+		}
+		
 		internal static async Task<bool> DownloadAsync(AppSettings appSettings,
 			IHttpClientHelper httpClientHelper, IStorage hostStorage,
 			IStorage subStorage, IWebLogger webLogger)
@@ -161,18 +179,7 @@ namespace starsky.feature.demo.Services
 				var result = await PlainTextFileHelper.StreamToStringAsync(
 					hostStorage.ReadStream(settingsJsonFullPath));
 
-				PublishManifestDemo? data = null;
-				try
-				{
-					data = 	JsonSerializer.Deserialize<PublishManifestDemo?>(result);
-				}
-				catch ( JsonException exception)
-				{
-					webLogger.LogError("catch-ed", exception);
-					// and delete to retry
-					hostStorage.FileDelete(settingsJsonFullPath);
-				}
-
+				var data = Deserialize(result, webLogger, hostStorage, settingsJsonFullPath); 
 				if ( data == null )
 				{
 					webLogger.LogError("data is null");

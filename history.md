@@ -55,6 +55,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Desktop_ Update window of desktop again works again (Issue #987 PR #987)
 - [x] (Fixed) _Front-end_ Add display of sorting option (Issue #985 PR #987)
 - [x] (Fixed) _Desktop_ Fix settings names remove valueOf (PR #987)
+- [x] (Fixed) _Back-end_ Seed Data CLI & Docker with deps bugfixes (PR #993)
 
 # version 0.5.0 - 2022-11-18
 

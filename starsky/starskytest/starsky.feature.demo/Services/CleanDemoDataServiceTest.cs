@@ -299,4 +299,26 @@ public class CleanDemoDataServiceTest
 		Assert.AreEqual(1,c1A);
 	}
 
+		
+	[TestMethod]
+	public void Deserialize_ParsingFailed()
+	{
+		var result = CleanDemoDataService.Deserialize(string.Empty, new FakeIWebLogger(), new FakeIStorage(), string.Empty);
+		
+		Assert.IsNull(result);
+	}
+	
+	[TestMethod]
+	public void Deserialize_Success()
+	{
+		var input = "{" +
+		            "\"Copy\": {" +
+		            "\"1000/20211117_091926_dsc00514_e_kl1k.jpg\": true" +
+		            "}" +
+		            "}";
+		var result = CleanDemoDataService.Deserialize(input, new FakeIWebLogger(), new FakeIStorage(), string.Empty);
+		
+		Assert.AreEqual("1000/20211117_091926_dsc00514_e_kl1k.jpg", result!.Copy.FirstOrDefault().Key);
+	}
+	
 }
