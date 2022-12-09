@@ -111,12 +111,13 @@ namespace starsky.foundation.writemeta.Services
 			{
 				return checksums;
 			}
-			_logger.LogError($"Checksum loading failed {CheckSumLocation}, next retry from mirror");
+			_logger.LogError($"Checksum loading failed {CheckSumLocation}, next retry from mirror ~ error > " + checksums.Value);
+			
 			checksums = await _httpClientHelper.ReadString(CheckSumLocationMirror);
-			if ( checksums.Key ) return new KeyValuePair<bool, string>(false,checksums.Value);
+			if ( checksums.Key ) return new KeyValuePair<bool, string>(false, checksums.Value);
 			
 			_logger.LogError($"Checksum loading failed {CheckSumLocationMirror}" +
-			                 $", next stop; please connect to internet and restart app");
+			                 $", next stop; please connect to internet and restart app ~ error > " + checksums.Value);
 			return null;
 		}
 

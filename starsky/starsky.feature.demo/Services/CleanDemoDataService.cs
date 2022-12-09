@@ -149,18 +149,35 @@ namespace starsky.feature.demo.Services
 			foreach ( var (jsonUrl, dir) in appSettings.DemoData )
 			{
 				hostStorage.CreateDirectory(Path.Combine(cacheFolder, dir));
-				
+
 				var settingsJsonFullPath =
 					Path.Combine(cacheFolder, dir, "_settings.json");
 				if ( !hostStorage.ExistFile(settingsJsonFullPath) && !await httpClientHelper.Download(jsonUrl, settingsJsonFullPath))
 				{
+					webLogger.LogInformation("Skip due not exists: " + settingsJsonFullPath);
 					continue;
 				}
 				
 				var result = await PlainTextFileHelper.StreamToStringAsync(
 					hostStorage.ReadStream(settingsJsonFullPath));
-				var data = 	JsonSerializer.Deserialize<PublishManifestDemo>(result);
-				if ( data == null ) continue;
+
+				PublishManifestDemo? data = null;
+				try
+				{
+					data = 	JsonSerializer.Deserialize<PublishManifestDemo?>(result);
+				}
+				catch ( JsonException exception)
+				{
+					webLogger.LogError("catch-ed", exception);
+					// and delete to retry
+					hostStorage.FileDelete(settingsJsonFullPath);
+				}
+
+				if ( data == null )
+				{
+					webLogger.LogError("data is null");
+					continue;
+				}
 
 				var baseUrl = jsonUrl.Replace("_settings.json", string.Empty); // ends with slash
 				
