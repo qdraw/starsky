@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>starsky.feature.syncbackground</RootNamespace>
     <ProjectGuid>{15e1493e-6e79-4314-907f-b3ef18eb9046}</ProjectGuid>
-    <Version>0.5.0</Version>
+    <Version>0.5.1</Version>
     <Nullable>enable</Nullable>
 </PropertyGroup>
 
