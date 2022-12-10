@@ -41,7 +41,10 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 
-# version 0.5.1 _(Unreleased)_ - 2022-12-??
+# version 0.5.2 _(Unreleased)_ - 2022-12-??
+- nothing yet
+
+# version 0.5.1 - 2022-12-10
 
 - [x] (Added) _Docs_ New documentation site (PR #971)
 - [x] (Changed) _Back-end_ First user after registration is Admin to avoid issues with editing storage folder (PR #977)
