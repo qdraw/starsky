@@ -7,13 +7,14 @@ trigger:
     include:
     - documentation
     - starsky/readme.md
+    - starsky/history.md
     - starsky/starsky/readme.md
     - starsky/starsky/readme-docker-hub.md
     - starsky/starsky/readme-docker-development.md
     - starsky/starsky/clientapp/readme.md
     - starsky/**/readme.md
     - starskydesktop/readme.md
-    - starskydesktop/docs-assets/
+    - starskydesktop/docs-assets/**
     - starsky/starskytest/readme.md
     - starsky-tools/readme.md
     - starsky-tools/**/readme.md
