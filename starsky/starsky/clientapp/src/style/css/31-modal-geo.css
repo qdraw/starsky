@@ -1,0 +1,16 @@
+.modal-bg-large div.modal-content {
+  max-width: 98%;
+  height: 100%;
+}
+
+.modal-bg-large .content {
+  height: 100%;
+}
+.modal-bg .content-geo {
+  height: calc(100% - 150px);
+}
+
+.modal-bg-large .modal-button-bar button {
+  margin-right: 15px;
+  margin-top: 7px;
+}

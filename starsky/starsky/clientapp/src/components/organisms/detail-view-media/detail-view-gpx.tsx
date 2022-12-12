@@ -7,6 +7,10 @@ import FetchXml from "../../../shared/fetch-xml";
 import { Geo } from "../../../shared/geo";
 import { LeafletEmptyImageUrlGridLayer } from "../../../shared/leaflet-modify-empty-image-url-gridlayer";
 import { LeafletEmptyImageUrlTileLayer } from "../../../shared/leaflet-modify-empty-image-url-tilelayer";
+import {
+  tileLayerAttribution,
+  tileLayerLocation
+} from "../../../shared/tile-layer-location.const";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import MarkerBlueSvg from "../../../style/images/fa-map-marker-blue.svg";
@@ -49,9 +53,8 @@ const DetailViewGpx: React.FC = () => {
     // create map
     const map = L.map(mapReference.current, {
       layers: [
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution:
-            '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        L.tileLayer(tileLayerLocation, {
+          attribution: tileLayerAttribution
         })
       ]
     });
