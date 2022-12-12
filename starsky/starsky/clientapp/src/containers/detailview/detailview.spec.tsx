@@ -220,6 +220,7 @@ describe("DetailView", () => {
         .spyOn(useLocation, "default")
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
 
       // eslint-disable-next-line testing-library/render-result-naming-convention
@@ -254,6 +255,7 @@ describe("DetailView", () => {
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
@@ -298,6 +300,7 @@ describe("DetailView", () => {
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
