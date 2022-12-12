@@ -15,14 +15,75 @@ interface IModalMoveFileProps {
   handleExit: Function;
   selectedSubPath: string;
   parentDirectory: string;
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface ILatLong {
   latitude: number;
   longitude: number;
 }
+
+// /**
+//  * To update the archive
+//  */
+// function pushUpdate() {
+
+//   // // loading + update button
+//   // setIsLoading(true);
+
+//   const bodyParams = new URLPath().ObjectToSearchParams(update);
+//   if (bodyParams.toString().length === 0) return;
+
+//   // const subPaths = new URLPath().MergeSelectFileIndexItem(
+//   //   select,
+//   //   state.fileIndexItems
+//   // );
+//   // if (!subPaths) return;
+//   // const selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
+//   //   subPaths,
+//   //   ""
+//   // );
+
+//   if (selectParams.length === 0) return;
+//   bodyParams.append("f", selectParams);
+
+//   FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString())
+//     .then((anyData) => {
+//       const result = new CastToInterface().InfoFileIndexArray(anyData.data);
+//       result.forEach((element) => {
+//         if (element.status === IExifStatus.ReadOnly)
+//           setIsError(MessageErrorReadOnly);
+//         if (element.status === IExifStatus.NotFoundSourceMissing)
+//           setIsError(MessageErrorNotFoundSourceMissing);
+//         if (
+//           element.status === IExifStatus.Ok ||
+//           element.status === IExifStatus.Deleted
+//         ) {
+//           dispatch({
+//             type: "update",
+//             ...element,
+//             select: [element.fileName]
+//           });
+//         }
+//       });
+
+//       // loading + update button
+//       setIsLoading(false);
+//       setInputEnabled(true);
+//       ClearSearchCache(history.location.search);
+//       // undo error message when success
+//       if (isError === MessageErrorGenericFail) {
+//         setIsError("");
+//       }
+//     })
+//     .catch(() => {
+//       setIsError(MessageErrorGenericFail);
+//       // loading + update button
+//       setIsLoading(false);
+//       setInputEnabled(true);
+//     });
+// }
 
 const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   const settings = useGlobalSettings();
@@ -33,12 +94,10 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   );
   const MessageCancel = language.text("Annuleren", "Cancel");
 
-  const MessageTo = language.text("naar", "to");
-
   const [mapState, setMapState] = useState<L.Map | null>(null);
   const [location, setLocation] = useState<ILatLong | null>({
-    latitude: props.latitude,
-    longitude: props.longitude
+    latitude: !!props.latitude ? props.latitude : 0,
+    longitude: !!props.longitude ? props.longitude : 0
   });
   const [isLocationUpdated, setIsLocationUpdated] = useState<boolean>(false);
 
@@ -64,12 +123,12 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   const mapReference = useCallback((node: HTMLDivElement | null) => {
     if (node !== null && mapState === null) {
       let mapLocationCenter = L.latLng(52.375, 4.9);
-      if (props.latitude !== 0 && props.longitude !== 0) {
+      if (props.latitude && props.longitude) {
         mapLocationCenter = L.latLng(props.latitude, props.longitude);
       }
 
-      let zoom = 10;
-      if (props.latitude !== 0 && props.longitude !== 0) {
+      let zoom = 12;
+      if (props.latitude && props.longitude) {
         zoom = 15;
       }
 
@@ -83,7 +142,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
         ]
       });
 
-      if (props.latitude !== 0 && props.longitude !== 0) {
+      if (props.latitude && props.longitude) {
         const markerLocal = new L.Marker(
           {
             lat: props.latitude,
@@ -126,8 +185,6 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function updateLocation() {}
-
   return (
     <Modal
       id="move-geo"
@@ -151,7 +208,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
           {isLocationUpdated ? (
             <button
               onClick={() => {
-                // forceDelete();
+                // pushUpdate();
                 props.handleExit();
               }}
               data-test="update-geo-location"

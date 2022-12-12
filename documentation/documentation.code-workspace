@@ -22,7 +22,6 @@
 		"javascript.updateImportsOnFileMove.enabled": "always",
 		"jest.disabledWorkspaceFolders": [
 			"node_modules",
-			"mock",
 			"history.md"
 		],
 		"typescript.preferences.quoteStyle": "double",

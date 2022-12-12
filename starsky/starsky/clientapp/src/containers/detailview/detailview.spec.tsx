@@ -3,22 +3,22 @@ import { globalHistory } from "@reach/router";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
-import * as FileHashImage from "../components/atoms/file-hash-image/file-hash-image";
-import * as ContextDetailview from "../contexts/detailview-context";
-import * as useFetch from "../hooks/use-fetch";
-import * as useGestures from "../hooks/use-gestures/use-gestures";
-import * as useLocation from "../hooks/use-location";
-import { newIConnectionDefault } from "../interfaces/IConnectionDefault";
+import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
+import * as ContextDetailview from "../../contexts/detailview-context";
+import * as useFetch from "../../hooks/use-fetch";
+import * as useGestures from "../../hooks/use-gestures/use-gestures";
+import * as useLocation from "../../hooks/use-location";
+import { newIConnectionDefault } from "../../interfaces/IConnectionDefault";
 import {
   IDetailView,
   IRelativeObjects,
   newDetailView,
   PageType
-} from "../interfaces/IDetailView";
-import { IExifStatus } from "../interfaces/IExifStatus";
-import { IFileIndexItem, Orientation } from "../interfaces/IFileIndexItem";
-import { UpdateRelativeObject } from "../shared/update-relative-object";
-import { UrlQuery } from "../shared/url-query";
+} from "../../interfaces/IDetailView";
+import { IExifStatus } from "../../interfaces/IExifStatus";
+import { IFileIndexItem, Orientation } from "../../interfaces/IFileIndexItem";
+import { UpdateRelativeObject } from "../../shared/update-relative-object";
+import { UrlQuery } from "../../shared/url-query";
 import DetailView from "./detailview";
 
 describe("DetailView", () => {

@@ -22,7 +22,7 @@ export default function Modal({
   isOpen,
   handleExit,
   focusAfterExit,
-  className
+  className = ""
 }: ModalPropTypes): any {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);

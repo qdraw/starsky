@@ -1,27 +1,27 @@
 import React, { useEffect, useRef } from "react";
-import FileHashImage from "../components/atoms/file-hash-image/file-hash-image";
-import Preloader from "../components/atoms/preloader/preloader";
-import ColorClassSelectKeyboard from "../components/molecules/color-class-select/color-class-select-keyboard";
-import DetailViewGpx from "../components/organisms/detail-view-media/detail-view-gpx";
-import DetailViewMp4 from "../components/organisms/detail-view-media/detail-view-mp4";
-import DetailViewSidebar from "../components/organisms/detail-view-sidebar/detail-view-sidebar";
-import { DetailViewContext } from "../contexts/detailview-context";
-import useGestures from "../hooks/use-gestures/use-gestures";
-import useKeyboardEvent from "../hooks/use-keyboard/use-keyboard-event";
-import useLocation from "../hooks/use-location";
+import FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
+import Preloader from "../../components/atoms/preloader/preloader";
+import ColorClassSelectKeyboard from "../../components/molecules/color-class-select/color-class-select-keyboard";
+import DetailViewGpx from "../../components/organisms/detail-view-media/detail-view-gpx";
+import DetailViewMp4 from "../../components/organisms/detail-view-media/detail-view-mp4";
+import DetailViewSidebar from "../../components/organisms/detail-view-sidebar/detail-view-sidebar";
+import { DetailViewContext } from "../../contexts/detailview-context";
+import useGestures from "../../hooks/use-gestures/use-gestures";
+import useKeyboardEvent from "../../hooks/use-keyboard/use-keyboard-event";
+import useLocation from "../../hooks/use-location";
 import {
   IDetailView,
   IRelativeObjects,
   newDetailView
-} from "../interfaces/IDetailView";
-import { ImageFormat } from "../interfaces/IFileIndexItem";
-import { INavigateState } from "../interfaces/INavigateState";
-import DocumentTitle from "../shared/document-title";
-import { Keyboard } from "../shared/keyboard";
-import { UpdateRelativeObject } from "../shared/update-relative-object";
-import { URLPath } from "../shared/url-path";
-import { UrlQuery } from "../shared/url-query";
-import MenuDetailViewContainer from "./menu-detailview-container/menu-detailview-container";
+} from "../../interfaces/IDetailView";
+import { ImageFormat } from "../../interfaces/IFileIndexItem";
+import { INavigateState } from "../../interfaces/INavigateState";
+import DocumentTitle from "../../shared/document-title";
+import { Keyboard } from "../../shared/keyboard";
+import { UpdateRelativeObject } from "../../shared/update-relative-object";
+import { URLPath } from "../../shared/url-path";
+import { UrlQuery } from "../../shared/url-query";
+import MenuDetailViewContainer from "../menu-detailview-container/menu-detailview-container";
 
 const DetailView: React.FC<IDetailView> = () => {
   const history = useLocation();

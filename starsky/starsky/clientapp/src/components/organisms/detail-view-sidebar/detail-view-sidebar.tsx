@@ -13,12 +13,7 @@ import AspectRatio from "../../../shared/aspect-ratio";
 import BytesFormat from "../../../shared/bytes-format";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import { ClipboardHelper } from "../../../shared/clipboard-helper";
-import {
-  isValidDate,
-  parseDate,
-  parseRelativeDate,
-  parseTime
-} from "../../../shared/date";
+import { isValidDate, parseRelativeDate } from "../../../shared/date";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Keyboard } from "../../../shared/keyboard";
 import { Language } from "../../../shared/language";
@@ -30,7 +25,8 @@ import DetailViewInfoMakeModelAperture from "../../atoms/detailview-info-make-mo
 import FormControl from "../../atoms/form-control/form-control";
 import Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "../../molecules/color-class-select/color-class-select";
-import ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
+import DetailViewInfoDateTime from "../detailview-info-datetime/detailview-info-datetime";
+import DetailViewInfoLocation from "../detailview-info-location/detailview-info-location";
 import { UpdateChange } from "./update-change";
 
 interface IDetailViewSidebarProps {
@@ -61,13 +57,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
     );
     const MessageDateMinutes = language.text("minuten", "minutes");
     const MessageDateHour = language.text("uur", "hour");
-    const MessageNounNameless = language.text("Naamloze", "Unnamed");
-    const MessageLocation = language.text("locatie", "location");
-    const MessageCreationDate = language.text("Aanmaakdatum", "Creation date");
-    const MessageCreationDateUnknownTime = language.text(
-      "is op een onbekend moment",
-      "is at an unknown time"
-    );
+
     const MessageCopiedLabels = language.text(
       "De labels zijn gekopieerd",
       "The labels have been copied"
@@ -217,8 +207,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
       [props]
     );
 
-    const [isModalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
-
     if (!fileIndexItem) {
       return <>No status</>;
     }
@@ -307,52 +295,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
           <div className="content--header">Details</div>
         ) : null}
 
-        {/* dateTime when the image is created */}
-        {isModalDatetimeOpen ? (
-          <ModalDatetime
-            subPath={fileIndexItem.filePath}
-            dateTime={fileIndexItem.dateTime}
-            handleExit={(result) => {
-              setModalDatetimeOpen(false);
-              if (!result || !result[0]) return;
-              // only update the content that can be changed
-              setFileIndexItem({
-                ...fileIndexItem,
-                dateTime: result[0].dateTime
-              });
-              dispatch({
-                type: "update",
-                dateTime: result[0].dateTime,
-                lastEdited: ""
-              });
-            }}
-            isOpen={true}
-          />
-        ) : null}
         <div className="content--text">
-          <button
-            className="box"
-            disabled={!isFormEnabled}
-            data-test="dateTime"
-            onClick={() => setModalDatetimeOpen(true)}
-          >
-            {isFormEnabled ? (
-              <div className="icon icon--right icon--edit" />
-            ) : null}
-            <div className="icon icon--date" />
-            {isValidDate(fileIndexItem.dateTime) ? (
-              <>
-                <b>{parseDate(fileIndexItem.dateTime, settings.language)}</b>
-                <p>{parseTime(fileIndexItem.dateTime)}</p>
-              </>
-            ) : null}
-            {!isValidDate(fileIndexItem.dateTime) ? (
-              <>
-                <b>{MessageCreationDate}</b>
-                <p>{MessageCreationDateUnknownTime}</p>
-              </>
-            ) : null}
-          </button>
+          <DetailViewInfoDateTime
+            fileIndexItem={fileIndexItem}
+            isFormEnabled={isFormEnabled}
+            setFileIndexItem={setFileIndexItem}
+            dispatch={dispatch}
+          />
 
           {isValidDate(fileIndexItem.lastEdited) ? (
             <div className="box" data-test="lastEdited">
@@ -391,41 +340,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
             </div>
           ) : null}
 
-          {fileIndexItem.latitude && fileIndexItem.longitude ? (
-            <a
-              className="box"
-              target="_blank"
-              rel="noopener noreferrer"
-              href={
-                "https://www.openstreetmap.org/?mlat=" +
-                fileIndexItem.latitude +
-                "&mlon=" +
-                fileIndexItem.longitude +
-                "#map=16/" +
-                fileIndexItem.latitude +
-                "/" +
-                fileIndexItem.longitude
-              }
-            >
-              <div
-                className="icon icon--location"
-                data-test="detailview-location-div"
-              />
-              {fileIndexItem.locationCity && fileIndexItem.locationCountry ? (
-                <>
-                  <b>{fileIndexItem.locationCity}</b>
-                  <p>{fileIndexItem.locationCountry}</p>
-                </>
-              ) : (
-                <>
-                  <b>{MessageNounNameless}</b>
-                  <p>{MessageLocation}</p>
-                </>
-              )}
-            </a>
-          ) : (
-            ""
-          )}
+          <DetailViewInfoLocation fileIndexItem={fileIndexItem} />
 
           {collections.map((item, index) => (
             // some senarios details is set off, this is linked from details

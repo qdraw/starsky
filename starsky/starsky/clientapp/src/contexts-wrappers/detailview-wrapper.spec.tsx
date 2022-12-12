@@ -1,6 +1,5 @@
 import { render } from "@testing-library/react";
-import React from "react";
-import * as DetailView from "../containers/detailview";
+import * as DetailView from "../containers/detailview/detailview";
 import * as useDetailViewContext from "../contexts/detailview-context";
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { mountReactHook } from "../hooks/___tests___/test-hook";
