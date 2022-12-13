@@ -15,6 +15,8 @@ type ModalPropTypes = {
   className?: string;
 };
 
+export const ModalOpenClassName = "modal-bg--open";
+
 export default function Modal({
   children,
   id = "modal-root",
@@ -103,11 +105,13 @@ export default function Modal({
         <div
           onClick={(event) => {
             const target = event.target as HTMLElement;
-            if (target.className.indexOf("modal-bg--open") === -1) return;
+            if (target.className.indexOf(ModalOpenClassName) === -1) return;
             handleExit();
           }}
           data-test="modal-bg"
-          className={`modal-bg ${isOpen ? " modal-bg--open " + className : ""}`}
+          className={`modal-bg ${
+            isOpen ? ` ${ModalOpenClassName} ` + className : ""
+          }`}
         >
           <div
             className={`modal-content ${isOpen ? " modal-content--show" : ""}`}

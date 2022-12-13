@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
+import { ModalOpenClassName } from "../../components/atoms/modal/modal";
 import Preloader from "../../components/atoms/preloader/preloader";
 import ColorClassSelectKeyboard from "../../components/molecules/color-class-select/color-class-select-keyboard";
 import DetailViewGpx from "../../components/organisms/detail-view-media/detail-view-gpx";
@@ -104,6 +105,12 @@ const DetailView: React.FC<IDetailView> = () => {
       if (!history.location) return;
       if (new Keyboard().isInForm(event)) return;
 
+      const isPortalActive = !!(document.querySelector(
+        `.${ModalOpenClassName}`
+      ) as HTMLElement);
+      if (isPortalActive) {
+        return;
+      }
       const url = isSearchQuery
         ? new UrlQuery().HashSearchPage(history.location.search)
         : new UrlQuery().updateFilePathHash(
