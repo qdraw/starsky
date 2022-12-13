@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import ModalGeo from "./modal-geo";
+import ModalGeo, { getZoom } from "./modal-geo";
 
 describe("ModalForceDelete", () => {
   beforeEach(() => {
@@ -18,6 +18,12 @@ describe("ModalForceDelete", () => {
         isFormEnabled={false}
       ></ModalGeo>
     );
+  });
+
+  describe("getZoom", () => {
+    it("getZoom 1", () => {
+      getZoom({} as ILatLong);
+    });
   });
 
   // it("should fetchPost and dispatch", async () => {

@@ -17,7 +17,7 @@ import MarkerShadowPng from "../../../style/images/marker-shadow.png";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
-interface IModalMoveFileProps {
+export interface IModalMoveFileProps {
   isOpen: boolean;
   isFormEnabled: boolean;
   handleExit: (result: IGeoLocationModel | null) => void;
@@ -28,7 +28,7 @@ interface IModalMoveFileProps {
   collections?: boolean;
 }
 
-interface ILatLong {
+export interface ILatLong {
   latitude: number;
   longitude: number;
 }
