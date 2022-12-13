@@ -256,6 +256,14 @@ export class UrlQuery {
   };
 
   /**
+   * GET to coordinates
+   * @returns url
+   */
+  public UrlReverseLookup = (latitude: string, longitude: string): string => {
+    return `${this.prefix}/api/geo-reverse-lookup?latitude=${latitude}&longitude=${longitude}`;
+  };
+
+  /**
    * DELETE to endpoint to remove file from database and disk
    */
   public UrlDeleteApi = (): string => {

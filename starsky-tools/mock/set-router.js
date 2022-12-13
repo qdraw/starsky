@@ -7,6 +7,7 @@ var apiAccountPermissionsIndex = require("./api/account/permissions/index.json")
 var accountStatus = require("./api/account/status/index.json");
 var apiHealthDetails = require("./api/health/details/index.json");
 var apiHealthCheckForUpdates = require("./api/health/check-for-updates/index.json");
+var apiGeoReverseLookup = require("./api/geo-reverse-lookup/index.json");
 
 var apiIndexIndex = require("./api/index/index.json");
 var apiIndex__Starsky = require("./api/index/__starsky.json");
@@ -91,6 +92,11 @@ function setRouter(app, isStoryBook = false) {
 	app.get(prefix + "/api/health/check-for-updates", (req, res) => {
 		res.status(202);
 		res.json(apiHealthCheckForUpdates);
+	});
+
+	app.get(prefix + "/api/geo-reverse-lookup", (req, res) => {
+		res.status(200);
+		res.json(apiGeoReverseLookup);
 	});
 
 	app.get(prefix + "/api/info", (req, res) => {

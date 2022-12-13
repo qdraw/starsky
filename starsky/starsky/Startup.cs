@@ -139,7 +139,10 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
-			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
+			services.AddMvcCore(options =>
+			{
+				options.ModelBinderProviders.Insert(0, new DoubleBinderProvider());
+			}).AddApiExplorer().AddAuthorization().AddViews();
 
 	        ConfigureForwardedHeaders(services);
 	        

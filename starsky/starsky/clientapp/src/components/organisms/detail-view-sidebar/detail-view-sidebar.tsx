@@ -340,7 +340,12 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
             </div>
           ) : null}
 
-          <DetailViewInfoLocation fileIndexItem={fileIndexItem} />
+          <DetailViewInfoLocation
+            fileIndexItem={fileIndexItem}
+            isFormEnabled={isFormEnabled}
+            dispatch={dispatch}
+            setFileIndexItem={setFileIndexItem}
+          />
 
           {collections.map((item, index) => (
             // some senarios details is set off, this is linked from details
