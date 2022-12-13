@@ -32,67 +32,6 @@ interface ILatLong {
   longitude: number;
 }
 
-// /**
-//  * To update the archive
-//  */
-// function pushUpdate() {
-
-//   // // loading + update button
-//   // setIsLoading(true);
-
-//   const bodyParams = new URLPath().ObjectToSearchParams(update);
-//   if (bodyParams.toString().length === 0) return;
-
-//   // const subPaths = new URLPath().MergeSelectFileIndexItem(
-//   //   select,
-//   //   state.fileIndexItems
-//   // );
-//   // if (!subPaths) return;
-//   // const selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
-//   //   subPaths,
-//   //   ""
-//   // );
-
-//   if (selectParams.length === 0) return;
-//   bodyParams.append("f", selectParams);
-
-//   FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString())
-//     .then((anyData) => {
-//       const result = new CastToInterface().InfoFileIndexArray(anyData.data);
-//       result.forEach((element) => {
-//         if (element.status === IExifStatus.ReadOnly)
-//           setIsError(MessageErrorReadOnly);
-//         if (element.status === IExifStatus.NotFoundSourceMissing)
-//           setIsError(MessageErrorNotFoundSourceMissing);
-//         if (
-//           element.status === IExifStatus.Ok ||
-//           element.status === IExifStatus.Deleted
-//         ) {
-//           dispatch({
-//             type: "update",
-//             ...element,
-//             select: [element.fileName]
-//           });
-//         }
-//       });
-
-//       // loading + update button
-//       setIsLoading(false);
-//       setInputEnabled(true);
-//       ClearSearchCache(history.location.search);
-//       // undo error message when success
-//       if (isError === MessageErrorGenericFail) {
-//         setIsError("");
-//       }
-//     })
-//     .catch(() => {
-//       setIsError(MessageErrorGenericFail);
-//       // loading + update button
-//       setIsLoading(false);
-//       setInputEnabled(true);
-//     });
-// }
-
 async function updateGeoLocation(
   parentDirectory: string,
   selectedSubPath: string,
@@ -183,7 +122,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   });
 
   const onDrag = function (dragEndEvent: L.DragEndEvent) {
-    var latlng = dragEndEvent.target.getLatLng();
+    const latlng = dragEndEvent.target.getLatLng();
     setLocation({
       latitude: latlng.lat,
       longitude: latlng.lng
@@ -208,7 +147,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       }
 
       const map = L.map(node, {
-        center: mapLocationCenter!,
+        center: mapLocationCenter,
         zoom,
         layers: [
           L.tileLayer(tileLayerLocation, {
@@ -269,9 +208,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       id="move-geo"
       className="modal-bg-large"
       isOpen={props.isOpen}
-      handleExit={() => {
-        props.handleExit(null);
-      }}
+      handleExit={() => props.handleExit}
     >
       <div className="content" data-test="modal-geo">
         <div className="modal content--subheader">
