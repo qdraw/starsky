@@ -43,7 +43,7 @@ const blueIcon = L.icon({
   popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
 });
 
-function getZoom(location: ILatLong): number {
+export function getZoom(location: ILatLong): number {
   let zoom = 12;
   if (location.latitude && location.longitude) {
     zoom = 15;
@@ -51,7 +51,7 @@ function getZoom(location: ILatLong): number {
   return zoom;
 }
 
-function addDefaultMarker(
+export function addDefaultMarker(
   location: ILatLong,
   map: L.Map,
   isFormEnabled: boolean,
@@ -83,7 +83,7 @@ function addDefaultMarker(
   }
 }
 
-function addDefaultClickSetMarker(
+export function addDefaultClickSetMarker(
   map: L.Map,
   isFormEnabled: boolean,
   setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
@@ -126,7 +126,7 @@ function addDefaultClickSetMarker(
   });
 }
 
-async function updateGeoLocation(
+export async function updateGeoLocation(
   parentDirectory: string,
   selectedSubPath: string,
   location: ILatLong | null,
