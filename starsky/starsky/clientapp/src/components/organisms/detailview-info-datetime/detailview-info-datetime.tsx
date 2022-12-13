@@ -25,6 +25,21 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
 
     const [isModalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
 
+    function handleExit(result: IFileIndexItem[] | null) {
+      setModalDatetimeOpen(false);
+      if (!result || !result[0]) return;
+      // only update the content that can be changed
+      setFileIndexItem({
+        ...fileIndexItem,
+        dateTime: result[0].dateTime
+      });
+      dispatch({
+        type: "update",
+        dateTime: result[0].dateTime,
+        lastEdited: ""
+      });
+    }
+
     return (
       <>
         {/* dateTime when the image is created */}
@@ -32,20 +47,7 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
           <ModalDatetime
             subPath={fileIndexItem.filePath}
             dateTime={fileIndexItem.dateTime}
-            handleExit={(result) => {
-              setModalDatetimeOpen(false);
-              if (!result || !result[0]) return;
-              // only update the content that can be changed
-              setFileIndexItem({
-                ...fileIndexItem,
-                dateTime: result[0].dateTime
-              });
-              dispatch({
-                type: "update",
-                dateTime: result[0].dateTime,
-                lastEdited: ""
-              });
-            }}
+            handleExit={handleExit}
             isOpen={true}
           />
         ) : null}

@@ -21,11 +21,11 @@ namespace starsky.feature.geolookup.Services
     {
 	    private readonly AppSettings _appSettings;
 	    private readonly IStorage _iStorage;
-	    private readonly IMemoryCache _cache;
-	    private readonly IWebLogger _logger;
+	    private readonly IMemoryCache? _cache;
+	    private readonly IWebLogger? _logger;
 
 	    public GeoIndexGpx(AppSettings appSettings, IStorage iStorage, 
-		    IWebLogger logger = null, IMemoryCache memoryCache = null )
+		    IWebLogger? logger = null, IMemoryCache? memoryCache = null )
         {
             _appSettings = appSettings;
 	        _iStorage = iStorage;
@@ -91,7 +91,7 @@ namespace starsky.feature.geolookup.Services
 
             metaFilesInDirectory = GetNoLocationItems(metaFilesInDirectory);
 
-            var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
+            var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory!;
             new GeoCacheStatusService(_cache).StatusUpdate(subPath,
 	            metaFilesInDirectory.Count, StatusType.Total);
             
@@ -99,7 +99,7 @@ namespace starsky.feature.geolookup.Services
 	                     (value, index) => new { value, index }))
             {
 	            var dateTimeCameraUtc = ConvertTimeZone(metaFileItem.value.DateTime, 
-		            metaFileItem.value.FilePath);
+		            metaFileItem.value.FilePath!);
                 
                 var fileGeoData = gpxList.MinBy(p => Math.Abs((p.DateTime - dateTimeCameraUtc).Ticks));
                 if(fileGeoData == null) continue;
@@ -114,7 +114,7 @@ namespace starsky.feature.geolookup.Services
                 toUpdateMetaFiles.Add(metaFileItem.value);
                 
                 // status update
-                new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory, 
+                new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory!, 
 	                metaFileItem.index, StatusType.Current);
             }
             

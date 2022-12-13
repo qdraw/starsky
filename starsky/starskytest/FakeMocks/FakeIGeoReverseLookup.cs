@@ -26,7 +26,13 @@ namespace starskytest.FakeMocks
 
 		public Task<GeoLocationModel> GetLocation(double latitude, double longitude)
 		{
-			throw new System.NotImplementedException();
+			return Task.FromResult(new GeoLocationModel
+			{
+				IsSuccess = true,
+				Longitude = longitude,
+				Latitude = latitude,
+				LocationCity = "FakeLocationName"
+			});
 		}
 	}
 }

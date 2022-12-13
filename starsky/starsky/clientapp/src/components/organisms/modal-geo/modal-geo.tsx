@@ -14,6 +14,7 @@ import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import MarkerBlueSvg from "../../../style/images/fa-map-marker-blue.svg";
 import MarkerShadowPng from "../../../style/images/marker-shadow.png";
+import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
 interface IModalMoveFileProps {
@@ -30,6 +31,99 @@ interface IModalMoveFileProps {
 interface ILatLong {
   latitude: number;
   longitude: number;
+}
+
+const blueIcon = L.icon({
+  iconUrl: MarkerBlueSvg,
+  shadowUrl: MarkerShadowPng,
+  iconSize: [50, 50], // size of the icon
+  shadowSize: [50, 50], // size of the shadow
+  iconAnchor: [25, 50], // point of the icon which will correspond to marker's location
+  shadowAnchor: [15, 55], // the same for the shadow
+  popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
+});
+
+function getZoom(location: ILatLong): number {
+  let zoom = 12;
+  if (location.latitude && location.longitude) {
+    zoom = 15;
+  }
+  return zoom;
+}
+
+function addDefaultMarker(
+  location: ILatLong,
+  map: L.Map,
+  isFormEnabled: boolean,
+  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
+  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>
+): void {
+  const onDrag = function (dragEndEvent: L.DragEndEvent) {
+    const latlng = dragEndEvent.target.getLatLng();
+    setLocation({
+      latitude: latLongRound(latlng.lat),
+      longitude: latLongRound(latlng.lng)
+    });
+    setIsLocationUpdated(true);
+  };
+
+  if (location.latitude && location.longitude) {
+    const markerLocal = new L.Marker(
+      {
+        lat: location.latitude,
+        lng: location.longitude
+      },
+      {
+        draggable: isFormEnabled,
+        icon: blueIcon
+      }
+    );
+    markerLocal.on("dragend", onDrag);
+    map.addLayer(markerLocal);
+  }
+}
+
+function addDefaultClickSetMarker(
+  map: L.Map,
+  isFormEnabled: boolean,
+  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
+  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  map.on("click", function (event) {
+    if (!isFormEnabled) {
+      return;
+    }
+
+    map.eachLayer(function (layer) {
+      if (layer instanceof L.Marker) {
+        map.removeLayer(layer);
+      }
+    });
+
+    const markerLocal = new L.Marker(event.latlng, {
+      draggable: true,
+      icon: blueIcon
+    });
+
+    const onDrag = function (dragEndEvent: L.DragEndEvent) {
+      const latlng = dragEndEvent.target.getLatLng();
+      setLocation({
+        latitude: latLongRound(latlng.lat),
+        longitude: latLongRound(latlng.lng)
+      });
+      setIsLocationUpdated(true);
+    };
+
+    markerLocal.on("dragend", onDrag);
+
+    setLocation({
+      latitude: latLongRound(event.latlng.lat),
+      longitude: latLongRound(event.latlng.lng)
+    });
+
+    setIsLocationUpdated(true);
+    map.addLayer(markerLocal);
+  });
 }
 
 async function updateGeoLocation(
@@ -88,6 +182,10 @@ async function updateGeoLocation(
   return Promise.resolve(model);
 }
 
+function latLongRound(latitudeLong: number | undefined) {
+  return !!latitudeLong ? Math.round(latitudeLong * 1000000) / 1000000 : 0;
+}
+
 const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -106,29 +204,10 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   );
   const [mapState, setMapState] = useState<L.Map | null>(null);
   const [location, setLocation] = useState<ILatLong>({
-    latitude: !!props.latitude ? props.latitude : 0,
-    longitude: !!props.longitude ? props.longitude : 0
+    latitude: latLongRound(props.latitude),
+    longitude: latLongRound(props.longitude)
   });
   const [isLocationUpdated, setIsLocationUpdated] = useState<boolean>(false);
-
-  const blueIcon = L.icon({
-    iconUrl: MarkerBlueSvg,
-    shadowUrl: MarkerShadowPng,
-    iconSize: [50, 50], // size of the icon
-    shadowSize: [50, 50], // size of the shadow
-    iconAnchor: [25, 50], // point of the icon which will correspond to marker's location
-    shadowAnchor: [15, 55], // the same for the shadow
-    popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
-  });
-
-  const onDrag = function (dragEndEvent: L.DragEndEvent) {
-    const latlng = dragEndEvent.target.getLatLng();
-    setLocation({
-      latitude: latlng.lat,
-      longitude: latlng.lng
-    });
-    setIsLocationUpdated(true);
-  };
 
   const mapReference = useCallback((node: HTMLDivElement | null) => {
     if (node !== null && mapState === null) {
@@ -141,10 +220,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
         mapLocationCenter = L.latLng(location.latitude, location.longitude);
       }
 
-      let zoom = 12;
-      if (location.latitude && location.longitude) {
-        zoom = 15;
-      }
+      const zoom = getZoom(location);
 
       const map = L.map(node, {
         center: mapLocationCenter,
@@ -156,68 +232,75 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
         ]
       });
 
-      if (location.latitude && location.longitude) {
-        const markerLocal = new L.Marker(
-          {
-            lat: location.latitude,
-            lng: location.longitude
-          },
-          {
-            draggable: props.isFormEnabled,
-            icon: blueIcon
-          }
-        );
-        markerLocal.on("dragend", onDrag);
-        map.addLayer(markerLocal);
-      }
+      addDefaultMarker(
+        location,
+        map,
+        props.isFormEnabled,
+        setLocation,
+        setIsLocationUpdated
+      );
 
-      map.on("click", function (event) {
-        if (!props.isFormEnabled) {
-          return;
-        }
-
-        map.eachLayer(function (layer) {
-          if (layer instanceof L.Marker) {
-            map.removeLayer(layer);
-          }
-        });
-
-        const markerLocal = new L.Marker(event.latlng, {
-          draggable: true,
-          icon: blueIcon
-        });
-
-        markerLocal.on("dragend", onDrag);
-
-        setLocation({
-          latitude: event.latlng.lat,
-          longitude: event.latlng.lng
-        });
-
-        setIsLocationUpdated(true);
-        map.addLayer(markerLocal);
-      });
+      addDefaultClickSetMarker(
+        map,
+        props.isFormEnabled,
+        setLocation,
+        setIsLocationUpdated
+      );
 
       setMapState(map);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  function subHeader(): string {
+    return props.isFormEnabled
+      ? !props.latitude && !props.longitude
+        ? MessageAddLocation
+        : MessageUpdateLocation
+      : MessageViewLocation;
+  }
+
+  function updateButton(): JSX.Element {
+    return isLocationUpdated ? (
+      <button
+        onClick={async () => {
+          const model = await updateGeoLocation(
+            props.parentDirectory,
+            props.selectedSubPath,
+            location,
+            setError,
+            props.collections
+          );
+          if (model) {
+            props.handleExit(model);
+          }
+        }}
+        data-test="update-geo-location"
+        className="btn btn--default"
+      >
+        {!props.latitude && !props.longitude
+          ? MessageAddLocation
+          : MessageUpdateLocation}
+      </button>
+    ) : (
+      <button className="btn btn--default" disabled={true}>
+        {/* disabled */}
+        {!props.latitude && !props.longitude
+          ? MessageAddLocation
+          : MessageUpdateLocation}
+      </button>
+    );
+  }
+
   return (
     <Modal
       id="move-geo"
       className="modal-bg-large"
       isOpen={props.isOpen}
-      handleExit={() => props.handleExit}
+      handleExit={() => props.handleExit(null)}
     >
       <div className="content" data-test="modal-geo">
-        <div className="modal content--subheader">
-          {props.isFormEnabled
-            ? !props.latitude && !props.longitude
-              ? MessageAddLocation
-              : MessageUpdateLocation
-            : MessageViewLocation}
-        </div>
+        <div className="modal content--subheader">{subHeader()}</div>
         {error ? (
           <div className="modal modal-button-bar-error">
             <div data-test="login-error" className="content--error-true">
@@ -234,37 +317,23 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
           >
             {MessageCancel}
           </button>
-          {props.isFormEnabled ? (
-            isLocationUpdated ? (
-              <button
-                onClick={async () => {
-                  const model = await updateGeoLocation(
-                    props.parentDirectory,
-                    props.selectedSubPath,
-                    location,
-                    setError,
-                    props.collections
-                  );
-                  if (model) {
-                    props.handleExit(model);
-                  }
-                }}
-                data-test="update-geo-location"
-                className="btn btn--default"
-              >
-                {!props.latitude && !props.longitude
-                  ? MessageAddLocation
-                  : MessageUpdateLocation}
-              </button>
-            ) : (
-              <button className="btn btn--default" disabled={true}>
-                {/* disabled */}
-                {!props.latitude && !props.longitude
-                  ? MessageAddLocation
-                  : MessageUpdateLocation}
-              </button>
-            )
-          ) : null}
+          {props.isFormEnabled ? updateButton() : null}
+          <b>Latitude:</b>{" "}
+          <FormControl
+            contentEditable={false}
+            className={"inline"}
+            name={"lat"}
+          >
+            {location.latitude}
+          </FormControl>{" "}
+          <b>Longitude:</b>{" "}
+          <FormControl
+            contentEditable={false}
+            className={"inline"}
+            name={"lat"}
+          >
+            {location.longitude}
+          </FormControl>
         </div>
       </div>
     </Modal>

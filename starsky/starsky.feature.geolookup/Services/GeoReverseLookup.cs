@@ -118,6 +118,7 @@ namespace starsky.feature.geolookup.Services
 		    metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
 
             var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
+            if ( string.IsNullOrEmpty(subPath) ) return metaFilesInDirectory;
             
 	        new GeoCacheStatusService(_cache).StatusUpdate(subPath, metaFilesInDirectory.Count*2, StatusType.Total);
 
@@ -126,7 +127,7 @@ namespace starsky.feature.geolookup.Services
             {
 	            
 	            var result = await GetLocation(metaFileItem.value.Latitude, metaFileItem.value.Longitude);
-	            new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory, 
+	            new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory!, 
 		            metaFileItem.index, StatusType.Current);
 	            if ( !result.IsSuccess )
 	            {

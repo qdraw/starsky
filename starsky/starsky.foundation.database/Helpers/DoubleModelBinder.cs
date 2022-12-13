@@ -14,7 +14,7 @@ public class DoubleBinderProvider : IModelBinderProvider
 			throw new ArgumentNullException(nameof(context));
 		}
 
-		return context.Metadata.ModelType == typeof(double) ? new DoubleModelBinder() : null;
+		return context.Metadata?.ModelType == typeof(double) ? new DoubleModelBinder() : null;
 	}
 }
 

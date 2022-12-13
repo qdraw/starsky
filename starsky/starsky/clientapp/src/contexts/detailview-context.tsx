@@ -111,12 +111,14 @@ export function detailviewReducer(
       if (dateTime) state.fileIndexItem.dateTime = dateTime;
       if (latitude) state.fileIndexItem.latitude = latitude;
       if (longitude) state.fileIndexItem.longitude = longitude;
-      if (locationCity) state.fileIndexItem.dateTime = locationCity;
-      if (locationCountry) state.fileIndexItem.dateTime = locationCountry;
-      if (locationCountryCode) {
-        state.fileIndexItem.dateTime = locationCountryCode;
+      if (locationCity) state.fileIndexItem.locationCity = locationCity;
+      if (locationCountry) {
+        state.fileIndexItem.locationCountry = locationCountry;
       }
-      if (locationState) state.fileIndexItem.dateTime = locationState;
+      if (locationCountryCode) {
+        state.fileIndexItem.locationCountryCode = locationCountryCode;
+      }
+      if (locationState) state.fileIndexItem.locationState = locationState;
 
       // Need to update otherwise other events are not triggerd
       return updateCache({ ...state, lastUpdated: new Date() });

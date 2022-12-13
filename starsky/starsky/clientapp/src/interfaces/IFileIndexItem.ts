@@ -39,7 +39,9 @@ export interface IFileIndexItem {
   shutterSpeed?: string;
   focalLength?: number;
   locationCountry?: string;
+  locationCountryCode?: string;
   locationCity?: string;
+  locationState?: string;
   imageWidth: number;
   imageHeight: number;
   size?: number;

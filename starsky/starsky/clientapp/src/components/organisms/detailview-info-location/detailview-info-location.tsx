@@ -3,6 +3,7 @@ import { DetailViewAction } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import { Language } from "../../../shared/language";
 import ModalGeo from "../modal-geo/modal-geo";
 
@@ -28,6 +29,37 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
       history.location.href.includes("&modal=geo")
     );
 
+    function handleExit(model: IGeoLocationModel | null) {
+      setLocationOpen(false);
+      history.navigate(history.location.href.replace(/&modal=geo/gi, ""), {
+        replace: true
+      });
+      if (!model || !setFileIndexItem || !dispatch) {
+        return;
+      }
+      setFileIndexItem({
+        ...fileIndexItem,
+        ...model
+      });
+      dispatch({
+        type: "update",
+        ...model
+      });
+      fileIndexItem.locationCity = model.locationCity;
+      fileIndexItem.locationCountry = model.locationCountry;
+    }
+
+    function onClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+      event.preventDefault();
+      history.navigate(
+        history.location.href.replace(/&modal=geo/gi, "") + "&modal=geo",
+        {
+          replace: true
+        }
+      );
+      setLocationOpen(true);
+    }
+
     return (
       <>
         {/* loation when the image is created */}
@@ -38,44 +70,14 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
             parentDirectory={fileIndexItem.parentDirectory}
             selectedSubPath={fileIndexItem.fileName}
             isFormEnabled={isFormEnabled}
-            handleExit={(model) => {
-              setLocationOpen(false);
-              history.navigate(
-                history.location.href.replace(/&modal=geo/gi, ""),
-                {
-                  replace: true
-                }
-              );
-              if (!model || !setFileIndexItem || !dispatch) {
-                return;
-              }
-              setFileIndexItem({
-                ...fileIndexItem,
-                ...model
-              });
-              dispatch({
-                type: "update",
-                ...model
-              });
-              fileIndexItem.locationCity = model.locationCity;
-              fileIndexItem.locationCountry = model.locationCountry;
-            }}
+            handleExit={handleExit}
             isOpen={true}
           />
         ) : null}
 
         <a
           className="box"
-          onClick={(event) => {
-            event.preventDefault();
-            history.navigate(
-              history.location.href.replace(/&modal=geo/gi, "") + "&modal=geo",
-              {
-                replace: true
-              }
-            );
-            setLocationOpen(true);
-          }}
+          onClick={onClick}
           href={history.location.href + "&modal=geo"}
         >
           <div
