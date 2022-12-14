@@ -37,8 +37,7 @@
 }
 
 .colorclass.colorclass--filter .sort {
-  float: right;
-  margin-left: 10px;
+  margin-left: 3px;
   height: 35px;
   margin-top: 10px;
   background-color: #eceff1;

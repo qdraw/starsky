@@ -10,6 +10,27 @@
   height: calc(100% - 150px);
 }
 
+.modal-bg .modal-button-bar .lat-long {
+  display: inline;
+}
+
+@media screen and (max-width: 608px) {
+  .modal-bg .modal-button-bar .lat-long {
+    display: inline-block;
+    margin-top: 15px;
+  }
+}
+
+@media screen and (max-width: 608px) {
+  .modal-bg .content-geo {
+    height: calc(100% - 200px);
+  }
+
+  .modal-button-bar {
+    height: inherit;
+  }
+}
+
 .modal.modal-button-bar-error {
   position: fixed;
   top: calc(100% - 100px);
@@ -34,4 +55,15 @@
 .modal-bg-large .modal-button-bar button {
   margin-right: 15px;
   margin-top: 7px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .leaflet-control > .leaflet-control-zoom-in,
+  .leaflet-control > .leaflet-control-zoom-out {
+    color: white;
+    background-color: #263238;
+  }
+  .leaflet-control-attribution.leaflet-control > a {
+    color: #263238;
+  }
 }
