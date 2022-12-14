@@ -3,9 +3,9 @@ import {
   fireEvent,
   render,
   RenderResult,
+  screen,
   waitFor
 } from "@testing-library/react";
-import React from "react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import {
@@ -323,7 +323,7 @@ describe("DetailViewSidebar", () => {
     });
 
     function findDataNameCurrent(component: RenderResult, name: string) {
-      return (component as RenderResult)
+      return screen
         .queryAllByTestId("form-control")
         .find((p) => (p as HTMLElement).getAttribute("data-name") === name);
     }

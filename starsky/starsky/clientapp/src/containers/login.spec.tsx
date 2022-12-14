@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
 import { fireEvent, render, screen } from "@testing-library/react";
-import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../hooks/use-fetch";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
@@ -92,11 +91,11 @@ describe("Login", () => {
     const login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
-    expect(login.queryByTestId("logout")).toBeTruthy();
-    expect(login.queryAllByTestId("stayLoggedin")).toBeTruthy();
+    expect(screen.getByTestId("logout")).toBeTruthy();
+    expect(screen.queryAllByTestId("stayLoggedin")).toBeTruthy();
 
     // no prefix (starsky in url)
-    expect((login.queryByTestId("logout") as HTMLAnchorElement).href).toBe(
+    expect((screen.queryByTestId("logout") as HTMLAnchorElement).href).toBe(
       "http://localhost/account/logout?ReturnUrl=/test"
     );
 
@@ -127,11 +126,11 @@ describe("Login", () => {
     const login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
-    expect(login.queryByTestId("logout")).toBeTruthy();
+    expect(screen.getByTestId("logout")).toBeTruthy();
     expect(login.queryAllByTestId("stayLoggedin")).toBeTruthy();
 
     // including starsky prefix
-    expect((login.queryByTestId("logout") as HTMLAnchorElement).href).toBe(
+    expect((screen.getByTestId("logout") as HTMLAnchorElement).href).toBe(
       "http://localhost/starsky/account/logout?ReturnUrl=/starsky/test"
     );
 
@@ -158,8 +157,8 @@ describe("Login", () => {
 
     const login = render(<Login />);
 
-    expect(login.queryByTestId("email")).toBeTruthy();
-    expect(login.queryByTestId("password")).toBeTruthy();
+    expect(screen.getByTestId("email")).toBeTruthy();
+    expect(screen.getByTestId("password")).toBeTruthy();
 
     expect(useFetchSpy).toBeCalled();
     expect(useFetchSpy).toBeCalledWith(
@@ -224,20 +223,20 @@ describe("Login", () => {
 
     // email
     act(() => {
-      const emailElement = login.queryByTestId("email") as HTMLInputElement;
+      const emailElement = screen.queryByTestId("email") as HTMLInputElement;
       fireEvent.change(emailElement, { target: { value: "dont@mail.me" } });
     });
 
     // password
     act(() => {
-      const passwordElement = login.queryByTestId(
+      const passwordElement = screen.queryByTestId(
         "password"
       ) as HTMLInputElement;
       fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
     // submit
-    const loginContent = login.queryByTestId("login-content");
+    const loginContent = screen.queryByTestId("login-content");
     act(() => {
       loginContent?.querySelector("form")?.submit();
     });
@@ -286,25 +285,25 @@ describe("Login", () => {
 
     // email
     act(() => {
-      const emailElement = login.queryByTestId("email") as HTMLInputElement;
+      const emailElement = screen.queryByTestId("email") as HTMLInputElement;
       fireEvent.change(emailElement, { target: { value: "dont@mail.me" } });
     });
 
     // password
     act(() => {
-      const passwordElement = login.queryByTestId(
+      const passwordElement = screen.queryByTestId(
         "password"
       ) as HTMLInputElement;
       fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
     // submit
-    const loginContent = login.queryByTestId("login-content");
+    const loginContent = screen.queryByTestId("login-content");
     act(() => {
       loginContent?.querySelector("form")?.submit();
     });
 
-    await login.findByTestId("login-error");
+    await screen.findByTestId("login-error");
     expect(useFetchSpy).toBeCalled();
     expect(postSpy).toBeCalled();
 
@@ -339,27 +338,27 @@ describe("Login", () => {
 
     // email
     act(() => {
-      const emailElement = login.queryByTestId("email") as HTMLInputElement;
+      const emailElement = screen.queryByTestId("email") as HTMLInputElement;
       fireEvent.change(emailElement, { target: { value: "dont@mail.me" } });
     });
 
     // password
     act(() => {
-      const passwordElement = login.queryByTestId(
+      const passwordElement = screen.queryByTestId(
         "password"
       ) as HTMLInputElement;
       fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
     // submit
-    const loginContent = login.queryByTestId("login-content");
+    const loginContent = screen.queryByTestId("login-content");
     act(() => {
       loginContent?.querySelector("form")?.submit();
     });
 
     // expect(login.html().search('class="content--error-true"')).toBeTruthy();
     // expect(login.queryByTestId("login-error")).toBeTruthy();
-    await login.findByTestId("login-error");
+    await screen.findByTestId("login-error");
     expect(useFetchSpy).toBeCalled();
     expect(postSpy).toBeCalled();
 

@@ -109,51 +109,6 @@ describe("ModalGeo", () => {
     modal.unmount();
   });
 
-  // it("exit fails flow", async () => {
-  //   jest.spyOn(React, "useState").mockImplementationOnce(() => {
-  //     return [true, jest.fn()];
-  //   });
-
-  //   const useLocationSpy = jest
-  //     .spyOn(useLocation, "default")
-  //     .mockImplementationOnce(() => {
-  //       return {
-  //         location: {
-  //           href: ""
-  //         }
-  //       } as any;
-  //     });
-
-  //   const modalSpy = jest
-  //     .spyOn(ModalGeo, "default")
-  //     .mockImplementationOnce(() => {
-  //       return <div data-test="modal-geo-tmp-2">data_11</div>;
-  //     })
-  //     .mockImplementationOnce((props) => {
-  //       act(() => {
-  //         props.handleExit(null);
-  //       });
-  //       return <div data-test="modal-geo-tmp-2">data_11</div>;
-  //     });
-
-  //   const setFileIndexItemSpy = jest.fn();
-  //   const modal = render(
-  //     <DetailViewInfoLocation
-  //       fileIndexItem={{} as IFileIndexItem}
-  //       isFormEnabled={false}
-  //       dispatch={jest.fn()}
-  //       setFileIndexItem={setFileIndexItemSpy}
-  //     ></DetailViewInfoLocation>
-  //   );
-
-  //   expect(modalSpy).toBeCalledTimes(1);
-
-  //   expect(setFileIndexItemSpy).toBeCalledTimes(1);
-  //   modalSpy.mockReset();
-  //   useLocationSpy.mockReset();
-  //   modal.unmount();
-  // });
-
   it("should close with callback data", () => {
     jest.spyOn(React, "useState").mockImplementationOnce(() => {
       return [true, jest.fn()];
