@@ -58,8 +58,10 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
       !scrubberRef.current ||
       !progressRef.current ||
       !timeRef.current
-    )
+    ) {
       return;
+    }
+
     videoRef.current.setAttribute("src", downloadApiLocal);
     videoRef.current.load();
 
@@ -69,7 +71,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     scrubberRef.current.style.left = "0%";
     progressRef.current.value = 0;
     timeRef.current.innerHTML = "";
-  }, [history.location.search]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [new URLPath().getFilePath(history.location.search)]);
 
   // Check if media is found
   useEffect(() => {

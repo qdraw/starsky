@@ -1,0 +1,37 @@
+.modal-bg-large div.modal-content {
+  max-width: 98%;
+  height: 100%;
+}
+
+.modal-bg-large .content {
+  height: 100%;
+}
+.modal-bg .content-geo {
+  height: calc(100% - 150px);
+}
+
+.modal.modal-button-bar-error {
+  position: fixed;
+  top: calc(100% - 100px);
+  z-index: 777;
+  height: 50px;
+  float: left;
+}
+
+.modal.modal-button-bar-error > div {
+  background-color: #283593;
+  color: white;
+  padding-left: 10px;
+  line-height: 30px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 100%;
+}
+
+.modal-bg-large .modal-button-bar button {
+  margin-right: 15px;
+  margin-top: 7px;
+}

@@ -76,7 +76,10 @@ namespace starsky.feature.metaupdate.Services
 				
 				CompareAllLabelsAndRotation(changedFileIndexItemName,
 					fileIndexItem, inputModel, append, rotateClock);
-						
+
+				// Add to update list
+				CheckGeoLocationStatus(fileIndexItem);
+
 				// this one is good :)
 				if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default or FileIndexItem.ExifStatus.OkAndSame)
 				{
@@ -101,6 +104,20 @@ namespace starsky.feature.metaupdate.Services
 			AddNotFoundInIndexStatus.Update(inputFilePaths, fileIndexUpdateList);
 
 			return (fileIndexUpdateList, changedFileIndexItemName);
+		}
+
+		private static void CheckGeoLocationStatus(FileIndexItem fileIndexItem)
+		{
+			if ( fileIndexItem.Latitude == 0 || fileIndexItem.Longitude == 0 )
+				return;
+			
+			var result = ValidateLocation.ValidateLatitudeLongitude(
+				fileIndexItem.Latitude, fileIndexItem.Longitude);
+			if ( !result )
+			{
+				fileIndexItem.Status = FileIndexItem.ExifStatus
+					.OperationNotSupported;
+			}
 		}
 
 		/// <summary>

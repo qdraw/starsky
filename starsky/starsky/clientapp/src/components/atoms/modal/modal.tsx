@@ -12,7 +12,10 @@ type ModalPropTypes = {
   isOpen: boolean;
   handleExit: () => any;
   focusAfterExit?: HTMLElement;
+  className?: string;
 };
+
+export const ModalOpenClassName = "modal-bg--open";
 
 export default function Modal({
   children,
@@ -20,7 +23,8 @@ export default function Modal({
   root = "root",
   isOpen,
   handleExit,
-  focusAfterExit
+  focusAfterExit,
+  className = ""
 }: ModalPropTypes): any {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -101,11 +105,13 @@ export default function Modal({
         <div
           onClick={(event) => {
             const target = event.target as HTMLElement;
-            if (target.className.indexOf("modal-bg--open") === -1) return;
+            if (target.className.indexOf(ModalOpenClassName) === -1) return;
             handleExit();
           }}
           data-test="modal-bg"
-          className={`modal-bg ${isOpen ? " modal-bg--open" : ""}`}
+          className={`modal-bg ${
+            isOpen ? ` ${ModalOpenClassName} ` + className : ""
+          }`}
         >
           <div
             className={`modal-content ${isOpen ? " modal-content--show" : ""}`}

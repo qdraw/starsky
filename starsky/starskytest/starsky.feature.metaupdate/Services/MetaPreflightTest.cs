@@ -111,6 +111,52 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 		
 		[TestMethod]
+		public async Task Preflight_InvalidLatLong()
+		{
+			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg") {Latitude = 92043, Longitude = 38294923},
+				}), 
+				new AppSettings(), new FakeSelectorStorage(
+					new FakeIStorage(new List<string>(), 
+						new List<string>{"/test.jpg"}, 
+						new []{CreateAnImage.Bytes, CreateAnImage.Bytes}))
+				,new FakeIWebLogger());
+			
+			var result = await metaPreflight.Preflight(
+				new FileIndexItem("/test.jpg"), 
+				new[] {"/test.jpg"}, true, true, 0);
+
+			Assert.AreEqual(1, result.fileIndexResultsList.Count);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, 
+				result.fileIndexResultsList[0].Status);
+		}
+		
+		[TestMethod]
+		public async Task Preflight_ValidLatLong()
+		{
+			// 51.34963/5.46038 = valkenswaard
+
+			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg") {Latitude = 51.34963, Longitude = 5.46038},
+				}), 
+				new AppSettings(), new FakeSelectorStorage(
+					new FakeIStorage(new List<string>(), 
+						new List<string>{"/test.jpg"}, 
+						new []{CreateAnImage.Bytes, CreateAnImage.Bytes}))
+				,new FakeIWebLogger());
+			
+			var result = await metaPreflight.Preflight(
+				new FileIndexItem("/test.jpg"), 
+				new[] {"/test.jpg"}, true, true, 0);
+
+			Assert.AreEqual(1, result.fileIndexResultsList.Count);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
+				result.fileIndexResultsList[0].Status);
+		}
+		
+		[TestMethod]
 		[ExpectedException(typeof(MissingFieldException))]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
 		{

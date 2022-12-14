@@ -46,6 +46,12 @@ export type DetailViewAction =
       status?: IExifStatus;
       lastEdited?: string;
       dateTime?: string;
+      latitude?: number;
+      longitude?: number;
+      locationCity?: string;
+      locationCountry?: string;
+      locationCountryCode?: string;
+      locationState?: string;
     }
   | {
       type: "reset";
@@ -84,7 +90,13 @@ export function detailviewReducer(
         fileHash,
         orientation,
         lastEdited,
-        dateTime
+        dateTime,
+        latitude,
+        longitude,
+        locationCity,
+        locationCountry,
+        locationCountryCode,
+        locationState
       } = action;
       if (tags !== undefined) state.fileIndexItem.tags = tags;
       if (description !== undefined)
@@ -97,6 +109,16 @@ export function detailviewReducer(
       if (orientation) state.fileIndexItem.orientation = orientation;
       if (lastEdited) state.fileIndexItem.lastEdited = lastEdited;
       if (dateTime) state.fileIndexItem.dateTime = dateTime;
+      if (latitude) state.fileIndexItem.latitude = latitude;
+      if (longitude) state.fileIndexItem.longitude = longitude;
+      if (locationCity) state.fileIndexItem.locationCity = locationCity;
+      if (locationCountry) {
+        state.fileIndexItem.locationCountry = locationCountry;
+      }
+      if (locationCountryCode) {
+        state.fileIndexItem.locationCountryCode = locationCountryCode;
+      }
+      if (locationState) state.fileIndexItem.locationState = locationState;
 
       // Need to update otherwise other events are not triggerd
       return updateCache({ ...state, lastUpdated: new Date() });

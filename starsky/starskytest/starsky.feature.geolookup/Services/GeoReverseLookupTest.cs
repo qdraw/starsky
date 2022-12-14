@@ -121,6 +121,19 @@ namespace starskytest.starsky.feature.geolookup.Services
 		}
 
 		[TestMethod]
+		public  async Task GeoReverseLookup_NullParentFOlder()
+		{
+			var item = new FileIndexItem();
+			var propertyObject = item.GetType().GetProperty(nameof(item.ParentDirectory));
+			propertyObject!.SetValue(item, null, null);
+
+			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).LoopFolderLookup(new List<FileIndexItem>{item},false);
+			
+			Assert.AreEqual(0, result.Count);
+		}
+
+		[TestMethod]
 		public async Task GeoReverseLookup_CatchError_VaticanCity()
 		{
 			// the Country code VA does not exist
@@ -187,6 +200,72 @@ namespace starskytest.starsky.feature.geolookup.Services
 			await geoReverseLookup.SetupAsync();
 			var result = geoReverseLookup.GetAdmin1Name("NL", new string[3]);
 			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public async Task GetLocation_NonValid()
+		{
+			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).GetLocation(516897055,52974817);
+			
+			Assert.IsFalse(result.IsSuccess);
+		}
+		
+		[TestMethod]
+		public async Task GetLocation_NonValid2()
+		{
+			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).GetLocation(0,0);
+			
+			Assert.IsFalse(result.IsSuccess);
+		}
+		
+		[TestMethod]
+		public async Task GetLocation_NearestPlace()
+		{
+			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).GetLocation(51.69917,5.304170);
+			
+			Assert.IsTrue(result.IsSuccess);
+		}
+		
+		[TestMethod]
+		public async Task GetLocation_NearestPlace2_Uden()
+		{
+			// 51.6643,5.6196 = uden
+			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).GetLocation(51.6643,5.6196);
+			Assert.IsTrue(result.IsSuccess);
+		}
+		
+		
+		[TestMethod]
+		public async Task GetLocation_NearestPlace2_Valkenswaard()
+		{
+			// 51.34963/5.46038 = valkenswaard
+			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).GetLocation(51.34963,5.46038);
+			
+			Assert.IsFalse(result.IsSuccess);
+			// 40.0 km
+			Assert.AreEqual("Distance to nearest place is too far", result.ErrorReason);
+		}
+
+		[TestMethod]
+		public async Task GetLocation_No_nearest_place_found()
+		{
+			await new StorageHostFullPathFilesystem().WriteStreamAsync(
+				PlainTextFileHelper.StringToStream(""), // empty file yes!
+				Path.Combine(_appSettings.DependenciesFolder, "cities1000.txt"));
+			
+			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).GetLocation(51.34963,5.46038);
+			
+			// and undo empty file
+			Setup();
+			
+			Assert.IsFalse(result.IsSuccess);
+			Assert.AreEqual("No nearest place found", result.ErrorReason);
 		}
 	}
 }

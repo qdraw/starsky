@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using NGeoNames;
@@ -20,7 +21,7 @@ using starsky.foundation.readmeta.Helpers;
 
 namespace starsky.feature.geolookup.Services
 {
-	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Scoped)]
+	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Singleton)]
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public sealed class GeoReverseLookup : IGeoReverseLookup
     {
@@ -114,57 +115,28 @@ namespace starsky.feature.geolookup.Services
 	    public async Task<List<FileIndexItem>> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
             bool overwriteLocationNames)
 	    {
-		    if ( _reverseGeoCode == null )
-		    {
-			    (_, _reverseGeoCode) = await SetupAsync();
-		    }
-
 		    metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
 
             var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
+            if ( subPath == null ) return metaFilesInDirectory;
             
 	        new GeoCacheStatusService(_cache).StatusUpdate(subPath, metaFilesInDirectory.Count*2, StatusType.Total);
 
             foreach (var metaFileItem in metaFilesInDirectory.Select(
 	            (value, index) => new { value, index }))
             {
-                // Create a point from a lat/long pair from which we want to conduct our search(es) (center)
-                var place = _reverseGeoCode.CreateFromLatLong(
-	                metaFileItem.value.Latitude, metaFileItem.value.Longitude);
-            
-                // Find nearest
-                var nearestPlace = _reverseGeoCode.NearestNeighbourSearch(place, 1).FirstOrDefault();
-
-                if ( nearestPlace == null ) continue;
-                
-                // Distance to avoid non logic locations
-                var distanceTo = GeoDistanceTo.GetDistance(
-                    nearestPlace.Latitude, 
-                    nearestPlace.Longitude, 
-                    metaFileItem.value.Latitude,
-                    metaFileItem.value.Longitude);
-
-                new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory, 
-	                metaFileItem.index, StatusType.Current);
-	                
-                if (distanceTo > 35) continue; 
-                // if less than 35 kilometers from that place add it to the object
-
-                metaFileItem.value.LocationCity = nearestPlace.NameASCII;
-                
-                // Catch is used for example the region VA (Vatican City)
-                try
-                {
-	                var region = new RegionInfo(nearestPlace.CountryCode);
-	                metaFileItem.value.LocationCountry = region.NativeName;
-	                metaFileItem.value.LocationCountryCode = region.ThreeLetterISORegionName;
-                }
-                catch ( ArgumentException e )
-                {
-	                _logger.LogInformation("[GeoReverseLookup] " + e.Message);
-                }
-                
-                metaFileItem.value.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
+	            
+	            var result = await GetLocation(metaFileItem.value.Latitude, metaFileItem.value.Longitude);
+	            new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory!, 
+		            metaFileItem.index, StatusType.Current);
+	            if ( !result.IsSuccess )
+	            {
+		            continue;
+	            }
+	            metaFileItem.value.LocationCity = result.LocationCity;
+	            metaFileItem.value.LocationState = result.LocationState;
+	            metaFileItem.value.LocationCountry = result.LocationCountry;
+	            metaFileItem.value.LocationCountryCode = result.LocationCountryCode;
             }
             
             // Ready signal
@@ -173,6 +145,74 @@ namespace starsky.feature.geolookup.Services
             
             return metaFilesInDirectory;
         }
-        
+
+
+
+	    public async Task<GeoLocationModel> GetLocation(double latitude, double longitude)
+	    {
+		    if ( _reverseGeoCode == null )
+		    {
+			    (_, _reverseGeoCode) = await SetupAsync();
+		    }
+
+		    var status = new GeoLocationModel
+		    {
+			    Longitude = longitude,
+			    Latitude =  latitude,
+			    IsSuccess = false,
+			    ErrorReason	= "Unknown"
+		    };
+
+		    if ( !ValidateLocation.ValidateLatitudeLongitude(latitude,longitude) )
+		    {
+			    status.ErrorReason = "Non-valid location";
+			    return status;
+		    }
+		    
+		    // Create a point from a lat/long pair from which we want to conduct our search(es) (center)
+		    var place = _reverseGeoCode.CreateFromLatLong(
+			    status.Latitude, status.Longitude);
+            
+		    // Find nearest
+		    var nearestPlace = _reverseGeoCode.NearestNeighbourSearch(place, 1).FirstOrDefault();
+
+		    if ( nearestPlace == null ) {
+			    status.ErrorReason = "No nearest place found";
+			    return status;
+		    }
+                
+		    // Distance to avoid non logic locations
+		    var distanceTo = GeoDistanceTo.GetDistance(
+			    nearestPlace.Latitude, 
+			    nearestPlace.Longitude, 
+			    status.Latitude,
+			    status.Longitude);
+
+		    if ( distanceTo > 35 )
+		    {
+				status.ErrorReason = "Distance to nearest place is too far";
+			    return status;
+		    }
+
+		    status.ErrorReason = "Success";
+		    status.IsSuccess = true;
+		    status.LocationCity = nearestPlace.NameASCII;
+                
+		    // Catch is used for example the region VA (Vatican City)
+		    try
+		    {
+			    var region = new RegionInfo(nearestPlace.CountryCode);
+			    status.LocationCountry = region.NativeName;
+			    status.LocationCountryCode = region.ThreeLetterISORegionName;
+		    }
+		    catch ( ArgumentException e )
+		    {
+			    _logger.LogInformation("[GeoReverseLookup] " + e.Message);
+		    }
+                
+		    status.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
+		    
+		    return status;
+	    }
     }
 }

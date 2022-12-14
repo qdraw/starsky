@@ -1,5 +1,4 @@
 import { act, createEvent, fireEvent, render } from "@testing-library/react";
-import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -308,6 +307,7 @@ describe("ModalPublish", () => {
   });
 
   it("test if handleExit is called", () => {
+    // callback
     // simulate if a user press on close
     // use as ==> import * as Modal from './modal';
     jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
