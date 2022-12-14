@@ -34,6 +34,8 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
       history.navigate(history.location.href.replace(/&modal=geo/gi, ""), {
         replace: true
       });
+
+      // when no data is passed, but window should be closed
       if (!model || !setFileIndexItem || !dispatch) {
         return;
       }
