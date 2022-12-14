@@ -121,6 +121,19 @@ namespace starskytest.starsky.feature.geolookup.Services
 		}
 
 		[TestMethod]
+		public  async Task GeoReverseLookup_NullParentFOlder()
+		{
+			var item = new FileIndexItem();
+			var propertyObject = item.GetType().GetProperty(nameof(item.ParentDirectory));
+			propertyObject!.SetValue(item, null, null);
+
+			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
+				new FakeIWebLogger()).LoopFolderLookup(new List<FileIndexItem>{item},false);
+			
+			Assert.AreEqual(0, result.Count);
+		}
+
+		[TestMethod]
 		public async Task GeoReverseLookup_CatchError_VaticanCity()
 		{
 			// the Country code VA does not exist
@@ -233,7 +246,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),
 				new FakeIWebLogger()).GetLocation(51.34963,5.46038);
 			
-			Assert.IsTrue(result.IsSuccess);
+			Assert.IsFalse(result.IsSuccess);
 			// 40.0 km
 			Assert.AreEqual("Distance to nearest place is too far", result.ErrorReason);
 		}

@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
-import ModalGeo, { getZoom } from "./modal-geo";
+import ModalGeo, { addDefaultMarker, getZoom, ILatLong } from "./modal-geo";
 
-describe("ModalForceDelete", () => {
+describe("ModalGeo", () => {
   beforeEach(() => {
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
   });
@@ -21,8 +21,40 @@ describe("ModalForceDelete", () => {
   });
 
   describe("getZoom", () => {
-    it("getZoom 1", () => {
-      getZoom({} as ILatLong);
+    it("getZoom none", () => {
+      const result = getZoom({} as ILatLong);
+      expect(result).toBe(12);
+    });
+
+    it("getZoom with location", () => {
+      const result = getZoom({ latitude: 10, longitude: 15 } as ILatLong);
+      expect(result).toBe(15);
+    });
+  });
+
+  describe("addDefaultMarker", () => {
+    it("no location so not called", () => {
+      const map = {
+        addLayer: jest.fn()
+      } as unknown as L.Map;
+      addDefaultMarker({} as ILatLong, map, true, jest.fn(), jest.fn());
+
+      expect(map.addLayer).toBeCalledTimes(0);
+    });
+
+    it("location so called", () => {
+      const map = {
+        addLayer: jest.fn()
+      } as unknown as L.Map;
+      addDefaultMarker(
+        { latitude: 10, longitude: 15 } as ILatLong,
+        map,
+        true,
+        jest.fn(),
+        jest.fn()
+      );
+
+      expect(map.addLayer).toBeCalledTimes(1);
     });
   });
 

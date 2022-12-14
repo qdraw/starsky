@@ -118,7 +118,7 @@ namespace starsky.feature.geolookup.Services
 		    metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
 
             var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
-            if ( string.IsNullOrEmpty(subPath) ) return metaFilesInDirectory;
+            if ( subPath == null ) return metaFilesInDirectory;
             
 	        new GeoCacheStatusService(_cache).StatusUpdate(subPath, metaFilesInDirectory.Count*2, StatusType.Total);
 

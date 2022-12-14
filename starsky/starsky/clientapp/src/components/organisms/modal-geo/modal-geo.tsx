@@ -51,6 +51,19 @@ export function getZoom(location: ILatLong): number {
   return zoom;
 }
 
+export const onDrag = function (
+  dragEndEvent: L.DragEndEvent,
+  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
+  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  const latlng = dragEndEvent.target.getLatLng();
+  setLocation({
+    latitude: latLongRound(latlng.lat),
+    longitude: latLongRound(latlng.lng)
+  });
+  setIsLocationUpdated(true);
+};
+
 export function addDefaultMarker(
   location: ILatLong,
   map: L.Map,
@@ -58,15 +71,6 @@ export function addDefaultMarker(
   setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
   setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>
 ): void {
-  const onDrag = function (dragEndEvent: L.DragEndEvent) {
-    const latlng = dragEndEvent.target.getLatLng();
-    setLocation({
-      latitude: latLongRound(latlng.lat),
-      longitude: latLongRound(latlng.lng)
-    });
-    setIsLocationUpdated(true);
-  };
-
   if (location.latitude && location.longitude) {
     const markerLocal = new L.Marker(
       {
@@ -78,7 +82,9 @@ export function addDefaultMarker(
         icon: blueIcon
       }
     );
-    markerLocal.on("dragend", onDrag);
+    markerLocal.on("dragend", (event) =>
+      onDrag(event, setLocation, setIsLocationUpdated)
+    );
     map.addLayer(markerLocal);
   }
 }
@@ -105,16 +111,9 @@ export function addDefaultClickSetMarker(
       icon: blueIcon
     });
 
-    const onDrag = function (dragEndEvent: L.DragEndEvent) {
-      const latlng = dragEndEvent.target.getLatLng();
-      setLocation({
-        latitude: latLongRound(latlng.lat),
-        longitude: latLongRound(latlng.lng)
-      });
-      setIsLocationUpdated(true);
-    };
-
-    markerLocal.on("dragend", onDrag);
+    markerLocal.on("dragend", (event) =>
+      onDrag(event, setLocation, setIsLocationUpdated)
+    );
 
     setLocation({
       latitude: latLongRound(event.latlng.lat),
