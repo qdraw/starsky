@@ -1,5 +1,14 @@
-import { render } from "@testing-library/react";
-import ModalGeo, { addDefaultMarker, getZoom, ILatLong } from "./modal-geo";
+import { render, screen } from "@testing-library/react";
+import L, { LatLng } from "leaflet";
+
+import ModalGeo, {
+  addDefaultClickSetMarker,
+  addDefaultMarker,
+  getZoom,
+  ILatLong,
+  onDrag
+} from "./modal-geo";
+import * as updateGeoLocation from "./update-geo-location";
 
 describe("ModalGeo", () => {
   beforeEach(() => {
@@ -58,6 +67,93 @@ describe("ModalGeo", () => {
     });
   });
 
+  describe("onDrag", () => {
+    it("should update setter", () => {
+      const setLocationSpy = jest.fn();
+      onDrag(
+        {
+          target: {
+            getLatLng: () => {
+              return {
+                lat: 2,
+                lng: 3
+              };
+            }
+          }
+        } as L.DragEndEvent,
+        setLocationSpy,
+        jest.fn()
+      );
+
+      expect(setLocationSpy).toBeCalledTimes(1);
+      expect(setLocationSpy).toBeCalledWith({
+        latitude: 2,
+        longitude: 3
+      });
+    });
+  });
+
+  describe("addDefaultClickSetMarker", () => {
+    it("should remove other layers and add new one", () => {
+      const map = {
+        on: (name: string, fn: Function) => {
+          fn({ latlng: {} });
+        },
+        eachLayer: (fn: Function) => {
+          fn(new L.Marker(new LatLng(0, 0)));
+          fn({});
+        },
+        addLayer: jest.fn(),
+        removeLayer: jest.fn()
+      } as unknown as L.Map;
+      addDefaultClickSetMarker(map, true, jest.fn(), jest.fn());
+
+      expect(map.addLayer).toBeCalledTimes(1);
+      expect(map.removeLayer).toBeCalledTimes(1);
+    });
+
+    it("should not add layers due readonly", () => {
+      const map = {
+        on: (name: string, fn: Function) => {
+          fn({ latlng: {} });
+        },
+        eachLayer: (fn: Function) => {
+          fn(new L.Marker(new LatLng(0, 0)));
+          fn({});
+        },
+        addLayer: jest.fn(),
+        removeLayer: jest.fn()
+      } as unknown as L.Map;
+      addDefaultClickSetMarker(map, false, jest.fn(), jest.fn());
+
+      expect(map.addLayer).toBeCalledTimes(0);
+      expect(map.removeLayer).toBeCalledTimes(0);
+    });
+  });
+
+  describe("ModalGeo", () => {
+    it("loads and displays greeting", async () => {
+      jest
+        .spyOn(updateGeoLocation, "updateGeoLocation")
+        .mockImplementationOnce(() => {
+          return Promise.resolve(null);
+        });
+      render(
+        <ModalGeo
+          parentDirectory="/"
+          selectedSubPath="/test.jpg"
+          isOpen={true}
+          handleExit={() => {}}
+          latitude={51}
+          longitude={3}
+          isFormEnabled={true}
+        ></ModalGeo>
+      );
+      console.log(screen);
+
+      const data = await screen.findByTestId("update-geo-location");
+    });
+  });
   // it("should fetchPost and dispatch", async () => {
   //   const fetchSpy = jest
   //     .spyOn(FetchPost, "default")
