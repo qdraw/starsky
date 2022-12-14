@@ -162,6 +162,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
       const zoom = getZoom(location);
 
+      // Leaflet maps
       const map = L.map(node, {
         center: mapLocationCenter,
         zoom,
@@ -248,7 +249,11 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
             </div>
           </div>
         ) : null}
-        <div className="content-geo" ref={mapReference}></div>
+        <div
+          className="content-geo"
+          data-test="content-geo"
+          ref={mapReference}
+        ></div>
         <div className="modal modal-button-bar">
           <button
             data-test="force-cancel"
