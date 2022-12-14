@@ -88,7 +88,9 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
           {true ? <div className="icon icon--right icon--edit" /> : null}
           {fileIndexItem.locationCity && fileIndexItem.locationCountry ? (
             <>
-              <b>{fileIndexItem.locationCity}</b>
+              <b data-test="detailview-info-location-city">
+                {fileIndexItem.locationCity}
+              </b>
               <p>{fileIndexItem.locationCountry}</p>
             </>
           ) : (
