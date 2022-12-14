@@ -1,5 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import L, { LatLng } from "leaflet";
+import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
+import * as Modal from "../../atoms/modal/modal";
 
 import ModalGeo, {
   addDefaultClickSetMarker,
@@ -132,142 +134,184 @@ describe("ModalGeo", () => {
   });
 
   describe("ModalGeo", () => {
-    it("loads and displays greeting", async () => {
-      jest
+    it("button should not be there when no update", async () => {
+      const updateSpy = jest
         .spyOn(updateGeoLocation, "updateGeoLocation")
         .mockImplementationOnce(() => {
           return Promise.resolve(null);
         });
-      render(
+      const handleExitSpy = jest.fn();
+      const modal = render(
         <ModalGeo
           parentDirectory="/"
           selectedSubPath="/test.jpg"
           isOpen={true}
-          handleExit={() => {}}
+          handleExit={handleExitSpy}
           latitude={51}
           longitude={3}
           isFormEnabled={true}
         ></ModalGeo>
       );
-      console.log(screen);
 
-      const data = await screen.findByTestId("update-geo-location");
+      expect(screen.queryByTestId("update-geo-location")).toBeNull();
+
+      expect(updateSpy).toBeCalledTimes(0);
+
+      expect(handleExitSpy).toBeCalledTimes(0);
+      modal.unmount();
+    });
+
+    it("click on update button with edit - failed api", async () => {
+      const updateSpy = jest
+        .spyOn(updateGeoLocation, "updateGeoLocation")
+        .mockImplementationOnce(() => {
+          return Promise.resolve(null);
+        });
+      const handleExitSpy = jest.fn();
+      const modal = render(
+        <ModalGeo
+          parentDirectory="/"
+          selectedSubPath="/test.jpg"
+          isOpen={true}
+          handleExit={handleExitSpy}
+          latitude={51}
+          longitude={3}
+          isFormEnabled={true}
+        ></ModalGeo>
+      );
+
+      (await screen.findByTestId("content-geo")).click();
+
+      const button = await screen.findByTestId("update-geo-location");
+      button.click();
+
+      expect(updateSpy).toBeCalled();
+      expect(updateSpy).toBeCalledWith(
+        "/",
+        "/test.jpg",
+        {
+          latitude: 51.00001,
+          longitude: 2.999997
+        },
+        expect.any(Function),
+        undefined
+      );
+      expect(handleExitSpy).toBeCalledTimes(0);
+      modal.unmount();
+    });
+
+    it("click on update button with edit - success api", async () => {
+      const updateSpy = jest
+        .spyOn(updateGeoLocation, "updateGeoLocation")
+        .mockImplementationOnce(() => {
+          return Promise.resolve({
+            locationCity: "t"
+          } as IGeoLocationModel);
+        });
+      const handleExitSpy = jest.fn();
+      const modal = render(
+        <ModalGeo
+          parentDirectory="/"
+          selectedSubPath="/test.jpg"
+          isOpen={true}
+          handleExit={handleExitSpy}
+          latitude={51}
+          longitude={3}
+          isFormEnabled={true}
+        ></ModalGeo>
+      );
+
+      (await screen.findByTestId("content-geo")).click();
+
+      const button = await screen.findByTestId("update-geo-location");
+      button.click();
+
+      expect(updateSpy).toBeCalled();
+      expect(updateSpy).toBeCalledWith(
+        "/",
+        "/test.jpg",
+        {
+          latitude: 51.00001,
+          longitude: 2.999997
+        },
+        expect.any(Function),
+        undefined
+      );
+
+      await waitFor(() => expect(handleExitSpy).toBeCalledTimes(1));
+      expect(handleExitSpy).toBeCalledWith({ locationCity: "t" });
+      modal.unmount();
+    });
+
+    it("press cancel button", async () => {
+      const handleExitSpy = jest.fn();
+      const modal = render(
+        <ModalGeo
+          parentDirectory="/"
+          selectedSubPath="/test.jpg"
+          isOpen={true}
+          handleExit={handleExitSpy}
+          latitude={51}
+          longitude={3}
+          isFormEnabled={true}
+        ></ModalGeo>
+      );
+
+      (await screen.findByTestId("force-cancel")).click();
+
+      expect(handleExitSpy).toBeCalledTimes(1);
+      modal.unmount();
+    });
+
+    it("press cancel1 button", async () => {
+      const handleExitSpy = jest.fn();
+      const modal = render(
+        <ModalGeo
+          parentDirectory="/"
+          selectedSubPath="/test.jpg"
+          isOpen={true}
+          handleExit={handleExitSpy}
+          latitude={51}
+          longitude={3}
+          isFormEnabled={true}
+        ></ModalGeo>
+      );
+
+      (await screen.findByTestId("force-cancel")).click();
+
+      expect(handleExitSpy).toBeCalledTimes(1);
+      modal.unmount();
+    });
+
+    it("test if handleExit is called", () => {
+      // callback
+      // simulate if a user press on close
+      // use as ==> import * as Modal from './modal';
+      jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+        props.handleExit();
+        return <>{props.children}</>;
+      });
+
+      const handleExitSpy = jest.fn();
+
+      const modal = render(
+        <ModalGeo
+          parentDirectory="/"
+          selectedSubPath="/test.jpg"
+          isOpen={true}
+          handleExit={handleExitSpy}
+          latitude={51}
+          longitude={3}
+          isFormEnabled={true}
+        ></ModalGeo>
+      );
+
+      expect(handleExitSpy).toBeCalled();
+
+      // and clean afterwards
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+
+      modal.unmount();
     });
   });
-  // it("should fetchPost and dispatch", async () => {
-  //   const fetchSpy = jest
-  //     .spyOn(FetchPost, "default")
-  //     .mockImplementationOnce(async () => {
-  //       return { statusCode: 200 } as IConnectionDefault;
-  //     });
-
-  //   const dispatch = jest.fn();
-  //   const modal = render(
-  //     <ModalForceDelete
-  //       isOpen={true}
-  //       handleExit={() => {}}
-  //       dispatch={dispatch}
-  //       select={["test.jpg"]}
-  //       setIsLoading={jest.fn()}
-  //       setSelect={jest.fn()}
-  //       state={
-  //         {
-  //           fileIndexItems: [
-  //             {
-  //               parentDirectory: "/",
-  //               filePath: "/test.jpg",
-  //               fileName: "test.jpg"
-  //             }
-  //           ]
-  //         } as IArchiveProps
-  //       }
-  //     ></ModalForceDelete>
-  //   );
-
-  //   const forceDelete = modal.queryByTestId("force-delete");
-  //   expect(forceDelete).toBeTruthy();
-  //   // need to await here
-  //   await forceDelete?.click();
-
-  //   expect(fetchSpy).toBeCalled();
-  //   expect(fetchSpy).toBeCalledWith(
-  //     new UrlQuery().UrlDeleteApi(),
-  //     "f=%2Ftest.jpg&collections=false",
-  //     "delete"
-  //   );
-  //   expect(dispatch).toBeCalled();
-  //   modal.unmount();
-  // });
-
-  // it("should fetchPost and not dispatch due status error", async () => {
-  //   const fetchSpy = jest
-  //     .spyOn(FetchPost, "default")
-  //     .mockImplementationOnce(async () => {
-  //       return { statusCode: 500 } as IConnectionDefault;
-  //     });
-
-  //   const dispatch = jest.fn();
-  //   const modal = render(
-  //     <ModalForceDelete
-  //       isOpen={true}
-  //       handleExit={() => {}}
-  //       dispatch={dispatch}
-  //       select={["test.jpg"]}
-  //       setIsLoading={jest.fn()}
-  //       setSelect={jest.fn()}
-  //       state={
-  //         {
-  //           fileIndexItems: [
-  //             {
-  //               parentDirectory: "/",
-  //               filePath: "/test.jpg",
-  //               fileName: "test.jpg"
-  //             }
-  //           ]
-  //         } as IArchiveProps
-  //       }
-  //     ></ModalForceDelete>
-  //   );
-
-  //   const forceDelete = modal.queryByTestId("force-delete");
-  //   expect(forceDelete).toBeTruthy();
-  //   // need to await here
-  //   await forceDelete?.click();
-
-  //   expect(fetchSpy).toBeCalled();
-  //   expect(fetchSpy).toBeCalledWith(
-  //     new UrlQuery().UrlDeleteApi(),
-  //     "f=%2Ftest.jpg&collections=false",
-  //     "delete"
-  //   );
-  //   expect(dispatch).toBeCalledTimes(0);
-  //   modal.unmount();
-  // });
-
-  // it("test if handleExit is called", () => {
-  //   // simulate if a user press on close
-  //   // use as ==> import * as Modal from './modal';
-  //   jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
-  //     props.handleExit();
-  //     return <>{props.children}</>;
-  //   });
-
-  //   const handleExitSpy = jest.fn();
-
-  //   const component = render(
-  //     <ModalForceDelete
-  //       isOpen={true}
-  //       dispatch={jest.fn()}
-  //       select={[]}
-  //       setIsLoading={jest.fn()}
-  //       setSelect={jest.fn()}
-  //       state={newIArchive()}
-  //       handleExit={handleExitSpy}
-  //     />
-  //   );
-
-  //   expect(handleExitSpy).toBeCalled();
-
-  //   component.unmount();
-  // });
 });

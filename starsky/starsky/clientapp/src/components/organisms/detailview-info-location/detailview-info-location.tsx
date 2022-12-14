@@ -78,6 +78,7 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
         <a
           className="box"
           onClick={onClick}
+          data-test="detailview-info-location-open-modal"
           href={history.location.href + "&modal=geo"}
         >
           <div

@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import {
   IFileIndexItem,
@@ -17,12 +17,12 @@ describe("ItemTextListView", () => {
   });
 
   it("renders undefined", () => {
-    const content = render(
+    render(
       <ItemTextListView fileIndexItems={undefined as any} callback={() => {}} />
     );
 
     expect(
-      content.queryByTestId("list-text-view-no-photos-in-folder")
+      screen.queryByTestId("list-text-view-no-photos-in-folder")
     ).toBeTruthy();
   });
 
