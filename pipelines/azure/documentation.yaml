@@ -30,7 +30,7 @@ variables:
   DOCS_PASSWORD: $(password)
   DOCS_URL: $(url) # public url/domain
   DOCS_BASE_URL: $(baseUrl) # dir in domain
-  
+  GOOGLE_VERIFICATION: $(googleVerification) # generate html file
 
 stages:
 - stage: builddocumentation
@@ -53,6 +53,7 @@ stages:
         npmConfigCache: $(npm_config_cache)
         url: $(DOCS_URL)
         baseUrl: $(DOCS_BASE_URL)
+        googleVerification: $(GOOGLE_VERIFICATION)
 
     - task: Bash@3
       enabled: true
