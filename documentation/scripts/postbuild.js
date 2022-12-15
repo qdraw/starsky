@@ -16,6 +16,12 @@ const toFavicon = path.join(__dirname, "..", "build", "favicon.ico");
 console.log(`${sourceFavicon} -> ${toFavicon}`);
 fs.copyFileSync(sourceFavicon, toFavicon);
 
+if (process.env.GOOGLE_VERIFICATION) {
+  const googleVerficationPath = path.join(__dirname, "..", "build", process.env.GOOGLE_VERIFICATION);
+  console.log("process.env.GOOGLE_VERIFICATION " + process.env.GOOGLE_VERIFICATION);
+  fs.writeFileSync(googleVerficationPath, 'google-site-verification: '+ process.env.GOOGLE_VERIFICATION);
+}
+
 
 const gitHash = spawnSync("git", ["log", "-1", "--format=\"%H\""], {
     cwd: __dirname,
