@@ -263,22 +263,24 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
             {MessageCancel}
           </button>
           {props.isFormEnabled ? updateButton() : null}
-          <b>Latitude:</b>{" "}
-          <FormControl
-            contentEditable={false}
-            className={"inline"}
-            name={"lat"}
-          >
-            {location.latitude}
-          </FormControl>{" "}
-          <b>Longitude:</b>{" "}
-          <FormControl
-            contentEditable={false}
-            className={"inline"}
-            name={"lat"}
-          >
-            {location.longitude}
-          </FormControl>
+          <div className="lat-long">
+            <b>Latitude:</b>{" "}
+            <FormControl
+              contentEditable={false}
+              className={"inline"}
+              name={"lat"}
+            >
+              {location.latitude}
+            </FormControl>{" "}
+            <b>Longitude:</b>{" "}
+            <FormControl
+              contentEditable={false}
+              className={"inline"}
+              name={"lat"}
+            >
+              {location.longitude}
+            </FormControl>
+          </div>
         </div>
       </div>
     </Modal>
