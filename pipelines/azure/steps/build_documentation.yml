@@ -2,6 +2,7 @@ parameters:
   npmConfigCache: $(Pipeline.Workspace)/.npm
   url: "/"
   baseUrl: "/"
+  googleVerification: ""
 
 steps:
 
