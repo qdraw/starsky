@@ -42,7 +42,10 @@ node starsky-tools/build-tools/app-version-update.js
 ```
 
 # version 0.5.2 _(Unreleased)_ - 2022-12-??
-- nothing yet
+- [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.404 (Runtime: 6.0.12)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.12/6.0.12.md) (PR #997)
+- [x] (Changed) _Front-end_ Upgrade Create React App / Typescript / storybook  (PR #998)
+- [x] (Changed) _Front-end_ Geo location edit in detail view (PR #996)
+- [x] (Changed) _Front-end_ Dark-mode UI tweaks (PR #999)
 
 # version 0.5.1 - 2022-12-10
 
