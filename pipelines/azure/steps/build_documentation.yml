@@ -29,8 +29,11 @@ steps:
       script: |
         $env:DOCS_URL = "${{ parameters.url }}"
         $env:DOCS_BASE_URL = "${{ parameters.baseUrl }}"
+        $env:GOOGLE_VERIFICATION = "${{ parameters.googleVerification }}"
+
         Write-Host "DOCS_URL $Env:DOCS_URL"
         Write-Host "DOCS_BASE_URL $Env:DOCS_BASE_URL"
+        Write-Host "GOOGLE_VERIFICATION $Env:GOOGLE_VERIFICATION"
 
         npm run build
         
