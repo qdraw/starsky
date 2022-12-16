@@ -4,6 +4,10 @@ sidebar_position: 1
 
 import Button from "@site/src/components/button";
 
+# Why should you use this tool?
+
+Are you tired of sifting through cluttered folders and endless streams of unorganized photos? Say goodbye to the headache of finding the perfect picture and hello to a streamlined, efficient way to publish, sort, and label your content. Our app makes it easy to keep track of all your photos in one convenient location, so you can quickly find exactly what you're looking for. Whether you're a professional photographer or just looking to keep your personal collection organized, our app has the tools you need to succeed. Try it out today and see just how much time and energy you'll save!
+
 # What is Starsky? (an introduction)
 
 Starsky is a free photo-management tool, which runs on your server or web-space. Installing is a matter of running the application. It acts as an accelerator to find and organize images driven by meta information. Browse and search images in your own cloud. Starsky is the name of the Starsky DAM (Digital asset management) system that runs as a desktop application and web service.
