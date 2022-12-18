@@ -37,7 +37,7 @@ namespace starskytest.Services
 				new FakeIWebLogger(),memoryCache);
 			
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test.jpg","/test2.jpg", "/readonly/test.jpg", "/test.dng"});
+				new List<string>{"/test.jpg","/test2.jpg", "/readonly/test.jpg", "/test.dng", "/test34598.jpg"});
 			_metaReplace = new MetaReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},
 				new FakeSelectorStorage(_iStorage), new FakeIWebLogger());
 
@@ -263,6 +263,34 @@ namespace starskytest.Services
 			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !delete!", Status = FileIndexItem.ExifStatus.Deleted}};
 			var result =  MetaReplaceService.SearchAndReplace(items, "tags", "!delete!", "");
 			Assert.AreEqual("test",result.FirstOrDefault().Tags);
+		}
+		
+		[TestMethod]
+		public async Task ReplaceServiceTest_replaceString_Duplicate_Input()
+		{
+			var item1 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "test34598.jpg",
+				ParentDirectory = "/",
+				Tags = "test1, !delete!, test"
+			}); 
+			var item2 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "test34598.jpg",
+				ParentDirectory = "/",
+				Tags = "test1, !delete!, test"
+			}); 
+			
+			
+			var output = await _metaReplace.Replace("/test34598.jpg",
+				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+
+			await _query.RemoveItemAsync(item1);
+			await _query.RemoveItemAsync(item2);
+
+			Assert.AreEqual(1,output.Count);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
+			Assert.AreEqual("test1, test",output[0].Tags);
 		}
 	}
 }
