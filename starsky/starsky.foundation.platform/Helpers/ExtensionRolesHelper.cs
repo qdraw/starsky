@@ -330,19 +330,7 @@ namespace starsky.foundation.platform.Helpers
 			mp4 = 50
 		}
 
-		/// <summary>
-		/// Get the format of the image by looking the first bytes
-		/// </summary>
-		/// <param name="stream">stream</param>
-		/// <returns>ImageFormat enum</returns>
-		public static ImageFormat GetImageFormat(Stream stream)
-		{
-			if ( stream == Stream.Null ) return ImageFormat.notfound;
-
-			var format = GetImageFormat(ReadBuffer(stream, 68));
-			return format;
-		}
-		
+				
 		[SuppressMessage("ReSharper", "MustUseReturnValue")]
 		private static byte[] ReadBuffer(Stream stream, int size)
 		{
@@ -358,6 +346,20 @@ namespace starsky.foundation.platform.Helpers
 				Console.WriteLine(ex.Message);
 			}
 			return buffer;
+		}
+
+		
+		/// <summary>
+		/// Get the format of the image by looking the first bytes
+		/// </summary>
+		/// <param name="stream">stream</param>
+		/// <returns>ImageFormat enum</returns>
+		public static ImageFormat GetImageFormat(Stream stream)
+		{
+			if ( stream == Stream.Null ) return ImageFormat.notfound;
+
+			var format = GetImageFormat(ReadBuffer(stream, 68));
+			return format;
 		}
 
 		/// <summary>
