@@ -330,16 +330,11 @@ namespace starsky.foundation.platform.Helpers
 			mp4 = 50
 		}
 
-		/// <summary>
-		/// Get the format of the image by looking the first bytes
-		/// </summary>
-		/// <param name="stream">stream</param>
-		/// <returns>ImageFormat enum</returns>
+				
 		[SuppressMessage("ReSharper", "MustUseReturnValue")]
-		public static ImageFormat GetImageFormat(Stream stream)
+		private static byte[] ReadBuffer(Stream stream, int size)
 		{
-			if ( stream == Stream.Null ) return ImageFormat.notfound;
-			byte[] buffer = new byte[43];
+			byte[] buffer = new byte[size];
 			try
 			{
 				stream.Read(buffer, 0, buffer.Length);
@@ -350,8 +345,21 @@ namespace starsky.foundation.platform.Helpers
 			{
 				Console.WriteLine(ex.Message);
 			}
+			return buffer;
+		}
 
-			return GetImageFormat(buffer);
+		
+		/// <summary>
+		/// Get the format of the image by looking the first bytes
+		/// </summary>
+		/// <param name="stream">stream</param>
+		/// <returns>ImageFormat enum</returns>
+		public static ImageFormat GetImageFormat(Stream stream)
+		{
+			if ( stream == Stream.Null ) return ImageFormat.notfound;
+
+			var format = GetImageFormat(ReadBuffer(stream, 68));
+			return format;
 		}
 
 		/// <summary>
@@ -393,10 +401,15 @@ namespace starsky.foundation.platform.Helpers
 			if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
 				return ImageFormat.xmp;
 
-			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) || 
-			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) || 
-			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length))  )
+			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) )
+			{
 				return ImageFormat.gpx;
+			}
 			
 			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
 				return ImageFormat.mp4;

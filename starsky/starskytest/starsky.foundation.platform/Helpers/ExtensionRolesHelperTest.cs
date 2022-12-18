@@ -125,7 +125,50 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
 		}
-
+		
+		[TestMethod]
+		public void Files_GetImageFormat_gpx_Test_57()
+		{
+			byte[] bmBytes = Encoding.ASCII.GetBytes("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+		}
+				
+		[TestMethod]
+		public void Files_GetImageFormat_gpx_Test_56()
+		{
+			byte[] bmBytes = Encoding.ASCII.GetBytes("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx creator");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+		}
+		
+		[TestMethod]
+		public void Files_GetImageFormat_gpx_Test_60()
+		{
+			// the offset is 60 before the gpx tag
+			byte[] bmBytes = Encoding.ASCII.GetBytes("   <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n<gpx creator");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+		}
+		
+		[TestMethod]
+		public void Files_GetImageFormat_gpx_Test_1()
+		{
+			// there is one space offset
+			byte[] bmBytes = Encoding.ASCII.GetBytes(" <gpx creator");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+		}
+				
+		[TestMethod]
+		public void Files_GetImageFormat_gpx_Test_39()
+		{
+			// the number of spaces is 39 before <gpx creator
+			byte[] bmBytes = Encoding.ASCII.GetBytes("                                       <gpx creator");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+		}
+		
 		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionForceXmp_Positive()
 		{
