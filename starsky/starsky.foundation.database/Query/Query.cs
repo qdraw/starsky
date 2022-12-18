@@ -325,7 +325,15 @@ namespace starsky.foundation.database.Query
 		        foreach ( var item in fileIndexItems )
 		        {
 			        item.SetLastEdited();
-			        context.Attach(item).State = EntityState.Modified;
+			        try
+			        {
+				        context.Attach(item).State = EntityState.Modified;
+			        }
+			        catch ( InvalidOperationException)
+			        {
+				        // System.InvalidOperationException: The property 'FileIndexItem.Id' has a temporary value while attempting to change the entity's state to 'Modified'
+				        // Issue #994
+			        }
 		        }
 
 		        await context.SaveChangesAsync();
