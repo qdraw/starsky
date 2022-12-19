@@ -45,12 +45,12 @@ namespace starsky.foundation.platform.Middleware
 					"https://*.in.applicationinsights.azure.com https://dc.services.visualstudio.com/v2/track; " +
 					"style-src 'self'; " +
 					"font-src 'self'; " +
-					"frame-ancestors 'none'; " +
+					"frame-ancestors https://demo.qdraw.nl; " +
 					"base-uri 'none'; " +
 					"form-action 'self'; " +
 					"object-src 'none'; " +
 					"media-src 'self'; " +
-					"frame-src https://demo.qdraw.nl; " +
+					"frame-src 'none'; " +
 					"manifest-src 'self'; " +
 					"block-all-mixed-content; ";
 
