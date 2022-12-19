@@ -50,6 +50,7 @@ namespace starsky.foundation.platform.Middleware
 					"form-action 'self'; " +
 					"object-src 'none'; " +
 					"media-src 'self'; " +
+					"frame-src https://demo.qdraw.nl; " +
 					"manifest-src 'self'; " +
 					"block-all-mixed-content; ";
 
