@@ -43,22 +43,6 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
         history.location.href.includes("&modal=geo")
       );
 
-      // const [cityName, setCityName] = React.useState(
-      //   fileIndexItem?.locationCity
-      // );
-      // const [countryName, setCountryName] = React.useState(
-      //   fileIndexItem?.locationCountry
-      // );
-
-      // useEffect(() => {
-      //   console.log("update11111  " + fileIndexItem.locationCity);
-
-      //   setCityName(fileIndexItem?.locationCity);
-      //   setCountryName(fileIndexItem.locationCountry);
-
-      //   // eslint-disable-next-line react-hooks/exhaustive-deps
-      // }, [fileIndexItem?.locationCity, fileIndexItem?.locationCountry]);
-
       function handleExit(model: IGeoLocationModel | null) {
         setLocationOpen(false);
         history.navigate(history.location.href.replace(/&modal=geo/gi, ""), {
