@@ -350,7 +350,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
             <b>Latitude:</b>{" "}
             <FormControl
               contentEditable={false}
-              data-test="modal-longitude"
+              data-test="modal-latitude"
               className={"inline"}
               name={"lat"}
             >
