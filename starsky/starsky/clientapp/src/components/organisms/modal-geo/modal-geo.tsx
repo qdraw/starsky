@@ -1,5 +1,5 @@
 import L from "leaflet";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import { Geo } from "../../../shared/geo";
@@ -86,6 +86,75 @@ export function addDefaultMarker(
   }
 }
 
+export function addMapLocationCenter(location: ILatLong): L.LatLng {
+  let mapLocationCenter = L.latLng(52.375, 4.9);
+  if (
+    location.latitude &&
+    location.longitude &&
+    new Geo().Validate(location.latitude, location.longitude)
+  ) {
+    mapLocationCenter = L.latLng(location.latitude, location.longitude);
+  }
+  return mapLocationCenter;
+}
+
+export function addMap(
+  mapLocationCenter: L.LatLng,
+  node: HTMLDivElement,
+  zoom: number
+): L.Map {
+  // Leaflet maps
+  const map = L.map(node, {
+    center: mapLocationCenter,
+    zoom,
+    layers: [
+      L.tileLayer(tileLayerLocation, {
+        attribution: tileLayerAttribution
+      })
+    ]
+  });
+  return map;
+}
+
+function setMarker(
+  map: L.Map,
+  isFormEnabled: boolean,
+  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
+  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>,
+  lat: number,
+  lng: number
+) {
+  if (!isFormEnabled) {
+    return;
+  }
+
+  map.eachLayer(function (layer) {
+    if (layer instanceof L.Marker) {
+      map.removeLayer(layer);
+    }
+  });
+
+  const markerLocal = new L.Marker(
+    { lat, lng },
+    {
+      draggable: true,
+      icon: blueIcon
+    }
+  );
+
+  markerLocal.on("dragend", (event) =>
+    onDrag(event, setLocation, setIsLocationUpdated)
+  );
+
+  setLocation({
+    latitude: latLongRound(lat),
+    longitude: latLongRound(lng)
+  });
+
+  setIsLocationUpdated(true);
+  map.addLayer(markerLocal);
+}
+
 export function addDefaultClickSetMarker(
   map: L.Map,
   isFormEnabled: boolean,
@@ -93,32 +162,14 @@ export function addDefaultClickSetMarker(
   setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   map.on("click", function (event) {
-    if (!isFormEnabled) {
-      return;
-    }
-
-    map.eachLayer(function (layer) {
-      if (layer instanceof L.Marker) {
-        map.removeLayer(layer);
-      }
-    });
-
-    const markerLocal = new L.Marker(event.latlng, {
-      draggable: true,
-      icon: blueIcon
-    });
-
-    markerLocal.on("dragend", (event) =>
-      onDrag(event, setLocation, setIsLocationUpdated)
+    setMarker(
+      map,
+      isFormEnabled,
+      setLocation,
+      setIsLocationUpdated,
+      event.latlng.lat,
+      event.latlng.lng
     );
-
-    setLocation({
-      latitude: latLongRound(event.latlng.lat),
-      longitude: latLongRound(event.latlng.lng)
-    });
-
-    setIsLocationUpdated(true);
-    map.addLayer(markerLocal);
   });
 }
 
@@ -126,7 +177,46 @@ function latLongRound(latitudeLong: number | undefined) {
   return !!latitudeLong ? Math.round(latitudeLong * 1000000) / 1000000 : 0;
 }
 
-const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
+function updateMap(
+  node: HTMLDivElement,
+  location: ILatLong,
+  isFormEnabled: boolean,
+  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
+  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>,
+  setMapState: React.Dispatch<React.SetStateAction<L.Map | null>>
+) {
+  const zoom = getZoom(location);
+
+  const mapLocationCenter = addMapLocationCenter(location);
+
+  const map = addMap(mapLocationCenter, node, zoom);
+
+  addDefaultMarker(
+    location,
+    map,
+    isFormEnabled,
+    setLocation,
+    setIsLocationUpdated
+  );
+
+  addDefaultClickSetMarker(
+    map,
+    isFormEnabled,
+    setLocation,
+    setIsLocationUpdated
+  );
+
+  setMapState(map);
+}
+
+const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
+  latitude,
+  longitude,
+  isFormEnabled,
+  parentDirectory,
+  selectedSubPath,
+  ...props
+}) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const [error, setError] = useState(false);
@@ -143,59 +233,52 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     "Something went wrong with the update. Please try again"
   );
   const [mapState, setMapState] = useState<L.Map | null>(null);
+
   const [location, setLocation] = useState<ILatLong>({
-    latitude: latLongRound(props.latitude),
-    longitude: latLongRound(props.longitude)
+    latitude: latLongRound(latitude),
+    longitude: latLongRound(longitude)
   });
+
+  useEffect(() => {
+    if (mapState === null || !latitude || !longitude) {
+      return;
+    }
+
+    setMarker(
+      mapState,
+      isFormEnabled,
+      setLocation,
+      setIsLocationUpdated,
+      latitude,
+      longitude
+    );
+
+    setIsLocationUpdated(false);
+    mapState.panTo(new L.LatLng(latitude, longitude));
+
+    // when get new location
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [latitude, longitude]);
+
   const [isLocationUpdated, setIsLocationUpdated] = useState<boolean>(false);
 
   const mapReference = useCallback((node: HTMLDivElement | null) => {
     if (node !== null && mapState === null) {
-      let mapLocationCenter = L.latLng(52.375, 4.9);
-      if (
-        location.latitude &&
-        location.longitude &&
-        new Geo().Validate(location.latitude, location.longitude)
-      ) {
-        mapLocationCenter = L.latLng(location.latitude, location.longitude);
-      }
-
-      const zoom = getZoom(location);
-
-      // Leaflet maps
-      const map = L.map(node, {
-        center: mapLocationCenter,
-        zoom,
-        layers: [
-          L.tileLayer(tileLayerLocation, {
-            attribution: tileLayerAttribution
-          })
-        ]
-      });
-
-      addDefaultMarker(
+      updateMap(
+        node,
         location,
-        map,
-        props.isFormEnabled,
+        isFormEnabled,
         setLocation,
-        setIsLocationUpdated
+        setIsLocationUpdated,
+        setMapState
       );
-
-      addDefaultClickSetMarker(
-        map,
-        props.isFormEnabled,
-        setLocation,
-        setIsLocationUpdated
-      );
-
-      setMapState(map);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function subHeader(): string {
-    return props.isFormEnabled
-      ? !props.latitude && !props.longitude
+    return isFormEnabled
+      ? !latitude && !longitude
         ? MessageAddLocation
         : MessageUpdateLocation
       : MessageViewLocation;
@@ -206,8 +289,8 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       <button
         onClick={async () => {
           const model = await updateGeoLocation(
-            props.parentDirectory,
-            props.selectedSubPath,
+            parentDirectory,
+            selectedSubPath,
             location,
             setError,
             props.collections
@@ -219,16 +302,12 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
         data-test="update-geo-location"
         className="btn btn--default"
       >
-        {!props.latitude && !props.longitude
-          ? MessageAddLocation
-          : MessageUpdateLocation}
+        {!latitude && !longitude ? MessageAddLocation : MessageUpdateLocation}
       </button>
     ) : (
       <button className="btn btn--default" disabled={true}>
         {/* disabled */}
-        {!props.latitude && !props.longitude
-          ? MessageAddLocation
-          : MessageUpdateLocation}
+        {!latitude && !longitude ? MessageAddLocation : MessageUpdateLocation}
       </button>
     );
   }
@@ -262,7 +341,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = (props) => {
           >
             {MessageCancel}
           </button>
-          {props.isFormEnabled ? updateButton() : null}
+          {isFormEnabled ? updateButton() : null}
           <div className="lat-long">
             <b>Latitude:</b>{" "}
             <FormControl
