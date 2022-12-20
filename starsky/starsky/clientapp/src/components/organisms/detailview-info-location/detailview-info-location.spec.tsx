@@ -59,6 +59,8 @@ describe("ModalGeo", () => {
           { locationCity: "hi", locationCountry: "s" } as IFileIndexItem
         }
         isFormEnabled={false}
+        locationCity="hi"
+        locationCountry="hi"
         dispatch={jest.fn()}
         setFileIndexItem={jest.fn()}
       ></DetailViewInfoLocation>

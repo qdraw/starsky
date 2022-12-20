@@ -343,6 +343,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
           <DetailViewInfoLocation
             fileIndexItem={fileIndexItem}
             isFormEnabled={isFormEnabled}
+            {...fileIndexItem}
             dispatch={dispatch}
             setFileIndexItem={setFileIndexItem}
           />

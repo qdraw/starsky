@@ -28,3 +28,14 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.hero--primary {
+  background-image: url("../../static/img/header_00206.jpg");
+  background-size: cover;
+  color: #fff;
+}
+
+.hero--primary .hero__subtitle,
+.hero--primary h1{
+  text-shadow: #000 0 0 10px;
+}

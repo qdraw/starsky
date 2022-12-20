@@ -111,7 +111,7 @@ export default function DownloadFeatures(): JSX.Element {
 		},
 		{
 			type: "col--6",
-			src: require("@site/static/img/starsky-mac-v043-home-nl.jpg").default,
+			src: require("@site/static/img/starsky-mac-v050-home-nl.jpg").default,
 		},
 
 	];
