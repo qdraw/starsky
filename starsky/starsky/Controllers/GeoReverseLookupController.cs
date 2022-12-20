@@ -18,6 +18,8 @@ public sealed class GeoReverseLookupController : Controller
 	/// <summary>
 	/// Reverse geo lookup
 	/// </summary>
+	/// <param name="latitude">Latitude coordinate in Decimal Degree (DD)</param>
+	/// <param name="longitude">Longitude coordinate in DD</param>
 	/// <returns>reverse geo code data</returns>
 	/// <response code="200">Data with object</response>
 	[HttpGet("/api/geo-reverse-lookup")]
