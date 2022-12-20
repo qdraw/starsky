@@ -8,7 +8,8 @@ import ModalGeo, {
   addDefaultMarker,
   getZoom,
   ILatLong,
-  onDrag
+  onDrag,
+  realtimeMapUpdate
 } from "./modal-geo";
 import * as updateGeoLocation from "./update-geo-location";
 
@@ -130,6 +131,31 @@ describe("ModalGeo", () => {
 
       expect(map.addLayer).toBeCalledTimes(0);
       expect(map.removeLayer).toBeCalledTimes(0);
+    });
+  });
+
+  describe("realtimeMapUpdate", () => {
+    it("should trigger pan to", () => {
+      const panToSpy = jest.fn();
+      const map = {
+        on: (name: string, fn: Function) => {
+          fn({ latlng: {} });
+        },
+        eachLayer: (fn: Function) => {
+          fn(new L.Marker(new LatLng(0, 0)));
+          fn({});
+        },
+        panTo: panToSpy,
+        addLayer: jest.fn(),
+        removeLayer: jest.fn()
+      } as unknown as L.Map;
+
+      realtimeMapUpdate(map, false, jest.fn(), jest.fn(), 1, 1);
+
+      expect(map.addLayer).toBeCalledTimes(0);
+      expect(map.removeLayer).toBeCalledTimes(0);
+      expect(panToSpy).toBeCalledTimes(1);
+      expect(panToSpy).toBeCalledWith({ lat: 1, lng: 1 });
     });
   });
 
