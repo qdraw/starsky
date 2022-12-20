@@ -50,6 +50,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Back-end_ Avoid duplicate input when replace (Issue #995 / PR  #1000)
 - [x] (Fixed) _Back-end_ Rename Exception (Issue #994 / PR #1001)
 - [x] (Fixed) _Back-end_ GPX file loaded (Issue #763 / PR #1002)
+- [x] (Fixed) _Desktop_ Upgrade dependencies desktop / add script update deps in docs (PR #1003) 
+- [x] (Fixed) _Front-end_ Geo updates are now realtime and Update documentation (PR #1005)
+
 
 # version 0.5.1 - 2022-12-10
 
