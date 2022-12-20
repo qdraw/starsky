@@ -13,12 +13,14 @@
       <Compile Remove="docs\advanced-options\starsky\**" />
       <Compile Remove="docs\advanced-options\starsky-tools\**" />
       <Compile Remove="docs\advanced-options\starskydesktop\**" />
+      <Compile Remove="build\**" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Remove="docs\advanced-options\starsky\**" />
       <EmbeddedResource Remove="docs\advanced-options\starsky-tools\**" />
       <EmbeddedResource Remove="docs\advanced-options\starskydesktop\**" />
+      <EmbeddedResource Remove="build\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,6 +28,7 @@
       <None Remove="docs\advanced-options\starsky-tools\**" />
       <None Remove="docs\advanced-options\starskydesktop\**" />
       <None Remove="docs\advanced-options\history.md" />
+      <None Remove="build\**" />
     </ItemGroup>
 
 </Project>

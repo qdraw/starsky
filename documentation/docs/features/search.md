@@ -3,7 +3,7 @@
 Search and find photos based on keywords through the whole photo library.
 
 ![Rename](../assets/search_cloud_v050.gif)
-_Screenshot from: https://demostarsky.azurewebsites.net/search?t=wolken_
+_Screenshot from: https://demo.qdraw.nl and `search?t=wolken` page_
 
 ## A Painless Search Pane
 

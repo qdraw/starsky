@@ -19,13 +19,13 @@ At the moment email addresses are not checked for validity. In future versions t
 
 ![Account register](../assets/account_register_v050.jpg)
 
-_Screenshot from: https://demostarsky.azurewebsites.net/starsky/account/register_
+_Screenshot from: https://demo.qdraw.nl and account/register page_
 
 When the account is created, the user will be redirected to the login page.
 
 ![Account login](../assets/account_login_v050.jpg)
 
-_Screenshot from: https://demostarsky.azurewebsites.net/starsky/account/login_
+_Screenshot from: https://demo.qdraw.nl and account/login page_
 
 # Change password when already logged in
 
@@ -33,7 +33,7 @@ When you are logged in, you can change your password via the preferences page.
 
 ![Account login](../assets/account_preferences_v050.jpg)
 
-_Screenshot from: https://demostarsky.azurewebsites.net/preferences_
+_Screenshot from: https://demo.qdraw.nl and preferences page_
 
 
 ## Account management via the CLI

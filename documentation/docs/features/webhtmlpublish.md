@@ -8,7 +8,7 @@ The html is prerendered to make it possible to publish the html to a blog or sta
 The html is prerendered with the razor files. The title, tags and description of the image can be autofilled.
 
 ![Rename](../assets/webhtmlpublish_default_v050.gif)
-_Screenshot from: https://demostarsky.azurewebsites.net/search?t=wolken_
+_Screenshot from: https://demo.qdraw.nl and `search?t=wolken` page_
 
 ## Settings
 Template and logo are configurable in the settings. 

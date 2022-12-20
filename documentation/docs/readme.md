@@ -25,7 +25,7 @@ Starsky helps you get more value from creative digital assets like images and vi
 
 There is a online demo of the Starsky Application.
 
-<Button href="https://demostarsky.azurewebsites.net" color="#25c2a0">
+<Button href="https://demo.qdraw.nl" color="#25c2a0">
   See the online demo
 </Button>
 <br />

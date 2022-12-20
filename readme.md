@@ -24,7 +24,7 @@
 ## Demo app
 Starsky has a demo application online.
 
-[See the online demo](https://demostarsky.azurewebsites.net?classes=btn,btn-default)
+[See the online demo](https://demo.qdraw.nl)
 
 > Is not needed to login, but you can create a new account
 
