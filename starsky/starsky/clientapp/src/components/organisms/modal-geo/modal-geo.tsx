@@ -209,6 +209,27 @@ function updateMap(
   setMapState(map);
 }
 
+export function realtimeMapUpdate(
+  mapState: L.Map,
+  isFormEnabled: boolean,
+  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
+  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>,
+  latitude: number,
+  longitude: number
+) {
+  setMarker(
+    mapState,
+    isFormEnabled,
+    setLocation,
+    setIsLocationUpdated,
+    latitude,
+    longitude
+  );
+
+  setIsLocationUpdated(false);
+  mapState.panTo(new L.LatLng(latitude, longitude));
+}
+
 const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
   latitude,
   longitude,
@@ -248,7 +269,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
       return;
     }
 
-    setMarker(
+    realtimeMapUpdate(
       mapState,
       isFormEnabled,
       setLocation,
@@ -256,9 +277,6 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
       latitude,
       longitude
     );
-
-    setIsLocationUpdated(false);
-    mapState.panTo(new L.LatLng(latitude, longitude));
 
     // when get new location
     // eslint-disable-next-line react-hooks/exhaustive-deps
