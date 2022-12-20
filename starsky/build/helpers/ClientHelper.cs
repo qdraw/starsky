@@ -31,7 +31,7 @@ namespace helpers
 	
 		public static void ClientCiCommand()
 		{
-			Run(NpmBaseCommand, "ci --legacy-peer-deps --prefer-offline --no-audit", ClientAppFolder, 
+			Run(NpmBaseCommand, "ci --legacy-peer-deps --prefer-offline --no-audit --no-fund", ClientAppFolder, 
 				false, null, null, false);
 		}
 	

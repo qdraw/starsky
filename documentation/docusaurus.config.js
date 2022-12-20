@@ -20,7 +20,7 @@ console.log(`baseUrl ${baseUrl}`);
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "Starsky",
-	tagline: "Self-hosted photo-management done right",
+	tagline: "Photo-management done right",
 	url,
 	baseUrl,
 	onBrokenLinks: "throw",
@@ -51,7 +51,10 @@ const config = {
 					// Please change this to your repo.
 					// Remove this to remove the "edit this page" links.
 				},
-				blog: false,
+				blog: {
+					postsPerPage: 5,
+					showReadingTime: true
+				},
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
 				},
@@ -114,6 +117,14 @@ const config = {
 								label: "Getting started",
 								to: "/docs/getting-started",
 							},
+							{
+								label: "All features",
+								to: "/docs/features",
+							},
+							{
+								label: "Application Blog",
+								to: "/blog",
+							},
 						],
 					},
 					{
@@ -129,7 +140,7 @@ const config = {
 						title: "More",
 						items: [
 							{
-								label: "Blog",
+								label: "Qdraw Blog (in Dutch)",
 								to: "https://qdraw.nl/blog/",
 							},
 							{
@@ -139,7 +150,7 @@ const config = {
 						],
 					},
 				],
-				copyright: `Copyright © ${new Date().getFullYear()} Starsky`,
+				copyright: `Copyright &copy; ${new Date().getFullYear()} Starsky`,
 			},
 			prism: {
 				theme: lightCodeTheme,
