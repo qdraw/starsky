@@ -244,6 +244,10 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
       return;
     }
 
+    if (location.latitude === latitude && location.longitude === longitude) {
+      return;
+    }
+
     setMarker(
       mapState,
       isFormEnabled,
