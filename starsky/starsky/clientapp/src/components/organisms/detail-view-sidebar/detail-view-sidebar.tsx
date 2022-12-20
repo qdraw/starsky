@@ -82,7 +82,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
     useEffect(() => {
       if (!state) return;
       setFileIndexItem(state.fileIndexItem);
-    }, [state, state.fileIndexItem?.locationCity]);
+    }, [state]);
 
     const [collections, setCollections] = React.useState([] as string[]);
 

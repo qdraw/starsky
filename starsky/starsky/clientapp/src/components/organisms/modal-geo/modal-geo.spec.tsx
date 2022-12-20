@@ -99,7 +99,7 @@ describe("ModalGeo", () => {
     it("should remove other layers and add new one", () => {
       const map = {
         on: (name: string, fn: Function) => {
-          fn({ latlng: {} });
+          fn({ latlng: { lat: 1, lng: 1 } });
         },
         eachLayer: (fn: Function) => {
           fn(new L.Marker(new LatLng(0, 0)));
