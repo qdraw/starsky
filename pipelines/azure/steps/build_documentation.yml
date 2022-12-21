@@ -3,6 +3,7 @@ parameters:
   url: "/"
   baseUrl: "/"
   googleVerification: ""
+  gtag: ""
 
 steps:
 
@@ -31,6 +32,7 @@ steps:
         $env:DOCS_URL = "${{ parameters.url }}"
         $env:DOCS_BASE_URL = "${{ parameters.baseUrl }}"
         $env:GOOGLE_VERIFICATION = "${{ parameters.googleVerification }}"
+        $env:GTAG = "${{ parameters.gtag }}"
 
         Write-Host "DOCS_URL $Env:DOCS_URL"
         Write-Host "DOCS_BASE_URL $Env:DOCS_BASE_URL"
