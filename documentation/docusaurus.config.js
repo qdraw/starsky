@@ -58,6 +58,10 @@ const config = {
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
 				},
+				gtag: {
+					trackingID: process.env.GTAG ? process.env.GTAG : 'G-999X9XX9XX',
+					anonymizeIP: true,
+				}
 			}),
 		],
 	],
