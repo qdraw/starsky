@@ -31,6 +31,7 @@ variables:
   DOCS_URL: $(url) # public url/domain
   DOCS_BASE_URL: $(baseUrl) # dir in domain
   GOOGLE_VERIFICATION: $(googleVerification) # generate html file
+  GTAG: $(gtag) # google analytics
 
 stages:
 - stage: builddocumentation
@@ -54,6 +55,7 @@ stages:
         url: $(DOCS_URL)
         baseUrl: $(DOCS_BASE_URL)
         googleVerification: $(GOOGLE_VERIFICATION)
+        gtag: $(GTAG)
 
     - task: Bash@3
       enabled: true
