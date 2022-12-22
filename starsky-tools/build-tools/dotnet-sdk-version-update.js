@@ -1,3 +1,5 @@
+#!/usr/bin/node
+
 /**
  * Update the project versions to have the same version
  * Use parameter to match version and the path. it defaults to the solution
@@ -10,7 +12,7 @@ const { getFiles } = require("./lib/get-files-directory");
 const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
 
-var newRunTimeVersion = "6.0.x";
+let newRunTimeVersion = "6.0.x";
 
 // https://docs.microsoft.com/en-us/dotnet/standard/frameworks
 
@@ -86,7 +88,10 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 		.then(async (filePathList) => {
 			const sdkVersion = await getSdkVersionByTarget();
 			process.env["SDK_VERSION"] = sdkVersion;
+			console.log(`SDK_VERSION: ${sdkVersion}`);
+			// ::set-output is deprecated
 			console.log(`::set-output name=SDK_VERSION::${sdkVersion}`);
+			// process.env["GITHUB_STATE"] += ` SDK_VERSION=${sdkVersion} `;
 
 			await updateAzureYmlFile(filePathList, sdkVersion);
 			await updateGithubYmlFile(filePathList, sdkVersion);
@@ -108,8 +113,8 @@ async function updateMcrDockerFile(filePathList) {
 	const aspNetResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list");
 	const sdkResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/sdk/tags/list");
 
-	const aspNetResult = aspNetResults.tags.find(p => p == targetVersion);
-	const sdkResult = sdkResults.tags.find(p => p == targetVersion);
+	const aspNetResult = aspNetResults.tags.find(p => p === targetVersion);
+	const sdkResult = sdkResults.tags.find(p => p === targetVersion);
 
 	if (newRunTimeVersion.includes(".x") && aspNetResult !== sdkResult) {
 		console.log('DockerFile versions dont match');
@@ -150,7 +155,7 @@ async function getByBlobMicrosoft(targetVersion, isRuntime) {
 	);
 
 	if (resultsDotnetCli["releases-index"] !== undefined) {
-		var versionObject = resultsDotnetCli["releases-index"].find(p => p["channel-version"] == targetVersion);
+		const versionObject = resultsDotnetCli["releases-index"].find(p => p["channel-version"] === targetVersion);
 		if (versionObject && versionObject[what].startsWith(targetVersion)) {
 			return [versionObject[what], versionObject];
 		}
@@ -183,7 +188,7 @@ async function getByGithubReleases(targetVersion, isRuntime) {
 		}
 	}
 
-	if (versions.length == 0) {
+	if (versions.length === 0) {
 		console.log(`\n[Github] There are no versions matching ${targetVersion}`);
 		return;
 	}
@@ -215,7 +220,7 @@ async function getBlobSdkReleaseNotesPage(blobObject) {
 		releaseJsonFile
 	);
 
-	const findVersion = resultsReleaseJsonFile.releases.find(p => p.sdk.version == blobObject[0]);
+	const findVersion = resultsReleaseJsonFile.releases.find(p => p.sdk.version === blobObject[0]);
 	if (findVersion && findVersion["release-notes"]) {
 		process.env["SDK_RELEASE_NOTES"] = findVersion["release-notes"];
 		console.log(`::set-output name=SDK_RELEASE_NOTES::${findVersion["release-notes"]}`);
@@ -379,7 +384,7 @@ async function getProjectReferences(filePath) {
 
 		let name = result[0]
 			.replace('<ProjectReference Include="', "")
-			.replace(/\" \/>$/, "")
+			.replace(/" \/>$/, "")
 			.replace(/\\/ig,"/");
 
 		// console.log(join(currentDirName,name));
@@ -439,22 +444,22 @@ async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 			let fileContent = buffer.toString("utf8");
 
 			// <TargetFramework>net
-			var targetFrameworkNetStandard = new RegExp(
+			const targetFrameworkNetStandard = new RegExp(
 				"(<TargetFramework>net)",
 				"g"
 			);
-			var targetFrameworkNetStandardMatch = fileContent.match(
+			const targetFrameworkNetStandardMatch = fileContent.match(
 				targetFrameworkNetStandard
 			);
 
 			// Should check if file contains TargetFramework
 			if (targetFrameworkNetStandardMatch != null) {
 				// unescaped: (<RuntimeFrameworkVersion>)([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?(<\/RuntimeFrameworkVersion>)
-				var runtimeFrameworkVersionXMLRegex = new RegExp(
+				const runtimeFrameworkVersionXMLRegex = new RegExp(
 					"(<RuntimeFrameworkVersion>)([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(</RuntimeFrameworkVersion>)",
 					"g"
 				);
-				var fileXmlMatch = fileContent.match(
+				const fileXmlMatch = fileContent.match(
 					runtimeFrameworkVersionXMLRegex
 				);
 				if (fileXmlMatch == null) {
@@ -463,7 +468,7 @@ async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 							filePath +
 							" - RuntimeFrameworkVersion tag is not included"
 					);
-				} else if (fileXmlMatch != null) {
+				} else  { // fileXmlMatch != null
 					fileContent = fileContent.replace(
 						runtimeFrameworkVersionXMLRegex,
 						`<RuntimeFrameworkVersion>${newTargetVersion}</RuntimeFrameworkVersion>`
@@ -502,22 +507,22 @@ async function updateSingleNugetPackageVersion(filePath) {
 		let fileContent = buffer.toString("utf8");
 
 		// unescaped: <PackageReference Include="[a-z.]+" Version="[0-9.]+" />
-		var packageReferenceRegex = new RegExp(
+		const packageReferenceRegex = new RegExp(
 			'<PackageReference Include="[a-z.]+" Version="[0-9.]+" />',
 			"ig"
 		);
 
-		var packageReferenceMatches = fileContent.matchAll(
+		const packageReferenceMatches = fileContent.matchAll(
 			packageReferenceRegex
 		);
 
 		let toUpdatePackages = [];
 		for (const result of packageReferenceMatches) {
-			var name = result[0]
+			const name = result[0]
 				.replace('<PackageReference Include="', "")
 				.replace(/" Version="[0-9.]+" \/>/, "");
 
-			var version = result[0]
+			const version = result[0]
 				.replace(/<PackageReference Include="[a-z.]+" Version="/gi, "")
 				.replace('" />', "");
 
@@ -530,7 +535,7 @@ async function updateSingleNugetPackageVersion(filePath) {
 		// e.
 
 		if (toUpdatePackages.length >= 1) {
-			var searchVersion = newRunTimeVersion.replace(".x", "");
+			const searchVersion = newRunTimeVersion.replace(".x", "");
 
 			for (const item of toUpdatePackages) {
 				const toUpdatePackageName = item[0];
@@ -563,8 +568,8 @@ async function updateSingleNugetPackageVersion(filePath) {
 								const versionSpecificData = await httpsGet(sortfindedVersions[0]["@id"]);
 								const catalogEntryData = await httpsGet(versionSpecificData.catalogEntry);
 
-								var netStandardlist = catalogEntryData.dependencyGroups.filter(p => p.targetFramework.toLowerCase().includes(".netstandard"))
-								var netList = catalogEntryData.dependencyGroups.filter(p => p.targetFramework.toLowerCase().startsWith("net"));
+								const netStandardlist = catalogEntryData.dependencyGroups.filter(p => p.targetFramework.toLowerCase().includes(".netstandard"))
+								const netList = catalogEntryData.dependencyGroups.filter(p => p.targetFramework.toLowerCase().startsWith("net"));
 
 								for (const item of [...netStandardlist,...netList]) {
 									const parsedName = item.targetFramework.replace(/^\./ig,"").toLowerCase()
@@ -575,12 +580,12 @@ async function updateSingleNugetPackageVersion(filePath) {
 								}
 							} //e.
 
-							var versionXMLRegex = new RegExp(
+							const versionXMLRegex = new RegExp(
 								'(Version=")([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(" )',
 								"g"
 							);
 
-							updatedPackageReference = toUpdatePackageReference.replace(
+							const updatedPackageReference = toUpdatePackageReference.replace(
 									versionXMLRegex,
 									`Version="${newVersion}" `
 								);
@@ -633,12 +638,12 @@ function sortFilterOnExeCSproj(filePathList) {
 		let fileContent = buffer.toString("utf8");
 
 		// <OutputType>Exe<\/OutputType>|(Microsoft\.NET\.Sdk\.Web)|(Microsoft\.NET\.Test\.Sdk)
-		var isExeRegex = new RegExp(
+		const isExeRegex = new RegExp(
 			'<OutputType>Exe<\/OutputType>|(Microsoft\.NET\.Sdk\.Web)|(Microsoft\.NET\.Test\.Sdk)',
 			"ig"
 		);
 
-		var isExeMatches = fileContent.match(
+		const isExeMatches = fileContent.match(
 			isExeRegex
 		);
 

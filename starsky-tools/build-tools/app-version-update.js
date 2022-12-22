@@ -1,3 +1,4 @@
+#!/usr/bin/node
 
 /**
  * Update the project versions to have the same version
@@ -8,7 +9,7 @@ const { readFile, writeFile } = require('fs').promises;
 const {getFiles} = require('./lib/get-files-directory');
 const { prefixPath } = require('./lib/prefix-path.const.js');
 
-var newVersion = "0.5.2";
+let newVersion = "0.5.3";
 
 // allow version as single argument
 const argv = process.argv.slice(2)

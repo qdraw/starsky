@@ -2,13 +2,10 @@ import React from "react";
 import Layout from "@theme/Layout";
 import DownloadFeatures from "../components/DownloadFeature";
 
-// https://qdraw.github.io/starsky/assets/download/download.html
-export default function Hello() {
+export default function Download() {
 	return (
-		<Layout title="Hello" description="Hello React Page">
-
+		<Layout title="Download Starsky" description="Download application">
       <DownloadFeatures />
-
 		</Layout>
 	);
 }
