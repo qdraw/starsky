@@ -40,8 +40,10 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
+# version 0.5.3 _(Unreleased)_ - 2022-12-??
+- nothing yet
 
-# version 0.5.2 _(Unreleased)_ - 2022-12-??
+# version 0.5.2 - 2022-12-22
 
 - [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.404 (Runtime: 6.0.12)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.12/6.0.12.md) (PR #997)
 - [x] (Changed) _Front-end_ Upgrade Create React App / Typescript / storybook  (PR #998)
@@ -52,7 +54,6 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Back-end_ GPX file loaded (Issue #763 / PR #1002)
 - [x] (Fixed) _Desktop_ Upgrade dependencies desktop / add script update deps in docs (PR #1003) 
 - [x] (Fixed) _Front-end_ Geo updates are now realtime and Update documentation (PR #1005)
-
 
 # version 0.5.1 - 2022-12-10
 
