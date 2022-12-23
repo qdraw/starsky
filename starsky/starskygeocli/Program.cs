@@ -38,7 +38,7 @@ namespace starskyGeoCli
 			new SetupDatabaseTypes(appSettings,services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
-			var geoReverseLookup = serviceProvider.GetService<IGeoReverseLookup>();
+			var geoReverseLookup = serviceProvider.GetRequiredService<IGeoReverseLookup>();
 			var geoLocationWrite = serviceProvider.GetRequiredService<IGeoLocationWrite>();
 			var geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
 
@@ -49,7 +49,7 @@ namespace starskyGeoCli
 			var logger = serviceProvider.GetRequiredService<IWebLogger>();
 
 			// Migrations before geo-tools (not needed for this specific app, but helps the process)
-			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), logger,appSettings);
+			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(), logger,appSettings);
 			
 			// Help and other Command Line Tools args are included in the Geo tools 
 			await new GeoCli(geoReverseLookup, geoLocationWrite, selectorStorage,

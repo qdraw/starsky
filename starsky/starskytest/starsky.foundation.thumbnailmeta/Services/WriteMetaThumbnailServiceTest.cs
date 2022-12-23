@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.metathumbnail.Models;
 using starsky.foundation.metathumbnail.Services;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Storage;

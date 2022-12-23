@@ -22,10 +22,10 @@ namespace starsky.feature.geolookup.Services
 	    private readonly AppSettings _appSettings;
 	    private readonly IStorage _iStorage;
 	    private readonly IMemoryCache? _cache;
-	    private readonly IWebLogger? _logger;
+	    private readonly IWebLogger _logger;
 
 	    public GeoIndexGpx(AppSettings appSettings, IStorage iStorage, 
-		    IWebLogger? logger = null, IMemoryCache? memoryCache = null )
+		    IWebLogger logger, IMemoryCache? memoryCache = null )
         {
             _appSettings = appSettings;
 	        _iStorage = iStorage;
