@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.storage.Storage;
 
 namespace starskytest.starsky.foundation.storage.Storage

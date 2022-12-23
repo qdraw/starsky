@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Models
@@ -1043,6 +1044,13 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		[NotMapped]
 		public List<string> LastChanged { get; set; } = new List<string>();
+
+		// /// <summary>
+		// /// 
+		// /// </summary>
+		// /// <returns></returns>
+		// public ICollection<ThumbnailSize> ThumbnailSizes { get; set; } =
+		// 	new List<ThumbnailSize>();
 
 	}
 
