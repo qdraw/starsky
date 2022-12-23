@@ -145,7 +145,8 @@ namespace starsky.feature.metaupdate.Services
 						searchIn,
 						Regex.Escape(search), 
 						replace.Replace("$","$$"), 
-						RegexOptions.IgnoreCase
+						RegexOptions.IgnoreCase,
+						TimeSpan.FromMilliseconds(100)
 					);
 				}
 

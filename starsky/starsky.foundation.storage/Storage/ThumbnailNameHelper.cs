@@ -50,7 +50,8 @@ namespace starsky.foundation.storage.Storage
 			var fileNameWithoutExtension =
 				fileName.Replace(".jpg", string.Empty);
 
-			var afterAtString = Regex.Match(fileNameWithoutExtension, "@\\d+")
+			var afterAtString = Regex.Match(fileNameWithoutExtension, "@\\d+", 
+					RegexOptions.None, TimeSpan.FromMilliseconds(100))
 				.Value.Replace("@", string.Empty);
 			
 			if ( fileNameWithoutExtension.Replace($"@{afterAtString}", string.Empty).Length != 26 )

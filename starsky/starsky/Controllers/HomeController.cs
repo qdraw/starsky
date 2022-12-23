@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,7 +61,8 @@ namespace starsky.Controllers
 			
 			// Added filter to prevent redirects based on tainted, user-controlled data
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:,\.>< ]+$
-			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:,\\.>< ]+$") )
+			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:,\\.>< ]+$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest("`t` is not allowed");
 			}
@@ -98,7 +100,8 @@ namespace starsky.Controllers
 
 			// Added filter to prevent redirects based on tainted, user-controlled data
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
-			if (!Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$") )
+			if (!Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest("`t` is not allowed");
 			}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,8 @@ namespace starsky.foundation.platform.Helpers
 			
 			var keywords = ReplaceSingleCommaWithCommaWithSpace(inputKeywords);
 
-			var dotcommaRegex = new Regex(@",\s");
+			var dotcommaRegex = new Regex(@",\s", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
 			var keywordList = dotcommaRegex.Split(keywords);
 
@@ -41,7 +43,8 @@ namespace starsky.foundation.platform.Helpers
 		private static string ReplaceSingleCommaWithCommaWithSpace(string keywords)
 		{
 			// unescaped regex: (,(?=\S)|:)
-			Regex pattern = new Regex("(,(?=\\S)|:)");
+			Regex pattern = new Regex("(,(?=\\S)|:)", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			keywords = pattern.Replace(keywords, ", ");
 			return keywords;
 		}

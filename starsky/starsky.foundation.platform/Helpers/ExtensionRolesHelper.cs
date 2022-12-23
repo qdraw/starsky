@@ -265,7 +265,8 @@ namespace starsky.foundation.platform.Helpers
 
 			// without escaped values:
 			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
-			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);
+			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Matches(filename);
 			if ( matchCollection.Count == 0 ) return false;
 			foreach ( var matchValue in matchCollection.Select(p => p.Value) )
 			{
