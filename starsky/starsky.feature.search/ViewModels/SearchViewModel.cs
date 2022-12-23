@@ -356,7 +356,8 @@ namespace starsky.feature.search.ViewModels
 	    public static char AndOrRegex(string item)
 	    {
 		    // (\|\||\&\&)$
-		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase);
+		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase,
+			    TimeSpan.FromMilliseconds(100));
 
 		    // To Search Type
 		    var lastStringValue = rgx.Match(item).Value;

@@ -88,7 +88,7 @@ namespace starsky.foundation.platform.Helpers
 			// without escaped values:
 			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
 			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$",
-				RegexOptions.None, TimeSpan.FromMilliseconds(20)
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)
 				).Matches(filename);
 			if ( matchCollection.Count == 0 ) return ImageFormat.unknown;
 			
@@ -286,7 +286,9 @@ namespace starsky.foundation.platform.Helpers
 		{
 			// without escaped values:
 			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
-			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);
+			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Matches(filename);
+			
 			if ( matchCollection.Count == 0 ) return string.Empty;
 			foreach ( Match match in matchCollection )
 			{
