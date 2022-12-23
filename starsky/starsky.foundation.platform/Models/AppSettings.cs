@@ -159,7 +159,9 @@ namespace starsky.foundation.platform.Models
 			{
 				var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 				return string.IsNullOrEmpty(assemblyVersion) ? string.Empty : 
-					new Regex("\\.0$").Replace(assemblyVersion, string.Empty);
+					new Regex("\\.0$", RegexOptions.None, 
+						TimeSpan.FromMilliseconds(100))
+						.Replace(assemblyVersion, string.Empty);
 			}
 		}
 		
@@ -246,9 +248,11 @@ namespace starsky.foundation.platform.Models
 
 			var matchNotRegexString = @"[^a-zA-Z0-9\s-" + charAllowLowerCase + charAllowAtSign + "]";
             
-			text = Regex.Replace(text,matchNotRegexString, string.Empty);         
+			text = Regex.Replace(text,matchNotRegexString, string.Empty, 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));         
 			//						^^^ remove invalid characters
-			text = Regex.Replace(text, @"\s+", " ").Trim();                       // single space
+			text = Regex.Replace(text, @"\s+", " ", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Trim();                       // single space
 			text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim();      // cut and trim
 			text = Regex.Replace(text, @"\s", "-");                               // insert hyphens
 			text = text.Replace("---", "-"); // for example: "test[space]-[space]test"
@@ -368,7 +372,7 @@ namespace starsky.foundation.platform.Models
             
 			Regex structureRegex = new Regex( 
 				"^(\\/.+)?\\/([\\/_ A-Z0-9*{}\\.\\\\-]+(?=\\.ext))\\.ext$", 
-				RegexOptions.IgnoreCase);
+				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(300));
 
 			if (structureRegex.Match(structure).Success) return;
 

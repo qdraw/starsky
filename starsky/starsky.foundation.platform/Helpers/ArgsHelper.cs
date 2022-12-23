@@ -450,11 +450,14 @@ namespace starsky.foundation.platform.Helpers
 			}
 
 			// Ignore quotes at beginning: unescaped ^"|"$
-			path = new Regex("^\"|\"$").Replace(path, string.Empty);
+			path = new Regex("^\"|\"$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100))
+				.Replace(path, string.Empty);
 			
 			// split every dot comma but ignore escaped
 			// non escaped: (?<!\\);
-			var dotCommaRegex = new Regex("(?<!\\\\);");
+			var dotCommaRegex = new Regex("(?<!\\\\);", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			return dotCommaRegex.Split(path).Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
 		}
 

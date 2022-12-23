@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,8 @@ namespace starsky.foundation.platform.Helpers
 	    {
 			// unescaped:
 			// [^/]+(?=(?:\.[^.]+)?$)
-			return Regex.Match(filePath, "[^/]+(?=(?:\\.[^.]+)?$)").Value;
+			return Regex.Match(filePath, "[^/]+(?=(?:\\.[^.]+)?$)", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Value;
 	    }
 
 		/// <summary>

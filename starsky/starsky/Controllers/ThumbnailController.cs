@@ -51,7 +51,8 @@ namespace starsky.Controllers
 			
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
-			if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$") )
+			if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest();
 			}
@@ -107,7 +108,8 @@ namespace starsky.Controllers
 	        
 			// Restrict the fileHash to letters and digits only
 			// I/O function calls should not be vulnerable to path injection attacks
-			if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$") )
+			if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 			{
 				return BadRequest();
 			}
@@ -210,7 +212,8 @@ namespace starsky.Controllers
 	        
 	        // Restrict the fileHash to letters and digits only
 	        // I/O function calls should not be vulnerable to path injection attacks
-	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$") )
+	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$", 
+		        RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 	        {
 		        return BadRequest();
 	        }
@@ -306,7 +309,8 @@ namespace starsky.Controllers
 	        
 	        // Restrict the fileHash to letters and digits only
 	        // I/O function calls should not be vulnerable to path injection attacks
-	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$") )
+	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$", 
+		        RegexOptions.None, TimeSpan.FromMilliseconds(100)) )
 	        {
 		        return BadRequest();
 	        }
