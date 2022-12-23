@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -44,8 +45,12 @@ namespace starsky.feature.import.Helpers
 		/// <param name="colorClassTransformation">change colorClass</param>
 		/// <param name="dateTimeParsedFromFileName">is date time parsed from fileName</param>
 		/// <param name="indexMode">should update database</param>
-		internal async Task<FileIndexItem> UpdateTransformations(QueryUpdateDelegate queryUpdateDelegate,  FileIndexItem fileIndexItem, 
-			int colorClassTransformation, bool dateTimeParsedFromFileName, bool indexMode)
+		/// <param name="tinyMetaThumbnailSuccess"></param>
+		internal async Task<FileIndexItem> UpdateTransformations(
+			QueryUpdateDelegate queryUpdateDelegate,
+			FileIndexItem fileIndexItem,
+			int colorClassTransformation, bool dateTimeParsedFromFileName,
+			bool indexMode)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
 
@@ -72,6 +77,13 @@ namespace starsky.feature.import.Helpers
 			
 			// Hash is changed after transformation
 			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
+			
+			// Check if fastest version is available to show 
+			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.TinyMeta)) )
+			{
+				fileIndexItem.ThumbnailSizes.Add(ThumbnailSize.TinyMeta);
+			}
+			
 			await queryUpdateDelegate(fileIndexItem);
 
 			return fileIndexItem.Clone();

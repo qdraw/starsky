@@ -75,7 +75,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
 		[ProducesResponseType(typeof(List<ImportIndexItem>),206)]  // When all items are already imported
 		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // Wrong input (e.g. wrong extenstion type)
-		public async Task<IActionResult> IndexPost()
+		public async Task<IActionResult> IndexPost() // aka ActionResult Import
 		{
 			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
 			var importSettings = new ImportSettingsModel(Request);

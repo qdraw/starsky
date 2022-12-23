@@ -553,13 +553,13 @@ namespace starsky.feature.import.Services
 				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
 		    }
 		    
+		    await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
+
 		    importIndexItem.FileIndexItem = await _updateImportTransformations
 			    .UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
 			    importSettings.ColorClass, importIndexItem.DateTimeFromFileName, importSettings.IndexMode);
 
 		    DeleteFileAfter(importSettings, importIndexItem);
-		    
-		    await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
 		    
             if ( _appSettings.IsVerbose() ) _console.Write("+");
             return importIndexItem;

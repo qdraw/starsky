@@ -69,16 +69,16 @@ namespace starsky.Controllers
 			try
 			{
 				_logger.LogInformation($"[ThumbnailGenerationController] start {subPath}");
-				var thumbnail = new Thumbnail(subPathStorage, 
+				var thumbnailService = new Thumbnail(subPathStorage, 
 					thumbnailStorage, _logger);
-				var thumbs = await thumbnail.CreateThumb(subPath);
+				var thumbs = await thumbnailService.CreateThumb(subPath);
 				var getAllFilesAsync = await _query.GetAllFilesAsync(subPath);
 
 				var result = new List<FileIndexItem>();
 				foreach ( var item in 
 				         getAllFilesAsync.Where(item => thumbs.FirstOrDefault(p => p.Item1 == item.FilePath).Item2) )
 				{
-					if ( item.Tags.Contains("!delete!") ) continue;
+					if ( item.Tags?.Contains("!delete!") == true ) continue;
 
 					item.SetLastEdited();
 					result.Add(item);

@@ -1045,12 +1045,13 @@ namespace starsky.foundation.database.Models
 		[NotMapped]
 		public List<string> LastChanged { get; set; } = new List<string>();
 
-		// /// <summary>
-		// /// 
-		// /// </summary>
-		// /// <returns></returns>
-		// public ICollection<ThumbnailSize> ThumbnailSizes { get; set; } =
-		// 	new List<ThumbnailSize>();
+		
+		/// <summary>
+		/// Sizes available for the image
+		/// </summary>
+		/// <returns></returns>
+		public ICollection<ThumbnailSize> ThumbnailSizes { get; set; } =
+			new List<ThumbnailSize>();
 
 	}
 

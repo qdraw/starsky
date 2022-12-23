@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
+using starsky.foundation.database.ValueConverters;
+using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.database.Data
 {
@@ -57,6 +59,14 @@ namespace starsky.foundation.database.Data
 				etb.HasIndex(x => new {x.FileName, x.ParentDirectory});
 				
 				etb.Property(p => p.Size).HasColumnType("bigint");
+				
+				var converter = new EnumCollectionJsonValueConverter<ThumbnailSize>();
+				var comparer = new CollectionValueComparer<ThumbnailSize>();
+				
+				etb.Property(e => e.ThumbnailSizes)
+					.HasConversion(converter)
+					.Metadata.SetValueComparer(comparer);
+				
 			});
 			
 			modelBuilder.Entity<User>(etb =>

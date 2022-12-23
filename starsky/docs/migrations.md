@@ -12,6 +12,11 @@ dotnet tool install -g dotnet-ef
 dotnet tool update --global dotnet-ef
 ```
 
+```bash
+# https://www.nuget.org/packages/dotnet-ef#versions-body-tab
+dotnet tool update --global dotnet-ef --version 6.0.12
+```
+
 ## Set constance for EF Core
 Define constance in `starsky.foundation.database.csproj`
 ```xml
