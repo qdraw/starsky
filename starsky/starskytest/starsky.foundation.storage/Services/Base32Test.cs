@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.storage.Services
 			Assert.AreEqual("VWQII6FKPI26LLWB3TRDQJU3CM",encodeString);
 			
 			// Empty result
-			encodeString = Base32.Encode(new byte[0]);
+			encodeString = Base32.Encode(Array.Empty<byte>());
 			Assert.AreEqual(string.Empty,encodeString);
 			
 			Base32.Encode(encodeBytes,true);

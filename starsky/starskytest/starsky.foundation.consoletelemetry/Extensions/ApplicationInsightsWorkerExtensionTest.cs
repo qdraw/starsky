@@ -32,7 +32,7 @@ namespace starskytest.starsky.foundation.consoletelemetry.Extensions
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddMonitoringWorkerService(new AppSettings{ApplicationInsightsConnectionString = ""}, AppSettings.StarskyAppType.Importer);
 
-			Assert.AreEqual(0, serviceCollection.Count());
+			Assert.AreEqual(0, serviceCollection.Count);
 			var result= serviceCollection.FirstOrDefault(p
 				=> p.ServiceType.FullName.Contains("ApplicationInsights"));
 			Assert.IsNull(result);

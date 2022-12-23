@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -117,7 +118,10 @@ namespace starskytest.starsky.feature.webftppublish.Services
 		public void MakeUpload_AndFile_Is_Found()
 		{
 			var factory = new FakeIFtpWebRequestFactory();
-			var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"//test.jpg"}, new List<byte[]>{new byte[0]});
+			var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"//test.jpg"}, new List<byte[]>
+			{
+				Array.Empty<byte>()
+			});
 			var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(), factory);
 			var makeUpload = ftpService.MakeUpload("/", "test", new List<string> {"/test.jpg"});
 			Assert.IsTrue(makeUpload);
@@ -127,7 +131,10 @@ namespace starskytest.starsky.feature.webftppublish.Services
 		public void Run_UploadDone()
 		{
 			var factory = new FakeIFtpWebRequestFactory();
-			var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"//test.jpg"}, new List<byte[]>{new byte[0]});
+			var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"//test.jpg"}, new List<byte[]>
+			{
+				Array.Empty<byte>()
+			});
 			var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(), factory);
 			var makeUpload = ftpService.Run("/", "test", new Dictionary<string, bool>
 			{

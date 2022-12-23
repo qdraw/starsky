@@ -142,13 +142,17 @@ namespace starskytest.Controllers
 			Console.WriteLine("createAnImage.FilePath");
 			Console.WriteLine("@#~ "+ createAnImage.FilePath);
 
-			new CreateAnImage();
+			// create an image
+			var createAnImage1 = new CreateAnImage();
+			Assert.IsNotNull(createAnImage1);
 			
 			var actionResult = controller.Delete(createAnImage.FilePath) as JsonResult;
-			Assert.AreNotEqual(actionResult,null);
+			Assert.AreNotEqual(null,actionResult);
 			var jsonCollection = actionResult.Value as List<FileIndexItem>;
 			Assert.AreEqual(createAnImage.FilePath,jsonCollection.FirstOrDefault().FilePath);
-			new CreateAnImage(); //restore afterwards
+			
+			var createAnImage2 = new CreateAnImage(); //restore afterwards
+			Assert.IsNotNull(createAnImage2);
 		}
 
 		[TestMethod]

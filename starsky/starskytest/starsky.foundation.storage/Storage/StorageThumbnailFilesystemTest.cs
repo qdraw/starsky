@@ -52,7 +52,9 @@ namespace starskytest.starsky.foundation.storage.Storage
 			Assert.IsTrue(File.Exists(path2));
 			
 			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg"));
-			new CreateAnImage();
+
+			var createAnImage = new CreateAnImage();
+			Assert.IsNotNull(createAnImage);
 		}
 		
 		[TestMethod]
@@ -69,7 +71,9 @@ namespace starskytest.starsky.foundation.storage.Storage
 			
 			File.Delete(_fileNameWithoutExtension);
 			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileCopy.jpg"));
-			new CreateAnImage();
+
+			var createAnImage = new CreateAnImage();
+			Assert.IsNotNull(createAnImage);
 		}
 		
 		[TestMethod]
@@ -92,7 +96,8 @@ namespace starskytest.starsky.foundation.storage.Storage
 		[TestMethod]
 		public void ReadStream()
 		{
-			new CreateAnImage();
+			var createAnImage = new CreateAnImage();
+			Assert.IsNotNull(createAnImage);
 
 			var stream =_thumbnailStorage.ReadStream(_fileNameWithoutExtension);
 			Assert.AreEqual(CreateAnImage.Bytes.Length,stream.Length);
@@ -103,7 +108,8 @@ namespace starskytest.starsky.foundation.storage.Storage
 		[TestMethod]
 		public void ReadStream_MaxLength()
 		{
-			new CreateAnImage();
+			var createAnImage = new CreateAnImage();
+			Assert.IsNotNull(createAnImage);
 
 			var stream =_thumbnailStorage.ReadStream(_fileNameWithoutExtension, 100);
 			Assert.AreEqual(100,stream.Length);

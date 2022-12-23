@@ -134,7 +134,7 @@ namespace starskytest.Controllers
 			var actionResult = controller.Thumbnail(createAnImage.FileHash,true,true) as JsonResult;
 			
 			// Thumbnail exist
-			Assert.AreNotEqual(actionResult,null);
+			Assert.AreNotEqual(null,actionResult);
 			var thumbnailAnswer = actionResult.Value as string;
 			Assert.AreEqual("OK",thumbnailAnswer);
 		}
@@ -158,7 +158,7 @@ namespace starskytest.Controllers
 			var actionResult = controller.Thumbnail(createAnImage.FileHash, true) as FileStreamResult;
 			
 			// Thumbnail exist
-			Assert.AreNotEqual(actionResult,null);
+			Assert.AreNotEqual(null,actionResult);
 			var thumbnailAnswer = actionResult.ContentType;
 			
 			controller.Response.Headers.TryGetValue("x-filename", out var value ); 
@@ -493,7 +493,7 @@ namespace starskytest.Controllers
 			var actionResult = controller.ListSizesByHash("01234567890123456789123456") as JsonResult;
 			
 			// Thumbnail exist
-			Assert.AreNotEqual(actionResult,null);
+			Assert.AreNotEqual(null,actionResult);
 			var thumbnailAnswer = actionResult.Value as ThumbnailSizesExistStatusModel;
 
 			Assert.AreEqual(202, controller.Response.StatusCode);

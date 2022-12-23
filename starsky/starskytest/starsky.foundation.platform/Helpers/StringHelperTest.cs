@@ -31,7 +31,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void AsciiNullChar()
 		{
 			var result = StringHelper.AsciiNullChar;
-			Assert.IsTrue(result.Contains("\\"));
+			Assert.IsTrue(result.Contains('\\'));
 		}
 	}
 }

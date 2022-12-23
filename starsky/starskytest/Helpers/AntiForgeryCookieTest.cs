@@ -8,7 +8,7 @@ namespace starskytest.Helpers
 	[TestClass]
 	public sealed class AntiForgeryCookieTest
 	{
-		private string GetCookieValueFromResponse(HttpResponse response, string cookieName)
+		private static string GetCookieValueFromResponse(HttpResponse response, string cookieName)
 		{
 			foreach (var headers in response.Headers)
 			{
