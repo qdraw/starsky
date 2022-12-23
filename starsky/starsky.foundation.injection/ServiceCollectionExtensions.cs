@@ -210,7 +210,8 @@ namespace starsky.foundation.injection
         {
             return input == wildcard || Regex.IsMatch(input, "^" + 
                                                              Regex.Escape(wildcard).Replace("\\*", ".*")
-	                                                             .Replace("\\?", ".") + "$", RegexOptions.IgnoreCase);
+	                                                             .Replace("\\?", ".") + "$", RegexOptions.IgnoreCase,
+                                                             TimeSpan.FromMilliseconds(100));
         }
 
     }

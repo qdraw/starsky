@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -232,7 +233,8 @@ namespace starsky.Controllers
 			if (filename == null) filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
 	        
 			// I/O function calls should not be vulnerable to path injection attacks
-			if (!Regex.IsMatch(filename, "^[a-zA-Z0-9_\\s\\.]+$") || !FilenamesHelper.IsValidFileName(filename))
+			if (!Regex.IsMatch(filename, "^[a-zA-Z0-9_\\s\\.]+$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)) || !FilenamesHelper.IsValidFileName(filename))
 			{
 				return BadRequest();
 			}

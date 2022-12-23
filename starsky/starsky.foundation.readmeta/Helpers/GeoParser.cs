@@ -21,7 +21,8 @@ namespace starsky.foundation.readmeta.Helpers
             
 		    var multiplier = (refGps.Contains('S') || refGps.Contains('W') ) ? -1 : 1; //handle south and west
 
-		    point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant); //remove the characters
+		    point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant, 
+			    TimeSpan.FromMilliseconds(100)); //remove the characters
 
 		    // When you use an localisation where commas are used instead of a dot
 		    point = point.Replace(",", ".");
@@ -52,7 +53,8 @@ namespace starsky.foundation.readmeta.Helpers
 		    var multiplier = (refGps.Contains('S') || refGps.Contains('W')) ? -1 : 1; // handle south and west
 
 		    point = point.Replace(",", " ");
-		    point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant); //remove the characters
+		    point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant, 
+			     TimeSpan.FromMilliseconds(100)); //remove the characters
 
 		    var pointArray = point.Split(' '); //split the string.
 		    var degrees = double.Parse(pointArray[0], CultureInfo.InvariantCulture);

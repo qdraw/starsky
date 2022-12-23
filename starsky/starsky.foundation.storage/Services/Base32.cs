@@ -92,7 +92,8 @@ namespace starsky.foundation.storage.Services
             // Remove padding. Note: the padding is used as hint to determine how many
             // bits to decode from the last incomplete chunk (which is commented out
             // below, so this may have been wrong to start with).
-            encoded = Regex.Replace(encoded, "[=]*$", "");
+            encoded = Regex.Replace(encoded, "[=]*$", "", 
+	            RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
             // Canonicalize to all upper case
             encoded = encoded.ToUpper();

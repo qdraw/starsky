@@ -654,7 +654,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        // exif:GPSLatitude,45,33.615N
 		        var latitudeLocal = GetXmpData(exifItem, propertyPath);
 		        if(string.IsNullOrEmpty(latitudeLocal)) continue;
-		        var split = Regex.Split(latitudeLocal, "[NSWE]");
+		        var split = Regex.Split(latitudeLocal, "[NSWE]", 
+			        RegexOptions.None, TimeSpan.FromMilliseconds(100));
 		        if(split.Length != 2) continue;
 		        latitudeString = split[0];
 		        latitudeRef = latitudeLocal[latitudeLocal.Length-1].ToString();

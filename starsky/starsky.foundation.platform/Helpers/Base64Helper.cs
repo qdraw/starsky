@@ -47,7 +47,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		private static readonly Regex Base64Regex = new Regex(
 			@"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=|[A-Za-z0-9+/][AQgw]==)?$",
-			RegexOptions.Compiled);
+			RegexOptions.Compiled,  TimeSpan.FromMilliseconds(100));
 
 		/// <summary>
 		/// MemoryString to base64 string

@@ -177,7 +177,7 @@ namespace starskytest.starsky.foundation.database.Models
             
 			input.ParseDateTimeFromFileName();
             
-			Regex pattern = new Regex("-|_| |;|\\.|:");
+			Regex pattern = new Regex("-|_| |;|\\.|:", RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			var output = pattern.Replace("2018-02-03 18.47.35.jpg",string.Empty);
             
 			DateTime.TryParseExact(

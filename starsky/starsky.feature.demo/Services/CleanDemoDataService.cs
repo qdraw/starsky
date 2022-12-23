@@ -191,7 +191,8 @@ namespace starsky.feature.demo.Services
 				foreach ( var keyValuePairKey in data.Copy.Where(p => p.Value 
 					         && p.Key.Contains("1000")).Select(p => p.Key) )
 				{
-					var regex = new Regex("\\?.+$");
+					var regex = new Regex("\\?.+$", 
+						RegexOptions.None, TimeSpan.FromMilliseconds(100));
 					var fileName =
 						FilenamesHelper.GetFileName(regex.Replace(keyValuePairKey, string.Empty));
 					var cacheFilePath = Path.Combine(cacheFolder,dir, fileName);

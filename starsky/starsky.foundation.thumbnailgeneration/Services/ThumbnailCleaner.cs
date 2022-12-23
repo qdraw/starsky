@@ -98,7 +98,8 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			foreach ( var thumbnailFile in allThumbnailFiles )
 			{
 				var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile);
-				var fileHashWithoutSize = Regex.Match(fileHash, "^.*(?=(@))").Value;
+				var fileHashWithoutSize = Regex.Match(fileHash, "^.*(?=(@))", 
+					RegexOptions.None, TimeSpan.FromMilliseconds(100)).Value;
 				if ( string.IsNullOrEmpty(fileHashWithoutSize)  )
 				{
 					fileHashWithoutSize = fileHash;
