@@ -55,7 +55,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			return new Tuple<IQuery, IServiceScopeFactory>(query, serviceScopeFactory);
 		}
 		
-		private IStorage GetStorage()
+		private static IStorage GetStorage()
 		{
 			return new FakeIStorage(
 				new List<string>

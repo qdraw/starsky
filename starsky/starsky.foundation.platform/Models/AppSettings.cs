@@ -242,6 +242,7 @@ namespace starsky.foundation.platform.Models
 			bool toLowerCase = true, bool allowAtSign = false)
 		{
 			var text = toLowerCase ? phrase.ToLowerInvariant() : phrase;
+			var regexTimespan = TimeSpan.FromMilliseconds(100);
 
 			var charAllowLowerCase = allowUnderScore ? "_" : string.Empty;
 			var charAllowAtSign = allowAtSign ? "@" : string.Empty;
@@ -249,12 +250,13 @@ namespace starsky.foundation.platform.Models
 			var matchNotRegexString = @"[^a-zA-Z0-9\s-" + charAllowLowerCase + charAllowAtSign + "]";
             
 			text = Regex.Replace(text,matchNotRegexString, string.Empty, 
-				RegexOptions.None, TimeSpan.FromMilliseconds(100));         
+				RegexOptions.None, regexTimespan);         
 			//						^^^ remove invalid characters
 			text = Regex.Replace(text, @"\s+", " ", 
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Trim();                       // single space
+				RegexOptions.None, regexTimespan).Trim();                       // single space
 			text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim();      // cut and trim
-			text = Regex.Replace(text, @"\s", "-");                               // insert hyphens
+			text = Regex.Replace(text, @"\s", "-", RegexOptions.None,
+				regexTimespan);                               // insert hyphens
 			text = text.Replace("---", "-"); // for example: "test[space]-[space]test"
 			return text;
 		}

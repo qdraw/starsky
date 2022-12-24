@@ -39,9 +39,9 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var predicates = new List<Expression<Func<TestClass, bool>>>
 			{
 				x => x.Key.Contains("Key"), 
-				x => x.Key.Contains("1"),
-				x => x.Key.Contains("2"),
-				x => x.Key.Contains("3")
+				x => x.Key.Contains('1'),
+				x => x.Key.Contains('2'),
+				x => x.Key.Contains('3')
 			};
 
 			var predicate = PredicateBuilder.False<TestClass>();
@@ -120,7 +120,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var predicates = new List<Expression<Func<TestClass, bool>>>
 			{
 				x => x.Key.Contains("Key"), 
-				x => x.Key.Contains("1"),
+				x => x.Key.Contains('1'),
 			};
 
 			var predicate = PredicateBuilder.False<TestClass>();

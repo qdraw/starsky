@@ -22,7 +22,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			var content = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(path).ToList();
 
-			Console.WriteLine("count => "+ content.Count());
+			Console.WriteLine("count => "+ content.Count);
 
 			// Gives a list of the content in the temp folder.
 			Assert.AreEqual(true, content.Any());            

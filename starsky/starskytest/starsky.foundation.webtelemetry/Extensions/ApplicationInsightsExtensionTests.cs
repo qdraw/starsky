@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Extensions
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddMonitoring(new AppSettings{ApplicationInsightsConnectionString = ""});
 
-			Assert.AreEqual(0, serviceCollection.Count());
+			Assert.AreEqual(0, serviceCollection.Count);
 			var result= serviceCollection.FirstOrDefault(p
 				=> p.ServiceType.FullName!.Contains("ApplicationInsights"));
 			Assert.IsNull(result);

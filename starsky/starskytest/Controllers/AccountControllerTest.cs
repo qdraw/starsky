@@ -96,7 +96,7 @@ namespace starskytest.Controllers
 			_antiForgery = new FakeAntiforgery();
 		}
 
-		private ClaimsPrincipal SetTestClaimsSet(string name, string id)
+		private static ClaimsPrincipal SetTestClaimsSet(string name, string id)
 		{
 			var claims = new List<Claim>()
 			{

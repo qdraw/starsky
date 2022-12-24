@@ -7,12 +7,11 @@ using starsky.foundation.metathumbnail.Models;
 using starsky.foundation.metathumbnail.Services;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.readmeta.Services
+namespace starskytest.starsky.foundation.thumbnailmeta.Services
 {
 	[TestClass]
 	public sealed class WriteMetaThumbnailServiceTest
@@ -21,7 +20,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		public async Task WriteAndCropFile_Fail_BufferNull()
 		{
 			var storage = new FakeIStorage(new List<string>(),
-				new List<string> {"/test.jpg"}, new byte[0][]);
+				new List<string> {"/test.jpg"}, Array.Empty<byte[]>());
 			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(storage),
 				new FakeIWebLogger(), new AppSettings());
 			var result = await service.WriteAndCropFile("/test.jpg", new OffsetModel(), 0, 0,
@@ -33,7 +32,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		public async Task WriteAndCropFile_Fail_ImageCantBeLoaded()
 		{
 			var storage = new FakeIStorage(new List<string>(),
-				new List<string> {"/test.jpg"}, new byte[0][]);
+				new List<string> {"/test.jpg"}, Array.Empty<byte[]>()); // instead of new byte[0][]
 			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(storage),
 				new FakeIWebLogger(), new AppSettings());
 			var result = await service.WriteAndCropFile("/test.jpg", new OffsetModel

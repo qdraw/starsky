@@ -41,7 +41,8 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 # version 0.5.3 _(Unreleased)_ - 2022-12-??
-- nothing yet
+
+- [x] (Security) _Back-end_ Add Regex timeouts to avoid DoS (PR #1012)
 
 # version 0.5.2 - 2022-12-22
 
