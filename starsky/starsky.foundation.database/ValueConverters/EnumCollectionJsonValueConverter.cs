@@ -19,11 +19,9 @@ namespace starsky.foundation.database.ValueConverters;
 public class EnumCollectionJsonValueConverter<T> : ValueConverter<ICollection<T>, string> where T : Enum
 {
 	public EnumCollectionJsonValueConverter() : base(
-		v => JsonSerializer
-			.Serialize(v.Select(e => e.ToString()).ToList(), DefaultJsonSerializer.CamelCase),
+		v => string.Join(",",v),
 		v => string.IsNullOrEmpty(v) ? new List<T>() : 
-			JsonSerializer.Deserialize<ICollection<string>?>(v, DefaultJsonSerializer.CamelCase)!
-			.Select(e => (T) Enum.Parse(typeof(T), e)).ToList())
+			v.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList().Select(x => (T)Enum.Parse(typeof(T), x)).ToList())
 	{
 	}
 }
@@ -32,7 +30,7 @@ public class EnumCollectionJsonValueConverter<T> : ValueConverter<ICollection<T>
 public class CollectionValueComparer<T> : ValueComparer<ICollection<T>>
 {
 	public CollectionValueComparer() : base((c1, c2) => c1!.SequenceEqual(c2!),
-		c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v!.GetHashCode())), c => (ICollection<T>) c.ToHashSet())
+		c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v!.GetHashCode())), c => c.ToHashSet())
 	{
 	}
 }

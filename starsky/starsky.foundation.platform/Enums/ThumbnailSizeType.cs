@@ -5,25 +5,30 @@ public enum ThumbnailSize
 	/// <summary>
 	/// Should not use this one
 	/// </summary>
-	Unknown,
+	Unknown = 0,
 		
 	/// <summary>
 	/// 150px
 	/// </summary>
-	TinyMeta,
+	TinyMeta = 10,
 		
+	/// <summary>
+	/// Should only use this status when Tiny meta failed
+	/// </summary>
+	ErrorTinyMeta = 11,
+
 	/// <summary>
 	/// 300px
 	/// </summary>
-	Small, 
+	Small = 20, 
 		
 	/// <summary>
 	/// 1000px
 	/// </summary>
-	Large,
+	Large = 22,
 		
 	/// <summary>
 	/// 2000px
 	/// </summary>
-	ExtraLarge,
+	ExtraLarge = 24,
 }

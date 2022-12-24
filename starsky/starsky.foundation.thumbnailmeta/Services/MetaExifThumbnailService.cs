@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -40,10 +39,10 @@ namespace starsky.foundation.metathumbnail.Services
 		}
 
 		/// <summary>
-		/// Run for list that contains subPath and FileHash at once
+		///	Run for list that contains subPath and FileHash at once create Meta Thumbnail 
 		/// </summary>
 		/// <param name="subPathsAndHash">(subPath, FileHash)</param>
-		/// <returns></returns>
+		/// <returns>fail/pass, subPath</returns>
 		public async Task<IEnumerable<(bool,string)>> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
 		{
 			return await subPathsAndHash
@@ -57,7 +56,7 @@ namespace starsky.foundation.metathumbnail.Services
 		///  Or File
 		/// </summary>
 		/// <param name="subPath">folder subPath style</param>
-		/// <returns>fail/pass</returns>
+		/// <returns>fail/pass, string=subPath</returns>
 		/// <exception cref="FileNotFoundException">if folder/file not exist</exception>
 		public async Task<List<(bool,string)>> AddMetaThumbnail(string subPath)
 		{
@@ -92,6 +91,12 @@ namespace starsky.foundation.metathumbnail.Services
 			}
 		}
 
+		/// <summary>
+		/// Create Meta Thumbnail
+		/// </summary>
+		/// <param name="subPath">location on disk</param>
+		/// <param name="fileHash">hash</param>
+		/// <returns>fail/pass, subPath</returns>
 		public async Task<(bool,string)> AddMetaThumbnail(string subPath, string fileHash)
 		{
 			var first50BytesStream = _iStorage.ReadStream(subPath,50);
@@ -115,9 +120,14 @@ namespace starsky.foundation.metathumbnail.Services
 				fileHash = result.Key;
 			}
 
-			if ( !_iStorage.ExistFile(subPath) || _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta)) )
+			if ( !_iStorage.ExistFile(subPath))
 			{
 				return (false,subPath);
+			}
+
+			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta)) )
+			{
+				return (true,subPath);
 			}
 				
 			var (exifThumbnailDir, sourceWidth, sourceHeight, rotation) = 

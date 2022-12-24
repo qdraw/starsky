@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
@@ -63,9 +66,14 @@ namespace starsky.foundation.database.Data
 				var converter = new EnumCollectionJsonValueConverter<ThumbnailSize>();
 				var comparer = new CollectionValueComparer<ThumbnailSize>();
 				
+				var comp = new ValueComparer<ICollection<ThumbnailSize>>(
+					(c1, c2) => c1.SequenceEqual(c2),
+					c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+					c => c.ToList());
+				
 				etb.Property(e => e.ThumbnailSizes)
-					.HasConversion(converter)
-					.Metadata.SetValueComparer(comparer);
+					.HasConversion(converter, comp);
+					// .Metadata.SetValueComparer(comparer);
 				
 			});
 			
