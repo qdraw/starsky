@@ -886,7 +886,7 @@ namespace starskytest.starsky.feature.import.Services
 
 			var result = await importService.CreateMataThumbnail(null,
 				new ImportSettingsModel());
-			Assert.IsFalse(result);
+			Assert.IsFalse(result.FirstOrDefault().Item1);
 		}
 		
 		[TestMethod]
@@ -899,7 +899,7 @@ namespace starskytest.starsky.feature.import.Services
 
 			var result = await importService.CreateMataThumbnail(null,
 				new ImportSettingsModel{IndexMode = false});
-			Assert.IsFalse(result);
+			Assert.IsFalse(result.FirstOrDefault().Item1);
 		}
 		
 		[TestMethod]
@@ -923,7 +923,7 @@ namespace starskytest.starsky.feature.import.Services
 				},
 				new ImportSettingsModel());
 			
-			Assert.IsTrue(result);
+			Assert.IsTrue(result.FirstOrDefault().Item1);
 		}
 				
 		[TestMethod]

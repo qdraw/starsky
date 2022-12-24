@@ -34,9 +34,10 @@ namespace starskythumbnailmetacli
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var metaExifThumbnailService = serviceProvider.GetRequiredService<IMetaExifThumbnailService>();
 
-			// Help and other Command Line Tools args are included in the Geo tools 
-			await new MetaThumbnailCommandLineHelper(selectorStorage, 
-				appSettings, console, metaExifThumbnailService ).CommandLineAsync(args);
+			// Help and other Command Line Tools args are included in the MetaThumbnail tools 
+			var cmdLineTool = new MetaThumbnailCommandLineHelper(
+				selectorStorage, appSettings, console, metaExifThumbnailService);
+			await cmdLineTool.CommandLineAsync(args);
 		}
 	}
 }

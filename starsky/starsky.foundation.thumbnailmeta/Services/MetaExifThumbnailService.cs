@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,14 +44,12 @@ namespace starsky.foundation.metathumbnail.Services
 		/// </summary>
 		/// <param name="subPathsAndHash">(subPath, FileHash)</param>
 		/// <returns></returns>
-		public async Task<bool> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
+		public async Task<IEnumerable<(bool,string)>> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
 		{
-			await subPathsAndHash
+			return await subPathsAndHash
 				.ForEachAsync(async item => 
 						await AddMetaThumbnail(item.Item1, item.Item2),
 					_appSettings.MaxDegreesOfParallelism);
-
-			return true;
 		}
 
 		/// <summary>
@@ -60,7 +59,7 @@ namespace starsky.foundation.metathumbnail.Services
 		/// <param name="subPath">folder subPath style</param>
 		/// <returns>fail/pass</returns>
 		/// <exception cref="FileNotFoundException">if folder/file not exist</exception>
-		public async Task<bool> AddMetaThumbnail(string subPath)
+		public async Task<List<(bool,string)>> AddMetaThumbnail(string subPath)
 		{
 			var isFolderOrFile = _iStorage.IsFolderOrFile(subPath);
 			// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -68,29 +67,32 @@ namespace starsky.foundation.metathumbnail.Services
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
 					_logger.LogError($"[AddMetaThumbnail] folder or file not found {subPath}");
-					return false;
+					return new List<(bool, string)>
+					{
+						(false, "folder or file not found")
+					};
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
 				{
 					var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
 						.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
 					
-					await contentOfDir
+					var results = await contentOfDir
 						.ForEachAsync(async singleSubPath => 
 							await AddMetaThumbnail(singleSubPath, null),
 							_appSettings.MaxDegreesOfParallelism);
 
-					return true;
+					return results.ToList();
 				}
 				default:
 				{
 					var result = (await  new FileHash(_iStorage).GetHashCodeAsync(subPath));
-					if ( !result.Value ) return false;
-					return await AddMetaThumbnail(subPath, result.Key);
+					return !result.Value ? new List<(bool, string)>{(false,subPath)} : 
+						new List<(bool, string)>{await AddMetaThumbnail(subPath, result.Key)};
 				}
 			}
 		}
 
-		public async Task<bool> AddMetaThumbnail(string subPath, string fileHash)
+		public async Task<(bool,string)> AddMetaThumbnail(string subPath, string fileHash)
 		{
 			var first50BytesStream = _iStorage.ReadStream(subPath,50);
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(first50BytesStream);
@@ -99,7 +101,7 @@ namespace starsky.foundation.metathumbnail.Services
 			     imageFormat != ExtensionRolesHelper.ImageFormat.tiff )
 			{
 				_logger.LogDebug($"[AddMetaThumbnail] {subPath} is not a jpg or tiff file");
-				return false;
+				return (false,subPath);
 			}
 
 			if ( string.IsNullOrEmpty(fileHash) )
@@ -108,24 +110,24 @@ namespace starsky.foundation.metathumbnail.Services
 				if ( !result.Value )
 				{
 					_logger.LogError("[MetaExifThumbnail] hash failed");
-					return false;
+					return (false,subPath);
 				}
 				fileHash = result.Key;
 			}
 
 			if ( !_iStorage.ExistFile(subPath) || _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta)) )
 			{
-				return false;
+				return (false,subPath);
 			}
 				
 			var (exifThumbnailDir, sourceWidth, sourceHeight, rotation) = 
 				_offsetDataMetaExifThumbnail.GetExifMetaDirectories(subPath);
 			var offsetData = _offsetDataMetaExifThumbnail.
 				ParseOffsetData(exifThumbnailDir,subPath);
-			if ( !offsetData.Success ) return false;
+			if ( !offsetData.Success ) return (false,subPath);
 
-			return await _writeMetaThumbnailService.WriteAndCropFile(fileHash, offsetData, sourceWidth,
-				sourceHeight, rotation, subPath);
+			return (await _writeMetaThumbnailService.WriteAndCropFile(fileHash, offsetData, sourceWidth,
+				sourceHeight, rotation, subPath), subPath);
 		}
 	}
 }

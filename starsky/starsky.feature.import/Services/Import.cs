@@ -491,14 +491,14 @@ namespace starsky.feature.import.Services
 			return importIndexItemsList;
 		}
 
-		internal async Task<bool> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
+		internal async Task<IEnumerable<(bool, string)>> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
 			importIndexItemsList, ImportSettingsModel importSettings)
 		{
-			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return false;
+			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return new List<(bool, string)>();
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
 				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).ToList();
-			if ( !items.Any() ) return false;
+			if ( !items.Any() ) return new List<(bool, string)>();
 			return await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}
 

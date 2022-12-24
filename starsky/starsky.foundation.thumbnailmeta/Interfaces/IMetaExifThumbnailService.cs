@@ -10,8 +10,8 @@ namespace starsky.foundation.metathumbnail.Interfaces
 		/// </summary>
 		/// <param name="subPathsAndHash">(FilePath,FileHash)</param>
 		/// <returns></returns>
-		Task<bool> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash);
-		Task<bool> AddMetaThumbnail(string subPath);
-		Task<bool> AddMetaThumbnail(string subPath, string fileHash);
+		Task<IEnumerable<(bool,string)>> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash);
+		Task<List<(bool,string)>> AddMetaThumbnail(string subPath);
+		Task<(bool,string)> AddMetaThumbnail(string subPath, string fileHash);
 	}
 }

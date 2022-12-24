@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.metathumbnail.Services;
@@ -37,7 +38,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 					new WriteMetaThumbnailService(selectorStorage, logger, new AppSettings()), logger)
 					.AddMetaThumbnail("/no_thumbnail.jpg","anything");
 
-			Assert.IsFalse(result);
+			Assert.IsFalse(result.Item1);
 		}
 		
 		[TestMethod]
@@ -50,7 +51,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 					new WriteMetaThumbnailService(selectorStorage, logger, new AppSettings()), logger)
 				.AddMetaThumbnail("/poppy.jpg","/meta_image");
 			
-			Assert.IsTrue(result);
+			Assert.IsTrue(result.Item1);
 			Assert.IsTrue(_iStorageFake.ExistFile("/meta_image@meta"));
 		}
 		
@@ -65,7 +66,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
 				.AddMetaThumbnail("/poppy.jpg","/meta_image");
 			
-			Assert.IsTrue(result);
+			Assert.IsTrue(result.Item1);
 		}
 		
 		[TestMethod]
@@ -79,7 +80,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
 				.AddMetaThumbnail("/poppy.jpg",null);
 			
-			Assert.IsTrue(result);
+			Assert.IsTrue(result.Item1);
 		}
 
 		
@@ -94,7 +95,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
 				.AddMetaThumbnail("/not-found.jpg","/meta_image");
 			
-			Assert.IsFalse(result);
+			Assert.IsFalse(result.Item1);
 		}
 		
 		[TestMethod]
@@ -108,7 +109,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
 				.AddMetaThumbnail("/poppy.jpg");
 			
-			Assert.IsTrue(result);
+			Assert.IsTrue(result.FirstOrDefault().Item1);
 		}
 		
 		[TestMethod]
@@ -122,7 +123,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
 				.AddMetaThumbnail("/");
 			
-			Assert.IsTrue(result);
+			Assert.IsTrue(result.FirstOrDefault().Item1);
 		}
 		
 		[TestMethod]
@@ -135,7 +136,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
 				.AddMetaThumbnail("/not_found.jpg");
 			
-			Assert.IsFalse(result);
+			Assert.IsFalse(result.FirstOrDefault().Item1);
 		}
 		
 		[TestMethod]
@@ -148,7 +149,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
 				.AddMetaThumbnail(new List<(string, string)>{("/not_found.jpg", "hash")});
 			
-			Assert.IsTrue(result);
+			Assert.IsFalse(result.FirstOrDefault().Item1);
 		}
 	}
 }
