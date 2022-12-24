@@ -7,12 +7,11 @@ using starsky.foundation.metathumbnail.Models;
 using starsky.foundation.metathumbnail.Services;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.readmeta.Services
+namespace starskytest.starsky.foundation.thumbnailmeta.Services
 {
 	[TestClass]
 	public sealed class WriteMetaThumbnailServiceTest
