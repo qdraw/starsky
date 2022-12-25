@@ -20,6 +20,9 @@ So `app__databaseType` is the same as `"app":{"databaseType":"mysql"}` in `appse
 
 # Command line options
 
+There are separate command line applications that target the specific needs.
+See the [Advanced options](../advanced-options/starsky/readme.md) for more information.
+
 Add the command line argument `--help` option to see all available options.
 The options are configured in `appsettings.json` and environment variables and command line arguments.
 
