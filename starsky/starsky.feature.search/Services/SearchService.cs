@@ -358,7 +358,8 @@ namespace starsky.feature.search.Services
 	        model.SearchQuery = model.SearchQuery.Replace("\"\"", "\"");
 	        
 	        // Escape special quotes
-	        model.SearchQuery = Regex.Replace(model.SearchQuery, "[“”‘’]", "\"");
+	        model.SearchQuery = Regex.Replace(model.SearchQuery, "[“”‘’]", "\"", 
+		        RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
             // Without double escapes:
             // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))
@@ -367,7 +368,7 @@ namespace starsky.feature.search.Services
             Regex inurlRegex = new Regex(
                 "-" + itemName +
                 "(:|=|;|>|<|-)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:]+)( \\|\\|| \\&\\&)?",
-                RegexOptions.IgnoreCase);
+                RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 	        
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
 	        // the current query is removed from the list, so the next item will not search on it
@@ -385,7 +386,8 @@ namespace starsky.feature.search.Services
 	            // put ||&& in operator field => next regex > removed
 	            model.SetAndOrOperator(SearchViewModel.AndOrRegex(itemQuery));
 	            
-	            Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<|-)", RegexOptions.IgnoreCase);
+	            Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<|-)", 
+		            RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
                 // To Search Type
                 var itemNameSearch = rgx.Match(itemQuery).Value;
@@ -405,7 +407,8 @@ namespace starsky.feature.search.Services
 	            // Remove || / && at the end of the string
 	            // (\|\||\&\&)$
 	            string pattern = "(\\|\\||\\&\\&)$";
-				itemQuery = Regex.Replace(itemQuery, pattern, string.Empty);
+				itemQuery = Regex.Replace(itemQuery, pattern, string.Empty, 
+					RegexOptions.None, TimeSpan.FromMilliseconds(100));
 	            
                 model.SetAddSearchFor(itemQuery.Trim());
                 model.SetAddSearchInStringType(itemName);
@@ -432,7 +435,8 @@ namespace starsky.feature.search.Services
         public static string QueryShortcuts(string query)
         {
 	        // should be ignoring case
-            query = Regex.Replace(query, "-inurl", "-FilePath", RegexOptions.IgnoreCase);
+            query = Regex.Replace(query, "-inurl", "-FilePath", 
+	            RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
             return query;
         }
 

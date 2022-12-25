@@ -124,7 +124,8 @@ namespace starsky.foundation.storage.Services
 			if ( matchDirectFolderName != "/" && p == parentFolderBuilder + matchDirectFolderName ) return true;
 			
 			var matchRegex = new Regex(
-				parentFolderBuilder + currentChildFolderBuilder.ToString().Replace("*", ".+")
+				parentFolderBuilder + currentChildFolderBuilder.ToString().Replace("*", ".+"), 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)
 			);
 			return matchRegex.IsMatch(p);
 		}
@@ -211,7 +212,8 @@ namespace starsky.foundation.storage.Services
 				if ( string.IsNullOrWhiteSpace(structureItem) ) continue;
 
 				var matchCollection = new 
-						Regex(DateRegexPattern + "|{filenamebase}|\\*|.ext|.")
+						Regex(DateRegexPattern + "|{filenamebase}|\\*|.ext|.", 
+							RegexOptions.None, TimeSpan.FromMilliseconds(100))
 							.Matches(structureItem);
 				
 				var matchList = new List<StructureRange>();
@@ -244,7 +246,9 @@ namespace starsky.foundation.storage.Services
 			string fileNameBase, string extensionWithoutDot = "")
 		{
 			// allow only full word matches (so .ext is no match)
-			MatchCollection matchCollection = new Regex(DateRegexPattern).Matches(pattern);
+			MatchCollection matchCollection = new Regex(DateRegexPattern, 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Matches(pattern);
+			
 			foreach ( Match match in matchCollection )
 			{
 				// Ignore escaped items

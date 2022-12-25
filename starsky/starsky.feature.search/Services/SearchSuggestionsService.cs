@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,7 @@ namespace starsky.feature.search.Services
 		/// All keywords are stored lowercase
 		/// </summary>
 		/// <returns></returns>
+		[SuppressMessage("Performance", "CA1827:Do not use Count() or LongCount() when Any() can be used")]
 		public async Task<List<KeyValuePair<string,int>>> Inflate()
 		{
 			if ( _cache == null) return new List<KeyValuePair<string, int>>();
@@ -94,8 +96,11 @@ namespace starsky.feature.search.Services
 				.OrderByDescending(p => p.Value)
 				.ToList();
 
+			var cacheExpire = suggestionsFiltered.Any() ? 
+				new TimeSpan(120,0,0) : new TimeSpan(0, 1, 0);
+			
 			_cache.Set(nameof(SearchSuggestionsService), suggestionsFiltered, 
-				new TimeSpan(100,0,0));
+				cacheExpire);
 
 			return suggestionsFiltered;
 		}

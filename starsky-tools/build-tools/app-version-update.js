@@ -1,3 +1,4 @@
+#!/usr/bin/node
 
 /**
  * Update the project versions to have the same version
@@ -8,7 +9,7 @@ const { readFile, writeFile } = require('fs').promises;
 const {getFiles} = require('./lib/get-files-directory');
 const { prefixPath } = require('./lib/prefix-path.const.js');
 
-var newVersion = "0.5.0";
+let newVersion = "0.5.3";
 
 // allow version as single argument
 const argv = process.argv.slice(2)
@@ -44,6 +45,12 @@ getFiles(join(__dirname, prefixPath, "starskydesktop")).then(async (filePathList
 });
 
 getFiles(join(__dirname, prefixPath, "starsky-tools")).then(async (filePathList) => {
+  await updateVersions(filePathList);
+}).catch((err) => {
+  console.log(err);
+});
+
+getFiles(join(__dirname, prefixPath, "documentation")).then(async (filePathList) => {
   await updateVersions(filePathList);
 }).catch((err) => {
   console.log(err);

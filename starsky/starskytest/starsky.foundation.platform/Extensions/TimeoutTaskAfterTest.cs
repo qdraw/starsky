@@ -8,7 +8,7 @@ namespace starskytest.starsky.foundation.platform.Extensions
 	[TestClass]
 	public sealed class TimeoutTaskAfterTest
 	{
-		private async Task<bool> EndlessTest(int duration = 10000)
+		private static async Task<bool> EndlessTest(int duration = 10000)
 		{
 			await Task.Delay(duration);
 			return true;

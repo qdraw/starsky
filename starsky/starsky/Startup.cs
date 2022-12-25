@@ -10,7 +10,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -49,7 +48,10 @@ namespace starsky
 
         public Startup()
 		{
-			Console.WriteLine("app__appsettingspath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
+			if ( !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__appsettingspath")) )
+			{
+				Console.WriteLine("app__appsettingspath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
+			}
 			_configuration = SetupAppSettings.AppSettingsToBuilder().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
@@ -138,7 +140,10 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
-			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
+			services.AddMvcCore(options =>
+			{
+				options.ModelBinderProviders.Insert(0, new DoubleBinderProvider());
+			}).AddApiExplorer().AddAuthorization().AddViews();
 
 	        ConfigureForwardedHeaders(services);
 	        

@@ -48,12 +48,16 @@ services:
       - app__IsAccountRegisterOpen=true
       - app__addSwagger=true
       - app__DemoUnsafeDeleteStorageFolder=false
-      - app__storageFolder=/app/storageFolderLocal
+      - app__useDiskWatcher=false
+      - app__storageFolder=/app/pictures
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+      - DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
       - app__databaseConnection=Server=host.docker.internal;port=${MARIA_DB_PORT};database=${MYSQL_DATABASE};uid=${MYSQL_USER};pwd=${MYSQL_PASSWORD};
     ports:
       - "${STARSKY_PORT}:${STARSKY_PORT}"
     volumes:
-      - './docker/storageFolder:/app/storageFolderLocal'
+      - "./docker/storageFolder:/app/pictures"    
+      #- "~/Pictures:/app/pictures"       # switch two options to use with local home Pictures folder
     depends_on:
       - "mariadb"
     networks:

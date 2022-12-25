@@ -2,6 +2,10 @@
 
 This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
 
+# Upgrading npm packages
+This is done by script that re-generate the npx command and picks a new version 
+See `documentation-create-docusaurus-update.js`
+
 ### Installation
 
 ```

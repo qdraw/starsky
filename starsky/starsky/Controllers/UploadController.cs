@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
 using starsky.feature.import.Interfaces;
+using starsky.feature.import.Models;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -27,7 +28,6 @@ using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.SyncServices;
-using starskycore.Models;
 
 namespace starsky.Controllers
 {

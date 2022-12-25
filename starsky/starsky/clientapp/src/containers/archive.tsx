@@ -45,6 +45,7 @@ function Archive(archive: IArchiveProps) {
             subPath={archive.subPath}
             colorClassActiveList={archive.colorClassActiveList}
             colorClassUsage={archive.colorClassUsage}
+            sticky={true}
           />
           <ItemListView iconList={iconList} {...archive}></ItemListView>
         </div>

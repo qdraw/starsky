@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
+using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
 
 namespace starskytest.FakeMocks
@@ -21,6 +22,17 @@ namespace starskytest.FakeMocks
 			Count++;
 			metaFilesInDirectory.AddRange(_fileIndexItems);
 			return Task.FromResult(metaFilesInDirectory);
+		}
+
+		public Task<GeoLocationModel> GetLocation(double latitude, double longitude)
+		{
+			return Task.FromResult(new GeoLocationModel
+			{
+				IsSuccess = true,
+				Longitude = longitude,
+				Latitude = latitude,
+				LocationCity = "FakeLocationName"
+			});
 		}
 	}
 }

@@ -7,9 +7,9 @@ namespace starsky.feature.geolookup.Services
 {
 	public class GeoCacheStatusService
 	{
-		private readonly IMemoryCache _cache;
+		private readonly IMemoryCache? _cache;
 		
-		public GeoCacheStatusService( IMemoryCache memoryCache = null)
+		public GeoCacheStatusService( IMemoryCache? memoryCache = null)
 		{
 			_cache = memoryCache;
 		}

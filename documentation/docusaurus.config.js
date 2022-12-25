@@ -4,12 +4,25 @@
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
+let url = "http://localhost:3003";
+if (process.env.DOCS_URL && process.env.DOCS_URL.startsWith("https://")) {
+	url = process.env.DOCS_URL;
+}
+
+let baseUrl = "/"
+if (process.env.DOCS_BASE_URL && process.env.DOCS_BASE_URL.startsWith("/")) {
+	baseUrl = process.env.DOCS_BASE_URL;
+}
+
+console.log(`url ${url}`);
+console.log(`baseUrl ${baseUrl}`);
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "Starsky",
-	tagline: "Self-hosted photo-management done right",
-	url: "https://docs.qdraw.eu",
-	baseUrl: "/",
+	tagline: "Photo-management done right",
+	url,
+	baseUrl,
 	onBrokenLinks: "throw",
 	onBrokenMarkdownLinks: "warn",
 	favicon: "img/favicon.ico",
@@ -38,10 +51,17 @@ const config = {
 					// Please change this to your repo.
 					// Remove this to remove the "edit this page" links.
 				},
-				blog: false,
+				blog: {
+					postsPerPage: 5,
+					showReadingTime: true
+				},
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
 				},
+				gtag: {
+					trackingID: process.env.GTAG ? process.env.GTAG : 'G-999X9XX9XX',
+					anonymizeIP: true,
+				}
 			}),
 		],
 	],
@@ -101,6 +121,14 @@ const config = {
 								label: "Getting started",
 								to: "/docs/getting-started",
 							},
+							{
+								label: "All features",
+								to: "/docs/features",
+							},
+							{
+								label: "Application Blog",
+								to: "/blog",
+							},
 						],
 					},
 					{
@@ -116,7 +144,7 @@ const config = {
 						title: "More",
 						items: [
 							{
-								label: "Blog",
+								label: "Qdraw Blog (in Dutch)",
 								to: "https://qdraw.nl/blog/",
 							},
 							{
@@ -126,7 +154,7 @@ const config = {
 						],
 					},
 				],
-				copyright: `Copyright © ${new Date().getFullYear()} Starsky`,
+				copyright: `Copyright &copy; ${new Date().getFullYear()} Starsky`,
 			},
 			prism: {
 				theme: lightCodeTheme,

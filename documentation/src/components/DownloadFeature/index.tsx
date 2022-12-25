@@ -111,7 +111,7 @@ export default function DownloadFeatures(): JSX.Element {
 		},
 		{
 			type: "col--6",
-			src: require("@site/static/img/starsky-mac-v043-home-nl.jpg").default,
+			src: require("@site/static/img/starsky-mac-v050-home-nl.jpg").default,
 		},
 
 	];
@@ -128,20 +128,20 @@ export default function DownloadFeatures(): JSX.Element {
                     <i>
                 By downloading you agree to{" "}
 						<a
-							href="https://demostarsky.azurewebsites.net/legal/toc.en.html"
+							href="https://docs.qdraw.nl/legal/toc.en.html"
 							data-test="toc"
 						>
 							Starsky's Conditions of Use.
 						</a>
 						{" "}Please see our{" "}
 						<a
-							href="https://demostarsky.azurewebsites.net/legal/privacy-policy.en.html"
+							href="https://docs.qdraw.nl/legal/privacy-policy.en.html"
 							data-test="privacy"
 						>
 							Privacy Notice
 						</a>{" "}
 						and our{" "}
-						<a href="https://demostarsky.azurewebsites.net/legal/privacy-policy.en.html#cookie">
+						<a href="https://docs.qdraw.nl/legal/privacy-policy.en.html#cookie">
 							Cookies Notice
 						</a>
 					</i>

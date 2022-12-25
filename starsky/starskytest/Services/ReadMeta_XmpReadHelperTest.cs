@@ -9,7 +9,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.readmeta.Services;
 using starskycore.Helpers;
-using starskycore.Models;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -195,7 +194,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void XmpGetSidecarFile_LocationCountryCode()
 		{
-			const string xmpData = "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+			const string xmpData = "<?xpacket begin=' ' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
 			                       "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.42'>\n" +
 			                       "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n" +
 			                       " <rdf:Description rdf:about=''\n" +

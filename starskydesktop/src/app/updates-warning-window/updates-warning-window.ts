@@ -8,7 +8,7 @@ import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import {
   isPolicyDisabled,
   shouldItUpdate,
-  SkipDisplayOfUpdate
+  SkipDisplayOfUpdate,
 } from "./should-it-update";
 import { updatesWarningWindows } from "./updates-warning-windows.const";
 
@@ -24,8 +24,8 @@ export async function checkForUpdatesWindow() {
     resizable: !isPackaged(),
     webPreferences: {
       partition: "persist:main",
-      contextIsolation: true
-    }
+      contextIsolation: true,
+    },
   });
 
   // hides the menu for windows
@@ -35,9 +35,10 @@ export async function checkForUpdatesWindow() {
 
   const location = path.join(
     __dirname,
-    "..",
-    "..",
-    "client/pages/updates-warning/updates-warning.html"
+    "client",
+    "pages",
+    "updates-warning",
+    "updates-warning.html"
   );
 
   await newWindow.loadFile(location);
@@ -80,7 +81,8 @@ async function createCheckForUpdatesContainerWindow(
           // fails for some random reason
           try {
             logger.warn(error);
-          } catch (error1 : unknown) { // nothing
+          } catch (error1: unknown) {
+            // nothing
           }
           reject(error);
         }),

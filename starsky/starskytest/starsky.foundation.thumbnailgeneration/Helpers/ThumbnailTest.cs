@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Services;
@@ -166,7 +167,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"test"}, 
-				new List<byte[]> {new byte[0]});
+				new List<byte[]> { Array.Empty<byte>() });
 
 			var result = (await new Thumbnail(storage, 
 				storage,
@@ -180,7 +181,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"test"}, 
-				new List<byte[]> {new byte[0]});
+				new List<byte[]> { Array.Empty<byte>() });
 
 			var result = (await new Thumbnail(storage, 
 				storage,
@@ -195,7 +196,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"test"}, 
-				new List<byte[]> {new byte[0]});
+				new List<byte[]> { Array.Empty<byte>() });
 
 			await  Thumbnail.SaveThumbnailImageFormat(null,
 				ExtensionRolesHelper.ImageFormat.bmp, null);
@@ -208,7 +209,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) }, 
-				new List<byte[]> {new byte[0]});
+				new List<byte[]> { Array.Empty<byte>() });
 
 			var result = new Thumbnail(storage, 
 				storage, new FakeIWebLogger()).RemoveCorruptImage("test", ThumbnailSize.ExtraLarge);
@@ -272,7 +273,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"test"}, 
-				new List<byte[]> {new byte[0]});
+				new List<byte[]> { Array.Empty<byte>() });
 
 			var result = await new Thumbnail(storage, 
 					storage, new FakeIWebLogger()).
@@ -286,7 +287,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"test"}, 
-				new List<byte[]> {new byte[0]});
+				new List<byte[]> { Array.Empty<byte>() });
 
 			var result = await new Thumbnail(storage, 
 					storage, new FakeIWebLogger()).

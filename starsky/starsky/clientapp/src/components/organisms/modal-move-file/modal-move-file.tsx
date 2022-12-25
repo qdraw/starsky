@@ -1,5 +1,6 @@
 import React from "react";
 import useFileList, { IFileList } from "../../../hooks/use-filelist";
+import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { PageType } from "../../../interfaces/IDetailView";
@@ -10,6 +11,7 @@ import {
 import FetchPost from "../../../shared/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
+import { Language } from "../../../shared/language";
 import { StringOptions } from "../../../shared/string-options";
 import { UrlQuery } from "../../../shared/url-query";
 import Modal from "../../atoms/modal/modal";
@@ -26,6 +28,11 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   const [currentFolderPath, setCurrentFolderPath] = React.useState(
     props.parentDirectory
   );
+
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageMove = language.text("Verplaats", "Move");
+  const MessageTo = language.text("naar", "to");
 
   let usesFileList = useFileList("?f=" + currentFolderPath, true);
 
@@ -104,12 +111,12 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     >
       <div className="content" data-test="modal-move-file">
         <div className="modal content--subheader">
-          Verplaats{" "}
+          {MessageMove}{" "}
           {new StringOptions().LimitLength(
             new FileExtensions().GetFileName(props.selectedSubPath),
             30
           )}{" "}
-          naar:&nbsp;
+          {MessageTo}:&nbsp;
           <b>{new StringOptions().LimitLength(currentFolderPath, 44)}</b>
         </div>
         <div
@@ -171,7 +178,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
             className="btn btn--default"
             onClick={MoveFile}
           >
-            Verplaats
+            {MessageMove}
           </button>
         </div>
       </div>

@@ -24,11 +24,14 @@ namespace helpers
 		{
 			Console.WriteLine("Checking if Npm (and implicit: Node) is installed, will fail if not on this step");
 			Run(NpmBaseCommand, "-v");
+			
+			Console.WriteLine("Checking if Node is installed, will fail if not on this step");
+			Run(NodeBaseCommand, "-v");
 		}	
 	
 		public static void ClientCiCommand()
 		{
-			Run(NpmBaseCommand, "ci --legacy-peer-deps --prefer-offline --no-audit", ClientAppFolder, 
+			Run(NpmBaseCommand, "ci --legacy-peer-deps --prefer-offline --no-audit --no-fund", ClientAppFolder, 
 				false, null, null, false);
 		}
 	

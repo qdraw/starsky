@@ -244,7 +244,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var path = Path.Join(_tempExistingFilesFolder, "test.txt");
 			new StorageHostFullPathFilesystem().WriteStream(
-				new MemoryStream(new byte[] { }), path);
+				new MemoryStream(Array.Empty<byte>()), path);
 			
 			var watcher = new FileSystemWatcher(_tempExistingFilesFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
@@ -269,7 +269,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var path = Path.Join(_tempExistingFilesFolder, "test.txt");
 			new StorageHostFullPathFilesystem().WriteStream(
-				new MemoryStream(new byte[] { }), path);
+				new MemoryStream(Array.Empty<byte>()), path);
 			
 			var watcher = new FileSystemWatcher(_tempExistingFilesFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
@@ -295,7 +295,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var path = Path.Join(_tempExistingFilesFolder, "test.txt");
 			new StorageHostFullPathFilesystem().WriteStream(
-				new MemoryStream(new byte[] { }), path);
+				new MemoryStream(Array.Empty<byte>()), path);
 			
 			var watcher = new FileSystemWatcher(_tempExistingFilesFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);

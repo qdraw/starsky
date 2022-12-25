@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,12 +11,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic;
 using starsky.Attributes;
 using starsky.feature.import.Interfaces;
+using starsky.feature.import.Models;
 using starsky.feature.import.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -24,7 +27,6 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
-using starskycore.Models;
 
 namespace starsky.Controllers
 {
@@ -231,7 +233,8 @@ namespace starsky.Controllers
 			if (filename == null) filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
 	        
 			// I/O function calls should not be vulnerable to path injection attacks
-			if (!Regex.IsMatch(filename, "^[a-zA-Z0-9_\\s\\.]+$") || !FilenamesHelper.IsValidFileName(filename))
+			if (!Regex.IsMatch(filename, "^[a-zA-Z0-9_\\s\\.]+$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)) || !FilenamesHelper.IsValidFileName(filename))
 			{
 				return BadRequest();
 			}

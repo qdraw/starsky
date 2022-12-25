@@ -1,3 +1,4 @@
+using starsky.foundation.platform.Enums;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.Storage

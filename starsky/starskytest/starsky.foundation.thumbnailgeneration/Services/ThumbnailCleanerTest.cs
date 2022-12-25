@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;

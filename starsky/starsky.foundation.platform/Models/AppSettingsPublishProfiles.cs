@@ -97,7 +97,8 @@ namespace starsky.foundation.platform.Models
 		    var assemblyDirectory = PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory);
 		    // replace value -- ignore this case
 		    var subPath = Regex.Replace(value, "{AssemblyDirectory}", 
-			    string.Empty, RegexOptions.IgnoreCase);
+			    string.Empty, RegexOptions.IgnoreCase,
+			    TimeSpan.FromMilliseconds(100));
 			    
 		    // append and replace
 		    return assemblyDirectory + subPath

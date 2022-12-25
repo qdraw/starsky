@@ -159,7 +159,9 @@ namespace starsky.foundation.platform.Models
 			{
 				var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 				return string.IsNullOrEmpty(assemblyVersion) ? string.Empty : 
-					new Regex("\\.0$").Replace(assemblyVersion, string.Empty);
+					new Regex("\\.0$", RegexOptions.None, 
+						TimeSpan.FromMilliseconds(100))
+						.Replace(assemblyVersion, string.Empty);
 			}
 		}
 		
@@ -240,17 +242,21 @@ namespace starsky.foundation.platform.Models
 			bool toLowerCase = true, bool allowAtSign = false)
 		{
 			var text = toLowerCase ? phrase.ToLowerInvariant() : phrase;
+			var regexTimespan = TimeSpan.FromMilliseconds(100);
 
 			var charAllowLowerCase = allowUnderScore ? "_" : string.Empty;
 			var charAllowAtSign = allowAtSign ? "@" : string.Empty;
 
 			var matchNotRegexString = @"[^a-zA-Z0-9\s-" + charAllowLowerCase + charAllowAtSign + "]";
             
-			text = Regex.Replace(text,matchNotRegexString, string.Empty);         
+			text = Regex.Replace(text,matchNotRegexString, string.Empty, 
+				RegexOptions.None, regexTimespan);         
 			//						^^^ remove invalid characters
-			text = Regex.Replace(text, @"\s+", " ").Trim();                       // single space
+			text = Regex.Replace(text, @"\s+", " ", 
+				RegexOptions.None, regexTimespan).Trim();                       // single space
 			text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim();      // cut and trim
-			text = Regex.Replace(text, @"\s", "-");                               // insert hyphens
+			text = Regex.Replace(text, @"\s", "-", RegexOptions.None,
+				regexTimespan);                               // insert hyphens
 			text = text.Replace("---", "-"); // for example: "test[space]-[space]test"
 			return text;
 		}
@@ -368,7 +374,7 @@ namespace starsky.foundation.platform.Models
             
 			Regex structureRegex = new Regex( 
 				"^(\\/.+)?\\/([\\/_ A-Z0-9*{}\\.\\\\-]+(?=\\.ext))\\.ext$", 
-				RegexOptions.IgnoreCase);
+				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(300));
 
 			if (structureRegex.Match(structure).Success) return;
 
@@ -612,6 +618,13 @@ namespace starsky.foundation.platform.Models
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		[PackageTelemetry]
 		public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
+		
+		
+		/// <summary>
+		/// Add the default account as admin, other accounts as AccountRegisterDefaultRole
+		/// </summary>
+		[PackageTelemetry]
+		public bool? AccountRegisterFirstRoleAdmin { get; set; } = true;
 		
 		/// <summary>
 		/// Private storage for Application Insights InstrumentationKey

@@ -41,7 +41,8 @@ namespace helpers
 				// get current netMoniker
 				var version = System.Runtime.InteropServices.RuntimeInformation
 					.FrameworkDescription;
-				var netMoniker = new Regex(".\\d+$").Replace(version, string.Empty).Replace(".NET ","net");
+				var netMoniker = new Regex(".\\d+$", RegexOptions.None, TimeSpan.FromMilliseconds(100))
+					.Replace(version, string.Empty).Replace(".NET ","net");
 				// e.g net6.0
 				
 				if (Directory.Exists($"obj/Release/{netMoniker}/{runtime}"))

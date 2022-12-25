@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -97,7 +98,8 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			foreach ( var thumbnailFile in allThumbnailFiles )
 			{
 				var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile);
-				var fileHashWithoutSize = Regex.Match(fileHash, "^.*(?=(@))").Value;
+				var fileHashWithoutSize = Regex.Match(fileHash, "^.*(?=(@))", 
+					RegexOptions.None, TimeSpan.FromMilliseconds(100)).Value;
 				if ( string.IsNullOrEmpty(fileHashWithoutSize)  )
 				{
 					fileHashWithoutSize = fileHash;

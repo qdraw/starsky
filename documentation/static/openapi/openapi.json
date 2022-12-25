@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Starsky",
-    "version": "0.5.0.0",
+    "version": "0.5.3.0",
     "extensions": {}
   },
   "servers": [
@@ -3877,6 +3877,102 @@
             },
             "401": {
               "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {}
+    },
+    "/api/geo-reverse-lookup": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "GeoReverseLookup",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Reverse geo lookup",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "latitude",
+              "in": 0,
+              "description": "Latitude coordinate in Decimal Degree (DD)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "number",
+                "format": "double",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "longitude",
+              "in": 0,
+              "description": "Longitude coordinate in DD",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "number",
+                "format": "double",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Data with object",
               "headers": {},
               "content": {},
               "links": {},
@@ -11068,6 +11164,22 @@
               "referenceV2": "#/definitions/AppAccountRoles"
             }
           },
+          "accountRegisterFirstRoleAdmin": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
           "applicationInsightsConnectionString": {
             "type": "string",
             "readOnly": false,
@@ -13467,6 +13579,11 @@
             "primitiveType": 0,
             "anyType": 0,
             "value": 6
+          },
+          {
+            "primitiveType": 0,
+            "anyType": 0,
+            "value": 7
           }
         ],
         "nullable": false,

@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
 using starskycore.Helpers;
-using starskycore.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
@@ -47,7 +46,7 @@ namespace starskytest.starskyGeoCore.Services
 		public void GeoIndexGpx_ConvertTimeZone_EuropeAmsterdam()
 		{
 			var fakeIStorage = new FakeIStorage();
-			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/Amsterdam"}, fakeIStorage).ConvertTimeZone(new DateTime(2020, 04, 15,
+			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/Amsterdam"}, fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(new DateTime(2020, 04, 15,
 				17, 0, 0, 0));
 			Assert.AreEqual(new DateTime(2020, 04, 15, 15, 0, 0, 0), result);
 		}
@@ -56,7 +55,7 @@ namespace starskytest.starskyGeoCore.Services
 		public void GeoIndexGpx_ConvertTimeZone_EuropeLondon()
 		{
 			var fakeIStorage = new FakeIStorage();
-			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage).ConvertTimeZone(new DateTime(2020, 01, 15,
+			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(new DateTime(2020, 01, 15,
 				17, 0, 0, 0));
 			Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0), result);
 		}
@@ -68,7 +67,7 @@ namespace starskytest.starskyGeoCore.Services
 			var inputDateTime = new DateTime(2020, 01, 15,
 				17, 0, 0, 0);
 			inputDateTime = DateTime.SpecifyKind(inputDateTime, DateTimeKind.Utc);
-			var result =new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage).ConvertTimeZone(inputDateTime);
+			var result =new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(inputDateTime);
 			Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0), result);
 		}
 
@@ -80,7 +79,8 @@ namespace starskytest.starskyGeoCore.Services
 			var inputDateTime = new DateTime(2020, 01, 15,
 				17, 0, 0, 0);
 			inputDateTime = DateTime.SpecifyKind(inputDateTime, DateTimeKind.Local);
-			new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage).ConvertTimeZone(inputDateTime);
+			new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, 
+				fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(inputDateTime);
 		}
 
 		[TestMethod]
@@ -105,7 +105,8 @@ namespace starskytest.starskyGeoCore.Services
 
 			var fakeIStorage = new FakeIStorage(new List<string>{"/"},new List<string>{_metaFilesDirectory[0].FilePath}, new List<byte[]>{CreateAnGpx.Bytes} );
                
-			var returnFileIndexItems = new GeoIndexGpx(_appSettings,fakeIStorage).LoopFolder(exampleFiles);
+			var returnFileIndexItems = new GeoIndexGpx(_appSettings,
+				fakeIStorage, new FakeIWebLogger()).LoopFolder(exampleFiles);
             
 			Assert.AreEqual(null,returnFileIndexItems.FirstOrDefault(p => p.FileName == "NotInRange.jpg"));
 			Assert.AreEqual("01.jpg",returnFileIndexItems.FirstOrDefault(p => p.FileName == "01.jpg")?.FileName);

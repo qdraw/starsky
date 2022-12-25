@@ -48,4 +48,36 @@ describe("Geo", () => {
       );
     });
   });
+
+  describe("Validate", () => {
+    it("non valid lat", () => {
+      const result = geo.Validate(44444, 15);
+
+      expect(result).toBeFalsy();
+    });
+
+    it("non valid long", () => {
+      const result = geo.Validate(51, 444444);
+
+      expect(result).toBeFalsy();
+    });
+
+    it("valid undefined", () => {
+      const result = geo.Validate(0, 0);
+
+      expect(result).toBeTruthy();
+    });
+
+    it("valid example", () => {
+      const result = geo.Validate(51, 15);
+
+      expect(result).toBeTruthy();
+    });
+
+    it("valid example 2 (long)", () => {
+      const result = geo.Validate(51.893458349589349855, 15.83450934590345345);
+
+      expect(result).toBeTruthy();
+    });
+  });
 });

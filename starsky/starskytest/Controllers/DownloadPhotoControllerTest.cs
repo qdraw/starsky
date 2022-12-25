@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -61,7 +62,8 @@ namespace starskytest.Controllers
 			var inputSubPaths = new List<string>{"/test.jpg","/test.xmp", "/corrupt.jpg"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes,FakeCreateAn.CreateAnXmp.Bytes, new byte[0]});
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes,
+						FakeCreateAn.CreateAnXmp.Bytes, Array.Empty<byte>()});
 			return storage;
 		}
 

@@ -108,6 +108,7 @@ function npmCi() {
   console.log(npmCiOne.stdout);
   console.log(npmCiOne.stout ? updateSpawn.stout : "");
 }
+
 npmCi();
 
 function npmUnInstall(packageName) {
@@ -176,6 +177,11 @@ npmUnInstall('@types/node')
 npmInstall('@types/node', false, false);
 npmInstall('concurrently', false, true);
 npmInstall('@testing-library/user-event',false, false);
+// # for storybook
+npmInstall('@storybook/builder-webpack5',false, true);
+npmInstall('@storybook/manager-webpack5',false, true);
+npmInstall('@storybook/preset-create-react-app',false, true);
+npmInstall('webpack',false, true);
 
 npmCi();
 

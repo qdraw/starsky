@@ -1,0 +1,66 @@
+name: Auto Documentation create Docusaurus upgrade
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '45 4 15 * *'
+    
+jobs:
+  run:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: master
+
+    - name: 'Update docusaurus'
+      id: clientapp_create_docusaurus_update
+      working-directory: ./starsky-tools/build-tools
+      run: npm run documentation-create-docusaurus-update
+      
+    - shell: bash
+      working-directory: ./documentation
+      id: files_changed
+      run: |
+        git status
+        git status --porcelain
+      
+        if [[ `git status --porcelain` ]]; then
+          echo "There are files not committed yet"
+          echo "::set-output name=CHANGED::true"
+        else 
+          echo "not changed"
+          echo "::set-output name=CHANGED::false"
+        fi
+      
+    - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
+      id: cpr
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.WORKFLOW_GITHUB }}
+        commit-message: 'Update Documentation and Docusaurus'
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        add-paths: |
+          *
+        branch: feature/auto_documentation_create_docusaurus_update
+        delete-branch: true
+        title: 'Documentation - Create Docusaurus - Upgrade dependencies'
+        body: |
+          ## Upgrade Documentation to the lastest Docusaurus version
+          - todo: test!         
+        labels: |
+          dependencies
+        draft: false
+        
+    - name: Merge current branch into -> auto_documentation_create_docusaurus_update
+      uses: everlytic/branch-merge@1.1.2
+      if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
+      with:
+        github_token: ${{ secrets.WORKFLOW_GITHUB }}
+        source_ref: 'master'
+        target_branch: feature/auto_documentation_create_docusaurus_update
+        commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'

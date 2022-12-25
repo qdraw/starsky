@@ -16,6 +16,7 @@ export interface IColorClassProp {
   colorClassActiveList: Array<number>;
   colorClassUsage: Array<number>;
   itemsCount?: number;
+  sticky?: boolean;
 }
 
 const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
@@ -128,11 +129,13 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
       </div>
     );
 
+    const classNameContainer = !props.sticky
+      ? "colorclass colorclass--filter"
+      : "colorclass colorclass--filter colorclass--sticky";
+
     // there is no content ?
     if (colorClassUsage.length === 1 && colorClassActiveList.length >= 1) {
-      return (
-        <div className="colorclass colorclass--filter"> {resetButton}</div>
-      );
+      return <div className={classNameContainer}> {resetButton}</div>;
     }
 
     if (collectionsCount === 0 || colorClassUsage.length === 1) {
@@ -140,7 +143,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
     }
 
     return (
-      <div className="colorclass colorclass--filter">
+      <div className={classNameContainer}>
         {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : null}
         {props.colorClassActiveList.length !== 0
           ? resetButton
@@ -167,6 +170,10 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
             <span key={item} />
           )
         )}
+        <div className="btn btn--default sort">
+          <span className="text">{!state.sort ? "fileName" : state.sort}</span>
+          <span className="icon"></span>
+        </div>
       </div>
     );
   }

@@ -105,8 +105,12 @@ namespace starsky.foundation.writemeta.Helpers
 			// Create an XMP File -> as those files don't support those tags
 			// Check first if it is needed
 
+			// When change update metadata.md
+			
 			command = UpdateKeywordsCommand(command, comparedNames, updateModel);
 			command = UpdateDescriptionCommand(command, comparedNames, updateModel);
+			command = UpdateTitleCommand(command, comparedNames, updateModel);
+			command = UpdateColorClassCommand(command, comparedNames, updateModel);
 
 			command = UpdateGpsLatitudeCommand(command, comparedNames, updateModel);
 			command = UpdateGpsLongitudeCommand(command, comparedNames, updateModel);
@@ -122,8 +126,6 @@ namespace starsky.foundation.writemeta.Helpers
 			command = UpdateImageHeightCommand(command, comparedNames, updateModel);
 			command = UpdateImageWidthCommand(command, comparedNames, updateModel);
 		        
-			command = UpdateTitleCommand(command, comparedNames, updateModel);
-			command = UpdateColorClassCommand(command, comparedNames, updateModel);
 			command = UpdateOrientationCommand(command, comparedNames, updateModel);
 			command = UpdateDateTimeCommand(command, comparedNames, updateModel);
 
@@ -218,6 +220,13 @@ namespace starsky.foundation.writemeta.Helpers
 			return new ValueTuple<string,List<string>>(command, fileHashes);
 		}
 
+		/// <summary>
+		///  -GPSAltitude="10" -gpsaltituderef#="1" -xmp-exif:GPSAltitude="10" -xmp-exif:gpsaltituderef#="1"
+		/// </summary>
+		/// <param name="command">the command where to add to</param>
+		/// <param name="comparedNames">list of field that are changed</param>
+		/// <param name="updateModel">model with data</param>
+		/// <returns></returns>
 		private static string UpdateLocationAltitudeCommand(
 			string command, List<string> comparedNames, FileIndexItem updateModel)
 		{

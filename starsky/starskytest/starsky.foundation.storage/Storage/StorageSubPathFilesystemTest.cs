@@ -111,8 +111,9 @@ namespace starskytest.starsky.foundation.storage.Storage
 		[TestMethod]
 		public void ReadStream_MaxLength()
 		{
-			new CreateAnImage();
-
+			var createAnImage = new CreateAnImage();
+			Assert.IsNotNull(createAnImage);
+			
 			var stream = _storage.ReadStream(_newImage.DbPath, 100);
 			Assert.AreEqual(100,stream.Length);
 			

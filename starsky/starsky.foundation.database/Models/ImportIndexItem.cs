@@ -25,7 +25,8 @@ namespace starsky.foundation.database.Models
 		FileError,
 		NotFound,
 		Ignore,
-		ParentDirectoryNotFound
+		ParentDirectoryNotFound,
+		ReadOnlyFileSystem
 	}
 	
     [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
@@ -146,7 +147,8 @@ namespace starsky.foundation.database.Models
                             
             // Now retry it and replace special charaters from string
             // For parsing files like: '2018-08-31 18.50.35' > '20180831185035'
-            Regex pattern = new Regex("-|_| |;|\\.|:");
+            Regex pattern = new Regex("-|_| |;|\\.|:", 
+	            RegexOptions.None, TimeSpan.FromMilliseconds(100));
             fileName = pattern.Replace(fileName,string.Empty);
             structuredFileName = pattern.Replace(structuredFileName,string.Empty);
                 

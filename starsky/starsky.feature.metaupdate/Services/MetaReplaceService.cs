@@ -118,7 +118,7 @@ namespace starsky.feature.metaupdate.Services
 				fileIndexResultList.Add(fileIndexItem);
 			}
 			
-			return fileIndexResultList;
+			return await new Duplicate(_query).RemoveDuplicateAsync(fileIndexResultList);
 		}
 		
 		public static List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 
@@ -145,7 +145,8 @@ namespace starsky.feature.metaupdate.Services
 						searchIn,
 						Regex.Escape(search), 
 						replace.Replace("$","$$"), 
-						RegexOptions.IgnoreCase
+						RegexOptions.IgnoreCase,
+						TimeSpan.FromMilliseconds(100)
 					);
 				}
 

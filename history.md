@@ -12,8 +12,8 @@
   - [starskyAdminCli](starsky/starskyadmincli/readme.md) _manage user accounts_
   - [starskySynchronizeCli](starsky/starskysynchronizecli/readme.md) _check if disk changes are updated in the database_
   - [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md) _speed web performance by generating smaller images_
-  - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
-  - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests_
+  - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (.NET)_
+  - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
 - [starskydesktop](starskydesktop/readme.md) _Desktop Application_
   - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
@@ -40,10 +40,38 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
+# version 0.5.3 _(Unreleased)_ - 2022-12-??
 
-# version 0.5.1 _(Unreleased)_ - 2022-??-??
+- [x] (Security) _Back-end_ Add Regex timeouts to avoid DoS (PR #1012)
+- [x] (Added)  _Docs_ Add section about how to install desktop, macOS and Linux (PR #1015)
 
-- nothing yet
+# version 0.5.2 - 2022-12-22
+
+- [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.404 (Runtime: 6.0.12)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.12/6.0.12.md) (PR #997)
+- [x] (Changed) _Front-end_ Upgrade Create React App / Typescript / storybook  (PR #998)
+- [x] (Changed) _Front-end_ Geo location edit in detail view (PR #996)
+- [x] (Changed) _Front-end_ Dark-mode UI tweaks (PR #999)
+- [x] (Fixed) _Back-end_ Avoid duplicate input when replace (Issue #995 / PR  #1000)
+- [x] (Fixed) _Back-end_ Rename Exception (Issue #994 / PR #1001)
+- [x] (Fixed) _Back-end_ GPX file loaded (Issue #763 / PR #1002)
+- [x] (Fixed) _Desktop_ Upgrade dependencies desktop / add script update deps in docs (PR #1003) 
+- [x] (Fixed) _Front-end_ Geo updates are now realtime and Update documentation (PR #1005)
+
+# version 0.5.1 - 2022-12-10
+
+- [x] (Added) _Docs_ New documentation site (PR #971)
+- [x] (Changed) _Back-end_ First user after registration is Admin to avoid issues with editing storage folder (PR #977)
+- [x] (Fixed) _Back-end_ when importing --move false is fixed (PR #978)
+- [x] (Fixed) _Back-end_ DiskWatcher with a non-existing folder does not crash (PR #978)
+- [x] (Fixed) _Back-end_ Import from read only folder does not partly import files and crash (PR #978)
+- [x] (Fixed) _Back-end_ Docker compose issues with file rights on Mac OS (PR #980)
+- [x] (Added) _Back-end_ More docs about how use the software (PR #981)
+- [x] (Fixed) _Back-end_ Publish on read-only files gives 0 items back (PR #938)
+- [x] (Fixed) _Front-end_ Move file button out of screen iOS (Issue #859 PR #984)
+- [x] (Fixed) _Desktop_ Update window of desktop again works again (Issue #987 PR #987)
+- [x] (Fixed) _Front-end_ Add display of sorting option (Issue #985 PR #987)
+- [x] (Fixed) _Desktop_ Fix settings names remove valueOf (PR #987)
+- [x] (Fixed) _Back-end_ Seed Data CLI & Docker with deps bugfixes (PR #993)
 
 # version 0.5.0 - 2022-11-18
 

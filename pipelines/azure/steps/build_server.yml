@@ -46,10 +46,4 @@ steps:
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
-  - task: PowerShell@2
-    displayName: "Cake DocsGenerate"
-    inputs:
-      filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target DocsGenerate  --skip --no-logo'
-      pwsh: true
-      workingDirectory: "$(Build.SourcesDirectory)/starsky/"
+

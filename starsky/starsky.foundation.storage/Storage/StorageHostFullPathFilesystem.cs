@@ -28,22 +28,55 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>StorageInfo object</returns>
 		public StorageInfo Info(string path)
 		{
-			if ( !ExistFile(path) )
+			var type = IsFolderOrFile(path);
+			if ( type == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				// when NOT found
 				return new StorageInfo
 				{
 					IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted,
-					Size = -1
+					Size = -1,
+					IsDirectory = null
 				};
 			}
+
+			var lastWrite = type == FolderOrFileModel.FolderOrFileTypeList.File ? 
+				File.GetLastWriteTime(path).ToUniversalTime() : Directory.GetLastWriteTime(path).ToUniversalTime();
+			
+			var size = type == FolderOrFileModel.FolderOrFileTypeList.File ? 
+				new FileInfo(path).Length : -1;
 			
 			return new StorageInfo
 			{
-				IsFolderOrFile = IsFolderOrFile(path),
-				Size = new FileInfo(path).Length,
-				LastWriteTime = File.GetLastWriteTime(path).ToUniversalTime()
+				IsFolderOrFile = type,
+				IsDirectory = type == FolderOrFileModel.FolderOrFileTypeList.Folder,
+				Size = size,
+				LastWriteTime = lastWrite,
+				IsFileSystemReadOnly = TestIfFileSystemIsReadOnly(path, type)
 			};
+		}
+
+		internal static bool? TestIfFileSystemIsReadOnly(string folderPath, FolderOrFileModel.FolderOrFileTypeList type )
+		{
+			if ( type != FolderOrFileModel.FolderOrFileTypeList.Folder )
+			{
+				return null;
+			}
+
+			try
+			{
+				var testFilePath = Path.Combine(folderPath, ".test");
+				var myFileStream = File.Open(testFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+				myFileStream.Close();
+				myFileStream.Dispose();
+				File.Delete(testFilePath);
+			}
+			catch ( IOException  )
+			{
+				return true;
+			}
+
+			return false;
 		}
 		
 		public void CreateDirectory(string path)
@@ -89,9 +122,13 @@ namespace starsky.foundation.storage.Storage
 			{
 				 allFiles = Directory.GetFiles(path);
 			}
-			catch ( UnauthorizedAccessException e )
+			catch ( Exception exception )
 			{
-				_logger?.LogError(e, "[GetAllFilesInDirectory] catch-ed UnauthorizedAccessException");
+				if ( exception is not (UnauthorizedAccessException
+				    or DirectoryNotFoundException) ) throw;
+				
+				_logger?.LogError(exception, "[GetAllFilesInDirectory] " +
+				                             "catch-ed UnauthorizedAccessException/DirectoryNotFoundException");
 				return Array.Empty<string>();
 			}
 
@@ -154,9 +191,12 @@ namespace starsky.foundation.storage.Storage
 						}
 					}
 				}
-				catch(UnauthorizedAccessException e) 
+				catch(Exception exception) 
 				{
-					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed UnauthorizedAccessException => " + e.Message);
+					if ( exception is not (UnauthorizedAccessException
+					    or DirectoryNotFoundException) ) throw;
+					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed " +
+					                  "DirectoryNotFoundException/UnauthorizedAccessException => " + exception.Message);
 				}
 			}
 

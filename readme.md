@@ -11,8 +11,8 @@
     * [starskyAdminCli](starsky/starskyadmincli/readme.md)  _manage user accounts_
     * [starskySynchronizeCli](starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
     * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
-    * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
-    * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
+    * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (.NET)_
+    * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskydesktop](starskydesktop/readme.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and Mac OS version_
@@ -24,7 +24,7 @@
 ## Demo app
 Starsky has a demo application online.
 
-[See the online demo](https://demostarsky.azurewebsites.net?classes=btn,btn-default)
+[See the online demo](https://demo.qdraw.nl)
 
 > Is not needed to login, but you can create a new account
 
@@ -57,9 +57,11 @@ This policy is in place to avoid bugs being drowned out in a pile of sensible su
 
 If a feature request is actually going to be built, it will get its own issue with the tag: Feature Request
 
-## Release status
+## Latest stable release
 
 [![Release](https://img.shields.io/github/v/release/qdraw/starsky)](https://github.com/qdraw/starsky/releases/)
+
+## Latest prerelease
 
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/qdraw/starsky?include_prereleases)](https://github.com/qdraw/starsky/releases/)
 

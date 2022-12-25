@@ -1,37 +1,11 @@
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.storage.Storage
 {
-	public enum ThumbnailSize
-	{
-		/// <summary>
-		/// Should not use this one
-		/// </summary>
-		Unknown,
-		
-		/// <summary>
-		/// 150px
-		/// </summary>
-		TinyMeta,
-		
-		/// <summary>
-		/// 300px
-		/// </summary>
-		Small, 
-		
-		/// <summary>
-		/// 1000px
-		/// </summary>
-		Large,
-		
-		/// <summary>
-		/// 2000px
-		/// </summary>
-		ExtraLarge,
-	}
-	
+
 	/// <summary>
 	/// ThumbnailNamesHelper
 	/// </summary>
@@ -76,7 +50,8 @@ namespace starsky.foundation.storage.Storage
 			var fileNameWithoutExtension =
 				fileName.Replace(".jpg", string.Empty);
 
-			var afterAtString = Regex.Match(fileNameWithoutExtension, "@\\d+")
+			var afterAtString = Regex.Match(fileNameWithoutExtension, "@\\d+", 
+					RegexOptions.None, TimeSpan.FromMilliseconds(100))
 				.Value.Replace("@", string.Empty);
 			
 			if ( fileNameWithoutExtension.Replace($"@{afterAtString}", string.Empty).Length != 26 )

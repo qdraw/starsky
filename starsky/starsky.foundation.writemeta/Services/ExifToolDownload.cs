@@ -111,12 +111,13 @@ namespace starsky.foundation.writemeta.Services
 			{
 				return checksums;
 			}
-			_logger.LogError($"Checksum loading failed {CheckSumLocation}, next retry from mirror");
+			_logger.LogError($"Checksum loading failed {CheckSumLocation}, next retry from mirror ~ error > " + checksums.Value);
+			
 			checksums = await _httpClientHelper.ReadString(CheckSumLocationMirror);
-			if ( checksums.Key ) return new KeyValuePair<bool, string>(false,checksums.Value);
+			if ( checksums.Key ) return new KeyValuePair<bool, string>(false, checksums.Value);
 			
 			_logger.LogError($"Checksum loading failed {CheckSumLocationMirror}" +
-			                 $", next stop; please connect to internet and restart app");
+			                 $", next stop; please connect to internet and restart app ~ error > " + checksums.Value);
 			return null;
 		}
 
@@ -132,7 +133,8 @@ namespace starsky.foundation.writemeta.Services
 		internal static string GetUnixTarGzFromChecksum(string checksumsValue)
 		{
 			// (?<=SHA1\()Image-ExifTool-[\d\.]+\.zip
-			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()Image-ExifTool-[0-9\.]+\.tar.gz");
+			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()Image-ExifTool-[0-9\.]+\.tar.gz", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			return regexExifToolForWindowsName.Match(checksumsValue).Value;
 		}
 
@@ -229,7 +231,8 @@ namespace starsky.foundation.writemeta.Services
 		internal static string GetWindowsZipFromChecksum(string checksumsValue)
 		{
 			// (?<=SHA1\()exiftool-[\d\.]+\.zip
-			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()exiftool-[0-9\.]+\.zip");
+			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()exiftool-[0-9\.]+\.zip", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			return regexExifToolForWindowsName.Match(checksumsValue).Value;
 		}
 		
@@ -241,7 +244,8 @@ namespace starsky.foundation.writemeta.Services
 		/// <returns></returns>
 		internal string[] GetChecksumsFromTextFile(string checksumsValue, int max = 8)
 		{
-			var regexExifToolForWindowsName = new Regex("[a-z0-9]{40}");
+			var regexExifToolForWindowsName = new Regex("[a-z0-9]{40}", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			var results = regexExifToolForWindowsName.Matches(checksumsValue).
 				Select(m => m.Value).
 				ToArray();

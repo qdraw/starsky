@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new FakeIThumbnailService(), new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
-			await thumbnailService.Thumbnail(new string[0]);
+			await thumbnailService.Thumbnail(Array.Empty<string>());
 			
 			Assert.AreEqual(1, fakeConsole.WrittenLines.Count);
 		}

@@ -16,7 +16,8 @@ namespace starsky.foundation.platform.Helpers
 			// use the same as in the front-end
 			var extensionRegex =
 				new Regex("^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\\.[a-zA-Z0-9_-]+$",
-					RegexOptions.CultureInvariant);
+					RegexOptions.CultureInvariant,
+					TimeSpan.FromMilliseconds(100));
 
 			return extensionRegex.IsMatch(filename);
 		}
@@ -33,7 +34,7 @@ namespace starsky.foundation.platform.Helpers
 			// [^\/]+(?=\.[\w]+\.$)|[^\/]+$
 			var extensionRegex =
 				new Regex("[^\\/]+(?=\\.[\\w]+\\.$)|[^\\/]+$",
-					RegexOptions.CultureInvariant);
+					RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
 			return extensionRegex.Match(filePath).Value;
 		}
 
@@ -59,7 +60,8 @@ namespace starsky.foundation.platform.Helpers
 		{
 			// ReSharper disable once ConvertIfStatementToReturnStatement
 			if ( !filename.Contains('.') ) return string.Empty;
-			return Regex.Match(filename, @"[^.][a-zA-Z0-9]{1,4}$").Value.ToLowerInvariant();
+			return Regex.Match(filename, @"[^.][a-zA-Z0-9]{1,4}$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Value.ToLowerInvariant();
 		}
 		
 		/// <summary>
@@ -74,7 +76,8 @@ namespace starsky.foundation.platform.Helpers
 			// unescaped regex: /.+(?=\/[^/]+$)/
 			var parentRegex =
 				new Regex(".+(?=\\/[^/]+$)",
-					RegexOptions.CultureInvariant);
+					RegexOptions.CultureInvariant, 
+					TimeSpan.FromMilliseconds(100));
 			var result = parentRegex.Match(filePath).Value;
 			return  string.IsNullOrEmpty(result) ? "/" : PathHelper.RemoveLatestSlash(result);
 		}

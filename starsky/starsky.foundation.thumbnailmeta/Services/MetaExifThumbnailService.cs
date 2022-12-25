@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;

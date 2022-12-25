@@ -1,3 +1,7 @@
 # Rename photos
 
-From the user interface it is posible to rename images
+From the user interface it is possible to rename folders and images
+Use the **More** button on the right top to rename a folder or image
+
+![Rename](../assets/rename_folder_v050.jpg)
+_Screenshot from: https://demo.qdraw.nl and ?f=/estland-2021 page_

@@ -10,9 +10,9 @@ Starsky DAM (Digital asset management) system that runs as a desktop application
 You could add how to add users, set up your archives, upload content, control metadata, share content and more.
 
 ## Online demo
-There is an demo environment on heroku, please wait a few seconds before the app is started
+There is an demo environment, please wait a few seconds before the app is started
 
-[See the online demo on heroku](https://demostarsky.azurewebsites.net?classes=btn,btn-default)
+[See the online demo](https://demo.qdraw.nl)
 
 > There is no need to login to the demo environment, you can browse the content.
 

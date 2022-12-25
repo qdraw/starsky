@@ -1,0 +1,70 @@
+name: $(Date:yyyyMMdd)$(rev:.r)
+
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+pr: none
+
+schedules:
+  - cron: "35 4 20 * *"
+    displayName: "Monthy Build"
+    branches:
+      include:
+        - development
+
+steps: 
+
+  - checkout: self
+    fetchDepth: 1
+    persistCredentials: true
+
+  - task: Bash@3
+    enabled: true
+    displayName: 'dotnet sdk update'
+    inputs:
+      workingDirectory: 'azure/pipelines/scripts'
+      targetType: 'inline'
+      script: |
+        node dotnet-sdk-version-update.js 7.0.x
+
+  - task: Bash@3
+    enabled: true
+    displayName: 'new branch if not exists'
+    inputs:
+      workingDirectory: 'azure/pipelines/scripts'
+      targetType: 'inline'
+      script: |
+        export BRANCH_NAME="feature/dependencies-update-$(SDK_VERSION)"
+        node git-new-branch-if-not-exists.js
+
+
+  - task: Bash@3
+    enabled: true
+    displayName: 'commit if files are changed'
+    inputs:
+      workingDirectory: 'azure/pipelines/scripts'
+      targetType: 'inline'
+      script: |
+        export GIT_USER_EMAIL=devops@iodigital.com
+        export GIT_USER_NAME=Devops
+        export GIT_COMMIT_MESSAGE="Update SDK version to $(SDK_VERSION)"
+        node git-commit-message.js
+
+  - task: Bash@3
+    enabled: true
+    displayName: 'create PR if branch exists'
+    inputs:
+      workingDirectory: 'azure/pipelines/scripts'
+      targetType: 'inline'
+      script: |
+        export SYSTEM_COLLECTIONURI=$(System.CollectionUri)
+        export SYSTEM_TEAM_PROJECT=$(System.TeamProject)
+        export BUILD_REPOSITORY_ID=$(Build.Repository.Id)
+        export BUILD_SOURCE_BRANCH="refs/heads/feature/dependencies-update-$(SDK_VERSION)"
+        export TARGET_BRANCH="refs/heads/development"
+        export SYSTEM_ACCESSTOKEN=$(System.AccessToken)
+        export PR_TITLE="Update SDK version to $(SDK_VERSION)"
+        export PR_DESCRIPTION="Update SDK version to $(SDK_VERSION)"
+        node create-pull-request-azure-devops.js       

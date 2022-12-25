@@ -30,7 +30,10 @@ const PreferencesUsername: React.FunctionComponent<any> = (_) => {
   return (
     <>
       <div className="content--subheader">{MessageUsername}</div>
-      <div data-test="preferences-username-text" className="content--text">
+      <div
+        data-test="preferences-username-text"
+        className="content--text preferences-username-text"
+      >
         {userName}
       </div>
     </>

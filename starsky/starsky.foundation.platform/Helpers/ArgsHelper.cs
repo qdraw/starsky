@@ -450,11 +450,14 @@ namespace starsky.foundation.platform.Helpers
 			}
 
 			// Ignore quotes at beginning: unescaped ^"|"$
-			path = new Regex("^\"|\"$").Replace(path, string.Empty);
+			path = new Regex("^\"|\"$", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100))
+				.Replace(path, string.Empty);
 			
 			// split every dot comma but ignore escaped
 			// non escaped: (?<!\\);
-			var dotCommaRegex = new Regex("(?<!\\\\);");
+			var dotCommaRegex = new Regex("(?<!\\\\);", 
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			return dotCommaRegex.Split(path).Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
 		}
 
@@ -708,6 +711,7 @@ namespace starsky.foundation.platform.Helpers
 					&& (arg + 1) != args.Count && bool.TryParse(args[arg + 1], out var getMove2))
 				{
 					getMove = getMove2;
+					continue;
 				}
 				
 				if ((args[arg].ToLower() == "--move" || args[arg].ToLower() == "-m"))

@@ -9,6 +9,10 @@ then
     exit 1
 fi
 
+# for mac os:
+#realpath() {
+#    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+#}
 # realpath is not support using os x
 OUTPUT_DIR="$(dirname "$(realpath "$0")")"
 
@@ -145,7 +149,7 @@ systemctl --user cat $SERVICE_NAME".service"
 echo "end"
 echo "to restart: "
 
-echo "rm "OUTPUT_DIR"app__data.db* && ""systemctl --user restart "$SERVICE_NAME".service"
+echo "rm "$OUTPUT_DIR"app__data.db* && ""systemctl --user restart "$SERVICE_NAME".service"
 # for example: 
 #           rm /opt/starsky/app__data.db*
 #           systemctl --user restart starsky.service

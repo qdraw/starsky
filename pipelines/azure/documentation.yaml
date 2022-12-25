@@ -7,23 +7,31 @@ trigger:
     include:
     - documentation
     - starsky/readme.md
+    - starsky/history.md
     - starsky/starsky/readme.md
     - starsky/starsky/readme-docker-hub.md
     - starsky/starsky/readme-docker-development.md
     - starsky/starsky/clientapp/readme.md
     - starsky/**/readme.md
     - starskydesktop/readme.md
-    - starskydesktop/docs-assets/
+    - starskydesktop/docs-assets/**
     - starsky/starskytest/readme.md
     - starsky-tools/readme.md
     - starsky-tools/**/readme.md
 
+pr: none
+
 variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
-  DOCS_SERVER_URL: $(serverUrl)
-  DOCS_USERNAME: $(username)
+  DOCS_SERVER_URL: $(serverUrl) # starts with ftp:// 
+              # use: serverUrl, username etc. as variable name is devops
+  DOCS_USERNAME: $(username) # ftp user name
   DOCS_PASSWORD: $(password)
+  DOCS_URL: $(url) # public url/domain
+  DOCS_BASE_URL: $(baseUrl) # dir in domain
+  GOOGLE_VERIFICATION: $(googleVerification) # generate html file
+  G_TAG: $(gTag) # google analytics
 
 stages:
 - stage: builddocumentation
@@ -44,11 +52,23 @@ stages:
     - template: /pipelines/azure/steps/build_documentation.yml
       parameters:
         npmConfigCache: $(npm_config_cache)
+        url: $(DOCS_URL)
+        baseUrl: $(DOCS_BASE_URL)
+        googleVerification: $(GOOGLE_VERIFICATION)
+        gtag: $(G_TAG)
 
-    - template: /pipelines/azure/steps/upload_documentation.yml
+    - task: Bash@3
+      enabled: true
+      displayName: 'Double zip docs folder'
+      inputs:
+        workingDirectory: 'documentation/build'
+        targetType: 'inline'
+        script: |
+          zip -r documentation.zip *
+          ls -lah
+
+    - template: /pipelines/azure/steps/publish_artifacts.yml
       parameters:
-        serverUrl: $(DOCS_SERVER_URL)
-        username: $(DOCS_USERNAME)
-        password: $(DOCS_PASSWORD)
-        rootDirectory: 'documentation/build'
-        remoteDirectory: '/'
+        publish:
+          - key: documentation
+            value: '/documentation/build/documentation.zip'

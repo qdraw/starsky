@@ -51,6 +51,9 @@ function writeFile(to, content) {
 }
 
 copyFileSync("history.md", "advanced-options/history.md");
+
+touchSync("advanced-options/__do_not_edit_history_md");
+
 touchSync("advanced-options/starsky/__do_not_edit_this__folder");
 
 writeFile(
@@ -135,12 +138,12 @@ copyFileSync("starsky/starskytest/readme.md", "advanced-options/starsky/starskyt
 
 copyFileSync("starsky-tools/readme.md", "advanced-options/starsky-tools/readme.md");
 
+touchSync("advanced-options/starsky-tools/__do_not_edit_this__folder");
+
 copyFileSync(
   "starsky-tools/build-tools/readme.md",
   "advanced-options/starsky-tools/build-tools/readme.md"
 );
-
-copyFileSync("starsky-tools/docs/readme.md", "advanced-options/starsky-tools/docs/readme.md");
 
 copyFileSync(
   "starsky-tools/dropbox-import/readme.md",

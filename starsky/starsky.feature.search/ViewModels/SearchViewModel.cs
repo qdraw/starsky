@@ -356,7 +356,8 @@ namespace starsky.feature.search.ViewModels
 	    public static char AndOrRegex(string item)
 	    {
 		    // (\|\||\&\&)$
-		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase);
+		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase,
+			    TimeSpan.FromMilliseconds(100));
 
 		    // To Search Type
 		    var lastStringValue = rgx.Match(item).Value;
@@ -395,10 +396,11 @@ namespace starsky.feature.search.ViewModels
 		    // [\w!]+|(["'])(\\?.)*?\1
 		    
 		    Regex inUrlRegex = new Regex("[\\w!]+|([\"\'])(\\\\?.)*?\\1",
-			    RegexOptions.IgnoreCase);
+			    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
 		    // Escape special quotes
-		    defaultQuery = Regex.Replace(defaultQuery, "[“”‘’]", "\"");
+		    defaultQuery = Regex.Replace(defaultQuery, "[“”‘’]", "\"", 
+			    RegexOptions.None, TimeSpan.FromMilliseconds(100));
 		    
 		    var regexInUrlMatches = inUrlRegex.Matches(defaultQuery);
 
@@ -460,7 +462,7 @@ namespace starsky.feature.search.ViewModels
 		    // Regex: for ||&& without escape chars 
 			//	// &&|\|\|
 		    Regex andOrRegex = new Regex("&&|\\|\\|",
-			    RegexOptions.IgnoreCase);
+			    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 		    
 		    var andOrRegexMatches = andOrRegex.Matches(defaultQuery);
 
@@ -623,7 +625,9 @@ namespace starsky.feature.search.ViewModels
 	    {
 
 		    // For relative values
-		    if ( Regex.IsMatch(input, @"^\d+$") && int.TryParse(input, out var relativeValue) )
+		    if ( Regex.IsMatch(input, @"^\d+$", 
+			    RegexOptions.None, TimeSpan.FromMilliseconds(100)) &&
+		         int.TryParse(input, out var relativeValue) )
 		    {
 			    if(relativeValue >= 1) relativeValue *= -1; // always in the past
 			    if ( relativeValue > -60000 ) // 24-11-1854

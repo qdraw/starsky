@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.import.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
-using starskycore.Models;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.database.Models
@@ -177,7 +177,7 @@ namespace starskytest.starsky.foundation.database.Models
             
 			input.ParseDateTimeFromFileName();
             
-			Regex pattern = new Regex("-|_| |;|\\.|:");
+			Regex pattern = new Regex("-|_| |;|\\.|:", RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			var output = pattern.Replace("2018-02-03 18.47.35.jpg",string.Empty);
             
 			DateTime.TryParseExact(

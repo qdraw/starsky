@@ -34,6 +34,7 @@ namespace starsky.feature.geolookup.Services
 		private readonly IReadMeta _readMeta;
 		private readonly IGeoFileDownload _geoFileDownload;
 		private readonly IExifToolDownload _exifToolDownload;
+		private readonly IWebLogger _logger;
 
 		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 		public GeoCli(IGeoReverseLookup geoReverseLookup, 
@@ -49,6 +50,7 @@ namespace starsky.feature.geolookup.Services
 			_console = console;
 			_exifToolDownload = exifToolDownload;
 			_geoFileDownload = geoFileDownload;
+			_logger = logger;
 		}
 		
 		/// <summary>
@@ -126,7 +128,7 @@ namespace starsky.feature.geolookup.Services
 				_console.WriteLine($"CameraTimeZone: {_appSettings.CameraTimeZone}");
 				_console.WriteLine($"Folder: {inputPath}");
 
-				var geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage);
+				var geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, _logger);
 				toMetaFilesUpdate = geoIndexGpx.LoopFolder(fileIndexList);
       
 				_console.Write("¬");

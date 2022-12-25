@@ -14,6 +14,7 @@ export interface IFormControlProps {
   children?: React.ReactNode;
   warning?: boolean;
   spellcheck?: boolean;
+  "data-test"?: string;
 }
 
 const FormControl: React.FunctionComponent<IFormControlProps> = ({
@@ -60,7 +61,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({
       ) : null}
 
       <div
-        data-test="form-control"
+        data-test={props["data-test"] ? props["data-test"] : "form-control"}
         onBlur={
           new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur
         }

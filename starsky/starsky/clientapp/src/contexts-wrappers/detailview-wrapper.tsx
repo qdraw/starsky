@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import DetailView from "../containers/detailview";
+import DetailView from "../containers/detailview/detailview";
 import {
   DetailViewAction,
   DetailViewContextProvider,
