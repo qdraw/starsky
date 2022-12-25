@@ -10,6 +10,7 @@ There are multiple ways of installing Starsky:
 
 1. **As background service (systemd or pm2 service)** <br />
    Run it as system service. All dependencies are included in the application
+   There are multiple options to run it as a service, see [systemd](linux-systemd.md), [macOS launchctl](macos-launchctl.md) or [pm2](pm2.md) for more information
 
 2. **Docker** <br />
    When using Docker we recommend running Starsky with Docker Compose when hosting it on a private server. It is available for Mac, Linux, and Windows.

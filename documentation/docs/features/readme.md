@@ -12,3 +12,4 @@ Get a overview of the features of the application
 - [Realtime](realtime.md)
 - [Search](search.md)
 - [Publish media with watermarks](webhtmlpublish.md)  
+- [Bulk editing](bulk-editing.md)

@@ -1,10 +1,10 @@
 const https = require("https");
 
 
-async function httpsGet(url) {
+async function httpsGet(url, authorizationHeader = "") {
 	return new Promise((resolve, reject) => {
-		httpsGetInternal(url).then(resolve).catch(()=> {
-			httpsGetInternal(url).then(resolve).catch((err)=> {
+		httpsGetInternal(url, authorizationHeader).then(resolve).catch(()=> {
+			httpsGetInternal(url, authorizationHeader).then(resolve).catch((err)=> {
 				console.log('failed');
 				reject(err)
 			})
@@ -18,7 +18,7 @@ async function httpsGet(url) {
  * @param url
  * @return {Promise}
  */
-async function httpsGetInternal(url) {
+async function httpsGetInternal(url, authorizationHeader = "") {
 	let requestOptionsUrl = new URL(url);
 	const requestOptions = {
 		host: requestOptionsUrl.host,
@@ -29,6 +29,9 @@ async function httpsGetInternal(url) {
 			"Content-Type": "application/json",
 		},
 	};
+	if (authorizationHeader) {
+		requestOptions.headers.Authorization = authorizationHeader;
+	}
 
 	// Promisify the https.request
 	return new Promise((resolve, reject) => {

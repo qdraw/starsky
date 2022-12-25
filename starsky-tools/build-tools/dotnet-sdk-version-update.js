@@ -28,6 +28,8 @@ const argv = process.argv.slice(2);
 
 let searchPath = join(__dirname, prefixPath);
 
+console.log(`searchPath: ${searchPath}`);
+
 // it checks if the parameter matches a semver string or a valid path on disk
 if (argv) {
 	// regex: ^(\d+\.)?(\d+\.)?(\*|x|\d+)$
@@ -60,7 +62,8 @@ async function getLatestDotnetRelease() {
 console.log(`\nUpgrade version in csproj-files to ${newRunTimeVersion}\n`);
 
 getLatestDotnetRelease().then((newTargetVersion) => {
-	getFiles(searchPath) // add "starsky" back when netframework is removed
+	// // next upgrade csproj files
+	getFiles(searchPath)
 		.then(async (filePathList) => {
 			const sortedFilterPathList = sortFilterOnExeCSproj(filePathList);
 
@@ -74,7 +77,11 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 					sortedFilterPathList,
 					newRunTimeVersion
 				);
-				const sortedFrameworkMonikerByPath = await sortNetFrameworkMoniker(frameworkMonikerByPath);
+
+				const refFrameworkMonikerByPath = await addReferencedProjectMonikers(frameworkMonikerByPath);
+
+				const sortedFrameworkMonikerByPath = await sortNetFrameworkMoniker(refFrameworkMonikerByPath);
+
 				await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
 
 				console.log('---done');
@@ -93,21 +100,26 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 			console.log(`::set-output name=SDK_VERSION::${sdkVersion}`);
 			// process.env["GITHUB_STATE"] += ` SDK_VERSION=${sdkVersion} `;
 
+            if (process.env.TF_BUILD) {
+                console.log(`##vso[task.setvariable variable=SDK_VERSION;]${sdkVersion}`);
+            }
+
 			await updateAzureYmlFile(filePathList, sdkVersion);
 			await updateGithubYmlFile(filePathList, sdkVersion);
 
 			await updateMcrDockerFile(filePathList);
 			await updateGlobalJsonFiles(filePathList, sdkVersion);
+			await updateDockerEnvFile(filePathList);
 		})
 		.catch((err) => {
 			console.log(err);
 		});
 });
 
-async function updateMcrDockerFile(filePathList) {
+async function updateDockerEnvFile(filePathList) {
 	const targetVersion = newRunTimeVersion.replace(".x", "");
 
-	const dockerFilePathList = filePathList.filter(p => p.endsWith("Dockerfile"));
+	const envDockerFilePathList = filePathList.filter(p => p.endsWith(".env"));
 
 	// aspnet is runtime for asp.net apps
 	const aspNetResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list");
@@ -121,6 +133,48 @@ async function updateMcrDockerFile(filePathList) {
 		return;
 	}
 
+	for (const envDockerFilePath of envDockerFilePathList) {
+		let buffer = await readFile(envDockerFilePath);
+		console.log("✓ " + envDockerFilePath);
+		let fileContent = buffer.toString("utf8");
+		fileContent = replaceEnvDockerFileContent(fileContent, "sdk",sdkResult);
+		fileContent = replaceEnvDockerFileContent(fileContent, "aspnet",aspNetResult);
+		await writeFile(envDockerFilePath, fileContent);
+	}
+
+}
+
+function replaceEnvDockerFileContent(fileContent, what, sdkResult) {
+	// replace variables with sdk version
+	const buildBaseImageRegex = new RegExp("((BUILD)|(BASE))_?(IMAGE)=mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+", "ig");
+	const buildBaseImageMatches = fileContent.match(buildBaseImageRegex);
+	if (buildBaseImageMatches) {
+		for (const buildBaseImageMatch of buildBaseImageMatches) {
+			const replacedResult = buildBaseImageMatch.replace(/(\d|\.)+$/g,sdkResult); // sdkResult = to version
+			console.log("  ✓  replaceEnvDockerFileContent - build/base " + replacedResult);
+			fileContent = fileContent.replace(buildBaseImageMatch, replacedResult);
+		}
+	}
+	return fileContent;
+}
+
+
+async function updateMcrDockerFile(filePathList) {
+	const targetVersion = newRunTimeVersion.replace(".x", "");
+
+	// aspnet is runtime for asp.net apps
+	const aspNetResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list");
+	const sdkResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/sdk/tags/list");
+
+	const aspNetResult = aspNetResults.tags.find(p => p === targetVersion);
+	const sdkResult = sdkResults.tags.find(p => p === targetVersion);
+
+	if (newRunTimeVersion.includes(".x") && aspNetResult !== sdkResult) {
+		console.log('DockerFile versions dont match');
+		return;
+	}
+
+	const dockerFilePathList = filePathList.filter(p => p.endsWith("Dockerfile"));
 	for (const dockerFilePath of dockerFilePathList) {
 		let buffer = await readFile(dockerFilePath);
 		console.log("✓ " + dockerFilePath);
@@ -143,6 +197,18 @@ function replaceMcrFileContent(fileContent, what, sdkResult) {
 			fileContent = fileContent.replace(sdkfromBuildPlatformMatch, replacedResult);
 		}
 	}
+
+	// replace variables with sdk version
+	const buildBaseImageRegex = new RegExp("ARG ((BUILD)|(BASE))_(IMAGE)=mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+", "g");
+	const buildBaseImageMatches = fileContent.match(buildBaseImageRegex);
+	if (buildBaseImageMatches) {
+		for (const buildBaseImageMatch of buildBaseImageMatches) {
+			const replacedResult = buildBaseImageMatch.replace(/(\d|\.)+$/g,sdkResult); // sdkResult = to version
+			console.log("  ✓  replaceMcrFileContent - build/base " + replacedResult);
+			fileContent = fileContent.replace(buildBaseImageMatch, replacedResult);
+		}
+	}
+
 	return fileContent;
 }
 
@@ -224,6 +290,9 @@ async function getBlobSdkReleaseNotesPage(blobObject) {
 	if (findVersion && findVersion["release-notes"]) {
 		process.env["SDK_RELEASE_NOTES"] = findVersion["release-notes"];
 		console.log(`::set-output name=SDK_RELEASE_NOTES::${findVersion["release-notes"]}`);
+        if (process.env.TF_BUILD) {
+            console.log(`##vso[task.setvariable variable=SDK_RELEASE_NOTES;]${findVersion["release-notes"]}`);
+        }
 		return findVersion["release-notes"];
 	}
 	return null;
@@ -281,8 +350,54 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 					`✓ ${filePath} - Azure Yml is updated to ${sdkVersion}`
 				);
 			}
+
+			// Update Docker Variables in Azure Yml
+			// replace the following variables:
+			// 	variables:
+			//   buildImage: "mcr.microsoft.com/dotnet/sdk:6.0"
+			//   baseImage: "mcr.microsoft.com/dotnet/aspnet:6.0"
+
+			var buildBaseImageVariableRegex = new RegExp("(build|base)Image: ?\"mcr.microsoft.com", "ig");
+			const buildBaseImageVariableMatch = buildBaseImageVariableRegex.exec(fileContent);
+			if (buildBaseImageVariableMatch != null) {
+				console.log(
+					`✓ ${filePath} - Azure Yml (build/base) is updated to ${newRunTimeVersion.replace(".x", "")}`
+				);
+				fileContent = await replaceAzureDockerYmlFile(fileContent, "sdk");
+				fileContent = await replaceAzureDockerYmlFile(fileContent, "aspnet");
+				await writeFile(filePath, fileContent);
+			}
+
 		}
 	});
+}
+
+async function replaceAzureDockerYmlFile(fileContent, what) {
+
+	const targetVersion = newRunTimeVersion.replace(".x", "");
+
+	// aspnet is runtime for asp.net apps
+	const aspNetResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list");
+	const sdkResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/sdk/tags/list");
+
+	const aspNetResult = aspNetResults.tags.find(p => p === targetVersion);
+	const sdkResult = sdkResults.tags.find(p => p === targetVersion);
+
+	if (newRunTimeVersion.includes(".x") && aspNetResult !== sdkResult) {
+		console.log('DockerFile versions dont match');
+		return;
+	}
+
+	const buildBaseImageRegex = new RegExp("((BUILD)|(BASE))_?(IMAGE): \"mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+", "ig");
+	const buildBaseImageMatches = fileContent.match(buildBaseImageRegex);
+	if (buildBaseImageMatches) {
+		for (const buildBaseImageMatch of buildBaseImageMatches) {
+			const replacedResult = buildBaseImageMatch.replace(/(\d|\.)+\"$/g,targetVersion +"\""); // sdkResult = to version
+			console.log("  ✓  Azure Yml - build/base " + replacedResult);
+			fileContent = fileContent.replace(buildBaseImageMatch, replacedResult);
+		}
+	}
+	return fileContent;
 }
 
 async function updateGithubYmlFile(filePathList, sdkVersion) {
@@ -314,6 +429,22 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 	});
 }
 
+async function addReferencedProjectMonikers(frameworkMonikerByPath){
+
+	// make sure referenced projects netmonikers are included
+	for (let [filePath,_] of Object.entries(frameworkMonikerByPath)) {
+		const referencedFiles = await getProjectReferences(filePath);
+		for (const refPath of referencedFiles) {
+			if (!frameworkMonikerByPath[refPath]) {
+				continue;
+			}
+			frameworkMonikerByPath[filePath] = [...new Set([...frameworkMonikerByPath[filePath], ...frameworkMonikerByPath[refPath]])]
+		}
+	}
+
+	return frameworkMonikerByPath;
+}
+
 async function sortNetFrameworkMoniker(frameworkMonikerByPath) {
 
     // references
@@ -321,17 +452,23 @@ async function sortNetFrameworkMoniker(frameworkMonikerByPath) {
 		const referencedProjectPaths = await getReferencedProjectPaths(filePath);
         // console.log(filePath + ' referencedProjectPaths')
         // console.log(referencedProjectPaths)
+
 		for (const refPath of referencedProjectPaths) {
 			for (const netMoniker of netMonikers) {
-                if (!frameworkMonikerByPath[refPath]) {
-                    console.log('refPath is missing ' + refPath);
-                }
+				if (!frameworkMonikerByPath[refPath]) {
+					console.log('[x] Missing ' + refPath);
+					frameworkMonikerByPath[refPath] = [];
+				} 
 				if (!frameworkMonikerByPath[refPath].includes(netMoniker)) {
 					frameworkMonikerByPath[refPath].push(netMoniker)
 				}
 			}
 		}
 	}
+
+
+	// console.log('frameworkMonikerByPath[filePath]');
+	// console.log(frameworkMonikerByPath);
 
     // Re-order versions
     const updatedFrameworkMonikerByPath = [];
@@ -430,15 +567,26 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 	}
 }
 
+async function getNetMonikerByCsProjFilePath(filePath) {
+	var targetFrameworkRegex = new RegExp(
+		"<TargetFramework>.+<\/TargetFramework>",
+		"g"
+	);
+
+	let buffer = await readFile(filePath);
+	let fileContent = buffer.toString("utf8");
+
+	const matchResults = fileContent.match(targetFrameworkRegex);
+	if (matchResults.length !== 1) {
+		return ""
+	}
+	return matchResults[0].replace("<TargetFramework>","").replace("</TargetFramework>","");
+}
+
 async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 	for (const filePath of filePathList) {
 		if (
-			filePath.match(
-				new RegExp(
-					"[a-z]+?.csproj$",
-					"i"
-				)
-			)
+			filePath.endsWith(".csproj")
 		) {
 			let buffer = await readFile(filePath);
 			let fileContent = buffer.toString("utf8");
@@ -496,19 +644,14 @@ async function updateSingleNugetPackageVersion(filePath) {
 	// '///starsky/starsky.foundation.consoletelemetry/starsky.foundation.consoletelemetry.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
 
 	if (
-		filePath.match(
-			new RegExp(
-				"[a-z].csproj$",
-				"i"
-			)
-		)
+		filePath.endsWith(".csproj")
 	) {
 		let buffer = await readFile(filePath);
 		let fileContent = buffer.toString("utf8");
 
-		// unescaped: <PackageReference Include="[a-z.]+" Version="[0-9.]+" />
+		// unescaped: <PackageReference Include="[a-z.]+" Version="[0-9.]+" ?/?>
 		const packageReferenceRegex = new RegExp(
-			'<PackageReference Include="[a-z.]+" Version="[0-9.]+" />',
+			'<PackageReference Include="[a-z.]+" Version="[0-9.]+" ?/?>',
 			"ig"
 		);
 
@@ -520,11 +663,11 @@ async function updateSingleNugetPackageVersion(filePath) {
 		for (const result of packageReferenceMatches) {
 			const name = result[0]
 				.replace('<PackageReference Include="', "")
-				.replace(/" Version="[0-9.]+" \/>/, "");
+				.replace(/" Version="[0-9.]+" ?\/?>/, "");
 
 			const version = result[0]
 				.replace(/<PackageReference Include="[a-z.]+" Version="/gi, "")
-				.replace('" />', "");
+				.replace(/" ?\/?>/, "");
 
 			for (const aspNetName of aspNetCorePackages) {
 				if (name.startsWith(aspNetName)) {
@@ -624,13 +767,8 @@ function sortFilterOnExeCSproj(filePathList) {
 
 	for (const filePath of filePathList) {
 
-		if (!filePath.match(
-			new RegExp(
-				"[a-z]?.csproj$",
-				"i"
-			)
-		)) {
-			continue;	
+		if (!filePath.endsWith(".csproj")) {
+			continue;
 		}
 		
 
