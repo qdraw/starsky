@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "6.0.12");
+                .HasAnnotation("ProductVersion", "6.0.9");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -221,7 +221,7 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys");
+                    b.ToTable("DataProtectionKeys", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
@@ -338,10 +338,6 @@ namespace starsky.foundation.database.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ThumbnailSizes")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
@@ -349,7 +345,7 @@ namespace starsky.foundation.database.Migrations
 
                     b.HasIndex("FileName", "ParentDirectory");
 
-                    b.ToTable("FileIndex");
+                    b.ToTable("FileIndex", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
@@ -386,7 +382,7 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("FileHash")
                         .HasAnnotation("MySql:CharSet", "utf8mb4");
 
-                    b.ToTable("ImportIndex");
+                    b.ToTable("ImportIndex", (string)null);
                 });
 
             modelBuilder.Entity("starsky.foundation.database.Models.NotificationItem", b =>
@@ -402,7 +398,6 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("mediumtext");
 
                     b.Property<DateTime>("DateTime")
-                        .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

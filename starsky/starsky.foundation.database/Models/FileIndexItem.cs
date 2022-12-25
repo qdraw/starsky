@@ -133,6 +133,10 @@ namespace starsky.foundation.database.Models
 		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
 		public string? FileHash { get; set; } = string.Empty;
 
+		
+		public ThumbnailData ThumbnailData { get; set; }
+		
+		
 		/// <summary>
 		/// GetFileNameWithoutExtension (only a getter)
 		/// </summary>
@@ -799,11 +803,7 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		[MaxLength(20)]
 		public string? ShutterSpeed {
-			get
-			{
-				if ( string.IsNullOrEmpty(_shutterSpeed) ) return string.Empty;
-				return _shutterSpeed;
-			}
+			get => string.IsNullOrEmpty(_shutterSpeed) ? string.Empty : _shutterSpeed;
 			set
 			{
 				if ( string.IsNullOrEmpty(_shutterSpeed) ) _shutterSpeed = string.Empty;
@@ -867,11 +867,7 @@ namespace starsky.foundation.database.Models
 		/// Camera brand and type (incl. lens)
 		/// </value>
 		public string? MakeModel {
-			get
-			{
-				if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
-				return _makeModel;
-			}
+			get => string.IsNullOrEmpty(_makeModel) ? string.Empty : _makeModel;
 			// ReSharper disable once PropertyCanBeMadeInitOnly.Global
 			set => _makeModel = string.IsNullOrEmpty(value) ? string.Empty : value;
 		}
@@ -1044,14 +1040,6 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		[NotMapped]
 		public List<string> LastChanged { get; set; } = new List<string>();
-
-		
-		/// <summary>
-		/// Sizes available for the image
-		/// </summary>
-		/// <returns></returns>
-		public ICollection<ThumbnailSize> ThumbnailSizes { get; set; } =
-			new List<ThumbnailSize>();
 
 	}
 

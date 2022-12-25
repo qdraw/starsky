@@ -81,7 +81,8 @@ namespace starsky.feature.import.Helpers
 			// Check if fastest version is available to show 
 			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.TinyMeta)) )
 			{
-				fileIndexItem.ThumbnailSizes.Add(ThumbnailSize.TinyMeta);
+				
+				//fileIndexItem.ThumbnailSizes.Add(ThumbnailSize.TinyMeta);
 			}
 			
 			await queryUpdateDelegate(fileIndexItem);

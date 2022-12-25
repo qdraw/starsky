@@ -27,7 +27,7 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 		foreach ( var item in itemsSucceed )
 		{
 			//item.ThumbnailSizes.Remove(ThumbnailSize.ErrorTinyMeta);
-			item.ThumbnailSizes.Add(ThumbnailSize.TinyMeta);
+			// item.ThumbnailSizes.Add(ThumbnailSize.TinyMeta);
 		}
 		
 		// Error case
@@ -37,7 +37,7 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 		foreach ( var item in itemsFailed )
 		{
 			//item.ThumbnailSizes.Remove(ThumbnailSize.TinyMeta);
-			item.ThumbnailSizes.Add(ThumbnailSize.ErrorTinyMeta);
+			//item.ThumbnailSizes.Add(ThumbnailSize.ErrorTinyMeta);
 		}
 		
 		await _query.UpdateItemAsync(itemsFailed);

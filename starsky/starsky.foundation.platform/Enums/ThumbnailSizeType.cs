@@ -11,11 +11,6 @@ public enum ThumbnailSize
 	/// 150px
 	/// </summary>
 	TinyMeta = 10,
-		
-	/// <summary>
-	/// Should only use this status when Tiny meta failed
-	/// </summary>
-	ErrorTinyMeta = 11,
 
 	/// <summary>
 	/// 300px

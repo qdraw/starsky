@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
-using starsky.foundation.database.ValueConverters;
-using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.database.Data
 {
@@ -37,6 +32,8 @@ namespace starsky.foundation.database.Data
 		public DbSet<NotificationItem> Notifications { get; set; }
 
 		public DbSet<SettingsItem> Settings { get; set; }
+		
+		public DbSet<ThumbnailData> ThumbnailData { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
@@ -62,20 +59,23 @@ namespace starsky.foundation.database.Data
 				etb.HasIndex(x => new {x.FileName, x.ParentDirectory});
 				
 				etb.Property(p => p.Size).HasColumnType("bigint");
-				
-				var converter = new EnumCollectionJsonValueConverter<ThumbnailSize>();
-				var comparer = new CollectionValueComparer<ThumbnailSize>();
-				
-				var comp = new ValueComparer<ICollection<ThumbnailSize>>(
-					(c1, c2) => c1.SequenceEqual(c2),
-					c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-					c => c.ToList());
-				
-				etb.Property(e => e.ThumbnailSizes)
-					.HasConversion(converter, comp);
-					// .Metadata.SetValueComparer(comparer);
-				
 			});
+			
+			
+			modelBuilder.Entity<FileIndexItem>()
+				.HasOne(s => s.ThumbnailData)
+				.WithMany(c => c.FileHash)
+				.HasForeignKey(s => s.FileHash)
+				.HasPrincipalKey(c => c.LicensePlate);
+			
+			
+			// modelBuilder
+			// 	.Entity<FileIndexItem>()
+			// 	.HasOne(e => e.ThumbnailData)
+			// 	.WithOne(e => e.FileHash)
+			// 	.HasForeignKey(p => p.FileHash)
+			// 	.OnDelete(DeleteBehavior.ClientCascade);
+			
 			
 			modelBuilder.Entity<User>(etb =>
 				{
