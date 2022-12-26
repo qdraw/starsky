@@ -8,8 +8,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.JsonConverter;
 
 namespace starsky.foundation.database.Models
 {
@@ -132,9 +134,6 @@ namespace starsky.foundation.database.Models
 		/// <example>OZHCK4I47QPHOT53QBRE7Z4RLI</example>
 		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
 		public string? FileHash { get; set; } = string.Empty;
-
-		
-		public ThumbnailData ThumbnailData { get; set; }
 		
 		
 		/// <summary>
@@ -952,7 +951,7 @@ namespace starsky.foundation.database.Models
 				_size = value;
 			} 
 		}
-	    
+
 		/// <summary>
 		/// To add Make (without comma and TitleCase) and second follow by Model (same as input)
 		/// Followed by index 2: Lens info

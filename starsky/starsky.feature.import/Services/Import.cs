@@ -497,7 +497,7 @@ namespace starsky.feature.import.Services
 			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return new List<(bool, string)>();
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
-				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).ToList();
+				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).Cast<(string,string)>().ToList();
 			if ( !items.Any() ) return new List<(bool, string)>();
 			return await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}

@@ -52,7 +52,7 @@ namespace starsky.foundation.sync.Helpers
 		/// <param name="parentDirectory">parent directory name</param>
 		/// <param name="fileName">name without path</param>
 		/// <returns></returns>
-		public async Task<FileIndexItem> NewFileItem(string filePath, string fileHash, string parentDirectory, string fileName)
+		private async Task<FileIndexItem> NewFileItem(string filePath, string fileHash, string parentDirectory, string fileName)
 		{
 			var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(filePath);
 			updatedDatabaseItem.ImageFormat = ExtensionRolesHelper
@@ -66,6 +66,7 @@ namespace starsky.foundation.sync.Helpers
 			updatedDatabaseItem.Size = _subPathStorage.Info(filePath).Size;
 			updatedDatabaseItem.ParentDirectory = parentDirectory;
 			updatedDatabaseItem.FileName = fileName;
+			
 			return updatedDatabaseItem;
 		}
 

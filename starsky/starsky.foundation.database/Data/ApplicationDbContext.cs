@@ -33,7 +33,7 @@ namespace starsky.foundation.database.Data
 
 		public DbSet<SettingsItem> Settings { get; set; }
 		
-		public DbSet<ThumbnailData> ThumbnailData { get; set; }
+		public DbSet<ThumbnailItem> Thumbnails { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
@@ -60,22 +60,6 @@ namespace starsky.foundation.database.Data
 				
 				etb.Property(p => p.Size).HasColumnType("bigint");
 			});
-			
-			
-			modelBuilder.Entity<FileIndexItem>()
-				.HasOne(s => s.ThumbnailData)
-				.WithMany(c => c.FileHash)
-				.HasForeignKey(s => s.FileHash)
-				.HasPrincipalKey(c => c.LicensePlate);
-			
-			
-			// modelBuilder
-			// 	.Entity<FileIndexItem>()
-			// 	.HasOne(e => e.ThumbnailData)
-			// 	.WithOne(e => e.FileHash)
-			// 	.HasForeignKey(p => p.FileHash)
-			// 	.OnDelete(DeleteBehavior.ClientCascade);
-			
 			
 			modelBuilder.Entity<User>(etb =>
 				{
@@ -207,6 +191,7 @@ namespace starsky.foundation.database.Data
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}
 			);
+			
 			modelBuilder.Entity<DataProtectionKey>(etb =>
 			{
 				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
@@ -216,6 +201,17 @@ namespace starsky.foundation.database.Data
 					.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 				}
 			);
+			
+			modelBuilder.Entity<ThumbnailItem>(etb =>
+				{
+					etb.Property(e => e.FileHash).IsRequired().HasMaxLength(190);
+					etb.HasKey(e => e.FileHash);
+					
+					etb.ToTable("Thumbnails");
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+				}
+			);
+			
 		}
 
 		/// <summary>

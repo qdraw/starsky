@@ -77,7 +77,7 @@ namespace starsky.foundation.metathumbnail.Services
 					
 					var results = await contentOfDir
 						.ForEachAsync(async singleSubPath => 
-							await AddMetaThumbnail(singleSubPath, null),
+							await AddMetaThumbnail(singleSubPath, null!),
 							_appSettings.MaxDegreesOfParallelism);
 
 					return results.ToList();

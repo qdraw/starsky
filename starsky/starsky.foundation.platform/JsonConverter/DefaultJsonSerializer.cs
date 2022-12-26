@@ -9,6 +9,7 @@ namespace starsky.foundation.platform.JsonConverter
 			{
 				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
 				PropertyNameCaseInsensitive = true,
+				AllowTrailingCommas = true,
 			};
 	}
 }

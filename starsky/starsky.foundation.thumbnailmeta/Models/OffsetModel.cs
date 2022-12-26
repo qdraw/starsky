@@ -11,7 +11,7 @@ namespace starsky.foundation.metathumbnail.Models
 		/// </summary>
 		public int Count { get; set; }
 		public bool Success { get; set; }
-		public string Reason { get; set; }
-		public byte[] Data { get; set; }
+		public string? Reason { get; set; }
+		public byte[]? Data { get; set; }
 	}
 }

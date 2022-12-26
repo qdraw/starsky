@@ -34,8 +34,9 @@ namespace starsky.foundation.metathumbnail.Services
 		public async Task<bool> WriteAndCropFile(string fileHash, 
 			OffsetModel offsetData, int sourceWidth,
 			int sourceHeight, FileIndexItem.Rotation rotation,
-			string reference = null)
+			string? reference = null)
 		{
+			if ( offsetData.Data == null ) return false;
 			try
 			{
 				using (var thumbnailStream = new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count ))

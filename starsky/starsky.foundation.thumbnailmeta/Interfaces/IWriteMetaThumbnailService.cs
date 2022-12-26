@@ -10,6 +10,6 @@ namespace starsky.foundation.metathumbnail.Interfaces
 		Task<bool> WriteAndCropFile(string fileHash,
 			OffsetModel offsetData, int sourceWidth,
 			int sourceHeight, FileIndexItem.Rotation rotation, 
-			string reference = null);
+			string? reference = null);
 	}
 }
