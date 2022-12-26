@@ -5,5 +5,10 @@ namespace starsky.foundation.metathumbnail.Interfaces;
 
 public interface IMetaUpdateStatusThumbnailService
 {
-	Task UpdateStatusThumbnail(List<(bool, string)> statusList);
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="statusList">fail/pass, string=subPath, string?2= error reason</param>
+	/// <returns></returns>
+	Task UpdateStatusThumbnail(List<(bool, string, string?)> statusList);
 }

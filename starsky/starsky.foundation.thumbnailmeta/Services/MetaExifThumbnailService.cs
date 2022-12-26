@@ -42,8 +42,8 @@ namespace starsky.foundation.metathumbnail.Services
 		///	Run for list that contains subPath and FileHash at once create Meta Thumbnail 
 		/// </summary>
 		/// <param name="subPathsAndHash">(subPath, FileHash)</param>
-		/// <returns>fail/pass, subPath</returns>
-		public async Task<IEnumerable<(bool,string)>> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
+		/// <returns>fail/pass, string=subPath, string?2= error reason</returns>
+		public async Task<IEnumerable<(bool,string,string?)>> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
 		{
 			return await subPathsAndHash
 				.ForEachAsync(async item => 
@@ -56,9 +56,9 @@ namespace starsky.foundation.metathumbnail.Services
 		///  Or File
 		/// </summary>
 		/// <param name="subPath">folder subPath style</param>
-		/// <returns>fail/pass, string=subPath</returns>
+		/// <returns>fail/pass, string=subPath, string?2= error reason</returns>
 		/// <exception cref="FileNotFoundException">if folder/file not exist</exception>
-		public async Task<List<(bool,string)>> AddMetaThumbnail(string subPath)
+		public async Task<List<(bool,string,string?)>> AddMetaThumbnail(string subPath)
 		{
 			var isFolderOrFile = _iStorage.IsFolderOrFile(subPath);
 			// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -66,9 +66,9 @@ namespace starsky.foundation.metathumbnail.Services
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
 					_logger.LogError($"[AddMetaThumbnail] folder or file not found {subPath}");
-					return new List<(bool, string)>
+					return new List<(bool, string, string?)>
 					{
-						(false, "folder or file not found")
+						(false, subPath, "folder or file not found")
 					};
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
 				{
@@ -85,8 +85,8 @@ namespace starsky.foundation.metathumbnail.Services
 				default:
 				{
 					var result = (await  new FileHash(_iStorage).GetHashCodeAsync(subPath));
-					return !result.Value ? new List<(bool, string)>{(false,subPath)} : 
-						new List<(bool, string)>{await AddMetaThumbnail(subPath, result.Key)};
+					return !result.Value ? new List<(bool, string, string?)>{(false,subPath,"hash not found")} : 
+						new List<(bool, string, string?)>{await AddMetaThumbnail(subPath, result.Key)};
 				}
 			}
 		}
@@ -97,7 +97,7 @@ namespace starsky.foundation.metathumbnail.Services
 		/// <param name="subPath">location on disk</param>
 		/// <param name="fileHash">hash</param>
 		/// <returns>fail/pass, subPath</returns>
-		public async Task<(bool,string)> AddMetaThumbnail(string subPath, string fileHash)
+		public async Task<(bool,string, string?)> AddMetaThumbnail(string subPath, string fileHash)
 		{
 			var first50BytesStream = _iStorage.ReadStream(subPath,50);
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(first50BytesStream);
@@ -106,7 +106,7 @@ namespace starsky.foundation.metathumbnail.Services
 			     imageFormat != ExtensionRolesHelper.ImageFormat.tiff )
 			{
 				_logger.LogDebug($"[AddMetaThumbnail] {subPath} is not a jpg or tiff file");
-				return (false,subPath);
+				return (false,subPath, $"{subPath} is not a jpg or tiff file");
 			}
 
 			if ( string.IsNullOrEmpty(fileHash) )
@@ -115,29 +115,29 @@ namespace starsky.foundation.metathumbnail.Services
 				if ( !result.Value )
 				{
 					_logger.LogError("[MetaExifThumbnail] hash failed");
-					return (false,subPath);
+					return (false,subPath,"hash failed");
 				}
 				fileHash = result.Key;
 			}
 
 			if ( !_iStorage.ExistFile(subPath))
 			{
-				return (false,subPath);
+				return (false,subPath, "not found");
 			}
 
 			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta)) )
 			{
-				return (true,subPath);
+				return (true,subPath,"already exist");
 			}
 				
 			var (exifThumbnailDir, sourceWidth, sourceHeight, rotation) = 
 				_offsetDataMetaExifThumbnail.GetExifMetaDirectories(subPath);
 			var offsetData = _offsetDataMetaExifThumbnail.
 				ParseOffsetData(exifThumbnailDir,subPath);
-			if ( !offsetData.Success ) return (false,subPath);
+			if ( !offsetData.Success ) return (false, subPath, offsetData.Reason);
 
 			return (await _writeMetaThumbnailService.WriteAndCropFile(fileHash, offsetData, sourceWidth,
-				sourceHeight, rotation, subPath), subPath);
+				sourceHeight, rotation, subPath), subPath, null);
 		}
 	}
 }

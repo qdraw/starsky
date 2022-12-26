@@ -1,7 +1,7 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
@@ -36,18 +36,21 @@ namespace starsky.feature.import.Helpers
 
 		
 		public delegate Task<FileIndexItem> QueryUpdateDelegate(FileIndexItem fileIndexItem);
+		public delegate Task<List<ThumbnailItem>?> QueryThumbnailUpdateDelegate(ThumbnailSize size,
+			IEnumerable<string> fileHashes, bool? setStatus = null);
 
 		/// <summary>
 		/// Run Transformation on Import to the files in the database && Update fileHash in database
 		/// </summary>
 		/// <param name="queryUpdateDelegate"></param>
+		/// <param name="queryThumbnailUpdateDelegate"></param>
 		/// <param name="fileIndexItem">information</param>
 		/// <param name="colorClassTransformation">change colorClass</param>
 		/// <param name="dateTimeParsedFromFileName">is date time parsed from fileName</param>
 		/// <param name="indexMode">should update database</param>
-		/// <param name="tinyMetaThumbnailSuccess"></param>
 		internal async Task<FileIndexItem> UpdateTransformations(
-			QueryUpdateDelegate queryUpdateDelegate,
+			QueryUpdateDelegate? queryUpdateDelegate,
+			QueryThumbnailUpdateDelegate? queryThumbnailUpdateDelegate,
 			FileIndexItem fileIndexItem,
 			int colorClassTransformation, bool dateTimeParsedFromFileName,
 			bool indexMode)
@@ -73,7 +76,7 @@ namespace starsky.feature.import.Helpers
 				new ReadMeta(_subPathStorage, _appSettings, null, _logger)).UpdateAsync(fileIndexItem, comparedNamesList);
 
 			// Only update database when indexMode is true
-			if ( !indexMode || queryUpdateDelegate == null) return fileIndexItem;
+			if ( !indexMode || queryUpdateDelegate == null || queryThumbnailUpdateDelegate == null) return fileIndexItem;
 			
 			// Hash is changed after transformation
 			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
@@ -81,8 +84,7 @@ namespace starsky.feature.import.Helpers
 			// Check if fastest version is available to show 
 			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.TinyMeta)) )
 			{
-				
-				//fileIndexItem.ThumbnailSizes.Add(ThumbnailSize.TinyMeta);
+				await queryThumbnailUpdateDelegate(ThumbnailSize.TinyMeta, new List<string>{fileIndexItem.FileHash});
 			}
 			
 			await queryUpdateDelegate(fileIndexItem);

@@ -6,51 +6,40 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Interfaces;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.metathumbnail.Services;
 
 [Service(typeof(IMetaUpdateStatusThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailService
 {
-	private readonly IQuery _query;
+	private readonly IThumbnailQuery _thumbnailQuery;
+	private readonly FileHash _fileHashStorage;
 
-	public MetaUpdateStatusThumbnailService(IQuery query)
+	public MetaUpdateStatusThumbnailService(IThumbnailQuery thumbnailQuery, ISelectorStorage selectorStorage)
 	{
-		_query = query;
+		_thumbnailQuery = thumbnailQuery;
+		var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		_fileHashStorage = new FileHash(storage);
 	}
 	
-	public async Task UpdateStatusThumbnail(List<(bool, string)> statusList)
+	public async Task UpdateStatusThumbnail(List<(bool, string, string?)> statusResultsWithSubPaths)
 	{
-		// ok case
-		var itemsSucceed = await _query.GetAllObjectsAsync(statusList.Where(status => 
-			status.Item1).Select(p => p.Item2).ToList());
-		foreach ( var item in itemsSucceed )
+		var statusResultsWithFileHashes = new List<(bool, string, string?)>();
+		foreach ( var (status, subPath, reason) in statusResultsWithSubPaths )
 		{
-			//item.ThumbnailSizes.Remove(ThumbnailSize.ErrorTinyMeta);
-			// item.ThumbnailSizes.Add(ThumbnailSize.TinyMeta);
+			var fileHash = ( await _fileHashStorage.GetHashCodeAsync(subPath)).Key;
+			statusResultsWithFileHashes.Add((status, fileHash,reason));
 		}
 		
-		// Error case
-		var paths = statusList.Where(status =>
-			!status.Item1).Select(p => p.Item2).ToList();
-		var itemsFailed = await _query.GetAllObjectsAsync(paths);
-		foreach ( var item in itemsFailed )
-		{
-			//item.ThumbnailSizes.Remove(ThumbnailSize.TinyMeta);
-			//item.ThumbnailSizes.Add(ThumbnailSize.ErrorTinyMeta);
-		}
+		var okItems = statusResultsWithFileHashes.Where(p => p.Item1).Select(p => p.Item2);
+		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, okItems, true);
 		
-		await _query.UpdateItemAsync(itemsFailed);
-
-		Console.WriteLine();
-		// var items = itemsSucceed.Concat(itemsFailed).ToList();
-		//
-		// foreach ( var chunk in items.Chunk(40) )
-		// {
-		// 	await _query.UpdateItemAsync(chunk.ToList());
-		// 	Console.WriteLine("---1");
-		// }
-		
+		var failItems = statusResultsWithFileHashes.Where(p => !p.Item1);
+		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, failItems.Select(p => p.Item2), 
+			false);
 	}
 
 }

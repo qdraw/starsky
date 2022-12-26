@@ -1,13 +1,57 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.database.Models;
 
 public class ThumbnailItem
 {
-	public ThumbnailItem(string? fileHash = null)
+	public ThumbnailItem()
+	{
+	}
+	
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="fileHash"></param>
+	/// <param name="thumbnailSize"></param>
+	/// <param name="setStatus"></param>
+	public ThumbnailItem(string? fileHash = null, ThumbnailSize? thumbnailSize = null, bool? setStatus = null )
 	{
 		FileHash = fileHash!;
+		Change(thumbnailSize, setStatus);
+	}
+
+	/// <summary>
+	/// Null is to-do
+	/// True is done
+	/// False is Failed
+	/// </summary>
+	/// <param name="thumbnailSize">The size</param>
+	/// <param name="setStatus">Null is to-do |  True is done | False is Failed</param>
+	/// <exception cref="ArgumentOutOfRangeException"></exception>
+	public void Change(ThumbnailSize? thumbnailSize = null, bool? setStatus = null)
+	{
+		switch ( thumbnailSize )
+		{
+			case ThumbnailSize.TinyMeta:
+				TinyMeta = setStatus;
+				break;
+			case ThumbnailSize.Small:
+				Small = setStatus;
+				break;
+			case ThumbnailSize.Large:
+				Large = setStatus;
+				break;
+			case ThumbnailSize.ExtraLarge:
+				ExtraLarge = setStatus;
+				break;
+			case null:
+				break;
+			default:
+				throw new ArgumentOutOfRangeException(nameof(thumbnailSize), thumbnailSize, null);
+		}
 	}
 	
 	[Key]

@@ -15,6 +15,7 @@ using starsky.foundation.database.Import;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.database.Thumbnails;
 using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Interfaces;
 using starsky.foundation.platform.Extensions;
@@ -58,6 +59,7 @@ namespace starsky.feature.import.Services
 		private readonly IMemoryCache? _memoryCache;
 		private readonly IWebLogger _logger;
 		private readonly UpdateImportTransformations _updateImportTransformations;
+		private readonly IThumbnailQuery _thumbnailQuery;
 
 		/// <summary>
 		/// Used when File has no exif date in description
@@ -73,6 +75,7 @@ namespace starsky.feature.import.Services
 			IConsole console,
 			IMetaExifThumbnailService metaExifThumbnailService,
 			IWebLogger logger,
+			IThumbnailQuery thumbnailQuery,
 			IMemoryCache? memoryCache = null)
 		{
 			_importQuery = importQuery;
@@ -90,6 +93,7 @@ namespace starsky.feature.import.Services
             _memoryCache = memoryCache;
             _logger = logger;
             _updateImportTransformations = new UpdateImportTransformations(logger, _exifTool, selectorStorage, appSettings);
+            _thumbnailQuery = thumbnailQuery;
 		}
 
 		/// <summary>
@@ -546,17 +550,23 @@ namespace starsky.feature.import.Services
 
 		    // Run Exiftool to Update for example colorClass
 		    UpdateImportTransformations.QueryUpdateDelegate? updateItemAsync = null;
+		    UpdateImportTransformations.QueryThumbnailUpdateDelegate? updateThumbnailAsync = null;
+		    
 		    if ( importSettings.IndexMode )
 		    {
 			    updateItemAsync = new QueryFactory(
 				    new SetupDatabaseTypes(_appSettings), _query,
 				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
+			    updateThumbnailAsync = (size, fileHashes, setStatus) => new ThumbnailQueryFactory(
+				    new SetupDatabaseTypes(_appSettings),
+				    _thumbnailQuery, _logger).ThumbnailQuery()!.AddThumbnailRangeAsync(size, fileHashes, setStatus);
 		    }
 		    
-		    await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
-
+		    var createMetaResult = await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
+			
+		    
 		    importIndexItem.FileIndexItem = await _updateImportTransformations
-			    .UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
+			    .UpdateTransformations(updateItemAsync, updateThumbnailAsync, importIndexItem.FileIndexItem!, 
 			    importSettings.ColorClass, importIndexItem.DateTimeFromFileName, importSettings.IndexMode);
 
 		    DeleteFileAfter(importSettings, importIndexItem);

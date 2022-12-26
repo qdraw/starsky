@@ -49,9 +49,9 @@ namespace starsky.foundation.metathumbnail.Helpers
 					.ParseSubfolders(getSubPathRelative);
 			}
 
-			var results = await _metaExifThumbnailService.AddMetaThumbnail(subPath);
+			var statusResultsWithSubPaths = await _metaExifThumbnailService.AddMetaThumbnail(subPath);
 			_console.WriteLine("next: run update status");
-			await _statusThumbnailService.UpdateStatusThumbnail(results);
+			await _statusThumbnailService.UpdateStatusThumbnail(statusResultsWithSubPaths);
 			_console.WriteLine("Done!");
 		}
 	}
