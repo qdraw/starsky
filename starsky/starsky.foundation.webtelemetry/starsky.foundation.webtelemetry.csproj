@@ -8,6 +8,7 @@
         <Version>0.5.3</Version>
         <RootNamespace>starsky.foundation.webtelemetry</RootNamespace>
         <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     
     <ItemGroup>

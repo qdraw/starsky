@@ -54,8 +54,8 @@ namespace starsky.foundation.http.Streaming
         }
 
         [SuppressMessage("Usage", "S125:Remove this commented out code")]
-        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, 
-	        ISelectorStorage selectorStorage, string headerFileName = null)
+        public static async Task<List<string>> StreamFile(string? contentType, Stream requestBody, AppSettings appSettings, 
+	        ISelectorStorage selectorStorage, string? headerFileName = null)
         {
             // headerFileName is for uploading on a single file without a multi part form.
 
@@ -100,7 +100,7 @@ namespace starsky.foundation.http.Streaming
 	            var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(
 		            section.ContentDisposition, out var contentDisposition);
 	            
-	            if (hasContentDispositionHeader && MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
+	            if (hasContentDispositionHeader && contentDisposition != null && MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                 {
                     var sourceFileName = contentDisposition.FileName.ToString().Replace("\"", string.Empty);
                     var inputExtension = Path.GetExtension(sourceFileName).Replace("\n",string.Empty);

@@ -186,7 +186,7 @@ namespace starsky.foundation.storage.Services
 					stream.Close();
 
 					var hash = md5.Hash;
-					return Base32.Encode(hash);
+					return Base32.Encode(hash!);
 				}
 			}
 			finally

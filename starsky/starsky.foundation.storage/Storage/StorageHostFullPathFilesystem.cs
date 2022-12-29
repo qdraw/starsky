@@ -14,9 +14,9 @@ namespace starsky.foundation.storage.Storage
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class StorageHostFullPathFilesystem : IStorage
 	{
-		private readonly IWebLogger _logger;
+		private readonly IWebLogger? _logger;
 
-		public StorageHostFullPathFilesystem(IWebLogger logger = null)
+		public StorageHostFullPathFilesystem(IWebLogger? logger = null)
 		{
 			_logger = logger;
 		}

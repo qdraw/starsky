@@ -7,6 +7,7 @@
         <DebugType>Full</DebugType>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
         <Version>0.5.3</Version>
+        <Nullable>disable</Nullable> <!-- todo enable nullable -->
     </PropertyGroup>
     
     <ItemGroup>

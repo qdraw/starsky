@@ -29,17 +29,17 @@ namespace starsky.foundation.injection
             var typesWithAttributes = assemblies
                 .Where(assembly => !assembly.IsDynamic)
                 .SelectMany(GetExportedTypes)
-                .Where(type => !type.IsAbstract && !type.IsGenericTypeDefinition)
-                .Select(type => new { Lifetime = type.GetCustomAttribute<ServiceAttribute>()?.InjectionLifetime, ServiceType = type, 
-	                ImplementationType = type.GetCustomAttribute<ServiceAttribute>()?.ServiceType })
+                .Where(type => type?.IsAbstract == false && !type.IsGenericTypeDefinition)
+                .Select(type => new { Lifetime = type?.GetCustomAttribute<ServiceAttribute>()?.InjectionLifetime, ServiceType = type, 
+	                ImplementationType = type?.GetCustomAttribute<ServiceAttribute>()?.ServiceType })
                 .Where(t => t.Lifetime != null);
 
             foreach (var type in typesWithAttributes)
             {
                 if (type.ImplementationType == null)
-                    serviceCollection.Add(type.ServiceType, type.Lifetime.Value);
+                    serviceCollection.Add(type.ServiceType!, type.Lifetime!.Value);
                 else
-                    serviceCollection.Add(type.ImplementationType, type.ServiceType, type.Lifetime.Value);
+                    serviceCollection.Add(type.ImplementationType, type.ServiceType!, type.Lifetime!.Value);
             }
         }
         
@@ -105,7 +105,7 @@ namespace starsky.foundation.injection
             foreach (var assemblyFilter in assemblyFilters)
             {
                 assemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Where(assembly => 
-	                IsWildcardMatch(assembly.GetName().Name, assemblyFilter)).ToArray());
+	                IsWildcardMatch(assembly.GetName().Name!, assemblyFilter)).ToArray());
             }
 
             assemblies = GetEntryAssemblyReferencedAssemblies(assemblies,
@@ -137,7 +137,7 @@ namespace starsky.foundation.injection
 		        foreach ( var assemblyFilter in assemblyFilters )
 		        {
 			        var isThere = assemblies.Any(p => p.FullName == assemblyName.FullName);
-			        if (IsWildcardMatch(assemblyName.Name, assemblyFilter) && !isThere )
+			        if (IsWildcardMatch(assemblyName.Name!, assemblyFilter) && !isThere )
 			        {
 				        assemblies.Add(AppDomain.CurrentDomain.Load(assemblyName));
 			        }
@@ -162,7 +162,7 @@ namespace starsky.foundation.injection
 		        {
 			        foreach ( var referencedAssembly in assembly.GetReferencedAssemblies() )
 			        {
-				        if ( IsWildcardMatch(referencedAssembly.Name, assemblyFilter) 
+				        if ( IsWildcardMatch(referencedAssembly.Name!, assemblyFilter) 
 				             && assemblies.All(p => p.FullName != referencedAssembly.FullName) )
 				        {
 					        assemblies.Add(Assembly.Load(referencedAssembly));
@@ -173,7 +173,7 @@ namespace starsky.foundation.injection
 	        return assemblies.ToArray();
         }
         
-        private static IEnumerable<Type> GetExportedTypes(Assembly assembly)
+        private static IEnumerable<Type?> GetExportedTypes(Assembly assembly)
         {
             try
             {

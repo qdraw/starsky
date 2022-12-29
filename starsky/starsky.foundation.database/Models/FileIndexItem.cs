@@ -8,10 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.JsonConverter;
 
 namespace starsky.foundation.database.Models
 {

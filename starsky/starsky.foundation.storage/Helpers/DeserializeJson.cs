@@ -20,7 +20,7 @@ namespace starsky.foundation.storage.Helpers
 		/// <typeparam name="T">Typed</typeparam>
 		/// <returns>Data</returns>
 		/// <exception cref="FileNotFoundException">when file is not found</exception>
-		public T Read<T>(string jsonSubPath)
+		public T? Read<T>(string jsonSubPath)
 		{
 			if ( !_iStorage.ExistFile(jsonSubPath) ) throw new FileNotFoundException(jsonSubPath);
 			var stream = _iStorage.ReadStream(jsonSubPath);

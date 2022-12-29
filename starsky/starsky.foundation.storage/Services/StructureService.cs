@@ -47,7 +47,7 @@ namespace starsky.foundation.storage.Services
 		/// <param name="fileNameBase">include fileName if requested in structure</param>
 		/// <param name="extensionWithoutDot">include parentFolder if requested in structure (not recommend)</param>
 		/// <returns>sub Path including folders</returns>
-		public string ParseSubfolders(int? getSubPathRelative, string fileNameBase = "",
+		public string? ParseSubfolders(int? getSubPathRelative, string fileNameBase = "",
 			string extensionWithoutDot = "")
 		{
 			if ( getSubPathRelative == null ) return null;

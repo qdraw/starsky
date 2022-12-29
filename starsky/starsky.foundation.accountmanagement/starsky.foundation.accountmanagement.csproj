@@ -6,6 +6,7 @@
         <ProjectGuid>{842d2080-b847-43c3-8535-e5065970dd47}</ProjectGuid>
         <RootNamespace>starsky.foundation.accountmanagement</RootNamespace>
         <Version>0.5.3</Version>
+        <Nullable>disable</Nullable><!-- todo enable -->
     </PropertyGroup>
     
     <ItemGroup>

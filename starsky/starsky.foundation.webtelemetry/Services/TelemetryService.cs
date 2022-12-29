@@ -10,9 +10,9 @@ namespace starsky.foundation.webtelemetry.Services
 	[Service(typeof(ITelemetryService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class TelemetryService : ITelemetryService
 	{
-		private readonly TelemetryClient _telemetry;
+		private readonly TelemetryClient? _telemetry;
 
-		public TelemetryService(AppSettings appSettings)
+		public TelemetryService(AppSettings? appSettings)
 		{
 			if (appSettings == null ||  string.IsNullOrEmpty(appSettings.ApplicationInsightsConnectionString) ) return;
 			_telemetry = new TelemetryClient(TelemetryConfiguration.CreateDefault())

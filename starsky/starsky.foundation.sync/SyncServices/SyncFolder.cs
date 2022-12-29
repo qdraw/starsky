@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -288,7 +287,7 @@ namespace starsky.foundation.sync.SyncServices
 				.ForEachAsync(async item =>
 				{
 					// assume only the input of directories
-					if ( _subPathStorage.ExistFolder(item.FilePath) )
+					if ( _subPathStorage.ExistFolder(item.FilePath!) )
 					{
 						return null;
 					}
