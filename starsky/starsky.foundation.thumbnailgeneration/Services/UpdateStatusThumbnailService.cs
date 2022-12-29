@@ -22,9 +22,9 @@ public class UpdateStatusThumbnailService : IUpdateStatusThumbnailService
 		_fileHashStorage = new FileHash(storage);
 	}
 	
-	public async Task UpdateStatusThumbnail(List<string> statusResultsWithSubPaths)
+	public Task UpdateStatusThumbnail(List<string> statusResultsWithSubPaths)
 	{
-		
+		return Task.CompletedTask;
 		// var statusResultsWithFileHashes = new List<(bool, string, string?)>();
 		// foreach ( var (status, subPath, reason) in statusResultsWithSubPaths )
 		// {

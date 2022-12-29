@@ -9,6 +9,7 @@ public class ThumbnailItem
 {
 	public ThumbnailItem()
 	{
+		FileHash = string.Empty;
 	}
 	
 	/// <summary>

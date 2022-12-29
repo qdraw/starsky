@@ -119,7 +119,7 @@ namespace starsky.Controllers
 				fileIndexResultsList[i].FileIndexItem!.ParentDirectory =  parentDirectory;
 				fileIndexResultsList[i].FilePath = subPath;
 				// Do sync action before writing it down
-				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem);
+				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem!);
 				
 				var writeStatus =
 					await _iStorage.WriteStreamAsync(tempFileStream, subPath + ".tmp");
@@ -175,7 +175,7 @@ namespace starsky.Controllers
 		/// <returns>updated item</returns>
 		private async Task<FileIndexItem> SyncItem(FileIndexItem metaDataItem)
 		{
-			var itemFromDatabase = await _query.GetObjectByFilePathAsync(metaDataItem.FilePath);
+			var itemFromDatabase = await _query.GetObjectByFilePathAsync(metaDataItem.FilePath!);
 			if ( itemFromDatabase == null )
 			{
 				AddOrRemoveXmpSidecarFileToDatabase(metaDataItem);
@@ -291,7 +291,7 @@ namespace starsky.Controllers
 			return Json(importedList);
 		}
 
-		internal string GetParentDirectoryFromRequestHeader()
+		internal string? GetParentDirectoryFromRequestHeader()
 		{
 			var to = Request.Headers["to"].ToString();
 			if ( to == "/" ) return "/";
