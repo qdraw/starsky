@@ -76,7 +76,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{CreateAnGpx.Bytes});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), _appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, _appSettings),_query,_console, new FakeIMetaExifThumbnailService(),  new FakeIWebLogger(),new FakeMemoryCache());
+				new FakeExifTool(storage, _appSettings),_query,_console, new FakeIMetaExifThumbnailService(),  new FakeIWebLogger(),new FakeIThumbnailQuery(), new FakeMemoryCache());
 			var expectedFilePath = ImportTest.GetExpectedFilePath(storage, _appSettings, "/test.gpx");
 
 			var result = await importService.Importer(new List<string> {"/test.gpx"},
@@ -96,7 +96,7 @@ namespace starskytest.starsky.feature.import.Services
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), 
 				_appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, _appSettings),_query, _console, 
-				new FakeIMetaExifThumbnailService(),  new FakeIWebLogger(),new FakeMemoryCache());
+				new FakeIMetaExifThumbnailService(),  new FakeIWebLogger(),new FakeIThumbnailQuery(),new FakeMemoryCache());
 			
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel{
@@ -125,7 +125,7 @@ namespace starskytest.starsky.feature.import.Services
 				_appSettings, _importQuery,
 				new FakeExifTool(_iStorageFake, _appSettings),_query, 
 				_console, new FakeIMetaExifThumbnailService(), 
-				new FakeIWebLogger());
+				new FakeIWebLogger(),new FakeIThumbnailQuery());
 			
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel{
@@ -154,7 +154,7 @@ namespace starskytest.starsky.feature.import.Services
 				_appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, _appSettings),
 				_query, _console, new FakeIMetaExifThumbnailService(), 
-				new FakeIWebLogger());
+				new FakeIWebLogger(), new FakeIThumbnailQuery());
 
 			var expectedFilePath = ImportTest.GetExpectedFilePath(_iStorageFake, _appSettings, "/test.jpg");
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
@@ -162,7 +162,8 @@ namespace starskytest.starsky.feature.import.Services
 					ColorClass = 5
 				});
 			
-			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
+			Assert.IsNotNull(result.FirstOrDefault());
+			Assert.AreEqual(expectedFilePath,result.FirstOrDefault()!.FilePath);
 			var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
 			Assert.IsNotNull(queryResult);
 
@@ -180,7 +181,7 @@ namespace starskytest.starsky.feature.import.Services
 				_appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, _appSettings),
 				_query,_console, new FakeIMetaExifThumbnailService(), 
-				new FakeIWebLogger());
+				new FakeIWebLogger(), new FakeIThumbnailQuery());
 
 			var expectedFilePath = ImportTest.GetExpectedFilePath(_iStorageFake, _appSettings, "/test.jpg");
 			var result = await importService.Importer(new List<string> {"/test.jpg"},

@@ -50,7 +50,6 @@ namespace starsky.feature.import.Helpers
 		/// <param name="indexMode">should update database</param>
 		internal async Task<FileIndexItem> UpdateTransformations(
 			QueryUpdateDelegate? queryUpdateDelegate,
-			QueryThumbnailUpdateDelegate? queryThumbnailUpdateDelegate,
 			FileIndexItem fileIndexItem,
 			int colorClassTransformation, bool dateTimeParsedFromFileName,
 			bool indexMode)
@@ -76,17 +75,11 @@ namespace starsky.feature.import.Helpers
 				new ReadMeta(_subPathStorage, _appSettings, null, _logger)).UpdateAsync(fileIndexItem, comparedNamesList);
 
 			// Only update database when indexMode is true
-			if ( !indexMode || queryUpdateDelegate == null || queryThumbnailUpdateDelegate == null) return fileIndexItem;
+			if ( !indexMode || queryUpdateDelegate == null) return fileIndexItem;
 			
 			// Hash is changed after transformation
 			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
-			
-			// Check if fastest version is available to show 
-			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.TinyMeta)) )
-			{
-				await queryThumbnailUpdateDelegate(ThumbnailSize.TinyMeta, new List<string>{fileIndexItem.FileHash});
-			}
-			
+
 			await queryUpdateDelegate(fileIndexItem);
 
 			return fileIndexItem.Clone();

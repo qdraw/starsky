@@ -71,7 +71,7 @@ namespace starsky.Controllers
 				_logger.LogInformation($"[ThumbnailGenerationController] start {subPath}");
 				var thumbnailService = new Thumbnail(subPathStorage, 
 					thumbnailStorage, _logger);
-				var thumbs = await thumbnailService.CreateThumb(subPath);
+				var thumbs = await thumbnailService.CreateThumbAsync(subPath);
 				var getAllFilesAsync = await _query.GetAllFilesAsync(subPath);
 
 				var result = new List<FileIndexItem>();

@@ -41,10 +41,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		///  Or File
 		/// </summary>
 		/// <param name="subPath">folder subPath style</param>
-		/// <param name="recursive">recursive</param>
 		/// <returns>fail/pass</returns>
 		/// <exception cref="FileNotFoundException">if folder/file not exist</exception>
-		public async Task<List<(string, bool)>> CreateThumb(string subPath, bool recursive = true)
+		public async Task<List<(string, bool)>> CreateThumbAsync(string subPath)
 		{
 			var isFolderOrFile = _iStorage.IsFolderOrFile(subPath);
 			var result = new List<(string, bool)>();
@@ -59,14 +58,14 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 					foreach ( var singleSubPath in contentOfDir )
 					{
 						var hashResult =  await new FileHash(_iStorage).GetHashCodeAsync(singleSubPath);
-						if ( hashResult.Value ) result.Add((singleSubPath, await CreateThumb(singleSubPath, hashResult.Key )));
+						if ( hashResult.Value ) result.Add((singleSubPath, await CreateThumbAsync(singleSubPath, hashResult.Key )));
 					}
 					return result;
 				}
 				default:
 				{
 					var hashResult =  await new FileHash(_iStorage).GetHashCodeAsync(subPath);
-					if ( hashResult.Value ) result.Add((subPath, await CreateThumb(subPath, hashResult.Key)));
+					if ( hashResult.Value ) result.Add((subPath, await CreateThumbAsync(subPath, hashResult.Key)));
 					return result;
 				}
 			}
@@ -79,7 +78,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="fileHash">the base32 hash of the subPath file</param>
 		/// <param name="skipExtraLarge">skip the extra large variant</param>
 		/// <returns>true, if successful</returns>
-		public Task<bool> CreateThumb(string subPath, string fileHash, bool skipExtraLarge = false)
+		public Task<bool> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false)
 		{
 			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
 
@@ -132,7 +131,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 					await WriteErrorMessageToBlockLog(subPath, resizeMessage);
 					return false;
 				}
-				Console.Write(".");
+				_logger.LogInformation(".");
 			}
 
 			var thumbnailFromThumbnailUpdateList = new List<ThumbnailSize>();
@@ -160,7 +159,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 						ThumbnailNameHelper.Combine(fileHash, size)),
 				10);
 
-			Console.Write(".");
+			_logger.LogInformation(".");
+			
 			return thumbnailFromThumbnailUpdateList.Any();
 		}
 
@@ -195,8 +195,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return true;
 		}
 
-		public async Task<MemoryStream> ResizeThumbnailFromThumbnailImage(string fileHash, 
-			int width, string thumbnailOutputHash = null,
+		public async Task<MemoryStream?> ResizeThumbnailFromThumbnailImage(string fileHash, 
+			int width, string? thumbnailOutputHash = null,
 			bool removeExif = false,
 			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
 		{
@@ -232,8 +232,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		}
 		
 		
-		public async Task<(MemoryStream, bool, string)> ResizeThumbnailFromSourceImage(string subPath, 
-			 int width, string thumbnailOutputHash = null,
+		public async Task<(MemoryStream?, bool, string)> ResizeThumbnailFromSourceImage(string subPath, 
+			 int width, string? thumbnailOutputHash = null,
 			bool removeExif = false,
 			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
 		{

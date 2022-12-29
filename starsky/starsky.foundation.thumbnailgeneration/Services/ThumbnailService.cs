@@ -27,10 +27,10 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// </summary>
 		/// <param name="subPath">path on disk (subPath) based</param>
 		/// <returns>true if success</returns>
-		public Task<List<(string, bool)>> CreateThumb(string subPath)
+		public Task<List<(string, bool)>> CreateThumbAsync(string subPath)
 		{
 			// Async method:
-			return _thumbnail.CreateThumb(subPath);
+			return _thumbnail.CreateThumbAsync(subPath);
 		}
 
 		/// <summary>
@@ -39,10 +39,10 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// <param name="subPath">path on disk (subPath) based</param>
 		/// <param name="fileHash">output name</param>
 		/// <returns>true if success</returns>
-		public Task<bool> CreateThumb(string subPath, string fileHash)
+		public Task<bool> CreateThumbAsync(string subPath, string fileHash)
 		{
 			// Async method:
-			return _thumbnail.CreateThumb(subPath, fileHash);
+			return _thumbnail.CreateThumbAsync(subPath, fileHash);
 		}
 	}
 }

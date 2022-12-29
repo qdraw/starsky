@@ -18,6 +18,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -495,14 +496,14 @@ namespace starsky.feature.import.Services
 			return importIndexItemsList;
 		}
 
-		internal async Task<IEnumerable<(bool, string)>> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
+		internal async Task<IEnumerable<(bool, string, string?)>> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
 			importIndexItemsList, ImportSettingsModel importSettings)
 		{
-			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return new List<(bool, string)>();
+			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return new List<(bool, string, string?)>();
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
 				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).Cast<(string,string)>().ToList();
-			if ( !items.Any() ) return new List<(bool, string)>();
+			if ( !items.Any() ) return new List<(bool, string, string?)>();
 			return await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}
 
@@ -550,29 +551,41 @@ namespace starsky.feature.import.Services
 
 		    // Run Exiftool to Update for example colorClass
 		    UpdateImportTransformations.QueryUpdateDelegate? updateItemAsync = null;
-		    UpdateImportTransformations.QueryThumbnailUpdateDelegate? updateThumbnailAsync = null;
+		    UpdateImportTransformations.QueryThumbnailUpdateDelegate? queryThumbnailUpdateDelegate = null;
 		    
 		    if ( importSettings.IndexMode )
 		    {
 			    updateItemAsync = new QueryFactory(
 				    new SetupDatabaseTypes(_appSettings), _query,
 				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
-			    updateThumbnailAsync = (size, fileHashes, setStatus) => new ThumbnailQueryFactory(
+			    queryThumbnailUpdateDelegate = (size, fileHashes, setStatus) => new ThumbnailQueryFactory(
 				    new SetupDatabaseTypes(_appSettings),
 				    _thumbnailQuery, _logger).ThumbnailQuery()!.AddThumbnailRangeAsync(size, fileHashes, setStatus);
 		    }
 		    
-		    var createMetaResult = await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
-			
+		    await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
 		    
+		    // next: and save the database item
 		    importIndexItem.FileIndexItem = await _updateImportTransformations
-			    .UpdateTransformations(updateItemAsync, updateThumbnailAsync, importIndexItem.FileIndexItem!, 
+			    .UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem!, 
 			    importSettings.ColorClass, importIndexItem.DateTimeFromFileName, importSettings.IndexMode);
+		    
+		    await UpdateCreateMetaThumbnail(queryThumbnailUpdateDelegate, importIndexItem.FileIndexItem?.FileHash, importSettings.IndexMode);
 
 		    DeleteFileAfter(importSettings, importIndexItem);
 		    
             if ( _appSettings.IsVerbose() ) _console.Write("+");
             return importIndexItem;
+		}
+
+		private async Task UpdateCreateMetaThumbnail( UpdateImportTransformations.QueryThumbnailUpdateDelegate? queryThumbnailUpdateDelegate, 
+			string? fileHash, bool indexMode)
+		{
+			if ( fileHash == null ||  _appSettings.MetaThumbnailOnImport == false || !indexMode || queryThumbnailUpdateDelegate == null) return;
+			// Check if fastest version is available to show 
+			var setStatus = _thumbnailStorage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
+			await queryThumbnailUpdateDelegate(ThumbnailSize.TinyMeta, new List<string>{fileHash}, setStatus);
 		}
 
 		/// <summary>

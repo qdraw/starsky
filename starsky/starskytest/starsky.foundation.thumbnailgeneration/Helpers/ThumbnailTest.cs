@@ -32,7 +32,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task CreateThumbTest_FileHash_FileHashNull()
 		{
-			await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger()).CreateThumb(
+			await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger()).CreateThumbAsync(
 				"/notfound.jpg", null);
 			// expect ArgumentNullException
 		}
@@ -40,7 +40,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[TestMethod]
 		public async Task CreateThumbTest_FileHash_ImageSubPathNotFound()
 		{
-			var isCreated = await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger()).CreateThumb(
+			var isCreated = await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger()).CreateThumbAsync(
 				"/notfound.jpg", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
@@ -48,7 +48,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[TestMethod]
 		public async Task CreateThumbTest_FileHash_WrongImageType()
 		{
-			var isCreated =  await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger()).CreateThumb(
+			var isCreated =  await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger()).CreateThumbAsync(
 				"/notfound.dng", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
@@ -65,7 +65,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				ThumbnailNameHelper.Combine(_fakeIStorageImageSubPath, ThumbnailSize.Small));
 			
 			var isCreated = await new Thumbnail(storage, storage, 
-				new FakeIWebLogger()).CreateThumb( _fakeIStorageImageSubPath, 
+				new FakeIWebLogger()).CreateThumbAsync( _fakeIStorageImageSubPath, 
 				_fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
@@ -81,7 +81,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			
 			// skip xtra large
 			var isCreated = await new Thumbnail(storage, 
-				storage, new FakeIWebLogger()).CreateThumb(
+				storage, new FakeIWebLogger()).CreateThumbAsync(
 				_fakeIStorageImageSubPath, fileHash, true);
 			Assert.AreEqual(true,isCreated);
 
@@ -102,7 +102,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var fileHash = "test_hash";
 			// include xtra large
 			var isCreated = await new Thumbnail(storage, 
-				storage, new FakeIWebLogger()).CreateThumb(
+				storage, new FakeIWebLogger()).CreateThumbAsync(
 				_fakeIStorageImageSubPath, fileHash);
 			Assert.AreEqual(true,isCreated);
 
@@ -132,7 +132,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small));
 			
 			var isCreated = await new Thumbnail(storage, 
-				storage, new FakeIWebLogger()).CreateThumb(
+				storage, new FakeIWebLogger()).CreateThumbAsync(
 				_fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated[0].Item2);
 		}

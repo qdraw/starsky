@@ -112,7 +112,7 @@ namespace starsky.Controllers
             if (!data.Small || !data.Large || !data.ExtraLarge)
             {
                 await new Thumbnail(_iStorage,
-	                _thumbnailStorage,_logger).CreateThumb(fileIndexItem.FilePath, 
+	                _thumbnailStorage,_logger).CreateThumbAsync(fileIndexItem.FilePath, 
 	                fileIndexItem.FileHash);
                 
                 if ( !_thumbnailStorage.ExistFile(

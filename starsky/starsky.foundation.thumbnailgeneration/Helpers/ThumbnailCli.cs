@@ -65,12 +65,12 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 					var fileHash = (await new FileHash(storage).GetHashCodeAsync(subPath));
 					if ( fileHash.Value ) 
 					{
-						await _thumbnailService.CreateThumb(subPath, fileHash.Key); // <= this uses subPath
+						await _thumbnailService.CreateThumbAsync(subPath, fileHash.Key); // <= this uses subPath
 					}
 				}
 				else
 				{
-					await _thumbnailService.CreateThumb(subPath);
+					await _thumbnailService.CreateThumbAsync(subPath);
 				}
 				_console.WriteLine("Thumbnail Done!");
 			}

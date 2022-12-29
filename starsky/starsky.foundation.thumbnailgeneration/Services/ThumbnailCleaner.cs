@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -12,7 +11,6 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Interfaces;
@@ -66,8 +64,8 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		{
 			var fileIndexItems = await _query.GetObjectsByFileHashAsync(itemsInChunk.ToList());
 			foreach ( var resultFileHash in fileIndexItems.Where(result => 
-				result.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex
-				).Select(p => p.FileHash))
+				result is { Status: FileIndexItem.ExifStatus.NotFoundNotInIndex, FileHash: { } }
+				).Select(p => p.FileHash).Cast<string>())
 			{
 				var fileHashesToDelete = new List<string>
 				{
@@ -80,6 +78,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 					ThumbnailNameHelper.Combine(resultFileHash,
 						ThumbnailSize.Large)
 				};
+				
 				foreach ( var fileHash in fileHashesToDelete )
 				{
 					_thumbnailStorage.FileDelete(fileHash);

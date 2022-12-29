@@ -144,7 +144,7 @@ namespace starsky.feature.export.Services
 						ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.Large, true));
 
 					await new Thumbnail(_iStorage, _thumbnailStorage, _logger)
-						.CreateThumb(item.FilePath, item.FileHash, true);
+						.CreateThumbAsync(item.FilePath, item.FileHash, true);
 					
 					filePaths.Add(sourceThumb);
 					continue;

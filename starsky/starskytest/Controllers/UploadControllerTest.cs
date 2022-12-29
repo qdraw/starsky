@@ -78,7 +78,7 @@ namespace starskytest.Controllers
 
 			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper(), 
-				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), _memoryCache);
+				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(), new FakeIThumbnailQuery(),  _memoryCache);
 
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();

@@ -109,6 +109,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IQuery, FakeIQuery>();
 			services.AddSingleton<IImport, FakeIImport>();
 			services.AddSingleton<IConsole, FakeConsoleWrapper>();
+			services.AddSingleton<IThumbnailQuery, FakeIThumbnailQuery>();
 			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
 			services.AddMemoryCache();
 
@@ -138,6 +139,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IQuery, FakeIQuery>();
 			services.AddSingleton<IImport, FakeIImport>();
 			services.AddSingleton<IConsole, FakeConsoleWrapper>();
+			services.AddSingleton<IThumbnailQuery, FakeIThumbnailQuery>();
 			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
 			services.AddMemoryCache();
 

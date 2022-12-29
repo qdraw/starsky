@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,5 +40,4 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, failItems.Select(p => p.Item2), 
 			false);
 	}
-
 }
