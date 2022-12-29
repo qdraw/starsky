@@ -36,6 +36,7 @@ using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Processor;
 using starsky.Helpers;
+using starsky.Middleware;
 
 namespace starsky
 {
@@ -240,6 +241,8 @@ namespace starsky
 	        {
 		        app.UseHttpsRedirection();
 	        }
+
+	        app.UseMiddleware<TestMiddleware>();
 
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase( PathHelper.PrefixDbSlash("starsky") );

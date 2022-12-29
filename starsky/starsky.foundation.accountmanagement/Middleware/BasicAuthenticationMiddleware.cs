@@ -22,20 +22,31 @@ namespace starsky.foundation.accountmanagement.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            if (!context.User.Identity.IsAuthenticated)
-            {
-                var basicAuthenticationHeader = GetBasicAuthenticationHeaderValue(context);
-                if (basicAuthenticationHeader.IsValidBasicAuthenticationHeaderValue)
-                {
-	                
-	                var userManager = (IUserManager) context.RequestServices.GetService(typeof(IUserManager));
-		                
-                    var authenticationManager = new BasicAuthenticationSignInManager(
-                        context, basicAuthenticationHeader, userManager);
-                    await authenticationManager.TrySignInUser();
-                }
-            }
+	        await Authenticate(context);
             await _next.Invoke(context);
+        }
+
+        public static async Task<bool> Authenticate(HttpContext context)
+        {
+	        if ( context.User.Identity?.IsAuthenticated != false )
+	        {
+		        return false;
+	        }
+	        var basicAuthenticationHeader = GetBasicAuthenticationHeaderValue(context);
+	        
+	        if ( !basicAuthenticationHeader
+		            .IsValidBasicAuthenticationHeaderValue )
+	        {
+		        return false;
+	        }
+	        
+	        var userManager = (IUserManager) context.RequestServices.GetService(typeof(IUserManager));
+		                
+	        var authenticationManager = new BasicAuthenticationSignInManager(
+		        context, basicAuthenticationHeader, userManager);
+	        await authenticationManager.TrySignInUser();
+
+	        return context.User.Identity?.IsAuthenticated == true;
         }
 
         private static BasicAuthenticationHeaderValue GetBasicAuthenticationHeaderValue(HttpContext context)
