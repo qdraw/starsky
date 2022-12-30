@@ -137,7 +137,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			}
 
 			// First create from the source file a thumbnail image (large or extra large)
-			var thumbnailToSourceSize = ThumbnailToSourceSize(fileHash, skipExtraLarge);
+			var thumbnailToSourceSize = ThumbnailToSourceSize(skipExtraLarge);
 			var largeThumbnailHash = LargeThumbnailHash(fileHash, thumbnailToSourceSize);
 			var thumbnailFromThumbnailUpdateList = ListThumbnailToBeCreated(fileHash);
 			await CreateLargestImageFromSource(resultModel, fileHash, largeThumbnailHash, subPath, thumbnailToSourceSize);
@@ -175,7 +175,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return results.Select(p =>p.Item2);
 		}
 
-		private static ThumbnailSize ThumbnailToSourceSize(string fileHash, bool skipExtraLarge)
+		private static ThumbnailSize ThumbnailToSourceSize(bool skipExtraLarge)
 		{
 			var thumbnailToSourceSize = ThumbnailSize.ExtraLarge;
 			if ( skipExtraLarge ) thumbnailToSourceSize = ThumbnailSize.Large;

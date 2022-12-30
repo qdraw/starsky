@@ -103,6 +103,7 @@ namespace starsky.Controllers
 				if ( item.Tags?.Contains("!delete!") == true ) continue;
 
 				item.SetLastEdited();
+				item.LastChanged = new List<string> {"LastEdited", "FileHash"};
 				result.Add(item);
 			}
 

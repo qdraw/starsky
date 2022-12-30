@@ -49,6 +49,7 @@ namespace starsky.foundation.metathumbnail.Helpers
 					.ParseSubfolders(getSubPathRelative);
 			}
 
+			if ( subPath == null )return;
 			var statusResultsWithSubPaths = await _metaExifThumbnailService.AddMetaThumbnail(subPath);
 			_console.WriteLine("next: run update status");
 			await _statusThumbnailService.UpdateStatusThumbnail(statusResultsWithSubPaths);

@@ -148,9 +148,9 @@ namespace starsky.feature.import.Services
 				parentFolders[parentFolders.IndexOf(item2)].Item2.Add(itemSourceFullFilePath);
 			}
 
-			foreach ( var parentFolder in parentFolders )
+			foreach ( var parentFolder in parentFolders.Where(p => p.Item1 != null) )
 			{
-				var fileStorageInfo = _filesystemStorage.Info(parentFolder.Item1);
+				var fileStorageInfo = _filesystemStorage.Info(parentFolder.Item1!);
 				if ( fileStorageInfo.IsFolderOrFile !=
 				     FolderOrFileModel.FolderOrFileTypeList.Folder ||
 				     fileStorageInfo.IsFileSystemReadOnly != true ) continue;
@@ -183,7 +183,7 @@ namespace starsky.feature.import.Services
 			foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(p =>
 				p.Status == ImportStatus.Ok).Select(p => p.FileIndexItem?.ParentDirectory) )
 			{
-				if ( directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory!) )
+				if ( importIndexItemFileIndexItemParentDirectory == null || directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory) )
 					continue;
 				
 				var parentDirectoryList =
@@ -459,11 +459,11 @@ namespace starsky.feature.import.Services
 			var structureService = new StructureService(_subPathStorage, importIndexItem.Structure);
 			
 			importIndexItem.FileIndexItem!.ParentDirectory = structureService.ParseSubfolders(
-				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
+				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName!,
 				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
 			
 			importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
-				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
+				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName!,
 				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
 			importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
 			
@@ -537,7 +537,7 @@ namespace starsky.feature.import.Services
 			if ( _appSettings.IsVerbose() ) _logger.LogInformation("[Import] Next Action = Copy" +
 			                        $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
 			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
-				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath);
+				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath!);
 			
 			// Copy the sidecar file
 		    if ( xmpExistForThisFileType)

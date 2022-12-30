@@ -1,14 +1,18 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.database.Models;
 
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public class ThumbnailItem
 {
 	public ThumbnailItem()
 	{
+		// used be EF Core
 		FileHash = string.Empty;
 	}
 	
@@ -18,9 +22,9 @@ public class ThumbnailItem
 	/// <param name="fileHash"></param>
 	/// <param name="thumbnailSize"></param>
 	/// <param name="setStatus"></param>
-	public ThumbnailItem(string? fileHash = null, ThumbnailSize? thumbnailSize = null, bool? setStatus = null )
+	public ThumbnailItem(string fileHash, ThumbnailSize? thumbnailSize = null, bool? setStatus = null )
 	{
-		FileHash = fileHash!;
+		FileHash = fileHash;
 		Change(thumbnailSize, setStatus);
 	}
 
@@ -64,22 +68,22 @@ public class ThumbnailItem
 	/// <summary>
 	/// 150px, null is to-do, false is error, true, is done
 	/// </summary>
-	public bool? TinyMeta { get; set; } = null;
+	public bool? TinyMeta { get; set; }
 
 	/// <summary>
 	/// 300px, null is to-do, false is error, true, is done
 	/// </summary>
-	public bool? Small { get; set; } = null;
+	public bool? Small { get; set; }
 
 	/// <summary>
 	/// 1000px, null is to-do, false is error, true, is done
 	/// </summary>
-	public bool? Large { get; set; } = null;
+	public bool? Large { get; set; }
 
 	/// <summary>
 	/// 2000px, null is to-do, false is error, true, is done
 	/// </summary>
-	public bool? ExtraLarge { get; set; } = null;
+	public bool? ExtraLarge { get; set; }
 
 	
 	/// <summary>

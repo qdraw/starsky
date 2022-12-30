@@ -8,7 +8,7 @@ public interface IMetaUpdateStatusThumbnailService
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <param name="statusList">fail/pass, string=subPath, string?2= error reason</param>
+	/// <param name="statusResultsWithSubPaths">fail/pass, string=subPath, string?2= error reason</param>
 	/// <returns></returns>
-	Task UpdateStatusThumbnail(List<(bool, string, string?)> statusList);
+	Task UpdateStatusThumbnail(List<(bool, string, string?)> statusResultsWithSubPaths);
 }

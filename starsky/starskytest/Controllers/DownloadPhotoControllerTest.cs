@@ -223,13 +223,13 @@ namespace starskytest.Controllers
 
 			// Run once
 			var actionResult1 = await controller.DownloadPhoto(fileIndexItem.FilePath) as FileStreamResult;
-			actionResult1.FileStream.DisposeAsync();
+			await actionResult1!.FileStream.DisposeAsync();
 
 			// Run twice
 			var actionResult2 =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult2);
 
-			actionResult2.FileStream.DisposeAsync();
+			await actionResult2!.FileStream.DisposeAsync();
 		}
 		
 		[TestMethod]

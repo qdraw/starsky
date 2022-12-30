@@ -78,7 +78,7 @@ namespace starsky.feature.import.Helpers
 			if ( !indexMode || queryUpdateDelegate == null) return fileIndexItem;
 			
 			// Hash is changed after transformation
-			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
+			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath!)).Key;
 
 			await queryUpdateDelegate(fileIndexItem);
 

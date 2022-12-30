@@ -86,7 +86,7 @@ namespace starsky.Controllers
 	            return NotFound("not in index " + f);
             }
 
-            if (!_iStorage.ExistFile(fileIndexItem.FilePath))
+            if (!_iStorage.ExistFile(fileIndexItem.FilePath!))
                 return NotFound($"source image missing {fileIndexItem.FilePath}" );
 
             // Return full image
@@ -105,7 +105,7 @@ namespace starsky.Controllers
             
             var data = new ThumbnailSizesExistStatusModel{ 
 	            Small = _thumbnailStorage.ExistFile(
-		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Small)),
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,ThumbnailSize.Small)),
 	            Large = _thumbnailStorage.ExistFile(
 		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Large)),
 	            ExtraLarge = _thumbnailStorage.ExistFile(
@@ -114,6 +114,7 @@ namespace starsky.Controllers
 
             if (!data.Small || !data.Large || !data.ExtraLarge)
             {
+	            _logger.LogDebug("Thumbnail generation started");
                 await _thumbnailService.CreateThumbAsync(fileIndexItem.FilePath, 
 	                fileIndexItem.FileHash);
                 
