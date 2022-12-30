@@ -26,7 +26,7 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 		// should bind to the context
 	}
 	
-	public Task<List<ThumbnailItem>> AddThumbnailRangeAsync(ThumbnailSize size, IEnumerable<string> fileHashes,
+	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(ThumbnailSize size, IEnumerable<string> fileHashes,
 		bool? setStatus = null)
 	{
 		foreach ( var hash in fileHashes )
@@ -41,7 +41,7 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 			_content[index].Change(size, setStatus);
 		}
 		
-		return Task.FromResult(_content);
+		return Task.FromResult(_content)!;
 	}
 
 	public Task<List<ThumbnailItem>> Get(string? fileHash = null)
