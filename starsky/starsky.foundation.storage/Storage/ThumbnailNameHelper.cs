@@ -94,5 +94,12 @@ namespace starsky.foundation.storage.Storage
 					throw new ArgumentOutOfRangeException(nameof(size), size, null);
 			}
 		}
+
+		public static string RemoveSuffix(string? thumbnailOutputHash)
+		{
+			return thumbnailOutputHash == null ? string.Empty : 
+				Regex.Replace(thumbnailOutputHash, "@\\d+", 
+					string.Empty, RegexOptions.None, TimeSpan.FromMilliseconds(100));
+		}
 	}
 }

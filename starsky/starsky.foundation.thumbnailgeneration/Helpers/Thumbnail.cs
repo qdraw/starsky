@@ -163,7 +163,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			var results = await thumbnailFromThumbnailUpdateList.ForEachAsync(
 				async (size)
 					=> await ResizeThumbnailFromThumbnailImage(
-						largeThumbnailHash,
+						largeThumbnailHash, // source location
 						ThumbnailNameHelper.GetSize(size),
 						subPath, // used for reference only
 						ThumbnailNameHelper.Combine(fileHash, size)),
@@ -274,16 +274,16 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		}
 
 		/// <summary>
-		/// 
+		/// Resize image from other thumbnail
 		/// </summary>
-		/// <param name="fileHash"></param>
-		/// <param name="width"></param>
-		/// <param name="thumbnailOutputHash"></param>
-		/// <param name="removeExif"></param>
-		/// <param name="imageFormat"></param>
+		/// <param name="fileHash">source location</param>
+		/// <param name="width">width in pixels</param>
+		/// <param name="thumbnailOutputHash">name of output file</param>
+		/// <param name="removeExif">remove meta data</param>
+		/// <param name="imageFormat">jpg, or png</param>
 		/// <param name="subPathReference">for reference only</param>
 		/// <returns>(stream, fileHash, and is ok)</returns>
-		public async Task<(MemoryStream?,GenerationResultModel)> ResizeThumbnailFromThumbnailImage(string fileHash, 
+		public async Task<(MemoryStream?,GenerationResultModel)> ResizeThumbnailFromThumbnailImage(string fileHash, // source location
 			int width,  string? subPathReference = null, string? thumbnailOutputHash = null,
 			bool removeExif = false,
 			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg
@@ -292,7 +292,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			var outputStream = new MemoryStream();
 			var result = new GenerationResultModel
 			{
-				FileHash = fileHash,
+				FileHash = ThumbnailNameHelper.RemoveSuffix(thumbnailOutputHash),
 				IsNotFound = false,
 				SizeInPixels = width,
 				Success = true,

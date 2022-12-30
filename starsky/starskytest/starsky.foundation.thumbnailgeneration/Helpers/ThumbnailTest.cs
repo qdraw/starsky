@@ -141,6 +141,18 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 
 		[TestMethod]
+		public async Task CreateThumbTest_1arg_Folder()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{_fakeIStorageImageSubPath}, 
+				new List<byte[]>{CreateAnImage.Bytes});
+			
+			var isCreated = await new Thumbnail(storage, 
+				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/");
+			Assert.AreEqual(true,isCreated[0].Success);
+		}
+
+		[TestMethod]
 		public async Task ResizeThumbnailToStream__HostDependency__JPEG_Test()
 		{
 			var newImage = new CreateAnImage();
