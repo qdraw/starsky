@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,6 +25,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		ThumbnailSize size, IEnumerable<string> fileHashes,
 		bool? setStatus = null)
 	{
+		if ( fileHashes == null )
+		{
+			throw new ArgumentNullException(nameof(fileHashes));
+		}
+		
 		var newItems = fileHashes.Distinct().Select(fileHash => new ThumbnailItem(fileHash, size, setStatus)).ToList();
 
 		var (newThumbnailItems, alreadyExistingThumbnailItems) = await CheckForDuplicates(
@@ -51,10 +57,23 @@ public class ThumbnailQuery : IThumbnailQuery
 		
 		foreach ( var item in allResults )
 		{
-			_context.Attach(item).State = EntityState.Detached;
+			try
+			{
+				_context.Attach(item).State = EntityState.Detached;
+			}
+			catch ( InvalidOperationException)
+			{
+			}
 		}
 		
 		return allResults;
+	}
+
+	public async Task<List<ThumbnailItem>?> Get(string fileHash)
+	{
+		return await _context
+			.Thumbnails.Where(p => p.FileHash == fileHash)
+			.ToListAsync();
 	}
 
 	/// <summary>

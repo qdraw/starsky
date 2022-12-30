@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
@@ -9,9 +10,14 @@ namespace starskytest.FakeMocks;
 
 public class FakeIThumbnailQuery : IThumbnailQuery
 {
-	public FakeIThumbnailQuery()
+	private readonly List<ThumbnailItem> _content = new List<ThumbnailItem>();
+
+	public FakeIThumbnailQuery(List<ThumbnailItem> items = null)
 	{
-		
+		if ( items != null )
+		{
+			_content = items;
+		}
 	}
 
 	public FakeIThumbnailQuery( ApplicationDbContext _)
@@ -22,6 +28,13 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 	public Task<List<ThumbnailItem>> AddThumbnailRangeAsync(ThumbnailSize size, IEnumerable<string> fileHashes,
 		bool? setStatus = null)
 	{
-		return Task.FromResult(new List<ThumbnailItem>());
+		return Task.FromResult(_content);
+	}
+
+	public Task<List<ThumbnailItem>> Get(string fileHash)
+	{
+		return Task.FromResult(
+			_content.Where(p => p.FileHash == fileHash).ToList()
+			);
 	}
 }

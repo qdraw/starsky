@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ public class ThumbnailQueryTest
 	{
 		// Arrange
 		var size = ThumbnailSize.Small;
-		var fileHashes = new List<string> { "123", "456" };
+		var fileHashes = new List<string> { "00123", "00456" };
 
 		// Act
 		var result = await _thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
@@ -54,10 +55,10 @@ public class ThumbnailQueryTest
 	public async Task AddThumbnailRangeAsync_UpdateExistingThumbnails_ReturnsUpdatedThumbnails()
 	{
 		// Arrange
-		var size = ThumbnailSize.Small;
-		var fileHashes = new List<string> { "123", "456" };
+		const ThumbnailSize size = ThumbnailSize.Small;
+		var fileHashes = new List<string> { "9123", "9456" };
 
-		var thumbnail = new ThumbnailItem("123", ThumbnailSize.Large, false);
+		var thumbnail = new ThumbnailItem("9123", size, true);
 		_context.Thumbnails.Add(thumbnail);
 		await _context.SaveChangesAsync();
 
@@ -71,9 +72,9 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(result.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
 
 		var thumbnails = await _context.Thumbnails.ToListAsync();
-		Assert.AreEqual(2, thumbnails.Count);
-		Assert.IsTrue(thumbnails.All(x => x.Small == true));
-		Assert.IsTrue(thumbnails.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
+		Assert.AreEqual(2, thumbnails.Count(p => p.FileHash is "9123" or "9456"));
+		Assert.IsTrue(thumbnails.Where(p => p.FileHash is "9123" or "9456").All(x => x.Small == true));
+		Assert.IsTrue(thumbnails.Where(p => p.FileHash is "9123" or "9456").Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
 	}
         
 	[TestMethod]
@@ -81,7 +82,7 @@ public class ThumbnailQueryTest
 	{
 		// Arrange
 		var size = ThumbnailSize.Small;
-		var fileHashes = new List<string> { "123", "456" };
+		var fileHashes = new List<string> { "789", "1011" };
 
 		// Act
 		var result = await _thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
@@ -91,25 +92,17 @@ public class ThumbnailQueryTest
 		Assert.AreEqual(2, result.Count);
 		Assert.IsTrue(result.All(x => x.Small == true));
 		Assert.IsTrue(result.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
-
-		result = await _thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
-
-		// Assert
-		Assert.IsNull(result);
 	}
         
 	[TestMethod]
-	public async Task AddThumbnailRangeAsync_NullFileHashes_ReturnsEmptyList()
+	[ExpectedException(typeof(ArgumentNullException))]
+	public async Task AddThumbnailRangeAsync_NullFileHashes_ArgumentException()
 	{
 		// Arrange
 		const ThumbnailSize size = ThumbnailSize.Small;
 
 		// Act
-		var result = await _thumbnailQuery.AddThumbnailRangeAsync(size, null!, true);
-
-		// Assert
-		Assert.IsNotNull(result);
-		Assert.AreEqual(0, result.Count);
+		await _thumbnailQuery.AddThumbnailRangeAsync(size, null!, true);
 	}
 	
 	[TestMethod]
@@ -118,8 +111,8 @@ public class ThumbnailQueryTest
 		// Arrange
 		var items = new List<ThumbnailItem?>
 		{
-			new ThumbnailItem("123", ThumbnailSize.Small, true),
-			new ThumbnailItem("456", ThumbnailSize.Small, true)
+			new ThumbnailItem("1213", ThumbnailSize.Small, true),
+			new ThumbnailItem("1516", ThumbnailSize.Small, true)
 		};
 
 		// Act
@@ -129,7 +122,7 @@ public class ThumbnailQueryTest
 		Assert.IsNotNull(result.newThumbnailItems);
 		Assert.AreEqual(2, result.newThumbnailItems.Count);
 		Assert.IsTrue(result.newThumbnailItems.All(x => x.Small == true));
-		Assert.IsTrue(result.newThumbnailItems.Select(x => x.FileHash).All(x => new List<string> { "123", "456" }.Contains(x)));
+		Assert.IsTrue(result.Item1.Select(x => x.FileHash).All(x => new List<string> { "1213", "1516" }.Contains(x)));
 	}
 	
 	[TestMethod]
@@ -138,16 +131,16 @@ public class ThumbnailQueryTest
 		// Arrange
 		var items = new List<ThumbnailItem?>
 		{
-			new ThumbnailItem("123", ThumbnailSize.Small, true),
-			new ThumbnailItem("456", ThumbnailSize.Small, true)
+			new ThumbnailItem("1718", ThumbnailSize.Small, true),
+			new ThumbnailItem("1920", ThumbnailSize.Small, true)
 		};
 
 		await ThumbnailQuery.CheckForDuplicates(_context, items);
 
 		items = new List<ThumbnailItem?>
 		{
-			new ThumbnailItem("123", ThumbnailSize.Large, false),
-			new ThumbnailItem("456", ThumbnailSize.Large, false)
+			new ThumbnailItem("1718", ThumbnailSize.Large, false),
+			new ThumbnailItem("1920", ThumbnailSize.Large, false)
 		};
 
 		// Act
@@ -155,7 +148,7 @@ public class ThumbnailQueryTest
 
 		// Assert
 		Assert.IsNotNull(result.alreadyExistingThumbnailItems);
-		Assert.AreEqual(2, result.alreadyExistingThumbnailItems.Count);
+		Assert.AreEqual(2, result.Item1.Count);
 		Assert.IsTrue(result.alreadyExistingThumbnailItems.All(x => x.Large == false));
 		Assert.IsTrue(result.alreadyExistingThumbnailItems.Select(x => x.FileHash).All(x => new List<string> { "123", "456" }.Contains(x)));
 	}

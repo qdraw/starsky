@@ -35,14 +35,10 @@ namespace starsky.foundation.database.Thumbnails
 			var isAnyContentIncluded = _thumbnailQuery.GetReflectionFieldValue<List<ThumbnailItem>?>("_content")?.Any();
 			if ( isAnyContentIncluded == true )
 			{
-				_logger?.LogInformation("FakeIQuery _content detected");
+				_logger?.LogInformation("FakeIThumbnailQuery _content detected");
 				return _thumbnailQuery;
 			}
-		
-			// ApplicationDbContext context, 
-			// 	AppSettings appSettings,
-			// IServiceScopeFactory scopeFactory, 
-			// 	IWebLogger logger, IMemoryCache memoryCache = null
+			
 			return Activator.CreateInstance(_thumbnailQuery.GetType(), context) as IThumbnailQuery;
 		}
 	}
