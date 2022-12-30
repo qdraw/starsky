@@ -51,9 +51,7 @@ namespace starskytest.Controllers
 		{
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"},
 				new List<byte[]> {CreateAnImage.Bytes});
-
-			var thumbStorage = new FakeIStorage();
-
+			
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
 					new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
@@ -61,10 +59,11 @@ namespace starskytest.Controllers
 
 			await controller.WorkThumbnailGeneration("/");
 
-			var folder = thumbStorage.GetAllFilesInDirectoryRecursive(
+			var folder = storage.GetAllFilesInDirectoryRecursive(
 				"/").ToList();
 			
-			Assert.AreEqual(1, folder.Count(p => !p.Contains('@')));
+			var name = Base32.Encode(System.Text.Encoding.UTF8.GetBytes("/"));
+			Assert.AreEqual(1, folder.Count(p => p == "/"+ name + "@2000.jpg"));
 		}
 		
 		[TestMethod]
@@ -105,12 +104,12 @@ namespace starskytest.Controllers
 		{
 			var message = "[ThumbnailGenerationController] reading not allowed";
 			
-			var storage = new FakeIStorage(new UnauthorizedAccessException(message));
+			var storage = new FakeIStorage();
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var webLogger = new FakeIWebLogger();
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
-				webLogger, new FakeIWebSocketConnectionsService(), new FakeIThumbnailService());
+				webLogger, new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(null,new UnauthorizedAccessException(message)));
 			
 			await controller.WorkThumbnailGeneration("/");
 

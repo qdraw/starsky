@@ -18,6 +18,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.Services;
 
@@ -73,17 +74,9 @@ namespace starsky.Controllers
 				var thumbs = await _thumbnailService.CreateThumbnailAsync(subPath);
 				var getAllFilesAsync = await _query.GetAllFilesAsync(subPath);
 
-				var result = new List<FileIndexItem>();
-				var searchFor = getAllFilesAsync.Where(item =>
-					thumbs.FirstOrDefault(p => p.SubPath == item.FilePath)
-						?.Success == true);
-				foreach ( var item in searchFor )
-				{
-					if ( item.Tags?.Contains("!delete!") == true ) continue;
-
-					item.SetLastEdited();
-					result.Add(item);
-				}
+				var result =
+					WhichFilesNeedToBePushedForUpdates(thumbs,
+						getAllFilesAsync);
 
 				if ( !result.Any() ) return;
 
@@ -97,6 +90,23 @@ namespace starsky.Controllers
 			{
 				_logger.LogError($"[ThumbnailGenerationController] catch-ed exception {e.Message}", e);
 			}
+		}
+
+		private static List<FileIndexItem> WhichFilesNeedToBePushedForUpdates(List<GenerationResultModel> thumbs, IEnumerable<FileIndexItem> getAllFilesAsync)
+		{
+			var result = new List<FileIndexItem>();
+			var searchFor = getAllFilesAsync.Where(item =>
+				thumbs.FirstOrDefault(p => p.SubPath == item.FilePath)
+					?.Success == true).DistinctBy(p => p.FilePath);
+			foreach ( var item in searchFor )
+			{
+				if ( item.Tags?.Contains("!delete!") == true ) continue;
+
+				item.SetLastEdited();
+				result.Add(item);
+			}
+
+			return result;
 		}
 	}
 }
