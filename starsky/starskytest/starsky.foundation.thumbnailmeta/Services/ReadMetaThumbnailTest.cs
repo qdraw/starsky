@@ -2,9 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.thumbnailmeta.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
 using starskytest.FakeMocks;
@@ -21,8 +24,8 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 		{
 			_iStorageFake = new FakeIStorage(
 				new List<string>{"/"},
-				new List<string>{"/no_thumbnail.jpg", "/poppy.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes, new CreateAnImageWithThumbnail().Bytes}
+				new List<string>{"/no_thumbnail.jpg", "/poppy.jpg", ThumbnailNameHelper.Combine("test",ThumbnailSize.TinyMeta)},
+				new List<byte[]>{CreateAnImage.Bytes, new CreateAnImageWithThumbnail().Bytes, CreateAnImage.Bytes}
 				);
 			
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/no_thumbnail.jpg").Key;
@@ -150,6 +153,50 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 				.AddMetaThumbnail(new List<(string, string)>{("/not_found.jpg", "hash")});
 			
 			Assert.IsFalse(result.FirstOrDefault().Item1);
+		}
+
+		[TestMethod]
+		public async Task AddMetaThumbnail_Fake_stringString_NotFound()
+		{
+			var selectorStorage = new FakeSelectorStorage(_iStorageFake);
+			var logger = new FakeIWebLogger();
+			
+			var result = await new MetaExifThumbnailService(new AppSettings(), selectorStorage, 
+					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
+				.AddMetaThumbnail("/not_found.jpg", "hash");
+			
+			Assert.IsFalse(result.Item1);
+		}
+		
+		
+		[TestMethod]
+		public async Task AddMetaThumbnail_Fake_Corrupt()
+		{
+			await _iStorageFake.WriteStreamAsync(PlainTextFileHelper.StringToStream("test"), "/poppy_corrupt_22.jpg");
+			
+			var selectorStorage = new FakeSelectorStorage(_iStorageFake);
+			var logger = new FakeIWebLogger();
+			
+			var result = await new MetaExifThumbnailService(new AppSettings(), selectorStorage, 
+					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
+				.AddMetaThumbnail("/poppy_corrupt_22.jpg", "hash");
+			
+			Assert.IsFalse(result.Item1);
+		}
+		
+		[TestMethod]
+		public async Task AddMetaThumbnail_Fake_AlReadyExists()
+		{
+			
+			var selectorStorage = new FakeSelectorStorage(_iStorageFake);
+			var logger = new FakeIWebLogger();
+			
+			var result = await new MetaExifThumbnailService(new AppSettings(), selectorStorage, 
+					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
+				.AddMetaThumbnail("/poppy.jpg", "test");
+			
+			Assert.IsTrue(result.Item1);
+			Assert.AreEqual("already exist",result.Item3);
 		}
 	}
 }

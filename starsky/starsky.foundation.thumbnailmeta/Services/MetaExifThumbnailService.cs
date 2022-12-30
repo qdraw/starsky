@@ -99,6 +99,11 @@ namespace starsky.foundation.thumbnailmeta.Services
 		/// <returns>fail/pass, subPath</returns>
 		public async Task<(bool,string, string?)> AddMetaThumbnail(string subPath, string fileHash)
 		{
+			if ( !_iStorage.ExistFile(subPath))
+			{
+				return (false,subPath, "not found");
+			}
+			
 			var first50BytesStream = _iStorage.ReadStream(subPath,50);
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(first50BytesStream);
 			
@@ -118,11 +123,6 @@ namespace starsky.foundation.thumbnailmeta.Services
 					return (false,subPath,"hash failed");
 				}
 				fileHash = result.Key;
-			}
-
-			if ( !_iStorage.ExistFile(subPath))
-			{
-				return (false,subPath, "not found");
 			}
 
 			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta)) )
