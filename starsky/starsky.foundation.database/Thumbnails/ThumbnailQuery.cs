@@ -76,9 +76,10 @@ public class ThumbnailQuery : IThumbnailQuery
 		return allResults;
 	}
 
-	public async Task<List<ThumbnailItem>?> Get(string fileHash)
+	public async Task<List<ThumbnailItem>> Get(string? fileHash = null)
 	{
-		return await _context
+		return fileHash == null ? await _context
+			.Thumbnails.ToListAsync() :  await _context
 			.Thumbnails.Where(p => p.FileHash == fileHash)
 			.ToListAsync();
 	}

@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,13 +29,23 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 	public Task<List<ThumbnailItem>> AddThumbnailRangeAsync(ThumbnailSize size, IEnumerable<string> fileHashes,
 		bool? setStatus = null)
 	{
+		foreach ( var hash in fileHashes )
+		{
+			var index = _content.FindIndex(p => p.FileHash == hash);
+			if ( index == -1 )
+			{
+				_content.Add(new ThumbnailItem(hash, size, setStatus));
+				continue;
+			}
+			
+			_content[index].Change(size, setStatus);
+		}
+		
 		return Task.FromResult(_content);
 	}
 
-	public Task<List<ThumbnailItem>> Get(string fileHash)
+	public Task<List<ThumbnailItem>> Get(string? fileHash = null)
 	{
-		return Task.FromResult(
-			_content.Where(p => p.FileHash == fileHash).ToList()
-			);
+		return Task.FromResult(fileHash == null ? _content : _content.Where(p => p.FileHash == fileHash).ToList());
 	}
 }
