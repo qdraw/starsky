@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -8,7 +8,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.foundation.metathumbnail.Helpers
+namespace starsky.foundation.thumbnailmeta.Helpers
 {
 	public class MetaThumbnailCommandLineHelper
 	{

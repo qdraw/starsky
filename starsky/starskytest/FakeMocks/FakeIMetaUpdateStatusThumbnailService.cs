@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 
 namespace starskytest.FakeMocks;
 

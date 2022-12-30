@@ -16,7 +16,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;

@@ -20,7 +20,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;

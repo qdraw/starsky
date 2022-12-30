@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.http.Services;
-using starsky.foundation.metathumbnail.Helpers;
+using starsky.foundation.thumbnailmeta.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 

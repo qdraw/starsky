@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
-using starsky.foundation.metathumbnail.Interfaces;
-using starsky.foundation.metathumbnail.Models;
+using starsky.foundation.thumbnailmeta.Interfaces;
+using starsky.foundation.thumbnailmeta.Models;
 using starsky.foundation.readmeta.Models;
 
 namespace starskytest.FakeMocks

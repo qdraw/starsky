@@ -17,7 +17,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.injection;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;

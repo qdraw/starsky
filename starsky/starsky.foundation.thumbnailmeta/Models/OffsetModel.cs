@@ -1,4 +1,4 @@
-namespace starsky.foundation.metathumbnail.Models
+namespace starsky.foundation.thumbnailmeta.Models
 {
 	public sealed class OffsetModel
 	{

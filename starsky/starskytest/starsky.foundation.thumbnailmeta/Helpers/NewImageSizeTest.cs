@@ -1,6 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.metathumbnail.Helpers;
+using starsky.foundation.thumbnailmeta.Helpers;
 
 namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 {

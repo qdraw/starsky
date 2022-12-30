@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace starsky.foundation.metathumbnail.Interfaces
+namespace starsky.foundation.thumbnailmeta.Interfaces
 {
 	public interface IMetaExifThumbnailService
 	{

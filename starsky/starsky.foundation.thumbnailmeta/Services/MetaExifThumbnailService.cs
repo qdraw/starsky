@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -14,7 +14,7 @@ using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.foundation.metathumbnail.Services
+namespace starsky.foundation.thumbnailmeta.Services
 {
 	[Service(typeof(IMetaExifThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class MetaExifThumbnailService : IMetaExifThumbnailService

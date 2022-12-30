@@ -10,7 +10,7 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        <RootNamespace>starsky.foundation.metathumbnail</RootNamespace>
+        <RootNamespace>starsky.foundation.thumbnailmeta</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
