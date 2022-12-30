@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
+using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Thumbnails
@@ -20,7 +25,23 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 		[TestMethod]
 		public void QueryFactoryTest_QueryReturn()
 		{
-			var queryFactory = new ThumbnailQueryFactory(null, new ThumbnailQuery(null),
+			var queryFactory = new ThumbnailQueryFactory(null, new ThumbnailQuery(null!),
+				new FakeIWebLogger());
+			var query = queryFactory.ThumbnailQuery();
+			Assert.AreEqual(typeof(ThumbnailQuery),query!.GetType());
+		}
+		
+		[TestMethod]
+		public void QueryFactoryTest_QueryReturn2()
+		{
+			var services = new ServiceCollection();
+			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builderDb.UseInMemoryDatabase("test1234");
+			var options = builderDb.Options;
+			var queryFactory = new ThumbnailQueryFactory(new SetupDatabaseTypes(new AppSettings
+				{
+					DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+				}, services), new ThumbnailQuery(new ApplicationDbContext(options)),
 				new FakeIWebLogger());
 			var query = queryFactory.ThumbnailQuery();
 			Assert.AreEqual(typeof(ThumbnailQuery),query!.GetType());
