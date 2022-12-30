@@ -224,6 +224,53 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task ExportControllerTest_IncompleteInput()
+		{
+			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
+			
+			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
+
+			var item = new FileIndexItem
+			{
+				ParentDirectory = "/",
+				FileHash = "test",
+				Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+			};
+
+			await _query.AddItemAsync(item);
+
+			var fileIndexResultsList = new List<FileIndexItem> { item };
+
+			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
+
+			Assert.AreEqual(0,filePaths.Count);
+		}
+		
+				
+		[TestMethod]
+		public async Task ExportControllerTest_IncompleteInput2()
+		{
+			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
+			
+			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
+
+			var item = new FileIndexItem
+			{
+				ParentDirectory = "/",
+				FileHash = null,
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+
+			await _query.AddItemAsync(item);
+
+			var fileIndexResultsList = new List<FileIndexItem> { item };
+
+			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
+
+			Assert.AreEqual(0,filePaths.Count);
+		}
+		
+		[TestMethod]
 		public async Task ExportControllerTest__ThumbFalse_AddXmpFile_CreateListToExport()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
@@ -255,7 +302,6 @@ namespace starskytest.Controllers
 			Assert.AreEqual(true,filePaths[0].Contains("test.dng"));
 			Assert.AreEqual(true,filePaths[1].Contains("test.xmp"));
 		}
-
 		
 		[TestMethod]
 		public async Task ExportControllerTest__ThumbFalse_CreateListToExport()
