@@ -20,8 +20,8 @@ public class ThumbnailQuery : IThumbnailQuery
 	{
 		_context = context;
 	}
-
-	public async Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(
+	
+	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(
 		ThumbnailSize size, IEnumerable<string> fileHashes,
 		bool? setStatus = null)
 	{
@@ -29,7 +29,13 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			throw new ArgumentNullException(nameof(fileHashes));
 		}
-		
+		return AddThumbnailRangeInternalAsync(size, fileHashes, setStatus);
+	}
+	
+	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
+		ThumbnailSize size, IEnumerable<string> fileHashes,
+		bool? setStatus = null)
+	{
 		var newItems = fileHashes.Distinct().Select(fileHash => new ThumbnailItem(fileHash, size, setStatus)).ToList();
 
 		var (newThumbnailItems, alreadyExistingThumbnailItems) = await CheckForDuplicates(
