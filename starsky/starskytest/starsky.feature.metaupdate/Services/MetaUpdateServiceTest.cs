@@ -110,7 +110,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta);
+				new FakeIWebLogger(), readMeta, new AppSettings());
 			
 			service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem, false,false,0);
 
@@ -159,7 +159,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var readMeta = new FakeReadMetaSubPathStorage();
 			var service = new MetaUpdateService(query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta);
+				new FakeIWebLogger(), readMeta, new AppSettings());
 			
 			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, null, false,false,0);
 
@@ -214,7 +214,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta);
+				new FakeIWebLogger(), readMeta, new AppSettings());
 			
 			await service.UpdateAsync(null, fileIndexResultsList, 
 				toUpdateItem, false,false,0);
@@ -251,7 +251,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var readMeta = new FakeReadMetaSubPathStorage();
 			var service = new MetaUpdateService(query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta);
+				new FakeIWebLogger(), readMeta, new AppSettings());
 			
 			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
@@ -273,7 +273,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta);
+				new FakeIWebLogger(), readMeta, new AppSettings());
 			
 			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultList , 
 					null,false,false,0);
@@ -303,7 +303,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var readMeta = new FakeReadMetaSubPathStorage();
 			var service = new MetaUpdateService(query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta);
+				new FakeIWebLogger(), readMeta, new AppSettings());
 				
 			await service
 				.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem,false,
@@ -328,7 +328,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta);
+				new FakeIWebLogger(), readMeta, new AppSettings());
 			
 			await service.ApplyOrGenerateUpdatedFileHash(new List<string>(), detailView.FileIndexItem);
 			

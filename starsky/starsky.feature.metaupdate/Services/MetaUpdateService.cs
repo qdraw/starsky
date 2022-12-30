@@ -35,6 +35,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IWebLogger _logger;
+		private readonly AppSettings _appSettings;
 
 		public MetaUpdateService(
 			IQuery query,
@@ -42,7 +43,7 @@ namespace starsky.feature.metaupdate.Services
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
 			IWebLogger logger,
-			IReadMetaSubPathStorage readMetaSubPathStorage)
+			IReadMetaSubPathStorage readMetaSubPathStorage, AppSettings appSettings)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -51,6 +52,7 @@ namespace starsky.feature.metaupdate.Services
 			_readMeta = readMetaSubPathStorage;
 			_metaPreflight = metaPreflight;
 			_logger = logger;
+			_appSettings = appSettings;
 		}
 
 
@@ -183,9 +185,11 @@ namespace starsky.feature.metaupdate.Services
 		private async Task RotationThumbnailExecute(int rotateClock, FileIndexItem fileIndexItem)
 		{
 			// Do orientation
-			if(FileIndexItem.IsRelativeOrientation(rotateClock)) 
+			if ( FileIndexItem.IsRelativeOrientation(rotateClock) )
+			{
 				await new Thumbnail(_iStorage,_thumbnailStorage,
-					_logger).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
+					_logger,_appSettings).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
+			}
 		}
 	}
 }

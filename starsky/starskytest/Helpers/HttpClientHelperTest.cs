@@ -107,6 +107,7 @@ namespace starskytest.Helpers
 		}
 
 		[TestMethod]
+		[Timeout(5000)]
 		public async Task Download_HttpClientHelper_Download_HttpRequestException()
 		{
 			// > next HttpRequestException
@@ -121,7 +122,7 @@ namespace starskytest.Helpers
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
 			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
-			var output = await httpClientHelper.Download("https://qdraw.nl/test","/sdkflndf");
+			var output = await httpClientHelper.Download("https://qdraw.nl/test","/sdkflndf",1);
 			Assert.IsFalse(output);
 		}
 

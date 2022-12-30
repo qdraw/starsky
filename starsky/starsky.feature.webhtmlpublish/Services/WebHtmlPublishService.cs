@@ -62,7 +62,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _copyPublishedContent = new CopyPublishedContent(_appSettings, _toCreateSubfolder, 
 			    selectorStorage);
 		    _logger = logger;
-		    _thumbnailService = new Thumbnail(_subPathStorage,_thumbnailStorage,_logger);
+		    _thumbnailService = new Thumbnail(_subPathStorage,_thumbnailStorage,_logger, appSettings);
 	    }
 	    
 	    public async Task<Dictionary<string, bool>> RenderCopy(List<FileIndexItem> fileIndexItemsList,
@@ -115,7 +115,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private Task<string[]> Base64DataUriList(IEnumerable<FileIndexItem> fileIndexItemsList)
 	    {
 		    return new ToBase64DataUriList(_subPathStorage, 
-			    _thumbnailStorage,_logger).Create(fileIndexItemsList.ToList());
+			    _thumbnailStorage,_logger, _appSettings).Create(fileIndexItemsList.ToList());
 	    }
 	    
 	    /// <summary>

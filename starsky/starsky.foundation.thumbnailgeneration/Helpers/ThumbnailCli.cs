@@ -3,7 +3,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Interfaces;
@@ -48,7 +47,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			{
 				subPath = new StructureService(_selectorStorage.Get(
 						SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
-					.ParseSubfolders(getSubPathRelative);
+					.ParseSubfolders(getSubPathRelative)!;
 			}
 
 			if (new ArgsHelper(_appSettings).GetThumbnail(args))
@@ -58,20 +57,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				var isFolderOrFile = storage.IsFolderOrFile(subPath);
 
 				if (_appSettings.IsVerbose()) _console.WriteLine(isFolderOrFile.ToString());
-                
-				if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
-				{
-					// If single file => create thumbnail
-					var fileHash = (await new FileHash(storage).GetHashCodeAsync(subPath));
-					if ( fileHash.Value ) 
-					{
-						await _thumbnailService.CreateThumbAsync(subPath, fileHash.Key); // <= this uses subPath
-					}
-				}
-				else
-				{
-					await _thumbnailService.CreateThumbAsync(subPath);
-				}
+
+				await _thumbnailService.CreateThumbnailAsync(subPath);
+				
 				_console.WriteLine("Thumbnail Done!");
 			}
             

@@ -155,7 +155,7 @@ namespace starskytest.Controllers
 				selectorStorage,new FakeIWebLogger());
 			var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 				selectorStorage, new FakeMetaPreflight(),
-				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
+				new FakeIWebLogger(), new FakeReadMetaSubPathStorage(), new AppSettings());
 			
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, _bgTaskQueue, 
 				new FakeIWebLogger(), NewScopeFactory());
@@ -193,7 +193,7 @@ namespace starskytest.Controllers
 				_appSettings,selectorStorage,new FakeIWebLogger());
 			var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 				selectorStorage, new FakeMetaPreflight(),
-				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
+				new FakeIWebLogger(), new FakeReadMetaSubPathStorage(), new AppSettings());
 			
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, _bgTaskQueue, 
 				new FakeIWebLogger(),NewScopeFactory())
@@ -231,7 +231,7 @@ namespace starskytest.Controllers
 				_appSettings,selectorStorage,new FakeIWebLogger());
 			var metaUpdateService = new MetaUpdateService(_query, _exifTool,
 				selectorStorage, new FakeMetaPreflight(),
-				new FakeIWebLogger(), new FakeReadMetaSubPathStorage());
+				new FakeIWebLogger(), new FakeReadMetaSubPathStorage(), new AppSettings());
 			
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, new FakeIUpdateBackgroundTaskQueue(), 
 				new FakeIWebLogger(),serviceScopeFactory)

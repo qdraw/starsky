@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.thumbnailgeneration.Helpers;
 
@@ -13,12 +14,14 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IWebLogger _logger;
+		private readonly AppSettings _appSettings;
 
-		public ToBase64DataUriList(IStorage iStorage, IStorage thumbnailStorage, IWebLogger logger)
+		public ToBase64DataUriList(IStorage iStorage, IStorage thumbnailStorage, IWebLogger logger, AppSettings appSettings)
 		{
 			_iStorage = iStorage;
 			_thumbnailStorage = thumbnailStorage;
 			_logger = logger;
+			_appSettings = appSettings;
 		}
 		
 		public async Task<string[]> Create(List<FileIndexItem> fileIndexList)
@@ -29,7 +32,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 				var item = fileIndexList[i];
 
 				var (memoryStream, status, _) = ( await new Thumbnail(_iStorage,
-					_thumbnailStorage, _logger).ResizeThumbnailFromSourceImage(
+					_thumbnailStorage, _logger, _appSettings).ResizeThumbnailFromSourceImage(
 					item.FilePath, 4, null, true,
 					ExtensionRolesHelper.ImageFormat.png));
 

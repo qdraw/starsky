@@ -37,7 +37,7 @@ namespace starskytest.Controllers
 		{
 			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}));
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService());
+				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService());
 			
 			var json = await controller.ThumbnailGeneration("/") as JsonResult;
 			var result = json.Value as string;
@@ -57,9 +57,9 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
 					new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
-				), new FakeIWebLogger(), new FakeIWebSocketConnectionsService());
+				), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(selectorStorage));
 
-			await controller.WorkItem("/", storage, thumbStorage);
+			await controller.WorkThumbnailGeneration("/");
 
 			var folder = thumbStorage.GetAllFilesInDirectoryRecursive(
 				"/").ToList();
@@ -72,16 +72,14 @@ namespace starskytest.Controllers
 		{
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"},
 				new List<byte[]> {CreateAnImage.Bytes});
-
-			var thumbStorage = new FakeIStorage();
-
+			
 			var socket = new FakeIWebSocketConnectionsService();
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
 				new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
-			), new FakeIWebLogger(), socket);
+			), new FakeIWebLogger(), socket, new FakeIThumbnailService(selectorStorage));
 
-			await controller.WorkItem("/", storage, thumbStorage);
+			await controller.WorkThumbnailGeneration("/");
 
 			Assert.AreEqual(1, socket.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
 		}
@@ -92,14 +90,12 @@ namespace starskytest.Controllers
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"},
 				new List<byte[]> {CreateAnImage.Bytes});
 
-			var thumbStorage = new FakeIStorage();
-
 			var socket = new FakeIWebSocketConnectionsService();
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
-				new List<FileIndexItem>()), new FakeIWebLogger(), socket);
+				new List<FileIndexItem>()), new FakeIWebLogger(), socket, new FakeIThumbnailService());
 
-			await controller.WorkItem("/", storage, thumbStorage);
+			await controller.WorkThumbnailGeneration("/");
 
 			Assert.AreEqual(0, socket.FakeSendToAllAsync.Count);
 		}
@@ -114,9 +110,9 @@ namespace starskytest.Controllers
 
 			var webLogger = new FakeIWebLogger();
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
-				webLogger, new FakeIWebSocketConnectionsService());
+				webLogger, new FakeIWebSocketConnectionsService(), new FakeIThumbnailService());
 			
-			await controller.WorkItem("/", storage, storage);
+			await controller.WorkThumbnailGeneration("/");
 
 			Assert.IsTrue(webLogger.TrackedExceptions.FirstOrDefault().Item2.Contains(message));
 		}

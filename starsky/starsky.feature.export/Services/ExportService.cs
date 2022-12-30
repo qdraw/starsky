@@ -25,6 +25,9 @@ using starsky.foundation.thumbnailgeneration.Helpers;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.export.Services
 {
+	/// <summary>
+	/// Also known as Download
+	/// </summary>
 	[Service(typeof(IExport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ExportService: IExport
 	{
@@ -126,7 +129,7 @@ namespace starsky.feature.export.Services
 		}
 		
 		/// <summary>
-		/// This list will be included in the zip
+		/// This list will be included in the zip - Export is called Download in the UI
 		/// </summary>
 		/// <param name="fileIndexResultsList">the items</param>
 		/// <param name="thumbnail">add the thumbnail or the source image</param>
@@ -136,15 +139,15 @@ namespace starsky.feature.export.Services
 			var filePaths = new List<string>();
 
 			foreach ( var item in fileIndexResultsList.Where(p => 
-				p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
+				p.Status == FileIndexItem.ExifStatus.Ok && p.FileHash != null ).ToList() )
 			{
 				if ( thumbnail )
 				{
 					var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder, 
-						ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.Large, true));
+						ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large, true));
 
-					await new Thumbnail(_iStorage, _thumbnailStorage, _logger)
-						.CreateThumbAsync(item.FilePath, item.FileHash, true);
+					await new Thumbnail(_iStorage, _thumbnailStorage, _logger,_appSettings)
+						.CreateThumbAsync(item.FilePath!, item.FileHash, true);
 					
 					filePaths.Add(sourceThumb);
 					continue;

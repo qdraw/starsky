@@ -17,6 +17,7 @@ using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
+using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.Services;
 
@@ -29,14 +30,16 @@ namespace starsky.Controllers
 		private readonly IWebLogger _logger;
 		private readonly IQuery _query;
 		private readonly IWebSocketConnectionsService _connectionsService;
+		private readonly IThumbnailService _thumbnailService;
 
 		public ThumbnailGenerationController(ISelectorStorage selectorStorage,
-			IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService)
+			IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService, IThumbnailService thumbnailService)
 		{
 			_selectorStorage = selectorStorage;
 			_query = query;
 			_logger = logger;
 			_connectionsService = connectionsService;
+			_thumbnailService = thumbnailService;
 		}
 		
 		/// <summary>
@@ -51,32 +54,30 @@ namespace starsky.Controllers
 		{
 			var subPath = f != "/" ? PathHelper.RemoveLatestSlash(f) : "/";
 			var subPathStorage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			var thumbnailStorage = _selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
 			if ( !subPathStorage.ExistFolder(subPath))
 			{
 				return NotFound("folder not found");
 			}
 
-			await Task.Factory.StartNew(() => WorkItem(subPath, subPathStorage, thumbnailStorage));
+			await Task.Factory.StartNew(() => WorkThumbnailGeneration(subPath));
 			
 			return Json("Job started");
 		}
 				
-		internal async Task WorkItem(string subPath, IStorage subPathStorage, 
-			IStorage thumbnailStorage)
+		internal async Task WorkThumbnailGeneration(string subPath)
 		{
 			try
 			{
 				_logger.LogInformation($"[ThumbnailGenerationController] start {subPath}");
-				var thumbnailService = new Thumbnail(subPathStorage, 
-					thumbnailStorage, _logger);
-				var thumbs = await thumbnailService.CreateThumbAsync(subPath);
+				var thumbs = await _thumbnailService.CreateThumbnailAsync(subPath);
 				var getAllFilesAsync = await _query.GetAllFilesAsync(subPath);
 
 				var result = new List<FileIndexItem>();
-				foreach ( var item in 
-				         getAllFilesAsync.Where(item => thumbs.FirstOrDefault(p => p.Item1 == item.FilePath).Item2) )
+				var searchFor = getAllFilesAsync.Where(item =>
+					thumbs.FirstOrDefault(p => p.SubPath == item.FilePath)
+						?.Success == true);
+				foreach ( var item in searchFor )
 				{
 					if ( item.Tags?.Contains("!delete!") == true ) continue;
 

@@ -123,8 +123,9 @@ namespace starsky.foundation.http.Services
 		/// </summary>
 		/// <param name="sourceHttpUrl">The source HTTPS URL.</param>
 		/// <param name="fullLocalPath">The full local path.</param>
+		/// <param name="retryAfterInSeconds">Retry after number of seconds</param>
 		/// <returns></returns>
-		public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath)
+		public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath, int retryAfterInSeconds = 15)
 		{
 			if ( _storage == null )
 			{
@@ -163,7 +164,7 @@ namespace starsky.foundation.http.Services
             try
             {
 	            return await RetryHelper.DoAsync(DownloadAsync, 
-		            TimeSpan.FromSeconds(15), 2);
+		            TimeSpan.FromSeconds(retryAfterInSeconds), 2);
             }
             catch (AggregateException exception)
             {

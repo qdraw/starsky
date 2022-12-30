@@ -14,11 +14,13 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.thumbnailgeneration.Helpers
@@ -28,48 +30,63 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IWebLogger _logger;
+		private readonly AppSettings _appSettings;
 
-		public Thumbnail(IStorage iStorage, IStorage thumbnailStorage, IWebLogger logger)
+		public Thumbnail(IStorage iStorage, IStorage thumbnailStorage, IWebLogger logger, AppSettings appSettings)
 		{
 			_iStorage = iStorage;
 			_thumbnailStorage = thumbnailStorage;
 			_logger = logger;
+			_appSettings = appSettings;
 		}
 
-		/// <summary>
-		///  This feature is used to crawl over directories and add this to the thumbnail-folder
-		///  Or File
-		/// </summary>
-		/// <param name="subPath">folder subPath style</param>
-		/// <returns>fail/pass</returns>
-		/// <exception cref="FileNotFoundException">if folder/file not exist</exception>
-		public async Task<List<(string, bool)>> CreateThumbAsync(string subPath)
+		public async Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
 		{
-			var isFolderOrFile = _iStorage.IsFolderOrFile(subPath);
-			var result = new List<(string, bool)>();
-			switch ( isFolderOrFile )
+			var toAddFilePaths = new List<string>();
+			switch ( _iStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					throw new FileNotFoundException("should enter some valid dir or file");
+					return new List<GenerationResultModel>
+					{
+						new GenerationResultModel
+						{
+							SubPath = subPath,
+							Success = false,
+							IsNotFound = true,
+							ErrorMessage = "File is deleted"
+						}
+					};
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
 				{
 					var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
 						.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
-					foreach ( var singleSubPath in contentOfDir )
-					{
-						var hashResult =  await new FileHash(_iStorage).GetHashCodeAsync(singleSubPath);
-						if ( hashResult.Value ) result.Add((singleSubPath, await CreateThumbAsync(singleSubPath, hashResult.Key )));
-					}
-					return result;
+					toAddFilePaths.AddRange(contentOfDir);
+					break;
 				}
+				case FolderOrFileModel.FolderOrFileTypeList.File:
 				default:
 				{
-					var hashResult =  await new FileHash(_iStorage).GetHashCodeAsync(subPath);
-					if ( hashResult.Value ) result.Add((subPath, await CreateThumbAsync(subPath, hashResult.Key)));
-					return result;
+					toAddFilePaths.Add(subPath);
+					break;
 				}
 			}
+			
+			var resultChunkList = await toAddFilePaths.ForEachAsync(
+				async singleSubPath =>
+				{
+					var hashResult =  await new FileHash(_iStorage).GetHashCodeAsync(singleSubPath);
+					return await CreateThumbAsync(singleSubPath, hashResult.Key);
+				}, _appSettings.MaxDegreesOfParallelism);
+			
+			var results = new List<GenerationResultModel>();
+			foreach ( var resultChunk in resultChunkList )
+			{
+				results.AddRange(resultChunk);
+			}
+
+			return results;
 		}
+		
 
 		/// <summary>
 		/// Create a Thumbnail file to load it faster in the UI. Use FileIndexItem or database style path, Feature used by the cli tool
@@ -78,7 +95,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="fileHash">the base32 hash of the subPath file</param>
 		/// <param name="skipExtraLarge">skip the extra large variant</param>
 		/// <returns>true, if successful</returns>
-		public Task<bool> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false)
+		public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false)
 		{
 			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
 
@@ -94,26 +111,89 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="fileHash">the base32 hash of the subPath file</param>
 		/// <param name="skipExtraLarge">skip the extra large image</param>
 		/// <returns>true, if successful</returns>
-		private async Task<bool> CreateThumbInternal(string subPath, string fileHash, bool skipExtraLarge = false)
+		private async Task<IEnumerable<GenerationResultModel>> CreateThumbInternal(string subPath, string fileHash, bool skipExtraLarge = false)
 		{
+			var resultModel = new List<GenerationResultModel>{new GenerationResultModel
+				{
+					SubPath = subPath,
+					FileHash = fileHash,
+					Success = false,
+					IsNotFound = true,
+					ErrorMessage = "File is deleted OR not supported"
+				}};
+			
 			// FileType=supported + subPath=exit + fileHash=NOT exist
 			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
 			     !_iStorage.ExistFile(subPath) )
 			{
-				return false;
+				return resultModel;
 			}
 
 			// File is already tested
-			if( _iStorage.ExistFile( GetErrorLogItemFullPath(subPath)) )
-				return false;
+			if ( _iStorage.ExistFile(GetErrorLogItemFullPath(subPath)) )
+			{
+				resultModel.FirstOrDefault()!.ErrorMessage = "File already failed before";
+				return resultModel;
+			}
 
+			// First create from the source file a thumbnail image (large or extra large)
+			var thumbnailToSourceSize = ThumbnailToSourceSize(fileHash, skipExtraLarge);
+			var largeThumbnailHash = LargeThumbnailHash(fileHash, thumbnailToSourceSize);
+			var thumbnailFromThumbnailUpdateList = ListThumbnailToBeCreated(fileHash);
+			await CreateLargestImageFromSource(resultModel, fileHash, largeThumbnailHash, subPath, thumbnailToSourceSize);
+
+			// when all images are already created
+			if ( !thumbnailFromThumbnailUpdateList.Any() )
+			{
+				var toCheckList = new List<ThumbnailSize>
+				{
+					ThumbnailSize.ExtraLarge,
+					ThumbnailSize.Small,
+					ThumbnailSize.Large
+				};
+				return toCheckList.Select(size => new GenerationResultModel
+				{
+					Success = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, size)), 
+					Size = size, 
+					FileHash = fileHash, 
+					IsNotFound = false
+				}).ToList();
+			}
+
+			var results = await thumbnailFromThumbnailUpdateList.ForEachAsync(
+				async (size)
+					=> await ResizeThumbnailFromThumbnailImage(
+						largeThumbnailHash,
+						ThumbnailNameHelper.GetSize(size),
+						subPath, // used for reference only
+						ThumbnailNameHelper.Combine(fileHash, size)),
+				10);
+
+			_logger.LogInformation(".");
+
+			// results return null if thumbnailFromThumbnailUpdateList has lenght 0
+			return results.Select(p =>p.Item2);
+		}
+
+		private static ThumbnailSize ThumbnailToSourceSize(string fileHash, bool skipExtraLarge)
+		{
 			var thumbnailToSourceSize = ThumbnailSize.ExtraLarge;
 			if ( skipExtraLarge ) thumbnailToSourceSize = ThumbnailSize.Large;
+			return thumbnailToSourceSize;
+		}
 
+		private static string LargeThumbnailHash(string fileHash, ThumbnailSize thumbnailToSourceSize)
+		{
 			var largeThumbnailHash = ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize);
-
+			return largeThumbnailHash;
+		}
+		
+		private async Task CreateLargestImageFromSource(IReadOnlyCollection<GenerationResultModel> resultModel, 
+			string fileHash, string largeThumbnailHash, string subPath,
+			ThumbnailSize thumbnailToSourceSize)
+		{
 			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
-				fileHash,thumbnailToSourceSize)) )
+				    fileHash,thumbnailToSourceSize)) )
 			{
 				// run resize sync
 				var (_, resizeSuccess, resizeMessage) = (await ResizeThumbnailFromSourceImage(subPath, 
@@ -124,23 +204,31 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				RemoveCorruptImage(fileHash, thumbnailToSourceSize);
 
 				if ( !resizeSuccess || ! _thumbnailStorage.ExistFile(
-					ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize)) )
+					    ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize)) )
 				{
 					_logger.LogError($"[ResizeThumbnailFromSourceImage] " +
 					                 $"output is null or corrupt for subPath {subPath}");
 					await WriteErrorMessageToBlockLog(subPath, resizeMessage);
-					return false;
+					
+					resultModel.FirstOrDefault()!.ErrorMessage = resizeMessage;
+					resultModel.FirstOrDefault()!.IsNotFound = false;
+					resultModel.FirstOrDefault()!.Size = thumbnailToSourceSize;
 				}
 				_logger.LogInformation(".");
 			}
+		}
 
+		private List<ThumbnailSize> ListThumbnailToBeCreated(string fileHash)
+		{
+			// And create then a thumbnail from the extra large thumbnail
+			// to the small thumbnail
 			var thumbnailFromThumbnailUpdateList = new List<ThumbnailSize>();
-			void Add(ThumbnailSize size)
+			void AddFileNames(ThumbnailSize size)
 			{
 				if ( !_thumbnailStorage.ExistFile(
-					ThumbnailNameHelper.Combine(
-						fileHash, size))
-				)
+					    ThumbnailNameHelper.Combine(
+						    fileHash, size))
+				   )
 				{
 					thumbnailFromThumbnailUpdateList.Add(size);
 				}
@@ -148,20 +236,10 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			new List<ThumbnailSize>
 			{
 				ThumbnailSize.Small, 
-				ThumbnailSize.Large // <- will be false when skipExtraLarge = true
-			}.ForEach(Add);
-
-			await ( thumbnailFromThumbnailUpdateList ).ForEachAsync(
-				async (size)
-					=> await ResizeThumbnailFromThumbnailImage(
-						largeThumbnailHash,
-						ThumbnailNameHelper.GetSize(size),
-						ThumbnailNameHelper.Combine(fileHash, size)),
-				10);
-
-			_logger.LogInformation(".");
+				ThumbnailSize.Large // <- will be false when skipExtraLarge = true, its already created
+			}.ForEach(AddFileNames);
 			
-			return thumbnailFromThumbnailUpdateList.Any();
+			return thumbnailFromThumbnailUpdateList;
 		}
 
 		private async Task WriteErrorMessageToBlockLog(string subPath, string resizeMessage)
@@ -195,24 +273,44 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return true;
 		}
 
-		public async Task<MemoryStream?> ResizeThumbnailFromThumbnailImage(string fileHash, 
-			int width, string? thumbnailOutputHash = null,
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fileHash"></param>
+		/// <param name="width"></param>
+		/// <param name="thumbnailOutputHash"></param>
+		/// <param name="removeExif"></param>
+		/// <param name="imageFormat"></param>
+		/// <param name="subPathReference">for reference only</param>
+		/// <returns>(stream, fileHash, and is ok)</returns>
+		public async Task<(MemoryStream?,GenerationResultModel)> ResizeThumbnailFromThumbnailImage(string fileHash, 
+			int width,  string? subPathReference = null, string? thumbnailOutputHash = null,
 			bool removeExif = false,
-			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
+			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			)
 		{
 			var outputStream = new MemoryStream();
-
+			var result = new GenerationResultModel
+			{
+				FileHash = fileHash,
+				IsNotFound = false,
+				SizeInPixels = width,
+				Success = true,
+				SubPath = subPathReference!
+			};
+			
 			try
 			{
 				// resize the image and save it to the output stream
 				using (var inputStream = _thumbnailStorage.ReadStream(fileHash))
 				using (var image = await Image.LoadAsync(inputStream))
 				{
+
 					ImageSharpImageResize(image, width, removeExif);
 					await SaveThumbnailImageFormat(image, imageFormat, outputStream);
 
 					// When thumbnailOutputHash is nothing return stream instead of writing down
-					if ( string.IsNullOrEmpty(thumbnailOutputHash) ) return outputStream;
+					if ( string.IsNullOrEmpty(thumbnailOutputHash) ) return (outputStream, result);
 					
 					// only when a hash exists
 					await _thumbnailStorage.WriteStreamAsync(outputStream, thumbnailOutputHash);
@@ -225,10 +323,12 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				var message = ex.Message;
 				if ( message.StartsWith("Image cannot be loaded") ) message = "Image cannot be loaded";
 				_logger.LogError($"[ResizeThumbnailFromThumbnailImage] Exception {fileHash} {message}", ex);
-				
-				return null;
+				result.Success = false;
+				result.ErrorMessage = message;
+				return (null,result);
 			}
-			return outputStream;
+			
+			return (outputStream, result);
 		}
 		
 		
