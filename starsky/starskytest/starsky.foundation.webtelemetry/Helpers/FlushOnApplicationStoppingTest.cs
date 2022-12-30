@@ -90,6 +90,13 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		}
 		
 		[TestMethod]
+		public void GetTelemetryClient_Logger_Nullable()
+		{
+			var result = new FlushApplicationInsights(null!, new AppSettings{ApplicationInsightsConnectionString = "t"}).GetTelemetryClient();
+			Assert.AreEqual(null, result);
+		}
+		
+		[TestMethod]
 		public void FlushApplicationInsights_HitLogger_Sync()
 		{
 			var logger = new FakeIWebLogger();
