@@ -69,6 +69,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			}
 			catch ( InvalidOperationException)
 			{
+				// do nothing
 			}
 		}
 		

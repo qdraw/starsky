@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -43,6 +44,7 @@ namespace starsky.Controllers
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 		private readonly IMetaUpdateStatusThumbnailService _metaUpdateStatusThumbnailService;
 
+		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 		public UploadController(IImport import, AppSettings appSettings, 
 			ISelectorStorage selectorStorage, IQuery query, 
 			IRealtimeConnectionsService realtimeService, IWebLogger logger, 

@@ -19,7 +19,7 @@ public class ThumbnailItemTest
 	public void ThumbnailItemCtor2()
 	{
 		var item = new ThumbnailItem("test");
-		Assert.AreEqual(item.FileHash, "test");
+		Assert.AreEqual("test", item.FileHash);
 	}
 	
 		
@@ -27,32 +27,32 @@ public class ThumbnailItemTest
 	public void ThumbnailItemCtor3()
 	{
 		var item = new ThumbnailItem("test", ThumbnailSize.Large);
-		Assert.AreEqual(item.FileHash, "test");
-		Assert.AreEqual(item.ExtraLarge, null);
+		Assert.AreEqual("test", item.FileHash);
+		Assert.AreEqual(null, item.ExtraLarge);
 	}
 			
 	[TestMethod]
 	public void ThumbnailItemCtor4()
 	{
 		var item = new ThumbnailItem("test", ThumbnailSize.Large, true);
-		Assert.AreEqual(item.FileHash, "test");
-		Assert.AreEqual(item.Large, true);
+		Assert.AreEqual("test", item.FileHash);
+		Assert.AreEqual(true, item.Large);
 	}
 	
 	[TestMethod]
 	public void ThumbnailItemCtor5()
 	{
 		var item = new ThumbnailItem("test", ThumbnailSize.ExtraLarge, true);
-		Assert.AreEqual(item.FileHash, "test");
-		Assert.AreEqual(item.ExtraLarge, true);
+		Assert.AreEqual("test", item.FileHash);
+		Assert.AreEqual(true, item.ExtraLarge);
 	}
 	
 	[TestMethod]
 	public void ThumbnailItemCtor6()
 	{
 		var item = new ThumbnailItem("test", ThumbnailSize.TinyMeta, true);
-		Assert.AreEqual(item.FileHash, "test");
-		Assert.AreEqual(item.TinyMeta, true);
+		Assert.AreEqual("test", item.FileHash);
+		Assert.AreEqual(true, item.TinyMeta);
 	}
 	
 			
@@ -61,7 +61,7 @@ public class ThumbnailItemTest
 	public void ThumbnailItemCtor7()
 	{
 		var item = new ThumbnailItem("test", ThumbnailSize.Unknown, true);
-		Assert.AreEqual(item.FileHash, "test");
+		Assert.AreEqual("test", item.FileHash);
 	}
 	
 				
@@ -69,7 +69,7 @@ public class ThumbnailItemTest
 	public void ThumbnailItemCtor8()
 	{
 		var item = new ThumbnailItem("test", ThumbnailSize.Small, true);
-		Assert.AreEqual(item.FileHash, "test");
-		Assert.AreEqual(item.Small, true);
+		Assert.AreEqual("test", item.FileHash);
+		Assert.AreEqual(true, item.Small);
 	}
 }
