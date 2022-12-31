@@ -35,7 +35,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task CreateThumbTest_FileHash_FileHashNull()
 		{
 			await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
-				"/notfound.jpg", null);
+				"/notfound.jpg", null!);
 			// expect ArgumentNullException
 		}
 
@@ -57,20 +57,22 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 		
 		[TestMethod]
-		public async Task CreateThumbTest_FileHash_ThumbnailAlreadyExist()
+		public async Task CreateThumbTest_FileHash_AlreadyFailedBefore()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
-
-			await storage.WriteStreamAsync(
-				PlainTextFileHelper.StringToStream("not 0 bytes"), 
-				ThumbnailNameHelper.Combine(_fakeIStorageImageSubPath, ThumbnailSize.Small));
 			
-			var isCreated = await new Thumbnail(storage, storage, 
-				new FakeIWebLogger(), new AppSettings()).CreateThumbAsync( _fakeIStorageImageSubPath, 
-				_fakeIStorageImageSubPath);
-			Assert.AreEqual(true,isCreated.FirstOrDefault()!.Success);
+			var thumbnailService =  new Thumbnail(storage, storage, 
+				new FakeIWebLogger(), new AppSettings());
+				
+			await thumbnailService.WriteErrorMessageToBlockLog(_fakeIStorageImageSubPath, "fail");
+			
+			var isCreated = (await thumbnailService.CreateThumbAsync( _fakeIStorageImageSubPath, 
+				_fakeIStorageImageSubPath)).ToList();
+				
+			Assert.AreEqual(false,isCreated!.FirstOrDefault()!.Success);
+			Assert.AreEqual("File already failed before",isCreated.FirstOrDefault()!.ErrorMessage);
 		}
 		
 		[TestMethod]

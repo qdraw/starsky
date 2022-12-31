@@ -72,4 +72,11 @@ public class ThumbnailItemTest
 		Assert.AreEqual("test", item.FileHash);
 		Assert.AreEqual(true, item.Small);
 	}
+	
+	[TestMethod]
+	public void ThumbnailItem_reasons()
+	{
+		var item = new ThumbnailItem("test", ThumbnailSize.Small, true){Reasons = "test"};
+		Assert.AreEqual("test", item.Reasons);
+	}
 }

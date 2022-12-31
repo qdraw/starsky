@@ -242,7 +242,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return thumbnailFromThumbnailUpdateList;
 		}
 
-		private async Task WriteErrorMessageToBlockLog(string subPath, string resizeMessage)
+		internal async Task WriteErrorMessageToBlockLog(string subPath, string resizeMessage)
 		{
 			var stream = PlainTextFileHelper.StringToStream("Thumbnail error " + resizeMessage);
 			await _iStorage.WriteStreamAsync(stream, GetErrorLogItemFullPath(subPath));
