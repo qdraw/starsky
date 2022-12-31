@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Models;
 using starsky.foundation.storage.Services;
+using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
@@ -19,8 +20,6 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class ThumbnailGenerationTest
 	{
-		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
-
 		public ThumbnailGenerationTest()
 		{
 			var services = new ServiceCollection();
@@ -28,7 +27,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 
 			var serviceProvider = services.BuildServiceProvider();
-			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+			serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 
 		}
 
@@ -114,6 +113,52 @@ namespace starskytest.Controllers
 			await controller.WorkThumbnailGeneration("/");
 
 			Assert.IsTrue(webLogger.TrackedExceptions.FirstOrDefault().Item2.Contains(message));
+		}
+
+		[TestMethod]
+		public void WhichFilesNeedToBePushedForUpdate_NothingToUpdate()
+		{
+			var result = ThumbnailGenerationController.WhichFilesNeedToBePushedForUpdates(
+				new List<GenerationResultModel>(), new List<FileIndexItem>());
+			Assert.AreEqual(0, result.Count);
+		}
+		
+		
+		[TestMethod]
+		public void WhichFilesNeedToBePushedForUpdate_DoesNotExistInFilesList()
+		{
+			var result = ThumbnailGenerationController.WhichFilesNeedToBePushedForUpdates(
+				new List<GenerationResultModel>
+				{
+					new GenerationResultModel{SubPath = "/test.jpg", Success = true}
+				}, new List<FileIndexItem>());
+			
+			Assert.AreEqual(0, result.Count);
+		}
+
+		[TestMethod]
+		public void WhichFilesNeedToBePushedForUpdate_DeletedSoIgnored()
+		{
+			var result = ThumbnailGenerationController.WhichFilesNeedToBePushedForUpdates(
+				new List<GenerationResultModel>
+				{
+					new GenerationResultModel{SubPath = "/test.jpg", Success = true}
+				}, new List<FileIndexItem>{new FileIndexItem("/test.jpg"){Tags = "!delete!"}});
+			
+			Assert.AreEqual(0, result.Count);
+		}
+		
+		
+		[TestMethod]
+		public void WhichFilesNeedToBePushedForUpdate_ShouldMap()
+		{
+			var result = ThumbnailGenerationController.WhichFilesNeedToBePushedForUpdates(
+				new List<GenerationResultModel>
+				{
+					new GenerationResultModel{SubPath = "/test.jpg", Success = true}
+				}, new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
+			
+			Assert.AreEqual(1, result.Count);
 		}
 	}
 }

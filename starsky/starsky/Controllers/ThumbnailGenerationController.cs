@@ -92,7 +92,7 @@ namespace starsky.Controllers
 			}
 		}
 
-		private static List<FileIndexItem> WhichFilesNeedToBePushedForUpdates(List<GenerationResultModel> thumbs, IEnumerable<FileIndexItem> getAllFilesAsync)
+		internal static List<FileIndexItem> WhichFilesNeedToBePushedForUpdates(List<GenerationResultModel> thumbs, IEnumerable<FileIndexItem> getAllFilesAsync)
 		{
 			var result = new List<FileIndexItem>();
 			var searchFor = getAllFilesAsync.Where(item =>
