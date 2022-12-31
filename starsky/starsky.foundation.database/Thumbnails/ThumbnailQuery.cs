@@ -40,10 +40,6 @@ public class ThumbnailQuery : IThumbnailQuery
 
 		var (newThumbnailItems, alreadyExistingThumbnailItems) = await CheckForDuplicates(
 			_context, newItems);
-		if ( alreadyExistingThumbnailItems == null ) // when true on CheckForDuplicates this should not happen
-		{
-			return null;
-		}
 		
 		if ( newThumbnailItems.Any() )
 		{
@@ -89,12 +85,11 @@ public class ThumbnailQuery : IThumbnailQuery
 	/// </summary>
 	/// <param name="context"></param>
 	/// <param name="items"></param>
-	/// <param name="returnAlreadyExists"></param>
 	/// <returns></returns>
 	internal static async Task<(List<ThumbnailItem> newThumbnailItems,
-		List<ThumbnailItem>? alreadyExistingThumbnailItems)> 
+		List<ThumbnailItem> alreadyExistingThumbnailItems)> 
 		CheckForDuplicates(ApplicationDbContext context, 
-			IEnumerable<ThumbnailItem?> items, bool returnAlreadyExists = true)
+			IEnumerable<ThumbnailItem?> items)
 	{
 		var nonNullItems = items.Where(item => item != null && 
 		                                       item.FileHash != null!).Distinct().ToList();
@@ -106,7 +101,6 @@ public class ThumbnailQuery : IThumbnailQuery
 		var newThumbnailItems = nonNullItems.Where(p => !alreadyExistingThumbnails.
 			Contains(p!.FileHash)).Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
 		
-		if ( !returnAlreadyExists ) return ( newThumbnailItems, null );
 		var alreadyExistingThumbnailItems = nonNullItems.
 			Where(p => alreadyExistingThumbnails.Contains(p!.FileHash)).Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
 		
