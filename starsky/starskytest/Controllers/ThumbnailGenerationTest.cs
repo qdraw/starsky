@@ -12,6 +12,7 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.thumbnailgeneration.Models;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
+using starsky.foundation.worker.ThumbnailServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -36,7 +37,7 @@ namespace starskytest.Controllers
 		{
 			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}));
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService());
+				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(), new FakeThumbnailBackgroundTaskQueue());
 			
 			var json = await controller.ThumbnailGeneration("/") as JsonResult;
 			var result = json.Value as string;
@@ -54,7 +55,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
 					new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
-				), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(selectorStorage));
+				), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
 
 			await controller.WorkThumbnailGeneration("/");
 
@@ -75,7 +76,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
 				new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
-			), new FakeIWebLogger(), socket, new FakeIThumbnailService(selectorStorage));
+			), new FakeIWebLogger(), socket, new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
 
 			await controller.WorkThumbnailGeneration("/");
 
@@ -91,7 +92,7 @@ namespace starskytest.Controllers
 			var socket = new FakeIWebSocketConnectionsService();
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
-				new List<FileIndexItem>()), new FakeIWebLogger(), socket, new FakeIThumbnailService());
+				new List<FileIndexItem>()), new FakeIWebLogger(), socket, new FakeIThumbnailService(), new FakeThumbnailBackgroundTaskQueue());
 
 			await controller.WorkThumbnailGeneration("/");
 
@@ -108,7 +109,8 @@ namespace starskytest.Controllers
 
 			var webLogger = new FakeIWebLogger();
 			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
-				webLogger, new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(null,new UnauthorizedAccessException(message)));
+				webLogger, new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(null,
+					new UnauthorizedAccessException(message)), new FakeThumbnailBackgroundTaskQueue());
 			
 			await controller.WorkThumbnailGeneration("/");
 

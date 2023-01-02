@@ -59,6 +59,7 @@ namespace starsky.Controllers
 				return NotFound("folder not found");
 			}
 
+			// When the CPU is to high its gives a Error 500
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await WorkThumbnailGeneration(subPath);
