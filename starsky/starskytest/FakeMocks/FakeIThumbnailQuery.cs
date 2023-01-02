@@ -13,7 +13,7 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 {
 	private readonly List<ThumbnailItem> _content = new List<ThumbnailItem>();
 
-	public FakeIThumbnailQuery(List<ThumbnailItem> items = null)
+	public FakeIThumbnailQuery(List<ThumbnailItem>? items = null)
 	{
 		if ( items != null )
 		{
