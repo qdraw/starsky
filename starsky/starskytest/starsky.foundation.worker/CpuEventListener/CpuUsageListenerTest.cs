@@ -104,6 +104,28 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 		}
 		
 		[TestMethod]
+		public void OnEventSourceCreated_EnablesEventsForSystemRuntimeEventSource_WrongPayLoadData3()
+		{
+			// Arrange
+			var listener = new CpuUsageListener(new FakeIWebLogger());
+
+			var data2 = new Dictionary<string, object>
+			{
+				{"Name", "cpu-usage"},
+				{"No___Mean", "wrong-value"}
+			};
+			var data = new List<object> { data2 };
+			var payload = new ReadOnlyCollection<object>(data);
+			
+			// Act
+			listener.UpdateEventData("EventCounters", payload);
+			// wrong payload data
+			
+			// Assert
+			Assert.IsFalse(listener.IsReady);
+		}
+		
+		[TestMethod]
 		public void OnEventSourceCreated_EnablesEventsForSystemRuntimeEventSource_NotDouble()
 		{
 			// Arrange
