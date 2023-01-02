@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Tracing;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -15,6 +16,7 @@ public sealed class CpuUsageListener : EventListener
 		_logger = logger;
 	}
 	public double LastValue { get; private set; }
+	public bool IsReady { get; private set; } = false;
 
 	protected override void OnEventSourceCreated(EventSource eventSource)
 	{
@@ -26,12 +28,16 @@ public sealed class CpuUsageListener : EventListener
 
 	protected override void OnEventWritten(EventWrittenEventArgs eventData)
 	{
-		if (eventData.EventName != "EventCounters")
+		UpdateEventData(eventData.EventName, eventData.Payload);
+		base.OnEventWritten(eventData);
+	}
+
+	internal void UpdateEventData(string? eventDataEventName, ReadOnlyCollection<object?>? eventDataPayload)
+	{
+		if (eventDataEventName != "EventCounters" || eventDataPayload == null || eventDataPayload.Count == 0)
 			return;
 
-		if (eventData.Payload == null || eventData.Payload.Count == 0)
-			return;
-		if ( eventData.Payload[0] is not IDictionary<string, object>
+		if ( eventDataPayload[0] is not IDictionary<string, object>
 			     eventPayload ||
 		     !eventPayload.TryGetValue("Name", out var nameData) ||
 		     nameData is not ("cpu-usage") ) return;
@@ -40,10 +46,9 @@ public sealed class CpuUsageListener : EventListener
 		
 		if ( value is not double dValue ) return;
 		LastValue = dValue;
+		IsReady = true;
 
 		_logger.LogDebug($"CPU Usage: {dValue}%");
-		
-		base.OnEventWritten(eventData);
 	}
 }
 
