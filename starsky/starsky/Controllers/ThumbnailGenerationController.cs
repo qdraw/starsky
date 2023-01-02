@@ -16,6 +16,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
+using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 namespace starsky.Controllers
 {
@@ -27,15 +28,17 @@ namespace starsky.Controllers
 		private readonly IQuery _query;
 		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly IThumbnailService _thumbnailService;
+		private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 
 		public ThumbnailGenerationController(ISelectorStorage selectorStorage,
-			IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService, IThumbnailService thumbnailService)
+			IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService, IThumbnailService thumbnailService, IThumbnailQueuedHostedService bgTaskQueue)
 		{
 			_selectorStorage = selectorStorage;
 			_query = query;
 			_logger = logger;
 			_connectionsService = connectionsService;
 			_thumbnailService = thumbnailService;
+			_bgTaskQueue = bgTaskQueue;
 		}
 		
 		/// <summary>
@@ -56,7 +59,10 @@ namespace starsky.Controllers
 				return NotFound("folder not found");
 			}
 
-			await Task.Factory.StartNew(() => WorkThumbnailGeneration(subPath));
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
+			{
+				await WorkThumbnailGeneration(subPath);
+			}, f);
 			
 			return Json("Job started");
 		}
@@ -72,7 +78,11 @@ namespace starsky.Controllers
 				var result =
 					WhichFilesNeedToBePushedForUpdates(thumbs, getAllFilesAsync);
 
-				if ( !result.Any() ) return;
+				if ( !result.Any() )
+				{
+					_logger.LogInformation($"[ThumbnailGenerationController] done - no results {subPath}");
+					return;
+				}
 
 				var webSocketResponse =
 					new ApiNotificationResponseModel<List<FileIndexItem>>(result, ApiNotificationType.ThumbnailGeneration);
