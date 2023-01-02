@@ -6,28 +6,28 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
+using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.foundation.sync.WatcherBackgroundService
+namespace starsky.foundation.worker.ThumbnailServices
 {
 	[Service(typeof(IHostedService),
 		InjectionLifetime = InjectionLifetime.Singleton)]
-	public sealed class DiskWatcherQueuedHostedService : BackgroundService
+	public sealed class ThumbnailQueuedHostedService : BackgroundService
 	{
-		private readonly IDiskWatcherBackgroundTaskQueue _taskQueue;
+		private readonly IThumbnailQueuedHostedService _taskQueue;
 		private readonly IWebLogger _logger;
-		private readonly AppSettings _appSettings;
-		
-		public DiskWatcherQueuedHostedService(
-			IDiskWatcherBackgroundTaskQueue taskQueue,
+
+		public ThumbnailQueuedHostedService(
+			IThumbnailQueuedHostedService taskQueue,
 			IWebLogger logger, AppSettings appSettings) =>
-			(_taskQueue, _logger, _appSettings) = (taskQueue, logger, appSettings);
+			(_taskQueue, _logger, _) = (taskQueue, logger, appSettings);
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			_logger.LogInformation("Queued Hosted Service for DiskWatcher");
-			await ProcessTaskQueue.ProcessBatchedLoopAsync(_taskQueue, _logger,
-				_appSettings, stoppingToken);
+			_logger.LogInformation("Queued Hosted Service for Thumbnails");
+			await ProcessTaskQueue.ProcessTaskQueueAsync(_taskQueue, _logger, 
+				stoppingToken);
 		}
 
 		public override async Task StopAsync(CancellationToken cancellationToken)
@@ -38,3 +38,4 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 		}
 	}
 }
+

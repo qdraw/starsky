@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -11,16 +10,12 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
-using starsky.foundation.webtelemetry.Interfaces;
-using starsky.foundation.worker.Services;
 
 namespace starsky.Controllers
 {
@@ -75,8 +70,7 @@ namespace starsky.Controllers
 				var getAllFilesAsync = await _query.GetAllFilesAsync(subPath);
 
 				var result =
-					WhichFilesNeedToBePushedForUpdates(thumbs,
-						getAllFilesAsync);
+					WhichFilesNeedToBePushedForUpdates(thumbs, getAllFilesAsync);
 
 				if ( !result.Any() ) return;
 
