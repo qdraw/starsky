@@ -14,10 +14,7 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.webtelemetry.Interfaces;
-using starsky.foundation.worker.CpuEventListener;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
-using starsky.foundation.worker.Interfaces;
-using starsky.foundation.worker.Services;
 using starsky.foundation.worker.ThumbnailServices;
 using starsky.foundation.worker.ThumbnailServices.Exceptions;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
@@ -158,7 +155,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		{
 			Func<CancellationToken, ValueTask> func = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func, string.Empty);
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
 			Assert.IsNull(func);
 		}
 
