@@ -10,6 +10,7 @@ let searchPath = join(__dirname, prefixPath);
 
 // Which company? and prefix for devops
 // set: System.CollectionUri 
+// should contain slash at end
 let systemCollectionUri = process.env.SYSTEM_COLLECTIONURI;
 // systemCollectionUri = "https://dev.azure.com/wea*****/";
 // System.CollectionUri = https://dev.azure.com/fabrikamfiber/
@@ -85,16 +86,25 @@ console.log(`searchPath: ${searchPath}`);
 
 const url = `${systemCollectionUri}${systemTeamProject}/_apis/git/repositories/${buildRepositoryID}/pullrequests?searchCriteria.sourceRefName=${buildSourceBranch}&api-version=7.0`;
 
+// First check if there is already a PR for this branch
 const base64authorizationHeader = 'Basic ' + Buffer.from(":" + personalAccessToken).toString('base64', 'utf8');
 httpsGet(url, base64authorizationHeader).then((data)=>{
-    if (data.count === 1) {
+    if (data.count === 1 && data.value.length === 1) {
         console.log("PR already exists");
+        console.log(data.value[0].pullRequestId);
+        console.log(data.value[0].url);
         return;
     }
 
     if (data.count === 0) {
-        console.log('No PR found, creating one');
-        createPullRequest();
+        // if there is no pr, check if the branch exists
+        checkIfBranchExists().then(()=>{    
+            console.log('No PR found, creating one');
+            createPullRequest();
+        }).catch((err)=>{
+            console.log('checking branch exists failed');
+            console.log(err);
+        });
         return;
     }
 
@@ -103,6 +113,24 @@ httpsGet(url, base64authorizationHeader).then((data)=>{
     exit(1);
 });
 
+
+function checkIfBranchExists(){
+	return new Promise((resolve, reject) => {
+        const url = `${systemCollectionUri}${systemTeamProject}/_apis/git/repositories/${buildRepositoryID}/refs?api-version=7.0&filter=${buildSourceBranch.replace('refs/', '')}`;
+        console.log(`checkIfBranchExists: ${url}`);
+        httpsGet(url, base64authorizationHeader).then((data)=>{
+            if (data.count === 1) {
+                resolve();
+                return;
+            }
+            if (data.count === 0) {
+                reject(new Error("Branch does not exist"));
+                return;
+            }
+            reject(new Error("Getting list of branches FAILED"));
+        });
+	});
+}
 
 function createPullRequest(){
     const content = {
@@ -131,6 +159,9 @@ function createPullRequest(){
           }
           console.log("PR creation done");
           console.log(data);
+          console.log('------------------');
+          console.log('-> PR created: ' + data.pullRequestId);
+          console.log(content.url);
       });
 
       // Error case:
