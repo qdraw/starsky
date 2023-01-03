@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -46,6 +47,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly IThumbnailService _thumbnailService;
 	    private readonly IWebLogger _logger;
 
+	    [SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage 
 			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool, 
 		    IOverlayImage overlayImage, IConsole console, IWebLogger logger, IThumbnailService thumbnailService)

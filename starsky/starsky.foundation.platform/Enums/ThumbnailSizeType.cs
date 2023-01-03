@@ -1,5 +1,8 @@
 namespace starsky.foundation.platform.Enums;
 
+/// <summary>
+/// These values are stored in a database, so don't change them
+/// </summary>
 public enum ThumbnailSize
 {
 	/// <summary>

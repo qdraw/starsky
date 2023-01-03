@@ -35,7 +35,6 @@ namespace starsky.feature.export.Services
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
-		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly IWebLogger _logger;
 		private readonly IThumbnailService _thumbnailService;
@@ -46,7 +45,6 @@ namespace starsky.feature.export.Services
 			_appSettings = appSettings;
 			_query = query;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_thumbnailService = thumbnailService;
 			_logger = logger;
