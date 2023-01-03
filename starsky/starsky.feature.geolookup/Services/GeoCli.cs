@@ -23,7 +23,7 @@ namespace starsky.feature.geolookup.Services
 	/// To test: exiftool image.jpg -Country-PrimaryLocationName="" -Country="" -State="" -Province-State=""
 	/// -City="" -xmp:City="" -XMP:CountryCode="" -Country-PrimaryLocationCode="" -overwrite_original
 	/// </summary>
-	public class GeoCli
+	public sealed class GeoCli
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IConsole _console;

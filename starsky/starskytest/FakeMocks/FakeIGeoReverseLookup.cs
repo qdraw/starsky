@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 
 namespace starskytest.FakeMocks
@@ -21,6 +23,9 @@ namespace starskytest.FakeMocks
 		{
 			Count++;
 			metaFilesInDirectory.AddRange(_fileIndexItems);
+			metaFilesInDirectory = _fileIndexItems.GroupBy(i => i.FilePath)
+				.Select(g => g.Last()) // get last item
+				.ToList();
 			return Task.FromResult(metaFilesInDirectory);
 		}
 
