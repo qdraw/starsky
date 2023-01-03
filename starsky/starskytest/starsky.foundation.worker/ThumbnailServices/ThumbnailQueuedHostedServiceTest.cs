@@ -15,6 +15,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.CpuEventListener;
+using starsky.foundation.worker.CpuEventListener.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starsky.foundation.worker.ThumbnailServices;
@@ -50,6 +51,8 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			// Add Background services
 			services.AddSingleton<IHostedService, ThumbnailQueuedHostedService>();
 			services.AddSingleton<IThumbnailQueuedHostedService, ThumbnailBackgroundTaskQueue>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+			services.AddSingleton<ICpuUsageListenerBackgroundService, FakeICpuUsageListenerBackgroundService>();
 			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 
 			// build the service
@@ -58,7 +61,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		}
         
 		[TestMethod]
-		public async Task BackgroundTaskQueueTest_DequeueAsync()
+		public async Task ThumbnailQueuedHostedServiceTest_DequeueAsync()
 		{
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async token =>
 			{
@@ -85,18 +88,28 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		// https://stackoverflow.com/a/51224556
 		[TestMethod]
 		[Timeout(5000)]
-		public async Task BackgroundTaskQueueTest_Verify_Hosted_Service_Executes_Task() {
+		public async Task ThumbnailQueuedHostedServiceTest_Verify_Hosted_Service_Executes_Task() {
 			IServiceCollection services = new ServiceCollection();
+			services.AddSingleton<IHostedService, ThumbnailQueuedHostedService>();
 			services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-			services.AddHostedService<UpdateBackgroundQueuedHostedService>();
 			services.AddSingleton<IThumbnailQueuedHostedService, ThumbnailBackgroundTaskQueue>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+			services.AddSingleton<ICpuUsageListenerBackgroundService, FakeICpuUsageListenerBackgroundService>();
 			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+			services.AddSingleton<AppSettings, AppSettings>();
+
 			var serviceProvider = services.BuildServiceProvider();
 
-			var service = serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
-
-			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
+			var hostedServices = serviceProvider.GetServices<IHostedService>().ToList();
+			if ( hostedServices.Count != 1 )
+			{
+				throw new NotSupportedException("hostedServices.Count() != 1");
+			}
+			var service = hostedServices.First() as ThumbnailQueuedHostedService;
+			
+			
+			var backgroundQueue = serviceProvider.GetService<IThumbnailQueuedHostedService>();
 
 			if ( service == null )
 				throw new NullReferenceException("bg is null");
@@ -108,7 +121,15 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 				isExecuted = true;
 			}, string.Empty);
 
-			await Task.Delay(1000);
+			await Task.Delay(100);
+			if ( !isExecuted )
+			{
+				await Task.Delay(400);
+			}
+			if ( !isExecuted )
+			{
+				await Task.Delay(500);
+			}
 			Assert.IsTrue(isExecuted);
 
 			await service.StopAsync(CancellationToken.None);
@@ -116,7 +137,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 
 		[ExpectedException(typeof(ArgumentNullException))]
 		[TestMethod]
-		public async Task BackgroundTaskQueueTest_ArgumentNullExceptionFail()
+		public async Task ThumbnailQueuedHostedServiceTest_ArgumentNullExceptionFail()
 		{
 			Func<CancellationToken, ValueTask> func = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
@@ -130,18 +151,24 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		{
 			IServiceCollection services = new ServiceCollection();
 			services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-			services.AddHostedService<UpdateBackgroundQueuedHostedService>();
-			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, ThumbnailQueuedHostedService>();
+			services.AddSingleton<IThumbnailQueuedHostedService, ThumbnailBackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
-			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
+			services.AddSingleton<AppSettings, AppSettings>();
+			services.AddSingleton<ICpuUsageListenerBackgroundService, FakeICpuUsageListenerBackgroundService>();
 			var serviceProvider = services.BuildServiceProvider();
 
-			var service = serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
+			var hostedServices = serviceProvider.GetServices<IHostedService>().ToList();
+			if ( hostedServices.Count != 1 )
+			{
+				throw new NotSupportedException("hostedServices.Count() != 1");
+			}
+			var service = hostedServices.First() as ThumbnailQueuedHostedService;
 
-			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
-
+			var backgroundQueue = serviceProvider.GetService<IThumbnailQueuedHostedService>();
+			
 			await service!.StartAsync(CancellationToken.None);
-
+			
 			var isExecuted = false;
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(async _ =>
 			{
@@ -149,8 +176,16 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 				throw new Exception();
 				// EXCEPTION IS IGNORED
 			}, string.Empty);
-
-			await Task.Delay(1000);
+			
+			await Task.Delay(100);
+			if ( !isExecuted )
+			{
+				await Task.Delay(400);
+			}
+			if ( !isExecuted )
+			{
+				await Task.Delay(500);
+			}
 			Assert.IsTrue(isExecuted);
 
 		}
@@ -160,7 +195,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		public async Task StartAsync_CancelBeforeStart()
 		{
 			var fakeLogger = new FakeIWebLogger();
-			var service = new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(), fakeLogger);
+			var service = new ThumbnailQueuedHostedService(new FakeThumbnailBackgroundTaskQueue(), fakeLogger, new AppSettings());
 
 			var cancelTokenSource = new CancellationTokenSource();
 			cancelTokenSource.Cancel();
@@ -177,7 +212,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		public async Task Update_End_StopAsync_Test()
 		{
 			var logger = new FakeIWebLogger();
-			var service = new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(), logger);
+			var service = new ThumbnailQueuedHostedService(new FakeThumbnailBackgroundTaskQueue(), logger, new AppSettings());
 			
 			CancellationTokenSource source = new CancellationTokenSource();
 			CancellationToken token = source.Token;

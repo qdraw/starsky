@@ -105,7 +105,15 @@ namespace starskytest.starsky.foundation.worker.Services
 				isExecuted = true;
 			}, string.Empty);
 
-			await Task.Delay(1000);
+			await Task.Delay(100);
+			if ( !isExecuted )
+			{
+				await Task.Delay(400);
+			}
+			if ( !isExecuted )
+			{
+				await Task.Delay(500);
+			}
 			Assert.IsTrue(isExecuted);
 
 			await service.StopAsync(CancellationToken.None);
@@ -147,9 +155,17 @@ namespace starskytest.starsky.foundation.worker.Services
 				// EXCEPTION IS IGNORED
 			}, string.Empty);
 
-			await Task.Delay(1000);
+			await Task.Delay(100);
+			if ( !isExecuted )
+			{
+				await Task.Delay(400);
+			}
+			if ( !isExecuted )
+			{
+				await Task.Delay(500);
+			}
+			
 			Assert.IsTrue(isExecuted);
-
 		}
 
 		[TestMethod]
