@@ -145,7 +145,10 @@ namespace starskytest.Controllers
 				new List<GenerationResultModel>
 				{
 					new GenerationResultModel{SubPath = "/test.jpg", Success = true}
-				}, new List<FileIndexItem>{new FileIndexItem("/test.jpg"){Tags = "!delete!"}});
+				}, new List<FileIndexItem>{new FileIndexItem("/test.jpg"){
+					Status = FileIndexItem.ExifStatus.Ok,
+					Tags = "!delete!"
+				}});
 			
 			Assert.AreEqual(0, result.Count);
 		}

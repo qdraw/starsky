@@ -101,11 +101,11 @@ namespace starsky.Controllers
 		{
 			var result = new List<FileIndexItem>();
 			var searchFor = getAllFilesAsync.Where(item =>
-				thumbs.FirstOrDefault(p => p.SubPath == item.FilePath)
+				thumbs.FirstOrDefault(p => p.SubPath == item.FilePath && item.Tags != null)
 					?.Success == true).DistinctBy(p => p.FilePath);
 			foreach ( var item in searchFor )
 			{
-				if ( item.Tags?.Contains("!delete!") == true ) continue;
+				if ( item.Tags!.Contains("!delete!") ) continue;
 
 				item.SetLastEdited();
 				item.LastChanged = new List<string> {"LastEdited", "FileHash"};
