@@ -42,7 +42,7 @@ namespace starsky.foundation.worker.ThumbnailServices
 		public ValueTask QueueBackgroundWorkItemAsync(
 			Func<CancellationToken, ValueTask> workItem, string metaData)
 		{
-			if ( _cpuUsageListenerService.LastValue > _appSettings.CpuUsageMaxPercentage )
+			if ( _cpuUsageListenerService.CpuUsageMean > _appSettings.CpuUsageMaxPercentage )
 			{
 				_logger.LogInformation("CPU is to high, skip thumbnail generation");
 				throw new ToManyUsageException($"QueueBackgroundWorkItemAsync: Skip {metaData} because of high CPU usage");

@@ -91,7 +91,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		public async Task Count_AddOneForCount_UsageException()
 		{
 			var e = new FakeICpuUsageListenerBackgroundService(100d);
-			Console.WriteLine(e.LastValue);
+			Console.WriteLine(e.CpuUsageMean);
 			var backgroundQueue = new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(), new AppSettings());
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();

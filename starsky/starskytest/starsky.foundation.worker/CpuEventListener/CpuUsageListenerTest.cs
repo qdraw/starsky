@@ -18,7 +18,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 			var listener = new CpuUsageListener(new FakeIWebLogger());
 
 			// Act
-			var result = listener.LastValue;
+			var result = listener.CpuUsageMean;
 
 			// Assert
 			Assert.AreEqual(0.0, result);

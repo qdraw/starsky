@@ -14,7 +14,7 @@ public class CpuUsageListenerBackgroundServiceTest
 	{
 		var service = new CpuUsageListenerBackgroundService(new FakeIWebLogger());
 		await service.StartAsync(new CancellationToken(true));
-		Assert.AreEqual(0,service.LastValue);
+		Assert.AreEqual(0,service.CpuUsageMean);
 	}
 	
 	[TestMethod]
@@ -22,7 +22,7 @@ public class CpuUsageListenerBackgroundServiceTest
 	{
 		var service = new CpuUsageListenerBackgroundService(new FakeIWebLogger());
 		await service.StopAsync(new CancellationToken(true));
-		Assert.AreEqual(0,service.LastValue);
+		Assert.AreEqual(0,service.CpuUsageMean);
 	}
 	
 	[TestMethod]
@@ -31,13 +31,13 @@ public class CpuUsageListenerBackgroundServiceTest
 		var service = new CpuUsageListenerBackgroundService(new FakeIWebLogger());
 		await service.StartAsync(new CancellationToken(true));
 		await service.StopAsync(new CancellationToken(true));
-		Assert.AreEqual(0,service.LastValue);
+		Assert.AreEqual(0,service.CpuUsageMean);
 	}
 	
 	[TestMethod]
 	public void CpuUsageListenerBackgroundService1_Nullable()
 	{
 		var service = new CpuUsageListenerBackgroundService(new FakeIWebLogger());
-		Assert.AreEqual(0,service.LastValue);
+		Assert.AreEqual(0,service.CpuUsageMean);
 	}
 }

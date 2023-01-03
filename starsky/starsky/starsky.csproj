@@ -28,6 +28,7 @@
     </PropertyGroup>
     <ItemGroup>
         <None Remove="Properties\.gitkeep" />
+        <None Remove="generic-site\**" />
     </ItemGroup>
     
     <ItemGroup Condition="!Exists('Properties/launchSettings.json')">
@@ -112,6 +113,7 @@
         <Content Update="appsettings.default.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Remove="generic-site\**" />
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">
@@ -157,10 +159,12 @@
     <ItemGroup>
         <Compile Remove="clientapp\node_modules\**" />
         <Compile Remove="clientapp\coverage\**" />
+        <Compile Remove="generic-site\**" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Remove="clientapp\node_modules\**" />
         <EmbeddedResource Remove="clientapp\coverage\**" />
+        <EmbeddedResource Remove="generic-site\**" />
     </ItemGroup>
     <ItemGroup>
         <Content Remove="clientapp\node_modules\**" />
@@ -168,6 +172,10 @@
     <ItemGroup>
         <None Remove="clientapp\node_modules\**" />
         <None Remove="clientapp\coverage\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="generic-site\appsettings.base.json" />
+      <_ContentIncludedByDefault Remove="generic-site\appsettings.Development.json" />
     </ItemGroup>
     <PropertyGroup>
         <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>

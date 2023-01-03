@@ -4,5 +4,8 @@ namespace starsky.foundation.worker.CpuEventListener.Interfaces;
 
 public interface ICpuUsageListenerBackgroundService : IHostedService
 {
-	double LastValue { get; }
+	/// <summary>
+	/// Last CPU usage
+	/// </summary>
+	double CpuUsageMean { get; }
 }

@@ -15,7 +15,7 @@ public sealed class CpuUsageListener : EventListener
 	{
 		_logger = logger;
 	}
-	public double LastValue { get; private set; }
+	public double CpuUsageMean { get; private set; }
 	public bool IsReady { get; private set; } = false;
 
 	protected override void OnEventSourceCreated(EventSource eventSource)
@@ -45,7 +45,7 @@ public sealed class CpuUsageListener : EventListener
 		if ( !eventPayload.TryGetValue("Mean", out var value) ) return;
 		
 		if ( value is not double dValue ) return;
-		LastValue = dValue;
+		CpuUsageMean = dValue;
 		IsReady = true;
 
 		_logger.LogDebug($"CPU Usage: {dValue}%");

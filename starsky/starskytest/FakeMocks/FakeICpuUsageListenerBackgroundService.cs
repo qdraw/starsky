@@ -8,7 +8,7 @@ public class FakeICpuUsageListenerBackgroundService : ICpuUsageListenerBackgroun
 {
 	public FakeICpuUsageListenerBackgroundService(double lastValue = 0)
 	{
-		LastValue = lastValue;
+		CpuUsageMean = lastValue;
 	}
 
 	public Task StartAsync(CancellationToken cancellationToken)
@@ -21,5 +21,5 @@ public class FakeICpuUsageListenerBackgroundService : ICpuUsageListenerBackgroun
 		return Task.CompletedTask;
 	}
 
-	public double LastValue { get; set; }
+	public double CpuUsageMean { get; set; }
 }

@@ -20,7 +20,7 @@ public class CpuUsageListenerBackgroundService : ICpuUsageListenerBackgroundServ
 	
 	private CpuUsageListener? _cpuListener;
 	
-	public double LastValue => _cpuListener?.LastValue ?? 0;
+	public double CpuUsageMean => _cpuListener?.CpuUsageMean ?? 0;
 	
 	public Task StartAsync(CancellationToken cancellationToken)
 	{
