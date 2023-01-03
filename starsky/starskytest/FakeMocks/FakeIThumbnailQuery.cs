@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -21,12 +22,12 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 		}
 	}
 
-	public FakeIThumbnailQuery( ApplicationDbContext _)
+	public FakeIThumbnailQuery( ApplicationDbContext _, IServiceScope _2)
 	{
 		// should bind to the context
 	}
 	
-	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(ThumbnailSize size, IEnumerable<string> fileHashes,
+	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(ThumbnailSize size, IReadOnlyCollection<string> fileHashes,
 		bool? setStatus = null)
 	{
 		foreach ( var hash in fileHashes )

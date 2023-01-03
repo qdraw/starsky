@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
@@ -11,7 +12,6 @@ using starsky.foundation.database.Thumbnails;
 using starsky.foundation.platform.Enums;
 
 namespace starskytest.starsky.foundation.database.Thumbnails;
-
 
 [TestClass]
 public class ThumbnailQueryTest
@@ -21,19 +21,24 @@ public class ThumbnailQueryTest
 
 	public ThumbnailQueryTest()
 	{
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(databaseName: "Add_writes_to_database")
-			.Options;
-
-		_context = new ApplicationDbContext(options);
-		_thumbnailQuery = new ThumbnailQuery(_context);
+		var serviceScope = CreateNewScope();
+		_context = serviceScope.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		_thumbnailQuery = new ThumbnailQuery(_context, serviceScope);
 	}
 
+	private static IServiceScopeFactory CreateNewScope()
+	{
+		var services = new ServiceCollection();
+		services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(ThumbnailQueryTest)));
+		var serviceProvider = services.BuildServiceProvider();
+		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	}
+	
 	[TestMethod]
 	public async Task AddThumbnailRangeAsync_AddNewThumbnails_ReturnsNewThumbnails()
 	{
 		// Arrange
-		var size = ThumbnailSize.Small;
+		const ThumbnailSize size = ThumbnailSize.Small;
 		var fileHashes = new List<string> { "00123", "00456" };
 
 		// Act
@@ -42,13 +47,67 @@ public class ThumbnailQueryTest
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(2, result.Count);
-		Assert.IsTrue(result.All(x => x.Small == true));
-		Assert.IsTrue(result.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
+		Assert.IsTrue(result.Where(p => p.FileHash is "00123" or "00456").All(x => x.Small == true));
+		Assert.IsTrue(result.Where(p => p.FileHash is "00123" or "00456").Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
 
 		var thumbnails = await _context.Thumbnails.ToListAsync();
-		Assert.AreEqual(2, thumbnails.Count);
+		Assert.AreEqual(2, thumbnails.Count(p => p.FileHash is "00123" or "00456"));
 		Assert.IsTrue(thumbnails.All(x => x.Small == true));
 		Assert.IsTrue(thumbnails.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
+	}
+	
+	        
+	[TestMethod]
+	public async Task AddThumbnailRangeAsync_Disposed_Success()
+	{
+		// Arrange
+		var fileHashes = new List<string> { "627445", "8127445" };
+		const ThumbnailSize size = ThumbnailSize.Large;
+
+		var serviceScope = CreateNewScope();
+		var scope = serviceScope.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		var thumbnailQuery = new ThumbnailQuery(dbContext,serviceScope);
+
+		// And dispose
+		await dbContext.DisposeAsync();
+
+		// Act
+		var result = await thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(2, result.Count);
+		Assert.IsTrue(result.Where(p => p.FileHash is "627445" or "8127445").All(x => x.Large == true));
+		Assert.IsTrue(result.Where(p => p.FileHash is "627445" or "8127445").Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
+
+		var thumbnails = await _context.Thumbnails.Where(p => p.FileHash == "627445" || p.FileHash == "8127445").ToListAsync();
+		Assert.AreEqual(2, thumbnails.Count(p => p.FileHash is "627445" or "8127445"));
+		Assert.IsTrue(thumbnails.All(x => x.Large == true));
+		Assert.IsTrue(thumbnails.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
+	}
+	
+	[TestMethod]
+	[ExpectedException(typeof(ObjectDisposedException))]
+	public async Task AddThumbnailRangeAsync_Disposed_NoServiceScope()
+	{
+		// Arrange
+		var fileHashes = new List<string> { "627445", "8127445" };
+		const ThumbnailSize size = ThumbnailSize.Large;
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(databaseName: "Add_writes_to_database11")
+			.Options;
+
+		var dbContext = new ApplicationDbContext(options);
+		var thumbnailQuery = new ThumbnailQuery(dbContext,null); // <-- no service scope
+
+		// And dispose
+		await dbContext.DisposeAsync();
+
+		// Act
+		await thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
+		// no service scope so exception
 	}
 
 	[TestMethod]

@@ -25,7 +25,7 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 		[TestMethod]
 		public void QueryFactoryTest_QueryReturn()
 		{
-			var queryFactory = new ThumbnailQueryFactory(null, new ThumbnailQuery(null!),
+			var queryFactory = new ThumbnailQueryFactory(null, new ThumbnailQuery(null!,null),
 				new FakeIWebLogger());
 			var query = queryFactory.ThumbnailQuery();
 			Assert.AreEqual(typeof(ThumbnailQuery),query!.GetType());
@@ -41,7 +41,7 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 			var queryFactory = new ThumbnailQueryFactory(new SetupDatabaseTypes(new AppSettings
 				{
 					DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-				}, services), new ThumbnailQuery(new ApplicationDbContext(options)),
+				}, services), new ThumbnailQuery(new ApplicationDbContext(options),null),
 				new FakeIWebLogger());
 			var query = queryFactory.ThumbnailQuery();
 			Assert.AreEqual(typeof(ThumbnailQuery),query!.GetType());

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -28,18 +29,19 @@ namespace starsky.foundation.database.Thumbnails
 			var context = _setupDatabaseTypes?.BuilderDbFactory();
 			if ( _thumbnailQuery.GetType() == typeof(ThumbnailQuery) && context != null)
 			{
-				return new ThumbnailQuery(context);
+				return new ThumbnailQuery(context, null);
 			}
 
 			// FakeIQuery should skip creation
 			var isAnyContentIncluded = _thumbnailQuery.GetReflectionFieldValue<List<ThumbnailItem>?>("_content")?.Any();
-			if ( isAnyContentIncluded == true )
+			if ( isAnyContentIncluded != true )
 			{
-				_logger?.LogInformation("FakeIThumbnailQuery _content detected");
-				return _thumbnailQuery;
+				return Activator.CreateInstance(_thumbnailQuery.GetType(),
+					context, null) as IThumbnailQuery;
 			}
 			
-			return Activator.CreateInstance(_thumbnailQuery.GetType(), context) as IThumbnailQuery;
+			_logger?.LogInformation("FakeIThumbnailQuery _content detected");
+			return _thumbnailQuery;
 		}
 	}
 }

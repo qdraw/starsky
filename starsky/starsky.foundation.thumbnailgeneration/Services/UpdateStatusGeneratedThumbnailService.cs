@@ -27,10 +27,10 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 			       ThumbnailSize.ExtraLarge } )
 		{
 			var largeThumbnailsSuccess = generationResults.Where(p => p.Success && p.Size == size);
-			await _thumbnailQuery.AddThumbnailRangeAsync(size, largeThumbnailsSuccess.Select(p => p.FileHash), true);
+			await _thumbnailQuery.AddThumbnailRangeAsync(size, largeThumbnailsSuccess.Select(p => p.FileHash).ToList(), true);
 
 			var largeThumbnailsFail = generationResults.Where(p => !p.Success && p.Size == size);
-			await _thumbnailQuery.AddThumbnailRangeAsync(size, largeThumbnailsFail.Select(p => p.FileHash), false);
+			await _thumbnailQuery.AddThumbnailRangeAsync(size, largeThumbnailsFail.Select(p => p.FileHash).ToList(), false);
 		}
 
 	}

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
 
@@ -15,35 +17,56 @@ namespace starsky.foundation.database.Thumbnails;
 public class ThumbnailQuery : IThumbnailQuery
 {
 	private readonly ApplicationDbContext _context;
+	private readonly IServiceScopeFactory? _scopeFactory;
 
-	public ThumbnailQuery(ApplicationDbContext context)
+	public ThumbnailQuery(ApplicationDbContext context, IServiceScopeFactory? scopeFactory)
 	{
 		_context = context;
+		_scopeFactory = scopeFactory;
 	}
 	
 	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(
-		ThumbnailSize size, IEnumerable<string> fileHashes,
+		ThumbnailSize size, IReadOnlyCollection<string> fileHashes,
 		bool? setStatus = null)
 	{
 		if ( fileHashes == null )
 		{
 			throw new ArgumentNullException(nameof(fileHashes));
 		}
-		return AddThumbnailRangeInternalAsync(size, fileHashes, setStatus);
+		return AddThumbnailRangeInternalRetryDisposedAsync(size, fileHashes, setStatus);
 	}
-	
-	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
+
+	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalRetryDisposedAsync(ThumbnailSize size,
+			IReadOnlyCollection<string> fileHashes,
+			bool? setStatus = null)
+	{
+		try
+		{
+			return await AddThumbnailRangeInternalAsync(_context, size,
+				fileHashes, setStatus);
+		}
+		// InvalidOperationException can also be disposed
+		catch (InvalidOperationException)
+		{
+			if ( _scopeFactory == null ) throw;
+			return await AddThumbnailRangeInternalAsync(new InjectServiceScope(_scopeFactory).Context(), size,
+				fileHashes, setStatus);
+		}
+	}
+
+	private static async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
+		ApplicationDbContext dbContext, 
 		ThumbnailSize size, IEnumerable<string> fileHashes,
 		bool? setStatus = null)
 	{
 		var newItems = fileHashes.Distinct().Select(fileHash => new ThumbnailItem(fileHash, size, setStatus)).ToList();
 
 		var (newThumbnailItems, alreadyExistingThumbnailItems) = await CheckForDuplicates(
-			_context, newItems);
+			dbContext, newItems);
 		
 		if ( newThumbnailItems.Any() )
 		{
-			await _context.Thumbnails.AddRangeAsync(newThumbnailItems);
+			await dbContext.Thumbnails.AddRangeAsync(newThumbnailItems);
 		}
 
 		foreach ( var thumbnailItem in alreadyExistingThumbnailItems )
@@ -51,7 +74,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			thumbnailItem.Change(size, setStatus);
 		}
 
-		await _context.SaveChangesAsync();
+		await dbContext.SaveChangesAsync();
 
 		var allResults = alreadyExistingThumbnailItems
 			.Concat(newThumbnailItems)
@@ -61,7 +84,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			try
 			{
-				_context.Attach(item).State = EntityState.Detached;
+				dbContext.Attach(item).State = EntityState.Detached;
 			}
 			catch ( InvalidOperationException)
 			{

@@ -33,11 +33,11 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 			statusResultsWithFileHashes.Add((status, fileHash,reason));
 		}
 		
-		var okItems = statusResultsWithFileHashes.Where(p => p.Item1).Select(p => p.Item2);
+		var okItems = statusResultsWithFileHashes.Where(p => p.Item1).Select(p => p.Item2).ToList();
 		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, okItems, true);
 		
 		var failItems = statusResultsWithFileHashes.Where(p => !p.Item1);
-		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, failItems.Select(p => p.Item2), 
+		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, failItems.Select(p => p.Item2).ToList(), 
 			false);
 	}
 }
