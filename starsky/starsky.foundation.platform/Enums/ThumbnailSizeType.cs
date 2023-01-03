@@ -20,10 +20,10 @@ public enum ThumbnailSize
 	/// <summary>
 	/// 1000px
 	/// </summary>
-	Large = 22,
+	Large = 30,
 		
 	/// <summary>
 	/// 2000px
 	/// </summary>
-	ExtraLarge = 24,
+	ExtraLarge = 40,
 }

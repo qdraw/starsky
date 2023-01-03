@@ -87,9 +87,9 @@ namespace starsky.feature.geolookup.Services
 			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
 				.ToList() )
 			{
-				var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath).Key;
+				var newThumb = (await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!)).Key;
 				if ( item.FileHash == newThumb) continue;
-				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(item.FileHash, newThumb);
+				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(item.FileHash!, newThumb);
 				if ( _appSettings.IsVerbose() )
 					_logger.LogInformation("[/api/geo/sync] thumb rename + `" + item.FileHash + "`" + newThumb);
 			}

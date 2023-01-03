@@ -50,9 +50,9 @@ namespace starsky.feature.geolookup.Services
 	            
                 if( !ExtensionRolesHelper.IsExtensionForceGpx(metaFileItem.FileName) ) continue;
 	            
-	            if ( !_iStorage.ExistFile(metaFileItem.FilePath) ) continue;
+	            if ( !_iStorage.ExistFile(metaFileItem.FilePath!) ) continue;
 	            
-	            using ( var stream = _iStorage.ReadStream(metaFileItem.FilePath) )
+	            using ( var stream = _iStorage.ReadStream(metaFileItem.FilePath!) )
 	            {
 		            geoList.AddRange(new ReadMetaGpx(_logger).ReadGpxFile(stream, geoList));
 	            }
