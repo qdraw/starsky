@@ -14,14 +14,14 @@ namespace starsky.foundation.thumbnailgeneration.Interfaces
 		/// <param name="subPath">folder to scan</param>
 		/// <returns>list of items with success</returns>
 		Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath);
-		
+
 		/// <summary>
 		/// Single item with fileHash
 		/// </summary>
 		/// <param name="subPath">location</param>
 		/// <param name="fileHash">fileHash</param>
+		/// <param name="skipExtraLarge"></param>
 		/// <returns></returns>
-		Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(
-			string subPath, string fileHash);
+		Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false);
 	}
 }

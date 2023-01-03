@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -16,11 +14,14 @@ namespace starsky.foundation.thumbnailgeneration.Services
 	[Service(typeof(IThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class ThumbnailService : IThumbnailService
 	{
+		private readonly IUpdateStatusGeneratedThumbnailService _updateStatusGeneratedThumbnailService;
 
 		private readonly Thumbnail _thumbnail;
 
-		public ThumbnailService(ISelectorStorage selectorStorage, IWebLogger logger, AppSettings appSettings)
+		public ThumbnailService(ISelectorStorage selectorStorage, IWebLogger logger, AppSettings appSettings, 
+			IUpdateStatusGeneratedThumbnailService updateStatusGeneratedThumbnailService)
 		{
+			_updateStatusGeneratedThumbnailService = updateStatusGeneratedThumbnailService;
 			var iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			var thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_thumbnail = new Thumbnail(iStorage, thumbnailStorage,logger,appSettings);
@@ -28,12 +29,15 @@ namespace starsky.foundation.thumbnailgeneration.Services
 
 		/// <summary>
 		/// Create a thumbnail for a file or folder
+		/// and update index!
 		/// </summary>
 		/// <param name="subPath">location on disk</param>
 		/// <returns>object with status</returns>
-		public Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
+		public async Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
 		{
-			return _thumbnail.CreateThumbnailAsync(subPath);
+			var generationResults = await _thumbnail.CreateThumbnailAsync(subPath);
+			await _updateStatusGeneratedThumbnailService.UpdateStatusAsync(generationResults);
+			return generationResults;
 		}
 
 		/// <summary>
@@ -41,8 +45,9 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// </summary>
 		/// <param name="subPath">path on disk (subPath) based</param>
 		/// <param name="fileHash">output name</param>
+		/// <param name="skipExtraLarge">skip xl</param>
 		/// <returns>true if success</returns>
-		public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash)
+		public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false)
 		{
 			return _thumbnail.CreateThumbAsync(subPath, fileHash);
 		}

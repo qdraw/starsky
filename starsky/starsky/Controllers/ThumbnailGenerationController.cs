@@ -31,7 +31,9 @@ namespace starsky.Controllers
 		private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 
 		public ThumbnailGenerationController(ISelectorStorage selectorStorage,
-			IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService, IThumbnailService thumbnailService, IThumbnailQueuedHostedService bgTaskQueue)
+			IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService, 
+			IThumbnailService thumbnailService, 
+			IThumbnailQueuedHostedService bgTaskQueue)
 		{
 			_selectorStorage = selectorStorage;
 			_query = query;

@@ -42,9 +42,6 @@ namespace starskytest.FakeMocks
 					Success = true
 				}});
 			}
-			
-			// _subPathStorage?.WriteStream(
-			// 	PlainTextFileHelper.StringToStream("test"), subPath);
 
 			var name = Base32.Encode(System.Text.Encoding.UTF8.GetBytes(subPath));
 			_subPathStorage?.WriteStream(
@@ -62,7 +59,7 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(resultModel);
 		}
 
-		Task<IEnumerable<GenerationResultModel>> IThumbnailService.CreateThumbAsync(string subPath, string fileHash)
+		Task<IEnumerable<GenerationResultModel>> IThumbnailService.CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge)
 		{
 			if ( _exception != null ) throw _exception;
 

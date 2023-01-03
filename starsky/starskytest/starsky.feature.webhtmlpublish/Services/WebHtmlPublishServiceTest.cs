@@ -27,7 +27,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var appSettings = new AppSettings();
 			var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			var result = await service.RenderCopy(new List<FileIndexItem>(), 
 				"test", "test", "/");
 
@@ -58,7 +58,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 			var service = new WebHtmlPublishService(new FakeIPublishPreflight(), selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			var result = await service.RenderCopy(new List<FileIndexItem>(), 
 				"test", "test", "/");
 
@@ -114,7 +114,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
 					new ConsoleWrapper()), selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			
 			var result = await service.RenderCopy(new List<FileIndexItem>(), 
 				"test", "test", "/");
@@ -151,7 +151,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
 					new ConsoleWrapper()), selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), overlayService,
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			
 			var result = await service.RenderCopy(new List<FileIndexItem>
 				{
@@ -171,7 +171,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 			var service = new WebHtmlPublishService(null,selectorStorage,null,
-				null,null,null, new FakeIWebLogger());
+				null,null,null, new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			var list = service.AddFileHashIfNotExist(new List<FileIndexItem> {new FileIndexItem("/test.jpg")});
 			Assert.IsTrue(list.FirstOrDefault()?.FileHash != string.Empty);
 		}
@@ -185,7 +185,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 			var service = new WebHtmlPublishService(null,selectorStorage,null,
-				null,null,null, new FakeIWebLogger());
+				null,null,null, new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			var input = new List<FileIndexItem>
 			{
 				new FileIndexItem("/test.jpg")
@@ -215,7 +215,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 					}
 				}}),
 				selectorStorage,null,
-				null,null,null, new FakeIWebLogger());
+				null,null,null, new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			
 			var result = service.ShouldSkipExtraLarge("");
 			Assert.IsFalse(result);
@@ -237,7 +237,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 					}
 				}}),
 				selectorStorage,null,
-				null,null,null, new FakeIWebLogger());
+				null,null,null, new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			
 			var result = service.ShouldSkipExtraLarge("");
 			Assert.IsTrue(result);
@@ -323,7 +323,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
 					new ConsoleWrapper()), selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			
 			var profiles = new PublishPreflight(appSettings, 
 				new ConsoleWrapper()).GetPublishProfileName("default");
@@ -368,7 +368,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
 					new ConsoleWrapper()), selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			
 			var profiles = new PublishPreflight(appSettings, 
 				new ConsoleWrapper()).GetPublishProfileName("default");
@@ -413,7 +413,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
 					new ConsoleWrapper()), selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			
 			var profiles = new PublishPreflight(appSettings, 
 				new ConsoleWrapper()).GetPublishProfileName("default");
@@ -458,7 +458,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
 					new ConsoleWrapper()), selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			
 			var profiles = new PublishPreflight(appSettings, 
 				new ConsoleWrapper()).GetPublishProfileName("default");
@@ -500,7 +500,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
 					new ConsoleWrapper()), selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 
 			await service.GenerateMoveSourceFiles(profile,
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")}, "/", 
@@ -543,7 +543,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), 
 				selectorStorage, appSettings,
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 
 			await service.GenerateMoveSourceFiles(profile,
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")}, "/", 

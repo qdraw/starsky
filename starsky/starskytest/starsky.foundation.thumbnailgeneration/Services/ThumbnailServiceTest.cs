@@ -14,7 +14,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 		public async Task NotFound()
 		{
 			var resultModels = await new ThumbnailService(new FakeSelectorStorage(), 
-				new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/not-found");
+				new FakeIWebLogger(), new AppSettings(), 
+				new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())).CreateThumbnailAsync("/not-found");
 			
 			Assert.IsFalse(resultModels.FirstOrDefault()!.Success);
 		}
@@ -22,7 +23,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 		[TestMethod]
 		public async Task NotFoundNonExistingHash()
 		{
-			var result = await new ThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger(), new AppSettings())
+			var result = await new ThumbnailService(new FakeSelectorStorage(), 
+					new FakeIWebLogger(), new AppSettings(),new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()))
 				.CreateThumbAsync("/not-found","non-existing-hash");
 			Assert.IsFalse(result.FirstOrDefault()!.Success);
 		}

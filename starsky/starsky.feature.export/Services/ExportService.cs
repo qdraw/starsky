@@ -21,6 +21,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
+using starsky.foundation.thumbnailgeneration.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.export.Services
@@ -37,15 +38,17 @@ namespace starsky.feature.export.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly IWebLogger _logger;
+		private readonly IThumbnailService _thumbnailService;
 
 		public ExportService(IQuery query, AppSettings appSettings, 
-			ISelectorStorage selectorStorage, IWebLogger logger)
+			ISelectorStorage selectorStorage, IWebLogger logger, IThumbnailService thumbnailService)
 		{
 			_appSettings = appSettings;
 			_query = query;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_thumbnailService = thumbnailService;
 			_logger = logger;
 		}
 
@@ -146,7 +149,7 @@ namespace starsky.feature.export.Services
 					var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder, 
 						ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large, true));
 
-					await new Thumbnail(_iStorage, _thumbnailStorage, _logger,_appSettings)
+					await _thumbnailService
 						.CreateThumbAsync(item.FilePath!, item.FileHash, true);
 					
 					filePaths.Add(sourceThumb);

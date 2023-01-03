@@ -22,6 +22,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
+using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 
@@ -42,12 +43,12 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly IPublishPreflight _publishPreflight;
 	    private readonly CopyPublishedContent _copyPublishedContent;
 	    private readonly ToCreateSubfolder _toCreateSubfolder;
-	    private readonly Thumbnail _thumbnailService;
+	    private readonly IThumbnailService _thumbnailService;
 	    private readonly IWebLogger _logger;
 
 	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage 
 			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool, 
-		    IOverlayImage overlayImage, IConsole console, IWebLogger logger)
+		    IOverlayImage overlayImage, IConsole console, IWebLogger logger, IThumbnailService thumbnailService)
 	    {
 		    _publishPreflight = publishPreflight;
 		    _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -62,7 +63,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _copyPublishedContent = new CopyPublishedContent(_appSettings, _toCreateSubfolder, 
 			    selectorStorage);
 		    _logger = logger;
-		    _thumbnailService = new Thumbnail(_subPathStorage,_thumbnailStorage,_logger, appSettings);
+		    _thumbnailService = thumbnailService;
 	    }
 	    
 	    public async Task<Dictionary<string, bool>> RenderCopy(List<FileIndexItem> fileIndexItemsList,

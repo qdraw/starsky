@@ -40,7 +40,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			_appSettings = appSettings;
 		}
 
-		public async Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
+		internal async Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
 		{
 			var toAddFilePaths = new List<string>();
 			switch ( _iStorage.IsFolderOrFile(subPath) )
@@ -95,7 +95,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="fileHash">the base32 hash of the subPath file</param>
 		/// <param name="skipExtraLarge">skip the extra large variant</param>
 		/// <returns>true, if successful</returns>
-		public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false)
+		internal Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false)
 		{
 			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
 
