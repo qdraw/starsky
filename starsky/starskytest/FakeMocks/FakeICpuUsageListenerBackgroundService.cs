@@ -6,7 +6,7 @@ namespace starskytest.FakeMocks;
 
 public class FakeICpuUsageListenerBackgroundService : ICpuUsageListenerBackgroundService
 {
-	public FakeICpuUsageListenerBackgroundService(int lastValue = 0)
+	public FakeICpuUsageListenerBackgroundService(double lastValue = 0)
 	{
 		LastValue = lastValue;
 	}

@@ -19,6 +19,7 @@ using starsky.foundation.worker.CpuEventListener.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starsky.foundation.worker.ThumbnailServices;
+using starsky.foundation.worker.ThumbnailServices.Exceptions;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 using starskytest.FakeMocks;
 
@@ -26,6 +27,9 @@ using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.worker.ThumbnailServices
 {
+	/// <summary>
+	/// ThumbnailBackgroundTaskQueueTest
+	/// </summary>
 	[TestClass]
 	public sealed class ThumbnailQueuedHostedServiceTest
 	{
@@ -79,11 +83,24 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		[TestMethod]
 		public async Task Count_AddOneForCount()
 		{
-			var backgroundQueue = new ThumbnailBackgroundTaskQueue(new CpuUsageListenerBackgroundService(new FakeIWebLogger()), new FakeIWebLogger(), new AppSettings());
+			var backgroundQueue = new ThumbnailBackgroundTaskQueue(new FakeICpuUsageListenerBackgroundService(), new FakeIWebLogger(), new AppSettings());
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(1,count);
 		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(ToManyUsageException))]
+		public async Task Count_AddOneForCount_UsageException()
+		{
+			var e = new FakeICpuUsageListenerBackgroundService(100d);
+			Console.WriteLine(e.LastValue);
+			var backgroundQueue = new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(), new AppSettings());
+			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
+			var count = backgroundQueue.Count();
+			Assert.AreEqual(0,count);
+		}
+
 
 		// https://stackoverflow.com/a/51224556
 		[TestMethod]
