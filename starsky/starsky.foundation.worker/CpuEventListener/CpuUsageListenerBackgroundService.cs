@@ -30,6 +30,7 @@ public class CpuUsageListenerBackgroundService : ICpuUsageListenerBackgroundServ
 
 	public Task StopAsync(CancellationToken cancellationToken)
 	{
+		_cpuListener?.Dispose();
 		return Task.CompletedTask;
 	}
 }
