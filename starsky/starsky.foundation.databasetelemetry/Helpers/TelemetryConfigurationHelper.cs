@@ -3,6 +3,7 @@ using System;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.ApplicationInsights.Extensibility;
+using starsky.foundation.databasetelemetry.Processor;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.databasetelemetry.Helpers
@@ -53,6 +54,8 @@ namespace starsky.foundation.databasetelemetry.Helpers
 		{
 			var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 			telemetryConfiguration.ConnectionString = appInsightsConnectionString;
+			telemetryConfiguration.TelemetryProcessorChainBuilder.Use(next => new FilterWebsocketsTelemetryProcessor(next));
+			telemetryConfiguration.TelemetryProcessorChainBuilder.Build();
 			return telemetryConfiguration;
 		}
 
