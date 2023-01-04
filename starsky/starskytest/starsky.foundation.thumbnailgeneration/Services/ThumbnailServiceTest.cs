@@ -1,6 +1,7 @@
-using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeMocks;
 
@@ -10,19 +11,22 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 	public sealed class ThumbnailServiceTest
 	{
 		[TestMethod]
-		[ExpectedException(typeof(FileNotFoundException))]
 		public async Task NotFound()
 		{
-			await new ThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger()).CreateThumb("/not-found");
-			// expect exception not found
+			var resultModels = await new ThumbnailService(new FakeSelectorStorage(), 
+				new FakeIWebLogger(), new AppSettings(), 
+				new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())).CreateThumbnailAsync("/not-found");
+			
+			Assert.IsFalse(resultModels.FirstOrDefault()!.Success);
 		}
 		
 		[TestMethod]
 		public async Task NotFoundNonExistingHash()
 		{
-			var result = await new ThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger())
-				.CreateThumb("/not-found","non-existing-hash");
-			Assert.IsFalse(result);
+			var result = await new ThumbnailService(new FakeSelectorStorage(), 
+					new FakeIWebLogger(), new AppSettings(),new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery()))
+				.CreateThumbAsync("/not-found","non-existing-hash");
+			Assert.IsFalse(result.FirstOrDefault()!.Success);
 		}
 	}
 }

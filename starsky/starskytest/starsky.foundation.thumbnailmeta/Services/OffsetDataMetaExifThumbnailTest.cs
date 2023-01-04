@@ -6,7 +6,7 @@ using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.Jpeg;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starsky.foundation.metathumbnail.Services;
+using starsky.foundation.thumbnailmeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
 using starskytest.FakeMocks;

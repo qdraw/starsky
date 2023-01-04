@@ -13,12 +13,11 @@ namespace starskytest.FakeMocks
 			return 0;
 		}
 
-		public ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string metaData)
+		public async ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string metaData)
 		{
-			workItem.Invoke(CancellationToken.None);
+			await workItem.Invoke(CancellationToken.None);
 			QueueBackgroundWorkItemCalled = true;
 			QueueBackgroundWorkItemCalledCounter++;
-			return ValueTask.CompletedTask;
 		}
 
 		public int QueueBackgroundWorkItemCalledCounter { get; set; }

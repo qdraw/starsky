@@ -19,7 +19,7 @@ using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.storage.Interfaces;
 using Directory = MetadataExtractor.Directory;
 
-[assembly: InternalsVisibleTo("starsky.foundation.metathumbnail.Services")]
+[assembly: InternalsVisibleTo("starsky.foundation.thumbnailmeta.Services")]
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {

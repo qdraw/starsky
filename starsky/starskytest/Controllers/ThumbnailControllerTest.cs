@@ -125,7 +125,7 @@ namespace starskytest.Controllers
 			// Act
 			// Create thumbnail in fake storage
 			await new Thumbnail(storage,storage, 
-				new FakeIWebLogger()).CreateThumb(createAnImage.FilePath, createAnImage.FileHash);
+				new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(createAnImage.FilePath, createAnImage.FileHash);
 			
 			// Check if exist
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
@@ -148,8 +148,8 @@ namespace starskytest.Controllers
 
 			// Act
 			// Create thumbnail in fake storage
-			await new Thumbnail(storage,storage, new FakeIWebLogger()
-			).CreateThumb(createAnImage.FilePath, createAnImage.FileHash);
+			await new Thumbnail(storage,storage, new FakeIWebLogger(), new AppSettings()
+			).CreateThumbAsync(createAnImage.FilePath, createAnImage.FileHash);
 			
 			// Check if exist
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));

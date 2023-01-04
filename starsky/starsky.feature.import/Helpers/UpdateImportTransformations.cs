@@ -1,8 +1,9 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -35,17 +36,23 @@ namespace starsky.feature.import.Helpers
 
 		
 		public delegate Task<FileIndexItem> QueryUpdateDelegate(FileIndexItem fileIndexItem);
+		public delegate Task<List<ThumbnailItem>?> QueryThumbnailUpdateDelegate(ThumbnailSize size,
+			IReadOnlyList<string> fileHashes, bool? setStatus = null);
 
 		/// <summary>
 		/// Run Transformation on Import to the files in the database && Update fileHash in database
 		/// </summary>
 		/// <param name="queryUpdateDelegate"></param>
+		/// <param name="queryThumbnailUpdateDelegate"></param>
 		/// <param name="fileIndexItem">information</param>
 		/// <param name="colorClassTransformation">change colorClass</param>
 		/// <param name="dateTimeParsedFromFileName">is date time parsed from fileName</param>
 		/// <param name="indexMode">should update database</param>
-		internal async Task<FileIndexItem> UpdateTransformations(QueryUpdateDelegate queryUpdateDelegate,  FileIndexItem fileIndexItem, 
-			int colorClassTransformation, bool dateTimeParsedFromFileName, bool indexMode)
+		internal async Task<FileIndexItem> UpdateTransformations(
+			QueryUpdateDelegate? queryUpdateDelegate,
+			FileIndexItem fileIndexItem,
+			int colorClassTransformation, bool dateTimeParsedFromFileName,
+			bool indexMode)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
 
@@ -71,7 +78,8 @@ namespace starsky.feature.import.Helpers
 			if ( !indexMode || queryUpdateDelegate == null) return fileIndexItem;
 			
 			// Hash is changed after transformation
-			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
+			fileIndexItem.FileHash = (await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath!)).Key;
+
 			await queryUpdateDelegate(fileIndexItem);
 
 			return fileIndexItem.Clone();

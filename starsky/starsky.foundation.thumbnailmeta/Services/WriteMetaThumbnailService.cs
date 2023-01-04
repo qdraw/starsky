@@ -5,9 +5,9 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.metathumbnail.Helpers;
-using starsky.foundation.metathumbnail.Interfaces;
-using starsky.foundation.metathumbnail.Models;
+using starsky.foundation.thumbnailmeta.Helpers;
+using starsky.foundation.thumbnailmeta.Interfaces;
+using starsky.foundation.thumbnailmeta.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -15,7 +15,7 @@ using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.foundation.metathumbnail.Services
+namespace starsky.foundation.thumbnailmeta.Services
 {
 	[Service(typeof(IWriteMetaThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class WriteMetaThumbnailService : IWriteMetaThumbnailService
@@ -34,8 +34,9 @@ namespace starsky.foundation.metathumbnail.Services
 		public async Task<bool> WriteAndCropFile(string fileHash, 
 			OffsetModel offsetData, int sourceWidth,
 			int sourceHeight, FileIndexItem.Rotation rotation,
-			string reference = null)
+			string? reference = null)
 		{
+			if ( offsetData.Data == null ) return false;
 			try
 			{
 				using (var thumbnailStream = new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count ))

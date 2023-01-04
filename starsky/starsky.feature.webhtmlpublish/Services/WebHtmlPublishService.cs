@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -22,6 +23,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
+using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 
@@ -42,12 +44,13 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly IPublishPreflight _publishPreflight;
 	    private readonly CopyPublishedContent _copyPublishedContent;
 	    private readonly ToCreateSubfolder _toCreateSubfolder;
-	    private readonly Thumbnail _thumbnailService;
+	    private readonly IThumbnailService _thumbnailService;
 	    private readonly IWebLogger _logger;
 
+	    [SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage 
 			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool, 
-		    IOverlayImage overlayImage, IConsole console, IWebLogger logger)
+		    IOverlayImage overlayImage, IConsole console, IWebLogger logger, IThumbnailService thumbnailService)
 	    {
 		    _publishPreflight = publishPreflight;
 		    _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -62,7 +65,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _copyPublishedContent = new CopyPublishedContent(_appSettings, _toCreateSubfolder, 
 			    selectorStorage);
 		    _logger = logger;
-		    _thumbnailService = new Thumbnail(_subPathStorage,_thumbnailStorage,_logger);
+		    _thumbnailService = thumbnailService;
 	    }
 	    
 	    public async Task<Dictionary<string, bool>> RenderCopy(List<FileIndexItem> fileIndexItemsList,
@@ -104,7 +107,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    var skipExtraLarge = ShouldSkipExtraLarge(publishProfileName);
 		    foreach ( var item in fileIndexItemsList )
 		    {
-			    await _thumbnailService.CreateThumb(item.FilePath, item.FileHash, skipExtraLarge);
+			    await _thumbnailService.CreateThumbAsync(item.FilePath, item.FileHash, skipExtraLarge);
 		    }
 	    }
 
@@ -115,7 +118,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private Task<string[]> Base64DataUriList(IEnumerable<FileIndexItem> fileIndexItemsList)
 	    {
 		    return new ToBase64DataUriList(_subPathStorage, 
-			    _thumbnailStorage,_logger).Create(fileIndexItemsList.ToList());
+			    _thumbnailStorage,_logger, _appSettings).Create(fileIndexItemsList.ToList());
 	    }
 	    
 	    /// <summary>

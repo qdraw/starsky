@@ -10,12 +10,12 @@ namespace starsky.foundation.webtelemetry.Helpers
 {
 	public sealed class FlushApplicationInsights
 	{
-		private readonly ServiceProvider _serviceProvider;
-		private readonly IApplicationBuilder _app;
-		private readonly IWebLogger _logger;
-		private readonly AppSettings _appSettings;
+		private readonly ServiceProvider? _serviceProvider;
+		private readonly IApplicationBuilder? _app;
+		private readonly IWebLogger? _logger;
+		private readonly AppSettings? _appSettings;
 
-		public FlushApplicationInsights(ServiceProvider serviceProvider, AppSettings appSettings = null, IWebLogger logger = null)
+		public FlushApplicationInsights(ServiceProvider serviceProvider, AppSettings? appSettings = null, IWebLogger? logger = null)
 		{
 			_serviceProvider = serviceProvider;
 			_logger = logger;
@@ -27,12 +27,12 @@ namespace starsky.foundation.webtelemetry.Helpers
 			_app = app;
 		}
 
-		internal TelemetryClient GetTelemetryClient()
+		internal TelemetryClient? GetTelemetryClient()
 		{
-			var client = _serviceProvider != null ? _serviceProvider.GetService<TelemetryClient>() : _app.ApplicationServices.GetService<TelemetryClient>();
+			var client = _serviceProvider != null ? _serviceProvider.GetService<TelemetryClient>() : _app?.ApplicationServices.GetService<TelemetryClient>();
 			if ( client == null && _appSettings != null && !string.IsNullOrEmpty(_appSettings.ApplicationInsightsConnectionString) )
 			{
-				_logger.LogInformation("TelemetryClient is null on exit");
+				_logger?.LogInformation("TelemetryClient is null on exit");
 			}
 			return client;
 		}

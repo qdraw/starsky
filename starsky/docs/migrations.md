@@ -12,6 +12,11 @@ dotnet tool install -g dotnet-ef
 dotnet tool update --global dotnet-ef
 ```
 
+```bash
+# https://www.nuget.org/packages/dotnet-ef#versions-body-tab
+dotnet tool update --global dotnet-ef --version 6.0.12
+```
+
 ## Set constance for EF Core
 Define constance in `starsky.foundation.database.csproj`
 ```xml
@@ -30,7 +35,16 @@ dotnet ef --startup-project ../starsky/starsky.csproj --project starsky.foundati
 ```
 
 The migration should be ready :)
-You should test both with MySQL and SQLite
+You should test **both** with MySQL and SQLite. 
+For MySql its the easiest to run the database and/or the application with docker-compose.
+
+
+## undo latest migration
+
+```bash
+cd starsky/starsky.foundation.database
+dotnet ef --startup-project ../starsky/starsky.csproj --project starsky.foundation.database.csproj migrations remove --force
+```
 
 ## Instead of setting constance (is replaced by defined constance)
 

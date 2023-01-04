@@ -81,6 +81,22 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		}
 		
 		[TestMethod]
+		public void GetTelemetryClientNullable()
+		{
+			var logger = new FakeIWebLogger();
+			new FlushApplicationInsights(null!, new AppSettings{ApplicationInsightsConnectionString = "t"}, logger).GetTelemetryClient();
+			Assert.AreEqual(1, logger.TrackedInformation.Count);
+			Assert.AreEqual("TelemetryClient is null on exit", logger.TrackedInformation[0].Item2);
+		}
+		
+		[TestMethod]
+		public void GetTelemetryClient_Logger_Nullable()
+		{
+			var result = new FlushApplicationInsights(null!, new AppSettings{ApplicationInsightsConnectionString = "t"}).GetTelemetryClient();
+			Assert.AreEqual(null, result);
+		}
+		
+		[TestMethod]
 		public void FlushApplicationInsights_HitLogger_Sync()
 		{
 			var logger = new FakeIWebLogger();

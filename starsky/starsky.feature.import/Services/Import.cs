@@ -15,8 +15,10 @@ using starsky.foundation.database.Import;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.database.Thumbnails;
 using starsky.foundation.injection;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -58,6 +60,7 @@ namespace starsky.feature.import.Services
 		private readonly IMemoryCache? _memoryCache;
 		private readonly IWebLogger _logger;
 		private readonly UpdateImportTransformations _updateImportTransformations;
+		private readonly IThumbnailQuery _thumbnailQuery;
 
 		/// <summary>
 		/// Used when File has no exif date in description
@@ -73,6 +76,7 @@ namespace starsky.feature.import.Services
 			IConsole console,
 			IMetaExifThumbnailService metaExifThumbnailService,
 			IWebLogger logger,
+			IThumbnailQuery thumbnailQuery,
 			IMemoryCache? memoryCache = null)
 		{
 			_importQuery = importQuery;
@@ -90,6 +94,7 @@ namespace starsky.feature.import.Services
             _memoryCache = memoryCache;
             _logger = logger;
             _updateImportTransformations = new UpdateImportTransformations(logger, _exifTool, selectorStorage, appSettings);
+            _thumbnailQuery = thumbnailQuery;
 		}
 
 		/// <summary>
@@ -143,9 +148,9 @@ namespace starsky.feature.import.Services
 				parentFolders[parentFolders.IndexOf(item2)].Item2.Add(itemSourceFullFilePath);
 			}
 
-			foreach ( var parentFolder in parentFolders )
+			foreach ( var parentFolder in parentFolders.Where(p => p.Item1 != null) )
 			{
-				var fileStorageInfo = _filesystemStorage.Info(parentFolder.Item1);
+				var fileStorageInfo = _filesystemStorage.Info(parentFolder.Item1!);
 				if ( fileStorageInfo.IsFolderOrFile !=
 				     FolderOrFileModel.FolderOrFileTypeList.Folder ||
 				     fileStorageInfo.IsFileSystemReadOnly != true ) continue;
@@ -178,7 +183,7 @@ namespace starsky.feature.import.Services
 			foreach ( var importIndexItemFileIndexItemParentDirectory in importIndexItemsList.Where(p =>
 				p.Status == ImportStatus.Ok).Select(p => p.FileIndexItem?.ParentDirectory) )
 			{
-				if ( directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory!) )
+				if ( importIndexItemFileIndexItemParentDirectory == null || directoriesContent.ContainsKey(importIndexItemFileIndexItemParentDirectory) )
 					continue;
 				
 				var parentDirectoryList =
@@ -454,11 +459,11 @@ namespace starsky.feature.import.Services
 			var structureService = new StructureService(_subPathStorage, importIndexItem.Structure);
 			
 			importIndexItem.FileIndexItem!.ParentDirectory = structureService.ParseSubfolders(
-				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
+				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName!,
 				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
 			
 			importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
-				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
+				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName!,
 				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
 			importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
 			
@@ -491,14 +496,14 @@ namespace starsky.feature.import.Services
 			return importIndexItemsList;
 		}
 
-		internal async Task<bool> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
+		internal async Task<IEnumerable<(bool, string, string?)>> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
 			importIndexItemsList, ImportSettingsModel importSettings)
 		{
-			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return false;
+			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return new List<(bool, string, string?)>();
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
-				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).ToList();
-			if ( !items.Any() ) return false;
+				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).Cast<(string,string)>().ToList();
+			if ( !items.Any() ) return new List<(bool, string, string?)>();
 			return await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}
 
@@ -532,7 +537,7 @@ namespace starsky.feature.import.Services
 			if ( _appSettings.IsVerbose() ) _logger.LogInformation("[Import] Next Action = Copy" +
 			                        $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
 			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
-				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath);
+				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath!);
 			
 			// Copy the sidecar file
 		    if ( xmpExistForThisFileType)
@@ -546,23 +551,41 @@ namespace starsky.feature.import.Services
 
 		    // Run Exiftool to Update for example colorClass
 		    UpdateImportTransformations.QueryUpdateDelegate? updateItemAsync = null;
+		    UpdateImportTransformations.QueryThumbnailUpdateDelegate? queryThumbnailUpdateDelegate = null;
+		    
 		    if ( importSettings.IndexMode )
 		    {
 			    updateItemAsync = new QueryFactory(
 				    new SetupDatabaseTypes(_appSettings), _query,
 				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
+			    queryThumbnailUpdateDelegate = (size, fileHashes, setStatus) => new ThumbnailQueryFactory(
+				    new SetupDatabaseTypes(_appSettings),
+				    _thumbnailQuery, _logger).ThumbnailQuery()!.AddThumbnailRangeAsync(size, fileHashes, setStatus);
 		    }
-		    
-		    importIndexItem.FileIndexItem = await _updateImportTransformations
-			    .UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem, 
-			    importSettings.ColorClass, importIndexItem.DateTimeFromFileName, importSettings.IndexMode);
-
-		    DeleteFileAfter(importSettings, importIndexItem);
 		    
 		    await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
 		    
+		    // next: and save the database item
+		    importIndexItem.FileIndexItem = await _updateImportTransformations
+			    .UpdateTransformations(updateItemAsync, importIndexItem.FileIndexItem!, 
+			    importSettings.ColorClass, importIndexItem.DateTimeFromFileName, importSettings.IndexMode);
+		    
+		    await UpdateCreateMetaThumbnail(queryThumbnailUpdateDelegate, importIndexItem.FileIndexItem?.FileHash, importSettings.IndexMode);
+
+		    DeleteFileAfter(importSettings, importIndexItem);
+		    
             if ( _appSettings.IsVerbose() ) _console.Write("+");
             return importIndexItem;
+		}
+
+		private async Task UpdateCreateMetaThumbnail( UpdateImportTransformations.QueryThumbnailUpdateDelegate? queryThumbnailUpdateDelegate, 
+			string? fileHash, bool indexMode)
+		{
+			if ( fileHash == null ||  _appSettings.MetaThumbnailOnImport == false || !indexMode || queryThumbnailUpdateDelegate == null) return;
+			// Check if fastest version is available to show 
+			var setStatus = _thumbnailStorage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
+			await queryThumbnailUpdateDelegate(ThumbnailSize.TinyMeta, new List<string>{fileHash}, setStatus);
 		}
 
 		/// <summary>

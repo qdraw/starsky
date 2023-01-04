@@ -55,7 +55,7 @@ namespace starsky.feature.metaupdate.Services
 			foreach ( var fileIndexItem in resultFileIndexItemsList )
 			{
 				// Files that are not on disk
-				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == 
+				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath!) == 
 				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					StatusCodesHelper.ReturnExifStatusError(fileIndexItem, 
@@ -132,7 +132,7 @@ namespace starsky.feature.metaupdate.Services
 		public void CompareAllLabelsAndRotation( Dictionary<string, List<string>> changedFileIndexItemName, 
 			FileIndexItem collectionsFileIndexItem, FileIndexItem statusModel, bool append, int rotateClock)
 		{
-			if ( changedFileIndexItemName == null )
+			if ( changedFileIndexItemName == null || string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )
 				throw new MissingFieldException(nameof(changedFileIndexItemName));
 			
 			// compare and add changes to collectionsDetailView
@@ -145,7 +145,7 @@ namespace starsky.feature.metaupdate.Services
 
 			collectionsFileIndexItem.LastChanged = comparedNamesList;
 
-			if ( ! changedFileIndexItemName.ContainsKey(collectionsFileIndexItem.FilePath) )
+			if ( ! changedFileIndexItemName.ContainsKey(collectionsFileIndexItem.FilePath!) )
 			{
 				// add to list
 				changedFileIndexItemName.Add(collectionsFileIndexItem.FilePath,comparedNamesList);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 
 namespace starsky.foundation.database.Query
@@ -19,7 +20,7 @@ namespace starsky.foundation.database.Query
 		{
 			if ( !fileIndexItemList.Any() ) return new List<FileIndexItem>();
 
-			async Task LocalQuery(ApplicationDbContext context, IEnumerable<FileIndexItem> items)
+			async Task LocalQuery(ApplicationDbContext context, IReadOnlyCollection<FileIndexItem> items)
 			{
 				await context.FileIndex.AddRangeAsync(items);
 				await context.SaveChangesAsync();

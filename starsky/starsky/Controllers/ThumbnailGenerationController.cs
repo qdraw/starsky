@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -11,14 +10,13 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Helpers;
-using starsky.foundation.webtelemetry.Interfaces;
-using starsky.foundation.worker.Services;
+using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.Models;
+using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
 namespace starsky.Controllers
 {
@@ -29,14 +27,20 @@ namespace starsky.Controllers
 		private readonly IWebLogger _logger;
 		private readonly IQuery _query;
 		private readonly IWebSocketConnectionsService _connectionsService;
+		private readonly IThumbnailService _thumbnailService;
+		private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 
 		public ThumbnailGenerationController(ISelectorStorage selectorStorage,
-			IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService)
+			IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService, 
+			IThumbnailService thumbnailService, 
+			IThumbnailQueuedHostedService bgTaskQueue)
 		{
 			_selectorStorage = selectorStorage;
 			_query = query;
 			_logger = logger;
 			_connectionsService = connectionsService;
+			_thumbnailService = thumbnailService;
+			_bgTaskQueue = bgTaskQueue;
 		}
 		
 		/// <summary>
@@ -51,40 +55,37 @@ namespace starsky.Controllers
 		{
 			var subPath = f != "/" ? PathHelper.RemoveLatestSlash(f) : "/";
 			var subPathStorage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			var thumbnailStorage = _selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
 			if ( !subPathStorage.ExistFolder(subPath))
 			{
 				return NotFound("folder not found");
 			}
 
-			await Task.Factory.StartNew(() => WorkItem(subPath, subPathStorage, thumbnailStorage));
+			// When the CPU is to high its gives a Error 500
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
+			{
+				await WorkThumbnailGeneration(subPath);
+			}, f);
 			
 			return Json("Job started");
 		}
 				
-		internal async Task WorkItem(string subPath, IStorage subPathStorage, 
-			IStorage thumbnailStorage)
+		internal async Task WorkThumbnailGeneration(string subPath)
 		{
 			try
 			{
 				_logger.LogInformation($"[ThumbnailGenerationController] start {subPath}");
-				var thumbnail = new Thumbnail(subPathStorage, 
-					thumbnailStorage, _logger);
-				var thumbs = await thumbnail.CreateThumb(subPath);
+				var thumbs = await _thumbnailService.CreateThumbnailAsync(subPath);
 				var getAllFilesAsync = await _query.GetAllFilesAsync(subPath);
 
-				var result = new List<FileIndexItem>();
-				foreach ( var item in 
-				         getAllFilesAsync.Where(item => thumbs.FirstOrDefault(p => p.Item1 == item.FilePath).Item2) )
+				var result =
+					WhichFilesNeedToBePushedForUpdates(thumbs, getAllFilesAsync);
+
+				if ( !result.Any() )
 				{
-					if ( item.Tags.Contains("!delete!") ) continue;
-
-					item.SetLastEdited();
-					result.Add(item);
+					_logger.LogInformation($"[ThumbnailGenerationController] done - no results {subPath}");
+					return;
 				}
-
-				if ( !result.Any() ) return;
 
 				var webSocketResponse =
 					new ApiNotificationResponseModel<List<FileIndexItem>>(result, ApiNotificationType.ThumbnailGeneration);
@@ -96,6 +97,24 @@ namespace starsky.Controllers
 			{
 				_logger.LogError($"[ThumbnailGenerationController] catch-ed exception {e.Message}", e);
 			}
+		}
+
+		internal static List<FileIndexItem> WhichFilesNeedToBePushedForUpdates(List<GenerationResultModel> thumbs, IEnumerable<FileIndexItem> getAllFilesAsync)
+		{
+			var result = new List<FileIndexItem>();
+			var searchFor = getAllFilesAsync.Where(item =>
+				thumbs.FirstOrDefault(p => p.SubPath == item.FilePath && item.Tags != null)
+					?.Success == true).DistinctBy(p => p.FilePath);
+			foreach ( var item in searchFor )
+			{
+				if ( item.Tags!.Contains("!delete!") ) continue;
+
+				item.SetLastEdited();
+				item.LastChanged = new List<string> {"LastEdited", "FileHash"};
+				result.Add(item);
+			}
+
+			return result;
 		}
 	}
 }

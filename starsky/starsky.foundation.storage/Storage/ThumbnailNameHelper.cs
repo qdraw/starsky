@@ -11,6 +11,30 @@ namespace starsky.foundation.storage.Storage
 	/// </summary>
 	public static class ThumbnailNameHelper
 	{
+		/// <summary>
+		/// Without TinyMeta
+		/// </summary>
+		public static readonly ThumbnailSize[] GeneratedThumbnailSizes = new ThumbnailSize[]
+		{
+			ThumbnailSize.ExtraLarge,
+			ThumbnailSize.Small,
+			ThumbnailSize.Large
+		};
+		
+		public static readonly ThumbnailSize[] SecondGeneratedThumbnailSizes = new ThumbnailSize[]
+		{
+			ThumbnailSize.Small,
+			ThumbnailSize.Large //  <- will be false when skipExtraLarge = true, its already created 
+		};
+		
+		public static readonly ThumbnailSize[] AllThumbnailSizes = new ThumbnailSize[]
+		{
+			ThumbnailSize.TinyMeta,
+			ThumbnailSize.ExtraLarge,
+			ThumbnailSize.Small,
+			ThumbnailSize.Large
+		};
+		
 		public static int GetSize(ThumbnailSize size)
 		{
 			switch (size)
@@ -93,6 +117,13 @@ namespace starsky.foundation.storage.Storage
 				default:
 					throw new ArgumentOutOfRangeException(nameof(size), size, null);
 			}
+		}
+
+		public static string RemoveSuffix(string? thumbnailOutputHash)
+		{
+			return thumbnailOutputHash == null ? string.Empty : 
+				Regex.Replace(thumbnailOutputHash, "@\\d+", 
+					string.Empty, RegexOptions.None, TimeSpan.FromMilliseconds(100));
 		}
 	}
 }

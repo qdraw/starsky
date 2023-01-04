@@ -17,7 +17,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Streaming;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -76,7 +76,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
 		[ProducesResponseType(typeof(List<ImportIndexItem>),206)]  // When all items are already imported
 		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // Wrong input (e.g. wrong extenstion type)
-		public async Task<IActionResult> IndexPost()
+		public async Task<IActionResult> IndexPost() // aka ActionResult Import
 		{
 			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
 			var importSettings = new ImportSettingsModel(Request);
@@ -119,11 +119,12 @@ namespace starsky.Controllers
 				var console = scope.ServiceProvider.GetRequiredService<IConsole>();
 				var metaExifThumbnailService = scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
 				var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
+				var thumbnailQuery = scope.ServiceProvider.GetRequiredService<IThumbnailQuery>();
 
 				// use of IImport direct does not work
 				importedFiles = await new Import(selectorStorage,_appSettings,
 					importQuery, exifTool, query,console, 
-					metaExifThumbnailService, _logger, memoryCache).Importer(tempImportPaths, importSettings);
+					metaExifThumbnailService, _logger, thumbnailQuery, memoryCache).Importer(tempImportPaths, importSettings);
 			}
 	            
 			if (isVerbose)

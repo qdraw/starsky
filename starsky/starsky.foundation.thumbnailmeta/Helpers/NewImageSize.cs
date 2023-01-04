@@ -1,4 +1,4 @@
-namespace starsky.foundation.metathumbnail.Helpers
+namespace starsky.foundation.thumbnailmeta.Helpers
 {
 	public static class NewImageSize
 	{

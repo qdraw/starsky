@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "6.0.10");
+                .HasAnnotation("ProductVersion", "6.0.12");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -428,6 +428,34 @@ namespace starsky.foundation.database.Migrations
                     b.HasKey("Key");
 
                     b.ToTable("Settings", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.ThumbnailItem", b =>
+                {
+                    b.Property<string>("FileHash")
+                        .HasMaxLength(190)
+                        .HasColumnType("varchar(190)");
+
+                    b.Property<bool?>("ExtraLarge")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool?>("Large")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Reasons")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool?>("Small")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool?>("TinyMeta")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("FileHash");
+
+                    b.ToTable("Thumbnails", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });

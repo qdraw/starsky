@@ -1,5 +1,6 @@
+using System.Linq;
 using System.Threading.Tasks;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -7,7 +8,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.foundation.metathumbnail.Helpers
+namespace starsky.foundation.thumbnailmeta.Helpers
 {
 	public class MetaThumbnailCommandLineHelper
 	{
@@ -15,14 +16,16 @@ namespace starsky.foundation.metathumbnail.Helpers
 		private readonly IConsole _console;
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 		private readonly ISelectorStorage _selectorStorage;
+		private readonly IMetaUpdateStatusThumbnailService _statusThumbnailService;
 
 		public MetaThumbnailCommandLineHelper(ISelectorStorage selectorStorage, AppSettings appSettings, 
-			IConsole console, IMetaExifThumbnailService metaExifThumbnailService)
+			IConsole console, IMetaExifThumbnailService metaExifThumbnailService, IMetaUpdateStatusThumbnailService statusThumbnailService)
 		{
 			_selectorStorage = selectorStorage;
 			_appSettings = appSettings;
 			_metaExifThumbnailService = metaExifThumbnailService;
 			_console = console;
+			_statusThumbnailService = statusThumbnailService;
 		}
 		
 		public async Task CommandLineAsync(string[] args)
@@ -46,8 +49,9 @@ namespace starsky.foundation.metathumbnail.Helpers
 					.ParseSubfolders(getSubPathRelative);
 			}
 
-			await _metaExifThumbnailService.AddMetaThumbnail(subPath);
-
+			var statusResultsWithSubPaths = await _metaExifThumbnailService.AddMetaThumbnail(subPath!);
+			_console.WriteLine("next: run update status");
+			await _statusThumbnailService.UpdateStatusThumbnail(statusResultsWithSubPaths);
 			_console.WriteLine("Done!");
 		}
 	}

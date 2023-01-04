@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.http.Services;
-using starsky.foundation.metathumbnail.Helpers;
+using starsky.foundation.thumbnailmeta.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -21,7 +21,8 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 		{
 			var console = new FakeConsoleWrapper();
 			var metaCli = new MetaThumbnailCommandLineHelper(new FakeSelectorStorage(), 
-				new AppSettings(), console, new FakeIMetaExifThumbnailService());
+				new AppSettings(), console, new FakeIMetaExifThumbnailService(),
+				new FakeIMetaUpdateStatusThumbnailService());
 			
 			await metaCli.CommandLineAsync(new List<string> {"-h",}.ToArray());
 
@@ -34,7 +35,8 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 			var console = new FakeConsoleWrapper();
 			var fakeMetaThumb = new FakeIMetaExifThumbnailService();
 			var metaCli = new MetaThumbnailCommandLineHelper(new FakeSelectorStorage(), 
-				new AppSettings(), console, fakeMetaThumb);
+				new AppSettings(), console, fakeMetaThumb,
+				new FakeIMetaUpdateStatusThumbnailService());
 			
 			await metaCli.CommandLineAsync(new List<string> {"-p", "/test"}.ToArray());
 			
@@ -49,7 +51,8 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 			var console = new FakeConsoleWrapper();
 			var fakeMetaThumb = new FakeIMetaExifThumbnailService();
 			var metaCli = new MetaThumbnailCommandLineHelper(new FakeSelectorStorage(), 
-				new AppSettings(), console, fakeMetaThumb);
+				new AppSettings(), console, fakeMetaThumb,
+				new FakeIMetaUpdateStatusThumbnailService());
 			
 			await metaCli.CommandLineAsync(new List<string> {"-g", "0"}.ToArray());
 
@@ -57,7 +60,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 			var currentYear = DateTime.Now.Year.ToString();
 
 			Assert.IsTrue(inputDate.Contains(currentYear));
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("Done"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()!.Contains("Done"));
 		}
 	}
 }

@@ -1,7 +1,8 @@
+#nullable enable
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -15,15 +16,11 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
-using starsky.foundation.metathumbnail.Interfaces;
-using starsky.foundation.metathumbnail.Services;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
-using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -45,11 +42,14 @@ namespace starsky.Controllers
 		private readonly IRealtimeConnectionsService _realtimeService;
 		private readonly IWebLogger _logger;
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
+		private readonly IMetaUpdateStatusThumbnailService _metaUpdateStatusThumbnailService;
 
+		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 		public UploadController(IImport import, AppSettings appSettings, 
 			ISelectorStorage selectorStorage, IQuery query, 
 			IRealtimeConnectionsService realtimeService, IWebLogger logger, 
-			IMetaExifThumbnailService metaExifThumbnailService)
+			IMetaExifThumbnailService metaExifThumbnailService,
+			IMetaUpdateStatusThumbnailService metaUpdateStatusThumbnailService)
 		{
 			_appSettings = appSettings;
 			_import = import;
@@ -60,6 +60,8 @@ namespace starsky.Controllers
 			_realtimeService = realtimeService;
 			_logger = logger;
 			_metaExifThumbnailService = metaExifThumbnailService;
+			_metaUpdateStatusThumbnailService =
+				metaUpdateStatusThumbnailService;
 		}
 
 		/// <summary>
@@ -97,6 +99,7 @@ namespace starsky.Controllers
 			
 			var fileIndexResultsList = await _import.Preflight(tempImportPaths, 
 				new ImportSettingsModel{IndexMode = false});
+			var metaResultsList = new List<(bool, string, string?)>();
 
 			for ( var i = 0; i < fileIndexResultsList.Count; i++ )
 			{
@@ -118,7 +121,7 @@ namespace starsky.Controllers
 				fileIndexResultsList[i].FileIndexItem!.ParentDirectory =  parentDirectory;
 				fileIndexResultsList[i].FilePath = subPath;
 				// Do sync action before writing it down
-				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem);
+				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem!);
 				
 				var writeStatus =
 					await _iStorage.WriteStreamAsync(tempFileStream, subPath + ".tmp");
@@ -141,18 +144,20 @@ namespace starsky.Controllers
 					_iHostStorage.FolderDelete(parentPath);
 				}
 
-				await _metaExifThumbnailService.AddMetaThumbnail(subPath,
-					fileIndexResultsList[i].FileIndexItem!.FileHash);
+				metaResultsList.Add((await _metaExifThumbnailService.AddMetaThumbnail(subPath,
+					fileIndexResultsList[i].FileIndexItem!.FileHash!)));
 			}
 
 			// send all uploads as list
 			var socketResult = fileIndexResultsList
 				.Where(p => p.Status == ImportStatus.Ok)
-				.Select(item => item.FileIndexItem).ToList();
+				.Select(item => item.FileIndexItem).Cast<FileIndexItem>().ToList();
 			
 			var webSocketResponse = new ApiNotificationResponseModel<List<FileIndexItem>>(
 				socketResult,ApiNotificationType.UploadFile);
 			await _realtimeService.NotificationToAllAsync(webSocketResponse, CancellationToken.None);
+			
+			await _metaUpdateStatusThumbnailService.UpdateStatusThumbnail(metaResultsList);
 			
 			// Wrong input (extension is not allowed)
             if ( fileIndexResultsList.All(p => p.Status == ImportStatus.FileError) )
@@ -172,7 +177,7 @@ namespace starsky.Controllers
 		/// <returns>updated item</returns>
 		private async Task<FileIndexItem> SyncItem(FileIndexItem metaDataItem)
 		{
-			var itemFromDatabase = await _query.GetObjectByFilePathAsync(metaDataItem.FilePath);
+			var itemFromDatabase = await _query.GetObjectByFilePathAsync(metaDataItem.FilePath!);
 			if ( itemFromDatabase == null )
 			{
 				AddOrRemoveXmpSidecarFileToDatabase(metaDataItem);
@@ -288,7 +293,7 @@ namespace starsky.Controllers
 			return Json(importedList);
 		}
 
-		internal string GetParentDirectoryFromRequestHeader()
+		internal string? GetParentDirectoryFromRequestHeader()
 		{
 			var to = Request.Headers["to"].ToString();
 			if ( to == "/" ) return "/";

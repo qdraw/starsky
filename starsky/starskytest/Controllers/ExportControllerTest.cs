@@ -110,7 +110,7 @@ namespace starskytest.Controllers
 		{
 			var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var storageSelector = new FakeSelectorStorage(iStorage);
-			var export = new ExportService(_query,_appSettings,storageSelector, new FakeIWebLogger());
+			var export = new ExportService(_query,_appSettings,storageSelector, new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
 			var controller = new ExportController( _bgTaskQueue, storageSelector, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -163,7 +163,7 @@ namespace starskytest.Controllers
 
 			var appSettings = new AppSettings {TempFolder = _createAnImage.BasePath, Verbose = true};
 			
-			var export = new ExportService(fakeQuery,appSettings,storageSelector, new FakeIWebLogger());
+			var export = new ExportService(fakeQuery,appSettings,storageSelector, new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
 			var controller = new ExportController(
 				backgroundQueue, storageSelector, export)
 			{
@@ -204,7 +204,8 @@ namespace starskytest.Controllers
 		{
 			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
 			
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
+			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+				new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
 
 			var item = new FileIndexItem
 			{
@@ -221,6 +222,55 @@ namespace starskytest.Controllers
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
 
 			Assert.AreEqual(true,filePaths.FirstOrDefault()?.Contains(item.FileHash));
+		}
+		
+		[TestMethod]
+		public async Task ExportControllerTest_IncompleteInput()
+		{
+			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
+			
+			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+				new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
+
+			var item = new FileIndexItem
+			{
+				ParentDirectory = "/",
+				FileHash = "test",
+				Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+			};
+
+			await _query.AddItemAsync(item);
+
+			var fileIndexResultsList = new List<FileIndexItem> { item };
+
+			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
+
+			Assert.AreEqual(0,filePaths.Count);
+		}
+		
+				
+		[TestMethod]
+		public async Task ExportControllerTest_IncompleteInput2()
+		{
+			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
+			
+			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+				new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
+
+			var item = new FileIndexItem
+			{
+				ParentDirectory = "/",
+				FileHash = null,
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+
+			await _query.AddItemAsync(item);
+
+			var fileIndexResultsList = new List<FileIndexItem> { item };
+
+			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
+
+			Assert.AreEqual(0,filePaths.Count);
 		}
 		
 		[TestMethod]
@@ -248,14 +298,14 @@ namespace starskytest.Controllers
 			};
 			var fakeQuery = new FakeIQuery(fileIndexResultsList);
 			
-			var export = new ExportService(fakeQuery,_appSettings,selectorStorage, new FakeIWebLogger());
+			var export = new ExportService(fakeQuery,_appSettings,selectorStorage, new FakeIWebLogger(), 
+				new FakeIThumbnailService(selectorStorage));
 
 			var filePaths = await export.CreateListToExport(fileIndexResultsList, false);
 
 			Assert.AreEqual(true,filePaths[0].Contains("test.dng"));
 			Assert.AreEqual(true,filePaths[1].Contains("test.xmp"));
 		}
-
 		
 		[TestMethod]
 		public async Task ExportControllerTest__ThumbFalse_CreateListToExport()
@@ -265,7 +315,8 @@ namespace starskytest.Controllers
 				selectorStorage.Get(SelectorStorage.StorageServices
 					.HostFilesystem);
 			
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
+			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+				new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
 
 			var createAnImageNoExif = new CreateAnImageNoExif();
 
@@ -286,7 +337,7 @@ namespace starskytest.Controllers
 			Assert.AreEqual(true, filePaths.FirstOrDefault()?.Contains(item.FileName));
 
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,
-				hostFileSystemStorage.IsFolderOrFile(filePaths.FirstOrDefault()));
+				hostFileSystemStorage.IsFolderOrFile(filePaths.FirstOrDefault()!));
 
 			hostFileSystemStorage.FileDelete(createAnImageNoExif.FullFilePathWithDate);
 		}
@@ -296,7 +347,8 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
+			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+				new FakeIThumbnailService(selectorStorage));
 
 			var filePaths = new List<string>
 			{
@@ -311,7 +363,8 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
+			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+				new FakeIThumbnailService(selectorStorage));
 			var filePaths = new List<string>
 			{
 				Path.Combine("test","thumb.jpg")
@@ -337,7 +390,8 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
+			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger(), 
+				new FakeIThumbnailService(selectorStorage));
 			var controller = new ExportController( _bgTaskQueue, selectorStorage, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 

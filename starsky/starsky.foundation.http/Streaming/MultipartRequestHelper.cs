@@ -26,7 +26,7 @@ namespace starsky.foundation.http.Streaming
             return boundary;
         }
 
-        public static bool IsMultipartContentType(string contentType)
+        public static bool IsMultipartContentType(string? contentType)
         {
             return !string.IsNullOrEmpty(contentType)
                     && contentType.Contains("multipart/", StringComparison.OrdinalIgnoreCase);
@@ -41,7 +41,7 @@ namespace starsky.foundation.http.Streaming
                     && string.IsNullOrEmpty(contentDisposition.FileNameStar.Value); // For .NET Core <2.0 remove ".Value"
         }
 
-        public static bool HasFileContentDisposition(ContentDispositionHeaderValue contentDisposition)
+        public static bool HasFileContentDisposition(ContentDispositionHeaderValue? contentDisposition)
         {
             // Content-Disposition: form-data; name="myfile1"; filename="Misc 002.jpg"
             return contentDisposition != null

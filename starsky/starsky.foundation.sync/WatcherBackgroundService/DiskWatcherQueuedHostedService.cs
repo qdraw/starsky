@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Helpers;
@@ -22,8 +17,6 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 		private readonly IDiskWatcherBackgroundTaskQueue _taskQueue;
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
-
-
 		
 		public DiskWatcherQueuedHostedService(
 			IDiskWatcherBackgroundTaskQueue taskQueue,

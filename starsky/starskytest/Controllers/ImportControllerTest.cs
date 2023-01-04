@@ -20,7 +20,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -109,6 +109,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IQuery, FakeIQuery>();
 			services.AddSingleton<IImport, FakeIImport>();
 			services.AddSingleton<IConsole, FakeConsoleWrapper>();
+			services.AddSingleton<IThumbnailQuery, FakeIThumbnailQuery>();
 			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
 			services.AddMemoryCache();
 
@@ -138,6 +139,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IQuery, FakeIQuery>();
 			services.AddSingleton<IImport, FakeIImport>();
 			services.AddSingleton<IConsole, FakeConsoleWrapper>();
+			services.AddSingleton<IThumbnailQuery, FakeIThumbnailQuery>();
 			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
 			services.AddMemoryCache();
 

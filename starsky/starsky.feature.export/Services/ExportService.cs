@@ -21,28 +21,32 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
+using starsky.foundation.thumbnailgeneration.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.export.Services
 {
+	/// <summary>
+	/// Also known as Download
+	/// </summary>
 	[Service(typeof(IExport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ExportService: IExport
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
-		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly IWebLogger _logger;
+		private readonly IThumbnailService _thumbnailService;
 
 		public ExportService(IQuery query, AppSettings appSettings, 
-			ISelectorStorage selectorStorage, IWebLogger logger)
+			ISelectorStorage selectorStorage, IWebLogger logger, IThumbnailService thumbnailService)
 		{
 			_appSettings = appSettings;
 			_query = query;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_thumbnailService = thumbnailService;
 			_logger = logger;
 		}
 
@@ -126,7 +130,7 @@ namespace starsky.feature.export.Services
 		}
 		
 		/// <summary>
-		/// This list will be included in the zip
+		/// This list will be included in the zip - Export is called Download in the UI
 		/// </summary>
 		/// <param name="fileIndexResultsList">the items</param>
 		/// <param name="thumbnail">add the thumbnail or the source image</param>
@@ -136,15 +140,15 @@ namespace starsky.feature.export.Services
 			var filePaths = new List<string>();
 
 			foreach ( var item in fileIndexResultsList.Where(p => 
-				p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
+				p.Status == FileIndexItem.ExifStatus.Ok && p.FileHash != null ).ToList() )
 			{
 				if ( thumbnail )
 				{
 					var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder, 
-						ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.Large, true));
+						ThumbnailNameHelper.Combine(item.FileHash!, ThumbnailSize.Large, true));
 
-					await new Thumbnail(_iStorage, _thumbnailStorage, _logger)
-						.CreateThumb(item.FilePath, item.FileHash, true);
+					await _thumbnailService
+						.CreateThumbAsync(item.FilePath!, item.FileHash, true);
 					
 					filePaths.Add(sourceThumb);
 					continue;

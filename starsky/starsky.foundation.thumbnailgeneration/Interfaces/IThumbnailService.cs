@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Enums;
+using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starsky.foundation.thumbnailgeneration.Interfaces
 {
@@ -10,14 +13,18 @@ namespace starsky.foundation.thumbnailgeneration.Interfaces
 		/// </summary>
 		/// <param name="subPath">folder to scan</param>
 		/// <returns>list of items with success</returns>
-		Task<List<(string, bool)>> CreateThumb(string subPath);
-		
+		Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath);
+
 		/// <summary>
 		/// Single item with fileHash
 		/// </summary>
 		/// <param name="subPath">location</param>
 		/// <param name="fileHash">fileHash</param>
+		/// <param name="skipExtraLarge"></param>
 		/// <returns></returns>
-		Task<bool> CreateThumb(string subPath, string fileHash);
+		Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false);
+
+		Task<bool> RotateThumbnail(string fileHash, int orientation,
+			int width = 1000, int height = 0);
 	}
 }

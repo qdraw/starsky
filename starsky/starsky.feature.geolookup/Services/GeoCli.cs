@@ -23,7 +23,7 @@ namespace starsky.feature.geolookup.Services
 	/// To test: exiftool image.jpg -Country-PrimaryLocationName="" -Country="" -State="" -Province-State=""
 	/// -City="" -xmp:City="" -XMP:CountryCode="" -Country-PrimaryLocationCode="" -overwrite_original
 	/// </summary>
-	public class GeoCli
+	public sealed class GeoCli
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IConsole _console;
@@ -157,10 +157,10 @@ namespace starsky.feature.geolookup.Services
 				Select(g => g.First())
 				.ToList() )
 			{
-				var newThumb = (await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath)).Key;
+				var newThumb = (await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!)).Key;
 				if ( item.FileHash == newThumb ) continue;
 				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(
-					item.FileHash, newThumb);
+					item.FileHash!, newThumb);
 				if ( _appSettings.IsVerbose() )
 					_console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);
 			}

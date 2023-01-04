@@ -32,8 +32,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task Thumbnail_Enable_T_Param_AssumeHome()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
-			var fakeIThumbnailService = new FakeIThumbnailService();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
 			var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
@@ -118,7 +118,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			await thumbnailService.Thumbnail(new []{"-t","true", "-s", "/test.jpg"});
 			
 			Assert.AreEqual("/test.jpg", fakeIThumbnailService.Inputs[0].Item1);
-			Assert.IsNotNull(fakeIThumbnailService.Inputs[0].Item2);
+			
+			Assert.AreEqual("/test.jpg", fakeIThumbnailService.Inputs[0].Item1);
+			Assert.IsNull(fakeIThumbnailService.Inputs[0].Item2);
 		}
 		
 		[TestMethod]

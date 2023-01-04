@@ -32,6 +32,8 @@ namespace starsky.foundation.database.Data
 		public DbSet<NotificationItem> Notifications { get; set; }
 
 		public DbSet<SettingsItem> Settings { get; set; }
+		
+		public DbSet<ThumbnailItem> Thumbnails { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
@@ -189,6 +191,7 @@ namespace starsky.foundation.database.Data
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
 				}
 			);
+			
 			modelBuilder.Entity<DataProtectionKey>(etb =>
 			{
 				etb.HasAnnotation("MySql:CharSet", "utf8mb4");
@@ -198,6 +201,17 @@ namespace starsky.foundation.database.Data
 					.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 				}
 			);
+			
+			modelBuilder.Entity<ThumbnailItem>(etb =>
+				{
+					etb.Property(e => e.FileHash).IsRequired().HasMaxLength(190);
+					etb.HasKey(e => e.FileHash);
+					
+					etb.ToTable("Thumbnails");
+					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
+				}
+			);
+			
 		}
 
 		/// <summary>

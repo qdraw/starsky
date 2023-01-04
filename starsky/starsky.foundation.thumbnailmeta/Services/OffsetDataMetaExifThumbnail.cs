@@ -7,8 +7,8 @@ using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Jpeg;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.metathumbnail.Interfaces;
-using starsky.foundation.metathumbnail.Models;
+using starsky.foundation.thumbnailmeta.Interfaces;
+using starsky.foundation.thumbnailmeta.Models;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
@@ -17,7 +17,7 @@ using starsky.foundation.storage.Storage;
 using Directory = MetadataExtractor.Directory;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.foundation.metathumbnail.Services
+namespace starsky.foundation.thumbnailmeta.Services
 {
 	[Service(typeof(IOffsetDataMetaExifThumbnail), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class OffsetDataMetaExifThumbnail : IOffsetDataMetaExifThumbnail
@@ -31,14 +31,14 @@ namespace starsky.foundation.metathumbnail.Services
 			_logger = logger;
 		}
 
-		public (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation)
+		public (ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation)
 			GetExifMetaDirectories(string subPath)
 		{
 			var (allExifItems,exifThumbnailDir) = ReadExifMetaDirectories(subPath);
 			return ParseMetaThumbnail(allExifItems, exifThumbnailDir, subPath);
 		}
 		
-		internal (List<Directory>, ExifThumbnailDirectory) ReadExifMetaDirectories(string subPath)
+		internal (List<Directory>?, ExifThumbnailDirectory?) ReadExifMetaDirectories(string subPath)
 		{
 			using ( var stream = _iStorage.ReadStream(subPath) )
 			{
@@ -52,11 +52,11 @@ namespace starsky.foundation.metathumbnail.Services
 			}
 		}
 		
-		internal (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation) ParseMetaThumbnail(List<Directory> allExifItems, 
-			ExifThumbnailDirectory exifThumbnailDir, string reference = null)
+		internal (ExifThumbnailDirectory?, int, int, FileIndexItem.Rotation) ParseMetaThumbnail(List<Directory>? allExifItems, 
+			ExifThumbnailDirectory? exifThumbnailDir, string? reference = null)
 		{
 
-			if ( exifThumbnailDir == null )
+			if ( exifThumbnailDir == null || allExifItems == null )
 			{
 				return ( null, 0, 0, FileIndexItem.Rotation.DoNotChange );
 			}
@@ -93,7 +93,7 @@ namespace starsky.foundation.metathumbnail.Services
 			return (exifThumbnailDir, width, height, rotation);
 		}
 
-		public OffsetModel ParseOffsetData(ExifThumbnailDirectory exifThumbnailDir, string subPath)
+		public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir, string subPath)
 		{
 			if ( exifThumbnailDir == null )  return new OffsetModel {Success = false, Reason = "ExifThumbnailDirectory null"};
 

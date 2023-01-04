@@ -10,6 +10,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
+using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.Helpers;
 using starskycore.Helpers;
 
@@ -22,12 +23,14 @@ namespace starsky.Controllers
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IWebLogger _logger;
+		private readonly IThumbnailService _thumbnailService;
 
-		public DownloadPhotoController(IQuery query, ISelectorStorage selectorStorage, IWebLogger logger)
+		public DownloadPhotoController(IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, IThumbnailService thumbnailService)
 		{
 			_query = query;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_thumbnailService = thumbnailService;
 			_logger = logger;
 		}
 
@@ -83,7 +86,7 @@ namespace starsky.Controllers
 	            return NotFound("not in index " + f);
             }
 
-            if (!_iStorage.ExistFile(fileIndexItem.FilePath))
+            if (!_iStorage.ExistFile(fileIndexItem.FilePath!))
                 return NotFound($"source image missing {fileIndexItem.FilePath}" );
 
             // Return full image
@@ -102,7 +105,7 @@ namespace starsky.Controllers
             
             var data = new ThumbnailSizesExistStatusModel{ 
 	            Small = _thumbnailStorage.ExistFile(
-		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Small)),
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,ThumbnailSize.Small)),
 	            Large = _thumbnailStorage.ExistFile(
 		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Large)),
 	            ExtraLarge = _thumbnailStorage.ExistFile(
@@ -111,8 +114,8 @@ namespace starsky.Controllers
 
             if (!data.Small || !data.Large || !data.ExtraLarge)
             {
-                await new Thumbnail(_iStorage,
-	                _thumbnailStorage,_logger).CreateThumb(fileIndexItem.FilePath, 
+	            _logger.LogDebug("Thumbnail generation started");
+                await _thumbnailService.CreateThumbAsync(fileIndexItem.FilePath, 
 	                fileIndexItem.FileHash);
                 
                 if ( !_thumbnailStorage.ExistFile(

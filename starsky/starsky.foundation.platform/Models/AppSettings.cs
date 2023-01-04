@@ -776,7 +776,13 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public const string CloneToDisplaySecurityWarning =
 			"warning: The field is not empty but for security reasons it is not shown";
-	    
+
+		/// <summary>
+		/// For background task with lower priority e.g. thumbnails
+		/// it skips the current task if the current process is to busy
+		/// </summary>
+		public double CpuUsageMaxPercentage { get; set; } = 75;
+
 		/// <returns>AppSettings duplicated</returns>
 		/// <summary>
 		/// Duplicate this item in memory. AND remove _databaseConnection 

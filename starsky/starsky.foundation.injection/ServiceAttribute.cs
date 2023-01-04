@@ -16,6 +16,6 @@ namespace starsky.foundation.injection
 		}
 
 		public InjectionLifetime InjectionLifetime { get; set; } = InjectionLifetime.Scoped;
-		public Type ServiceType { get; set; }
+		public Type? ServiceType { get; set; }
 	}
 }

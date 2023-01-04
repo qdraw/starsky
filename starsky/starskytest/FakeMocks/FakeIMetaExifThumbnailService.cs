@@ -1,32 +1,48 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.thumbnailmeta.Interfaces;
 
 namespace starskytest.FakeMocks
 {
 	public class FakeIMetaExifThumbnailService : IMetaExifThumbnailService
 	{
-		public List<(string, string)> Input { get; set; } =
-			Array.Empty<(string, string)>().ToList();
+		public List<(string, string?)> Input { get; set; } =
+			Array.Empty<(string, string?)>().ToList();
 		
-		public Task<bool> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
+		public Task<IEnumerable<(bool,string, string?)>>  AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
 		{
-			Input.AddRange(subPathsAndHash);
-			return Task.FromResult(true);
+			var subPathsAndHashList = subPathsAndHash.ToList();
+			Input.AddRange(subPathsAndHashList!);
+
+			var result = new List<(bool, string, string?)>();
+			foreach ( var singleSubPathsAndHash in subPathsAndHashList.ToList() )
+			{
+				if ( singleSubPathsAndHash.Item1.Contains("fail") )
+				{
+					result.Add((false, singleSubPathsAndHash.Item1,null));
+					continue;
+				}
+				
+				result.Add((true, singleSubPathsAndHash.Item1,null));
+			}
+			
+			return Task.FromResult(result.AsEnumerable());
 		}
 
-		public Task<bool> AddMetaThumbnail(string subPath)
+		public Task<List<(bool,string, string?)>> AddMetaThumbnail(string subPath)
 		{
 			Input.Add((subPath, null));
-			return Task.FromResult(true);
+			var result = new List<(bool, string,string?)> { (true, subPath, null) };
+			return Task.FromResult(result);
 		}
 
-		public Task<bool> AddMetaThumbnail(string subPath, string fileHash)
+		public Task<(bool,string,string?)> AddMetaThumbnail(string subPath, string fileHash)
 		{
 			Input.Add((subPath, fileHash));
-			return Task.FromResult(true);
+			return Task.FromResult((true, subPath, ""))!;
 		}
 	}
 }
