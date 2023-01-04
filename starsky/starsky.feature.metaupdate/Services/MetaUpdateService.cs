@@ -185,10 +185,12 @@ namespace starsky.feature.metaupdate.Services
 			// Do orientation
 			if ( FileIndexItem.IsRelativeOrientation(rotateClock) )
 			{
-				foreach ( var fileHash in ThumbnailNameHelper.AllThumbnailSizes.ToList().Select(size => 
-					         ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, size)) )
+				foreach ( var size in ThumbnailNameHelper.AllThumbnailSizes.ToList() )
 				{
-					await _thumbnailService.RotateThumbnail(fileHash,rotateClock);
+					var fileHash = ThumbnailNameHelper.Combine(
+						fileIndexItem.FileHash!, size);
+					await _thumbnailService.RotateThumbnail(fileHash,rotateClock, 
+						ThumbnailNameHelper.GetSize(size));
 				}
 			}
 		}

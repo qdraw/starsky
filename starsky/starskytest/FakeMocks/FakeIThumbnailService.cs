@@ -75,9 +75,12 @@ namespace starskytest.FakeMocks
 			}}.AsEnumerable());
 		}
 
+		public List<Tuple<string, int?, int?, int?>> InputsRotate { get; set; } = new List<Tuple<string, int?, int?, int?>>();
+
 		public Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
 			int height = 0)
 		{
+			InputsRotate.Add(new Tuple<string, int?, int?, int?>(fileHash, orientation, width, height));
 			return Task.FromResult(true);
 		}
 	}

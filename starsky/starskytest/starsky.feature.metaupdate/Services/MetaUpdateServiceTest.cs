@@ -12,11 +12,13 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
@@ -30,10 +32,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly FakeExifTool _exifTool;
-		private readonly ReadMeta _readMeta;
 		private readonly IStorage _iStorageFake;
-		private readonly Query _queryWithoutCache;
-		private string _exampleHash;
+		private readonly string _exampleHash;
 
 		public MetaUpdateServiceTest()
 		{
@@ -46,26 +46,29 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			builder.UseInMemoryDatabase(nameof(MetaUpdateService));
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
-			_query = new Query(dbContext, new AppSettings(), null,new FakeIWebLogger(),_memoryCache);
-			_queryWithoutCache = new Query(dbContext, new AppSettings{ AddMemoryCache = false}, null,new FakeIWebLogger(),null);
+			_query = new Query(dbContext, new AppSettings(), null!,new FakeIWebLogger(),_memoryCache);
+			new Query(dbContext, 
+				new AppSettings{ AddMemoryCache = false}, 
+				null!,new FakeIWebLogger(),null);
 
 			_appSettings = new AppSettings();
 
-			_iStorageFake = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg", _exampleHash,
+			_iStorageFake = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.jpg", _exampleHash,
 					"/test_default.jpg"},
 				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes});
 			
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
 
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
-			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache, new FakeIWebLogger());
+			new ReadMeta(_iStorageFake,_appSettings,_memoryCache, new FakeIWebLogger());
 		}
 
 		
 		[TestMethod]
 		public async Task UpdateService_Update_defaultTest()
 		{
-			var item0 = _query.AddItem(new FileIndexItem
+			var item0 = await _query.AddItemAsync(new FileIndexItem
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
 				Tags = "thisKeywordHasChanged",
@@ -118,9 +121,9 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			// check for item (Referenced)
 			Assert.AreEqual("thisKeywordHasChanged",item0.Tags);
 			// db
-			Assert.AreEqual("thisKeywordHasChanged",_query.SingleItem("/test_default.jpg").FileIndexItem.Tags);
+			Assert.AreEqual("thisKeywordHasChanged",_query.SingleItem("/test_default.jpg")!.FileIndexItem!.Tags);
 			
-			Assert.AreEqual("noChanges",_query.SingleItem("/test_default.jpg").FileIndexItem.Description);
+			Assert.AreEqual("noChanges",_query.SingleItem("/test_default.jpg")!.FileIndexItem!.Description);
 
 			_query.RemoveItem(item0);
 		}
@@ -140,7 +143,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			});
 
 			var item0 = query.GetObjectByFilePath("/delete/test_delete.jpg");
-			item0.Tags = "!delete!";
+			item0!.Tags = "!delete!";
 			
 			var changedFileIndexItemName = new Dictionary<string, List<string>>
 			{
@@ -169,9 +172,9 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,fileIndexResultsList[0].Status);
 
 			// db
-			Assert.AreEqual("!delete!",query.GetObjectByFilePath("/delete/test_delete.jpg").Tags);
+			Assert.AreEqual("!delete!",query.GetObjectByFilePath("/delete/test_delete.jpg")!.Tags);
 			
-			Assert.AreEqual("noChanges",query.GetObjectByFilePath("/delete/test_delete.jpg").Description);
+			Assert.AreEqual("noChanges",query.GetObjectByFilePath("/delete/test_delete.jpg")!.Description);
 
 			await query.RemoveItemAsync(item0);
 		}
@@ -223,12 +226,16 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				toUpdateItem, false,false,0);
 			// Second one is null
 
+			Assert.IsNotNull(_query.SingleItem("/test.jpg"));
+			Assert.IsNotNull(_query.SingleItem("/test.jpg")!.FileIndexItem);
+			Assert.IsNotNull(_query.SingleItem("/test.jpg")!.FileIndexItem!.Tags);
+
 			// check for item (Referenced)
 			Assert.AreEqual("databaseItem",toUpdateItem.Tags);
 			// db
-			Assert.AreEqual("databaseItem",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
+			Assert.AreEqual("databaseItem",_query.SingleItem("/test.jpg")!.FileIndexItem!.Tags);
 
-			_query.RemoveItem(databaseItem);
+			await _query.RemoveItemAsync(databaseItem);
 		}
 
 		[TestMethod]
@@ -341,9 +348,50 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 
 		[TestMethod]
-		public void RotationThumbnailExecute1()
+		public async Task RotationThumbnailExecute_Rotation0_soSkip()
 		{
-			//new RotationThumbnailExecute()
+			var thumbnailService =
+				new FakeIThumbnailService(
+					new FakeSelectorStorage(_iStorageFake));
+			var readMeta = new ReadMetaSubPathStorage(
+				new FakeSelectorStorage(_iStorageFake), _appSettings,
+				_memoryCache, new FakeIWebLogger());
+			var service = new MetaUpdateService(_query, _exifTool,
+				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+				new FakeIWebLogger(), readMeta, thumbnailService);
+			
+			await service.RotationThumbnailExecute(0, new FileIndexItem("/test.jpg"));
+			
+			Assert.AreEqual(0,thumbnailService.InputsRotate.Count);
+		}
+		
+		[TestMethod]
+		public async Task RotationThumbnailExecute2()
+		{
+			var thumbnailService =
+				new FakeIThumbnailService(
+					new FakeSelectorStorage(_iStorageFake));
+			var readMeta = new ReadMetaSubPathStorage(
+				new FakeSelectorStorage(_iStorageFake), _appSettings,
+				_memoryCache, new FakeIWebLogger());
+			
+			var service = new MetaUpdateService(_query, _exifTool,
+				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+				new FakeIWebLogger(), readMeta, thumbnailService);
+			
+			await service.RotationThumbnailExecute(1, new FileIndexItem("/test.jpg"));
+			
+			Assert.AreEqual(ThumbnailNameHelper.AllThumbnailSizes.Length,
+				thumbnailService.InputsRotate.Count);
+			
+			Assert.IsTrue(thumbnailService.InputsRotate.Any(p => p.Item3 == 
+				ThumbnailNameHelper.GetSize(ThumbnailSize.Small)));
+			Assert.IsTrue(thumbnailService.InputsRotate.Any(p => p.Item3 == 
+				ThumbnailNameHelper.GetSize(ThumbnailSize.TinyMeta)));
+			Assert.IsTrue(thumbnailService.InputsRotate.Any(p => p.Item3 == 
+				ThumbnailNameHelper.GetSize(ThumbnailSize.Large)));
+			Assert.IsTrue(thumbnailService.InputsRotate.Any(p => p.Item3 == 
+				ThumbnailNameHelper.GetSize(ThumbnailSize.ExtraLarge)));
 		}
 	}
 }
