@@ -10,7 +10,7 @@ To test your connection, [please open this website.](http://websocketstest.com/)
 
 If the Websockets are identified, you'll see the following message:
 
-wensocket_connection.jpg
+![websockets website](../../assets/getting-started-troubleshout-websockets.jpg)
 
 If the result is different, it's most likely that there's something in your network that blocks WebSocket connections. If this is the case try the following:
 
@@ -22,7 +22,7 @@ If the Websockets are identified correctly but there are still issues establishi
 
 ## If you use a Firewall
 
-Please allowlist the domains and subdomains you are using.
+Please allow list the domains and subdomains you are using.
 
 ## If you use a proxy 
 
