@@ -14,10 +14,8 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -33,7 +31,6 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		private readonly AppSettings _appSettings;
 		private readonly FakeExifTool _exifTool;
 		private readonly IStorage _iStorageFake;
-		private readonly string _exampleHash;
 
 		public MetaUpdateServiceTest()
 		{
@@ -47,21 +44,15 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
 			_query = new Query(dbContext, new AppSettings(), null!,new FakeIWebLogger(),_memoryCache);
-			new Query(dbContext, 
-				new AppSettings{ AddMemoryCache = false}, 
-				null!,new FakeIWebLogger(),null);
 
 			_appSettings = new AppSettings();
 
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.jpg", _exampleHash,
+				new List<string>{"/test.jpg", "_exampleHash",
 					"/test_default.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes});
+				new List<byte[]>{CreateAnImageNoExif.Bytes});
 			
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
-
-			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
-			new ReadMeta(_iStorageFake,_appSettings,_memoryCache, new FakeIWebLogger());
 		}
 
 		
@@ -125,7 +116,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			Assert.AreEqual("noChanges",_query.SingleItem("/test_default.jpg")!.FileIndexItem!.Description);
 
-			_query.RemoveItem(item0);
+			await _query.RemoveItemAsync(item0);
 		}
 		
 		[TestMethod]
@@ -264,7 +255,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeIWebLogger(), readMeta, 
 				new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)));
 			
-			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
+			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, 
+				updateItem,false,false,0);
 
 			Assert.IsTrue(_iStorageFake.ExistFile("/.starsky.test.gpx.json"));
 		}
