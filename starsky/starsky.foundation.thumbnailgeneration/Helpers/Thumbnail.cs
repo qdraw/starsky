@@ -228,7 +228,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				}
 			}
 			// Large <- will be false when skipExtraLarge = true, its already created 
-			ThumbnailNameHelper.SecondGeneratedThumbnailSizes.ForEach(AddFileNames);
+			ThumbnailNameHelper.SecondGeneratedThumbnailSizes.ToList().ForEach(AddFileNames);
 			
 			return thumbnailFromThumbnailUpdateList;
 		}
