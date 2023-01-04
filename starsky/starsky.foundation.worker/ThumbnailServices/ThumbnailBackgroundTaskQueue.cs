@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.worker.CpuEventListener;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.ThumbnailServices.Exceptions;
@@ -20,12 +19,12 @@ namespace starsky.foundation.worker.ThumbnailServices
 	[Service(typeof(IThumbnailQueuedHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class ThumbnailBackgroundTaskQueue : IThumbnailQueuedHostedService
 	{
-		private readonly ICpuUsageListenerBackgroundService _cpuUsageListenerService;
+		private readonly ICpuUsageListener _cpuUsageListenerService;
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
 		private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string>> _queue;
 
-		public ThumbnailBackgroundTaskQueue(ICpuUsageListenerBackgroundService cpuUsageListenerService, IWebLogger logger, AppSettings appSettings)
+		public ThumbnailBackgroundTaskQueue(ICpuUsageListener cpuUsageListenerService, IWebLogger logger, AppSettings appSettings)
 		{
 			_cpuUsageListenerService = cpuUsageListenerService;
 			_logger = logger;

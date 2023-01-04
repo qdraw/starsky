@@ -53,7 +53,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			services.AddSingleton<IHostedService, ThumbnailQueuedHostedService>();
 			services.AddSingleton<IThumbnailQueuedHostedService, ThumbnailBackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
-			services.AddSingleton<ICpuUsageListenerBackgroundService, FakeICpuUsageListenerBackgroundService>();
+			services.AddSingleton<ICpuUsageListener, FakeICpuUsageListener>();
 			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 
 			// build the service
@@ -80,7 +80,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		[TestMethod]
 		public async Task Count_AddOneForCount()
 		{
-			var backgroundQueue = new ThumbnailBackgroundTaskQueue(new FakeICpuUsageListenerBackgroundService(), new FakeIWebLogger(), new AppSettings());
+			var backgroundQueue = new ThumbnailBackgroundTaskQueue(new FakeICpuUsageListener(), new FakeIWebLogger(), new AppSettings());
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(1,count);
@@ -90,7 +90,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		[ExpectedException(typeof(ToManyUsageException))]
 		public async Task Count_AddOneForCount_UsageException()
 		{
-			var e = new FakeICpuUsageListenerBackgroundService(100d);
+			var e = new FakeICpuUsageListener(100d);
 			Console.WriteLine(e.CpuUsageMean);
 			var backgroundQueue = new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(), new AppSettings());
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
@@ -108,7 +108,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
 			services.AddSingleton<IThumbnailQueuedHostedService, ThumbnailBackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
-			services.AddSingleton<ICpuUsageListenerBackgroundService, FakeICpuUsageListenerBackgroundService>();
+			services.AddSingleton<ICpuUsageListener, FakeICpuUsageListener>();
 			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<AppSettings, AppSettings>();
@@ -169,7 +169,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			services.AddSingleton<IThumbnailQueuedHostedService, ThumbnailBackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<AppSettings, AppSettings>();
-			services.AddSingleton<ICpuUsageListenerBackgroundService, FakeICpuUsageListenerBackgroundService>();
+			services.AddSingleton<ICpuUsageListener, FakeICpuUsageListener>();
 			var serviceProvider = services.BuildServiceProvider();
 
 			var hostedServices = serviceProvider.GetServices<IHostedService>().ToList();

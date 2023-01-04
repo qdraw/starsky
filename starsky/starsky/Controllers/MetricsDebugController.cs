@@ -7,18 +7,18 @@ namespace starsky.Controllers;
 [ApiExplorerSettings(IgnoreApi = true)]
 public class MetricsDebugController : Controller
 {
-	private readonly ICpuUsageListenerBackgroundService _cpuUsageListenerBackgroundService;
+	private readonly ICpuUsageListener _cpuUsageListener;
 
-	public MetricsDebugController(ICpuUsageListenerBackgroundService cpuUsageListenerBackgroundService)
+	public MetricsDebugController(ICpuUsageListener cpuUsageListener)
 	{
-		_cpuUsageListenerBackgroundService = cpuUsageListenerBackgroundService;
+		_cpuUsageListener = cpuUsageListener;
 	}
 
 	public IActionResult Index()
 	{
 		return Json(new MetricsDebugViewModel
 		{
-			CpuUsageMean = _cpuUsageListenerBackgroundService.CpuUsageMean,
+			CpuUsageMean = _cpuUsageListener.CpuUsageMean,
 		});
 	}
 }

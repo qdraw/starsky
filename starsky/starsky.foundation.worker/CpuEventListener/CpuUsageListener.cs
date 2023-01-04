@@ -3,11 +3,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Tracing;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.worker.CpuEventListener.Interfaces;
 
 namespace starsky.foundation.worker.CpuEventListener;
 
-[Service(InjectionLifetime = InjectionLifetime.Singleton)]
-public sealed class CpuUsageListener : EventListener
+[Service(typeof(ICpuUsageListener), InjectionLifetime = InjectionLifetime.Singleton)]
+public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 {
 	private readonly IWebLogger _logger;
 
