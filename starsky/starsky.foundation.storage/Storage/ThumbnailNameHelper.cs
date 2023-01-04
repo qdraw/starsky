@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Enums;
@@ -16,20 +14,20 @@ namespace starsky.foundation.storage.Storage
 		/// <summary>
 		/// Without TinyMeta
 		/// </summary>
-		public static readonly ImmutableArray<ThumbnailSize> GeneratedThumbnailSizes = new ImmutableArray<ThumbnailSize>
+		public static readonly ThumbnailSize[] GeneratedThumbnailSizes = new ThumbnailSize[]
 		{
 			ThumbnailSize.ExtraLarge,
 			ThumbnailSize.Small,
 			ThumbnailSize.Large
 		};
 		
-		public static readonly ImmutableArray<ThumbnailSize> SecondGeneratedThumbnailSizes = new ImmutableArray<ThumbnailSize>
+		public static readonly ThumbnailSize[] SecondGeneratedThumbnailSizes = new ThumbnailSize[]
 		{
 			ThumbnailSize.Small,
 			ThumbnailSize.Large //  <- will be false when skipExtraLarge = true, its already created 
 		};
 		
-		public static readonly ImmutableArray<ThumbnailSize> AllThumbnailSizes = new ImmutableArray<ThumbnailSize>
+		public static readonly ThumbnailSize[] AllThumbnailSizes = new ThumbnailSize[]
 		{
 			ThumbnailSize.TinyMeta,
 			ThumbnailSize.ExtraLarge,
