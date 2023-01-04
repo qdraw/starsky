@@ -185,7 +185,7 @@ namespace starsky.feature.metaupdate.Services
 			// Do orientation
 			if ( FileIndexItem.IsRelativeOrientation(rotateClock) )
 			{
-				foreach ( var size in ThumbnailNameHelper.AllThumbnailSizes.ToList() )
+				foreach ( var size in ThumbnailNameHelper.AllThumbnailSizes )
 				{
 					var fileHash = ThumbnailNameHelper.Combine(
 						fileIndexItem.FileHash!, size);
