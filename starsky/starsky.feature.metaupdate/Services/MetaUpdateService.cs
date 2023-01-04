@@ -4,20 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
-using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Helpers;
+using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
@@ -35,7 +32,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IWebLogger _logger;
-		private readonly AppSettings _appSettings;
+		private readonly IThumbnailService _thumbnailService;
 
 		public MetaUpdateService(
 			IQuery query,
@@ -43,7 +40,8 @@ namespace starsky.feature.metaupdate.Services
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
 			IWebLogger logger,
-			IReadMetaSubPathStorage readMetaSubPathStorage, AppSettings appSettings)
+			IReadMetaSubPathStorage readMetaSubPathStorage, 
+			IThumbnailService thumbnailService)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -52,7 +50,7 @@ namespace starsky.feature.metaupdate.Services
 			_readMeta = readMetaSubPathStorage;
 			_metaPreflight = metaPreflight;
 			_logger = logger;
-			_appSettings = appSettings;
+			_thumbnailService = thumbnailService;
 		}
 
 
@@ -83,12 +81,12 @@ namespace starsky.feature.metaupdate.Services
 			
 			var updatedItems = new List<FileIndexItem>();
 			var fileIndexItemList = fileIndexResultsList
-				.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 
-				            || p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
+				.Where(p => p.Status is FileIndexItem.ExifStatus.Ok 
+					or FileIndexItem.ExifStatus.Deleted).ToList();
 				
 			foreach ( var fileIndexItem in fileIndexItemList )
 			{
-				if (changedFileIndexItemName.ContainsKey(fileIndexItem.FilePath) )
+				if (changedFileIndexItemName.ContainsKey(fileIndexItem.FilePath!) )
 				{
 					// used for tracking differences, in the database/ExifTool compare
 					var comparedNamesList = changedFileIndexItemName[fileIndexItem.FilePath];
@@ -135,7 +133,7 @@ namespace starsky.feature.metaupdate.Services
 				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
 
 				// to avoid diskWatcher catch up
-				_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath, fileIndexItem, TimeSpan.FromSeconds(10));
+				_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem, TimeSpan.FromSeconds(10));
 					
 				// Do an Exif Sync for all files, including thumbnails
 				var (exifResult,newFileHashes) = await exifTool.UpdateAsync(fileIndexItem, 
@@ -171,8 +169,8 @@ namespace starsky.feature.metaupdate.Services
 				return;
 			}
 			// when newFileHashes is null or string.empty
-			var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
-			_thumbnailStorage.FileMove(fileIndexItem.FileHash, newFileHash);
+			var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(fileIndexItem.FilePath!)).Key;
+			_thumbnailStorage.FileMove(fileIndexItem.FileHash!, newFileHash);
 			fileIndexItem.FileHash = newFileHash;
 		}
 
@@ -182,13 +180,16 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="rotateClock">-1 or 1</param>
 		/// <param name="fileIndexItem">object contains fileHash</param>
 		/// <returns>updated image</returns>
-		private async Task RotationThumbnailExecute(int rotateClock, FileIndexItem fileIndexItem)
+		internal async Task RotationThumbnailExecute(int rotateClock, FileIndexItem fileIndexItem)
 		{
 			// Do orientation
 			if ( FileIndexItem.IsRelativeOrientation(rotateClock) )
 			{
-				await new Thumbnail(_iStorage,_thumbnailStorage,
-					_logger,_appSettings).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
+				foreach ( var fileHash in ThumbnailNameHelper.AllThumbnailSizes.Select(size => 
+					         ThumbnailNameHelper.Combine(fileIndexItem.FileHash!, size)) )
+				{
+					await _thumbnailService.RotateThumbnail(fileHash,rotateClock);
+				}
 			}
 		}
 	}

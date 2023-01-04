@@ -56,6 +56,11 @@ namespace starsky.foundation.database.DataProtection
 			}
 		}
     
+		/// <summary>
+		/// This function crashes usually on the first run
+		/// </summary>
+		/// <param name="element">Xml element</param>
+		/// <param name="friendlyName">name of item</param>
 		public void StoreElement(XElement element, string friendlyName)
 		{
 			bool LocalDefault(ApplicationDbContext ctx)

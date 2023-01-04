@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.storage.Helpers;
@@ -12,6 +13,7 @@ using starsky.foundation.thumbnailgeneration.Models;
 
 namespace starskytest.FakeMocks
 {
+	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public class FakeIThumbnailService : IThumbnailService
 	{
 		private readonly IStorage? _subPathStorage;
@@ -73,5 +75,10 @@ namespace starskytest.FakeMocks
 			}}.AsEnumerable());
 		}
 
+		public Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000,
+			int height = 0)
+		{
+			return Task.FromResult(true);
+		}
 	}
 }

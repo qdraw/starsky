@@ -63,7 +63,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 		
 		[TestMethod]
-		public void UpdateService_Update_defaultTest()
+		public async Task UpdateService_Update_defaultTest()
 		{
 			var item0 = _query.AddItem(new FileIndexItem
 			{
@@ -110,9 +110,10 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta, new AppSettings());
+				new FakeIWebLogger(), readMeta, 
+				new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)));
 			
-			service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem, false,false,0);
+			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
 			Assert.AreEqual("thisKeywordHasChanged",item0.Tags);
@@ -159,7 +160,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var readMeta = new FakeReadMetaSubPathStorage();
 			var service = new MetaUpdateService(query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta, new AppSettings());
+				new FakeIWebLogger(), readMeta, 
+				new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)));
 			
 			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, null, false,false,0);
 
@@ -214,7 +216,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta, new AppSettings());
+				new FakeIWebLogger(), readMeta, 
+				new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)));
 			
 			await service.UpdateAsync(null, fileIndexResultsList, 
 				toUpdateItem, false,false,0);
@@ -251,7 +254,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var readMeta = new FakeReadMetaSubPathStorage();
 			var service = new MetaUpdateService(query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta, new AppSettings());
+				new FakeIWebLogger(), readMeta, 
+				new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)));
 			
 			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
@@ -273,7 +277,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta, new AppSettings());
+				new FakeIWebLogger(), readMeta, 
+				new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)));
 			
 			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultList , 
 					null,false,false,0);
@@ -303,7 +308,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var readMeta = new FakeReadMetaSubPathStorage();
 			var service = new MetaUpdateService(query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta, new AppSettings());
+				new FakeIWebLogger(), readMeta, new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)));
 				
 			await service
 				.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem,false,
@@ -328,11 +333,17 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				_memoryCache, new FakeIWebLogger());
 			var service = new MetaUpdateService(_query, _exifTool,
 				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
-				new FakeIWebLogger(), readMeta, new AppSettings());
+				new FakeIWebLogger(), readMeta, new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)));
 			
 			await service.ApplyOrGenerateUpdatedFileHash(new List<string>(), detailView.FileIndexItem);
 			
 			Assert.IsNotNull(detailView.FileIndexItem.FileHash);
+		}
+
+		[TestMethod]
+		public void RotationThumbnailExecute1()
+		{
+			//new RotationThumbnailExecute()
 		}
 	}
 }

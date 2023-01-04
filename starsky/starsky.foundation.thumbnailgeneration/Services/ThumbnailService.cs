@@ -51,5 +51,11 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		{
 			return _thumbnail.CreateThumbAsync(subPath, fileHash);
 		}
+
+		public Task<bool> RotateThumbnail(string fileHash, int orientation,
+			int width = 1000, int height = 0)
+		{
+			return _thumbnail.RotateThumbnail(fileHash, orientation, width, height);
+		}
 	}
 }

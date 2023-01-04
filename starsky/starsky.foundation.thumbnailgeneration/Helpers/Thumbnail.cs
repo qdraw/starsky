@@ -145,13 +145,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			// when all images are already created
 			if ( !thumbnailFromThumbnailUpdateList.Any() )
 			{
-				var toCheckList = new List<ThumbnailSize>
-				{
-					ThumbnailSize.ExtraLarge,
-					ThumbnailSize.Small,
-					ThumbnailSize.Large
-				};
-				return toCheckList.Select(size => new GenerationResultModel
+				return ThumbnailNameHelper.GeneratedThumbnailSizes.Select(size => new GenerationResultModel
 				{
 					Success = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, size)), 
 					Size = size, 
@@ -233,11 +227,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 					thumbnailFromThumbnailUpdateList.Add(size);
 				}
 			}
-			new List<ThumbnailSize>
-			{
-				ThumbnailSize.Small, 
-				ThumbnailSize.Large // <- will be false when skipExtraLarge = true, its already created
-			}.ForEach(AddFileNames);
+			// Large <- will be false when skipExtraLarge = true, its already created 
+			ThumbnailNameHelper.SecondGeneratedThumbnailSizes.ForEach(AddFileNames);
 			
 			return thumbnailFromThumbnailUpdateList;
 		}
@@ -450,7 +441,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="width">to resize, default 1000</param>
 		/// <param name="height">to resize, default keep ratio (0)</param>
 		/// <returns>Is successful? // private feature</returns>
-		public async Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000, int height = 0 )
+		internal async Task<bool> RotateThumbnail(string fileHash, int orientation, int width = 1000, int height = 0 )
 		{
 			if (!_thumbnailStorage.ExistFile(fileHash)) return false;
 

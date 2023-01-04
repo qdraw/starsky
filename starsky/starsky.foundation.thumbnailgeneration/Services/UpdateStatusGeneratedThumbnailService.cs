@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 
@@ -21,10 +22,7 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 
 	public async Task UpdateStatusAsync(List<GenerationResultModel> generationResults)
 	{
-		foreach ( var size in new List<ThumbnailSize>
-		         { ThumbnailSize.Large, 
-			       ThumbnailSize.Small, 
-			       ThumbnailSize.ExtraLarge } )
+		foreach ( var size in ThumbnailNameHelper.GeneratedThumbnailSizes )
 		{
 			var largeThumbnailsSuccess = generationResults.Where(p => p.Success && p.Size == size);
 			await _thumbnailQuery.AddThumbnailRangeAsync(size, largeThumbnailsSuccess.Select(p => p.FileHash).ToList(), true);

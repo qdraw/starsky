@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Enums;
@@ -11,6 +12,30 @@ namespace starsky.foundation.storage.Storage
 	/// </summary>
 	public static class ThumbnailNameHelper
 	{
+		/// <summary>
+		/// Without TinyMeta
+		/// </summary>
+		public static readonly List<ThumbnailSize> GeneratedThumbnailSizes = new List<ThumbnailSize>
+		{
+			ThumbnailSize.ExtraLarge,
+			ThumbnailSize.Small,
+			ThumbnailSize.Large
+		};
+		
+		public static readonly List<ThumbnailSize> SecondGeneratedThumbnailSizes = new List<ThumbnailSize>
+		{
+			ThumbnailSize.Small,
+			ThumbnailSize.Large //  <- will be false when skipExtraLarge = true, its already created 
+		};
+		
+		public static readonly List<ThumbnailSize> AllThumbnailSizes = new List<ThumbnailSize>
+		{
+			ThumbnailSize.TinyMeta,
+			ThumbnailSize.ExtraLarge,
+			ThumbnailSize.Small,
+			ThumbnailSize.Large
+		};
+		
 		public static int GetSize(ThumbnailSize size)
 		{
 			switch (size)
