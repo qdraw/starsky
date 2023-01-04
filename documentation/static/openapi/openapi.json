@@ -11508,6 +11508,23 @@
             "deprecated": false,
             "extensions": {},
             "unresolvedReference": false
+          },
+          "cpuUsageMaxPercentage": {
+            "type": "number",
+            "format": "double",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
           }
         },
         "additionalPropertiesAllowed": false,
