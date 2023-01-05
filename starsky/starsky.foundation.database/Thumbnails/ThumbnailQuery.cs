@@ -82,14 +82,15 @@ public class ThumbnailQuery : IThumbnailQuery
 		if ( newThumbnailItems.Any() )
 		{
 			await dbContext.Thumbnails.AddRangeAsync(newThumbnailItems);
+			await dbContext.SaveChangesAsync();
 		}
 		
 		if ( alreadyExistingThumbnailItems.Any() )
 		{
 			dbContext.Thumbnails.UpdateRange(alreadyExistingThumbnailItems);
+			// not optimized for bulk operations yet
+			await dbContext.SaveChangesAsync();
 		}
-
-		await dbContext.SaveChangesAsync();
 
 		var allResults = alreadyExistingThumbnailItems
 			.Concat(newThumbnailItems)

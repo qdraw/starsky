@@ -176,6 +176,9 @@ namespace starsky.foundation.database.Data
 					
 					etb.Property(p => p.DateTime)
 						.IsConcurrencyToken();
+					
+					etb.Property(p => p.DateTimeEpoch).HasColumnType("bigint");
+
 						
 					etb.ToTable("Notifications");
 					etb.HasAnnotation("MySql:CharSet", "utf8mb4");
