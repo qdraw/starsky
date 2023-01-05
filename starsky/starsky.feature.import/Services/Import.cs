@@ -585,7 +585,8 @@ namespace starsky.feature.import.Services
 			// Check if fastest version is available to show 
 			var setStatus = _thumbnailStorage.ExistFile(
 				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
-			await queryThumbnailUpdateDelegate(ThumbnailSize.TinyMeta, new List<string>{fileHash}, setStatus);
+			await queryThumbnailUpdateDelegate(new List<ThumbnailSize>{ThumbnailSize.TinyMeta},
+				new List<string>{fileHash}, setStatus);
 		}
 
 		/// <summary>

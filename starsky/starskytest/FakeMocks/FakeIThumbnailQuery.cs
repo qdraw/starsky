@@ -27,7 +27,7 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 		// should bind to the context
 	}
 	
-	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(ThumbnailSize size, IReadOnlyCollection<string> fileHashes,
+	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailSize> sizes, IReadOnlyCollection<string> fileHashes,
 		bool? setStatus = null)
 	{
 		foreach ( var hash in fileHashes )
@@ -35,11 +35,18 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 			var index = _content.FindIndex(p => p.FileHash == hash);
 			if ( index == -1 )
 			{
-				_content.Add(new ThumbnailItem(hash, size, setStatus));
+				foreach ( var size in sizes )
+				{
+					_content.Add(new ThumbnailItem(hash, size, setStatus));
+				}
 				continue;
 			}
-			
-			_content[index].Change(size, setStatus);
+
+			foreach ( var size in sizes )
+			{
+				_content[index].Change(size, setStatus);
+			}
+
 		}
 		
 		return Task.FromResult(_content)!;

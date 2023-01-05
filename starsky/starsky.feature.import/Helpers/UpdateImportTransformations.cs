@@ -36,7 +36,7 @@ namespace starsky.feature.import.Helpers
 
 		
 		public delegate Task<FileIndexItem> QueryUpdateDelegate(FileIndexItem fileIndexItem);
-		public delegate Task<List<ThumbnailItem>?> QueryThumbnailUpdateDelegate(ThumbnailSize size,
+		public delegate Task<List<ThumbnailItem>?> QueryThumbnailUpdateDelegate(List<ThumbnailSize> sizes,
 			IReadOnlyList<string> fileHashes, bool? setStatus = null);
 
 		/// <summary>

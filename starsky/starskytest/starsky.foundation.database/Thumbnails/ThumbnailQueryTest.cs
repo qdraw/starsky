@@ -42,7 +42,7 @@ public class ThumbnailQueryTest
 		var fileHashes = new List<string> { "00123", "00456" };
 
 		// Act
-		var result = await _thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
+		var result = await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, fileHashes, true);
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -73,7 +73,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act
-		var result = await thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
+		var result = await thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, fileHashes, true);
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -106,10 +106,48 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act
-		await thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
+		await thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, fileHashes, true);
 		// no service scope so exception
 	}
 
+	[TestMethod]
+	public async Task AddThumbnailRangeInternalAsync_Updates_Existing_Thumbnails_In_Database()
+	{
+		// Arrange
+		var sizes = new List<ThumbnailSize>
+		{
+			ThumbnailSize.Small,
+			ThumbnailSize.Large,
+		};
+		var fileHashes = new List<string>
+		{
+			"file" + ThumbnailSize.Small,
+			"file" + ThumbnailSize.Large
+		};
+
+		_context.Thumbnails.AddRange(sizes.Select(size => new ThumbnailItem("file" +size, size)));
+		await _context.SaveChangesAsync();
+
+		// Act
+		var result = await _thumbnailQuery.AddThumbnailRangeAsync(sizes, fileHashes,true);
+
+		// Assert
+		Assert.IsNotNull(result);
+		Assert.AreEqual(2, result.Count);
+		Assert.AreEqual(2, _context.Thumbnails.Count(p => p.FileHash == "file" + ThumbnailSize.Small 
+			|| p.FileHash == "file" + ThumbnailSize.Large));
+
+		var dbResult = _context.Thumbnails.Where(p =>
+			p.FileHash == "file" + ThumbnailSize.Small
+			|| p.FileHash == "file" + ThumbnailSize.Large);
+		Assert.IsTrue(result.All(x => x.Small == true));
+		Assert.IsTrue(result.All(x => x.Large == true));
+		
+		Assert.IsTrue(dbResult.All(x => x.Small == true));
+		Assert.IsTrue(dbResult.All(x => x.Large == true));
+	}
+
+	
 	[TestMethod]
 	public async Task AddThumbnailRangeAsync_UpdateExistingThumbnails_ReturnsUpdatedThumbnails()
 	{
@@ -122,7 +160,7 @@ public class ThumbnailQueryTest
 		await _context.SaveChangesAsync();
 
 		// Act
-		var result = await _thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
+		var result = await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, fileHashes, true);
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -144,7 +182,7 @@ public class ThumbnailQueryTest
 		var fileHashes = new List<string> { "789", "1011" };
 
 		// Act
-		var result = await _thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
+		var result = await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, fileHashes, true);
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -161,7 +199,7 @@ public class ThumbnailQueryTest
 		const ThumbnailSize size = ThumbnailSize.Small;
 
 		// Act
-		await _thumbnailQuery.AddThumbnailRangeAsync(size, null!, true);
+		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, null!, true);
 	}
 	
 	[TestMethod]
@@ -230,7 +268,7 @@ public class ThumbnailQueryTest
 		var fileHashes = new List<string> { "457838754" };
 
 		// Act
-		await _thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
+		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, fileHashes, true);
 
 		// Assert
 		var thumbnails = await _thumbnailQuery.Get("457838754");
@@ -248,7 +286,7 @@ public class ThumbnailQueryTest
 		var fileHashes = new List<string> { "3456789" };
 
 		// Act
-		await _thumbnailQuery.AddThumbnailRangeAsync(size, fileHashes, true);
+		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, fileHashes, true);
 
 		// Assert
 		var thumbnails = await _thumbnailQuery.Get();

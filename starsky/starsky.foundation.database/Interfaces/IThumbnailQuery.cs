@@ -7,7 +7,7 @@ namespace starsky.foundation.database.Interfaces;
 
 public interface IThumbnailQuery
 {
-	Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(ThumbnailSize size,
+	Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailSize> size,
 		IReadOnlyCollection<string> fileHashes, bool? setStatus = null);
 
 	Task<List<ThumbnailItem>> Get(string? fileHash = null);

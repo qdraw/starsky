@@ -24,12 +24,13 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 	{
 		foreach ( var size in ThumbnailNameHelper.GeneratedThumbnailSizes )
 		{
-			var largeThumbnailsSuccess = generationResults.Where(p => p.Success && p.Size == size);
-			await _thumbnailQuery.AddThumbnailRangeAsync(size, largeThumbnailsSuccess.Select(p => p.FileHash).ToList(), true);
+			var thumbnailsSuccess = generationResults.Where(p => p.Success && p.Size == size);
+			await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, 
+				thumbnailsSuccess.Select(p => p.FileHash).ToList(), true);
 
-			var largeThumbnailsFail = generationResults.Where(p => !p.Success && p.Size == size);
-			await _thumbnailQuery.AddThumbnailRangeAsync(size, largeThumbnailsFail.Select(p => p.FileHash).ToList(), false);
+			var thumbnailsFail = generationResults.Where(p => !p.Success && p.Size == size);
+			await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{size}, 
+				thumbnailsFail.Select(p => p.FileHash).ToList(), false);
 		}
-
 	}
 }

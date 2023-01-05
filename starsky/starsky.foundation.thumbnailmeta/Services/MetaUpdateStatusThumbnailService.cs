@@ -34,10 +34,12 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 		}
 		
 		var okItems = statusResultsWithFileHashes.Where(p => p.Item1).Select(p => p.Item2).ToList();
-		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, okItems, true);
+		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{ThumbnailSize.TinyMeta}, 
+			okItems, true);
 		
 		var failItems = statusResultsWithFileHashes.Where(p => !p.Item1);
-		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, failItems.Select(p => p.Item2).ToList(), 
+		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailSize>{ThumbnailSize.TinyMeta}, 
+			failItems.Select(p => p.Item2).ToList(), 
 			false);
 	}
 }

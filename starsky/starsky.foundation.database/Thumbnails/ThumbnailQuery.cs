@@ -26,7 +26,7 @@ public class ThumbnailQuery : IThumbnailQuery
 	}
 	
 	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(
-		ThumbnailSize size, IReadOnlyCollection<string> fileHashes,
+		List<ThumbnailSize> size, IReadOnlyCollection<string> fileHashes,
 		bool? setStatus = null)
 	{
 		if ( fileHashes == null )
@@ -36,7 +36,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		return AddThumbnailRangeInternalRetryDisposedAsync(size, fileHashes, setStatus);
 	}
 
-	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalRetryDisposedAsync(ThumbnailSize size,
+	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalRetryDisposedAsync(List<ThumbnailSize> size,
 			IReadOnlyCollection<string> fileHashes,
 			bool? setStatus = null)
 	{
@@ -56,11 +56,26 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	private static async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
 		ApplicationDbContext dbContext, 
-		ThumbnailSize size, IEnumerable<string> fileHashes,
+		List<ThumbnailSize> sizes, IEnumerable<string> fileHashes,
 		bool? setStatus = null)
 	{
-		var newItems = fileHashes.Distinct().Select(fileHash => new ThumbnailItem(fileHash, size, setStatus)).ToList();
+		if ( !sizes.Any() )
+		{
+			return new List<ThumbnailItem>();
+		}
+		
+		var newItems = fileHashes.Distinct().Select(fileHash => 
+			new ThumbnailItem(fileHash, 
+			sizes.FirstOrDefault(), setStatus)).ToList();
 
+		foreach ( var thumbnailItem in newItems )
+		{
+			foreach ( var size in sizes )
+			{
+				thumbnailItem.Change(size, setStatus);
+			}
+		}
+		
 		var (newThumbnailItems, alreadyExistingThumbnailItems) = await CheckForDuplicates(
 			dbContext, newItems);
 		
@@ -68,10 +83,10 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			await dbContext.Thumbnails.AddRangeAsync(newThumbnailItems);
 		}
-
-		foreach ( var thumbnailItem in alreadyExistingThumbnailItems )
+		
+		if ( alreadyExistingThumbnailItems.Any() )
 		{
-			thumbnailItem.Change(size, setStatus);
+			dbContext.Thumbnails.UpdateRange(alreadyExistingThumbnailItems);
 		}
 
 		await dbContext.SaveChangesAsync();
@@ -82,14 +97,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		
 		foreach ( var item in allResults )
 		{
-			try
-			{
-				dbContext.Attach(item).State = EntityState.Detached;
-			}
-			catch ( InvalidOperationException)
-			{
-				// do nothing
-			}
+			dbContext.Attach(item).State = EntityState.Detached;
 		}
 		
 		return allResults;
@@ -124,8 +132,9 @@ public class ThumbnailQuery : IThumbnailQuery
 		var newThumbnailItems = nonNullItems.Where(p => !alreadyExistingThumbnails.
 			Contains(p!.FileHash)).Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
 		
-		var alreadyExistingThumbnailItems = nonNullItems.
-			Where(p => alreadyExistingThumbnails.Contains(p!.FileHash)).Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
+		var alreadyExistingThumbnailItems = nonNullItems
+			.Where(p => alreadyExistingThumbnails.Contains(p!.FileHash))
+			.Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
 		
 		return ( newThumbnailItems, alreadyExistingThumbnailItems );
 	}
