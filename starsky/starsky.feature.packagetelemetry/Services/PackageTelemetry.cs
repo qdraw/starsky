@@ -77,8 +77,8 @@ namespace starsky.feature.packagetelemetry.Helpers
 				new KeyValuePair<string, string>("OSPlatform", currentPlatform.ToString()!),
 				new KeyValuePair<string, string>("DockerContainer", dockerContainer.ToString()),
 				new KeyValuePair<string, string>("CurrentCulture", CultureInfo.CurrentCulture.ThreeLetterISOLanguageName),
-				new KeyValuePair<string, string>("AspNetCoreEnvironment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!),
-				new KeyValuePair<string, string>("WebsiteName", Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? "Not set"),
+				new KeyValuePair<string, string>("AspNetCoreEnvironment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Not set"),
+				new KeyValuePair<string, string>("WebsiteName", Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? "Not set"), // used in Azure web apps
 				new KeyValuePair<string, string>("DeviceId", deviceId ?? "Not set"),
 			};
 			return data;
@@ -140,10 +140,7 @@ namespace starsky.feature.packagetelemetry.Helpers
 					value = ParseContent(propValue);
 				}
 
-				if ( value != null )
-				{
-					data.Add(new KeyValuePair<string, string>("AppSettings" + property.Name, value));
-				}
+				data.Add(new KeyValuePair<string, string>("AppSettings" + property.Name, value ?? "null"));
 			}
 			return data;
 		}
