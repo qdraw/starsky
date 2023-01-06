@@ -29,18 +29,21 @@ We track general usage information
 Specifically, we track the following anonymously on startup:
 
 ```
-[EnablePackageTelemetryDebug] UTCTime - 04/04/2022 20:24:02
-[EnablePackageTelemetryDebug] AppVersion - 0.5.0
-[EnablePackageTelemetryDebug] NetVersion - .NET 6.0.3
+[EnablePackageTelemetryDebug] UTCTime - 01/06/2023 20:32:49
+[EnablePackageTelemetryDebug] AppVersion - 0.5.3
+[EnablePackageTelemetryDebug] NetVersion - .NET 6.0.12
 [EnablePackageTelemetryDebug] OSArchitecture - X64
 [EnablePackageTelemetryDebug] ProcessArchitecture - X64
-[EnablePackageTelemetryDebug] OSVersion - 12.3.0
-[EnablePackageTelemetryDebug] OSDescriptionLong - Darwin 21.4.0 
+[EnablePackageTelemetryDebug] OSVersion - 12.6.2
+[EnablePackageTelemetryDebug] OSDescriptionLong - Darwin 21.6.0 
 [EnablePackageTelemetryDebug] OSPlatform - OSX
 [EnablePackageTelemetryDebug] DockerContainer - False
 [EnablePackageTelemetryDebug] CurrentCulture - ivl
 [EnablePackageTelemetryDebug] AspNetCoreEnvironment - Development
+[EnablePackageTelemetryDebug] WebsiteName - Encrypted value
+[EnablePackageTelemetryDebug] DeviceId - Encrypted value
 [EnablePackageTelemetryDebug] AppSettingsAppVersionBuildDateTime - 04/04/2022 22:23:46
+[EnablePackageTelemetryDebug] AppSettingsVerbose - null
 [EnablePackageTelemetryDebug] AppSettingsName - Starsky
 [EnablePackageTelemetryDebug] AppSettingsDatabaseType - Sqlite
 [EnablePackageTelemetryDebug] AppSettingsStructure - /yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext
@@ -56,10 +59,13 @@ Specifically, we track the following anonymously on startup:
 [EnablePackageTelemetryDebug] AppSettingsIsAccountRegisterOpen - True
 [EnablePackageTelemetryDebug] AppSettingsNoAccountLocalhost - True
 [EnablePackageTelemetryDebug] AppSettingsAccountRegisterDefaultRole - User
+[EnablePackageTelemetryDebug] AppSettingsAccountRegisterFirstRoleAdmin - True
 [EnablePackageTelemetryDebug] AppSettingsApplicationInsightsLog - True
 [EnablePackageTelemetryDebug] AppSettingsApplicationInsightsDatabaseTracking - True
 [EnablePackageTelemetryDebug] AppSettingsMaxDegreesOfParallelism - 6
+[EnablePackageTelemetryDebug] AppSettingsMaxDegreesOfParallelismThumbnail - 3
 [EnablePackageTelemetryDebug] AppSettingsUseHttpsRedirection - False
+[EnablePackageTelemetryDebug] AppSettingsHttpsOn - False
 [EnablePackageTelemetryDebug] AppSettingsUseRealtime - True
 [EnablePackageTelemetryDebug] AppSettingsUseDiskWatcher - True
 [EnablePackageTelemetryDebug] AppSettingsCheckForUpdates - True

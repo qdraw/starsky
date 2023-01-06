@@ -7,6 +7,7 @@ using Medallion.Shell;
 using Microsoft.Win32;
 using starsky.feature.packagetelemetry.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -25,6 +26,7 @@ public class DeviceIdService : IDeviceIdService
 	
 	public string IoReg { get; set; } = "ioreg";
 	public string DbusMachineIdPath { get; set; } = "/var/lib/dbus/machine-id";
+	public string MachineIdPath2 { get; set; } = "/etc/machine-id";
 
 	public string BsdHostIdPath { get; set; } = "/etc/hostid";
 
@@ -47,6 +49,9 @@ public class DeviceIdService : IDeviceIdService
 		{
 			id = DeviceIdLinuxBsd();
 		}
+
+		// For privacy reason this content of this id will be anonymous 
+		id = Sha256.ComputeSha256(id);
 		
 		if ( string.IsNullOrEmpty(id) )
 		{
@@ -62,7 +67,13 @@ public class DeviceIdService : IDeviceIdService
 			var stream = _hostStorage.ReadStream(DbusMachineIdPath);
 			return PlainTextFileHelper.StreamToString(stream);
 		}
-
+		
+		if ( _hostStorage.ExistFile(MachineIdPath2) )
+		{
+			var stream = _hostStorage.ReadStream(MachineIdPath2);
+			return PlainTextFileHelper.StreamToString(stream);
+		}
+		
 		if ( !_hostStorage.ExistFile(BsdHostIdPath) ) return FallBackId;
 		var streamBsd = _hostStorage.ReadStream(BsdHostIdPath);
 		return PlainTextFileHelper.StreamToString(streamBsd);

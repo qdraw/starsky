@@ -135,7 +135,7 @@ namespace starskytest.Controllers
 			
 			// Thumbnail exist
 			Assert.AreNotEqual(null,actionResult);
-			var thumbnailAnswer = actionResult.Value as string;
+			var thumbnailAnswer = actionResult?.Value as string;
 			Assert.AreEqual("OK",thumbnailAnswer);
 		}
 	  

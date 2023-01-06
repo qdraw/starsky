@@ -12,6 +12,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Attributes;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
@@ -64,7 +65,7 @@ namespace starsky.feature.packagetelemetry.Helpers
 			var dockerContainer = currentPlatform == OSPlatform.Linux &&
 			                      Environment.GetEnvironmentVariable(
 				                      "DOTNET_RUNNING_IN_CONTAINER") == "true";
-
+			
 			var data = new List<KeyValuePair<string, string>>
 			{
 				new KeyValuePair<string, string>("UTCTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
@@ -78,10 +79,17 @@ namespace starsky.feature.packagetelemetry.Helpers
 				new KeyValuePair<string, string>("DockerContainer", dockerContainer.ToString()),
 				new KeyValuePair<string, string>("CurrentCulture", CultureInfo.CurrentCulture.ThreeLetterISOLanguageName),
 				new KeyValuePair<string, string>("AspNetCoreEnvironment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Not set"),
-				new KeyValuePair<string, string>("WebsiteName", Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? "Not set"), // used in Azure web apps
+				new KeyValuePair<string, string>("WebsiteName", GetEncryptedSiteName()), 
 				new KeyValuePair<string, string>("DeviceId", deviceId ?? "Not set"),
 			};
 			return data;
+		}
+
+		private static string GetEncryptedSiteName()
+		{
+			var siteName =
+				Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+			return string.IsNullOrEmpty(siteName) ? "Not set" : Sha256.ComputeSha256(siteName); // used in Azure web apps
 		}
 
 
