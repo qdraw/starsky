@@ -9,7 +9,6 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Enums;
 
 namespace starsky.foundation.database.Thumbnails;
 
@@ -25,59 +24,47 @@ public class ThumbnailQuery : IThumbnailQuery
 		_scopeFactory = scopeFactory;
 	}
 	
-	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(
-		List<ThumbnailSize> size, IReadOnlyCollection<string> fileHashes,
-		bool? setStatus = null)
+	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
-		if ( fileHashes == null )
+		if ( thumbnailItems.Any(p => p.FileHash == null ) )
 		{
-			throw new ArgumentNullException(nameof(fileHashes));
+			throw new ArgumentNullException(nameof(thumbnailItems));
 		}
-		return AddThumbnailRangeInternalRetryDisposedAsync(size, fileHashes, setStatus);
+		return AddThumbnailRangeInternalRetryDisposedAsync(thumbnailItems);
 	}
 
-	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalRetryDisposedAsync(List<ThumbnailSize> size,
-			IReadOnlyCollection<string> fileHashes,
-			bool? setStatus = null)
+	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalRetryDisposedAsync(List<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
 		try
 		{
-			return await AddThumbnailRangeInternalAsync(_context, size,
-				fileHashes, setStatus);
+			return await AddThumbnailRangeInternalAsync(_context, thumbnailItems);
 		}
 		// InvalidOperationException can also be disposed
 		catch (InvalidOperationException)
 		{
 			if ( _scopeFactory == null ) throw;
-			return await AddThumbnailRangeInternalAsync(new InjectServiceScope(_scopeFactory).Context(), size,
-				fileHashes, setStatus);
+			return await AddThumbnailRangeInternalAsync(new InjectServiceScope(_scopeFactory).Context(), thumbnailItems);
 		}
 	}
 
 	private static async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
 		ApplicationDbContext dbContext, 
-		List<ThumbnailSize> sizes, IEnumerable<string> fileHashes,
-		bool? setStatus = null)
+		List<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
-		if ( !sizes.Any() )
+		if ( !thumbnailItems.Any() )
 		{
 			return new List<ThumbnailItem>();
 		}
 		
-		var newItems = fileHashes.Distinct().Select(fileHash => 
-			new ThumbnailItem(fileHash, 
-			sizes.FirstOrDefault(), setStatus)).ToList();
-
-		foreach ( var thumbnailItem in newItems )
+		var thumbnailNewItemsList = new List<ThumbnailItem>();
+		foreach ( var item in thumbnailItems
+			         .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
 		{
-			foreach ( var size in sizes )
-			{
-				thumbnailItem.Change(size, setStatus);
-			}
+			thumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!,item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
 		}
 		
 		var (newThumbnailItems, alreadyExistingThumbnailItems) = await CheckForDuplicates(
-			dbContext, newItems);
+			dbContext, thumbnailNewItemsList);
 		
 		if ( newThumbnailItems.Any() )
 		{
@@ -91,7 +78,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			// not optimized for bulk operations yet
 			await dbContext.SaveChangesAsync();
 		}
-
+		
 		var allResults = alreadyExistingThumbnailItems
 			.Concat(newThumbnailItems)
 			.ToList();

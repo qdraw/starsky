@@ -21,6 +21,9 @@ namespace starsky.foundation.database.Models
 		[ConcurrencyCheck]
 		public DateTime DateTime { get; set; }
 
+		/// <summary>
+		/// Stores last edited time as number to search faster
+		/// </summary>
 		public long DateTimeEpoch { get; set; }
 	}
 }

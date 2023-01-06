@@ -50,7 +50,10 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 		[TestMethod]
 		public async Task QueryFactoryTest_FakeIQueryReturn()
 		{
-			var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>{new ThumbnailItem("test3")});
+			var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
+			{
+				new ThumbnailItem("test3",null,null,null,null)
+			});
 			
 			var queryFactory = new ThumbnailQueryFactory(null, fakeIQuery,
 				new FakeIWebLogger());
@@ -65,7 +68,10 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 		[TestMethod]
 		public async Task QueryFactoryTest_FakeIQueryReturn_noLogger()
 		{
-			var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>{new ThumbnailItem("test4")});
+			var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
+			{
+				new ThumbnailItem("test4",null,null,null,null)
+			});
 			
 			var queryFactory = new ThumbnailQueryFactory(null, fakeIQuery, null);
 			var query = queryFactory.ThumbnailQuery();
@@ -79,7 +85,10 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 		[TestMethod]
 		public async Task QueryFactoryTest_FakeIQuery_IgnoreNoItemsInList()
 		{
-			var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>{new ThumbnailItem("test5")});
+			var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
+			{
+				new ThumbnailItem("test5",null,null,null,null)
+			});
 			
 			var queryFactory = new ThumbnailQueryFactory(null, fakeIQuery,
 				new FakeIWebLogger());

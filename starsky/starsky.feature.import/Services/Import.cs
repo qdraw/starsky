@@ -552,15 +552,15 @@ namespace starsky.feature.import.Services
 		    // Run Exiftool to Update for example colorClass
 		    UpdateImportTransformations.QueryUpdateDelegate? updateItemAsync = null;
 		    UpdateImportTransformations.QueryThumbnailUpdateDelegate? queryThumbnailUpdateDelegate = null;
-		    
+
 		    if ( importSettings.IndexMode )
 		    {
 			    updateItemAsync = new QueryFactory(
 				    new SetupDatabaseTypes(_appSettings), _query,
 				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
-			    queryThumbnailUpdateDelegate = (size, fileHashes, setStatus) => new ThumbnailQueryFactory(
+			    queryThumbnailUpdateDelegate = (thumbnailItems) => new ThumbnailQueryFactory(
 				    new SetupDatabaseTypes(_appSettings),
-				    _thumbnailQuery, _logger).ThumbnailQuery()!.AddThumbnailRangeAsync(size, fileHashes, setStatus);
+				    _thumbnailQuery, _logger).ThumbnailQuery()!.AddThumbnailRangeAsync(thumbnailItems);
 		    }
 		    
 		    await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
@@ -585,8 +585,10 @@ namespace starsky.feature.import.Services
 			// Check if fastest version is available to show 
 			var setStatus = _thumbnailStorage.ExistFile(
 				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
-			await queryThumbnailUpdateDelegate(new List<ThumbnailSize>{ThumbnailSize.TinyMeta},
-				new List<string>{fileHash}, setStatus);
+			await queryThumbnailUpdateDelegate(new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel(fileHash,setStatus)
+			});
 		}
 
 		/// <summary>

@@ -16,47 +16,15 @@ public class ThumbnailItem
 		FileHash = string.Empty;
 	}
 	
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="fileHash"></param>
-	/// <param name="thumbnailSize"></param>
-	/// <param name="setStatus"></param>
-	public ThumbnailItem(string fileHash, ThumbnailSize? thumbnailSize = null, bool? setStatus = null )
+	public ThumbnailItem(string fileHash, bool? tinyMeta, bool? small,
+		bool? large, bool? extraLarge, string? reasons = null)
 	{
 		FileHash = fileHash;
-		Change(thumbnailSize, setStatus);
-	}
-
-	/// <summary>
-	/// Null is to-do
-	/// True is done
-	/// False is Failed
-	/// </summary>
-	/// <param name="thumbnailSize">The size</param>
-	/// <param name="setStatus">Null is to-do |  True is done | False is Failed</param>
-	/// <exception cref="ArgumentOutOfRangeException"></exception>
-	public void Change(ThumbnailSize? thumbnailSize = null, bool? setStatus = null)
-	{
-		switch ( thumbnailSize )
-		{
-			case ThumbnailSize.TinyMeta:
-				TinyMeta = setStatus;
-				break;
-			case ThumbnailSize.Small:
-				Small = setStatus;
-				break;
-			case ThumbnailSize.Large:
-				Large = setStatus;
-				break;
-			case ThumbnailSize.ExtraLarge:
-				ExtraLarge = setStatus;
-				break;
-			case null:
-				break;
-			default:
-				throw new ArgumentOutOfRangeException(nameof(thumbnailSize), thumbnailSize, null);
-		}
+		if ( tinyMeta != null ) TinyMeta = tinyMeta;
+		if ( small != null ) Small = small;
+		if ( large != null ) Large = large;
+		if ( extraLarge != null ) ExtraLarge = extraLarge;
+		if ( reasons != null ) Reasons = reasons;
 	}
 	
 	[Key]
@@ -85,9 +53,9 @@ public class ThumbnailItem
 	/// </summary>
 	public bool? ExtraLarge { get; set; }
 
-	
+
 	/// <summary>
 	/// When something went wrong add message here
 	/// </summary>
-	public string? Reasons { get; set; }
+	public string? Reasons { get; set; } = string.Empty;
 }

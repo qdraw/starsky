@@ -43,7 +43,9 @@ namespace starskythumbnailcli
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 
 			// Help and other Command Line Tools args are included in the ThumbnailCLI
-			await new ThumbnailCli( appSettings, console, thumbnailService, thumbnailCleaner, selectorStorage).Thumbnail(args); 
+			var thumbnailCli = new ThumbnailCli(appSettings, console,
+				thumbnailService, thumbnailCleaner, selectorStorage);
+			await thumbnailCli.Thumbnail(args); 
 			
 			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}

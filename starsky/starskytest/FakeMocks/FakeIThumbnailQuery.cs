@@ -27,29 +27,34 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 		// should bind to the context
 	}
 	
-	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailSize> sizes, IReadOnlyCollection<string> fileHashes,
-		bool? setStatus = null)
+	// public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailSize> sizes, IReadOnlyCollection<string> fileHashes,
+	// 	bool? setStatus = null)
+	// {
+	// 	foreach ( var hash in fileHashes )
+	// 	{
+	// 		var index = _content.FindIndex(p => p.FileHash == hash);
+	// 		if ( index == -1 )
+	// 		{
+	// 			foreach ( var size in sizes )
+	// 			{
+	// 				_content.Add(new ThumbnailItem(hash, size, setStatus));
+	// 			}
+	// 			continue;
+	// 		}
+	//
+	// 		foreach ( var size in sizes )
+	// 		{
+	// 			_content[index].Change(size, setStatus);
+	// 		}
+	//
+	// 	}
+	// 	
+	// 	return Task.FromResult(_content)!;
+	// }
+
+	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
-		foreach ( var hash in fileHashes )
-		{
-			var index = _content.FindIndex(p => p.FileHash == hash);
-			if ( index == -1 )
-			{
-				foreach ( var size in sizes )
-				{
-					_content.Add(new ThumbnailItem(hash, size, setStatus));
-				}
-				continue;
-			}
-
-			foreach ( var size in sizes )
-			{
-				_content[index].Change(size, setStatus);
-			}
-
-		}
-		
-		return Task.FromResult(_content)!;
+		return Task.FromResult(new List<ThumbnailItem>());
 	}
 
 	public Task<List<ThumbnailItem>> Get(string? fileHash = null)

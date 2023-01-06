@@ -111,7 +111,7 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
-			var thumbnailAnswer = actionResult.StatusCode;
+			var thumbnailAnswer = actionResult?.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
 		}
 		

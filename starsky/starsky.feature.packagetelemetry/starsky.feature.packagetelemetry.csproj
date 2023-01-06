@@ -13,6 +13,10 @@
     <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
 </ItemGroup>
 
+<ItemGroup>
+  <PackageReference Include="MedallionShell" Version="1.6.2" />
+</ItemGroup>
+
 <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
     <SonarQubeExclude>true</SonarQubeExclude>
 </PropertyGroup>

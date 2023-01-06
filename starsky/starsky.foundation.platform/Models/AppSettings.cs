@@ -654,6 +654,9 @@ namespace starsky.foundation.platform.Models
 
 		[PackageTelemetry]
 		public int MaxDegreesOfParallelism { get; set; } = 6;
+		
+		[PackageTelemetry]
+		public int MaxDegreesOfParallelismThumbnail { get; set; } = 3;
 	    
 		/// <summary>
 		/// Set to false when running on http-only service.
