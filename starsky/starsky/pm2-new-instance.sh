@@ -189,13 +189,13 @@ export ASPNETCORE_ENVIRONMENT="Production"
 # only asked with --appinsights true parameter
 if [ ! -z "$USEAPPINSIGHTS" ];
 then
-    echo "Copy the App Insights key string and press [ENTER]:"
+    echo "Copy the App Insights connection string and press [ENTER]:"
     echo "for example: "
-    echo "11111111-2222-3333-4444-555555555555"
+    echo "InstrumentationKey=11111111-2222-3333-4444-555555555555;IngestionEndpoint=https://westeurope-1.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/ "
     echo " >> THIS VALUE IS IGNORED BY CLI APPLICATIONS <<"
     echo ">>>"
-    read -p "Enter: " INSTRUMENTATIONKEY
-    export APPINSIGHTS_INSTRUMENTATIONKEY=$INSTRUMENTATIONKEY
+    read -p "Enter: " CONNECTION_STRING
+    export APPLICATIONINSIGHTS_CONNECTION_STRING=$CONNECTION_STRING
 fi
 
 if [ -f starsky-$RUNTIME.zip ]; then
