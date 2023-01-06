@@ -92,11 +92,13 @@ public class DeviceIdService : IDeviceIdService
 		}
 		
 #pragma warning disable CS8600
-		using var registryKey = Registry.CurrentUser.OpenSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography");
-#pragma warning restore CS8600
+		var registryKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography");
+#pragma warning restore CS8600s
 
-		var titleObject = registryKey?.GetValue("Title");
-		return titleObject?.ToString();
+		var title = registryKey?.GetValue("MachineGuid")?.ToString();
+		registryKey?.Dispose();
+
+		return title;
 	}
 }
 
