@@ -90,15 +90,13 @@ public class DeviceIdService : IDeviceIdService
 		{
 			return string.Empty;
 		}
-
-		return "";
 		
-// #pragma warning disable CS8600
-// 		using var registryKey = Registry.CurrentUser.OpenSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography");
-// #pragma warning restore CS8600
-//
-// 		var titleObject = registryKey?.GetValue("Title");
-// 		return titleObject?.ToString();
+#pragma warning disable CS8600
+		using var registryKey = Registry.CurrentUser.OpenSubKey(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography");
+#pragma warning restore CS8600
+
+		var titleObject = registryKey?.GetValue("Title");
+		return titleObject?.ToString();
 	}
 }
 
