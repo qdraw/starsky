@@ -28,7 +28,7 @@ function touchSync(to) {
 
   const relativeParentInputFolder = path.dirname(to);
   
-  if (relativeParentInputFolder != ".") {
+  if (relativeParentInputFolder !== ".") {
     const relativeParentInputFolderPath = path.join(
       docsDirectory,
       relativeParentInputFolder
@@ -51,6 +51,7 @@ function writeFile(to, content) {
 }
 
 copyFileSync("history.md", "advanced-options/history.md");
+copyFileSync("starsky/telemetry.md", "advanced-options/starsky/telemetry.md");
 
 touchSync("advanced-options/__do_not_edit_history_md");
 
