@@ -202,10 +202,11 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				Size = thumbnailToSourceSize
 			};
 
-			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
+			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
 				    fileHash, thumbnailToSourceSize)) )
 			{
-				resultModel.IsNotFound = true;
+				// file already exist so skip
+				resultModel.Success = true;
 				return resultModel;
 			}
 
