@@ -27,11 +27,12 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 	/// 
 	/// </summary>
 	/// <param name="statusResultsWithSubPaths">fail/pass, string=subPath, string?2= error reason</param>
-	public async Task UpdateStatusThumbnail(List<(bool, string, string?)> statusResultsWithSubPaths)
+	public async Task UpdateStatusThumbnail(List<(bool, bool, string, string?)> statusResultsWithSubPaths)
 	{
 		var statusResultsWithFileHashes = new List<ThumbnailResultDataTransferModel>();
-		foreach ( var (status, subPath, reason) in statusResultsWithSubPaths )
+		foreach ( var (status, rightType, subPath, reason) in statusResultsWithSubPaths )
 		{
+			if ( !rightType ) continue;
 			var fileHash = ( await _fileHashStorage.GetHashCodeAsync(subPath)).Key;
 			statusResultsWithFileHashes.Add(new ThumbnailResultDataTransferModel(fileHash, status)
 			{

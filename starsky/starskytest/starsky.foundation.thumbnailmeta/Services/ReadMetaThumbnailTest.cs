@@ -196,7 +196,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 				.AddMetaThumbnail("/poppy.jpg", "test");
 			
 			Assert.IsTrue(result.Item1);
-			Assert.AreEqual("already exist",result.Item3);
+			Assert.AreEqual("already exist",result.Item4);
 		}
 	}
 }

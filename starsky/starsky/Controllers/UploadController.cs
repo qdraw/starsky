@@ -99,7 +99,8 @@ namespace starsky.Controllers
 			
 			var fileIndexResultsList = await _import.Preflight(tempImportPaths, 
 				new ImportSettingsModel{IndexMode = false});
-			var metaResultsList = new List<(bool, string, string?)>();
+			// fail/pass, right type, string=subPath, string?2= error reason
+			var metaResultsList = new List<(bool, bool, string, string?)>();
 
 			for ( var i = 0; i < fileIndexResultsList.Count; i++ )
 			{
