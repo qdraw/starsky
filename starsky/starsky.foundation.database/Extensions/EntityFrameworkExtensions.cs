@@ -24,10 +24,9 @@ namespace starsky.foundation.database.Extensions
 				return cacheValue;
 			}
 			
-			if ( context?.Database == null ) return false;
-			
 			try
 			{
+				if ( context?.Database == null ) return false;
 				context.Database.CanConnect();
 			}
 			catch ( MySqlException e)
