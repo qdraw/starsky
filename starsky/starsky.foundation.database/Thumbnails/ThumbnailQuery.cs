@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -125,6 +126,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			.Where(p => alreadyExistingThumbnails.Contains(p!.FileHash))
 			.Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
 
+		// merge two items together
 		foreach ( var item in dbThumbnailItems )
 		{
 			var indexOfAlreadyExists = alreadyExistingThumbnailItems.FindIndex(p => p.FileHash == item.FileHash);
@@ -137,10 +139,12 @@ public class ThumbnailQuery : IThumbnailQuery
 			alreadyExistingThumbnailItems[indexOfAlreadyExists].ExtraLarge ??= item.ExtraLarge;
 			alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons ??= item.Reasons;
 
-			if ( ! alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons!.Contains(item.Reasons!) )
-			{
-				alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons += "," + item.Reasons;
-			}
+			if ( alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons!
+			    .Contains(item.Reasons!) ) continue;
+			
+			var reasons = new StringBuilder(alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons);
+			reasons.Append($",{item.Reasons}");
+			alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons = reasons.ToString();
 		}
 		
 		return ( newThumbnailItems, alreadyExistingThumbnailItems );
