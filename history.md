@@ -40,10 +40,13 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
-# version 0.5.3 _(Unreleased)_ - 2022-12-??
+
+# version 0.5.3 _(Unreleased)_ - 2023-01-??
 
 - [x] (Security) _Back-end_ Add Regex timeouts to avoid DoS (PR #1012)
 - [x] (Added)  _Docs_ Add section about how to install desktop, macOS and Linux (PR #1015)
+- [x] (Added)  _Back-end_ Database table that stores the status of thumbnails (PR #1020, #1013)
+- [x] (Changed)  _Back-end_ Update telemetry fields  (PR #1020)
 
 # version 0.5.2 - 2022-12-22
 
