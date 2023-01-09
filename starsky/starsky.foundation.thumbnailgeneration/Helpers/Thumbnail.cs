@@ -188,7 +188,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return largeThumbnailHash;
 		}
 		
-		private async Task<GenerationResultModel> CreateLargestImageFromSource(
+		internal async Task<GenerationResultModel> CreateLargestImageFromSource(
 			string fileHash, string largeThumbnailHash, string subPath,
 			ThumbnailSize thumbnailToSourceSize)
 		{
