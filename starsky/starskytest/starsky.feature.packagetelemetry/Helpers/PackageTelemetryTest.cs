@@ -75,6 +75,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			
 			Assert.AreEqual("True", systemData.FirstOrDefault(p => p.Key == "DockerContainer").Value);
 			
+			// undo
 			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","false");
 			
 			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
@@ -82,6 +83,57 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			Assert.AreEqual("False", systemDataFalse.FirstOrDefault(p => p.Key == "DockerContainer").Value);
 			
 			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER",sourceValue);
+		}
+		
+		[TestMethod]
+		public void GetSystemDataTestDocker_NonLinux_soFalse()
+		{
+			var httpProvider = new FakeIHttpProvider();
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+
+			var sourceValue = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","true");
+			
+			var systemData = packageTelemetry.GetSystemData(OSPlatform.Windows);
+			
+			// so False
+			Assert.AreEqual("False", systemData.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			
+			// undo
+			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","false");
+			
+			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
+
+			Assert.AreEqual("False", systemDataFalse.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			
+			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER",sourceValue);
+		}
+		
+		[TestMethod]
+		public void GetSystemDataTestDocker_WebSiteName()
+		{
+			var httpProvider = new FakeIHttpProvider();
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+
+			var sourceValue = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+			Environment.SetEnvironmentVariable("WEBSITE_SITE_NAME","test");
+			
+			var systemData = packageTelemetry.GetSystemData(OSPlatform.Windows);
+			
+			// so False
+			Assert.AreEqual("9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08", 
+				systemData.FirstOrDefault(p => p.Key == "WebsiteName").Value);
+			
+			// undo
+			Environment.SetEnvironmentVariable("WEBSITE_SITE_NAME","");
+			
+			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
+
+			Assert.AreEqual("not set", systemDataFalse.FirstOrDefault(p => p.Key == "WebsiteName").Value.ToLowerInvariant());
+			
+			Environment.SetEnvironmentVariable("WEBSITE_SITE_NAME",sourceValue);
 		}
 
 		[TestMethod]
