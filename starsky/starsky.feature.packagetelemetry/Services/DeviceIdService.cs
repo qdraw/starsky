@@ -34,7 +34,7 @@ public class DeviceIdService : IDeviceIdService
 
 	public async Task<string> DeviceId(OSPlatform? currentPlatform )
 	{
-		var id = FallBackId;
+		var id = string.Empty;
 		if ( currentPlatform == OSPlatform.OSX )
 		{
 			id = await DeviceIdOsX();
@@ -103,12 +103,19 @@ public class DeviceIdService : IDeviceIdService
 			return string.Empty;
 		}
 
-		// Windows Only feature
-		var registryKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography");
-		var title = registryKey?.GetValue("MachineGuid")?.ToString();
-		registryKey?.Dispose();
+		try
+		{
+			// Windows Only feature
+			var registryKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography");
+			var title = registryKey?.GetValue("MachineGuid")?.ToString();
+			registryKey?.Dispose();
+			return title;
+		}
+		catch ( TypeInitializationException )
+		{
+			return string.Empty;
+		}
 
-		return title;
 	}
 }
 

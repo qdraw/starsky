@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,6 +34,15 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 
 			var id = new DeviceIdService(new FakeSelectorStorage()).DeviceId(OSPlatform.Windows);
 			Assert.IsNotNull( id );
+		}
+		
+		[TestMethod]
+		public async Task DeviceId_Nullable()
+		{
+			var deviceService = new DeviceIdService(new FakeSelectorStorage());
+			var id = await deviceService.DeviceId(null);
+			Assert.IsNotNull( id );
+			Assert.AreEqual("not set", id );
 		}
 		
 		[TestMethod]
@@ -243,7 +251,6 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		}
 		
 		[TestMethod]
-		[ExpectedException(typeof(TypeInitializationException))]
 		public void DeviceIdWindowsTest_Windows__UnixOnly()
 		{
 			if ( _appSettings.IsWindows )
@@ -252,7 +259,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 				return;
 			}
 
-			DeviceIdService.DeviceIdWindows(OSPlatform.Windows);
+			var result = DeviceIdService.DeviceIdWindows(OSPlatform.Windows);
+			Assert.AreEqual(string.Empty, result);
 		}
 	}
 }
