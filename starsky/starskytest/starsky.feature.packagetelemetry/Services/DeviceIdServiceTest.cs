@@ -46,6 +46,15 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		}
 		
 		[TestMethod]
+		public async Task DeviceId_TestOS()
+		{
+			var deviceService = new DeviceIdService(new FakeSelectorStorage());
+			var id = await deviceService.DeviceId(OSPlatform.Create("test"));
+			Assert.IsNotNull( id );
+			Assert.AreEqual("not set", id );
+		}
+		
+		[TestMethod]
 		public async Task DeviceId_Linux_NonePath()
 		{
 			var deviceService = new DeviceIdService(new FakeSelectorStorage());
