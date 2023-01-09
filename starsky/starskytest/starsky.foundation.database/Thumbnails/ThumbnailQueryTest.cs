@@ -22,20 +22,23 @@ public class ThumbnailQueryTest
 	public ThumbnailQueryTest()
 	{
 		var serviceScope = CreateNewScope();
-		_context = serviceScope.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		_context = serviceScope.CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
 		_thumbnailQuery = new ThumbnailQuery(_context, serviceScope);
 	}
 
 	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
-		services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(ThumbnailQueryTest)));
+		services.AddDbContext<ApplicationDbContext>(options =>
+			options.UseInMemoryDatabase(nameof(ThumbnailQueryTest)));
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
-	
+
 	[TestMethod]
-	public async Task AddThumbnailRangeAsync_AddNewThumbnails_ReturnsNewThumbnails()
+	public async Task
+		AddThumbnailRangeAsync_AddNewThumbnails_ReturnsNewThumbnails()
 	{
 		// Arrange
 		var fileHashes = new List<string> { "00123", "00456" };
@@ -57,12 +60,14 @@ public class ThumbnailQueryTest
 			.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
 
 		var thumbnails = await _context.Thumbnails.ToListAsync();
-		Assert.AreEqual(2, thumbnails.Count(p => p.FileHash is "00123" or "00456"));
+		Assert.AreEqual(2,
+			thumbnails.Count(p => p.FileHash is "00123" or "00456"));
 		Assert.IsTrue(thumbnails.All(x => x.Small == true));
-		Assert.IsTrue(thumbnails.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
+		Assert.IsTrue(thumbnails.Select(x => x.FileHash)
+			.All(x => fileHashes.Contains(x)));
 	}
-	
-	        
+
+
 	[TestMethod]
 	public async Task AddThumbnailRangeAsync_Disposed_Success()
 	{
@@ -70,14 +75,17 @@ public class ThumbnailQueryTest
 		var fileHashes = new List<string> { "627445", "8127445" };
 		var data = new List<ThumbnailResultDataTransferModel>
 		{
-			new ThumbnailResultDataTransferModel("627445", null, null,true),
-			new ThumbnailResultDataTransferModel("8127445", null, null,true)
+			new ThumbnailResultDataTransferModel("627445", null, null,
+				true),
+			new ThumbnailResultDataTransferModel("8127445", null, null,
+				true)
 		};
 
 		var serviceScope = CreateNewScope();
 		var scope = serviceScope.CreateScope();
-		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-		var thumbnailQuery = new ThumbnailQuery(dbContext,serviceScope);
+		var dbContext = scope.ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -93,13 +101,16 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(result.Where(p => p.FileHash is "627445" or "8127445")
 			.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
 
-		var thumbnails = await _context.Thumbnails.Where(p => p.FileHash == "627445" || 
+		var thumbnails = await _context.Thumbnails.Where(p =>
+			p.FileHash == "627445" ||
 			p.FileHash == "8127445").ToListAsync();
-		Assert.AreEqual(2, thumbnails.Count(p => p.FileHash is "627445" or "8127445"));
+		Assert.AreEqual(2,
+			thumbnails.Count(p => p.FileHash is "627445" or "8127445"));
 		Assert.IsTrue(thumbnails.All(x => x.Large == true));
-		Assert.IsTrue(thumbnails.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
+		Assert.IsTrue(thumbnails.Select(x => x.FileHash)
+			.All(x => fileHashes.Contains(x)));
 	}
-	
+
 	[TestMethod]
 	[ExpectedException(typeof(ObjectDisposedException))]
 	public async Task AddThumbnailRangeAsync_Disposed_NoServiceScope()
@@ -107,8 +118,10 @@ public class ThumbnailQueryTest
 		// Arrange
 		var data = new List<ThumbnailResultDataTransferModel>
 		{
-			new ThumbnailResultDataTransferModel("627445", null, null,true),
-			new ThumbnailResultDataTransferModel("8127445", null, null,true)
+			new ThumbnailResultDataTransferModel("627445", null, null,
+				true),
+			new ThumbnailResultDataTransferModel("8127445", null, null,
+				true)
 		};
 
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -116,7 +129,8 @@ public class ThumbnailQueryTest
 			.Options;
 
 		var dbContext = new ApplicationDbContext(options);
-		var thumbnailQuery = new ThumbnailQuery(dbContext,null); // <-- no service scope
+		var thumbnailQuery =
+			new ThumbnailQuery(dbContext, null); // <-- no service scope
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -127,105 +141,133 @@ public class ThumbnailQueryTest
 	}
 
 	[TestMethod]
-	public async Task AddThumbnailRangeInternalAsync_Updates_Existing_Thumbnails_In_Database()
+	public async Task
+		AddThumbnailRangeInternalAsync_Updates_Existing_Thumbnails_In_Database()
 	{
 		// Arrange
 		var sizes = new List<ThumbnailSize>
 		{
-			ThumbnailSize.Small,
-			ThumbnailSize.Large,
+			ThumbnailSize.Small, ThumbnailSize.Large,
 		};
 
-		_context.Thumbnails.AddRange(sizes.Select(size => new ThumbnailItem("file" + size, null,
-			size == ThumbnailSize.Small,size == ThumbnailSize.Large,null)));
+		_context.Thumbnails.AddRange(sizes.Select(size => new ThumbnailItem(
+			"file" + size, null,
+			size == ThumbnailSize.Small, size == ThumbnailSize.Large, null)));
 		await _context.SaveChangesAsync();
 
 		// Act
-		var result = await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
-			new ThumbnailResultDataTransferModel("file" + ThumbnailSize.Small, null, true),
-			new ThumbnailResultDataTransferModel("file" + ThumbnailSize.Large, null, null, true),
-		});
+		var result = await _thumbnailQuery.AddThumbnailRangeAsync(
+			new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel(
+					"file" + ThumbnailSize.Small, null, true),
+				new ThumbnailResultDataTransferModel(
+					"file" + ThumbnailSize.Large, null, null, true),
+			});
 
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(2, result.Count);
-		Assert.AreEqual(2, _context.Thumbnails.Count(p => p.FileHash == "file" + ThumbnailSize.Small 
+		Assert.AreEqual(2, _context.Thumbnails.Count(p =>
+			p.FileHash == "file" + ThumbnailSize.Small
 			|| p.FileHash == "file" + ThumbnailSize.Large));
 
 		var dbResult = _context.Thumbnails.Where(p =>
 			p.FileHash == "file" + ThumbnailSize.Small
 			|| p.FileHash == "file" + ThumbnailSize.Large);
-		Assert.IsTrue(result.Where(p => p.FileHash == "file" + ThumbnailSize.Small)
+		Assert.IsTrue(result
+			.Where(p => p.FileHash == "file" + ThumbnailSize.Small)
 			.All(x => x.Small == true));
-		Assert.IsTrue(result.Where(p => p.FileHash == "file" + ThumbnailSize.Large).All(x => x.Large == true));
-		
-		Assert.IsTrue(dbResult.Where(p => p.FileHash == "file" + ThumbnailSize.Small).All(x => x.Small == true));
-		Assert.IsTrue(dbResult.Where(p => p.FileHash == "file" + ThumbnailSize.Large).All(x => x.Large == true));
+		Assert.IsTrue(result
+			.Where(p => p.FileHash == "file" + ThumbnailSize.Large)
+			.All(x => x.Large == true));
+
+		Assert.IsTrue(dbResult
+			.Where(p => p.FileHash == "file" + ThumbnailSize.Small)
+			.All(x => x.Small == true));
+		Assert.IsTrue(dbResult
+			.Where(p => p.FileHash == "file" + ThumbnailSize.Large)
+			.All(x => x.Large == true));
 	}
-	
+
 	[TestMethod]
-	public async Task AddThumbnailRangeAsync_UpdateExistingThumbnails_ReturnsUpdatedThumbnails()
+	public async Task
+		AddThumbnailRangeAsync_UpdateExistingThumbnails_ReturnsUpdatedThumbnails()
 	{
 		// Arrange
 		var fileHashes = new List<string> { "9123", "9456" };
-	
-		var thumbnail = new ThumbnailItem("9123", null, true,null,null);
+
+		var thumbnail = new ThumbnailItem("9123", null, true, null, null);
 		_context.Thumbnails.Add(thumbnail);
 		await _context.SaveChangesAsync();
-	
+
 		// Act
-		var result = await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
-			new ThumbnailResultDataTransferModel("9123", null, true),
-			new ThumbnailResultDataTransferModel("9456", null, true),
-		});
-	
+		var result = await _thumbnailQuery.AddThumbnailRangeAsync(
+			new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel("9123", null, true),
+				new ThumbnailResultDataTransferModel("9456", null, true),
+			});
+
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(2, result.Count);
 		Assert.IsTrue(result.All(x => x.Small == true));
-		Assert.IsTrue(result.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
-	
+		Assert.IsTrue(result.Select(x => x.FileHash)
+			.All(x => fileHashes.Contains(x)));
+
 		var thumbnails = await _context.Thumbnails.ToListAsync();
-		Assert.AreEqual(2, thumbnails.Count(p => p.FileHash is "9123" or "9456"));
+		Assert.AreEqual(2,
+			thumbnails.Count(p => p.FileHash is "9123" or "9456"));
 		Assert.IsTrue(thumbnails.Where(p => p.FileHash is "9123" or "9456")
 			.All(x => x.Small == true));
 		Assert.IsTrue(thumbnails.Where(p => p.FileHash is "9123" or "9456")
 			.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
 	}
-        
+
 	[TestMethod]
-	public async Task AddThumbnailRangeAsync_AlreadyExistingThumbnailItems_ReturnsNull()
+	public async Task
+		AddThumbnailRangeAsync_AlreadyExistingThumbnailItems_ReturnsNull()
 	{
 		// Arrange
 		var fileHashes = new List<string> { "789", "1011" };
-	
+
 		// Act
-		var result = await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
-			new ThumbnailResultDataTransferModel("789", null, true),
-			new ThumbnailResultDataTransferModel("1011", null, true),
-		});
-	
+		var result = await _thumbnailQuery.AddThumbnailRangeAsync(
+			new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel("789", null, true),
+				new ThumbnailResultDataTransferModel("1011", null, true),
+			});
+
 		// Assert
 		Assert.IsNotNull(result);
 		Assert.AreEqual(2, result.Count);
 		Assert.IsTrue(result.All(x => x.Small == true));
-		Assert.IsTrue(result.Select(x => x.FileHash).All(x => fileHashes.Contains(x)));
+		Assert.IsTrue(result.Select(x => x.FileHash)
+			.All(x => fileHashes.Contains(x)));
 	}
-       
+
 	[TestMethod]
 	[ExpectedException(typeof(ArgumentNullException))]
 	public async Task AddThumbnailRangeAsync_NullFileHashes_ArgumentException()
 	{
 		// Act
-		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
-			new ThumbnailResultDataTransferModel(null!)
-		});
+		await _thumbnailQuery.AddThumbnailRangeAsync(
+			new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel(null!)
+			});
 	}
-	
+
+
+	[TestMethod]
+	public async Task AddThumbnailRangeAsync_NoContent()
+	{
+		var result = await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>());
+		Assert.AreEqual(0,result?.Count);
+	}
+
 	[TestMethod]
 	public async Task CheckForDuplicates_NewThumbnails_ReturnsNewThumbnails()
 	{
