@@ -163,5 +163,22 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			Assert.IsNotNull( id );
 			Assert.AreEqual("ea49e46c-1995-4405-aa3e-3bc4f1412448", id );
 		}
+
+		[TestMethod]
+		public async Task DeviceId_MacOS_Direct_Fail__UnixOnly()
+		{
+			if ( _appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Unix Only");
+				return;
+			}
+			
+			var storage = new FakeIStorage(new List<string>{"/"});
+			var storageSelector = new FakeSelectorStorage(storage);
+			var deviceService = new DeviceIdService(storageSelector);
+			deviceService.IoReg = "ls";
+			var id = await deviceService.DeviceIdOsX();
+			Assert.AreEqual("not set", id );
+		}
 	}
 }
