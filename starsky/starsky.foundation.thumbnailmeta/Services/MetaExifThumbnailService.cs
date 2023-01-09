@@ -90,8 +90,6 @@ namespace starsky.foundation.thumbnailmeta.Services
 				}
 			}
 		}
-		
-		public const string IsNotAJpegOrTiffFile = "is not a jpg or tiff file";
 
 		/// <summary>
 		/// Create Meta Thumbnail
@@ -109,11 +107,10 @@ namespace starsky.foundation.thumbnailmeta.Services
 			var first50BytesStream = _iStorage.ReadStream(subPath,50);
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(first50BytesStream);
 			
-			if ( imageFormat != ExtensionRolesHelper.ImageFormat.jpg && 
-			     imageFormat != ExtensionRolesHelper.ImageFormat.tiff )
+			if ( imageFormat != ExtensionRolesHelper.ImageFormat.jpg && imageFormat != ExtensionRolesHelper.ImageFormat.tiff)
 			{
 				_logger.LogDebug($"[AddMetaThumbnail] {subPath} is not a jpg or tiff file");
-				return (false, false, subPath, IsNotAJpegOrTiffFile);
+				return (false, false, subPath, $"{subPath} is not a jpg or tiff file");
 			}
 
 			if ( string.IsNullOrEmpty(fileHash) )
@@ -129,7 +126,7 @@ namespace starsky.foundation.thumbnailmeta.Services
 
 			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta)) )
 			{
-				return (true, true, subPath,"already exist");
+				return (true, true, subPath, "already exist");
 			}
 				
 			var (exifThumbnailDir, sourceWidth, sourceHeight, rotation) = 

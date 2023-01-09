@@ -267,6 +267,79 @@ public class ThumbnailQueryTest
 		var result = await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>());
 		Assert.AreEqual(0,result?.Count);
 	}
+	
+	
+	[TestMethod]
+	public async Task
+		AddThumbnailRangeAsync_UpdateInsteadOfOverwrite()
+	{
+		// Act
+		await _thumbnailQuery.AddThumbnailRangeAsync(
+			new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel("9475", true)
+				{
+					Reasons = "test"
+				},
+			});
+
+		await _thumbnailQuery.AddThumbnailRangeAsync(
+			new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel("9475", null, true, true, true)
+				{
+					Reasons = "test"
+				}
+			});
+		
+		// Assert
+		var result3 = await _thumbnailQuery.Get("9475");
+
+		var item = result3.FirstOrDefault();
+		
+		Assert.IsNotNull(item);
+		Assert.AreEqual(true, item?.TinyMeta);
+		Assert.AreEqual(true, item?.Small);
+		Assert.AreEqual(true, item?.Large);
+		Assert.AreEqual(true, item?.ExtraLarge);
+		Assert.AreEqual("test", item?.Reasons);
+	}
+	
+	[TestMethod]
+	public async Task
+		AddThumbnailRangeAsync_UpdateInsteadOfOverwrite2()
+	{
+		// Act
+		await _thumbnailQuery.AddThumbnailRangeAsync(
+			new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel("457838", true)
+				{
+					Reasons = "word"
+				},
+			});
+
+		await _thumbnailQuery.AddThumbnailRangeAsync(
+			new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel("457838", null, true, true, true)
+				{
+					Reasons = "test2"
+				}
+			});
+		
+		// Assert
+		var result3 = await _thumbnailQuery.Get("457838");
+
+		var item = result3.FirstOrDefault();
+		
+		Assert.IsNotNull(item);
+		Assert.AreEqual(true, item?.TinyMeta);
+		Assert.AreEqual(true, item?.Small);
+		Assert.AreEqual(true, item?.Large);
+		Assert.AreEqual(true, item?.ExtraLarge);
+		Assert.AreEqual("test2,word", item?.Reasons);
+	}
 
 	[TestMethod]
 	public async Task CheckForDuplicates_NewThumbnails_ReturnsNewThumbnails()

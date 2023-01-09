@@ -7,6 +7,7 @@ using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Jpeg;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.thumbnailmeta.Models;
 using starsky.foundation.platform.Interfaces;
@@ -95,7 +96,11 @@ namespace starsky.foundation.thumbnailmeta.Services
 
 		public OffsetModel ParseOffsetData(ExifThumbnailDirectory? exifThumbnailDir, string subPath)
 		{
-			if ( exifThumbnailDir == null )  return new OffsetModel {Success = false, Reason = "ExifThumbnailDirectory null"};
+			if ( exifThumbnailDir == null )  return new OffsetModel
+			{
+				Success = false, 
+				Reason = $"{FilenamesHelper.GetFileName(subPath)} ExifThumbnailDirectory null"
+			};
 
 			long thumbnailOffset = long.Parse(exifThumbnailDir!.GetDescription(
 				ExifThumbnailDirectory.TagThumbnailOffset)!.Split(' ')[0]);
@@ -114,7 +119,7 @@ namespace starsky.foundation.thumbnailmeta.Services
 			if ( thumbnailLength <= maxIssue35Offset + 1 )
 			{
 				_logger.LogInformation($"[ParseOffsetData] thumbnailLength : {thumbnailLength} {maxIssue35Offset + 1}");
-				return new OffsetModel {Success = false, Reason = "offsetLength"};
+				return new OffsetModel {Success = false, Reason =  $"{FilenamesHelper.GetFileName(subPath)} offsetLength"};
 			}
 			
 			int issue35Offset = 0;

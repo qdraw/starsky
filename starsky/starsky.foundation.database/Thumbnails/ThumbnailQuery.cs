@@ -56,15 +56,15 @@ public class ThumbnailQuery : IThumbnailQuery
 			return new List<ThumbnailItem>();
 		}
 		
-		var thumbnailNewItemsList = new List<ThumbnailItem>();
+		var updateThumbnailNewItemsList = new List<ThumbnailItem>();
 		foreach ( var item in thumbnailItems
 			         .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
 		{
-			thumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!,item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
+			updateThumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!,item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
 		}
 		
 		var (newThumbnailItems, alreadyExistingThumbnailItems) = await CheckForDuplicates(
-			dbContext, thumbnailNewItemsList);
+			dbContext, updateThumbnailNewItemsList);
 		
 		if ( newThumbnailItems.Any() )
 		{
@@ -103,19 +103,20 @@ public class ThumbnailQuery : IThumbnailQuery
 	/// Check for Duplicates in the database
 	/// </summary>
 	/// <param name="context"></param>
-	/// <param name="items"></param>
+	/// <param name="updateThumbnailNewItemsList"></param>
 	/// <returns></returns>
 	internal static async Task<(List<ThumbnailItem> newThumbnailItems,
 		List<ThumbnailItem> alreadyExistingThumbnailItems)> 
 		CheckForDuplicates(ApplicationDbContext context, 
-			IEnumerable<ThumbnailItem?> items)
+			IEnumerable<ThumbnailItem?> updateThumbnailNewItemsList)
 	{
-		var nonNullItems = items.Where(item => item != null && 
+		var nonNullItems = updateThumbnailNewItemsList.Where(item => item != null && 
 		                                       item.FileHash != null!).Distinct().ToList();
 		
-		var alreadyExistingThumbnails = await context.Thumbnails
+		var dbThumbnailItems = await context.Thumbnails
 			.Where(p => nonNullItems.Select(x => x!.FileHash)
-			.Contains(p.FileHash)).Select(p => p.FileHash).Distinct().ToListAsync();
+				.Contains(p.FileHash)).ToListAsync();
+		var alreadyExistingThumbnails = dbThumbnailItems.Select(p => p.FileHash).Distinct();
 				
 		var newThumbnailItems = nonNullItems.Where(p => !alreadyExistingThumbnails.
 			Contains(p!.FileHash)).Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
@@ -123,6 +124,24 @@ public class ThumbnailQuery : IThumbnailQuery
 		var alreadyExistingThumbnailItems = nonNullItems
 			.Where(p => alreadyExistingThumbnails.Contains(p!.FileHash))
 			.Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
+
+		foreach ( var item in dbThumbnailItems )
+		{
+			var indexOfAlreadyExists = alreadyExistingThumbnailItems.FindIndex(p => p.FileHash == item.FileHash);
+			if ( indexOfAlreadyExists == -1 ) continue;
+			context.Attach(item).State = EntityState.Detached;
+
+			alreadyExistingThumbnailItems[indexOfAlreadyExists].TinyMeta ??= item.TinyMeta;
+			alreadyExistingThumbnailItems[indexOfAlreadyExists].Large ??= item.Large;
+			alreadyExistingThumbnailItems[indexOfAlreadyExists].Small ??= item.Small;
+			alreadyExistingThumbnailItems[indexOfAlreadyExists].ExtraLarge ??= item.ExtraLarge;
+			alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons ??= item.Reasons;
+
+			if ( ! alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons!.Contains(item.Reasons!) )
+			{
+				alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons += "," + item.Reasons;
+			}
+		}
 		
 		return ( newThumbnailItems, alreadyExistingThumbnailItems );
 	}
