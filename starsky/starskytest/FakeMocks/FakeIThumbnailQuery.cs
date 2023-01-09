@@ -37,7 +37,7 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 			{
 				var item = new ThumbnailItem()
 				{
-					FileHash = thumbnailItem.FileHash,
+					FileHash = thumbnailItem.FileHash!,
 					Large = thumbnailItem.Large,
 					ExtraLarge = thumbnailItem.ExtraLarge,
 					Reasons = thumbnailItem.Reasons,

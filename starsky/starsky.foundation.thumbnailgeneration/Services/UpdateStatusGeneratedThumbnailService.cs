@@ -24,12 +24,12 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 	{
 		// in the next step only the fileHash is included
 		var dtoObjects = generationResults
-			.Where(p => p.IsNotFound == false)
+			.Where(p => !p.IsNotFound)
 			.DistinctBy(p => p.FileHash)
 			.Select(p => p.FileHash)
 			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash)).ToList();
 
-		foreach ( var generationResult in generationResults.Where(p => p.IsNotFound == false) )
+		foreach ( var generationResult in generationResults.Where(p => !p.IsNotFound) )
 		{
 			var index = dtoObjects.FindIndex(p => p.FileHash == generationResult.FileHash);
 			if ( generationResult.Size == ThumbnailSize.Unknown || index == -1 )
