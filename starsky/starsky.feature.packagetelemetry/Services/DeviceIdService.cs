@@ -83,9 +83,10 @@ public class DeviceIdService : IDeviceIdService
 	/// Get the device id from the OS
 	/// </summary>
 	/// <returns>Guid</returns>
-	private async Task<string> DeviceIdOsX()
+	internal async Task<string> DeviceIdOsX()
 	{
 		var id = "not set";
+		// ioreg -rd1 -c IOPlatformExpertDevice
 		var result = await Command.Run(IoReg, "-rd1", "-c", "IOPlatformExpertDevice").Task;
 		if ( !result.Success ) return id;
 		
