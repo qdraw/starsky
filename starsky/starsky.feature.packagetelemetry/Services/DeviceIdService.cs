@@ -1,5 +1,5 @@
 using System;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -42,7 +42,7 @@ public class DeviceIdService : IDeviceIdService
 		
 		if ( currentPlatform == OSPlatform.Windows )
 		{
-			id = DeviceIdWindows();
+			id = DeviceIdWindows(currentPlatform);
 		}
 		
 		if ( currentPlatform == OSPlatform.Linux || currentPlatform == OSPlatform.FreeBSD)
@@ -95,17 +95,16 @@ public class DeviceIdService : IDeviceIdService
 		return id;
 	}
 
-	private static string? DeviceIdWindows()
+	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+	internal static string? DeviceIdWindows(OSPlatform? currentPlatform)
 	{
-		if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		if (currentPlatform != OSPlatform.Windows)
 		{
 			return string.Empty;
 		}
-		
-#pragma warning disable CS8600
-		var registryKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography");
-#pragma warning restore CS8600s
 
+		// Windows Only feature
+		var registryKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography");
 		var title = registryKey?.GetValue("MachineGuid")?.ToString();
 		registryKey?.Dispose();
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -232,6 +233,26 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			};
 			var id = await deviceService.DeviceIdOsX();
 			Assert.AreEqual(string.Empty, id );
+		}
+
+		[TestMethod]
+		public void DeviceIdWindowsTest_LinuxSoSkip()
+		{
+			var result = DeviceIdService.DeviceIdWindows(OSPlatform.Linux);
+			Assert.AreEqual(string.Empty, result);
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(TypeInitializationException))]
+		public void DeviceIdWindowsTest_Windows__UnixOnly()
+		{
+			if ( _appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Unix Only");
+				return;
+			}
+
+			DeviceIdService.DeviceIdWindows(OSPlatform.Windows);
 		}
 	}
 }
