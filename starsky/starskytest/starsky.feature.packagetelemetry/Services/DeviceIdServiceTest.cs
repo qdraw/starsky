@@ -37,7 +37,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		}
 		
 		[TestMethod]
-		public async Task DeviceId_BsdHostIdPath()
+		public async Task DeviceId_Linux_BsdHostIdPath()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
@@ -49,7 +49,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		}
 		
 		[TestMethod]
-		public async Task DeviceId_MachineIdPath2()
+		public async Task DeviceId_Linux_MachineIdPath2()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
@@ -62,7 +62,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		}
 		
 		[TestMethod]
-		public async Task DeviceId_DbusMachineIdPath()
+		public async Task DeviceId_Linux_DbusMachineIdPath()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
@@ -74,6 +74,48 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			var id = await deviceService.DeviceId(OSPlatform.Linux);
 			Assert.IsNotNull( id );
 			Assert.AreEqual("6CC41D5EC590AB78CCCECF81EF167D418C309A4598E8E45FEF78039F7D9AA9FE", id );
+		}
+				
+		[TestMethod]
+		public async Task DeviceId_Bsd_DbusMachineIdPath()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"});
+			var storageSelector = new FakeSelectorStorage(storage);
+			var deviceService = new DeviceIdService(storageSelector);
+			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
+			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.MachineIdPath2);
+			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("test-id"), deviceService.DbusMachineIdPath);
+
+			var id = await deviceService.DeviceId(OSPlatform.FreeBSD);
+			Assert.IsNotNull( id );
+			Assert.AreEqual("6CC41D5EC590AB78CCCECF81EF167D418C309A4598E8E45FEF78039F7D9AA9FE", id );
+		}
+		
+		[TestMethod]
+		public async Task DeviceId_Windows()
+		{
+			var deviceService = new DeviceIdService(new FakeSelectorStorage());
+			var id = await deviceService.DeviceId(OSPlatform.Windows);
+			Assert.IsNotNull( id );
+		}
+		
+		[TestMethod]
+		public async Task DeviceId_MacOS_Wrapper__UnixOnly()
+		{
+			if ( _appSettings.IsWindows )
+			{
+				Assert.Inconclusive("This test if for Unix Only");
+				return;
+			}
+			
+			var storage = new FakeIStorage(new List<string>{"/"});
+			var storageSelector = new FakeSelectorStorage(storage);
+			var deviceService = new DeviceIdService(storageSelector)
+			{
+				IoReg = "ls"
+			};
+			var id = await deviceService.DeviceId(OSPlatform.OSX);
+			Assert.AreEqual("not set", id );
 		}
 		
 		[TestMethod]
@@ -175,10 +217,12 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var deviceService = new DeviceIdService(storageSelector);
-			deviceService.IoReg = "ls";
+			var deviceService = new DeviceIdService(storageSelector)
+			{
+				IoReg = "ls"
+			};
 			var id = await deviceService.DeviceIdOsX();
-			Assert.AreEqual("not set", id );
+			Assert.AreEqual(string.Empty, id );
 		}
 	}
 }

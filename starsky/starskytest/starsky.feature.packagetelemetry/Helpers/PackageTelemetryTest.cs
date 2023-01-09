@@ -139,7 +139,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		[TestMethod]
 		public void ParseContent_Null()
 		{
-			var result = PackageTelemetry.ParseContent(null);
+			var result = PackageTelemetry.ParseContent(null!);
 			Assert.AreEqual("null",result);
 		}
 	
@@ -147,6 +147,13 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		public void GetPropValue_Null()
 		{
 			var result = PackageTelemetry.GetPropValue(null, "test");
+			Assert.AreEqual(null,result);
+		}
+		
+		[TestMethod]
+		public void GetPropValue_Null_Null()
+		{
+			var result = PackageTelemetry.GetPropValue(null, null!);
 			Assert.AreEqual(null,result);
 		}
 
@@ -160,6 +167,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var result = PackageTelemetry.GetPropValue(new TestClass(), "Test");
 			Assert.AreEqual(true,result);
+			Assert.AreEqual(true,new TestClass().Test);
 		}
 
 		private class PropValueTestClass

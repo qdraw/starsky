@@ -74,7 +74,7 @@ public class DeviceIdService : IDeviceIdService
 			return PlainTextFileHelper.StreamToString(stream);
 		}
 		
-		if ( !_hostStorage.ExistFile(BsdHostIdPath) ) return FallBackId;
+		if ( !_hostStorage.ExistFile(BsdHostIdPath) ) return string.Empty;
 		var streamBsd = _hostStorage.ReadStream(BsdHostIdPath);
 		return PlainTextFileHelper.StreamToString(streamBsd);
 	}
@@ -85,14 +85,13 @@ public class DeviceIdService : IDeviceIdService
 	/// <returns>Guid</returns>
 	internal async Task<string> DeviceIdOsX()
 	{
-		var id = "not set";
 		// ioreg -rd1 -c IOPlatformExpertDevice
 		var result = await Command.Run(IoReg, "-rd1", "-c", "IOPlatformExpertDevice").Task;
-		if ( !result.Success ) return id;
+		if ( !result.Success ) return string.Empty;
 		
 		var match = Regex.Match(result.StandardOutput,"\"IOPlatformUUID\" = \"[\\d+\\w+-]+\"",
 			RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
-		id = match.Value.Replace("\"IOPlatformUUID\" = \"", "").Replace('\"', ' ').Trim();
+		var id = match.Value.Replace("\"IOPlatformUUID\" = \"", "").Replace('\"', ' ').Trim();
 		return id;
 	}
 
