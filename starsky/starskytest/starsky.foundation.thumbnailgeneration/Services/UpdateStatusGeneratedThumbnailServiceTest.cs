@@ -158,4 +158,72 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		Assert.AreEqual(false, getResult[0].ExtraLarge);
 		Assert.AreEqual(null, getResult[0].Small);
 	}
+	
+	public static readonly List<GenerationResultModel> ExampleData2 = new List<GenerationResultModel>
+	{
+		new GenerationResultModel
+		{
+			FileHash = "image_01",
+			Size = ThumbnailSize.Large,
+			Success = true
+		},
+		new GenerationResultModel
+		{
+			FileHash = "image_01",
+			Size = ThumbnailSize.ExtraLarge,
+			Success = true
+		},
+		new GenerationResultModel
+		{
+			FileHash = "image_01",
+			Size = ThumbnailSize.Small,
+			Success = true
+		},
+		new GenerationResultModel
+		{
+			FileHash = "image_01",
+			Size = ThumbnailSize.TinyMeta,
+			Success = false
+		}
+	};
+	
+	[TestMethod]
+	public async Task UpdateStatusGeneratedThumbnailService_Data2_NewItem()
+	{
+		var query = new FakeIThumbnailQuery();
+		var service = new UpdateStatusGeneratedThumbnailService(query);
+		await service.UpdateStatusAsync(ExampleData2);
+
+		var getResult = await query.Get(ExampleData2[0].FileHash);
+		Assert.AreEqual(1, getResult.Count);
+		Assert.AreEqual(true, getResult[0].Large);
+		Assert.AreEqual(true, getResult[0].ExtraLarge);
+		Assert.AreEqual(true, getResult[0].Small);
+		Assert.AreEqual(false, getResult[0].TinyMeta);
+	}
+	
+	[TestMethod]
+	public async Task UpdateStatusGeneratedThumbnailService_Data2_UpdateItem()
+	{
+		var query = new FakeIThumbnailQuery();
+		var service = new UpdateStatusGeneratedThumbnailService(query);
+		await service.UpdateStatusAsync(ExampleData2);
+
+		await service.UpdateStatusAsync(new List<GenerationResultModel>{new GenerationResultModel
+		{
+			FileHash = "image_01",
+			Size = ThumbnailSize.Large,
+			Success = false
+		}});
+
+		
+		var getResult = await query.Get(ExampleData2[0].FileHash);
+		Assert.AreEqual(1, getResult.Count);
+		Assert.AreEqual(false, getResult[0].Large);
+		Assert.AreEqual(true, getResult[0].ExtraLarge);
+		Assert.AreEqual(true, getResult[0].Small);
+		Assert.AreEqual(false, getResult[0].TinyMeta);
+	}
+
+
 }

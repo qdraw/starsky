@@ -76,7 +76,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				{
 					var hashResult =  await new FileHash(_iStorage).GetHashCodeAsync(singleSubPath);
 					return await CreateThumbAsync(singleSubPath, hashResult.Key);
-				}, _appSettings.MaxDegreesOfParallelism);
+				}, _appSettings.MaxDegreesOfParallelismThumbnail);
 			
 			var results = new List<GenerationResultModel>();
 			foreach ( var resultChunk in resultChunkList )
@@ -113,34 +113,40 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <returns>true, if successful</returns>
 		private async Task<IEnumerable<GenerationResultModel>> CreateThumbInternal(string subPath, string fileHash, bool skipExtraLarge = false)
 		{
-			var resultModel = new List<GenerationResultModel>{new GenerationResultModel
+			// FileType=supported + subPath=exit + fileHash=NOT exist
+			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
+			     !_iStorage.ExistFile(subPath) )
+			{
+				return ThumbnailNameHelper.GeneratedThumbnailSizes.Select(size => new GenerationResultModel
 				{
 					SubPath = subPath,
 					FileHash = fileHash,
 					Success = false,
 					IsNotFound = true,
-					ErrorMessage = "File is deleted OR not supported"
-				}};
-			
-			// FileType=supported + subPath=exit + fileHash=NOT exist
-			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
-			     !_iStorage.ExistFile(subPath) )
-			{
-				return resultModel;
+					ErrorMessage = "File is deleted OR not supported",
+					Size = size
+				}).ToList();
 			}
 
 			// File is already tested
 			if ( _iStorage.ExistFile(GetErrorLogItemFullPath(subPath)) )
 			{
-				resultModel.FirstOrDefault()!.ErrorMessage = "File already failed before";
-				return resultModel;
+				return ThumbnailNameHelper.GeneratedThumbnailSizes.Select(size => new GenerationResultModel
+				{
+					SubPath = subPath,
+					FileHash = fileHash,
+					Success = false,
+					IsNotFound = false,
+					ErrorMessage = "File already failed before",
+					Size = size
+				}).ToList();
 			}
 
 			// First create from the source file a thumbnail image (large or extra large)
 			var thumbnailToSourceSize = ThumbnailToSourceSize(skipExtraLarge);
 			var largeThumbnailHash = LargeThumbnailHash(fileHash, thumbnailToSourceSize);
 			var thumbnailFromThumbnailUpdateList = ListThumbnailToBeCreated(fileHash);
-			await CreateLargestImageFromSource(resultModel, fileHash, largeThumbnailHash, subPath, thumbnailToSourceSize);
+			var largeImageResult = await CreateLargestImageFromSource(fileHash, largeThumbnailHash, subPath, thumbnailToSourceSize);
 
 			// when all images are already created
 			if ( !thumbnailFromThumbnailUpdateList.Any() )
@@ -161,12 +167,12 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 						ThumbnailNameHelper.GetSize(size),
 						subPath, // used for reference only
 						ThumbnailNameHelper.Combine(fileHash, size)),
-				10);
+				3);
 
 			_logger.LogInformation(".");
 
 			// results return null if thumbnailFromThumbnailUpdateList has lenght 0
-			return results.Select(p =>p.Item2);
+			return results.Select(p =>p.Item2).Append(largeImageResult);
 		}
 
 		private static ThumbnailSize ThumbnailToSourceSize(bool skipExtraLarge)
@@ -182,34 +188,49 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return largeThumbnailHash;
 		}
 		
-		private async Task CreateLargestImageFromSource(IReadOnlyCollection<GenerationResultModel> resultModel, 
+		internal async Task<GenerationResultModel> CreateLargestImageFromSource(
 			string fileHash, string largeThumbnailHash, string subPath,
 			ThumbnailSize thumbnailToSourceSize)
 		{
-			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
-				    fileHash,thumbnailToSourceSize)) )
+			var resultModel = new GenerationResultModel
 			{
-				// run resize sync
-				var (_, resizeSuccess, resizeMessage) = (await ResizeThumbnailFromSourceImage(subPath, 
-					ThumbnailNameHelper.GetSize(thumbnailToSourceSize), 
-					largeThumbnailHash ));
+				IsNotFound = false,
+				Success = false,
+				ErrorMessage = string.Empty,
+				FileHash = fileHash,
+				SubPath = subPath,
+				Size = thumbnailToSourceSize
+			};
 
-				// check if output any good
-				RemoveCorruptImage(fileHash, thumbnailToSourceSize);
-
-				if ( !resizeSuccess || ! _thumbnailStorage.ExistFile(
-					    ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize)) )
-				{
-					_logger.LogError($"[ResizeThumbnailFromSourceImage] " +
-					                 $"output is null or corrupt for subPath {subPath}");
-					await WriteErrorMessageToBlockLog(subPath, resizeMessage);
-					
-					resultModel.FirstOrDefault()!.ErrorMessage = resizeMessage;
-					resultModel.FirstOrDefault()!.IsNotFound = false;
-					resultModel.FirstOrDefault()!.Size = thumbnailToSourceSize;
-				}
-				_logger.LogInformation(".");
+			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
+				    fileHash, thumbnailToSourceSize)) )
+			{
+				// file already exist so skip
+				resultModel.Success = true;
+				return resultModel;
 			}
+
+			// run resize sync
+			var (_, resizeSuccess, resizeMessage) = await ResizeThumbnailFromSourceImage(subPath, 
+				ThumbnailNameHelper.GetSize(thumbnailToSourceSize), 
+				largeThumbnailHash );
+
+			// check if output any good
+			RemoveCorruptImage(fileHash, thumbnailToSourceSize);
+
+			if ( !resizeSuccess || ! _thumbnailStorage.ExistFile(
+				    ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize)) )
+			{
+				_logger.LogError($"[ResizeThumbnailFromSourceImage] " +
+				                 $"output is null or corrupt for subPath {subPath}");
+				await WriteErrorMessageToBlockLog(subPath, resizeMessage);
+
+				resultModel.ErrorMessage = resizeMessage;
+				return resultModel;
+			}
+			
+			resultModel.Success = true;
+			return resultModel;
 		}
 
 		private List<ThumbnailSize> ListThumbnailToBeCreated(string fileHash)
@@ -243,7 +264,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		{
 			return Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault()
 			       + "/"
-				   + "_"
+			       + "_"
 			       + Path.GetFileNameWithoutExtension(PathHelper.GetFileName(subPath)) 
 			       + ".log";
 		}
@@ -278,7 +299,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			int width,  string? subPathReference = null, string? thumbnailOutputHash = null,
 			bool removeExif = false,
 			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg
-			)
+		)
 		{
 			var outputStream = new MemoryStream();
 			var result = new GenerationResultModel
@@ -324,7 +345,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		
 		
 		public async Task<(MemoryStream?, bool, string)> ResizeThumbnailFromSourceImage(string subPath, 
-			 int width, string? thumbnailOutputHash = null,
+			int width, string? thumbnailOutputHash = null,
 			bool removeExif = false,
 			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
 		{

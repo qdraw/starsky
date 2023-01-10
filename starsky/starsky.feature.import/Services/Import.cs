@@ -496,14 +496,20 @@ namespace starsky.feature.import.Services
 			return importIndexItemsList;
 		}
 
-		internal async Task<IEnumerable<(bool, string, string?)>> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
+		/// <summary>
+		/// fail/pass, right type, string=subPath, string?2= error reason
+		/// </summary>
+		/// <param name="importIndexItemsList"></param>
+		/// <param name="importSettings"></param>
+		/// <returns></returns>
+		internal async Task<IEnumerable<(bool, bool, string, string?)>> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
 			importIndexItemsList, ImportSettingsModel importSettings)
 		{
-			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return new List<(bool, string, string?)>();
+			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return new List<(bool, bool, string, string?)>();
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
 				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).Cast<(string,string)>().ToList();
-			if ( !items.Any() ) return new List<(bool, string, string?)>();
+			if ( !items.Any() ) return new List<(bool, bool, string, string?)>();
 			return await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}
 
@@ -552,15 +558,15 @@ namespace starsky.feature.import.Services
 		    // Run Exiftool to Update for example colorClass
 		    UpdateImportTransformations.QueryUpdateDelegate? updateItemAsync = null;
 		    UpdateImportTransformations.QueryThumbnailUpdateDelegate? queryThumbnailUpdateDelegate = null;
-		    
+
 		    if ( importSettings.IndexMode )
 		    {
 			    updateItemAsync = new QueryFactory(
 				    new SetupDatabaseTypes(_appSettings), _query,
 				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
-			    queryThumbnailUpdateDelegate = (size, fileHashes, setStatus) => new ThumbnailQueryFactory(
+			    queryThumbnailUpdateDelegate = (thumbnailItems) => new ThumbnailQueryFactory(
 				    new SetupDatabaseTypes(_appSettings),
-				    _thumbnailQuery, _logger).ThumbnailQuery()!.AddThumbnailRangeAsync(size, fileHashes, setStatus);
+				    _thumbnailQuery, _logger).ThumbnailQuery()!.AddThumbnailRangeAsync(thumbnailItems);
 		    }
 		    
 		    await CreateMataThumbnail(new List<ImportIndexItem>{importIndexItem}, importSettings);
@@ -585,7 +591,10 @@ namespace starsky.feature.import.Services
 			// Check if fastest version is available to show 
 			var setStatus = _thumbnailStorage.ExistFile(
 				ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.TinyMeta));
-			await queryThumbnailUpdateDelegate(ThumbnailSize.TinyMeta, new List<string>{fileHash}, setStatus);
+			await queryThumbnailUpdateDelegate(new List<ThumbnailResultDataTransferModel>
+			{
+				new ThumbnailResultDataTransferModel(fileHash,setStatus)
+			});
 		}
 
 		/// <summary>

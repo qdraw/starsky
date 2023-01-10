@@ -130,7 +130,7 @@ namespace starsky.feature.metaupdate.Services
 				{
 					fileIndexItem.FilePath           
 				};
-				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
+				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage,_readMeta);
 
 				// to avoid diskWatcher catch up
 				_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem, TimeSpan.FromSeconds(10));
@@ -140,6 +140,7 @@ namespace starsky.feature.metaupdate.Services
 					exifUpdateFilePaths, comparedNamesList,true, true);
 
 				await ApplyOrGenerateUpdatedFileHash(newFileHashes, fileIndexItem);
+				
 				_logger.LogInformation(string.IsNullOrEmpty(exifResult)
 					? $"[UpdateWriteDiskDatabase] ExifTool result is Nothing or " +
 					  $"Null for: path:{fileIndexItem.FilePath} {DateTime.UtcNow.ToShortTimeString()}"
@@ -169,6 +170,7 @@ namespace starsky.feature.metaupdate.Services
 				return;
 			}
 			// when newFileHashes is null or string.empty
+			// rename is done in the exiftool helper
 			var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(fileIndexItem.FilePath!)).Key;
 			_thumbnailStorage.FileMove(fileIndexItem.FileHash!, newFileHash);
 			fileIndexItem.FileHash = newFileHash;

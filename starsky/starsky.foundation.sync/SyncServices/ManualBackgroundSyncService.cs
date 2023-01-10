@@ -68,6 +68,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			CreateSyncLock(subPath);
 
+			// Runs within IUpdateBackgroundTaskQueue
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
 				await BackgroundTaskExceptionWrapper(fileIndexItem.FilePath,

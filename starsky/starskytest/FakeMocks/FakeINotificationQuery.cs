@@ -41,6 +41,7 @@ namespace starskytest.FakeMocks
 			var item = new NotificationItem
 			{
 				DateTime = DateTime.UtcNow,
+				DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
 				Content = content
 			};
 			FakeContent.Add(item);

@@ -42,7 +42,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 		[ExpectedException(typeof(DirectoryNotFoundException))]
 		public async Task ThumbnailCleanerTestAsync_DirectoryNotFoundException()
 		{
-			await new ThumbnailCleaner(new FakeIStorage(), _query, new FakeIWebLogger()).CleanAllUnusedFilesAsync();
+			await new ThumbnailCleaner(new FakeIStorage(), _query, new FakeIWebLogger(), new FakeIThumbnailQuery()).CleanAllUnusedFilesAsync();
 		}
 		
 		[TestMethod]
@@ -74,7 +74,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			};
 			var thumbnailStorage = new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
 			
-			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query, new FakeIWebLogger());
+			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query, new FakeIWebLogger(), new FakeIThumbnailQuery());
 			
 			// there are now two files inside this dir
 			var allThumbnailFilesBefore = thumbnailStorage.GetAllFilesInDirectory("/");
@@ -102,7 +102,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			var fakeQuery = new FakeIQueryException(new Microsoft.EntityFrameworkCore.Storage.RetryLimitExceededException());
 			
 			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
-				 new FakeIWebLogger());
+				 new FakeIWebLogger(), new FakeIThumbnailQuery());
 
 			await thumbnailCleaner.CleanAllUnusedFilesAsync();
 
@@ -133,7 +133,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			});
 			
 			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
-				 new FakeIWebLogger());
+				 new FakeIWebLogger(), new FakeIThumbnailQuery());
 
 			await thumbnailCleaner.CleanAllUnusedFilesAsync(1);
 
@@ -154,6 +154,33 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large)));
 			Assert.IsFalse(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("12234456677", ThumbnailSize.ExtraLarge)));
+		}
+		
+		[TestMethod]
+		public async Task ThumbnailCleanerTestAsync_RemoveFromThumbnailTable()
+		{
+			var fakeStorage = new FakeIStorage(new List<string> {"/"},
+				new List<string>
+				{
+					ThumbnailNameHelper.Combine("35874453877", ThumbnailSize.Large),
+				});
+
+			var fakeQuery = new FakeIQuery();
+			var thumbnailQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
+			{
+				new ThumbnailItem("35874453877", null, null, true, null)
+			});
+			
+			var preGetter = await thumbnailQuery.Get("35874453877");
+			Assert.AreEqual(1,preGetter.Count);
+
+			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
+				new FakeIWebLogger(), thumbnailQuery);
+
+			await thumbnailCleaner.CleanAllUnusedFilesAsync();
+			
+			var getter = await thumbnailQuery.Get("35874453877");
+			Assert.AreEqual(0,getter.Count);
 		}
 	}
 }

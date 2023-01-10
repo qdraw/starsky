@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 
@@ -22,14 +22,24 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 
 	public async Task UpdateStatusAsync(List<GenerationResultModel> generationResults)
 	{
-		foreach ( var size in ThumbnailNameHelper.GeneratedThumbnailSizes )
-		{
-			var largeThumbnailsSuccess = generationResults.Where(p => p.Success && p.Size == size);
-			await _thumbnailQuery.AddThumbnailRangeAsync(size, largeThumbnailsSuccess.Select(p => p.FileHash).ToList(), true);
+		// in the next step only the fileHash is included
+		var dtoObjects = generationResults
+			.Where(p => !p.IsNotFound)
+			.DistinctBy(p => p.FileHash)
+			.Select(p => p.FileHash)
+			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash)).ToList();
 
-			var largeThumbnailsFail = generationResults.Where(p => !p.Success && p.Size == size);
-			await _thumbnailQuery.AddThumbnailRangeAsync(size, largeThumbnailsFail.Select(p => p.FileHash).ToList(), false);
+		foreach ( var generationResult in generationResults.Where(p => !p.IsNotFound) )
+		{
+			var index = dtoObjects.FindIndex(p => p.FileHash == generationResult.FileHash);
+			if ( generationResult.Size == ThumbnailSize.Unknown || index == -1 )
+			{
+				continue;
+			}
+			dtoObjects[index].Change(generationResult.Size, generationResult.Success);
+			dtoObjects[index].Reasons = generationResult.ErrorMessage;
 		}
 
+		await _thumbnailQuery.AddThumbnailRangeAsync(dtoObjects);
 	}
 }

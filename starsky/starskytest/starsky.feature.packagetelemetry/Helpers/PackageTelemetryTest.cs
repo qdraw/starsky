@@ -9,10 +9,9 @@ using starsky.feature.packagetelemetry.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
-using starsky.foundation.webtelemetry.Helpers;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.webtelemetry.Helpers
+namespace starskytest.starsky.feature.packagetelemetry.Helpers
 {
 	
 	[TestClass]
@@ -40,7 +39,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var httpProvider = new FakeIHttpProvider();
 			var appSettings = new AppSettings();
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 
 			var systemData = packageTelemetry.GetSystemData();
 			Assert.IsTrue(systemData.Any(p => p.Key == "AppVersion"));
@@ -65,7 +64,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var httpProvider = new FakeIHttpProvider();
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 
 			var sourceValue = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
 			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","true");
@@ -74,6 +73,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			
 			Assert.AreEqual("True", systemData.FirstOrDefault(p => p.Key == "DockerContainer").Value);
 			
+			// undo
 			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","false");
 			
 			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
@@ -82,11 +82,62 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			
 			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER",sourceValue);
 		}
+		
+		[TestMethod]
+		public void GetSystemDataTestDocker_NonLinux_soFalse()
+		{
+			var httpProvider = new FakeIHttpProvider();
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+
+			var sourceValue = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","true");
+			
+			var systemData = packageTelemetry.GetSystemData(OSPlatform.Windows);
+			
+			// so False
+			Assert.AreEqual("False", systemData.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			
+			// undo
+			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER","false");
+			
+			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
+
+			Assert.AreEqual("False", systemDataFalse.FirstOrDefault(p => p.Key == "DockerContainer").Value);
+			
+			Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER",sourceValue);
+		}
+		
+		[TestMethod]
+		public void GetSystemDataTestDocker_WebSiteName()
+		{
+			var httpProvider = new FakeIHttpProvider();
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
+
+			var sourceValue = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+			Environment.SetEnvironmentVariable("WEBSITE_SITE_NAME","test");
+			
+			var systemData = packageTelemetry.GetSystemData(OSPlatform.Windows);
+			
+			// so False
+			Assert.AreEqual("9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08", 
+				systemData.FirstOrDefault(p => p.Key == "WebsiteName").Value);
+			
+			// undo
+			Environment.SetEnvironmentVariable("WEBSITE_SITE_NAME","");
+			
+			var systemDataFalse = packageTelemetry.GetSystemData(OSPlatform.Linux);
+
+			Assert.AreEqual("not set", systemDataFalse.FirstOrDefault(p => p.Key == "WebsiteName").Value.ToLowerInvariant());
+			
+			Environment.SetEnvironmentVariable("WEBSITE_SITE_NAME",sourceValue);
+		}
 
 		[TestMethod]
 		public void ParseContent_Null()
 		{
-			var result = PackageTelemetry.ParseContent(null);
+			var result = PackageTelemetry.ParseContent(null!);
 			Assert.AreEqual("null",result);
 		}
 	
@@ -94,6 +145,13 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		public void GetPropValue_Null()
 		{
 			var result = PackageTelemetry.GetPropValue(null, "test");
+			Assert.AreEqual(null,result);
+		}
+		
+		[TestMethod]
+		public void GetPropValue_Null_Null()
+		{
+			var result = PackageTelemetry.GetPropValue(null, null!);
 			Assert.AreEqual(null,result);
 		}
 
@@ -107,6 +165,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		{
 			var result = PackageTelemetry.GetPropValue(new TestClass(), "Test");
 			Assert.AreEqual(true,result);
+			Assert.AreEqual(true,new TestClass().Test);
 		}
 
 		private class PropValueTestClass
@@ -128,7 +187,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var httpProvider = new FakeIHttpProvider();
 			var appSettings = new AppSettings();
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 			var result = packageTelemetry.AddAppSettingsData(new List<KeyValuePair<string, string>>());
 
 			Assert.IsTrue(result.Any(p => p.Key == "AppSettingsName"));
@@ -140,7 +199,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var httpProvider = new FakeIHttpProvider();
 			var appSettings = new AppSettings{EnablePackageTelemetry = false};
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsNull(result);
 		}
@@ -155,7 +214,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			});
 			var appSettings = new AppSettings{EnablePackageTelemetry = true};
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsTrue(result);
 		}
@@ -170,7 +229,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			});
 			var appSettings = new AppSettings{EnablePackageTelemetry = true, EnablePackageTelemetryDebug = true};
 			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
-			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery());
+			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsNull(result);
 		}
@@ -183,7 +242,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			{
 				new FileIndexItem("/test.jpg"),
 				new FileIndexItem("/test"){IsDirectory = true},
-			}));
+			}), new FakeIDeviceIdService());
 			
 			var result = await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
 
@@ -207,7 +266,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var appSettings = new AppSettings {EnablePackageTelemetry = true};
 			var packageTelemetry = new PackageTelemetry(null!, appSettings,
 				new FakeIWebLogger(),
-				new FakeIQueryException(new ArgumentNullException()));
+				new FakeIQueryException(new ArgumentNullException()), new FakeIDeviceIdService());
 			var result = await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
 			
 			var res1 =

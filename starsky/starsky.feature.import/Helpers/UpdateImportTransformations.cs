@@ -36,8 +36,7 @@ namespace starsky.feature.import.Helpers
 
 		
 		public delegate Task<FileIndexItem> QueryUpdateDelegate(FileIndexItem fileIndexItem);
-		public delegate Task<List<ThumbnailItem>?> QueryThumbnailUpdateDelegate(ThumbnailSize size,
-			IReadOnlyList<string> fileHashes, bool? setStatus = null);
+		public delegate Task<List<ThumbnailItem>?> QueryThumbnailUpdateDelegate(List<ThumbnailResultDataTransferModel> thumbnailItems);
 
 		/// <summary>
 		/// Run Transformation on Import to the files in the database && Update fileHash in database

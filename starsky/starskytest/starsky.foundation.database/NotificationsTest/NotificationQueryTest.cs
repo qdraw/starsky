@@ -58,12 +58,16 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 		public async Task Get_RecentItems_Ok()
 		{
 			var currentTime = DateTime.UtcNow;
-			await _notificationQuery.AddNotification(
+			var item = await _notificationQuery.AddNotification(
 				new ApiNotificationResponseModel<string>("test")
 				{
 					Type = ApiNotificationType.Welcome
 				});
+			
+			var unixTime = ((DateTimeOffset)currentTime).ToUnixTimeSeconds() -1;
 
+			Assert.IsTrue(unixTime <= item.DateTimeEpoch);
+			
 			var recent = await _notificationQuery.GetNewerThan(currentTime);
 			Assert.AreEqual(1, recent.Count);
 			

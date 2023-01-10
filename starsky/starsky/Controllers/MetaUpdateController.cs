@@ -92,9 +92,12 @@ namespace starsky.Controllers
 			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f,collections, stopwatch);
 
 			// When all items are not found
-			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok 
-			                                  && p.Status != FileIndexItem.ExifStatus.Deleted))
+			if ( fileIndexResultsList.All(p =>
+				    p.Status != FileIndexItem.ExifStatus.Ok
+				    && p.Status != FileIndexItem.ExifStatus.Deleted) )
+			{
 				return NotFound(fileIndexResultsList);
+			}
 
 			// Clone an new item in the list to display
 			var returnNewResultList = fileIndexResultsList.Select(item => item.Clone()).ToList();
@@ -105,12 +108,12 @@ namespace starsky.Controllers
 			// Push direct to socket when update or replace to avoid undo after a second
 			_logger.LogInformation($"[UpdateController] send to socket {f}");
 
-			await Task.Run(async () => await TaskRun(fileIndexResultsList));
+			await Task.Run(async () => await UpdateWebSocketTaskRun(fileIndexResultsList));
 
 			return Json(returnNewResultList);
 		}
 
-		private async Task TaskRun(List<FileIndexItem> fileIndexResultsList)
+		private async Task UpdateWebSocketTaskRun(List<FileIndexItem> fileIndexResultsList)
 		{
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexResultsList, ApiNotificationType.MetaUpdate);

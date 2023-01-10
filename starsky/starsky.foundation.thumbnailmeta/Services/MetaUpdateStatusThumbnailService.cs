@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.thumbnailmeta.Interfaces;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
@@ -24,20 +23,23 @@ public class MetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailServic
 		_fileHashStorage = new FileHash(storage);
 	}
 	
-	public async Task UpdateStatusThumbnail(List<(bool, string, string?)> statusResultsWithSubPaths)
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="statusResultsWithSubPaths">fail/pass, string=subPath, string?2= error reason</param>
+	public async Task UpdateStatusThumbnail(List<(bool, bool, string, string?)> statusResultsWithSubPaths)
 	{
-		var statusResultsWithFileHashes = new List<(bool, string, string?)>();
-		foreach ( var (status, subPath, reason) in statusResultsWithSubPaths )
+		var statusResultsWithFileHashes = new List<ThumbnailResultDataTransferModel>();
+		foreach ( var (status, rightType, subPath, reason) in statusResultsWithSubPaths )
 		{
+			if ( !rightType ) continue;
 			var fileHash = ( await _fileHashStorage.GetHashCodeAsync(subPath)).Key;
-			statusResultsWithFileHashes.Add((status, fileHash,reason));
+			statusResultsWithFileHashes.Add(new ThumbnailResultDataTransferModel(fileHash, status)
+			{
+				Reasons = reason
+			});
 		}
 		
-		var okItems = statusResultsWithFileHashes.Where(p => p.Item1).Select(p => p.Item2).ToList();
-		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, okItems, true);
-		
-		var failItems = statusResultsWithFileHashes.Where(p => !p.Item1);
-		await _thumbnailQuery.AddThumbnailRangeAsync(ThumbnailSize.TinyMeta, failItems.Select(p => p.Item2).ToList(), 
-			false);
+		await _thumbnailQuery.AddThumbnailRangeAsync(statusResultsWithFileHashes);
 	}
 }

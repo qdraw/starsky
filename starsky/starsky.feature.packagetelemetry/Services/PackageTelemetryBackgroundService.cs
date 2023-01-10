@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.packagetelemetry.Helpers;
+using starsky.feature.packagetelemetry.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
@@ -38,10 +39,11 @@ namespace starsky.feature.packagetelemetry.Services
 				var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
 				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
 				var query = scope.ServiceProvider.GetRequiredService<IQuery>();
-				
+				var deviceIdService = scope.ServiceProvider.GetRequiredService<IDeviceIdService>();
+
 				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 				{
-					await new PackageTelemetry(httpClientHelper, appSettings,logger,query).PackageTelemetrySend();
+					await new PackageTelemetry(httpClientHelper, appSettings,logger,query,deviceIdService).PackageTelemetrySend();
 				}
 			}
 		}

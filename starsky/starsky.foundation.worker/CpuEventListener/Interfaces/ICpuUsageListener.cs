@@ -1,8 +1,6 @@
-using Microsoft.Extensions.Hosting;
-
 namespace starsky.foundation.worker.CpuEventListener.Interfaces;
 
-public interface ICpuUsageListenerBackgroundService : IHostedService
+public interface ICpuUsageListener
 {
 	/// <summary>
 	/// Last CPU usage

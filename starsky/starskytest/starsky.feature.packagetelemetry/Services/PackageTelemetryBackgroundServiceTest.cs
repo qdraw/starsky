@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.packagetelemetry.Helpers;
+using starsky.feature.packagetelemetry.Interfaces;
 using starsky.feature.packagetelemetry.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;
@@ -42,6 +43,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 			services.AddSingleton<IQuery, FakeIQuery>();
+			services.AddSingleton<IDeviceIdService, FakeIDeviceIdService>();
 
 			var serviceProvider = services.BuildServiceProvider();
 			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();

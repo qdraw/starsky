@@ -33,6 +33,7 @@ namespace starsky.foundation.database.Notifications
 			var item = new NotificationItem
 			{
 				DateTime = DateTime.UtcNow,
+				DateTimeEpoch = DateTimeOffset.Now.ToUnixTimeSeconds(),
 				Content = content
 			};
 			
@@ -60,12 +61,14 @@ namespace starsky.foundation.database.Notifications
 
 		public Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime)
 		{
-			return _context.Notifications.Where(x => x.DateTime > parsedDateTime).ToListAsync();
+			var unixTime = ((DateTimeOffset)parsedDateTime).ToUnixTimeSeconds() -1;
+			return _context.Notifications.Where(x => x.DateTimeEpoch > unixTime).ToListAsync();
 		}
 
 		public Task<List<NotificationItem>> GetOlderThan(DateTime parsedDateTime)
 		{
-			return _context.Notifications.Where(x => x.DateTime < parsedDateTime).ToListAsync();
+			var unixTime = ((DateTimeOffset)parsedDateTime).ToUnixTimeSeconds();
+			return _context.Notifications.Where(x => x.DateTimeEpoch < unixTime).ToListAsync();
 		}
 
 		public async Task RemoveAsync(IEnumerable<NotificationItem> content)

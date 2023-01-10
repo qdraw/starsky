@@ -283,6 +283,7 @@ namespace starsky.foundation.sync.SyncServices
 			
 			if ( !fileIndexItemsOnlyFolders.Any() ) return new List<FileIndexItem?>();
 		
+			// can this be done in a batch?
 			return (await fileIndexItemsOnlyFolders
 				.ForEachAsync(async item =>
 				{

@@ -314,5 +314,21 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 
 		}
 		
+		[TestMethod]
+		public async Task CreateLargestImageFromSource_CorruptInput()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> {"test"}, 
+				new List<byte[]> { Array.Empty<byte>() });
+
+			var result = await new Thumbnail(storage, 
+					storage, new FakeIWebLogger(), new AppSettings()).
+				CreateLargestImageFromSource("test", "test", "test", ThumbnailSize.Small);
+			
+			Assert.IsFalse(result.Success);
+			Assert.AreEqual("Image cannot be loaded",result.ErrorMessage);
+		}
+		
 	}
 }

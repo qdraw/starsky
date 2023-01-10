@@ -12,7 +12,7 @@ public class MetricsDebugControllerTest
 	[TestMethod]
 	public void MetricsDebugController_Index_test()
 	{
-		var controller = new MetricsDebugController(new FakeICpuUsageListenerBackgroundService(1d));
+		var controller = new MetricsDebugController(new FakeICpuUsageListener(1d));
 		var jsonResult = controller.Index() as JsonResult;
 		var resultValue = jsonResult!.Value as MetricsDebugViewModel;
 

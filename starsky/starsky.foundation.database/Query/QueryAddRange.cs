@@ -22,6 +22,7 @@ namespace starsky.foundation.database.Query
 
 			async Task LocalQuery(ApplicationDbContext context, IReadOnlyCollection<FileIndexItem> items)
 			{
+				await context.SaveChangesAsync();
 				await context.FileIndex.AddRangeAsync(items);
 				await context.SaveChangesAsync();
 			}
