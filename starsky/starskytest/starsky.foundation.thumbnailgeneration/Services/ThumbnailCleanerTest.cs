@@ -155,5 +155,32 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			Assert.IsFalse(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("12234456677", ThumbnailSize.ExtraLarge)));
 		}
+		
+		[TestMethod]
+		public async Task ThumbnailCleanerTestAsync_RemoveFromThumbnailTable()
+		{
+			var fakeStorage = new FakeIStorage(new List<string> {"/"},
+				new List<string>
+				{
+					ThumbnailNameHelper.Combine("35874453877", ThumbnailSize.Large),
+				});
+
+			var fakeQuery = new FakeIQuery();
+			var thumbnailQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
+			{
+				new ThumbnailItem("35874453877", null, null, true, null)
+			});
+			
+			var preGetter = await thumbnailQuery.Get("35874453877");
+			Assert.AreEqual(1,preGetter.Count);
+
+			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
+				new FakeIWebLogger(), thumbnailQuery);
+
+			await thumbnailCleaner.CleanAllUnusedFilesAsync();
+			
+			var getter = await thumbnailQuery.Get("35874453877");
+			Assert.AreEqual(0,getter.Count);
+		}
 	}
 }
