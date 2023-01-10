@@ -11245,6 +11245,23 @@
             "extensions": {},
             "unresolvedReference": false
           },
+          "maxDegreesOfParallelismThumbnail": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
           "useHttpsRedirection": {
             "type": "boolean",
             "readOnly": false,
