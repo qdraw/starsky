@@ -205,7 +205,7 @@ public class ThumbnailQueryTest
 		var result = await _thumbnailQuery.AddThumbnailRangeAsync(
 			new List<ThumbnailResultDataTransferModel>
 			{
-				new ThumbnailResultDataTransferModel("9123", null, true),
+				new ThumbnailResultDataTransferModel("9123", null, true,true),
 				new ThumbnailResultDataTransferModel("9456", null, true),
 			});
 
@@ -398,6 +398,29 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(result.newThumbnailItems.All(x => x.Small == true));
 		Assert.IsTrue(result.Item1.Select(x => x.FileHash).All(x => new List<string> { "1213" }.Contains(x)));
 	}
+	
+	[TestMethod]
+	public async Task CheckForDuplicates_NewThumbnails_equalContent()
+	{
+		// Arrange
+		var items = new List<ThumbnailItem?>
+		{
+			new ThumbnailItem("347598453", null, true, null, null),
+		};
+		
+		_context.Thumbnails.Add(items[0]!);
+		await _context.SaveChangesAsync();
+		
+		// Act
+		// run for a second time
+		var result = await ThumbnailQuery.CheckForDuplicates(_context, items);
+
+		// Assert
+		Assert.IsNotNull(result.equalThumbnailItems);
+		Assert.AreEqual(1, result.equalThumbnailItems.Count);
+		Assert.IsTrue(result.equalThumbnailItems.All(x => x.Small == true));
+		Assert.IsTrue(result.equalThumbnailItems.Select(x => x.FileHash).All(x => new List<string> { "347598453" }.Contains(x)));
+	}
  
 	[TestMethod]
 	public async Task Get_Test_ReturnOne()
@@ -464,10 +487,10 @@ public class ThumbnailQueryTest
 		var result = await ThumbnailQuery.CheckForDuplicates(_context, items);
 	
 		// Assert
-		Assert.IsNotNull(result.alreadyExistingThumbnailItems);
+		Assert.IsNotNull(result.updateThumbnailItems);
 		Assert.AreEqual(2, result.Item1.Count);
-		Assert.IsTrue(result.alreadyExistingThumbnailItems.All(x => x.Large == false));
-		Assert.IsTrue(result.alreadyExistingThumbnailItems.Select(x => x.FileHash)
+		Assert.IsTrue(result.updateThumbnailItems.All(x => x.Large == false));
+		Assert.IsTrue(result.updateThumbnailItems.Select(x => x.FileHash)
 			.All(x => new List<string> { "123", "456" }.Contains(x)));
 	}
 }

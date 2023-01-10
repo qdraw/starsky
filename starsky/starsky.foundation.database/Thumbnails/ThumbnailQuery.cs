@@ -64,7 +64,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			updateThumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!,item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
 		}
 		
-		var (newThumbnailItems, alreadyExistingThumbnailItems) = await CheckForDuplicates(
+		var (newThumbnailItems, alreadyExistingThumbnailItems,equalThumbnailItems) = await CheckForDuplicates(
 			dbContext, updateThumbnailNewItemsList);
 		
 		if ( newThumbnailItems.Any() )
@@ -82,6 +82,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		
 		var allResults = alreadyExistingThumbnailItems
 			.Concat(newThumbnailItems)
+			.Concat(equalThumbnailItems)
 			.ToList();
 		
 		foreach ( var item in allResults )
@@ -107,7 +108,7 @@ public class ThumbnailQuery : IThumbnailQuery
 	/// <param name="updateThumbnailNewItemsList"></param>
 	/// <returns></returns>
 	internal static async Task<(List<ThumbnailItem> newThumbnailItems,
-		List<ThumbnailItem> alreadyExistingThumbnailItems)> 
+		List<ThumbnailItem> updateThumbnailItems, List<ThumbnailItem> equalThumbnailItems)> 
 		CheckForDuplicates(ApplicationDbContext context, 
 			IEnumerable<ThumbnailItem?> updateThumbnailNewItemsList)
 	{
@@ -126,28 +127,42 @@ public class ThumbnailQuery : IThumbnailQuery
 			.Where(p => alreadyExistingThumbnails.Contains(p!.FileHash))
 			.Cast<ThumbnailItem>().DistinctBy(p => p.FileHash).ToList();
 
+		var updateThumbnailItems = new List<ThumbnailItem>();
+		var equalThumbnailItems = new List<ThumbnailItem>();
+		
 		// merge two items together
 		foreach ( var item in dbThumbnailItems )
 		{
 			var indexOfAlreadyExists = alreadyExistingThumbnailItems.FindIndex(p => p.FileHash == item.FileHash);
 			if ( indexOfAlreadyExists == -1 ) continue;
+			var alreadyExists = alreadyExistingThumbnailItems[indexOfAlreadyExists];
 			context.Attach(item).State = EntityState.Detached;
 
-			alreadyExistingThumbnailItems[indexOfAlreadyExists].TinyMeta ??= item.TinyMeta;
-			alreadyExistingThumbnailItems[indexOfAlreadyExists].Large ??= item.Large;
-			alreadyExistingThumbnailItems[indexOfAlreadyExists].Small ??= item.Small;
-			alreadyExistingThumbnailItems[indexOfAlreadyExists].ExtraLarge ??= item.ExtraLarge;
-			alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons ??= item.Reasons;
+			alreadyExists.TinyMeta ??= item.TinyMeta;
+			alreadyExists.Large ??= item.Large;
+			alreadyExists.Small ??= item.Small;
+			alreadyExists.ExtraLarge ??= item.ExtraLarge;
+			alreadyExists.Reasons ??= item.Reasons;
 
-			if ( alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons!
-			    .Contains(item.Reasons!) ) continue;
+			if ( !alreadyExists.Reasons!.Contains(item.Reasons!) )
+			{
+				var reasons = new StringBuilder(alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons);
+				reasons.Append($",{item.Reasons}");
+				alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons = reasons.ToString();
+			}
 			
-			var reasons = new StringBuilder(alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons);
-			reasons.Append($",{item.Reasons}");
-			alreadyExistingThumbnailItems[indexOfAlreadyExists].Reasons = reasons.ToString();
+			if ( item.TinyMeta == alreadyExists.TinyMeta  && 
+			     item.Large == alreadyExists.Large  &&
+			     item.Small == alreadyExists.Small &&
+			     item.ExtraLarge == alreadyExists.ExtraLarge)
+			{
+				equalThumbnailItems.Add(alreadyExists);
+				continue;
+			}
+			updateThumbnailItems.Add(alreadyExists);
 		}
 		
-		return ( newThumbnailItems, alreadyExistingThumbnailItems );
+		return ( newThumbnailItems, updateThumbnailItems, equalThumbnailItems );
 	}
 
 }
