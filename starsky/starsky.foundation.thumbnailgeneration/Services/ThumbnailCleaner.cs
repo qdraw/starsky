@@ -23,12 +23,14 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		private readonly IQuery _query;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IWebLogger _logger;
+		private readonly IThumbnailQuery _thumbnailQuery;
 
-		public ThumbnailCleaner(IStorage thumbnailStorage, IQuery iQuery, IWebLogger logger)
+		public ThumbnailCleaner(IStorage thumbnailStorage, IQuery iQuery, IWebLogger logger, IThumbnailQuery thumbnailQuery)
 		{
 			_thumbnailStorage = thumbnailStorage;
 			_query = iQuery;
 			_logger = logger;
+			_thumbnailQuery = thumbnailQuery;
 		}
 
 		public async Task<List<string>> CleanAllUnusedFilesAsync(int chunkSize = 50)
@@ -57,6 +59,8 @@ namespace starsky.foundation.thumbnailgeneration.Services
 					                       $"skip {string.Join(",", itemsInChunk.ToList())} ~ {exception.Message}", exception);
 				}
 			}
+
+			await _thumbnailQuery.RemoveThumbnails(deletedFileHashes);
 			return deletedFileHashes;
 		}
 

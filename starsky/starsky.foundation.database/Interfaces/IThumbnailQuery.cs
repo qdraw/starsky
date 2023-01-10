@@ -9,4 +9,5 @@ public interface IThumbnailQuery
 	Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailResultDataTransferModel> thumbnailItems);
 
 	Task<List<ThumbnailItem>> Get(string? fileHash = null);
+	Task RemoveThumbnails(List<string> deletedFileHashes);
 }

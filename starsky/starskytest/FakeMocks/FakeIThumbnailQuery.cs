@@ -78,4 +78,10 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 	{
 		return Task.FromResult(fileHash == null ? _content : _content.Where(p => p.FileHash == fileHash).ToList());
 	}
+
+	public Task RemoveThumbnails(List<string> deletedFileHashes)
+	{
+		_content.RemoveAll(p => deletedFileHashes.Contains(p.FileHash));
+		return Task.CompletedTask;
+	}
 }

@@ -421,6 +421,62 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(result.equalThumbnailItems.All(x => x.Small == true));
 		Assert.IsTrue(result.equalThumbnailItems.Select(x => x.FileHash).All(x => new List<string> { "347598453" }.Contains(x)));
 	}
+	
+	[TestMethod]
+	public async Task RemoveThumbnails_ShouldRemove()
+	{
+		// Arrange
+		var items = new List<ThumbnailItem?>
+		{
+			new ThumbnailItem("3478534758", null, true, null, null),
+		};
+		
+		_context.Thumbnails.Add(items[0]!);
+		await _context.SaveChangesAsync();
+		
+		// Act
+		var query = new ThumbnailQuery(_context, null!);
+		await query.RemoveThumbnails(new List<string>{"3478534758"});
+
+		// Assert
+		var getter = await query.Get("3478534758");
+		Assert.AreEqual(0,getter.Count);
+	}
+	
+	[TestMethod]
+	public async Task RemoveThumbnails_ShouldRemove2()
+	{
+		// Arrange
+		var items = new List<ThumbnailItem?>
+		{
+			new ThumbnailItem("9086798654", null, true, null, null),
+			new ThumbnailItem("9607374598453", null, true, null, null),
+
+		};
+		
+		_context.Thumbnails.Add(items[0]!);
+		await _context.SaveChangesAsync();
+		
+		// Act
+		var query = new ThumbnailQuery(_context, null!);
+		await query.RemoveThumbnails(new List<string>{"9086798654","9607374598453"});
+
+		// Assert
+		var getter = await query.Get("9607374598453");
+		Assert.AreEqual(0,getter.Count);
+	}
+	
+	[TestMethod]
+	public async Task RemoveThumbnails_ZeroItems()
+	{
+		// Act
+		var query = new ThumbnailQuery(_context, null!);
+		await query.RemoveThumbnails(new List<string>());
+
+		// Assert
+		var getter = await query.Get("3787453");
+		Assert.AreEqual(0,getter.Count);
+	}
  
 	[TestMethod]
 	public async Task Get_Test_ReturnOne()

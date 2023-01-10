@@ -10,6 +10,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Extensions;
 
 namespace starsky.foundation.database.Thumbnails;
 
@@ -99,6 +100,17 @@ public class ThumbnailQuery : IThumbnailQuery
 			.Thumbnails.ToListAsync() :  await _context
 			.Thumbnails.Where(p => p.FileHash == fileHash)
 			.ToListAsync();
+	}
+
+	public async Task RemoveThumbnails(List<string> deletedFileHashes)
+	{
+		if ( !deletedFileHashes.Any() ) return;
+		foreach ( var fileNamesInChunk in deletedFileHashes.ChunkyEnumerable(100) )
+		{
+			var thumbnailItems = await _context.Thumbnails.Where(p => fileNamesInChunk.Contains(p.FileHash)).ToListAsync();
+			_context.Thumbnails.RemoveRange(thumbnailItems);
+			await _context.SaveChangesAsync();
+		}
 	}
 
 	/// <summary>
