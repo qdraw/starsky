@@ -43,6 +43,9 @@ COPY . ./
 
 WORKDIR /app/starsky
 
+# there is specific version matched in global.json, but docker uses the latest
+RUN rm /app/global.json
+
 RUN \
     if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
         echo $TARGETPLATFORM ; \
