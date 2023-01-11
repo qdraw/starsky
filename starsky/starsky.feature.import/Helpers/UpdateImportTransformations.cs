@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
@@ -23,15 +24,17 @@ namespace starsky.feature.import.Helpers
 		private readonly IStorage _thumbnailStorage;
 		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
+		private readonly IThumbnailQuery _thumbnailQuery;
 
 		public UpdateImportTransformations(IWebLogger logger, 
-			IExifTool exifTool, ISelectorStorage selectorStorage, AppSettings appSettings)
+			IExifTool exifTool, ISelectorStorage selectorStorage, AppSettings appSettings, IThumbnailQuery thumbnailQuery)
 		{
 			_logger = logger;
 			_exifTool = exifTool;
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_appSettings = appSettings;
+			_thumbnailQuery = thumbnailQuery;
 		}
 
 		
@@ -42,7 +45,6 @@ namespace starsky.feature.import.Helpers
 		/// Run Transformation on Import to the files in the database && Update fileHash in database
 		/// </summary>
 		/// <param name="queryUpdateDelegate"></param>
-		/// <param name="queryThumbnailUpdateDelegate"></param>
 		/// <param name="fileIndexItem">information</param>
 		/// <param name="colorClassTransformation">change colorClass</param>
 		/// <param name="dateTimeParsedFromFileName">is date time parsed from fileName</param>
@@ -69,9 +71,12 @@ namespace starsky.feature.import.Helpers
 			}
 
 			if ( !comparedNamesList.Any() ) return fileIndexItem;
-			
-			await new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
-				new ReadMeta(_subPathStorage, _appSettings, null, _logger)).UpdateAsync(fileIndexItem, comparedNamesList);
+
+			var exifToolCmdHelper = new ExifToolCmdHelper(_exifTool,
+				_subPathStorage, _thumbnailStorage,
+				new ReadMeta(_subPathStorage, _appSettings, null, _logger),
+				_thumbnailQuery);
+			await exifToolCmdHelper.UpdateAsync(fileIndexItem, comparedNamesList);
 
 			// Only update database when indexMode is true
 			if ( !indexMode || queryUpdateDelegate == null) return fileIndexItem;

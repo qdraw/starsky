@@ -113,6 +113,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 	}
 
+	public Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
+	{
+		throw new NotImplementedException();
+	}
+
 	/// <summary>
 	/// Check for Duplicates in the database
 	/// </summary>

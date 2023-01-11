@@ -99,7 +99,7 @@ namespace starsky.foundation.storage.Services
 					return new KeyValuePair<string, bool>(
 						Base32.Encode(
 						GenerateRandomBytes(27)
-						) + "_T", false);
+						) + GeneratedPostFix, false);
 				}
 				return new KeyValuePair<string, bool>(code, true);
 			}
@@ -114,6 +114,8 @@ namespace starsky.foundation.storage.Services
 					Base32.Encode(GenerateRandomBytes(27)) + "_T", false);
 			}
 		}
+
+		public const string GeneratedPostFix = "_T";
 
 		/// <summary>
 		/// Create a random string

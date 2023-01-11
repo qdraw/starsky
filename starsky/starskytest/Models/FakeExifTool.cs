@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Models;
@@ -39,7 +40,8 @@ namespace starskytest.Models
 			return true;
 		}
 		
-		public async Task<KeyValuePair<bool,string>> WriteTagsAndRenameThumbnailAsync(string subPath, string command)
+		public async Task<KeyValuePair<bool,string>> WriteTagsAndRenameThumbnailAsync(string subPath, 
+			string? beforeFileHash, string command)
 		{
 			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
 

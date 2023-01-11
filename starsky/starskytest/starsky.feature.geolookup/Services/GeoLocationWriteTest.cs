@@ -45,7 +45,8 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 			var fakeIStorage = new FakeIStorage();
 			await new GeoLocationWrite(_appSettings, _exifTool, 
-				new FakeSelectorStorage(fakeIStorage),console, new FakeIWebLogger()).LoopFolderAsync(metaFilesInDirectory, true);
+				new FakeSelectorStorage(fakeIStorage),console, 
+				new FakeIWebLogger(), new FakeIThumbnailQuery()).LoopFolderAsync(metaFilesInDirectory, true);
 			Assert.IsNotNull(metaFilesInDirectory);
 			
 			Assert.AreEqual(1,console.WrittenLines.Count);
@@ -71,12 +72,12 @@ namespace starskytest.starsky.feature.geolookup.Services
 			};
 			var console = new FakeConsoleWrapper();
 			await new GeoLocationWrite(new AppSettings{Verbose = true}, 
-					_exifTool, new FakeSelectorStorage(),console, new FakeIWebLogger())
+					_exifTool, new FakeSelectorStorage(),console, new FakeIWebLogger(), new FakeIThumbnailQuery())
 				.LoopFolderAsync(metaFilesInDirectory, 
 				true);
 
 			Assert.AreEqual(2,console.WrittenLines.Count);
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("GeoLocationWrite"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()!.Contains("GeoLocationWrite"));
 		}
 	}
 }

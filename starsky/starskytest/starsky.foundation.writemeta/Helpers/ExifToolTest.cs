@@ -61,7 +61,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
 			var result = await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-				.RenameThumbnailByStream(new KeyValuePair<string, bool>("OLDHASH",true),new MemoryStream());
+				.RenameThumbnailByStream("OLDHASH",new MemoryStream(),true);
 
 			Assert.AreEqual(26,result.Length);
 		}
@@ -79,7 +79,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
 			var result = await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
-				.RenameThumbnailByStream(new KeyValuePair<string, bool>("OLDHASH",false),new MemoryStream());
+				.RenameThumbnailByStream("OLDHASH",new MemoryStream(),false);
 
 			Assert.AreEqual(0,result.Length);
 		}

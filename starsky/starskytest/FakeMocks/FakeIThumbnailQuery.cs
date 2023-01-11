@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Enums;
 
 namespace starskytest.FakeMocks;
 
@@ -83,5 +82,16 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 	{
 		_content.RemoveAll(p => deletedFileHashes.Contains(p.FileHash));
 		return Task.CompletedTask;
+	}
+
+	public Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
+	{
+		var index = _content.FindIndex(p=> p.FileHash == beforeFileHash);
+		if ( index == -1 )
+		{
+			return Task.FromResult(false);
+		}
+		_content[index].FileHash = newFileHash;
+		return Task.FromResult(true);
 	}
 }

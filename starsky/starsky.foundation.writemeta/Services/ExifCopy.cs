@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Interfaces;
@@ -15,15 +16,14 @@ namespace starsky.foundation.writemeta.Services
 	{
 		private readonly IStorage _iStorage;
 		private readonly IReadMeta _readMeta;
-		private readonly IExifTool _exifTool;
-		private readonly IStorage _thumbnailStorage;
+		private readonly ExifToolCmdHelper _exifToolCmdHelper;
 
-		public ExifCopy(IStorage iStorage, IStorage thumbnailStorage,  IExifTool exifTool, IReadMeta readMeta)
+		public ExifCopy(IStorage iStorage, IStorage thumbnailStorage,  IExifTool exifTool, IReadMeta readMeta, IThumbnailQuery thumbnailQuery)
 		{
 			_iStorage = iStorage;
-			_exifTool = exifTool;
 			_readMeta = readMeta;
-			_thumbnailStorage = thumbnailStorage;
+			_exifToolCmdHelper = new ExifToolCmdHelper(exifTool, _iStorage,
+				thumbnailStorage, _readMeta, thumbnailQuery);
 		}
 
 		private const string XmpStartContent =
@@ -80,7 +80,7 @@ namespace starsky.foundation.writemeta.Services
 			var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 			comparedNames.Add(nameof(FileIndexItem.Software));
 			updateModel.SetFilePath(toSubPath);
-			return (await new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage ,_readMeta).UpdateAsync(updateModel, 
+			return (await _exifToolCmdHelper.UpdateAsync(updateModel, 
 				comparedNames, true, false)).Item1;
 		}
 

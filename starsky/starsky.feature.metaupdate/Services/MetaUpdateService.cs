@@ -33,6 +33,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IWebLogger _logger;
 		private readonly IThumbnailService _thumbnailService;
+		private readonly IThumbnailQuery _thumbnailQuery;
 
 		public MetaUpdateService(
 			IQuery query,
@@ -41,7 +42,8 @@ namespace starsky.feature.metaupdate.Services
 			IMetaPreflight metaPreflight,
 			IWebLogger logger,
 			IReadMetaSubPathStorage readMetaSubPathStorage, 
-			IThumbnailService thumbnailService)
+			IThumbnailService thumbnailService,
+			IThumbnailQuery thumbnailQuery)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -51,6 +53,7 @@ namespace starsky.feature.metaupdate.Services
 			_metaPreflight = metaPreflight;
 			_logger = logger;
 			_thumbnailService = thumbnailService;
+			_thumbnailQuery = thumbnailQuery;
 		}
 
 
@@ -130,7 +133,7 @@ namespace starsky.feature.metaupdate.Services
 				{
 					fileIndexItem.FilePath           
 				};
-				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage,_readMeta);
+				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage,_readMeta, _thumbnailQuery);
 
 				// to avoid diskWatcher catch up
 				_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem, TimeSpan.FromSeconds(10));
