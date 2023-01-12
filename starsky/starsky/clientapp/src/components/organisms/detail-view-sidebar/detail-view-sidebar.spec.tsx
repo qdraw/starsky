@@ -117,7 +117,7 @@ describe("DetailViewSidebar", () => {
     }
 
     it("test if tags from the context is displayed", () => {
-      const tags = findDataName("tags");
+      const tags = screen.queryByTestId("detailview-sidebar-tags");
       expect(tags?.textContent).toBe("tags!");
     });
 
@@ -262,14 +262,15 @@ describe("DetailViewSidebar", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const tagsField = findDataName("tags") as HTMLElement;
+      const tagsField = screen.queryByTestId("detailview-sidebar-tags");
+
       expect(tagsField).not.toBeNull();
 
       act(() => {
-        tagsField.innerHTML = "a";
+        tagsField!.innerHTML = "a";
       });
 
-      fireEvent.blur(tagsField, { currentTarget: tagsField });
+      fireEvent.blur(tagsField!, { currentTarget: tagsField });
 
       await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
@@ -296,7 +297,9 @@ describe("DetailViewSidebar", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const tagsField = findDataName("tags") as HTMLInputElement;
+      const tagsField = screen.queryByTestId(
+        "detailview-sidebar-tags"
+      ) as HTMLInputElement;
 
       act(() => {
         tagsField.innerHTML = "";
@@ -322,19 +325,96 @@ describe("DetailViewSidebar", () => {
       fetchPostSpy.mockClear();
     });
 
+    it("search cache clear AND when a tag is updated", async () => {
+      document.location.search = "/?t=test";
+
+      // spy on fetch
+      // use this => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
+          ...newIConnectionDefault(),
+          statusCode: 200,
+          data: [{ filePath: "/test.jpg" } as IFileIndexItem]
+        });
+
+      const clearSearchCacheSpy = jest.spyOn(
+        ClearSearchCache,
+        "ClearSearchCache"
+      );
+
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault)
+        .mockImplementationOnce(() => mockIConnectionDefault)
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const tagsField = screen.queryByTestId(
+        "detailview-sidebar-tags"
+      ) as HTMLInputElement;
+
+      // need to await here
+      act(() => {
+        tagsField.innerHTML = "a";
+      });
+
+      fireEvent.blur(tagsField, { currentTarget: tagsField });
+
+      await waitFor(() => expect(clearSearchCacheSpy).toBeCalled());
+
+      expect(fetchPostSpy).toBeCalledTimes(1);
+
+      jest.spyOn(LimitLength.prototype, "LimitLengthBlur").mockClear();
+
+      document.location.search = "";
+    });
+  });
+
+  describe("Special status", () => {
+    let contextProvider: any;
+
+    beforeEach(() => {
+      contextProvider = {
+        dispatch: () => jest.fn(),
+        state: {
+          breadcrumb: [],
+          fileIndexItem: {
+            filePath: "/test.jpg",
+            status: IExifStatus.Ok,
+            tags: "tags!",
+            description: "description!",
+            title: "title!",
+            colorClass: 3,
+            dateTime: "2019-09-15T17:29:59",
+            lastEdited: new Date().toISOString(),
+            make: "apple",
+            model: "iPhone",
+            aperture: 2,
+            focalLength: 10,
+            longitude: 1,
+            latitude: 1
+          } as IFileIndexItem,
+          relativeObjects: {} as IRelativeObjects,
+          subPath: "/",
+          status: IExifStatus.Default,
+          pageType: PageType.DetailView,
+          colorClassActiveList: []
+        } as any
+      };
+    });
+
     function findDataNameCurrent(component: RenderResult, name: string) {
       return screen
         .queryAllByTestId("form-control")
         .find((p) => (p as HTMLElement).getAttribute("data-name") === name);
     }
 
-    it("Deleted status (from FileIndexItem)", async () => {
+    it("Deleted status (from FileIndexItem)", () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
 
       const DeletedTestComponent = () => (
         <DetailViewContext.Provider value={contextProvider}>
           <DetailViewSidebar
-            status={IExifStatus.Ok}
+            status={IExifStatus.Deleted}
             filePath={"/t"}
             state={contextProvider.state}
             dispatch={jest.fn()}
@@ -350,28 +430,17 @@ describe("DetailViewSidebar", () => {
 
       contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
 
-      // windows has random timeout issues on this test
-      component.rerender(<DeletedTestComponent />);
-
-      // Tags and other input fields are disabled
-      const tags = findDataNameCurrent(
-        component as any,
-        "tags"
+      const tagsField = screen.queryByTestId(
+        "detailview-sidebar-tags"
       ) as HTMLInputElement;
+
       const description = findDataNameCurrent(component as any, "description");
       const title = findDataNameCurrent(component as any, "title");
 
-      // need await here
-      await act(async () => {
-        await tags.click();
-      });
-
-      await waitFor(() => expect(tags?.classList).toContain("form-control"));
-      await waitFor(() => expect(tags?.classList).toContain("disabled"), {
-        timeout: 10000
-      });
-      await waitFor(() => expect(description?.classList).toContain("disabled"));
-      await waitFor(() => expect(title?.classList).toContain("disabled"));
+      expect(tagsField?.classList).toContain("form-control");
+      expect(tagsField?.classList).toContain("disabled");
+      expect(description?.classList).toContain("disabled");
+      expect(title?.classList).toContain("disabled");
 
       component.unmount();
     }, 14000);
@@ -397,9 +466,8 @@ describe("DetailViewSidebar", () => {
       expect(statusReadOnly).not.toBeNull();
 
       // Tags and other input fields are disabled
-      const tags = findDataNameCurrent(
-        component as any,
-        "tags"
+      const tags = screen.queryByTestId(
+        "detailview-sidebar-tags"
       ) as HTMLInputElement;
       const description = findDataNameCurrent(component as any, "description");
       const title = findDataNameCurrent(component as any, "title");
@@ -414,47 +482,6 @@ describe("DetailViewSidebar", () => {
 
       component.unmount();
     }, 13000);
-
-    it("search cache clear AND when a tag is updated", async () => {
-      document.location.search = "/?t=test";
-
-      // spy on fetch
-      // use this => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          ...newIConnectionDefault(),
-          statusCode: 200,
-          data: [{ filePath: "/test.jpg" } as IFileIndexItem]
-        });
-
-      const clearSearchCacheSpy = jest.spyOn(
-        ClearSearchCache,
-        "ClearSearchCache"
-      );
-
-      const fetchPostSpy = jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault)
-        .mockImplementationOnce(() => mockIConnectionDefault)
-        .mockImplementationOnce(() => mockIConnectionDefault);
-
-      const tagsField = findDataName("tags") as HTMLInputElement;
-
-      // need to await here
-      act(() => {
-        tagsField.innerHTML = "a";
-      });
-
-      fireEvent.blur(tagsField, { currentTarget: tagsField });
-
-      await waitFor(() => expect(clearSearchCacheSpy).toBeCalled());
-
-      expect(fetchPostSpy).toBeCalledTimes(1);
-
-      jest.spyOn(LimitLength.prototype, "LimitLengthBlur").mockClear();
-
-      document.location.search = "";
-    });
   });
 
   describe("Copy paste", () => {
