@@ -75,7 +75,7 @@ describe('Delete folder from upload', () => {
       headers: {
         'Content-Type': 'text/plain'
       }
-    } as RequestOptions).should((response) => {
+    } as RequestOptions).then((response) => {
       expect(response.status).to.eq(200)
       cy.log(JSON.stringify(response.body))
       expect(response.body.fileIndexItems).to.have.length(0)
