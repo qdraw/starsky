@@ -22,7 +22,7 @@ namespace starsky.foundation.platform.Helpers
 				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Value;
 	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Removes the latest backslash. Path.DirectorySeparatorChar
 		/// </summary>
 		/// <param name="basePath">The base path.</param>
@@ -100,7 +100,7 @@ namespace starsky.foundation.platform.Helpers
 	    /// <summary>
 	    /// Add / (always) before string
 	    /// </summary>
-	    /// <param name="subPath">the subpath</param>
+	    /// <param name="subPath">the subPath</param>
 	    /// <returns>/subpath</returns>
         public static string PrefixDbSlash(string subPath) { 
             // Add normal linux slash to beginning of the configuration
@@ -144,13 +144,13 @@ namespace starsky.foundation.platform.Helpers
 
 			// Remove duplicates from list
 			// have a single slash in front the path
-	        HashSet<string> inputHashSet = new HashSet<string>(); 
+	        var inputHashSet = new HashSet<string>(); 
 	        foreach ( var path in inputFilePaths )
 	        {
-		        var subpath = RemovePrefixDbSlash(path);
-		        subpath = PrefixDbSlash(subpath);
+		        var subPath = RemovePrefixDbSlash(path);
+		        subPath = PrefixDbSlash(subPath);
 
-		        inputHashSet.Add(subpath);
+		        inputHashSet.Add(subPath);
 	        }
             return inputHashSet.ToArray();
         }
