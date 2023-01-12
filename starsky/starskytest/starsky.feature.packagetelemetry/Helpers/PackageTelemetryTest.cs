@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.packagetelemetry.Helpers;
+using starsky.feature.packagetelemetry.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
