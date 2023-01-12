@@ -578,4 +578,22 @@ public class ThumbnailQueryTest
 		var getter = await query.RenameAsync("not-found","__new__hash__");
 		Assert.AreEqual(false,getter);
 	}
+	
+	[TestMethod]
+	public async Task RenameAsync_ShouldOverwrite()
+	{
+		// Act
+		var query = new ThumbnailQuery(_context, null!);
+		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
+		{
+			new ThumbnailResultDataTransferModel("357484875", null, true)
+		});	
+
+		// Assert
+		var getter = await query.RenameAsync("357484875","357484875");
+		Assert.AreEqual(true,getter);
+		
+		var getter2 = await query.Get("357484875");
+		Assert.AreEqual(1,getter2.Count);
+	}
 }
