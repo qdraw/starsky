@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -35,6 +36,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IThumbnailService _thumbnailService;
 		private readonly IThumbnailQuery _thumbnailQuery;
 
+		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 		public MetaUpdateService(
 			IQuery query,
 			IExifTool exifTool, 
