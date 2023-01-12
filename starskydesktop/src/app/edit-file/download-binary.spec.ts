@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -11,43 +12,74 @@ jest.mock("electron", () => {
       getVersion: () => "99.99.99",
       getPath: () => "tmp",
       getLocale: () => "en",
-      on: () => "en"
+      on: () => "en",
     },
-    Menu: {
-
-    },
+    Menu: {},
     shell: {
-      openExternal: jest.fn()
-    }
+      openExternal: jest.fn(),
+    },
+  };
+});
+
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "http://localhost:9609",
+    set: () => "data",
+    has: () => true,
+    unset: () => {},
+    configure: () => {},
+    file: () => {},
+    __esModule: true,
   };
 });
 
 describe("downloadBinary", () => {
   it("should download and fail", async () => {
-    jest.spyOn(GetParentDiskPath, "GetParentDiskPath").mockImplementationOnce(() => { return Promise.resolve("test"); });
-    jest.spyOn(downloadNetRequest, "downloadNetRequest").mockImplementationOnce(() => { return Promise.resolve("test"); });
+    jest
+      .spyOn(GetParentDiskPath, "GetParentDiskPath")
+      .mockImplementationOnce(() => {
+        return Promise.resolve("test");
+      });
+    jest
+      .spyOn(downloadNetRequest, "downloadNetRequest")
+      .mockImplementationOnce(() => {
+        return Promise.resolve("test");
+      });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const result = await downloadBinary({
-      collectionPaths: ["test"]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    } as any, {} as any);
+    const result = await downloadBinary(
+      {
+        collectionPaths: ["test"],
+      } as any,
+      {} as any
+    );
 
     expect(result).toBeNull();
   });
 
   it("should download and fail 2", async () => {
-    jest.spyOn(GetParentDiskPath, "GetParentDiskPath").mockImplementationOnce(() => { return Promise.resolve("test"); });
-    const downloadSpy = jest.spyOn(downloadNetRequest, "downloadNetRequest")
+    jest
+      .spyOn(GetParentDiskPath, "GetParentDiskPath")
+      .mockImplementationOnce(() => {
+        return Promise.resolve("test");
+      });
+    const downloadSpy = jest
+      .spyOn(downloadNetRequest, "downloadNetRequest")
       .mockClear()
-      .mockImplementationOnce(() => { return Promise.reject("test"); })
-      .mockImplementationOnce(() => { return Promise.resolve("test"); });
+      .mockImplementationOnce(() => {
+        return Promise.reject("test");
+      })
+      .mockImplementationOnce(() => {
+        return Promise.resolve("test");
+      });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const result = await downloadBinary({
-      collectionPaths: ["test"]
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    } as any, {} as any);
+    const result = await downloadBinary(
+      {
+        collectionPaths: ["test"],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      } as any,
+      {} as any
+    );
 
     expect(result).toBeNull();
     expect(downloadSpy).toHaveBeenCalledTimes(2);
