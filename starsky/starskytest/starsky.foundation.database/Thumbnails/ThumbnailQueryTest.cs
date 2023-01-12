@@ -549,4 +549,33 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(result.updateThumbnailItems.Select(x => x.FileHash)
 			.All(x => new List<string> { "123", "456" }.Contains(x)));
 	}
+	
+	[TestMethod]
+	public async Task RenameAsync_ShouldRename()
+	{
+		// Act
+		var query = new ThumbnailQuery(_context, null!);
+		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
+		{
+			new ThumbnailResultDataTransferModel("3787453", null, true)
+		});	
+
+		// Assert
+		var getter = await query.RenameAsync("3787453","__new__hash__");
+		Assert.AreEqual(true,getter);
+		
+		var getter2 = await query.Get("__new__hash__");
+		Assert.AreEqual(1,getter2.Count);
+	}
+		
+	[TestMethod]
+	public async Task RenameAsync_NotFound()
+	{
+		// Act
+		var query = new ThumbnailQuery(_context, null!);
+
+		// Assert
+		var getter = await query.RenameAsync("not-found","__new__hash__");
+		Assert.AreEqual(false,getter);
+	}
 }

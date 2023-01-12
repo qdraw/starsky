@@ -65,8 +65,10 @@ public class ThumbnailQuery : IThumbnailQuery
 			updateThumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!,item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
 		}
 		
-		var (newThumbnailItems, alreadyExistingThumbnailItems,equalThumbnailItems) = await CheckForDuplicates(
-			dbContext, updateThumbnailNewItemsList);
+		var (newThumbnailItems, 
+				alreadyExistingThumbnailItems, 
+				equalThumbnailItems) = 
+			await CheckForDuplicates(dbContext, updateThumbnailNewItemsList);
 		
 		if ( newThumbnailItems.Any() )
 		{
@@ -113,9 +115,20 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 	}
 
-	public Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
+	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
 	{
-		throw new NotImplementedException();
+		var item = await _context.Thumbnails.FirstOrDefaultAsync(p =>
+			p.FileHash == beforeFileHash);
+		if ( item == null ) return false;
+
+		_context.Thumbnails.Remove(item);
+		
+		await _context.Thumbnails.AddRangeAsync(new ThumbnailItem(newFileHash, 
+			item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
+		
+		await _context.SaveChangesAsync();
+		
+		return true;
 	}
 
 	/// <summary>
