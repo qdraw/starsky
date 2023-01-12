@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>starsky.feature.thumbnail</RootNamespace>
-        <ProjectGuid>{15e1493e-6e79-4314-907f-b3ef18eb9046}</ProjectGuid>
+        <ProjectGuid>{93a6019f-6627-483e-a18e-0d073d7b0883}</ProjectGuid>
         <Version>0.5.3</Version>
         <Nullable>enable</Nullable>
     </PropertyGroup>
