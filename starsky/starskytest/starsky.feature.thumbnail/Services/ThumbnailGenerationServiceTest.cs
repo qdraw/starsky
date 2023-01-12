@@ -2,50 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Controllers;
+using starsky.feature.thumbnail.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.thumbnailgeneration.Models;
-using starsky.foundation.worker.Interfaces;
-using starsky.foundation.worker.Services;
-using starsky.foundation.worker.ThumbnailServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.Controllers
+namespace starskytest.starsky.feature.thumbnail.Services 
 {
+
 	[TestClass]
-	public sealed class ThumbnailGenerationTest
+	public class ThumbnailGenerationServiceTest
 	{
-		public ThumbnailGenerationTest()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
-			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
-
-			var serviceProvider = services.BuildServiceProvider();
-			serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
-
-		}
-
-		[TestMethod]
-		public async Task ThumbnailGeneration_Endpoint()
-		{
-			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}));
-			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(), new FakeThumbnailBackgroundTaskQueue());
-			
-			var json = await controller.ThumbnailGeneration("/") as JsonResult;
-			var result = json.Value as string;
-			
-			Assert.IsNotNull(result);
-			Assert.AreEqual("Job started", result);
-		}
-
+	
 		[TestMethod]
 		public async Task ThumbnailGenerationTest_CheckIfGenerated()
 		{
@@ -53,9 +24,9 @@ namespace starskytest.Controllers
 				new List<byte[]> {CreateAnImage.Bytes});
 			
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
-					new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
-				), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
+			var controller = new ThumbnailGenerationService( new FakeIQuery(
+				new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
+			), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
 
 			await controller.WorkThumbnailGeneration("/");
 
@@ -74,7 +45,7 @@ namespace starskytest.Controllers
 			
 			var socket = new FakeIWebSocketConnectionsService();
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
+			var controller = new ThumbnailGenerationService(new FakeIQuery(
 				new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
 			), new FakeIWebLogger(), socket, new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
 
@@ -91,7 +62,7 @@ namespace starskytest.Controllers
 
 			var socket = new FakeIWebSocketConnectionsService();
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
+			var controller = new ThumbnailGenerationService( new FakeIQuery(
 				new List<FileIndexItem>()), new FakeIWebLogger(), socket, new FakeIThumbnailService(), new FakeThumbnailBackgroundTaskQueue());
 
 			await controller.WorkThumbnailGeneration("/");
@@ -108,7 +79,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var webLogger = new FakeIWebLogger();
-			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
+			var controller = new ThumbnailGenerationService(new FakeIQuery(), 
 				webLogger, new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(null,
 					new UnauthorizedAccessException(message)), new FakeThumbnailBackgroundTaskQueue());
 			
@@ -120,7 +91,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void WhichFilesNeedToBePushedForUpdate_NothingToUpdate()
 		{
-			var result = ThumbnailGenerationController.WhichFilesNeedToBePushedForUpdates(
+			var result = ThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
 				new List<GenerationResultModel>(), new List<FileIndexItem>());
 			Assert.AreEqual(0, result.Count);
 		}
@@ -129,7 +100,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void WhichFilesNeedToBePushedForUpdate_DoesNotExistInFilesList()
 		{
-			var result = ThumbnailGenerationController.WhichFilesNeedToBePushedForUpdates(
+			var result = ThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
 				new List<GenerationResultModel>
 				{
 					new GenerationResultModel{SubPath = "/test.jpg", Success = true}
@@ -141,7 +112,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void WhichFilesNeedToBePushedForUpdate_DeletedSoIgnored()
 		{
-			var result = ThumbnailGenerationController.WhichFilesNeedToBePushedForUpdates(
+			var result = ThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
 				new List<GenerationResultModel>
 				{
 					new GenerationResultModel{SubPath = "/test.jpg", Success = true}
@@ -157,7 +128,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void WhichFilesNeedToBePushedForUpdate_ShouldMap()
 		{
-			var result = ThumbnailGenerationController.WhichFilesNeedToBePushedForUpdates(
+			var result = ThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
 				new List<GenerationResultModel>
 				{
 					new GenerationResultModel{SubPath = "/test.jpg", Success = true}

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>starsky.feature.thumbnail</RootNamespace>
+        <ProjectGuid>{15e1493e-6e79-4314-907f-b3ef18eb9046}</ProjectGuid>
+        <Version>0.5.3</Version>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+      <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
+      <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
+      <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj" />
+    </ItemGroup>
+
+</Project>
