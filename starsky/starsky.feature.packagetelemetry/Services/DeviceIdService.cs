@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using Microsoft.Win32;
-using starsky.feature.packagetelemetry.Helpers;
 using starsky.feature.packagetelemetry.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -13,6 +12,7 @@ using starsky.foundation.settings.Enums;
 using starsky.foundation.settings.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.packagetelemetry.Services;
@@ -68,7 +68,7 @@ public class DeviceIdService : IDeviceIdService
 		var item = await _settingsService.GetSetting(SettingsType.DeviceId);
 		if ( !string.IsNullOrEmpty(item?.Value) ) return item.Value;
 
-		var generatedString = $"_{RandomGenerator.GenerateToken(30)}";
+		var generatedString = $"zz{Sha256.ComputeSha256(FileHash.GenerateRandomBytes(30))}";
 		await _settingsService.AddOrUpdateSetting(SettingsType.DeviceId, generatedString);
 		return generatedString;
 	}
