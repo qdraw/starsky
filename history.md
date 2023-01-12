@@ -46,7 +46,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Security) _Back-end_ Add Regex timeouts to avoid DoS (PR #1012)
 - [x] (Added)  _Docs_ Add section about how to install desktop, macOS and Linux (PR #1015)
 - [x] (Added)  _Back-end_ Database table that stores the status of thumbnails (PR #1020, #1013)
-- [x] (Changed)  _Back-end_ Update telemetry fields (PR #1020)
+- [x] (Changed)  _Back-end_ Update telemetry fields  (PR #1020)
+- [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.405 (Runtime: 6.0.13)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.13/6.0.13.md) (PR #1021)
 - [x] (Changed)  _Back-end_ Update thumbnail list on MetaUpdate (PR #1022)
 
 # version 0.5.2 - 2022-12-22
