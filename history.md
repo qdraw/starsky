@@ -49,6 +49,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Changed)  _Back-end_ Update telemetry fields  (PR #1020)
 - [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.405 (Runtime: 6.0.13)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.13/6.0.13.md) (PR #1021)
 - [x] (Changed)  _Back-end_ Update thumbnail list on MetaUpdate (PR #1022)
+- [x] (Changed)  _Back-end_ Upgrade nuget / docusaurus / clientapp / desktop dependencies (PR #1022)
 
 # version 0.5.2 - 2022-12-22
 
