@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic;
 using starsky.Attributes;
+using starsky.feature.import.Helpers;
 using starsky.feature.import.Interfaces;
 using starsky.feature.import.Models;
 using starsky.feature.import.Services;
@@ -18,7 +18,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.thumbnailmeta.Interfaces;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -41,7 +40,6 @@ namespace starsky.Controllers
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IStorage _hostFileSystemStorage;
-		private readonly IStorage _thumbnailStorage;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly IWebLogger _logger;
 
@@ -56,7 +54,6 @@ namespace starsky.Controllers
 			_httpClientHelper = httpClientHelper;
 			_selectorStorage = selectorStorage; 
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_scopeFactory = scopeFactory;
 			_logger = logger;
 		}
@@ -140,79 +137,13 @@ namespace starsky.Controllers
 			// Remove source files
 			foreach ( var toDelPath in tempImportPaths )
 			{
-				RemoveTempAndParentStreamFolder(toDelPath);
+				new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage,_appSettings)
+					.RemoveTempAndParentStreamFolder(toDelPath);
 			}
 
 			return importedFiles;
 		}
-		
-		/// <summary>
-		/// Upload thumbnail to ThumbnailTempFolder
-		/// Make sure that the filename is correct, a base32 hash of length 26;
-		/// Overwrite if the Id is the same
-		/// Also known as Thumbnail Upload or Thumbnail Import
-		/// </summary>
-		/// <returns>json of thumbnail urls</returns>
-		/// <response code="200">done</response>
-		/// <response code="415">Wrong input (e.g. wrong extenstion type)</response>
-		[HttpPost("/api/import/thumbnail")]
-		[DisableFormValueModelBinding]
-		[Produces("application/json")]
-		[RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
-		[RequestSizeLimit(100_000_000)] // in bytes, 100MB
-		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
-		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // wrong input
-		public async Task<IActionResult> Thumbnail()
-		{
-			var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
 
-			var thumbnailNames = new List<string>();
-			// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-			foreach ( var tempImportSinglePath in tempImportPaths )
-			{
-				var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tempImportSinglePath);
-			    
-				var thumbToUpperCase = fileNameWithoutExtension.ToUpperInvariant();
-				
-				_logger.LogInformation($"[Import/Thumbnail] - {thumbToUpperCase}" );
-
-				if ( ThumbnailNameHelper.GetSize(thumbToUpperCase) == ThumbnailSize.Unknown )
-				{
-					continue;
-				}
-			    
-				// remove existing thumbnail if exist
-				if (_thumbnailStorage.ExistFile(thumbToUpperCase))
-				{
-					_thumbnailStorage.FileDelete(thumbToUpperCase);
-				}
-			    
-				thumbnailNames.Add(thumbToUpperCase);
-			}
-
-			// Status if there is nothing uploaded
-			if (tempImportPaths.Count !=  thumbnailNames.Count)
-			{
-				Response.StatusCode = 415;
-				return Json(thumbnailNames);
-			}
-
-			for ( var i = 0; i < tempImportPaths.Count; i++ )
-			{
-				if ( ! _hostFileSystemStorage.ExistFile(tempImportPaths[i]) )
-				{
-					_logger.LogInformation($"[Import/Thumbnail] ERROR {tempImportPaths[i]} does not exist");
-					continue;
-				}
-				
-				await _thumbnailStorage.WriteStreamAsync(
-					_hostFileSystemStorage.ReadStream(tempImportPaths[i]), thumbnailNames[i]);
-				// Remove from temp folder to avoid long list of files
-				RemoveTempAndParentStreamFolder(tempImportPaths[i]);
-			}
-
-			return Json(thumbnailNames);
-		}
 
 		/// <summary>
 		/// Import file from web-url (only whitelisted domains) and import this file into the application
@@ -246,21 +177,13 @@ namespace starsky.Controllers
 			if (!isDownloaded) return NotFound("'file url' not found or domain not allowed " + fileUrl);
 
 			var importedFiles = await _import.Importer(new List<string>{tempImportFullPath}, importSettings);
-			RemoveTempAndParentStreamFolder(tempImportFullPath);
+			new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage,_appSettings)
+				.RemoveTempAndParentStreamFolder(tempImportFullPath);
 			
 			if(importedFiles.Count == 0) Response.StatusCode = 206;
 			return Json(importedFiles);
 		}
 
-		private void RemoveTempAndParentStreamFolder(string tempImportFullPath)
-		{
-			_hostFileSystemStorage.FileDelete(tempImportFullPath);
-			// remove parent folder of tempFile
-			var parentPath = Directory.GetParent(tempImportFullPath)?.FullName;
-			if ( !string.IsNullOrEmpty(parentPath) && parentPath != _appSettings.TempFolder )
-			{
-				_hostFileSystemStorage.FolderDelete(parentPath);
-			}
-		}
+
 	}
 }

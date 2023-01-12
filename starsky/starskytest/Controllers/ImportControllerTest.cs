@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -223,86 +221,6 @@ namespace starskytest.Controllers
 			var list = actionResult?.Value as List<ImportIndexItem>;
 
 			Assert.IsTrue(list?.FirstOrDefault()?.FilePath?.Contains("example_image.tiff"));
-		}
-
-		[TestMethod]
-		public async Task Import_Thumbnail_Ok()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IStorage, FakeIStorage>();
-			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			var serviceProvider = services.BuildServiceProvider();
-			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
-			var importController = new ImportController(
-				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider), 
-				_scopeFactory, new FakeIWebLogger())
-			{
-				ControllerContext = RequestWithFile(),
-			};
-			importController.Request.Headers["filename"] =
-				"01234567890123456789123456.jpg"; // len() 26
-
-			var actionResult = await importController.Thumbnail() as JsonResult;
-			var list = actionResult?.Value as List<string>;
-			var existFileInTempFolder =
-				storageProvider.ExistFile(
-					_appSettings.TempFolder + "01234567890123456789123456.jpg");
-
-			Assert.AreEqual("01234567890123456789123456", list?.FirstOrDefault());
-			Assert.IsFalse(existFileInTempFolder);
-		}
-		
-		[TestMethod]
-		public async Task Import_Thumbnail_Ok_SmallSize()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IStorage, FakeIStorage>();
-			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			var serviceProvider = services.BuildServiceProvider();
-			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
-			var importController = new ImportController(
-				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider), 
-				_scopeFactory, new FakeIWebLogger())
-			{
-				ControllerContext = RequestWithFile(),
-			};
-			importController.Request.Headers["filename"] =
-				"01234567890123456789123456@300.jpg"; // len() 26
-
-			var actionResult = await importController.Thumbnail() as JsonResult;
-			var list = actionResult?.Value as List<string>;
-			var existFileInTempFolder =
-				storageProvider.ExistFile(
-					_appSettings.TempFolder + "01234567890123456789123456@300.jpg");
-
-			Assert.AreEqual("01234567890123456789123456@300", list?.FirstOrDefault());
-			Assert.IsFalse(existFileInTempFolder);
-		}
-
-		[TestMethod]
-		public async Task Import_Thumbnail_WrongInputName()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IStorage, FakeIStorage>();
-			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			var serviceProvider = services.BuildServiceProvider();
-			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
-
-			var importController = new ImportController(
-				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider),
-				_scopeFactory, new FakeIWebLogger())
-			{
-				ControllerContext = RequestWithFile(),
-			};
-			importController.Request.Headers["filename"] = "123.jpg"; // len() 3
-
-			var actionResult = await importController.Thumbnail() as JsonResult;
-			var list = actionResult?.Value as List<string>;
-
-			Assert.AreEqual(0, list?.Count);
 		}
 	}
 }
