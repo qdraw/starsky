@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -14,7 +15,15 @@ public class RemoveTempAndParentStreamFolderHelper
 		_hostFileSystemStorage = hostFileSystemStorage;
 		_appSettings = appSettings;
 	}
-	
+
+	public void RemoveTempAndParentStreamFolder(List<string> tempImportFullPaths)
+	{
+		foreach ( var tempImportSinglePath in tempImportFullPaths )
+		{
+			RemoveTempAndParentStreamFolder(tempImportSinglePath);
+		}
+	}
+
 	public void RemoveTempAndParentStreamFolder(string tempImportFullPath)
 	{
 		_hostFileSystemStorage.FileDelete(tempImportFullPath);
