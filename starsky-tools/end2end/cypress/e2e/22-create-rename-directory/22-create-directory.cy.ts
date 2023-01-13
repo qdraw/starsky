@@ -60,7 +60,7 @@ describe('Create Rename Dir', () => {
 
     cy.intercept('/starsky/api/disk/mkdir').as('mkdir')
     cy.get('[data-name=directoryname]').type('z_test_auto_created')
-    cy.get('.btn.btn--default').click()
+    cy.get('[data-test=modal-archive-mkdir-btn-default]').click()
     cy.wait('@mkdir')
 
     cy.visit(config.url)

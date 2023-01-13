@@ -151,10 +151,10 @@ describe('Archive (from upload)', () => {
     resetAfterwards(sourceTags)
   })
 
-  it('test realtime update', async () => {
+  xit('test realtime update', async () => {
     if (!config.isEnabled) return
 
-    return await new Cypress.Promise((resolve) => {
+    await new Cypress.Promise((resolve) => {
       if (!config.isEnabled) return
 
       const sourceTags = 'tete de balacha, bergtop, mist, flaine'

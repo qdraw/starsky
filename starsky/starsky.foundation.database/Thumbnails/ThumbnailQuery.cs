@@ -117,14 +117,23 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
 	{
-		var item = await _context.Thumbnails.FirstOrDefaultAsync(p =>
-			p.FileHash == beforeFileHash);
-		if ( item == null ) return false;
+		var beforeOrNewItems = await _context.Thumbnails.Where(p =>
+			p.FileHash == beforeFileHash || p.FileHash == newFileHash).ToListAsync();
+		
+		var beforeItem = beforeOrNewItems.FirstOrDefault(p => p.FileHash == beforeFileHash);
+		var newItem = beforeOrNewItems.FirstOrDefault(p => p.FileHash == newFileHash);
 
-		_context.Thumbnails.Remove(item);
+		if ( beforeItem == null) return false;
+
+		_context.Thumbnails.Remove(beforeItem);
+
+		if ( newItem != null )
+		{
+			_context.Thumbnails.Remove(newItem);
+		}
 		
 		await _context.Thumbnails.AddRangeAsync(new ThumbnailItem(newFileHash, 
-			item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
+			beforeItem.TinyMeta, beforeItem.Small, beforeItem.Large, beforeItem.ExtraLarge, beforeItem.Reasons));
 		
 		await _context.SaveChangesAsync();
 		

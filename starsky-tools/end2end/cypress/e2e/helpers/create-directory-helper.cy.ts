@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { RequestOptions } from 'http'
 
-function createDirectory (config) {
+function createDirectory (config): void {
   cy.request({
     method: 'POST',
     url: config.mkdirApi,
@@ -18,7 +19,7 @@ function createDirectory (config) {
   })
 }
 
-export function checkIfExistAndCreate (config) {
+export function checkIfExistAndCreate (config): void {
   cy.request('POST', config.searchClearCache)
   cy.request(config.checkIfDirExistApi, {
     failOnStatusCode: false,
