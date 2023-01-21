@@ -1,4 +1,11 @@
-# Web HTML Publish
+# Publication workflow
+
+Starsky is a social media publishing workflow for pictures, with a focus on simplicity and ease of use. 
+It allows you to quickly generate good-looking images and then let you publish them to your various social media accounts.
+
+It's easy to publish, share and store your pictures with the Starsky app. 
+Simply choose from a wide range of templates, add one or more photos, write some text and press 'Publish'.
+There will be a generated image to included in your social media post.
 
 Publish photos with watermarks and prerendered html.
 It is possible to publish photos with watermarks and prerendered html. 

@@ -1,7 +1,10 @@
 # Realtime updates
 
-The user interface is updated via a websocket interface. This means that users are always up-to-date
+The app gives you real-time updates of the view of your image software, 
+so you never have to worry about missing new pictures or videos that have been uploaded. 
+Just download the app, upload a picture or video, and watch it come up in real time!
 
+The user interface is updated via a websocket interface. This means that users are always up-to-date
 
 ## Upload photos and view it realtime
 

@@ -1,5 +1,8 @@
 # Search
 
+The app lets you search and find based on meta data, with easy to use filters and fast results. 
+No need to waste time trying to remember what you photographed last year.
+
 Search and find photos based on keywords through the whole photo library.
 
 ![Rename](../assets/search_cloud_v050.gif)
@@ -14,7 +17,7 @@ let you narrow down results to a microscopic level.
 
 ## Unrivalled Digital Asset Management
 
-Searching for files in ACDSee Photo Studio for Mac is like a dream. 
+Searching for files in the app is like a dream. 
 Finding, sorting, moving, organizing, and sharing—everything 
 you need for complete mastery over your photography workflow is right here, 
 at your fingertips. No uploading or importing of images needed. 
