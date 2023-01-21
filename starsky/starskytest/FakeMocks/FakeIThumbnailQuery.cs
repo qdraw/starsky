@@ -99,4 +99,9 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 	{
 		throw new System.NotImplementedException();
 	}
+
+	public Task<bool> UpdateAsync(ThumbnailItem item)
+	{
+		throw new System.NotImplementedException();
+	}
 }

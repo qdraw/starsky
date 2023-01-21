@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.realtime.Interface;
 using starsky.feature.syncbackground.Services;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.settings.Enums;
 using starsky.foundation.settings.Interfaces;
@@ -23,6 +24,7 @@ namespace starskytest.starsky.feature.syncbackground.Services
 			services.AddSingleton<IRealtimeConnectionsService, FakeIRealtimeConnectionsService>();
 			services.AddSingleton<AppSettings>();
 			services.AddSingleton<ISynchronize, FakeISynchronize>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<ISettingsService, FakeISettingsService>();
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
