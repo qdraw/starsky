@@ -98,8 +98,24 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task<List<ThumbnailItem>> Get(string? fileHash = null)
 	{
-		return fileHash == null ? await _context
-			.Thumbnails.ToListAsync() :  await _context
+		try
+		{
+			return await GetInternalAsync(_context, fileHash);
+		}
+		// InvalidOperationException can also be disposed
+		catch (InvalidOperationException)
+		{
+			if ( _scopeFactory == null ) throw;
+			return await GetInternalAsync(new InjectServiceScope(_scopeFactory).Context(), fileHash);
+		}
+	}
+
+	private static async Task<List<ThumbnailItem>> GetInternalAsync(
+		ApplicationDbContext context,
+		string? fileHash = null)
+	{
+		return fileHash == null ? await context
+			.Thumbnails.ToListAsync() :  await context
 			.Thumbnails.Where(p => p.FileHash == fileHash)
 			.ToListAsync();
 	}
