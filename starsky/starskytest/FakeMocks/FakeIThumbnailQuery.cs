@@ -97,11 +97,17 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 
 	public Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails()
 	{
-		throw new System.NotImplementedException();
+		return Task.FromResult(_content.Where(p => p.ExtraLarge == null || p.Large == null || p.Small == null).ToList());
 	}
 
 	public Task<bool> UpdateAsync(ThumbnailItem item)
 	{
-		throw new System.NotImplementedException();
+		var index = _content.FindIndex(p=> p.FileHash == item.FileHash);
+		if ( index == -1 )
+		{
+			return Task.FromResult(false);
+		}
+		_content[index] = item;
+		return Task.FromResult(true);
 	}
 }

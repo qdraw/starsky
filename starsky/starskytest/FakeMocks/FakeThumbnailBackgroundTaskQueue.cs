@@ -9,7 +9,7 @@ namespace starskytest.FakeMocks
 
 		public int Count()
 		{
-			return 0;
+			return QueueBackgroundWorkItemCalledCounter;
 		}
 
 		public async ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem, string metaData)
