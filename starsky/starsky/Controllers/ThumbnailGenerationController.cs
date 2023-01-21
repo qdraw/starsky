@@ -12,10 +12,10 @@ namespace starsky.Controllers
 	public sealed class ThumbnailGenerationController : Controller
 	{
 		private readonly ISelectorStorage _selectorStorage;
-		private readonly IThumbnailGenerationService _thumbnailGenerationService;
+		private readonly IManualThumbnailGenerationService _thumbnailGenerationService;
 
 		public ThumbnailGenerationController(ISelectorStorage selectorStorage,
-			IThumbnailGenerationService thumbnailGenerationService)
+			IManualThumbnailGenerationService thumbnailGenerationService)
 		{
 			_selectorStorage = selectorStorage;
 			_thumbnailGenerationService = thumbnailGenerationService;
@@ -40,7 +40,7 @@ namespace starsky.Controllers
 			}
 
 			// When the CPU is to high its gives a Error 500
-			await _thumbnailGenerationService.BgQueue(subPath);
+			await _thumbnailGenerationService.ManualBackgroundQueue(subPath);
 			
 			return Json("Job started");
 		}

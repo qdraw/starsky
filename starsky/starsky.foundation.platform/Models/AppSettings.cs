@@ -785,6 +785,11 @@ namespace starsky.foundation.platform.Models
 		/// it skips the current task if the current process is to busy
 		/// </summary>
 		public double CpuUsageMaxPercentage { get; set; } = 75;
+		
+		/// <summary>
+		/// Background Task to run when the CPU is not busy
+		/// </summary>
+		public int? ThumbnailGenerationIntervalInMinutes { get; set; } = 1;
 
 		/// <returns>AppSettings duplicated</returns>
 		/// <summary>

@@ -20,7 +20,8 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 		_thumbnailQuery = thumbnailQuery;
 	}
 
-	public async Task UpdateStatusAsync(List<GenerationResultModel> generationResults)
+	public async Task<List<ThumbnailResultDataTransferModel>> UpdateStatusAsync(
+		List<GenerationResultModel> generationResults)
 	{
 		// in the next step only the fileHash is included
 		var dtoObjects = generationResults
@@ -41,5 +42,6 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 		}
 
 		await _thumbnailQuery.AddThumbnailRangeAsync(dtoObjects);
+		return dtoObjects;
 	}
 }

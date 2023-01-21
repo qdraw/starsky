@@ -19,9 +19,9 @@ using starsky.foundation.worker.ThumbnailServices.Interfaces;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.thumbnail.Services;
 
-[Service(typeof(IThumbnailGenerationService),
+[Service(typeof(IManualThumbnailGenerationService),
 	InjectionLifetime = InjectionLifetime.Scoped)]
-public class ThumbnailGenerationService : IThumbnailGenerationService
+public class ManualThumbnailGenerationService : IManualThumbnailGenerationService
 {
 	private readonly IWebLogger _logger;
 	private readonly IQuery _query;
@@ -29,7 +29,7 @@ public class ThumbnailGenerationService : IThumbnailGenerationService
 	private readonly IThumbnailService _thumbnailService;
 	private readonly IThumbnailQueuedHostedService _bgTaskQueue;
 	
-	public ThumbnailGenerationService(IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService, 
+	public ManualThumbnailGenerationService(IQuery query, IWebLogger logger, IWebSocketConnectionsService connectionsService, 
 		IThumbnailService thumbnailService, 
 		IThumbnailQueuedHostedService bgTaskQueue)
 	{
@@ -40,7 +40,7 @@ public class ThumbnailGenerationService : IThumbnailGenerationService
 		_bgTaskQueue = bgTaskQueue;	
 	}
 
-	public async Task BgQueue(string subPath)
+	public async Task ManualBackgroundQueue(string subPath)
 	{
 		// When the CPU is to high its gives a Error 500
 		await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>

@@ -14,7 +14,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 {
 
 	[TestClass]
-	public class ThumbnailGenerationServiceTest
+	public class ManualThumbnailGenerationServiceTest
 	{
 	
 		[TestMethod]
@@ -24,7 +24,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 				new List<byte[]> {CreateAnImage.Bytes});
 			
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ThumbnailGenerationService( new FakeIQuery(
+			var controller = new ManualThumbnailGenerationService( new FakeIQuery(
 				new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
 			), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
 
@@ -45,7 +45,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 			
 			var socket = new FakeIWebSocketConnectionsService();
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ThumbnailGenerationService(new FakeIQuery(
+			var controller = new ManualThumbnailGenerationService(new FakeIQuery(
 				new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
 			), new FakeIWebLogger(), socket, new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
 
@@ -62,7 +62,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 
 			var socket = new FakeIWebSocketConnectionsService();
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ThumbnailGenerationService( new FakeIQuery(
+			var controller = new ManualThumbnailGenerationService( new FakeIQuery(
 				new List<FileIndexItem>()), new FakeIWebLogger(), socket, new FakeIThumbnailService(), new FakeThumbnailBackgroundTaskQueue());
 
 			await controller.WorkThumbnailGeneration("/");
@@ -79,7 +79,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var webLogger = new FakeIWebLogger();
-			var controller = new ThumbnailGenerationService(new FakeIQuery(), 
+			var controller = new ManualThumbnailGenerationService(new FakeIQuery(), 
 				webLogger, new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(null,
 					new UnauthorizedAccessException(message)), new FakeThumbnailBackgroundTaskQueue());
 			
@@ -91,7 +91,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 		[TestMethod]
 		public void WhichFilesNeedToBePushedForUpdate_NothingToUpdate()
 		{
-			var result = ThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
+			var result = ManualThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
 				new List<GenerationResultModel>(), new List<FileIndexItem>());
 			Assert.AreEqual(0, result.Count);
 		}
@@ -100,7 +100,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 		[TestMethod]
 		public void WhichFilesNeedToBePushedForUpdate_DoesNotExistInFilesList()
 		{
-			var result = ThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
+			var result = ManualThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
 				new List<GenerationResultModel>
 				{
 					new GenerationResultModel{SubPath = "/test.jpg", Success = true}
@@ -112,7 +112,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 		[TestMethod]
 		public void WhichFilesNeedToBePushedForUpdate_DeletedSoIgnored()
 		{
-			var result = ThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
+			var result = ManualThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
 				new List<GenerationResultModel>
 				{
 					new GenerationResultModel{SubPath = "/test.jpg", Success = true}
@@ -128,7 +128,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 		[TestMethod]
 		public void WhichFilesNeedToBePushedForUpdate_ShouldMap()
 		{
-			var result = ThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
+			var result = ManualThumbnailGenerationService.WhichFilesNeedToBePushedForUpdates(
 				new List<GenerationResultModel>
 				{
 					new GenerationResultModel{SubPath = "/test.jpg", Success = true}

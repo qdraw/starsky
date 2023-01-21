@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace starsky.feature.thumbnail.Interfaces;
 
-public interface IThumbnailGenerationService
+public interface IDatabaseThumbnailGenerationService
 {
-	Task BgQueue(string subPath);
+	Task StartBackgroundQueue();
 }

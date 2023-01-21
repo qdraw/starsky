@@ -51,7 +51,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	private static async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
 		ApplicationDbContext dbContext, 
-		List<ThumbnailResultDataTransferModel> thumbnailItems)
+		IReadOnlyCollection<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
 		if ( !thumbnailItems.Any() )
 		{
@@ -138,6 +138,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		await _context.SaveChangesAsync();
 		
 		return true;
+	}
+
+	public async Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails()
+	{
+		return await _context.Thumbnails.Where(p => p.ExtraLarge == null || p.Large == null || p.Small == null).ToListAsync();
 	}
 
 	/// <summary>

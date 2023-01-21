@@ -94,4 +94,9 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 		_content[index].FileHash = newFileHash;
 		return Task.FromResult(true);
 	}
+
+	public Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails()
+	{
+		throw new System.NotImplementedException();
+	}
 }
