@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.syncbackground.Helpers;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.settings.Interfaces;
@@ -35,7 +36,8 @@ namespace starsky.feature.syncbackground.Services
 			var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 			var synchronize = scope.ServiceProvider.GetRequiredService<ISynchronize>();
 			var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
-			await new OnStartupSync(_serviceScopeFactory, appSettings, synchronize, settingsService).StartUpSync();
+			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
+			await new OnStartupSync(_serviceScopeFactory, appSettings, synchronize, settingsService, logger).StartUpSync();
 		}
 
 	}

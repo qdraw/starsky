@@ -17,7 +17,7 @@ namespace starsky.feature.thumbnail.Services;
 /// </summary>
 [Service(typeof(IHostedService),
 	InjectionLifetime = InjectionLifetime.Singleton)]
-public class PeriodicThumbnailScanHostedService : IHostedService
+public class PeriodicThumbnailScanHostedService : BackgroundService
 {
 	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _factory;
@@ -34,7 +34,7 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 		_logger = logger;
 		_factory = factory;
 		
-		if ( appSettings.ThumbnailGenerationIntervalInMinutes is >= 1 )
+		if ( appSettings.ThumbnailGenerationIntervalInMinutes is >= 2 )
 		{
 			Period = TimeSpan.FromMinutes(appSettings
 				.ThumbnailGenerationIntervalInMinutes.Value);
@@ -46,7 +46,12 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 	}
 
 
-	public async Task StartAsync(CancellationToken cancellationToken)
+	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+	{
+		await StartBackgroundAsync(stoppingToken);
+	}
+
+	internal async Task StartBackgroundAsync(CancellationToken cancellationToken)
 	{
 		using var timer = new PeriodicTimer(Period);
 		while (
@@ -75,11 +80,5 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 					$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} with exception message {ex.Message}. Good luck next round!");
 			}
 		}
-	}
-
-	public Task StopAsync(CancellationToken cancellationToken)
-	{
-		IsEnabled = false;
-		return Task.CompletedTask;
 	}
 }

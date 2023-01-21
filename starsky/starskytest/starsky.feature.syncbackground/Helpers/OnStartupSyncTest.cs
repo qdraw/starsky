@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.realtime.Interface;
 using starsky.feature.syncbackground.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.settings.Enums;
@@ -28,6 +28,8 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			services.AddSingleton<AppSettings>();
 			services.AddSingleton<ISynchronize, FakeISynchronize>();
 			services.AddSingleton<ISettingsService, FakeISettingsService>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
@@ -39,7 +41,9 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
 			var synchronize = scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
 			var settingsService = scope.CreateScope().ServiceProvider.GetRequiredService<ISettingsService>();
-			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService);
+			var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
+
+			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService,logger);
 			await startupSync.StartUpSync();
 
 			var setting = await settingsService.GetSetting<DateTime>(SettingsType
@@ -58,8 +62,10 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			var appSettings = scope.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
 			var synchronize = scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
 			var settingsService = scope.CreateScope().ServiceProvider.GetRequiredService<ISettingsService>();
+			var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
+
 			appSettings.SyncOnStartup = false;
-			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService);
+			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService,logger);
 			await startupSync.StartUpSync();
 
 			var setting = await settingsService.GetSetting<DateTime>(SettingsType
@@ -80,9 +86,9 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			var synchronize = scope.CreateScope().ServiceProvider.GetRequiredService<ISynchronize>();
 			var settingsService = scope.CreateScope().ServiceProvider.GetRequiredService<ISettingsService>();
 			var socketService = scope.CreateScope().ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
-			var notificationQuery = scope.CreateScope().ServiceProvider.GetRequiredService<INotificationQuery>();
+			var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 
-			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService);
+			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService,logger);
 			await startupSync.PushToSockets(new List<FileIndexItem>());
 			var result =
 				( socketService as

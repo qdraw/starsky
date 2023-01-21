@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.settings.Enums;
@@ -20,6 +21,7 @@ public class OnStartupSync
 {
 	private readonly ISynchronize _synchronize;
 	private readonly ISettingsService _settingsService;
+	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _serviceScopeFactory;
 	private readonly AppSettings _appSettings;
 
@@ -30,13 +32,15 @@ public class OnStartupSync
 	/// <param name="appSettings"></param>
 	/// <param name="synchronize"></param>
 	/// <param name="settingsService"></param>
+	/// <param name="logger"></param>
 	public OnStartupSync(IServiceScopeFactory serviceScopeFactory, AppSettings appSettings,
-		ISynchronize synchronize, ISettingsService settingsService)
+		ISynchronize synchronize, ISettingsService settingsService, IWebLogger logger)
 	{
 		_serviceScopeFactory = serviceScopeFactory;
 		_appSettings = appSettings;
 		_synchronize = synchronize;
 		_settingsService = settingsService;
+		_logger = logger;
 	}
 
 	public async Task StartUpSync()
@@ -54,6 +58,8 @@ public class OnStartupSync
 		await _settingsService.AddOrUpdateSetting(
 			SettingsType.LastSyncBackgroundDateTime,
 			DateTime.UtcNow.ToString(SettingsFormats.LastSyncBackgroundDateTime, CultureInfo.InvariantCulture));
+		
+		_logger.LogInformation("Sync on startup done");
 	}
 	
 	internal async Task PushToSockets(List<FileIndexItem> updatedList)

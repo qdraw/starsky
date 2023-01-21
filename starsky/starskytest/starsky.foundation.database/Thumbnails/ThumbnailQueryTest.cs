@@ -27,11 +27,12 @@ public class ThumbnailQueryTest
 		_thumbnailQuery = new ThumbnailQuery(_context, serviceScope);
 	}
 
-	private static IServiceScopeFactory CreateNewScope()
+	private static IServiceScopeFactory CreateNewScope(string? name = null)
 	{
+		name ??= nameof(ThumbnailQueryTest);
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options =>
-			options.UseInMemoryDatabase(nameof(ThumbnailQueryTest)));
+			options.UseInMemoryDatabase(name));
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
@@ -595,5 +596,50 @@ public class ThumbnailQueryTest
 		
 		var getter2 = await query.Get("357484875");
 		Assert.AreEqual(1,getter2.Count);
+	}
+
+
+	[TestMethod]
+	public async Task UnprocessedGeneratedThumbnails_EmptyDb()
+	{
+		var serviceScope = CreateNewScope("UnprocessedGeneratedThumbnails1");
+		var context = serviceScope.CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		
+		var query = new ThumbnailQuery(context, null!);
+		var result = await query.UnprocessedGeneratedThumbnails();
+		Assert.AreEqual(0,result.Count);
+	}
+	
+	[TestMethod]
+	public async Task UnprocessedGeneratedThumbnails_OneResult()
+	{
+		var serviceScope = CreateNewScope("UnprocessedGeneratedThumbnails2");
+		var context = serviceScope.CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		
+		context.Thumbnails.Add(new ThumbnailItem("123", null, true, null, null));
+		await context.SaveChangesAsync();
+		
+		var query = new ThumbnailQuery(context, null!);
+		var result = await query.UnprocessedGeneratedThumbnails();
+		Assert.AreEqual(1,result.Count);
+	}
+	
+	[TestMethod]
+	public async Task UnprocessedGeneratedThumbnails_OneResultOfTwo()
+	{
+		var serviceScope = CreateNewScope("UnprocessedGeneratedThumbnails3");
+		var context = serviceScope.CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		
+		context.Thumbnails.Add(new ThumbnailItem("1234", null, true, null, null));
+		context.Thumbnails.Add(new ThumbnailItem("12355", null, true, true, true));
+
+		await context.SaveChangesAsync();
+		
+		var query = new ThumbnailQuery(context, null!);
+		var result = await query.UnprocessedGeneratedThumbnails();
+		Assert.AreEqual(1,result.Count);
 	}
 }

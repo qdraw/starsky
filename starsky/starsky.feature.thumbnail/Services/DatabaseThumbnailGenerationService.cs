@@ -11,7 +11,6 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
-using starsky.foundation.realtime.Model;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.worker.ThumbnailServices.Interfaces;
 
@@ -73,6 +72,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			fileIndexItem.SetLastEdited();
 		}
 		
+		_logger.LogInformation("DatabaseThumbnailGenerationService: WorkThumbnailGeneration done");
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(fileIndexItems, ApiNotificationType.ThumbnailGeneration);
 		await _connectionsService.SendToAllAsync(webSocketResponse,
