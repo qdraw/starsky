@@ -16,6 +16,8 @@ namespace starsky.foundation.database.Query
 		
 		public async Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
 		{
+			if ( !fileHashesList.Any() ) return new List<FileIndexItem>();
+			
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{
 				var result = await context.

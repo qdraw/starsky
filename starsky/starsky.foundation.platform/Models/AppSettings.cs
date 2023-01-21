@@ -789,7 +789,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Background Task to run when the CPU is not busy
 		/// </summary>
-		public int? ThumbnailGenerationIntervalInMinutes { get; set; } = 1;
+		public int? ThumbnailGenerationIntervalInMinutes { get; set; } = 15;
 
 		/// <returns>AppSettings duplicated</returns>
 		/// <summary>

@@ -145,6 +145,27 @@ public class ThumbnailQuery : IThumbnailQuery
 		return await _context.Thumbnails.Where(p => p.ExtraLarge == null || p.Large == null || p.Small == null).ToListAsync();
 	}
 
+	public async Task<bool> UpdateAsync(ThumbnailItem item)
+	{
+		try
+		{
+			return await UpdateInternalAsync(_context, item);
+		}
+		// InvalidOperationException can also be disposed
+		catch (InvalidOperationException)
+		{
+			if ( _scopeFactory == null ) throw;
+			return await UpdateInternalAsync(new InjectServiceScope(_scopeFactory).Context(), item);
+		}
+	}
+
+	internal static async Task<bool> UpdateInternalAsync(ApplicationDbContext dbContext, ThumbnailItem item)
+	{
+		dbContext.Thumbnails.Update(item);
+		await dbContext.SaveChangesAsync();
+		return true;
+	}
+
 	/// <summary>
 	/// Check for Duplicates in the database
 	/// </summary>

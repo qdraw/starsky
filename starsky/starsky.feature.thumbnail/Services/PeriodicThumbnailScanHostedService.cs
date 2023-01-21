@@ -53,32 +53,40 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 	internal async Task StartBackgroundAsync(CancellationToken cancellationToken)
 	{
+#if (DEBUG)
+		await RunJob();
+#endif
+		
 		using var timer = new PeriodicTimer(Period);
 		while (
 			!cancellationToken.IsCancellationRequested &&
 			await timer.WaitForNextTickAsync(cancellationToken))
 		{
-			if (! IsEnabled )
-			{
-				_logger.LogInformation(
-					$"Skipped {nameof(PeriodicThumbnailScanHostedService)}");
-				continue;
-			}
-			
-			try
-			{
-				await using AsyncServiceScope asyncScope = _factory.CreateAsyncScope();
-				var service = asyncScope.ServiceProvider.GetRequiredService<IDatabaseThumbnailGenerationService>();
-				await service.StartBackgroundQueue(); 
-				_executionCount++;
-				_logger.LogInformation(
-					$"Executed {nameof(PeriodicThumbnailScanHostedService)} - Count: {_executionCount}");
-			}
-			catch (Exception ex)
-			{
-				_logger.LogInformation(
-					$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} with exception message {ex.Message}. Good luck next round!");
-			}
+			await RunJob();
+		}
+	}
+
+	internal async Task RunJob()
+	{
+		if (! IsEnabled )
+		{
+			_logger.LogInformation(
+				$"Skipped {nameof(PeriodicThumbnailScanHostedService)}");
+			return;
+		}
+		try
+		{
+			await using var asyncScope = _factory.CreateAsyncScope();
+			var service = asyncScope.ServiceProvider.GetRequiredService<IDatabaseThumbnailGenerationService>();
+			await service.StartBackgroundQueue(); 
+			_executionCount++;
+			_logger.LogInformation(
+				$"Executed {nameof(PeriodicThumbnailScanHostedService)} - Count: {_executionCount}");
+		}
+		catch (Exception ex)
+		{
+			_logger.LogInformation(
+				$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} with exception message {ex.Message}. Good luck next round!");
 		}
 	}
 }
