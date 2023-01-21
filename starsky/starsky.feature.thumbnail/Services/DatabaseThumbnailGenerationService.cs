@@ -52,13 +52,13 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			// When the CPU is to high its gives a Error 500
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				await WorkThumbnailGeneration(chuckedItems, queryItems);
+				await WorkThumbnailGeneration(chuckedItems.ToList(), queryItems);
 			}, "DatabaseThumbnailGenerationService");
 		}
 	}
 
-	internal async Task WorkThumbnailGeneration(
-		IEnumerable<ThumbnailItem> chuckedItems,
+	internal async Task<IEnumerable<ThumbnailItem>> WorkThumbnailGeneration(
+		List<ThumbnailItem> chuckedItems,
 		List<FileIndexItem> fileIndexItems)
 	{
 		foreach ( var item in chuckedItems )
@@ -89,6 +89,8 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filteredData, ApiNotificationType.ThumbnailGeneration);
 		await _connectionsService.SendToAllAsync(webSocketResponse,
 			new CancellationToken());
+		
+		return chuckedItems;
 	}
 }
 
