@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,8 +25,9 @@ public class DatabaseThumbnailGenerationServiceTest
 			bgTaskQueue,
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())
 		);
-		
-		await databaseThumbnailGenerationService.StartBackgroundQueue();
+
+		await databaseThumbnailGenerationService.StartBackgroundQueue(
+			DateTime.UtcNow, TimeSpan.FromMinutes(1));
 		
 		Assert.AreEqual(0,bgTaskQueue.Count());
 	}
@@ -47,7 +49,8 @@ public class DatabaseThumbnailGenerationServiceTest
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())
 		);
 		
-		await databaseThumbnailGenerationService.StartBackgroundQueue();
+		await databaseThumbnailGenerationService.StartBackgroundQueue(
+			DateTime.UtcNow, TimeSpan.FromMinutes(1));
 		
 		Assert.AreEqual(1,bgTaskQueue.Count());
 	}

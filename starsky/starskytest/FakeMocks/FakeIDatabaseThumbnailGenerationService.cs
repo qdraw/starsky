@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using starsky.feature.thumbnail.Interfaces;
 
@@ -7,7 +8,7 @@ public class FakeIDatabaseThumbnailGenerationService : IDatabaseThumbnailGenerat
 {
 	public int Count { get; set; }
 
-	public Task StartBackgroundQueue()
+	public Task StartBackgroundQueue(DateTime startTime, TimeSpan timeout)
 	{
 		Count++;
 		return Task.CompletedTask;
