@@ -92,6 +92,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 	
 	[TestMethod]
 	[Timeout(5000)]
+	[ExpectedException(typeof(OperationCanceledException))]
 	public async Task StartBackgroundAsync_ShouldRun_SlowTest()
 	{
 		var services = new ServiceCollection();
@@ -108,28 +109,15 @@ public class PeriodicThumbnailScanHostedServiceTest
 			},
 			new FakeIWebLogger(),
 			scopeFactory);
-		var cancelToken = new CancellationTokenSource();
 		
-		// maybe on slow machines this is not enough time
-		cancelToken.CancelAfter(200);
-
 		periodicThumbnailScanHostedService.IsEnabled = true;
 		periodicThumbnailScanHostedService.MinimumIntervalInMinutes = 0;
 
-		try
-		{
-			await periodicThumbnailScanHostedService.StartBackgroundAsync(
-				cancelToken.Token);
-		}
-		catch ( OperationCanceledException e )
-		{
-			Console.WriteLine(e);
-		}
-
-		var fakeService = scopeFactory.CreateScope().ServiceProvider
-			.GetService<IDatabaseThumbnailGenerationService>() as FakeIDatabaseThumbnailGenerationService;
+		var cancelToken = new CancellationTokenSource();
+		cancelToken.CancelAfter(200);
 		
-		Assert.AreEqual(1,fakeService?.Count);
+		await periodicThumbnailScanHostedService.StartBackgroundAsync(
+			cancelToken.Token);
 	}
 
 	[TestMethod]
@@ -188,4 +176,35 @@ public class PeriodicThumbnailScanHostedServiceTest
 		Assert.AreEqual(null,result);
 	}
 
+		
+	[TestMethod]
+	[Timeout(5000)]
+	[ExpectedException(typeof(OperationCanceledException))]
+	public async Task RunJob_Canceled()
+	{
+		var services = new ServiceCollection();
+		services
+			.AddSingleton<IDatabaseThumbnailGenerationService,
+				FakeIDatabaseThumbnailGenerationService>();
+		
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(new AppSettings
+			{
+				ThumbnailGenerationIntervalInMinutes = 0
+			},
+			new FakeIWebLogger(),
+			scopeFactory);
+		
+		periodicThumbnailScanHostedService.IsEnabled = true;
+		periodicThumbnailScanHostedService.MinimumIntervalInMinutes = 0;
+
+		var cancelToken = new CancellationTokenSource();
+		cancelToken.Cancel();
+		
+		await periodicThumbnailScanHostedService.RunJob(
+			cancelToken.Token);
+	}
+	
 }

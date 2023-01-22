@@ -55,21 +55,19 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 	internal async Task StartBackgroundAsync(CancellationToken cancellationToken)
 	{
-#if (DEBUG)
-		await RunJob();
-#endif
-		
 		using var timer = new PeriodicTimer(Period);
 		while (
 			!cancellationToken.IsCancellationRequested &&
 			await timer.WaitForNextTickAsync(cancellationToken))
 		{
-			await RunJob();
+			await RunJob(cancellationToken);
 		}
 	}
 
-	internal async Task<bool?> RunJob()
+	internal async Task<bool?> RunJob(CancellationToken cancellationToken = default)
 	{
+		cancellationToken.ThrowIfCancellationRequested();
+		
 		if (! IsEnabled )
 		{
 			_logger.LogInformation(
