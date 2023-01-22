@@ -5124,137 +5124,6 @@
       "parameters": [],
       "extensions": {}
     },
-    "/api/import/thumbnail": {
-      "operations": {
-        "Post": {
-          "tags": [
-            {
-              "name": "Import",
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          ],
-          "summary": "Upload thumbnail to ThumbnailTempFolder\r\nMake sure that the filename is correct, a base32 hash of length 26;\r\nOverwrite if the Id is the same\r\nAlso known as Thumbnail Upload or Thumbnail Import",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": "done",
-              "headers": {},
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "readOnly": false,
-                    "writeOnly": false,
-                    "allOf": [],
-                    "oneOf": [],
-                    "anyOf": [],
-                    "required": [],
-                    "items": {
-                      "readOnly": false,
-                      "writeOnly": false,
-                      "allOf": [],
-                      "oneOf": [],
-                      "anyOf": [],
-                      "required": [],
-                      "properties": {},
-                      "additionalPropertiesAllowed": true,
-                      "enum": [],
-                      "nullable": false,
-                      "deprecated": false,
-                      "extensions": {},
-                      "unresolvedReference": false,
-                      "reference": {
-                        "type": 0,
-                        "id": "ImportIndexItem",
-                        "isExternal": false,
-                        "isLocal": true,
-                        "referenceV3": "#/components/schemas/ImportIndexItem",
-                        "referenceV2": "#/definitions/ImportIndexItem"
-                      }
-                    },
-                    "properties": {},
-                    "additionalPropertiesAllowed": true,
-                    "enum": [],
-                    "nullable": false,
-                    "deprecated": false,
-                    "extensions": {},
-                    "unresolvedReference": false
-                  },
-                  "examples": {},
-                  "encoding": {},
-                  "extensions": {}
-                }
-              },
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            },
-            "415": {
-              "description": "Wrong input (e.g. wrong extenstion type)",
-              "headers": {},
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "readOnly": false,
-                    "writeOnly": false,
-                    "allOf": [],
-                    "oneOf": [],
-                    "anyOf": [],
-                    "required": [],
-                    "items": {
-                      "readOnly": false,
-                      "writeOnly": false,
-                      "allOf": [],
-                      "oneOf": [],
-                      "anyOf": [],
-                      "required": [],
-                      "properties": {},
-                      "additionalPropertiesAllowed": true,
-                      "enum": [],
-                      "nullable": false,
-                      "deprecated": false,
-                      "extensions": {},
-                      "unresolvedReference": false,
-                      "reference": {
-                        "type": 0,
-                        "id": "ImportIndexItem",
-                        "isExternal": false,
-                        "isLocal": true,
-                        "referenceV3": "#/components/schemas/ImportIndexItem",
-                        "referenceV2": "#/definitions/ImportIndexItem"
-                      }
-                    },
-                    "properties": {},
-                    "additionalPropertiesAllowed": true,
-                    "enum": [],
-                    "nullable": false,
-                    "deprecated": false,
-                    "extensions": {},
-                    "unresolvedReference": false
-                  },
-                  "examples": {},
-                  "encoding": {},
-                  "extensions": {}
-                }
-              },
-              "links": {},
-              "extensions": {},
-              "unresolvedReference": false
-            }
-          },
-          "callbacks": {},
-          "deprecated": false,
-          "security": [],
-          "servers": [],
-          "extensions": {}
-        }
-      },
-      "servers": [],
-      "parameters": [],
-      "extensions": {}
-    },
     "/api/import/fromUrl": {
       "operations": {
         "Post": {
@@ -5500,6 +5369,137 @@
           "responses": {
             "200": {
               "description": "done",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "type": 0,
+                        "id": "ImportIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/ImportIndexItem",
+                        "referenceV2": "#/definitions/ImportIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {}
+    },
+    "/api/import/thumbnail": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "ImportThumbnail",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Upload thumbnail to ThumbnailTempFolder\r\nMake sure that the filename is correct, a base32 hash of length 26;\r\nOverwrite if the Id is the same\r\nAlso known as Thumbnail Upload or Thumbnail Import",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "done",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "type": 0,
+                        "id": "ImportIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/ImportIndexItem",
+                        "referenceV2": "#/definitions/ImportIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "415": {
+              "description": "Wrong input (e.g. wrong extenstion type)",
               "headers": {},
               "content": {
                 "application/json": {
@@ -11539,6 +11539,23 @@
             "additionalPropertiesAllowed": true,
             "enum": [],
             "nullable": false,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "thumbnailGenerationIntervalInMinutes": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
             "deprecated": false,
             "extensions": {},
             "unresolvedReference": false
