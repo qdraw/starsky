@@ -64,7 +64,8 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		foreach ( var item in chuckedItems )
 		{
 			var fileIndexItem = fileIndexItems.FirstOrDefault(p => p.FileHash == item.FileHash);
-			if ( fileIndexItem is {FilePath: null, Status: FileIndexItem.ExifStatus.Ok} )
+			if ( fileIndexItem?.FilePath == null || 
+			     fileIndexItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
 				// when null set to false
 				item.Small ??= false;

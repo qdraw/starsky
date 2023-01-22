@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using starsky.foundation.injection;
@@ -6,6 +7,8 @@ using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.platform.Services
 {
+	[SuppressMessage("Usage", "CA2254:The logging message template should not vary between calls to " +
+	                          "'LoggerExtensions.LogInformation(ILogger, string?, params object?[])'")]
 	[Service(typeof(IWebLogger), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class WebLogger : IWebLogger
 	{

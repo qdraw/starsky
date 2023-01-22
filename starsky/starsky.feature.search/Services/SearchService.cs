@@ -268,7 +268,6 @@ namespace starsky.feature.search.Services
 						    predicates.Add(x => x.ColorClass == castColorClass);
 					    }
 					    break;
-				    case SearchViewModel.SearchInTypes.tags:
 				    default:
 					    var tags = model.SearchFor[i];
 					    predicates.Add(x => x.Tags!.ToLower().Contains(tags));

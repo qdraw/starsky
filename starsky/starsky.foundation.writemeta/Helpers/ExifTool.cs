@@ -74,13 +74,13 @@ namespace starsky.foundation.writemeta.Helpers
 		
 		[SuppressMessage("ReSharper", "MustUseReturnValue")]
 		internal async Task<string> RenameThumbnailByStream(
-			string beforeFileHash, Stream stream, bool isSuccess)
+			string beforeFileHash, Stream stream, bool isSuccess, CancellationToken cancellationToken = default)
 		{
 			if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess ) return string.Empty;
 			byte[] buffer = new byte[FileHash.MaxReadSize];
-			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize, CancellationToken.None);
+			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize, cancellationToken);
 			
-			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer), new CancellationToken(false));
+			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer), cancellationToken);
 			if ( string.IsNullOrEmpty(newHashCode)) return string.Empty;
 
 			if ( beforeFileHash == newHashCode ) return newHashCode;
