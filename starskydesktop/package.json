@@ -51,7 +51,8 @@
           "target": "dmg",
           "arch": "x64"
         }
-      ]
+      ],
+      "publish": []
     },
     "win": {
       "target": [
@@ -60,7 +61,8 @@
           "arch": "x64"
         }
       ],
-      "icon": "src/setup/icons/baseline-searcher-detective-263238__256px.ico"
+      "icon": "src/setup/icons/baseline-searcher-detective-263238__256px.ico",
+      "publish": []
     },
     "linux": {
       "target": [
@@ -69,7 +71,8 @@
           "arch": "x64"
         }
       ],
-      "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns"
+      "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns",
+      "publish": []
     },
     "nsis": {
       "oneClick": false,

@@ -151,6 +151,42 @@ else
     echo "Skip: remove cypress cache. -> "$HOME"/Library/Caches/Cypress"
 fi
 
+echo "Next clean electron builder cache"
+
+# https://github.com/electron/get#cache-location
+if [ -d $HOME"/.cache/electron" ] 
+then
+    echo "Remove electron cache [linux] -> "$HOME"/.cache/electron"
+    rm -rf $HOME"/.cache/electron"
+    mkdir -p $HOME"/.cache/electron"
+else
+    echo "Skip: remove electron cache [linux] -> "$HOME"/.cache/electron"
+fi
+
+if [ -d $HOME"/Library/Caches/electron" ] 
+then
+    echo "Remove electron cache [macOS] -> "$HOME"/Library/Caches/electron"
+    rm -rf $HOME"/Library/Caches/electron"
+    mkdir -p $HOME"/Library/Caches/electron"
+else
+    echo "Skip: remove electron cache [macOS]. -> "$HOME"/Library/Caches/electron"
+fi
+
+
+# not used in the project
+if command -v yarn &> /dev/null
+then
+    echo "clean yarn [not used in project]"
+    yarn cache clean
+fi
+
+# not used in the project
+if command -v pnpm &> /dev/null
+then
+    echo "clean pnpm [not used in project]"
+    pnpm store prune
+fi
+
 # Docker cache clean
 
 if ! command -v docker &> /dev/null
