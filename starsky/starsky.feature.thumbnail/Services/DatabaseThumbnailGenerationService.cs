@@ -74,8 +74,8 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 				continue;
 			}
 			
-			var generationResultModels = await _thumbnailService.CreateThumbnailAsync(fileIndexItem
-				.FilePath);
+			var generationResultModels = await _thumbnailService.CreateThumbnailAsync(fileIndexItem!
+				.FilePath!);
 			await _updateStatusGeneratedThumbnailService.UpdateStatusAsync(
 				generationResultModels);
 			fileIndexItem.SetLastEdited();
@@ -87,7 +87,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		if ( !filteredData.Any() ) return chuckedItems;
 		
 		_logger.LogInformation("DatabaseThumbnailGenerationService: done " +
-		                       $" {filteredData.Count} items {string.Join(",",filteredData.Select(p => p.FilePath).ToList())}");
+		                       $" {filteredData.Count} items: {string.Join(",",filteredData.Select(p => p.FilePath).ToList())}");
 
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filteredData, ApiNotificationType.ThumbnailGeneration);
