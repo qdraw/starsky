@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -85,9 +86,13 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		var filteredData = fileIndexItems
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
 
-		if ( !filteredData.Any() ) return chuckedItems;
+		if ( !filteredData.Any() )
+		{
+			_logger.LogInformation($"[DatabaseThumbnailGenerationService] no items ({DateTime.UtcNow:HH:mm:ss})");
+			return chuckedItems;
+		}
 		
-		_logger.LogInformation("DatabaseThumbnailGenerationService: done " +
+		_logger.LogInformation($"[DatabaseThumbnailGenerationService] done ({DateTime.UtcNow:HH:mm:ss})" +
 		                       $" {filteredData.Count} items: {string.Join(",",filteredData.Select(p => p.FilePath).ToList())}");
 
 		var webSocketResponse =
