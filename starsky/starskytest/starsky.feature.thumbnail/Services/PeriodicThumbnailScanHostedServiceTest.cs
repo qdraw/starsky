@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -207,4 +208,38 @@ public class PeriodicThumbnailScanHostedServiceTest
 			cancelToken.Token);
 	}
 	
+	[TestMethod]
+	[Timeout(300)]
+	public void ExecuteAsync_StartAsync_Test()
+	{
+		var services = new ServiceCollection();
+		// missing service in service scope
+		
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		var logger = new FakeIWebLogger();
+		var service = new PeriodicThumbnailScanHostedService(new AppSettings
+			{
+				ThumbnailGenerationIntervalInMinutes = 0
+			},
+			logger,
+			scopeFactory);
+			
+		CancellationTokenSource source = new CancellationTokenSource();
+		CancellationToken token = source.Token;
+		source.Cancel(); // <- cancel before start
+
+		MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
+			BindingFlags.NonPublic | BindingFlags.Instance);
+		if ( dynMethod == null )
+			throw new Exception("missing ExecuteAsync");
+		dynMethod.Invoke(service, new object[]
+		{
+			token
+		});
+			
+		Assert.IsTrue(!logger.TrackedInformation.Any());
+		Assert.IsTrue(!logger.TrackedExceptions.Any());
+
+	}
 }
