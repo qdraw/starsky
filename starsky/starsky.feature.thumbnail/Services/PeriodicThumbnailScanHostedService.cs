@@ -24,8 +24,10 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 	private int _executionCount = 0;
 
 	internal TimeSpan Period { get; set; }
+
+	internal int MinimumIntervalInMinutes { get; set; } = 2;
 	
-	private bool IsEnabled { get; set; }
+	internal bool IsEnabled { get; set; }
 	
 	public PeriodicThumbnailScanHostedService(AppSettings appSettings,
 		IWebLogger logger, 
@@ -34,7 +36,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		_logger = logger;
 		_factory = factory;
 		
-		if ( appSettings.ThumbnailGenerationIntervalInMinutes is >= 2 )
+		if ( appSettings.ThumbnailGenerationIntervalInMinutes >= MinimumIntervalInMinutes )
 		{
 			Period = TimeSpan.FromMinutes(appSettings
 				.ThumbnailGenerationIntervalInMinutes.Value);
