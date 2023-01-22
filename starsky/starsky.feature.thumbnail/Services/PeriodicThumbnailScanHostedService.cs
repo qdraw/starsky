@@ -68,13 +68,13 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		}
 	}
 
-	internal async Task RunJob()
+	internal async Task<bool?> RunJob()
 	{
 		if (! IsEnabled )
 		{
 			_logger.LogInformation(
 				$"Skipped {nameof(PeriodicThumbnailScanHostedService)}");
-			return;
+			return false;
 		}
 		try
 		{
@@ -84,11 +84,13 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 			_executionCount++;
 			_logger.LogInformation(
 				$"Executed {nameof(PeriodicThumbnailScanHostedService)} - Count: {_executionCount}");
+			return true;
 		}
 		catch (Exception ex)
 		{
 			_logger.LogInformation(
 				$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} with exception message {ex.Message}. Good luck next round!");
 		}
+		return null;
 	}
 }

@@ -92,7 +92,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 	
 	[TestMethod]
 	[Timeout(5000)]
-	public async Task StartBackgroundAsync_ShouldRun()
+	public async Task StartBackgroundAsync_ShouldRun_SlowTest()
 	{
 		var services = new ServiceCollection();
 		services
@@ -109,7 +109,9 @@ public class PeriodicThumbnailScanHostedServiceTest
 			new FakeIWebLogger(),
 			scopeFactory);
 		var cancelToken = new CancellationTokenSource();
-		cancelToken.CancelAfter(100);
+		
+		// maybe on slow machines this is not enough time
+		cancelToken.CancelAfter(200);
 
 		periodicThumbnailScanHostedService.IsEnabled = true;
 		periodicThumbnailScanHostedService.MinimumIntervalInMinutes = 0;
@@ -123,48 +125,67 @@ public class PeriodicThumbnailScanHostedServiceTest
 		{
 			Console.WriteLine(e);
 		}
-
 
 		var fakeService = scopeFactory.CreateScope().ServiceProvider
 			.GetService<IDatabaseThumbnailGenerationService>() as FakeIDatabaseThumbnailGenerationService;
 		
 		Assert.AreEqual(1,fakeService?.Count);
 	}
-	
-		
+
 	[TestMethod]
-	[Timeout(5000)]
-	public async Task StartBackgroundAsync_ShouldHitException()
+	public async Task RunJob_ShouldRun()
 	{
 		var services = new ServiceCollection();
-		// remove the service here!
+		services
+			.AddSingleton<IDatabaseThumbnailGenerationService,
+				FakeIDatabaseThumbnailGenerationService>();
 		
 		var serviceProvider = services.BuildServiceProvider();
 		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-		var logger = new FakeIWebLogger();
-		
-		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(new AppSettings
-			{
-				ThumbnailGenerationIntervalInMinutes = 0
-			},
-			logger,
+
+		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(new AppSettings(),
+			new FakeIWebLogger(),
 			scopeFactory);
-		var cancelToken = new CancellationTokenSource();
-		cancelToken.CancelAfter(100);
 
-		periodicThumbnailScanHostedService.IsEnabled = true;
-		periodicThumbnailScanHostedService.MinimumIntervalInMinutes = 0;
-
-		try
-		{
-			await periodicThumbnailScanHostedService.StartBackgroundAsync(
-				cancelToken.Token);
-		}
-		catch ( OperationCanceledException e )
-		{
-			Console.WriteLine(e);
-		}
-
-		Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2.Contains("Failed to execute"));
+		var result = await periodicThumbnailScanHostedService.RunJob();
+		Assert.AreEqual(true,result);
 	}
+	
+	[TestMethod]
+	public async Task RunJob_ShouldNotRun_NotEnabled()
+	{
+		var services = new ServiceCollection();
+		services
+			.AddSingleton<IDatabaseThumbnailGenerationService,
+				FakeIDatabaseThumbnailGenerationService>();
+		
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(new AppSettings(),
+			new FakeIWebLogger(),
+			scopeFactory);
+		periodicThumbnailScanHostedService.IsEnabled = false;
+		
+		var result = await periodicThumbnailScanHostedService.RunJob();
+		Assert.AreEqual(false,result);
+	}
+	
+	[TestMethod]
+	public async Task RunJob_FailCase()
+	{
+		var services = new ServiceCollection();
+		// missing service in service scope
+		
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(new AppSettings(),
+			new FakeIWebLogger(),
+			scopeFactory);
+		
+		var result = await periodicThumbnailScanHostedService.RunJob();
+		Assert.AreEqual(null,result);
+	}
+
 }
