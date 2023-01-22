@@ -53,6 +53,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			// When the CPU is to high its gives a Error 500
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
+				// todo cancel after 15 minutes duration
 				await WorkThumbnailGeneration(chuckedItems.ToList(), queryItems);
 			}, "DatabaseThumbnailGenerationService");
 		}
@@ -62,6 +63,8 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		List<ThumbnailItem> chuckedItems,
 		List<FileIndexItem> fileIndexItems)
 	{
+		var resultData = new List<FileIndexItem>();
+		
 		foreach ( var item in chuckedItems )
 		{
 			var fileIndexItem = fileIndexItems.FirstOrDefault(p => p.FileHash == item.FileHash);
@@ -81,9 +84,10 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			await _updateStatusGeneratedThumbnailService.UpdateStatusAsync(
 				generationResultModels);
 			fileIndexItem.SetLastEdited();
+			resultData.Add(fileIndexItem);
 		}
 		
-		var filteredData = fileIndexItems
+		var filteredData = resultData
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
 
 		if ( !filteredData.Any() )
