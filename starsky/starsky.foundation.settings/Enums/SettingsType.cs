@@ -2,5 +2,6 @@ namespace starsky.foundation.settings.Enums;
 
 public enum SettingsType
 {
-	LastSyncBackgroundDateTime = 1
+	LastSyncBackgroundDateTime = 1,
+	DeviceId = 2,
 }

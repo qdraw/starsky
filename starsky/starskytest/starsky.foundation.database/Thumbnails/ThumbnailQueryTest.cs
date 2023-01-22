@@ -27,11 +27,12 @@ public class ThumbnailQueryTest
 		_thumbnailQuery = new ThumbnailQuery(_context, serviceScope);
 	}
 
-	private static IServiceScopeFactory CreateNewScope()
+	private static IServiceScopeFactory CreateNewScope(string? name = null)
 	{
+		name ??= nameof(ThumbnailQueryTest);
 		var services = new ServiceCollection();
 		services.AddDbContext<ApplicationDbContext>(options =>
-			options.UseInMemoryDatabase(nameof(ThumbnailQueryTest)));
+			options.UseInMemoryDatabase(name));
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
@@ -548,5 +549,203 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(result.updateThumbnailItems.All(x => x.Large == false));
 		Assert.IsTrue(result.updateThumbnailItems.Select(x => x.FileHash)
 			.All(x => new List<string> { "123", "456" }.Contains(x)));
+	}
+	
+	[TestMethod]
+	public async Task RenameAsync_ShouldRename()
+	{
+		// Act
+		var query = new ThumbnailQuery(_context, null!);
+		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
+		{
+			new ThumbnailResultDataTransferModel("3787453", null, true)
+		});	
+
+		// Assert
+		var getter = await query.RenameAsync("3787453","__new__hash__");
+		Assert.AreEqual(true,getter);
+		
+		var getter2 = await query.Get("__new__hash__");
+		Assert.AreEqual(1,getter2.Count);
+	}
+		
+	[TestMethod]
+	public async Task RenameAsync_NotFound()
+	{
+		// Act
+		var query = new ThumbnailQuery(_context, null!);
+
+		// Assert
+		var getter = await query.RenameAsync("not-found","__new__hash__");
+		Assert.AreEqual(false,getter);
+	}
+	
+	[TestMethod]
+	public async Task RenameAsync_ShouldOverwrite()
+	{
+		// Act
+		var query = new ThumbnailQuery(_context, null!);
+		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
+		{
+			new ThumbnailResultDataTransferModel("357484875", null, true)
+		});	
+
+		// Assert
+		var getter = await query.RenameAsync("357484875","357484875");
+		Assert.AreEqual(true,getter);
+		
+		var getter2 = await query.Get("357484875");
+		Assert.AreEqual(1,getter2.Count);
+	}
+
+
+	[TestMethod]
+	public async Task UnprocessedGeneratedThumbnails_EmptyDb()
+	{
+		var serviceScope = CreateNewScope("UnprocessedGeneratedThumbnails1");
+		var context = serviceScope.CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		
+		var query = new ThumbnailQuery(context, null!);
+		var result = await query.UnprocessedGeneratedThumbnails();
+		Assert.AreEqual(0,result.Count);
+	}
+	
+	[TestMethod]
+	public async Task UnprocessedGeneratedThumbnails_OneResult()
+	{
+		var serviceScope = CreateNewScope("UnprocessedGeneratedThumbnails2");
+		var context = serviceScope.CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		
+		context.Thumbnails.Add(new ThumbnailItem("123", null, true, null, null));
+		await context.SaveChangesAsync();
+		
+		var query = new ThumbnailQuery(context, null!);
+		var result = await query.UnprocessedGeneratedThumbnails();
+		Assert.AreEqual(1,result.Count);
+	}
+	
+	[TestMethod]
+	public async Task UnprocessedGeneratedThumbnails_OneResultOfTwo()
+	{
+		var serviceScope = CreateNewScope("UnprocessedGeneratedThumbnails3");
+		var context = serviceScope.CreateScope().ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		
+		context.Thumbnails.Add(new ThumbnailItem("1234", null, true, null, null));
+		context.Thumbnails.Add(new ThumbnailItem("12355", null, true, true, true));
+
+		await context.SaveChangesAsync();
+		
+		var query = new ThumbnailQuery(context, null!);
+		var result = await query.UnprocessedGeneratedThumbnails();
+		Assert.AreEqual(1,result.Count);
+	}
+	
+	[TestMethod]
+	[ExpectedException(typeof(ObjectDisposedException))]
+	public async Task UpdateDatabase_Disposed_NoServiceScope()
+	{
+		// Arrange
+		var data = new ThumbnailItem();
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(databaseName: "Add_writes_to_database11")
+			.Options;
+
+		var dbContext = new ApplicationDbContext(options);
+		var thumbnailQuery =
+			new ThumbnailQuery(dbContext, null); // <-- no service scope
+
+		// And dispose
+		await dbContext.DisposeAsync();
+
+		// Act
+		await thumbnailQuery.UpdateAsync(data);
+		// no service scope so exception
+	}
+	
+	
+	[TestMethod]
+	public async Task UpdateDatabase_Disposed_Success()
+	{
+		// Arrange
+
+		var serviceScope = CreateNewScope();
+		var scope = serviceScope.CreateScope();
+		var dbContext = scope.ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
+
+		dbContext.Thumbnails.Add(new ThumbnailItem() { FileHash = "123wruiweriu", });
+		await dbContext.SaveChangesAsync();
+		var item = dbContext.Thumbnails.FirstOrDefault(p => p.FileHash == "123wruiweriu");
+		
+		// And dispose
+		await dbContext.DisposeAsync();
+
+		item!.Large = true;
+		// Act
+		var result = await thumbnailQuery.UpdateAsync(item!);
+
+		// Assert
+		Assert.IsTrue(result);
+		
+		var item2 = await thumbnailQuery.Get("123wruiweriu");
+		
+		Assert.IsTrue(item2.FirstOrDefault()!.Large);
+	}
+	
+		
+	[TestMethod]
+	[ExpectedException(typeof(ObjectDisposedException))]
+	public async Task Get_Disposed_NoServiceScope()
+	{
+		// Arrange
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(databaseName: "Add_writes_to_database11")
+			.Options;
+
+		var dbContext = new ApplicationDbContext(options);
+		var thumbnailQuery =
+			new ThumbnailQuery(dbContext, null); // <-- no service scope
+
+		// And dispose
+		await dbContext.DisposeAsync();
+
+		// Act
+		await thumbnailQuery.Get("data");
+		// no service scope so exception
+	}
+	
+	[TestMethod]
+	public async Task Get_Disposed_Success()
+	{
+		// Arrange
+
+		var serviceScope = CreateNewScope();
+		var scope = serviceScope.CreateScope();
+		var dbContext = scope.ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
+
+		dbContext.Thumbnails.Add(new ThumbnailItem() { FileHash = "kfjds87423kfs", Large = true});
+		await dbContext.SaveChangesAsync();
+		var item = dbContext.Thumbnails.FirstOrDefault(p => p.FileHash == "kfjds87423kfs");
+		
+		// And dispose
+		await dbContext.DisposeAsync();
+		
+		// Act
+		var result = await thumbnailQuery.UpdateAsync(item!);
+
+		// Assert
+		Assert.IsTrue(result);
+		
+		var item2 = await thumbnailQuery.Get("kfjds87423kfs");
+		
+		Assert.IsTrue(item2.Count == 1);
+		Assert.IsTrue(item2.FirstOrDefault()!.Large);
 	}
 }

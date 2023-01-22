@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.packagetelemetry.Helpers;
 using starsky.feature.packagetelemetry.Interfaces;
 using starsky.feature.packagetelemetry.Services;
 using starsky.foundation.database.Interfaces;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -17,21 +18,21 @@ namespace starsky.foundation.writemeta.Services
 	[Service(typeof(IGeoLocationWrite), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class GeoLocationWrite : IGeoLocationWrite
 	{
-		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
-		private readonly IStorage _iStorage;
-		private readonly IStorage _thumbnailStorage;
 		private readonly IConsole _console;
-		private readonly IWebLogger _logger;
+		private readonly ExifToolCmdHelper _exifToolCmdHelper;
 
-		public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, ISelectorStorage selectorStorage, IConsole console, IWebLogger logger)
+		public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, 
+			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger, IThumbnailQuery thumbnailQuery)
 		{
-			_exifTool = exifTool;
 			_appSettings = appSettings;
-			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			var thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			var iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_console = console;
-			_logger = logger;
+			_exifToolCmdHelper = new ExifToolCmdHelper(exifTool, 
+				iStorage, 
+				thumbnailStorage, 
+				new ReadMeta(iStorage, _appSettings, null, logger),thumbnailQuery);
 		}
 
 		/// <summary>
@@ -42,7 +43,8 @@ namespace starsky.foundation.writemeta.Services
 		public async Task LoopFolderAsync(List<FileIndexItem> metaFilesInDirectory,
 			bool syncLocationNames)
 		{
-			foreach ( var metaFileItem in metaFilesInDirectory.Where(metaFileItem => ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
+			foreach ( var metaFileItem in metaFilesInDirectory.Where(metaFileItem => 
+				         ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
 			{
 				if ( _appSettings.IsVerbose() ) _console.Write(" 👟 ");
 
@@ -60,13 +62,8 @@ namespace starsky.foundation.writemeta.Services
 					nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
 					nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()
 				});
-                
-				var exifToolCmdHelper = new ExifToolCmdHelper(_exifTool, 
-					_iStorage, 
-					_thumbnailStorage, 
-					new ReadMeta(_iStorage, _appSettings, null, _logger));
 				
-				await exifToolCmdHelper.UpdateAsync(metaFileItem, comparedNamesList);
+				await _exifToolCmdHelper.UpdateAsync(metaFileItem, comparedNamesList);
 
 				// Rocket man!
 				_console.Write(_appSettings.IsVerbose()

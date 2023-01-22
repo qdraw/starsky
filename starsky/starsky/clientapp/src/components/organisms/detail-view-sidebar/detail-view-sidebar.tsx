@@ -225,6 +225,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
           <FormControl
             onBlur={handleChange}
             name="tags"
+            data-test="detailview-sidebar-tags"
             maxlength={1024}
             reference={tagsReference}
             contentEditable={isFormEnabled}

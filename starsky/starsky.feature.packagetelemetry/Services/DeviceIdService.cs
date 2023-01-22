@@ -8,8 +8,11 @@ using Microsoft.Win32;
 using starsky.feature.packagetelemetry.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.settings.Enums;
+using starsky.foundation.settings.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.packagetelemetry.Services;
@@ -17,10 +20,12 @@ namespace starsky.feature.packagetelemetry.Services;
 [Service(typeof(IDeviceIdService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class DeviceIdService : IDeviceIdService
 {
+	private readonly ISettingsService _settingsService;
 	private readonly IStorage _hostStorage;
 
-	public DeviceIdService(ISelectorStorage selectorStorage)
+	public DeviceIdService(ISelectorStorage selectorStorage, ISettingsService settingsService)
 	{
+		_settingsService = settingsService;
 		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 	}
 	
@@ -29,8 +34,6 @@ public class DeviceIdService : IDeviceIdService
 	public string MachineIdPath2 { get; set; } = "/etc/machine-id";
 
 	public string BsdHostIdPath { get; set; } = "/etc/hostid";
-
-	public string FallBackId { get; set; } = "not set";
 
 	public async Task<string> DeviceId(OSPlatform? currentPlatform )
 	{
@@ -55,9 +58,19 @@ public class DeviceIdService : IDeviceIdService
 		
 		if ( string.IsNullOrEmpty(id) )
 		{
-			id = FallBackId;
+			id = await DeviceIdDatabaseId();
 		}
 		return id;
+	}
+
+	internal async Task<string> DeviceIdDatabaseId()
+	{
+		var item = await _settingsService.GetSetting(SettingsType.DeviceId);
+		if ( !string.IsNullOrEmpty(item?.Value) ) return item.Value;
+
+		var generatedString = $"zz{Sha256.ComputeSha256(FileHash.GenerateRandomBytes(30))}";
+		await _settingsService.AddOrUpdateSetting(SettingsType.DeviceId, generatedString);
+		return generatedString;
 	}
 
 	private string DeviceIdLinuxBsd()

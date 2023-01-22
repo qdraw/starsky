@@ -17,7 +17,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.feature.packagetelemetry.Helpers
+namespace starsky.feature.packagetelemetry.Services
 {
 	
 	[Service(typeof(IPackageTelemetry), InjectionLifetime = InjectionLifetime.Scoped)]

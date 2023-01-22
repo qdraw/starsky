@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using starsky.feature.packagetelemetry.Helpers;
 using starsky.feature.packagetelemetry.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.http.Interfaces;

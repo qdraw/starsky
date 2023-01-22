@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,24 +35,26 @@ namespace starsky.foundation.writemeta.Helpers
 			_thumbnailStorage = thumbnailStorage;
 			_logger = logger;
 		}
-		
+
 		/// <summary>
 		/// Write commands to ExifTool for ReadStream
 		/// </summary>
 		/// <param name="subPath">the location</param>
+		/// <param name="beforeFileHash">thumbnail fileHash</param>
 		/// <param name="command">exifTool command line args</param>
-		/// <returns>true=success</returns>
+		/// <returns>true=success, newFileHash</returns>
 		[SuppressMessage("ReSharper", "InvertIf")]
-		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, string command)
+		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, 
+			string? beforeFileHash, string command)
 		{
 			var inputStream = _iStorage.ReadStream(subPath);
-			var oldFileHashCodeKeyPair = (await new FileHash(_iStorage).GetHashCodeAsync(subPath));
+			beforeFileHash ??= ( await new FileHash(_iStorage).GetHashCodeAsync(subPath) ).Key;
 			
 			var runner = new StreamToStreamRunner(_appSettings, inputStream,_logger);
 			var stream = await runner.RunProcessAsync(command);
 
-			var newHashCode =
-				await RenameThumbnailByStream(oldFileHashCodeKeyPair, stream);
+			var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
+				!beforeFileHash.Contains(FileHash.GeneratedPostFix));
 			
 			// Set stream to begin for use afterwards
 			stream.Seek(0, SeekOrigin.Begin);
@@ -63,7 +66,7 @@ namespace starsky.foundation.writemeta.Helpers
 			    .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase))
 			{
 				_logger.LogError($"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
-				return new KeyValuePair<bool, string>(false, oldFileHashCodeKeyPair.Key);
+				return new KeyValuePair<bool, string>(false, beforeFileHash);
 			}
 			
 			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
@@ -71,19 +74,19 @@ namespace starsky.foundation.writemeta.Helpers
 		
 		[SuppressMessage("ReSharper", "MustUseReturnValue")]
 		internal async Task<string> RenameThumbnailByStream(
-			KeyValuePair<string, bool> oldFileHashCodeKeyPair, Stream stream)
+			string beforeFileHash, Stream stream, bool isSuccess)
 		{
-			if ( !oldFileHashCodeKeyPair.Value ) return string.Empty;
+			if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess ) return string.Empty;
 			byte[] buffer = new byte[FileHash.MaxReadSize];
 			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize, CancellationToken.None);
 			
 			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer), new CancellationToken(false));
 			if ( string.IsNullOrEmpty(newHashCode)) return string.Empty;
 
-			if ( oldFileHashCodeKeyPair.Key == newHashCode ) return newHashCode;
+			if ( beforeFileHash == newHashCode ) return newHashCode;
 			
 			new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(
-				oldFileHashCodeKeyPair.Key, newHashCode);
+				beforeFileHash, newHashCode);
 			return newHashCode;
 		}
 

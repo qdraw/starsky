@@ -7,6 +7,8 @@ using starskytest.FakeMocks;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Medallion.Shell;
+using starsky.foundation.database.Models;
+using starsky.foundation.settings.Enums;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
@@ -32,35 +34,69 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 				return;
 			}
 
-			var id = new DeviceIdService(new FakeSelectorStorage()).DeviceId(OSPlatform.Windows);
+			var id = new DeviceIdService(new FakeSelectorStorage(),
+				new FakeISettingsService()).DeviceId(OSPlatform.Windows);
 			Assert.IsNotNull( id );
 		}
 		
 		[TestMethod]
 		public async Task DeviceId_Nullable()
 		{
-			var deviceService = new DeviceIdService(new FakeSelectorStorage());
+			var deviceService = new DeviceIdService(new FakeSelectorStorage(),
+				new FakeISettingsService()
+				{
+					Items = new List<SettingsItem>
+					{
+						new SettingsItem()
+						{
+							Key = SettingsType.DeviceId.ToString(),
+							Value = "fallBackFromDatabase"
+						}
+					}
+				});
 			var id = await deviceService.DeviceId(null);
 			Assert.IsNotNull( id );
-			Assert.AreEqual("not set", id );
+			Assert.AreEqual("fallBackFromDatabase", id );
 		}
 		
 		[TestMethod]
 		public async Task DeviceId_TestOS()
 		{
-			var deviceService = new DeviceIdService(new FakeSelectorStorage());
+			var deviceService = new DeviceIdService(new FakeSelectorStorage(),
+				new FakeISettingsService()
+				{
+					Items = new List<SettingsItem>
+					{
+						new SettingsItem()
+						{
+							Key = SettingsType.DeviceId.ToString(),
+							Value = "fallBackFromDatabase"
+						}
+					}
+				});
 			var id = await deviceService.DeviceId(OSPlatform.Create("test"));
 			Assert.IsNotNull( id );
-			Assert.AreEqual("not set", id );
+			Assert.AreEqual("fallBackFromDatabase", id );
 		}
 		
 		[TestMethod]
 		public async Task DeviceId_Linux_NonePath()
 		{
-			var deviceService = new DeviceIdService(new FakeSelectorStorage());
+			var deviceService = new DeviceIdService(new FakeSelectorStorage(),
+				new FakeISettingsService()
+				{
+					Items = new List<SettingsItem>
+					{
+						new SettingsItem()
+						{
+							Key = SettingsType.DeviceId.ToString(),
+							Value = "fallBackFromDatabase"
+						}
+					}
+				});
 			var id = await deviceService.DeviceId(OSPlatform.Linux);
 			Assert.IsNotNull( id );
-			Assert.AreEqual("not set", id );
+			Assert.AreEqual("fallBackFromDatabase", id );
 		}
 		
 		[TestMethod]
@@ -68,7 +104,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var deviceService = new DeviceIdService(storageSelector);
+			var deviceService = new DeviceIdService(storageSelector,new FakeISettingsService());
 			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("test-id"), deviceService.BsdHostIdPath);
 			var id = await deviceService.DeviceId(OSPlatform.Linux);
 			Assert.IsNotNull( id );
@@ -80,7 +116,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var deviceService = new DeviceIdService(storageSelector);
+			var deviceService = new DeviceIdService(storageSelector,
+				new FakeISettingsService());
 			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
 			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("test-id"), deviceService.MachineIdPath2);
 			var id = await deviceService.DeviceId(OSPlatform.Linux);
@@ -93,7 +130,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var deviceService = new DeviceIdService(storageSelector);
+			var deviceService = new DeviceIdService(storageSelector,new FakeISettingsService());
 			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
 			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.MachineIdPath2);
 			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("test-id"), deviceService.DbusMachineIdPath);
@@ -108,7 +145,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var deviceService = new DeviceIdService(storageSelector);
+			var deviceService = new DeviceIdService(storageSelector,
+				new FakeISettingsService());
 			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.BsdHostIdPath);
 			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("should-not-use"), deviceService.MachineIdPath2);
 			await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("test-id"), deviceService.DbusMachineIdPath);
@@ -121,7 +159,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 		[TestMethod]
 		public async Task DeviceId_Windows()
 		{
-			var deviceService = new DeviceIdService(new FakeSelectorStorage());
+			var deviceService = new DeviceIdService(new FakeSelectorStorage(),
+				new FakeISettingsService());
 			var id = await deviceService.DeviceId(OSPlatform.Windows);
 			Assert.IsNotNull( id );
 		}
@@ -137,12 +176,23 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var deviceService = new DeviceIdService(storageSelector)
+			var deviceService = new DeviceIdService(storageSelector,
+				new FakeISettingsService()
+				{
+					Items = new List<SettingsItem>
+					{
+						new SettingsItem()
+						{
+							Key = SettingsType.DeviceId.ToString(),
+							Value = "fallBackFromDatabase"
+						}
+					}
+				})
 			{
 				IoReg = "ls"
 			};
 			var id = await deviceService.DeviceId(OSPlatform.OSX);
-			Assert.AreEqual("not set", id );
+			Assert.AreEqual("fallBackFromDatabase", id );
 		}
 		
 		[TestMethod]
@@ -156,7 +206,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var deviceService = new DeviceIdService(storageSelector);
+			var deviceService = new DeviceIdService(storageSelector,
+				new FakeISettingsService());
 
 			var hostFullPathFilesystem = new StorageHostFullPathFilesystem();
 
@@ -200,7 +251,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var deviceService = new DeviceIdService(storageSelector);
+			var deviceService = new DeviceIdService(storageSelector,
+				new FakeISettingsService());
 
 			var hostFullPathFilesystem = new StorageHostFullPathFilesystem();
 
@@ -244,7 +296,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 			
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var deviceService = new DeviceIdService(storageSelector)
+			var deviceService = new DeviceIdService(storageSelector,
+				new FakeISettingsService())
 			{
 				IoReg = "ls"
 			};
@@ -270,6 +323,44 @@ namespace starskytest.starsky.feature.packagetelemetry.Services
 
 			var result = DeviceIdService.DeviceIdWindows(OSPlatform.Windows);
 			Assert.AreEqual(string.Empty, result);
+		}
+
+		[TestMethod]
+		public async Task DeviceIdDatabaseId_New()
+		{
+			var settingsService = new FakeISettingsService();
+			var deviceService = new DeviceIdService(new FakeSelectorStorage(new FakeIStorage()),
+				settingsService);
+
+			var result = await deviceService.DeviceIdDatabaseId();
+			Assert.IsNotNull(result);
+		}
+		
+		[TestMethod]
+		public async Task DeviceIdDatabaseId_New2Runs()
+		{
+			var deviceService = new DeviceIdService(new FakeSelectorStorage(new FakeIStorage()),
+				new FakeISettingsService());
+
+			var result = await deviceService.DeviceIdDatabaseId();
+			
+			var deviceService2 = new DeviceIdService(new FakeSelectorStorage(new FakeIStorage()),
+				new FakeISettingsService());
+			var result2 = await deviceService2.DeviceIdDatabaseId();
+
+			Assert.AreNotEqual(result2, result);
+		}
+		
+		[TestMethod]
+		public async Task DeviceIdDatabaseId_UseOld()
+		{
+			var settingsService = new FakeISettingsService();
+			var deviceService = new DeviceIdService(new FakeSelectorStorage(new FakeIStorage()),
+				settingsService);
+			await settingsService.AddOrUpdateSetting(SettingsType.DeviceId, "1234");
+
+			var result = await deviceService.DeviceIdDatabaseId();
+			Assert.AreEqual("1234",result);
 		}
 	}
 }

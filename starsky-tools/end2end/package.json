@@ -17,19 +17,20 @@
     "e2e:azure": "export CYPRESS_BASE_URL=https://demostarsky.azurewebsites.net && export cypress_name=no-create-account && export cypress_AUTH_USER=demo@qdraw.nl && export cypress_AUTH_PASS=demo@qdraw.nl && npm run e2e:env",
     "start:azure": "export CYPRESS_BASE_URL=https://demostarsky.azurewebsites.net && export cypress_name=no-create-account && export cypress_AUTH_USER=demo@qdraw.nl && export cypress_AUTH_PASS=demo@qdraw.nl && npm run open:env",
     "open:azure": "npm run start:azure",
-    "lint": "node node_modules/eslint/bin/eslint.js \"**\" --max-warnings 0"
+    "lint": "node node_modules/eslint/bin/eslint.js \"**\" --max-warnings 0",
+    "update": "npx --yes npm-check-updates"
   },
   "devDependencies": {
-    "@types/node": "^18.11.9",
-    "@typescript-eslint/eslint-plugin": "^5.43.0",
-    "@typescript-eslint/parser": "^5.43.0",
-    "cypress": "^11.1.0",
-    "eslint": "^8.28.0",
-    "eslint-config-standard-with-typescript": "^23.0.0",
-    "eslint-plugin-import": "^2.26.0",
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.48.1",
+    "@typescript-eslint/parser": "^5.48.1",
+    "cypress": "^12.3.0",
+    "eslint": "^8.32.0",
+    "eslint-config-standard-with-typescript": "^27.0.1",
+    "eslint-plugin-import": "^2.27.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
     "get-port": "^6.1.2",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.4"
   }
 }

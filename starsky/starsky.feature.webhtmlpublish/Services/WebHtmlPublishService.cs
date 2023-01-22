@@ -355,7 +355,7 @@ namespace starsky.feature.webhtmlpublish.Services
 
 		    // Write it back
 		    await new ExifToolCmdHelper(_exifTool, _hostFileSystemStorage,
-			    _thumbnailStorage, null).UpdateAsync(item, 
+			    _thumbnailStorage, null,null).UpdateAsync(item, 
 			    new List<string> {outputPath}, comparedNames, 
 			    false, false);
 	    }

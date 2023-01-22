@@ -4,11 +4,13 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 
@@ -20,6 +22,7 @@ namespace starsky.foundation.writemeta.Helpers
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IReadMeta _readMeta;
+		private readonly IThumbnailQuery _thumbnailQuery;
 
 		/// <summary>
 		/// Run ExifTool 
@@ -28,11 +31,14 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="iStorage">Source storage provider</param>
 		/// <param name="thumbnailStorage">Thumbnail Storage Abstraction provider</param>
 		/// <param name="readMeta">ReadMeta abstraction</param>
-		public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage, IStorage thumbnailStorage, IReadMeta readMeta)
+		/// <param name="thumbnailQuery">thumbnailQuery</param>
+		public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage, 
+			IStorage thumbnailStorage, IReadMeta readMeta, IThumbnailQuery thumbnailQuery)
 		{
 			_exifTool = exifTool;
 			_iStorage = iStorage;
 			_readMeta = readMeta;
+			_thumbnailQuery = thumbnailQuery;
 			_thumbnailStorage = thumbnailStorage;
 		}
 		
@@ -80,14 +86,12 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="comparedNames"></param>
 		/// <param name="includeSoftware"></param>
 		/// <returns></returns>
-#pragma warning disable 1998
-		private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths,
+		private Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths,
 			List<string> comparedNames, bool includeSoftware = true)
-#pragma warning restore 1998
 		{
 			var task = Task.Run(() => UpdateAsync(updateModel,inputSubPaths,
 				comparedNames,includeSoftware, true));
-			return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result.Item1 : string.Empty;
+			return Task.FromResult(task.Wait(TimeSpan.FromSeconds(20)) ? task.Result.Item1 : string.Empty);
 		}
 	    
 		/// <summary>
@@ -97,7 +101,8 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="comparedNames">list of fields that are changed, other fields are ignored</param>
 		/// <param name="includeSoftware">to include the original software name</param>
 		/// <returns>command line args</returns>
-		internal static string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
+		internal static string ExifToolCommandLineArgs( FileIndexItem updateModel, 
+			List<string> comparedNames, bool includeSoftware )
 		{
 			var command = "-json -overwrite_original";
 			var initCommand = command; // to check if nothing
@@ -161,7 +166,9 @@ namespace starsky.foundation.writemeta.Helpers
 				if ( _iStorage.IsFolderOrFile(withXmp) !=
 				     FolderOrFileModel.FolderOrFileTypeList.Deleted ) continue;
 			    
-				new ExifCopy(_iStorage,_thumbnailStorage, _exifTool,_readMeta).XmpCreate(withXmp);
+				var exifCopy =  new ExifCopy(_iStorage, _thumbnailStorage, _exifTool,
+					_readMeta, _thumbnailQuery);
+				exifCopy.XmpCreate(withXmp);
 				    
 				var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 				var command = ExifToolCommandLineArgs(updateModel, comparedNames, true);
@@ -209,7 +216,13 @@ namespace starsky.foundation.writemeta.Helpers
 					await _exifTool.WriteTagsAsync(path, command);
 					continue;
 				}
-				fileHashes.Add((await _exifTool.WriteTagsAndRenameThumbnailAsync(path, command)).Value);
+
+				var beforeFileHash = await BeforeFileHash(updateModel, path);
+				var newFileHash =
+					( await _exifTool.WriteTagsAndRenameThumbnailAsync(path,
+						beforeFileHash, command) ).Value;
+				fileHashes.Add(newFileHash);
+				await _thumbnailQuery.RenameAsync(beforeFileHash, newFileHash);
 			}
 
 			if ( !string.IsNullOrEmpty(updateModel.FileHash) && _thumbnailStorage.ExistFile(updateModel.FileHash) )
@@ -218,6 +231,16 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 
 			return new ValueTuple<string,List<string>>(command, fileHashes);
+		}
+
+		private async Task<string> BeforeFileHash(FileIndexItem updateModel, string path)
+		{
+			if ( updateModel.FilePath == path )
+			{
+				return updateModel.FileHash;
+			}
+			return ( await new FileHash(_iStorage).GetHashCodeAsync(path) )
+				.Key;
 		}
 
 		/// <summary>
@@ -360,7 +383,8 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="updateModel">the model that has the data</param>
 		/// <param name="includeSoftware">to include the original software name</param>
 		/// <returns></returns>
-		internal static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel, bool includeSoftware)
+		internal static string UpdateSoftwareCommand(string command, List<string> comparedNames, 
+			FileIndexItem updateModel, bool includeSoftware)
 		{
 			if ( !comparedNames.Contains(nameof(FileIndexItem.Software).ToLowerInvariant()) )
 				return command;
@@ -369,7 +393,8 @@ namespace starsky.foundation.writemeta.Helpers
 			{
 				// add space before
 				command +=
-					$" -Software=\"{updateModel.Software}\" -CreatorTool=\"{updateModel.Software}\" -HistorySoftwareAgent=\"{updateModel.Software}\" " +
+					$" -Software=\"{updateModel.Software}\" -CreatorTool=\"{updateModel.Software}\" " +
+					$"-HistorySoftwareAgent=\"{updateModel.Software}\" " +
 					"-HistoryParameters=\"\" -PMVersion=\"\" ";
 			}
 			else

@@ -26,7 +26,9 @@ namespace starskytest.starsky.feature.import.Helpers
 			var appSettings = new AppSettings();
 			
 			var updateImportTransformations = new UpdateImportTransformations(new FakeIWebLogger(),
-				new FakeExifTool(storage, appSettings), new FakeSelectorStorage(storage), appSettings);
+				new FakeExifTool(storage, appSettings), 
+				new FakeSelectorStorage(storage), appSettings, 
+				new FakeIThumbnailQuery());
 			
 			var query = new FakeIQuery();
 			await query.AddItemAsync(new FileIndexItem("/test.jpg"){FileHash = "test"});
@@ -51,7 +53,9 @@ namespace starskytest.starsky.feature.import.Helpers
 			var appSettings = new AppSettings();
 			
 			var updateImportTransformations = new UpdateImportTransformations(new FakeIWebLogger(),
-				new FakeExifTool(storage, appSettings), new FakeSelectorStorage(storage), appSettings);
+				new FakeExifTool(storage, appSettings), 
+				new FakeSelectorStorage(storage), appSettings, 
+				new FakeIThumbnailQuery());
 			
 			var query = new FakeIQuery();
 			await query.AddItemAsync(new FileIndexItem("/test.jpg"){FileHash = "test"});
@@ -77,7 +81,8 @@ namespace starskytest.starsky.feature.import.Helpers
 			var appSettings = new AppSettings();
 			
 			var updateImportTransformations = new UpdateImportTransformations(new FakeIWebLogger(),
-				new FakeExifTool(storage, appSettings), new FakeSelectorStorage(storage), appSettings);
+				new FakeExifTool(storage, appSettings), new FakeSelectorStorage(storage), appSettings, 
+				new FakeIThumbnailQuery());
 			
 			var query = new FakeIQuery();
 			await query.AddItemAsync(new FileIndexItem("/test.jpg"){FileHash = "test"});

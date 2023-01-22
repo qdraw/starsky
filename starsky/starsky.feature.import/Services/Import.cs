@@ -93,7 +93,7 @@ namespace starsky.feature.import.Services
             _metaExifThumbnailService = metaExifThumbnailService;
             _memoryCache = memoryCache;
             _logger = logger;
-            _updateImportTransformations = new UpdateImportTransformations(logger, _exifTool, selectorStorage, appSettings);
+            _updateImportTransformations = new UpdateImportTransformations(logger, _exifTool, selectorStorage, appSettings, thumbnailQuery);
             _thumbnailQuery = thumbnailQuery;
 		}
 
@@ -626,7 +626,7 @@ namespace starsky.feature.import.Services
 			{
 				var exifCopy = new ExifCopy(_subPathStorage, 
 					_thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, 
-					_appSettings, null, _logger));
+					_appSettings, null, _logger),_thumbnailQuery);
 				await exifCopy.XmpSync(importIndexItem.FileIndexItem!.FilePath);
 			}
 		}

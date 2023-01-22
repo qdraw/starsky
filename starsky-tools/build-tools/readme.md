@@ -2,7 +2,10 @@
 
 # Build Tools Docs
 
-- scripts that are helping building the application
+- Scripts that are helping building the application
+- depends on nodejs or powershell, 
+- **not needed** to run npm install first
+- does not need to install dependencies
 
 ### app-version-update.js 
 
@@ -10,6 +13,22 @@ Checks the App Version Update. Update the project versions to have the same vers
 
 ```
 npm run app-version-update
+```
+
+### Clientapp create-react-app-update
+
+Regenerate npm package.json file for front-end with the latest version of create react app
+
+```
+npm run clientapp-create-react-app-update
+```
+
+### documentation-create-docusaurus-update
+
+Regenerate npm package.json file for docusaurus
+
+```
+npm run documentation-create-docusaurus-update
 ```
 
 ### audit-dotnet.ps1
@@ -22,6 +41,10 @@ For checking if there are vulnerablies and update in node.js/npm
 
 ### nuget-package-list.js
 Creates an list to able to cache the Nuget packages fast
+
+```
+npm run nuget-package-list
+```
 
 ### project-guid.js 
 Check for duplicate Project GUID's

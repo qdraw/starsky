@@ -78,4 +78,14 @@ public class ThumbnailItemTest
 		};
 		Assert.AreEqual("test", item.Reasons);
 	}
+	
+	[TestMethod]
+	public void ThumbnailItem_reasonsNull()
+	{
+		var item = new ThumbnailItem("test",null,null,null,null)
+		{
+			Reasons = null
+		};
+		Assert.AreEqual(string.Empty, item.Reasons);
+	}
 }

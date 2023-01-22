@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -33,7 +34,9 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IWebLogger _logger;
 		private readonly IThumbnailService _thumbnailService;
+		private readonly IThumbnailQuery _thumbnailQuery;
 
+		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 		public MetaUpdateService(
 			IQuery query,
 			IExifTool exifTool, 
@@ -41,7 +44,8 @@ namespace starsky.feature.metaupdate.Services
 			IMetaPreflight metaPreflight,
 			IWebLogger logger,
 			IReadMetaSubPathStorage readMetaSubPathStorage, 
-			IThumbnailService thumbnailService)
+			IThumbnailService thumbnailService,
+			IThumbnailQuery thumbnailQuery)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -51,6 +55,7 @@ namespace starsky.feature.metaupdate.Services
 			_metaPreflight = metaPreflight;
 			_logger = logger;
 			_thumbnailService = thumbnailService;
+			_thumbnailQuery = thumbnailQuery;
 		}
 
 
@@ -130,7 +135,7 @@ namespace starsky.feature.metaupdate.Services
 				{
 					fileIndexItem.FilePath           
 				};
-				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage,_readMeta);
+				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage,_readMeta, _thumbnailQuery);
 
 				// to avoid diskWatcher catch up
 				_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem, TimeSpan.FromSeconds(10));

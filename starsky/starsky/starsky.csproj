@@ -55,7 +55,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
         <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
     <!-- generate xml file for swagger -->
     <PropertyGroup>
@@ -136,6 +136,7 @@
         <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj" />
         <ProjectReference Include="..\starsky.feature.search\starsky.feature.search.csproj" />
         <ProjectReference Include="..\starsky.feature.syncbackground\starsky.feature.syncbackground.csproj" />
+        <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj" />
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
         <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj" />
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />

@@ -59,7 +59,8 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				new List<byte[]>{CreateAnImage.Bytes});
 			
 			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
-				.WriteTagsAndRenameThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
+				.WriteTagsAndRenameThumbnailAsync("/test.jpg",null,
+					"-Software=\"Qdraw 2.0\"");
 		}
 		
 		[TestMethod]
@@ -81,7 +82,8 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			}
 			await new TarBal(hostFileSystemStorage).ExtractTarGz(memoryStream, outputPath, CancellationToken.None);
 			var imageExifToolVersionFolder = hostFileSystemStorage.GetDirectories(outputPath)
-				.FirstOrDefault(p => p.StartsWith(Path.Combine(outputPath, "Image-ExifTool-")))?.Replace("./", string.Empty);
+				.FirstOrDefault(p => p.StartsWith(Path.Combine(outputPath, "Image-ExifTool-")))?
+				.Replace("./", string.Empty);
 
 			if ( imageExifToolVersionFolder == null )
 			{
@@ -101,8 +103,10 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				new List<byte[]>{CreateAnImage.Bytes});
 
 			var fakeLogger = new FakeIWebLogger();
-			var renameThumbnailAsync = await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, fakeLogger)
-				.WriteTagsAndRenameThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
+			var renameThumbnailAsync = await new ExifToolHostStorageService(
+					new FakeSelectorStorage(fakeStorage), appSettings, fakeLogger)
+				.WriteTagsAndRenameThumbnailAsync("/test.jpg",
+					null,"-Software=\"Qdraw 2.0\"");
 			
 			if ( hostFileSystemStorage.ExistFolder(outputPath) )
 			{
@@ -149,8 +153,11 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				new List<byte[]>{CreateAnImage.Bytes});
 			
 			var fakeLogger = new FakeIWebLogger();
-			var renameThumbnailAsync = await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, fakeLogger)
-				.WriteTagsAndRenameThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
+			var renameThumbnailAsync = await new ExifToolHostStorageService(
+					new FakeSelectorStorage(fakeStorage),
+					appSettings, fakeLogger)
+				.WriteTagsAndRenameThumbnailAsync("/test.jpg",null,
+					"-Software=\"Qdraw 2.0\"");
 			
 			if ( hostFileSystemStorage.ExistFolder(outputPath) )
 			{

@@ -53,9 +53,23 @@ public class ThumbnailItem
 	/// </summary>
 	public bool? ExtraLarge { get; set; }
 
-
+	/// <summary>
+	/// Private field to avoid null issues
+	/// </summary>
+	private string ReasonsPrivate { get; set; } = string.Empty;
+	
 	/// <summary>
 	/// When something went wrong add message here
 	/// </summary>
-	public string? Reasons { get; set; } = string.Empty;
+	public string? Reasons {
+		get => ReasonsPrivate;
+		set
+		{
+			if ( value == null )
+			{
+				return;
+			}
+			ReasonsPrivate = value;
+		} 
+	}
 }

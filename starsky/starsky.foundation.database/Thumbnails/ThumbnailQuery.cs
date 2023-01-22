@@ -51,7 +51,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	private static async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
 		ApplicationDbContext dbContext, 
-		List<ThumbnailResultDataTransferModel> thumbnailItems)
+		IReadOnlyCollection<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
 		if ( !thumbnailItems.Any() )
 		{
@@ -65,8 +65,10 @@ public class ThumbnailQuery : IThumbnailQuery
 			updateThumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!,item.TinyMeta, item.Small, item.Large, item.ExtraLarge, item.Reasons));
 		}
 		
-		var (newThumbnailItems, alreadyExistingThumbnailItems,equalThumbnailItems) = await CheckForDuplicates(
-			dbContext, updateThumbnailNewItemsList);
+		var (newThumbnailItems, 
+				alreadyExistingThumbnailItems, 
+				equalThumbnailItems) = 
+			await CheckForDuplicates(dbContext, updateThumbnailNewItemsList);
 		
 		if ( newThumbnailItems.Any() )
 		{
@@ -96,8 +98,24 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task<List<ThumbnailItem>> Get(string? fileHash = null)
 	{
-		return fileHash == null ? await _context
-			.Thumbnails.ToListAsync() :  await _context
+		try
+		{
+			return await GetInternalAsync(_context, fileHash);
+		}
+		// InvalidOperationException can also be disposed
+		catch (InvalidOperationException)
+		{
+			if ( _scopeFactory == null ) throw;
+			return await GetInternalAsync(new InjectServiceScope(_scopeFactory).Context(), fileHash);
+		}
+	}
+
+	private static async Task<List<ThumbnailItem>> GetInternalAsync(
+		ApplicationDbContext context,
+		string? fileHash = null)
+	{
+		return fileHash == null ? await context
+			.Thumbnails.ToListAsync() :  await context
 			.Thumbnails.Where(p => p.FileHash == fileHash)
 			.ToListAsync();
 	}
@@ -111,6 +129,57 @@ public class ThumbnailQuery : IThumbnailQuery
 			_context.Thumbnails.RemoveRange(thumbnailItems);
 			await _context.SaveChangesAsync();
 		}
+	}
+
+	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
+	{
+		var beforeOrNewItems = await _context.Thumbnails.Where(p =>
+			p.FileHash == beforeFileHash || p.FileHash == newFileHash).ToListAsync();
+		
+		var beforeItem = beforeOrNewItems.FirstOrDefault(p => p.FileHash == beforeFileHash);
+		var newItem = beforeOrNewItems.FirstOrDefault(p => p.FileHash == newFileHash);
+
+		if ( beforeItem == null) return false;
+
+		_context.Thumbnails.Remove(beforeItem);
+
+		if ( newItem != null )
+		{
+			_context.Thumbnails.Remove(newItem);
+		}
+		
+		await _context.Thumbnails.AddRangeAsync(new ThumbnailItem(newFileHash, 
+			beforeItem.TinyMeta, beforeItem.Small, beforeItem.Large, beforeItem.ExtraLarge, beforeItem.Reasons));
+		
+		await _context.SaveChangesAsync();
+		
+		return true;
+	}
+
+	public async Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails()
+	{
+		return await _context.Thumbnails.Where(p => p.ExtraLarge == null || p.Large == null || p.Small == null).ToListAsync();
+	}
+
+	public async Task<bool> UpdateAsync(ThumbnailItem item)
+	{
+		try
+		{
+			return await UpdateInternalAsync(_context, item);
+		}
+		// InvalidOperationException can also be disposed
+		catch (InvalidOperationException)
+		{
+			if ( _scopeFactory == null ) throw;
+			return await UpdateInternalAsync(new InjectServiceScope(_scopeFactory).Context(), item);
+		}
+	}
+
+	internal static async Task<bool> UpdateInternalAsync(ApplicationDbContext dbContext, ThumbnailItem item)
+	{
+		dbContext.Thumbnails.Update(item);
+		await dbContext.SaveChangesAsync();
+		return true;
 	}
 
 	/// <summary>

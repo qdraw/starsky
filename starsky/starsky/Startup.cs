@@ -148,14 +148,13 @@ namespace starsky
 	        
 			// Application Insights
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+			
 			RegisterDependencies.Configure(services);
 			
 			// Reference due missing links between services
 			services.AddSingleton<PackageTelemetryBackgroundService>();
 			services.AddSingleton<OnStartupSyncBackgroundService>();
 			services.AddSingleton<CleanDemoDataService>();
-
         }
 
         /// <summary>

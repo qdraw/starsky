@@ -52,6 +52,14 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			return _thumbnail.CreateThumbAsync(subPath, fileHash);
 		}
 
+		/// <summary>
+		/// Rotate a thumbnail
+		/// </summary>
+		/// <param name="fileHash">fileHash to rename</param>
+		/// <param name="orientation">which direction</param>
+		/// <param name="width">height of output</param>
+		/// <param name="height">0 = keep in shape</param>
+		/// <returns></returns>
 		public Task<bool> RotateThumbnail(string fileHash, int orientation,
 			int width = 1000, int height = 0)
 		{

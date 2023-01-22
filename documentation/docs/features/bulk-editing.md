@@ -14,7 +14,7 @@ You can update the following metadata:
 - Tags
 - Info
 - Title
-- Colorclass (the color label of the image)
+- ColorClass (the color label of the image)
 
 via the API you could also update other metadata like:
 - Location
