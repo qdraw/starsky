@@ -64,8 +64,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		foreach ( var item in chuckedItems )
 		{
 			var fileIndexItem = fileIndexItems.FirstOrDefault(p => p.FileHash == item.FileHash);
-			if ( fileIndexItem?.FilePath == null 
-			     || fileIndexItem.Status != FileIndexItem.ExifStatus.Ok )
+			if ( fileIndexItem is {FilePath: null, Status: FileIndexItem.ExifStatus.Ok} )
 			{
 				// when null set to false
 				item.Small ??= false;
@@ -82,14 +81,19 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			fileIndexItem.SetLastEdited();
 		}
 		
-		_logger.LogInformation("DatabaseThumbnailGenerationService: WorkThumbnailGeneration done");
 		var filteredData = fileIndexItems
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+
+		if ( !filteredData.Any() ) return chuckedItems;
+		
+		_logger.LogInformation("DatabaseThumbnailGenerationService: done " +
+		                       $" {filteredData.Count} items {string.Join(",",filteredData.Select(p => p.FilePath).ToList())}");
+
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filteredData, ApiNotificationType.ThumbnailGeneration);
 		await _connectionsService.SendToAllAsync(webSocketResponse,
 			new CancellationToken());
-		
+
 		return chuckedItems;
 	}
 }
