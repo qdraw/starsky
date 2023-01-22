@@ -21,7 +21,7 @@
     "macarm64": "npm run prod && electron-builder build --mac --arm64 true --x64 false --publish never",
     "macwindows": "npm run prod && echo prod-done && electron-builder build --mac zip --windows --publish never",
     "linux": "npm run prod && electron-builder build --linux --publish never",
-    "dist": "npm run prod && electron-builder build",
+    "dist": "npm run prod && electron-builder build --publish never",
     "build:win": "electron-builder build --win",
     "build:mac": "electron-builder build --mac",
     "build:runtime": "pwsh ../starsky/build.ps1 --runtime=osx-x64,win-x64",

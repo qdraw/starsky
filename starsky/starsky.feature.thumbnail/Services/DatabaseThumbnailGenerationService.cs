@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -64,8 +65,8 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		foreach ( var item in chuckedItems )
 		{
 			var fileIndexItem = fileIndexItems.FirstOrDefault(p => p.FileHash == item.FileHash);
-			if ( fileIndexItem?.FilePath == null 
-			     || fileIndexItem.Status != FileIndexItem.ExifStatus.Ok )
+			if ( fileIndexItem?.FilePath == null || 
+			     fileIndexItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
 				// when null set to false
 				item.Small ??= false;
@@ -75,21 +76,30 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 				continue;
 			}
 			
-			var generationResultModels = await _thumbnailService.CreateThumbnailAsync(fileIndexItem
-				.FilePath);
+			var generationResultModels = await _thumbnailService.CreateThumbnailAsync(fileIndexItem!
+				.FilePath!);
 			await _updateStatusGeneratedThumbnailService.UpdateStatusAsync(
 				generationResultModels);
 			fileIndexItem.SetLastEdited();
 		}
 		
-		_logger.LogInformation("DatabaseThumbnailGenerationService: WorkThumbnailGeneration done");
 		var filteredData = fileIndexItems
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+
+		if ( !filteredData.Any() )
+		{
+			_logger.LogInformation($"[DatabaseThumbnailGenerationService] no items ({DateTime.UtcNow:HH:mm:ss})");
+			return chuckedItems;
+		}
+		
+		_logger.LogInformation($"[DatabaseThumbnailGenerationService] done ({DateTime.UtcNow:HH:mm:ss})" +
+		                       $" {filteredData.Count} items: {string.Join(",",filteredData.Select(p => p.FilePath).ToList())}");
+
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filteredData, ApiNotificationType.ThumbnailGeneration);
 		await _connectionsService.SendToAllAsync(webSocketResponse,
 			new CancellationToken());
-		
+
 		return chuckedItems;
 	}
 }

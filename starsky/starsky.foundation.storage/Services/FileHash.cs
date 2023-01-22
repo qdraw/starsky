@@ -167,7 +167,7 @@ namespace starsky.foundation.storage.Services
 		}
 
 		public static async Task<string> CalculateHashAsync(Stream stream, 
-			CancellationToken cancellationToken = new CancellationToken())
+			CancellationToken cancellationToken = default)
 		{
 			var block =
 				ArrayPool<byte>.Shared
