@@ -40,7 +40,8 @@ namespace starskytest.starsky.foundation.database.Import
 		private IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
-			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(ImportQueryTest)));
+			services.AddDbContext<ApplicationDbContext>(options => 
+				options.UseInMemoryDatabase(nameof(ImportQueryTest)));
 			services.AddSingleton<IConsole, FakeConsoleWrapper>();
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -90,7 +91,8 @@ namespace starskytest.starsky.foundation.database.Import
 		[TestMethod]
 		public async Task IsHashInImportDbAsync_ContextFail()
 		{
-			var result = await new ImportQuery(null, new FakeConsoleWrapper(), new FakeIWebLogger()).IsHashInImportDbAsync("TEST");
+			var result = await new ImportQuery(null, 
+				new FakeConsoleWrapper(), new FakeIWebLogger()).IsHashInImportDbAsync("TEST");
 			Assert.IsFalse(result);
 		}
 		
@@ -102,7 +104,8 @@ namespace starskytest.starsky.foundation.database.Import
 			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), new FakeIWebLogger()).AddAsync(expectedResult);
+			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), 
+				new FakeIWebLogger()).AddAsync(expectedResult);
 			
 			var queryFromDb = await dbContext.ImportIndex.FirstOrDefaultAsync(
 				p => p.FileHash == expectedResult.FileHash);
@@ -122,7 +125,8 @@ namespace starskytest.starsky.foundation.database.Import
 			
 			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), new FakeIWebLogger()).AddAsync(expectedResult);
 
-			var historyResult = new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), new FakeIWebLogger()).History();
+			var historyResult = new ImportQuery(serviceScopeFactory, 
+				new FakeConsoleWrapper(), new FakeIWebLogger()).History();
 
 			if ( !historyResult.Any() ) throw new ArgumentNullException("should not be 0");
 			
@@ -141,9 +145,11 @@ namespace starskytest.starsky.foundation.database.Import
 			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), new FakeIWebLogger()).AddRangeAsync(expectedResult);
+			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), 
+				new FakeIWebLogger()).AddRangeAsync(expectedResult);
 			
-			var queryFromDb = dbContext.ImportIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
+			var queryFromDb = dbContext.ImportIndex
+				.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
 			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
 			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
 		}
@@ -162,8 +168,9 @@ namespace starskytest.starsky.foundation.database.Import
 			
 			new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper(), new FakeIWebLogger()).AddRange(expectedResult);
 			
-			var queryFromDb = dbContext.ImportIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
-			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
+			var queryFromDb = dbContext
+				.ImportIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
+			Assert.AreEqual(expectedResult.FirstOrDefault()!.FileHash, queryFromDb.FirstOrDefault()!.FileHash);
 			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
 		}
 		

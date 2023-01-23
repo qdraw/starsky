@@ -26,6 +26,7 @@ namespace starskytest.starsky.foundation.worker.Services
 	public sealed class UpdateBackgroundTaskQueueTest
 	{
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
+		private readonly IServiceScopeFactory _scopeFactory;
 
 		public UpdateBackgroundTaskQueueTest()
 		{
@@ -52,6 +53,8 @@ namespace starskytest.starsky.foundation.worker.Services
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
 			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
+			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
 		}
         
 		[TestMethod]
@@ -73,7 +76,7 @@ namespace starskytest.starsky.foundation.worker.Services
 		[TestMethod]
 		public async Task Count_AddOneForCount()
 		{
-			var backgroundQueue = new UpdateBackgroundTaskQueue();
+			var backgroundQueue = new UpdateBackgroundTaskQueue(_scopeFactory);
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(1,count);
@@ -125,7 +128,7 @@ namespace starskytest.starsky.foundation.worker.Services
 		{
 			Func<CancellationToken, ValueTask> func = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func, string.Empty);
+			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
 			Assert.IsNull(func);
 		}
 

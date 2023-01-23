@@ -3,9 +3,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.ThumbnailServices.Exceptions;
@@ -23,13 +26,18 @@ namespace starsky.foundation.worker.ThumbnailServices
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
 		private readonly Channel<Tuple<Func<CancellationToken, ValueTask>, string>> _queue;
+		private readonly TelemetryClient? _telemetryClient;
 
-		public ThumbnailBackgroundTaskQueue(ICpuUsageListener cpuUsageListenerService, IWebLogger logger, AppSettings appSettings)
+		public ThumbnailBackgroundTaskQueue(ICpuUsageListener cpuUsageListenerService, 
+			IWebLogger logger, AppSettings appSettings, IServiceScopeFactory scopeFactory)
 		{
 			_cpuUsageListenerService = cpuUsageListenerService;
 			_logger = logger;
 			_appSettings = appSettings;
-			_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(ProcessTaskQueue.DefaultBoundedChannelOptions);
+			_queue = Channel.CreateBounded<Tuple<Func<CancellationToken, ValueTask>, string>>(
+				ProcessTaskQueue.DefaultBoundedChannelOptions);
+			_telemetryClient = scopeFactory.CreateScope().ServiceProvider
+				.GetService<TelemetryClient>();
 		}
 
 		public int Count()
@@ -44,7 +52,8 @@ namespace starsky.foundation.worker.ThumbnailServices
 			if ( _cpuUsageListenerService.CpuUsageMean > _appSettings.CpuUsageMaxPercentage )
 			{
 				_logger.LogInformation("CPU is to high, skip thumbnail generation");
-				throw new ToManyUsageException($"QueueBackgroundWorkItemAsync: Skip {metaData} because of high CPU usage");
+				throw new ToManyUsageException($"QueueBackgroundWorkItemAsync: " +
+				                               $"Skip {metaData} because of high CPU usage");
 			}
 			
 			return ProcessTaskQueue.QueueBackgroundWorkItemAsync(_queue,
@@ -54,6 +63,7 @@ namespace starsky.foundation.worker.ThumbnailServices
 		public async ValueTask<Tuple<Func<CancellationToken, ValueTask>, string>> DequeueAsync(
 			CancellationToken cancellationToken)
 		{
+			MetricsHelper.Add(_telemetryClient, nameof(ThumbnailBackgroundTaskQueue), Count());
 			var workItem =
 				await _queue.Reader.ReadAsync(cancellationToken);
 			return workItem;

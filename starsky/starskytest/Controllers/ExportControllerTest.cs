@@ -68,7 +68,6 @@ namespace starskytest.Controllers
 			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
 
-			_bgTaskQueue = new UpdateBackgroundTaskQueue();
 			
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -103,6 +102,8 @@ namespace starskytest.Controllers
 			// get the service
 			_appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 			
+			var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_bgTaskQueue = new UpdateBackgroundTaskQueue(scopeFactory);
 		}
 
 		[TestMethod]
@@ -110,7 +111,8 @@ namespace starskytest.Controllers
 		{
 			var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var storageSelector = new FakeSelectorStorage(iStorage);
-			var export = new ExportService(_query,_appSettings,storageSelector, new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
+			var export = new ExportService(_query,_appSettings,storageSelector, 
+				new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
 			var controller = new ExportController( _bgTaskQueue, storageSelector, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -163,7 +165,8 @@ namespace starskytest.Controllers
 
 			var appSettings = new AppSettings {TempFolder = _createAnImage.BasePath, Verbose = true};
 			
-			var export = new ExportService(fakeQuery,appSettings,storageSelector, new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
+			var export = new ExportService(fakeQuery,appSettings,storageSelector, 
+				new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
 			var controller = new ExportController(
 				backgroundQueue, storageSelector, export)
 			{
