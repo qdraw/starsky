@@ -9,7 +9,7 @@ const { readFile, writeFile } = require('fs').promises;
 const {getFiles} = require('./lib/get-files-directory');
 const { prefixPath } = require('./lib/prefix-path.const.js');
 
-let newVersion = "0.5.3";
+let newVersion = "0.5.4";
 
 // allow version as single argument
 const argv = process.argv.slice(2)
