@@ -41,7 +41,8 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 # version 0.5.4 _(Unreleased)_ - 2023-01-??
-- nothing yet
+
+- [x] (Added)  _Back-end_ App insights metrics for internal queues (PR #1028)
 
 # version 0.5.3 - 2023-01-23
 
