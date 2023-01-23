@@ -114,7 +114,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		cancelToken.Cancel();
 		
 		Assert.AreEqual(false, periodicThumbnailScanHostedService.IsEnabled);
-		Assert.AreEqual( TimeSpan.FromMinutes(15), periodicThumbnailScanHostedService.Period);
+		Assert.AreEqual( TimeSpan.FromMinutes(60), periodicThumbnailScanHostedService.Period);
 	}
 	
 	[TestMethod]

@@ -5,5 +5,5 @@ namespace starsky.feature.thumbnail.Interfaces;
 
 public interface IDatabaseThumbnailGenerationService
 {
-	Task StartBackgroundQueue(DateTime startTime, TimeSpan timeout);
+	Task StartBackgroundQueue(DateTime endTime);
 }

@@ -45,7 +45,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 			return;
 		}
 		
-		Period = TimeSpan.FromMinutes(15);
+		Period = TimeSpan.FromMinutes(60);
 	}
 
 
@@ -81,7 +81,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		{
 			await using var asyncScope = _factory.CreateAsyncScope();
 			var service = asyncScope.ServiceProvider.GetRequiredService<IDatabaseThumbnailGenerationService>();
-			await service.StartBackgroundQueue(DateTime.UtcNow, Period);
+			await service.StartBackgroundQueue(DateTime.UtcNow.Add(Period));
 			_executionCount++;
 			// Executed PeriodicThumbnailScanHostedService
 			_logger.LogInformation(
