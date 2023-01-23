@@ -5,11 +5,11 @@ namespace starsky.foundation.webtelemetry.Helpers;
 
 public static class MetricsHelper
 {
-	public static void Add(TelemetryClient? telemetryClient, string name, double value)
+	public static bool Add(TelemetryClient? telemetryClient, string name, int value)
 	{
 		if ( telemetryClient == null )
 		{
-			return;
+			return false;
 		}
 		
 		var sample = new MetricTelemetry
@@ -17,6 +17,8 @@ public static class MetricsHelper
 			Name = name, 
 			Sum = value
 		};
+		
 		telemetryClient.TrackMetric(sample);
+		return true;
 	}
 }

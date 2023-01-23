@@ -1,20 +1,27 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.sync.WatcherBackgroundService;
-using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 {
 	[TestClass]
 	public sealed class DiskWatcherBackgroundTaskQueueTest
 	{
+		private readonly IServiceScopeFactory _scopeFactory;
+
+		public DiskWatcherBackgroundTaskQueueTest()
+		{
+			var services = new ServiceCollection();
+			var serviceProvider = services.BuildServiceProvider();
+			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		}
+		
 		[TestMethod]
 		public void Test01()
 		{
-			var queue = new DiskWatcherBackgroundTaskQueue();
+			var queue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
 #pragma warning disable CS1998
 			queue.QueueBackgroundWorkItemAsync(async _ =>
 #pragma warning restore CS1998
@@ -32,28 +39,10 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		[TestMethod]
 		public async Task Count_AddOneForCount()
 		{
-			var backgroundQueue = new DiskWatcherBackgroundTaskQueue();
+			var backgroundQueue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(1,count);
 		}
-		
-
-		// [TestMethod]
-		// public void AppInsights_InjectClient()
-		// {
-		// 	var taskQueue = new DiskWatcherBackgroundTaskQueue(
-		// 		new TelemetryClient(new TelemetryConfiguration()));
-		// 	var result = taskQueue.TrackQueue();
-		// 	Assert.IsTrue(result);
-		// }
-		//
-		// [TestMethod]
-		// public void AppInsights_DoNotInjectClient()
-		// {
-		// 	var taskQueue = new DiskWatcherBackgroundTaskQueue();
-		// 	var result = taskQueue.TrackQueue();
-		// 	Assert.IsFalse(result);
-		// }
 	}
 }
