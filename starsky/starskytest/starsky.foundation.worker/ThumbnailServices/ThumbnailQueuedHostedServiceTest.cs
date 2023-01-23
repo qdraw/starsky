@@ -31,6 +31,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 	public sealed class ThumbnailQueuedHostedServiceTest
 	{
 		private readonly IThumbnailQueuedHostedService _bgTaskQueue;
+		private readonly IServiceScopeFactory _scopeFactory;
 
 		public ThumbnailQueuedHostedServiceTest()
 		{
@@ -59,6 +60,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
 			_bgTaskQueue = serviceProvider.GetRequiredService<IThumbnailQueuedHostedService>();
+			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
         
 		[TestMethod]
@@ -80,7 +82,8 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		[TestMethod]
 		public async Task Count_AddOneForCount()
 		{
-			var backgroundQueue = new ThumbnailBackgroundTaskQueue(new FakeICpuUsageListener(), new FakeIWebLogger(), new AppSettings());
+			var backgroundQueue = new ThumbnailBackgroundTaskQueue(new FakeICpuUsageListener(), 
+				new FakeIWebLogger(), new AppSettings(), _scopeFactory);
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(1,count);
@@ -92,7 +95,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		{
 			var e = new FakeICpuUsageListener(100d);
 			Console.WriteLine(e.CpuUsageMean);
-			var backgroundQueue = new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(), new AppSettings());
+			var backgroundQueue = new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(), new AppSettings(), _scopeFactory);
 			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(0,count);
