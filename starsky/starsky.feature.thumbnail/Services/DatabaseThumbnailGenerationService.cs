@@ -43,7 +43,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		_updateStatusGeneratedThumbnailService = updateStatusGeneratedThumbnailService;
 	}
 	
-	public async Task StartBackgroundQueue()
+	public async Task StartBackgroundQueue(DateTime startTime, TimeSpan timeout)
 	{
 		var thumbnailItems = await _thumbnailQuery.UnprocessedGeneratedThumbnails();
 		var queryItems = await _query.GetObjectsByFileHashAsync(thumbnailItems.Select(p => p.FileHash).ToList());
@@ -53,15 +53,30 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			// When the CPU is to high its gives a Error 500
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				await WorkThumbnailGeneration(chuckedItems.ToList(), queryItems);
+				await FilterAndWorkThumbnailGeneration(startTime, timeout,
+					chuckedItems.ToList(), queryItems);
 			}, "DatabaseThumbnailGenerationService");
 		}
 	}
 
+	internal async Task<IEnumerable<ThumbnailItem>> FilterAndWorkThumbnailGeneration(
+		DateTime startTime, TimeSpan timeout,
+		List<ThumbnailItem> chuckedItems,
+		List<FileIndexItem> queryItems)
+	{
+		if ( startTime.Add(timeout) < DateTime.UtcNow )
+			return await WorkThumbnailGeneration(chuckedItems, queryItems);
+		
+		_logger.LogInformation("Cancel job due timeout");
+		return new List<ThumbnailItem>();
+	}
+	
 	internal async Task<IEnumerable<ThumbnailItem>> WorkThumbnailGeneration(
 		List<ThumbnailItem> chuckedItems,
 		List<FileIndexItem> fileIndexItems)
 	{
+		var resultData = new List<FileIndexItem>();
+		
 		foreach ( var item in chuckedItems )
 		{
 			var fileIndexItem = fileIndexItems.FirstOrDefault(p => p.FileHash == item.FileHash);
@@ -81,9 +96,10 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			await _updateStatusGeneratedThumbnailService.UpdateStatusAsync(
 				generationResultModels);
 			fileIndexItem.SetLastEdited();
+			resultData.Add(fileIndexItem);
 		}
 		
-		var filteredData = fileIndexItems
+		var filteredData = resultData
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
 
 		if ( !filteredData.Any() )

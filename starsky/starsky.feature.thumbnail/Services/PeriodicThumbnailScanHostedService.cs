@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
@@ -78,10 +79,10 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		{
 			await using var asyncScope = _factory.CreateAsyncScope();
 			var service = asyncScope.ServiceProvider.GetRequiredService<IDatabaseThumbnailGenerationService>();
-			await service.StartBackgroundQueue(); 
+			await service.StartBackgroundQueue(DateTime.UtcNow, Period);
 			_executionCount++;
 			_logger.LogInformation(
-				$"Executed {nameof(PeriodicThumbnailScanHostedService)} - Count: {_executionCount}");
+				$"Executed {nameof(PeriodicThumbnailScanHostedService)} - Count: {_executionCount} ({DateTime.UtcNow:hh:mm:ss})");
 			return true;
 		}
 		catch (Exception ex)
