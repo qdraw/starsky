@@ -51,11 +51,13 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		await StartBackgroundAsync(stoppingToken);
+		await StartBackgroundAsync(true, stoppingToken);
 	}
 
-	internal async Task StartBackgroundAsync(CancellationToken cancellationToken)
+	internal async Task StartBackgroundAsync(bool startDirect, CancellationToken cancellationToken)
 	{
+		if ( startDirect ) await RunJob(cancellationToken);
+		
 		using var timer = new PeriodicTimer(Period);
 		while (
 			!cancellationToken.IsCancellationRequested &&
@@ -81,14 +83,17 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 			var service = asyncScope.ServiceProvider.GetRequiredService<IDatabaseThumbnailGenerationService>();
 			await service.StartBackgroundQueue(DateTime.UtcNow, Period);
 			_executionCount++;
+			// Executed PeriodicThumbnailScanHostedService
 			_logger.LogInformation(
-				$"Executed {nameof(PeriodicThumbnailScanHostedService)} - Count: {_executionCount} ({DateTime.UtcNow:hh:mm:ss})");
+				$"Executed {nameof(PeriodicThumbnailScanHostedService)} -" +
+				$" Count: {_executionCount} ({DateTime.UtcNow:HH:mm:ss})");
 			return true;
 		}
 		catch (Exception ex)
 		{
 			_logger.LogInformation(
-				$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} with exception message {ex.Message}. Good luck next round!");
+				$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} " +
+				$"with exception message {ex.Message}. Good luck next round!");
 		}
 		return null;
 	}

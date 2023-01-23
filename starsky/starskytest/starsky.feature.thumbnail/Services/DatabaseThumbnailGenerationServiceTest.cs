@@ -164,9 +164,11 @@ public class DatabaseThumbnailGenerationServiceTest
 			bgTaskQueue,
 			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())
 		);
-		
+
+		var oldYear = new DateTime(2000, 01, 01);
+		var oldDiff = (oldYear - DateTime.UtcNow) + new TimeSpan(1,0,0);
 		var result = (await databaseThumbnailGenerationService.FilterAndWorkThumbnailGeneration(
-			new DateTime(2000,01,01), TimeSpan.FromHours(1),  
+			new DateTime(2000,01,01), oldDiff,  
 			new List<ThumbnailItem>
 			{
 				new ThumbnailItem("23478928939438234",null,null,null,null)

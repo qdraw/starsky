@@ -64,8 +64,11 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		List<ThumbnailItem> chuckedItems,
 		List<FileIndexItem> queryItems)
 	{
-		if ( startTime.Add(timeout) < DateTime.UtcNow )
+		var startTimeWithAdd = startTime.Add(timeout);
+		if ( DateTime.UtcNow > startTimeWithAdd )
+		{
 			return await WorkThumbnailGeneration(chuckedItems, queryItems);
+		}
 		
 		_logger.LogInformation("Cancel job due timeout");
 		return new List<ThumbnailItem>();
