@@ -8,7 +8,7 @@ public class FakeIDatabaseThumbnailGenerationService : IDatabaseThumbnailGenerat
 {
 	public int Count { get; set; }
 
-	public Task StartBackgroundQueue(DateTime startTime, TimeSpan timeout)
+	public Task StartBackgroundQueue(DateTime endTime)
 	{
 		Count++;
 		return Task.CompletedTask;

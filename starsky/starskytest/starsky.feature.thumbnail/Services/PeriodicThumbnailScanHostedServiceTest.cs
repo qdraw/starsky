@@ -36,7 +36,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var cancelToken = new CancellationTokenSource();
 		cancelToken.Cancel();
 		
-		await periodicThumbnailScanHostedService.StartBackgroundAsync(
+		await periodicThumbnailScanHostedService.StartBackgroundAsync(false,
 			cancelToken.Token);
 
 		var fakeService = scopeFactory.CreateScope().ServiceProvider
@@ -68,6 +68,32 @@ public class PeriodicThumbnailScanHostedServiceTest
 	
 	[TestMethod]
 	[Timeout(5000)]
+	[ExpectedException(typeof(OperationCanceledException))]
+	public async Task StartBackgroundAsync_StartDirect()
+	{
+		var services = new ServiceCollection();
+		services
+			.AddScoped<IDatabaseThumbnailGenerationService,
+				FakeIDatabaseThumbnailGenerationService>();
+		
+		var serviceProvider = services.BuildServiceProvider();
+		var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(new AppSettings
+			{
+				ThumbnailGenerationIntervalInMinutes = -1
+			},
+			new FakeIWebLogger(),
+			scopeFactory);
+		var cancelToken = new CancellationTokenSource();
+		cancelToken.Cancel();
+		
+		await periodicThumbnailScanHostedService.StartBackgroundAsync(true,
+			cancelToken.Token);
+	}
+	
+	[TestMethod]
+	[Timeout(5000)]
 	public void StartBackgroundAsync_SetEnabled_ValueBelow2Minutes()
 	{
 		var services = new ServiceCollection();
@@ -88,7 +114,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		cancelToken.Cancel();
 		
 		Assert.AreEqual(false, periodicThumbnailScanHostedService.IsEnabled);
-		Assert.AreEqual( TimeSpan.FromMinutes(15), periodicThumbnailScanHostedService.Period);
+		Assert.AreEqual( TimeSpan.FromMinutes(60), periodicThumbnailScanHostedService.Period);
 	}
 	
 	[TestMethod]
@@ -117,7 +143,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var cancelToken = new CancellationTokenSource();
 		cancelToken.CancelAfter(200);
 		
-		await periodicThumbnailScanHostedService.StartBackgroundAsync(
+		await periodicThumbnailScanHostedService.StartBackgroundAsync(false,
 			cancelToken.Token);
 	}
 

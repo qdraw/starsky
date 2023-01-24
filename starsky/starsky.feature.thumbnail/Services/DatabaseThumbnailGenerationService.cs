@@ -43,7 +43,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		_updateStatusGeneratedThumbnailService = updateStatusGeneratedThumbnailService;
 	}
 	
-	public async Task StartBackgroundQueue(DateTime startTime, TimeSpan timeout)
+	public async Task StartBackgroundQueue(DateTime endTime)
 	{
 		var thumbnailItems = await _thumbnailQuery.UnprocessedGeneratedThumbnails();
 		var queryItems = await _query.GetObjectsByFileHashAsync(thumbnailItems.Select(p => p.FileHash).ToList());
@@ -53,19 +53,21 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			// When the CPU is to high its gives a Error 500
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				await FilterAndWorkThumbnailGeneration(startTime, timeout,
+				await FilterAndWorkThumbnailGeneration(endTime,
 					chuckedItems.ToList(), queryItems);
 			}, "DatabaseThumbnailGenerationService");
 		}
 	}
 
 	internal async Task<IEnumerable<ThumbnailItem>> FilterAndWorkThumbnailGeneration(
-		DateTime startTime, TimeSpan timeout,
+		DateTime endTime,
 		List<ThumbnailItem> chuckedItems,
 		List<FileIndexItem> queryItems)
 	{
-		if ( startTime.Add(timeout) < DateTime.UtcNow )
+		if ( endTime > DateTime.UtcNow )
+		{
 			return await WorkThumbnailGeneration(chuckedItems, queryItems);
+		}
 		
 		_logger.LogInformation("Cancel job due timeout");
 		return new List<ThumbnailItem>();
