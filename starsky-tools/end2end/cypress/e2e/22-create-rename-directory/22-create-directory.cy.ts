@@ -101,33 +101,57 @@ describe('Create Rename Dir', () => {
   it('delete it afterwards', () => {
     if (!config.isEnabled) return
 
-    cy.visit(config.url)
+    // make sure the folder is there
+    cy.request({
+      method: 'POST',
+      url: config.apiMkdir,
+      form: true,
+      body: {
+        f: '/starsky-end2end-test/z_test_auto_created_update'
+      },
+      failOnStatusCode: false
+    }).then(() => {
+      cy.resetStorage()
 
-    cy.get('.item.item--select').click()
-    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').click()
+      cy.visit(config.url)
 
-    cy.get('.item.item--more').click()
-    cy.get('[data-test=trash]').click()
+      cy.get('.item.item--select').click()
+      cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').click()
 
-    cy.wait(3000)
-    cy.visit(config.trash)
+      cy.get('.item.item--more').click()
 
-    cy.get('.item.item--select').click()
-    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').click({ force: true })
+      cy.intercept(config.apiUpdate).as('updateToTrash')
+      cy.get('[data-test=trash]').click()
+      cy.wait('@updateToTrash')
 
-    // menu ->
-    cy.get('.item.item--more').click()
-    cy.get('[data-test=delete]').click()
+      console.log('test')
+      cy.wait(5000)
 
-    // verwijder onmiddelijk
-    cy.get('.modal .btn.btn--default').click()
+      cy.request(config.apiTrash).then((response) => {
+        cy.log(response.body.fileIndexItems)
+        console.log('---')
 
-    // item should be in the trash
-    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
+        cy.log(response.body.fileIndexItems.find((x: any) => x.filePath === '/starsky-end2end-test/z_test_auto_created_update'))
 
-    // and not in the source folder
-    cy.visit(config.url)
-    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
+        cy.visit(config.trash)
+        cy.get('.item.item--select').click()
+        cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').click({ force: true })
+
+        // menu ->
+        cy.get('.item.item--more').click()
+        cy.get('[data-test=delete]').click()
+
+        // verwijder onmiddelijk
+        cy.get('.modal .btn.btn--default').click()
+
+        // item should be in the trash
+        cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
+
+        // and not in the source folder
+        cy.visit(config.url)
+        cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
+      })
+    })
   })
 
   it('safe guard for other tests - if not deleted remove via the api', () => {
