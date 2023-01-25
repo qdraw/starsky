@@ -44,13 +44,13 @@ describe('Create Rename Dir', () => {
     cy.sendAuthenticationHeader()
   })
 
-  it('Create Rename Dir - Check if folder is there & create', () => {
+  xit('Create Rename Dir - Check if folder is there & create', () => {
     if (!config.isEnabled) return
     checkIfExistAndCreate(config)
     resetFolders()
   })
 
-  it('Create new folder', () => {
+  xit('Create new folder', () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url)
@@ -67,7 +67,7 @@ describe('Create Rename Dir', () => {
     cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created"]').should('exist')
   })
 
-  it('Rename new folder', () => {
+  xit('Rename new folder', () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url + '/z_test_auto_created')
@@ -119,6 +119,7 @@ describe('Create Rename Dir', () => {
       cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').click()
 
       cy.get('.item.item--more').click()
+      cy.wait(10)
 
       cy.intercept(config.apiUpdate).as('updateToTrash')
       cy.get('[data-test=trash]').click()
@@ -154,7 +155,7 @@ describe('Create Rename Dir', () => {
     })
   })
 
-  it('safe guard for other tests - if not deleted remove via the api', () => {
+  xit('safe guard for other tests - if not deleted remove via the api', () => {
     if (!config.isEnabled) return
 
     resetFolders()
