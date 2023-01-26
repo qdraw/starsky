@@ -64,9 +64,13 @@ namespace starsky.Controllers
 		public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, 
 			bool collections = true, int rotateClock = 0)
 		{
-			var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
-		    
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
+			if ( !inputFilePaths.Any() )
+			{
+				return BadRequest("No input files");
+			}
+			
+			var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
 
 			var (fileIndexResultsList, changedFileIndexItemName) =  await _metaPreflight.Preflight(inputModel, 
 				inputFilePaths, append, collections, rotateClock);

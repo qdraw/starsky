@@ -133,6 +133,11 @@ namespace starsky.Controllers
 		[Produces("application/json")]	    
 		public async Task<IActionResult> Rename(string f, string to, bool collections = true, bool currentStatus = true)
 		{
+			if ( string.IsNullOrEmpty(f) )
+			{
+				return BadRequest("No input files");
+			}
+			
 			var rename = await new RenameService(_query, _iStorage).Rename(f, to, collections);
 		    
 			// When all items are not found

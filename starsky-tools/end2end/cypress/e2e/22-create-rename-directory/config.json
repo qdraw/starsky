@@ -13,7 +13,8 @@
         "trash": "/trash",
         "apiTrash": "/api/search/trash",
         "apiMkdir": "/starsky/api/disk/mkdir",
-        "apiUpdate": "/starsky/api/update"
+        "apiUpdate": "/starsky/api/update",
+        "apiRename": "/starsky/api/disk/rename"
       },
       "heroku-demo" : {
         "isEnabled": true,
@@ -28,7 +29,8 @@
         "trash": "/trash",
         "apiTrash": "/api/search/trash",
         "apiMkdir": "/starsky/api/disk/mkdir",
-        "apiUpdate": "/starsky/api/update"
+        "apiUpdate": "/starsky/api/update",
+        "apiRename": "/starsky/api/disk/rename"
       },
       "no-create-account" : {
         "isEnabled": true,
@@ -43,7 +45,8 @@
         "trash": "/trash",
         "apiTrash": "/api/search/trash",
         "apiMkdir": "/starsky/api/disk/mkdir",
-        "apiUpdate": "/starsky/api/update"
+        "apiUpdate": "/starsky/api/update",
+        "apiRename": "/starsky/api/disk/rename"
       }
     }
   }

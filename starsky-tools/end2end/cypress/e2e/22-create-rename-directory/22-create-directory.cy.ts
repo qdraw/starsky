@@ -44,13 +44,13 @@ describe('Create Rename Dir', () => {
     cy.sendAuthenticationHeader()
   })
 
-  xit('Create Rename Dir - Check if folder is there & create', () => {
+  it('Create Rename Dir - Check if folder is there & create', () => {
     if (!config.isEnabled) return
     checkIfExistAndCreate(config)
     resetFolders()
   })
 
-  xit('Create new folder', () => {
+  it('Create new folder', () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url)
@@ -58,7 +58,9 @@ describe('Create Rename Dir', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=mkdir]').click()
 
-    cy.intercept('/starsky/api/disk/mkdir').as('mkdir')
+    cy.intercept('/starsky/api/disk/mkdir', (req) => {
+      req.headers['content-type'] = 'application/x-www-form-urlencoded'
+    }).as('mkdir')
     cy.get('[data-name=directoryname]').type('z_test_auto_created')
     cy.get('[data-test=modal-archive-mkdir-btn-default]').click()
     cy.wait('@mkdir')
@@ -67,7 +69,7 @@ describe('Create Rename Dir', () => {
     cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created"]').should('exist')
   })
 
-  xit('Rename new folder', () => {
+  it('Rename new folder', () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url + '/z_test_auto_created')
@@ -75,7 +77,9 @@ describe('Create Rename Dir', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=rename]').click()
 
-    cy.intercept('/starsky/api/disk/rename').as('rename')
+    cy.intercept(config.apiRename, (req) => {
+      req.headers['content-type'] = 'application/x-www-form-urlencoded'
+    }).as('rename')
 
     cy.get('[data-name=foldername]').type('_update')
     cy.get('.btn.btn--default').click()
@@ -98,7 +102,9 @@ describe('Create Rename Dir', () => {
     cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created"]').should('not.exist')
   })
 
-  it('delete it afterwards', () => {
+  it('delete it afterwards', {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
     if (!config.isEnabled) return
 
     // make sure the folder is there
@@ -122,17 +128,28 @@ describe('Create Rename Dir', () => {
       cy.wait(10)
 
       cy.intercept(config.apiUpdate).as('updateToTrash')
+
+      cy.intercept(config.apiUpdate, (req) => {
+        req.headers['content-type'] = 'application/x-www-form-urlencoded'
+      }).as('updateToTrash')
+
       cy.get('[data-test=trash]').click()
       cy.wait('@updateToTrash')
 
-      console.log('test')
-      cy.wait(5000)
+      console.log('next check if is in trash')
+      cy.wait(10)
 
       cy.request(config.apiTrash).then((response) => {
-        cy.log(response.body.fileIndexItems)
-        console.log('---')
-
-        cy.log(response.body.fileIndexItems.find((x: any) => x.filePath === '/starsky-end2end-test/z_test_auto_created_update'))
+        const message = response.body.fileIndexItems.find((x: any) => x.filePath === '/starsky-end2end-test/z_test_auto_created_update')
+        if (message?.filePath === '/starsky-end2end-test/z_test_auto_created_update') {
+          cy.log('found')
+          cy.log(message)
+        } else {
+          cy.log('NOT found')
+          cy.log(response.body)
+          resetFolders()
+          throw new Error('not found')
+        }
 
         cy.visit(config.trash)
         cy.get('.item.item--select').click()
@@ -151,11 +168,12 @@ describe('Create Rename Dir', () => {
         // and not in the source folder
         cy.visit(config.url)
         cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
+        resetFolders()
       })
     })
   })
 
-  xit('safe guard for other tests - if not deleted remove via the api', () => {
+  it('safe guard for other tests - if not deleted remove via the api', () => {
     if (!config.isEnabled) return
 
     resetFolders()

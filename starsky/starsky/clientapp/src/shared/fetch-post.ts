@@ -26,7 +26,7 @@ const FetchPost = async (
   };
 
   if (typeof body === "string") {
-    (settings.headers as any)["Content-type"] =
+    (settings.headers as any)["Content-Type"] =
       "application/x-www-form-urlencoded";
   }
 
