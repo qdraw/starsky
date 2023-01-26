@@ -57,7 +57,7 @@ namespace starsky.Controllers
 				Response.StatusCode = 400;
 				return Json(new List<SyncViewModel>());
 			}
-			
+
 			var syncResultsList = new List<SyncViewModel>();
 
 			foreach ( var subPath in inputFilePaths.Select(PathHelper.RemoveLatestSlash) )
@@ -104,14 +104,10 @@ namespace starsky.Controllers
 		/// <returns>Completed send of Socket SendToAllAsync</returns>
 		private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, ApiNotificationType type = ApiNotificationType.Unknown)
 		{
-			var list = syncResultsList.Where(p => 
-					p.Status is FileIndexItem.ExifStatus.Ok 
-						or FileIndexItem.ExifStatus.Deleted)
-				.Select(t => new FileIndexItem(t.FilePath)
-				{
-					Status = t.Status, 
-					IsDirectory = true
-				}).ToList();
+			var list = syncResultsList.Select(t => new FileIndexItem(t.FilePath)
+			{
+				Status = t.Status, IsDirectory = true
+			}).ToList();
 
 			var webSocketResponse = new ApiNotificationResponseModel<
 				List<FileIndexItem>>(list, type);
