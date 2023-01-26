@@ -262,5 +262,32 @@ namespace starskytest.Controllers
 			Assert.AreEqual(expected, actual);
 		}
 		
+				
+		[TestMethod]
+		public async Task UpdateAsync_BadRequest()
+		{
+			var context = new ControllerContext
+			{
+				HttpContext = new DefaultHttpContext()
+			};
+			var serviceScopeFactory = NewScopeFactory();
+			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
+
+			var metaPreflight = new MetaPreflight(_query,
+				_appSettings,selectorStorage,new FakeIWebLogger());
+			var metaUpdateService = new MetaUpdateService(_query, _exifTool,
+				selectorStorage, new FakeMetaPreflight(),
+				new FakeIWebLogger(), new FakeReadMetaSubPathStorage(), 
+				new FakeIThumbnailService(), new FakeIThumbnailQuery());
+			
+			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, new FakeIUpdateBackgroundTaskQueue(), 
+				new FakeIWebLogger(),serviceScopeFactory);
+			controller.ControllerContext = context;
+
+			var result = await controller.UpdateAsync(new FileIndexItem(),string.Empty, true) as BadRequestObjectResult;
+			
+			Assert.AreEqual(400,result?.StatusCode);
+		}
+		
 	}
 }

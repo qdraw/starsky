@@ -14,7 +14,7 @@ describe("fetch-post", () => {
       credentials: "include",
       headers: {
         Accept: "application/json",
-        "Content-type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded",
         "X-XSRF-TOKEN": "X-XSRF-TOKEN"
       },
       method: "post"
@@ -35,7 +35,7 @@ describe("fetch-post", () => {
       credentials: "include",
       headers: {
         Accept: "application/json",
-        "Content-type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded",
         "X-XSRF-TOKEN": "X-XSRF-TOKEN"
       },
       method: "post"
@@ -61,7 +61,7 @@ describe("fetch-post", () => {
       credentials: "include",
       headers: {
         Accept: "application/json",
-        "Content-type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded",
         "X-XSRF-TOKEN": "X-XSRF-TOKEN"
       },
       method: "post"
@@ -80,7 +80,7 @@ describe("fetch-post", () => {
       credentials: "include",
       headers: {
         Accept: "application/json",
-        "Content-type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded",
         "X-XSRF-TOKEN": "X-XSRF-TOKEN"
       },
       method: "post"
