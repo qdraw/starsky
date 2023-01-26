@@ -37,7 +37,7 @@ namespace starsky.Controllers
 		/// <summary>
 		/// Download sidecar file for example image.xmp
 		/// </summary>
-		/// <param name="f">string, 'sub path' to find the file</param>
+		/// <param name="f">string, subPath to find the file</param>
 		/// <returns>FileStream with image</returns>
 		/// <response code="200">returns content of the file</response>
 		/// <response code="404">source image missing</response>

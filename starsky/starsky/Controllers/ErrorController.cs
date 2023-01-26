@@ -15,7 +15,7 @@ namespace starsky.Controllers
 		}
 		
 		/// <summary>
-		/// Return Error page
+		/// Return Error page (HTML)
 		/// </summary>
 		/// <param name="statusCode">to add the status code to the response</param>
 		/// <returns>Any Error html page</returns>
