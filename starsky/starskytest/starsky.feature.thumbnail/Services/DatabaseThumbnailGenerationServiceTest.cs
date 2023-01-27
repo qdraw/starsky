@@ -78,8 +78,7 @@ public class DatabaseThumbnailGenerationServiceTest
 		
 		Assert.AreEqual(0,result.Count());
 	}
-	
-	
+
 	[TestMethod]
 	public async Task WorkThumbnailGeneration_NotFoundItem_Database()
 	{
@@ -149,6 +148,46 @@ public class DatabaseThumbnailGenerationServiceTest
 		Assert.AreEqual(1,result.Count);
 		Assert.AreEqual(0,(await thumbnailQuery.Get( "74283reiotfskl")).Count);
 	}
+	
+		
+	[TestMethod]
+	public async Task WorkThumbnailGeneration_FoundUpdate()
+	{
+		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
+		var thumbnailQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
+		{
+			new ThumbnailItem("345742938fsdjkdfkj",null,null,null,null)
+		});
+		
+		var databaseThumbnailGenerationService = new DatabaseThumbnailGenerationService(
+			new FakeIQuery(), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+			new FakeIThumbnailService(new FakeSelectorStorage(new FakeIStorage(new List<string>(), new List<string>
+			{
+				"/test.jpg"
+			}, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}))),
+			thumbnailQuery,
+			bgTaskQueue,
+			new UpdateStatusGeneratedThumbnailService(thumbnailQuery)
+		);
+		
+		var result = (await databaseThumbnailGenerationService.WorkThumbnailGeneration(
+			new List<ThumbnailItem>
+			{
+				new ThumbnailItem("345742938fsdjkdfkj",null,null,null,null)
+			}, new List<FileIndexItem>
+			{
+				new FileIndexItem()
+				{
+					FileHash = "345742938fsdjkdfkj",
+					FilePath = "/test.jpg",
+					Status = FileIndexItem.ExifStatus.Ok
+				}
+			})).ToList();
+		
+		Assert.AreEqual(1,result.Count);
+		Assert.AreEqual(1,(await thumbnailQuery.Get( "345742938fsdjkdfkj")).Count);
+		Assert.AreEqual(null,result.FirstOrDefault()!.Large);
+	}
 		
 	[TestMethod]
 	public async Task WorkThumbnailGeneration_MatchItem()
@@ -217,8 +256,7 @@ public class DatabaseThumbnailGenerationServiceTest
 		
 		Assert.AreEqual(0,result.Count);
 	}
-	
-		
+
 	[TestMethod]
 	public async Task FilterWorkThumbnailGeneration_MatchItem()
 	{
