@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Interfaces;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -24,6 +25,7 @@ namespace starskywebhtmlcli
 	        var serviceProvider = services.BuildServiceProvider();
 	        var appSettings = serviceProvider.GetRequiredService<AppSettings>();
             
+	        new SetupDatabaseTypes(appSettings,services).BuilderDb();
 	        serviceProvider = services.BuildServiceProvider();
 
 	        var publishPreflight = serviceProvider.GetService<IPublishPreflight>();
