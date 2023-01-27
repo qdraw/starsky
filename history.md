@@ -48,6 +48,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/disk/rename` (PR #1030)
 - [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/update` (PR #1030)
 - [x] (Changed)  _Tests_ Update create directory end2end tests (PR #1030)
+- [x] (Changed)  _Tests_ retry end2end test: Create Rename Dir > delete it afterwards (PR #1032)
+- [x] (Changed)  _Back-end_ Add thumbnail query delete for not found items (PR #1032)
+- [x] (Changed)  _Back-end_ starskyWebHtmlCli missing db context (PR #1032)
 
 # version 0.5.3 - 2023-01-23
 
