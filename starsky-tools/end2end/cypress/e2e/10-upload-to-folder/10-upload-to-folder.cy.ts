@@ -4,8 +4,8 @@ import { checkIfExistAndCreate } from '../helpers/create-directory-helper.cy'
 import { uploadFileName1 } from './upload-filename1.cy'
 const config = configFile[envFolder][envName]
 
-describe('Upload to folder', () => {
-  beforeEach('Check some config settings and do them before each test', () => {
+describe('Upload to folder (10)', () => {
+  beforeEach('Check some config settings and do them before each test (10)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false
@@ -17,7 +17,7 @@ describe('Upload to folder', () => {
     cy.sendAuthenticationHeader()
   })
 
-  it('Upload to folder - Check if folder is there & create', () => {
+  it('Upload to folder - Check if folder is there & create (10)', () => {
     if (!config.isEnabled) return
     checkIfExistAndCreate(config)
     cy.wait(1000)
@@ -28,7 +28,7 @@ describe('Upload to folder', () => {
   const fileName3 = '20200822_134151.jpg'
   const fileName4 = '20200822_134151.mp4'
 
-  it('Check if more menu exist', {
+  it('Check if more menu exist (10)', {
     retries: { runMode: 1, openMode: 1 }
   }, () => {
     if (!config.isEnabled) return
@@ -39,7 +39,7 @@ describe('Upload to folder', () => {
     cy.get('.menu-option--input label')
   })
 
-  it('Upload content and check if the name exist', {
+  it('Upload content and check if the name exist (10)', {
     retries: { runMode: 2, openMode: 2 }
   }, () => {
     if (!config.isEnabled) return
@@ -47,7 +47,7 @@ describe('Upload to folder', () => {
     uploadFileName1(config.url, fileName1)
   })
 
-  it('Upload more content and check if the name exist', {
+  it('Upload more content and check if the name exist (10)', {
     retries: { runMode: 2, openMode: 2 }
   }, () => {
     if (!config.isEnabled) return
@@ -90,7 +90,7 @@ describe('Upload to folder', () => {
     cy.get('.modal-exit-button').click()
   })
 
-  it('check if list has three items', () => {
+  it('check if list has three items (10)', () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url)
