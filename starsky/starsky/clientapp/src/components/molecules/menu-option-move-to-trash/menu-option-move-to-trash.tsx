@@ -74,9 +74,10 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       console.log(resultDo);
 
       if (
-        resultDo.statusCode !== 404 &&
-        resultDo.statusCode !== 200 &&
-        resultDo.statusCode !== 400
+        resultDo.statusCode === 404 ||
+        resultDo.statusCode === 400 ||
+        resultDo.statusCode === 500 ||
+        resultDo.statusCode === 502
       ) {
         return;
       }
