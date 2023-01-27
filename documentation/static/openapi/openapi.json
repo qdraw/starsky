@@ -2637,6 +2637,59 @@
               "extensions": {},
               "unresolvedReference": false
             },
+            "400": {
+              "description": "missing path",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "type": 0,
+                        "id": "SyncViewModel",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/SyncViewModel",
+                        "referenceV2": "#/definitions/SyncViewModel"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
             "401": {
               "description": "User unauthorized",
               "headers": {},
