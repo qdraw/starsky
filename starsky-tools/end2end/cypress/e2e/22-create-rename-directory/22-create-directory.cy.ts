@@ -144,11 +144,12 @@ describe('Create Rename Dir', () => {
         if (message?.filePath === '/starsky-end2end-test/z_test_auto_created_update') {
           cy.log('found')
           cy.log(message)
+          cy.log(message.filePath)
         } else {
-          cy.log('NOT found')
+          cy.log(' z_test_auto_created_update NOT found')
           cy.log(response.body)
           resetFolders()
-          throw new Error('not found')
+          expect('').to.be('not found')
         }
 
         cy.visit(config.trash)

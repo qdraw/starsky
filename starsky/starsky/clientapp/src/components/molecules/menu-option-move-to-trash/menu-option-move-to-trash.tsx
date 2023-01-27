@@ -71,6 +71,8 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
         new UrlQuery().UrlUpdateApi(),
         bodyParams.toString()
       );
+      console.log(resultDo);
+
       if (
         resultDo.statusCode !== 404 &&
         resultDo.statusCode !== 200 &&
