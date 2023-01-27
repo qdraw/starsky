@@ -21,7 +21,7 @@ describe('Delete file from upload (50)', () => {
   const fileName3 = '20200822_134151.jpg'
   const fileName4 = '20200822_134151.mp4'
 
-  it('clear cache & upload all files that are needed in background', () => {
+  it('clear cache & upload all files that are needed in background (50)', () => {
     // clean trash
     cy.request({
       failOnStatusCode: false,
@@ -58,7 +58,7 @@ describe('Delete file from upload (50)', () => {
     waitOnUploadIsDone(0)
   })
 
-  it('check if upload is done', () => {
+  it('check if upload is done (50)', () => {
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.fileIndexItems.length).to.eq(4)
@@ -88,7 +88,7 @@ describe('Delete file from upload (50)', () => {
     })
   }
 
-  it('remove collection item, but not the other file', () => {
+  it('remove collection item, but not the other file (50)', () => {
     cy.visit(config.urlVideoItemCollectionsFalse)
 
     cy.get('.item.item--more').click()
@@ -160,7 +160,7 @@ describe('Delete file from upload (50)', () => {
     })
   }
 
-  it('remove first on to trash and undo afterwards', () => {
+  it('remove first on to trash and undo afterwards (50)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
 
@@ -239,7 +239,7 @@ describe('Delete file from upload (50)', () => {
     cy.get('.folder > div').contains(fileName1)
   })
 
-  it('remove item and remove from trash', () => {
+  it('remove item and remove from trash (50)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
 

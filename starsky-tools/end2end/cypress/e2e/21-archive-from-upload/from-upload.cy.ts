@@ -26,13 +26,13 @@ describe('Archive (from upload)', () => {
     })
   })
 
-  it('Check if folder is there', () => {
+  it('Check if folder is there (21)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
     cy.get(flow.content)
   })
 
-  it('should match order', () => {
+  it('should match order (21)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
 
@@ -49,7 +49,7 @@ describe('Archive (from upload)', () => {
       .should('equal', '/starsky-end2end-test/20200822_134151.jpg')
   })
 
-  it('contains elements', () => {
+  it('contains elements (21)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
 
@@ -64,7 +64,7 @@ describe('Archive (from upload)', () => {
     ).should('have.length', 1)
   })
 
-  it('test realtime update 2 websockets', () => {
+  it('test realtime update 2 websockets (21)', () => {
     return new Cypress.Promise((resolve) => {
       if (!config.isEnabled) return
 
@@ -103,7 +103,7 @@ describe('Archive (from upload)', () => {
     })
   })
 
-  it('test realtime update notification api 3', () => {
+  it('test realtime update notification api 3 (21)', () => {
     if (!config.isEnabled) return
 
     const sourceTags = 'tete de balacha, bergtop, mist, flaine'
@@ -151,7 +151,7 @@ describe('Archive (from upload)', () => {
     resetAfterwards(sourceTags)
   })
 
-  xit('test realtime update', async () => {
+  xit('test realtime update (21)', async () => {
     if (!config.isEnabled) return
 
     await new Cypress.Promise((resolve) => {
