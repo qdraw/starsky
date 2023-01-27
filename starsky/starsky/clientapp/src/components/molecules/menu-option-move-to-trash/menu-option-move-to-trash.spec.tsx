@@ -131,6 +131,54 @@ describe("MenuOptionMoveToTrash", () => {
       expect(dispatch).toBeCalledTimes(0);
       component.unmount();
     });
+
+    it("check if not dispatch when readonly", () => {
+      console.log("-- check if not dispatch when readonly");
+
+      jest.spyOn(FetchPost, "default").mockReset();
+      const test = {
+        ...newIArchive(),
+        fileIndexItems: [
+          {
+            ...newIFileIndexItem(),
+            parentDirectory: "/",
+            fileName: "test.jpg"
+          } as IFileIndexItem
+        ]
+      } as IArchiveProps;
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
+          ...newIConnectionDefault(),
+          data: null,
+          statusCode: 400 // -- error
+        });
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const dispatch = jest.fn();
+      const component = render(
+        <MenuOptionMoveToTrash
+          setSelect={jest.fn()}
+          select={["test.jpg"]}
+          isReadOnly={true}
+          state={test}
+          dispatch={dispatch}
+        />
+      );
+
+      const trashButton = component.queryByTestId("trash") as HTMLButtonElement;
+      expect(trashButton).toBeTruthy();
+
+      act(() => {
+        trashButton.click();
+      });
+
+      expect(fetchPostSpy).toBeCalledTimes(0);
+      expect(dispatch).toBeCalledTimes(0);
+      component.unmount();
+    });
   });
   describe("context 2", () => {
     it("check if when pressing Delete key", () => {
