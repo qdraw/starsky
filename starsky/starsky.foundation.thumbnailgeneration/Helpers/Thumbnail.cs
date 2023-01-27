@@ -114,16 +114,17 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		private async Task<IEnumerable<GenerationResultModel>> CreateThumbInternal(string subPath, string fileHash, bool skipExtraLarge = false)
 		{
 			// FileType=supported + subPath=exit + fileHash=NOT exist
-			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
-			     !_iStorage.ExistFile(subPath) )
+			var extensionSupported = ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath);
+			var existsFile = _iStorage.ExistFile(subPath);
+			if ( !extensionSupported || !existsFile )
 			{
 				return ThumbnailNameHelper.GeneratedThumbnailSizes.Select(size => new GenerationResultModel
 				{
 					SubPath = subPath,
 					FileHash = fileHash,
 					Success = false,
-					IsNotFound = true,
-					ErrorMessage = "File is deleted OR not supported",
+					IsNotFound = !existsFile,
+					ErrorMessage = !extensionSupported ? "not supported" : "File is not found",
 					Size = size
 				}).ToList();
 			}

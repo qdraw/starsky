@@ -437,7 +437,7 @@ public class ThumbnailQueryTest
 		
 		// Act
 		var query = new ThumbnailQuery(_context, null!);
-		await query.RemoveThumbnails(new List<string>{"3478534758"});
+		await query.RemoveThumbnailsAsync(new List<string>{"3478534758"});
 
 		// Assert
 		var getter = await query.Get("3478534758");
@@ -460,7 +460,7 @@ public class ThumbnailQueryTest
 		
 		// Act
 		var query = new ThumbnailQuery(_context, null!);
-		await query.RemoveThumbnails(new List<string>{"9086798654","9607374598453"});
+		await query.RemoveThumbnailsAsync(new List<string>{"9086798654","9607374598453"});
 
 		// Assert
 		var getter = await query.Get("9607374598453");
@@ -472,7 +472,7 @@ public class ThumbnailQueryTest
 	{
 		// Act
 		var query = new ThumbnailQuery(_context, null!);
-		await query.RemoveThumbnails(new List<string>());
+		await query.RemoveThumbnailsAsync(new List<string>());
 
 		// Assert
 		var getter = await query.Get("3787453");
@@ -748,4 +748,53 @@ public class ThumbnailQueryTest
 		Assert.IsTrue(item2.Count == 1);
 		Assert.IsTrue(item2.FirstOrDefault()!.Large);
 	}
+	
+	[TestMethod]
+	[ExpectedException(typeof(ObjectDisposedException))]
+	public async Task RemoveThumbnailsAsync_Disposed_NoServiceScope()
+	{
+		// Arrange
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(databaseName: "Add_writes_to_database11")
+			.Options;
+
+		var dbContext = new ApplicationDbContext(options);
+		var thumbnailQuery =
+			new ThumbnailQuery(dbContext, null); // <-- no service scope
+
+		// And dispose
+		await dbContext.DisposeAsync();
+
+		// Act
+		await thumbnailQuery.RemoveThumbnailsAsync(new List<string>{"data"});
+		// no service scope so exception
+	}
+	
+	[TestMethod]
+	public async Task RemoveThumbnailsAsync_Disposed_Success()
+	{
+		// Arrange
+
+		var serviceScope = CreateNewScope();
+		var scope = serviceScope.CreateScope();
+		var dbContext = scope.ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
+
+		dbContext.Thumbnails.Add(new ThumbnailItem() { FileHash = "8439573458435", Large = true});
+		await dbContext.SaveChangesAsync();
+		var item = dbContext.Thumbnails.FirstOrDefault(p => p.FileHash == "8439573458435");
+		
+		// And dispose
+		await dbContext.DisposeAsync();
+		
+		// Act
+		await thumbnailQuery.RemoveThumbnailsAsync(new List<string>{"8439573458435"});
+
+		// Assert
+	
+		var item2 = await thumbnailQuery.Get("8439573458435");
+		
+		Assert.IsTrue(item2.Count == 0);
+	}	
 }
