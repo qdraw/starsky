@@ -20,6 +20,11 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 		_thumbnailQuery = thumbnailQuery;
 	}
 
+	/// <summary>
+	/// Ignores the not found items to update
+	/// </summary>
+	/// <param name="generationResults">items</param>
+	/// <returns>updated data transfer list</returns>
 	public async Task<List<ThumbnailResultDataTransferModel>> UpdateStatusAsync(
 		List<GenerationResultModel> generationResults)
 	{
@@ -30,6 +35,7 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 			.Select(p => p.FileHash)
 			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash)).ToList();
 
+		// add the other sizes
 		foreach ( var generationResult in generationResults.Where(p => !p.IsNotFound) )
 		{
 			var index = dtoObjects.FindIndex(p => p.FileHash == generationResult.FileHash);
@@ -42,6 +48,24 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 		}
 
 		await _thumbnailQuery.AddThumbnailRangeAsync(dtoObjects);
+		return dtoObjects;
+	}
+
+	/// <summary>
+	/// Remove items with status not found
+	/// </summary>
+	/// <param name="generationResults">items</param>
+	/// <returns>remove by fileHash</returns>
+	public async Task<List<string>> RemoveNotfoundStatusAsync(List<GenerationResultModel> generationResults)
+	{
+		// in the next step only the fileHash is included
+		var dtoObjects = generationResults
+			.Where(p => p.IsNotFound) // for not found items
+			.DistinctBy(p => p.FileHash)
+			.Select(p => p.FileHash)
+			.ToList();
+		
+		await _thumbnailQuery.RemoveThumbnailsAsync(dtoObjects);
 		return dtoObjects;
 	}
 }

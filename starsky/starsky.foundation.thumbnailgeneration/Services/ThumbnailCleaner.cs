@@ -60,7 +60,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 				}
 			}
 
-			await _thumbnailQuery.RemoveThumbnails(deletedFileHashes);
+			await _thumbnailQuery.RemoveThumbnailsAsync(deletedFileHashes);
 			return deletedFileHashes;
 		}
 

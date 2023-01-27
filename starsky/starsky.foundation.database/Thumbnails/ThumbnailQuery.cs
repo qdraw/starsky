@@ -120,17 +120,33 @@ public class ThumbnailQuery : IThumbnailQuery
 			.ToListAsync();
 	}
 
-	public async Task RemoveThumbnails(List<string> deletedFileHashes)
+	public async Task RemoveThumbnailsAsync(List<string> deletedFileHashes)
+	{
+		try
+		{
+			await RemoveThumbnailsInternalAsync(_context, deletedFileHashes);
+		}
+		// InvalidOperationException can also be disposed
+		catch (InvalidOperationException)
+		{
+			if ( _scopeFactory == null ) throw;
+			await RemoveThumbnailsInternalAsync(new InjectServiceScope(_scopeFactory).Context(), deletedFileHashes);
+		}
+	}
+
+	private static async Task RemoveThumbnailsInternalAsync(
+		ApplicationDbContext context,
+		IReadOnlyCollection<string> deletedFileHashes)
 	{
 		if ( !deletedFileHashes.Any() ) return;
 		foreach ( var fileNamesInChunk in deletedFileHashes.ChunkyEnumerable(100) )
 		{
-			var thumbnailItems = await _context.Thumbnails.Where(p => fileNamesInChunk.Contains(p.FileHash)).ToListAsync();
-			_context.Thumbnails.RemoveRange(thumbnailItems);
-			await _context.SaveChangesAsync();
+			var thumbnailItems = await context.Thumbnails.Where(p => fileNamesInChunk.Contains(p.FileHash)).ToListAsync();
+			context.Thumbnails.RemoveRange(thumbnailItems);
+			await context.SaveChangesAsync();
 		}
 	}
-
+	
 	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
 	{
 		var beforeOrNewItems = await _context.Thumbnails.Where(p =>

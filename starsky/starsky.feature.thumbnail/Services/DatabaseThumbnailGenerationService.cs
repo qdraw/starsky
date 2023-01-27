@@ -93,10 +93,20 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 				continue;
 			}
 			
-			var generationResultModels = await _thumbnailService.CreateThumbnailAsync(fileIndexItem!
-				.FilePath!);
+			var generationResultModels = (await _thumbnailService.CreateThumbAsync(fileIndexItem
+				.FilePath!, fileIndexItem.FileHash!)).ToList();
+			
 			await _updateStatusGeneratedThumbnailService.UpdateStatusAsync(
 				generationResultModels);
+			var removedItems = await _updateStatusGeneratedThumbnailService
+				.RemoveNotfoundStatusAsync(generationResultModels);
+			if ( removedItems.Any() )
+			{
+				_logger.LogInformation($"[DatabaseThumbnailGenerationService] removed items ({DateTime.UtcNow:HH:mm:ss})" +
+				                       $" items: {string.Join(",",removedItems)}");
+				continue;
+			}
+			
 			fileIndexItem.SetLastEdited();
 			resultData.Add(fileIndexItem);
 		}
