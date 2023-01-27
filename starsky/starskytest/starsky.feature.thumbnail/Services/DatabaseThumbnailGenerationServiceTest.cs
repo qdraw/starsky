@@ -81,7 +81,7 @@ public class DatabaseThumbnailGenerationServiceTest
 	
 	
 	[TestMethod]
-	public async Task WorkThumbnailGeneration_NotFoundItem()
+	public async Task WorkThumbnailGeneration_NotFoundItem_Database()
 	{
 		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
 		var thumbnailQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
@@ -94,7 +94,8 @@ public class DatabaseThumbnailGenerationServiceTest
 			new FakeIThumbnailService(),
 			thumbnailQuery,
 			bgTaskQueue,
-			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery())
+			new UpdateStatusGeneratedThumbnailService(new FakeIThumbnailQuery(
+				new List<ThumbnailItem>()))
 		);
 		
 		var result = (await databaseThumbnailGenerationService.WorkThumbnailGeneration(
@@ -112,6 +113,41 @@ public class DatabaseThumbnailGenerationServiceTest
 		
 		Assert.AreEqual(1,result.Count);
 		Assert.AreEqual(false,result.FirstOrDefault()!.Large);
+	}
+	
+	[TestMethod]
+	public async Task WorkThumbnailGeneration_NotFoundItem_2()
+	{
+		var bgTaskQueue = new FakeThumbnailBackgroundTaskQueue();
+		var thumbnailQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
+		{
+			new ThumbnailItem("74283reiotfskl",null,null,null,null)
+		});
+		
+		var databaseThumbnailGenerationService = new DatabaseThumbnailGenerationService(
+			new FakeIQuery(), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(),
+			new FakeIThumbnailService(new FakeSelectorStorage()),
+			thumbnailQuery,
+			bgTaskQueue,
+			new UpdateStatusGeneratedThumbnailService(thumbnailQuery)
+		);
+		
+		var result = (await databaseThumbnailGenerationService.WorkThumbnailGeneration(
+			new List<ThumbnailItem>
+			{
+				new ThumbnailItem("74283reiotfskl",null,null,null,null)
+			}, new List<FileIndexItem>
+			{
+				new FileIndexItem()
+				{
+					FileHash = "74283reiotfskl",
+					FilePath = "/test.jpg",
+					Status = FileIndexItem.ExifStatus.Ok
+				}
+			})).ToList();
+		
+		Assert.AreEqual(1,result.Count);
+		Assert.AreEqual(0,(await thumbnailQuery.Get( "74283reiotfskl")).Count);
 	}
 		
 	[TestMethod]

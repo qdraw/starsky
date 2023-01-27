@@ -61,17 +61,20 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(resultModel);
 		}
 
-		Task<IEnumerable<GenerationResultModel>> IThumbnailService.CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge)
+		public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge)
 		{
 			if ( _exception != null ) throw _exception;
 
 			_subPathStorage?.WriteStream(
 				PlainTextFileHelper.StringToStream("test"), fileHash);
 			Inputs.Add(new Tuple<string, string?>(subPath, fileHash));
+			
 			return Task.FromResult(new List<GenerationResultModel>{new GenerationResultModel()
 			{
-				Success = true,
-				SubPath = subPath
+				Success = _subPathStorage?.ExistFile(subPath) == true,
+				IsNotFound = _subPathStorage?.ExistFile(subPath) != true,
+				SubPath = subPath,
+				FileHash = fileHash
 			}}.AsEnumerable());
 		}
 

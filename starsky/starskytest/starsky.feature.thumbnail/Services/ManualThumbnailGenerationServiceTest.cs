@@ -53,15 +53,11 @@ namespace starskytest.starsky.feature.thumbnail.Services
 
 			Assert.AreEqual(1, socket.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
 		}
-		
+
 		[TestMethod]
 		public async Task ThumbnailGenerationTest_CheckIfGenerated_Socket_NoResultsInDatabase()
 		{
-			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"},
-				new List<byte[]> {CreateAnImage.Bytes});
-
 			var socket = new FakeIWebSocketConnectionsService();
-			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ManualThumbnailGenerationService( new FakeIQuery(
 				new List<FileIndexItem>()), new FakeIWebLogger(), socket, new FakeIThumbnailService(), new FakeThumbnailBackgroundTaskQueue());
 
@@ -73,10 +69,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 		[TestMethod]
 		public async Task WorkItem_TestFailing()
 		{
-			var message = "[ThumbnailGenerationController] reading not allowed";
-			
-			var storage = new FakeIStorage();
-			var selectorStorage = new FakeSelectorStorage(storage);
+			const string message = "[ThumbnailGenerationController] reading not allowed";
 
 			var webLogger = new FakeIWebLogger();
 			var controller = new ManualThumbnailGenerationService(new FakeIQuery(), 

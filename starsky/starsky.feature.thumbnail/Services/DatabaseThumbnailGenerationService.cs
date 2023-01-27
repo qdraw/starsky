@@ -104,6 +104,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			{
 				_logger.LogInformation($"[DatabaseThumbnailGenerationService] removed items ({DateTime.UtcNow:HH:mm:ss})" +
 				                       $" items: {string.Join(",",removedItems)}");
+				continue;
 			}
 			
 			fileIndexItem.SetLastEdited();
