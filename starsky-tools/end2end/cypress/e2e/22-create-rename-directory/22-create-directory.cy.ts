@@ -107,6 +107,8 @@ describe('Create Rename Dir', () => {
   }, () => {
     if (!config.isEnabled) return
 
+    resetFolders()
+
     // make sure the folder is there
     cy.request({
       method: 'POST',
@@ -148,7 +150,6 @@ describe('Create Rename Dir', () => {
         } else {
           cy.log(' z_test_auto_created_update NOT found')
           cy.log(response.body)
-          resetFolders()
           expect('').to.be('not found')
         }
 
@@ -169,7 +170,6 @@ describe('Create Rename Dir', () => {
         // and not in the source folder
         cy.visit(config.url)
         cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
-        resetFolders()
       })
     })
   })
