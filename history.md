@@ -40,9 +40,14 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
+
 # version 0.5.4 _(Unreleased)_ - 2023-01-??
 
 - [x] (Added)  _Back-end_ App insights metrics for internal queues (PR #1028)
+- [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/disk/mkdir` (PR #1030)
+- [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/disk/rename` (PR #1030)
+- [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/update` (PR #1030)
+- [x] (Changed)  _Tests_ Update create directory end2end tests (PR #1030)
 
 # version 0.5.3 - 2023-01-23
 
