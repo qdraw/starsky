@@ -173,7 +173,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       if (
         resultDo.statusCode &&
         resultDo.statusCode !== 200 &&
-        resultDo.statusCode !== 404
+        resultDo.statusCode !== 404 &&
+        resultDo.statusCode !== 400
       ) {
         // 404: file can already been deleted
         console.error(resultDo);
