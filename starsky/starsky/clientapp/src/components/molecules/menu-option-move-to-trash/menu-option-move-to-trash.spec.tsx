@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
 import { render } from "@testing-library/react";
-import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useLocation from "../../../hooks/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
@@ -85,8 +84,59 @@ describe("MenuOptionMoveToTrash", () => {
       component.unmount();
     });
 
-    it("check if when pressing Delete key", () => {
+    it("check if not dispatch when error", () => {
+      console.log("-- check if not dispatch when error");
+
       jest.spyOn(FetchPost, "default").mockReset();
+      const test = {
+        ...newIArchive(),
+        fileIndexItems: [
+          {
+            ...newIFileIndexItem(),
+            parentDirectory: "/",
+            fileName: "test.jpg"
+          } as IFileIndexItem
+        ]
+      } as IArchiveProps;
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
+          ...newIConnectionDefault(),
+          data: null,
+          statusCode: 400 // -- error
+        });
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const dispatch = jest.fn();
+      const component = render(
+        <MenuOptionMoveToTrash
+          setSelect={jest.fn()}
+          select={["test.jpg"]}
+          isReadOnly={false}
+          state={test}
+          dispatch={dispatch}
+        />
+      );
+
+      const trashButton = component.queryByTestId("trash") as HTMLButtonElement;
+      expect(trashButton).toBeTruthy();
+
+      act(() => {
+        trashButton.click();
+      });
+
+      expect(fetchPostSpy).toBeCalled();
+      expect(dispatch).toBeCalledTimes(0);
+      component.unmount();
+    });
+  });
+  describe("context 2", () => {
+    it("check if when pressing Delete key", () => {
+      console.log("-- check if when pressing Delete key");
+
+      jest.spyOn(FetchPost, "default").mockClear();
       const test = {
         ...newIArchive(),
         fileIndexItems: [
