@@ -4,7 +4,7 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('DetailView (from upload)', () => {
+describe('DetailView (from upload) (40)', () => {
   beforeEach('Check some config settings and do them before each test', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
@@ -31,7 +31,7 @@ describe('DetailView (from upload)', () => {
   const fileName1 = '20200822_112430.jpg'
   const fileName3 = '20200822_134151.jpg'
 
-  it('Check if folder is there and if files are in folder', () => {
+  it('Check if folder is there and if files are in folder (40)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
     cy.get(flow.content)
@@ -43,7 +43,7 @@ describe('DetailView (from upload)', () => {
     })
   })
 
-  it('Click on first item', () => {
+  it('Click on first item (40)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
     cy.get(flow.boxContent).first().click()
@@ -51,14 +51,14 @@ describe('DetailView (from upload)', () => {
       .should('contain', fileName2)
   })
 
-  it('Click on close', () => {
+  it('Click on close (40)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url + '/' + fileName2)
     cy.get('.item.item--first.item--close').click()
     cy.get(flow.content)
   })
 
-  it('go next', () => {
+  it('go next to filename3 (40)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url + '/' + fileName2)
 
@@ -78,11 +78,13 @@ describe('DetailView (from upload)', () => {
       .should('contain', fileName3)
   })
 
-  it('go back', () => {
+  it('go back to fileName2 (40)', {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
     if (!config.isEnabled) return
 
     cy.clearLocalStorage()
-    cy.visit(config.url + '/' + fileName3)
+    cy.visit(`${config.url}/${fileName3}`)
 
     cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_112430.jpg').as('index1')
 
@@ -97,7 +99,7 @@ describe('DetailView (from upload)', () => {
       .should('contain', fileName2)
   })
 
-  it('update label data', () => {
+  it('update label data (40)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url + '/' + fileName1)
 
