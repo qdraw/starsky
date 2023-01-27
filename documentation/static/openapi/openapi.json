@@ -22,7 +22,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Check the account status of the login",
+          "summary": "Check the account status of the current user",
           "parameters": [],
           "responses": {
             "200": {
@@ -2965,7 +2965,7 @@
               "unresolvedReference": false,
               "name": "f",
               "in": 0,
-              "description": "string, 'sub path' to find the file",
+              "description": "string, subPath to find the file",
               "required": false,
               "deprecated": false,
               "allowEmptyValue": false,
@@ -3197,7 +3197,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Return Error page",
+          "summary": "Return Error page (HTML)",
           "parameters": [
             {
               "unresolvedReference": false,
