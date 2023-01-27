@@ -3,8 +3,8 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('Search -from upload', () => {
-  beforeEach('Check some config settings and do them before each test', () => {
+describe('Search -from upload (31)', () => {
+  beforeEach('Check some config settings and do them before each test (31)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false
@@ -19,7 +19,7 @@ describe('Search -from upload', () => {
     cy.request('POST', config.searchClearCache)
   })
 
-  it('Go to urlSearchFromUpload page and newest first', () => {
+  it('Go to urlSearchFromUpload page and newest first (31)', () => {
     if (!config.isEnabled) return
 
     cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')

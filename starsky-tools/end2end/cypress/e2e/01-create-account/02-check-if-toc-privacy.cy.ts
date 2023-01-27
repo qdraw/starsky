@@ -3,7 +3,7 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('Create Account', () => {
+describe('Create Account (01/02)', () => {
   it('check if TOC page exist', () => {
     if (!config.isEnabled) return false
 
@@ -14,7 +14,7 @@ describe('Create Account', () => {
       .should('contain', flow.toc.tocUrl)
   })
 
-  it('check if privacy page exist', () => {
+  it('check if privacy page exist (01/02)', () => {
     if (!config.isEnabled) return false
 
     cy.visit(config.url)

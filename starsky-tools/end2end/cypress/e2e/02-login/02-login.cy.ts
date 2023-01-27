@@ -3,8 +3,8 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName] as any
 
-describe('Login', () => {
-  beforeEach('Check some config settings and do them before each test', () => {
+describe('Login (02)', () => {
+  beforeEach('Check some config settings and do them before each test (02)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false
@@ -14,12 +14,12 @@ describe('Login', () => {
     cy.resetStorage()
   })
 
-  it('login page is here', () => {
+  it('login page is here (02)', () => {
     if (!config.isEnabled) return false
     cy.checkStatusCode(config.url)
   })
 
-  it('does login into app', {
+  it('does login into app (02)', {
     retries: { runMode: 2, openMode: 2 }
   }, () => {
     if (!config.isEnabled) return false

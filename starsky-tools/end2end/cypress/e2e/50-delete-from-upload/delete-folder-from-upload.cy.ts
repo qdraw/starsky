@@ -4,8 +4,8 @@ import configFile from './config.json'
 import { RequestOptions } from 'http'
 const config = configFile[envFolder][envName]
 
-describe('Delete folder from upload', () => {
-  beforeEach('Check some config settings and do them before each test', () => {
+describe('Delete folder from upload (50)', () => {
+  beforeEach('Check some config settings and do them before each test (50)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false
@@ -39,7 +39,7 @@ describe('Delete folder from upload', () => {
     checkIfExistAndCreate(config)
   })
 
-  it('remove folder and clean trash afterwards', () => {
+  it('remove folder and clean trash afterwards (50)', () => {
     if (!config.isEnabled) return
     cy.visit(config.urlHome)
 

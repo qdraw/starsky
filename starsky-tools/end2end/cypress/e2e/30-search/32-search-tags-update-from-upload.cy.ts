@@ -3,8 +3,8 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('Search -from upload - update tags', () => {
-  beforeEach('Check some config settings and do them before each test', () => {
+describe('Search -from upload - update tags (32)', () => {
+  beforeEach('Check some config settings and do them before each test (32)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false
@@ -31,7 +31,7 @@ describe('Search -from upload - update tags', () => {
 
   const secondAddedText = 'test'
 
-  it('update and overwrite first image', () => {
+  it('update and overwrite first image (32)', () => {
     if (!config.isEnabled) return
 
     cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
@@ -58,7 +58,7 @@ describe('Search -from upload - update tags', () => {
       .should('have.text', helloWorldText)
   })
 
-  it('update and overwrite first image after cache clear',
+  it('update and overwrite first image after cache clear (32)',
     {
       retries: 4
     }, () => {
@@ -80,7 +80,7 @@ describe('Search -from upload - update tags', () => {
         .should('contain.text', helloWorldText)
     })
 
-  it('append text to first image', () => {
+  it('append text to first image (32)', () => {
     if (!config.isEnabled) return
 
     cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
@@ -105,7 +105,7 @@ describe('Search -from upload - update tags', () => {
       .should('contain.text', ', ' + secondAddedText)
   })
 
-  it('update and add first image after cache clear',
+  it('update and add first image after cache clear (32)',
     {
       retries: 4
     }, () => {
@@ -126,7 +126,7 @@ describe('Search -from upload - update tags', () => {
         .should('contain.text', secondAddedText)
     })
 
-  it('clean text afterwards to something different', () => {
+  it('clean text afterwards to something different (32)', () => {
     if (!config.isEnabled) return
 
     cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')

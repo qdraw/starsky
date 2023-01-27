@@ -3,8 +3,8 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('Archive', () => {
-  beforeEach('Check some config settings and do them before each test', () => {
+describe('Archive (20)', () => {
+  beforeEach('Check some config settings and do them before each test (20)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false
@@ -16,7 +16,7 @@ describe('Archive', () => {
     cy.sendAuthenticationHeader()
   })
 
-  it('Check if folder is there', () => {
+  it('Check if folder is there (20)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url, {
       headers: {
@@ -27,7 +27,7 @@ describe('Archive', () => {
     cy.get(flow.content)
   })
 
-  it('more button is there', () => {
+  it('more button is there (20)', () => {
     cy.visit(config.url, {
       headers: {
         Connection: 'Keep-Alive'

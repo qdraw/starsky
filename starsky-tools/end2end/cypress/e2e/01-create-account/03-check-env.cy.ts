@@ -1,20 +1,17 @@
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
-import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('env', () => {
-  it('check env file', () => {
+describe('env (01/03)', () => {
+  it('check env file (01/03)', () => {
     if (!config.isEnabled) return false
 
     cy.sendAuthenticationHeader()
 
     cy.visit(config.env, {
-        headers: {
-            "x-force-html": true
-        }
-    });
-
+      headers: {
+        'x-force-html': true
+      }
+    })
   })
-
 })

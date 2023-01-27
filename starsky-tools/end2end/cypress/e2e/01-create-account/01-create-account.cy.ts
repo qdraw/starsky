@@ -3,7 +3,7 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('Create Account', () => {
+describe('Create Account (01)', () => {
   beforeEach('Check some config settings and do them before each test', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
@@ -18,14 +18,14 @@ describe('Create Account', () => {
     cy.checkStatusCode(config.url, [200, 202])
   })
 
-  it('register page is open', () => {
+  it('register page is open (01)', () => {
     if (!config.isEnabled) return false
     cy.checkStatusCode(config.urlStatusApi, [200, 202])
     // When failing set in application the setting to
     // app__IsAccountRegisterOpen to true
   })
 
-  it('does the register page for and checks result page', () => {
+  it('does the register page for and checks result page (01)', () => {
     if (!config.isEnabled) return false
     cy.checkStatusCode(config.urlStatusApi, [200, 202])
 
@@ -46,10 +46,9 @@ describe('Create Account', () => {
 
       cy.get(flow.fields.submit)
         .click()
-        .wait("@registerCall").its('response.statusCode').should('eq', 200)  
+        .wait('@registerCall').its('response.statusCode').should('eq', 200)
         .url()
         .should('contain', 'account/login')
-
     })
   })
 })

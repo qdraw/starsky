@@ -3,8 +3,8 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('Search', () => {
-  beforeEach('Check some config settings and do them before each test', () => {
+describe('Search (30)', () => {
+  beforeEach('Check some config settings and do them before each test (30)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false
@@ -16,7 +16,7 @@ describe('Search', () => {
     cy.sendAuthenticationHeader()
   })
 
-  it('Type and go to search page', () => {
+  it('Type and go to search page (30)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
 
@@ -30,13 +30,13 @@ describe('Search', () => {
     cy.get(flow.boxContent)
   })
 
-  it('Go Direct to search page', () => {
+  it('Go Direct to search page (30)', () => {
     if (!config.isEnabled) return
     cy.visit(config.urlSearchJpg)
     cy.get(flow.boxContent)
   })
 
-  it('Navigate to first detailview item', () => {
+  it('Navigate to first detailview item (30)', () => {
     if (!config.isEnabled) return
     cy.visit(config.urlSearchJpg)
     cy.get(flow.boxContent).first().click()

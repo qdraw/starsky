@@ -3,8 +3,8 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('Logout', () => {
-  beforeEach('Check some config settings and do them before each test', () => {
+describe('Logout (03)', () => {
+  beforeEach('Check some config settings and do them before each test (03)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false
@@ -16,12 +16,12 @@ describe('Logout', () => {
     cy.sendAuthenticationHeader()
   })
 
-  it('logout page is here', () => {
+  it('logout page is here (03)', () => {
     if (!config.isEnabled) return false
     cy.checkStatusCode(config.url)
   })
 
-  it('does logout into app', { }, () => {
+  it('does logout into app (03)', { }, () => {
     if (!config.isEnabled) return false
 
     /* Start flow (connection header prevents script from

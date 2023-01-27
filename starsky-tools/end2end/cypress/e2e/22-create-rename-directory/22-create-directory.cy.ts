@@ -31,8 +31,8 @@ function resetFolders () {
   })
 }
 
-describe('Create Rename Dir', () => {
-  beforeEach('Check some config settings and do them before each test', () => {
+describe('Create Rename Dir (22)', () => {
+  beforeEach('Check some config settings and do them before each test (22)', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false
@@ -44,13 +44,13 @@ describe('Create Rename Dir', () => {
     cy.sendAuthenticationHeader()
   })
 
-  it('Create Rename Dir - Check if folder is there & create', () => {
+  it('Create Rename Dir - Check if folder is there & create (22)', () => {
     if (!config.isEnabled) return
     checkIfExistAndCreate(config)
     resetFolders()
   })
 
-  it('Create new folder', () => {
+  it('Create new folder (22)', () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url)
@@ -69,7 +69,7 @@ describe('Create Rename Dir', () => {
     cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created"]').should('exist')
   })
 
-  it('Rename new folder', () => {
+  it('Rename new folder (22)', () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url + '/z_test_auto_created')
@@ -102,7 +102,7 @@ describe('Create Rename Dir', () => {
     cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created"]').should('not.exist')
   })
 
-  it('delete it afterwards', {
+  it('delete it afterwards (22)', {
     retries: { runMode: 2, openMode: 2 }
   }, () => {
     if (!config.isEnabled) return
@@ -174,7 +174,7 @@ describe('Create Rename Dir', () => {
     })
   })
 
-  it('safe guard for other tests - if not deleted remove via the api', () => {
+  it('safe guard for other tests - if not deleted remove via the api (22)', () => {
     if (!config.isEnabled) return
 
     resetFolders()
