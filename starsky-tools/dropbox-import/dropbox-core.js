@@ -238,8 +238,10 @@ module.exports = class Dropbox {
             (async () => {
                 const { stdout, stderr } = await exec(exe);
                 if (stderr) {
+                    console.log('cli stderr:');
                     console.log(stderr);
                     reject();
+                    return;
                 }
                 console.log(stdout);
                 resolve(entries);
