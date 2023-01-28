@@ -134,7 +134,11 @@ COPY --chown=app:app --from=react-build /app/starsky/clientapp ./clientapp
 COPY --chown=app:app --from=test /testresults /tmp
 
 # you could mount this location
-RUN mkdir -p /app/photos && chown -R app:app /app/photos
+RUN mkdir -p /app/photos && chown app:app /app/photos
+RUN mkdir -p /app/thumbnailTempFolder && chown app:app /app/thumbnailTempFolder
+
+# and change owner of folder
+RUN chown app:app /app
 
 USER app
 
