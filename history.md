@@ -50,7 +50,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Changed)  _Tests_ Update create directory end2end tests (PR #1030)
 - [x] (Changed)  _Tests_ retry end2end test: Create Rename Dir > delete it afterwards (PR #1032)
 - [x] (Changed)  _Back-end_ Add thumbnail query delete for not found items (PR #1032)
-- [x] (Changed)  _Back-end_ starskyWebHtmlCli missing db context (PR #1032)
+- [x] (Fixed)  _Back-end_ starskyWebHtmlCli missing db context and crashed (PR #1032)
+- [x] (Fixed)  _Back-end_ fixing import disposed exception (issue #1033 / PR #1034)
 
 # version 0.5.3 - 2023-01-23
 
