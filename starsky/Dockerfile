@@ -39,7 +39,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 # copy everything else and build
-COPY starsky ./starsky
+COPY . ./
 
 WORKDIR /app/starsky
 
@@ -116,8 +116,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS release
 WORKDIR /app
 
 # Create a group and user
-RUN addgroup --gid 1000 -S app && adduser --uid 1000 -S app -G app
-
+RUN groupadd --gid 1000 app \
+    && useradd --uid 1000 --gid app --shell /bin/bash --create-home app
+    
 # copy dlls
 COPY --chown=app:app --from=build-env /app/starsky/out /app
 
