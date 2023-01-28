@@ -115,22 +115,32 @@ RUN if [ "$TEST" = "true" ]; then \
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS release
 WORKDIR /app
 
+# Create a group and user
+RUN groupadd --gid 1000 app \
+    && useradd --uid 1000 --gid app --shell /bin/bash --create-home app
+    
 # copy dlls
-COPY --from=build-env /app/starsky/out .
+COPY --chown=app:app --from=build-env /app/starsky/out /app
 
 # copy dependencies & demo content
-COPY --from=build-env /app/dependencies /app/dependencies
-COPY --from=build-env /app/temp /app/temp
-COPY --from=build-env /app/data.db /app/app__data.db
+COPY --chown=app:app --from=build-env /app/dependencies /app/dependencies
+COPY --chown=app:app --from=build-env /app/temp /app/temp
+COPY --chown=app:app --from=build-env /app/data.db /app/app__data.db
 
 # copy react build
-COPY --from=react-build /app/starsky/clientapp ./clientapp
+COPY --chown=app:app --from=react-build /app/starsky/clientapp ./clientapp
 
 # Makes sure the test stage is run when using docker buildkit
-COPY --from=test /testresults /tmp
+COPY --chown=app:app --from=test /testresults /tmp
 
 # you could mount this location
-RUN mkdir -p /app/photos
+RUN mkdir -p /app/photos && chown app:app /app/photos
+RUN mkdir -p /app/thumbnailTempFolder && chown app:app /app/thumbnailTempFolder
+
+# and change owner of folder
+RUN chown app:app /app
+
+USER app
 
 ENV ASPNETCORE_Environment=Production
 CMD ASPNETCORE_URLS=http://*:$PORT dotnet starsky.dll
