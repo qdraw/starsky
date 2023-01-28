@@ -12,7 +12,7 @@
   "AspNetCore.HealthChecks.Sqlite 6.0.2",
   "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore 6.0.13",
   "MedallionShell 1.6.2",
-  "RazorLight 2.3.0",
+  "RazorLight 2.3.1",
   "SixLabors.ImageSharp 2.1.3",
   "SixLabors.ImageSharp.Drawing 1.0.0-beta15",
   "Microsoft.AspNetCore.Authorization 6.0.13",
