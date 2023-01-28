@@ -797,4 +797,55 @@ public class ThumbnailQueryTest
 		
 		Assert.IsTrue(item2.Count == 0);
 	}	
+	
+	[TestMethod]
+	[ExpectedException(typeof(ObjectDisposedException))]
+	public async Task RenameAsync_Disposed_NoServiceScope()
+	{
+		// Arrange
+		var data = new ThumbnailItem();
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(databaseName: "Add_writes_to_database11")
+			.Options;
+
+		var dbContext = new ApplicationDbContext(options);
+		var thumbnailQuery =
+			new ThumbnailQuery(dbContext, null); // <-- no service scope
+
+		// And dispose
+		await dbContext.DisposeAsync();
+
+		// Act
+		await thumbnailQuery.RenameAsync("data","after");
+		// no service scope so exception
+	}
+	
+	
+	[TestMethod]
+	public async Task RenameAsync_Disposed_Success()
+	{
+		// Arrange
+
+		var serviceScope = CreateNewScope();
+		var scope = serviceScope.CreateScope();
+		var dbContext = scope.ServiceProvider
+			.GetRequiredService<ApplicationDbContext>();
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
+
+		dbContext.Thumbnails.Add(new ThumbnailItem() { FileHash = "5478349895834", Large = true});
+		await dbContext.SaveChangesAsync();
+		var item = dbContext.Thumbnails.FirstOrDefault(p => p.FileHash == "5478349895834");
+		
+		// And dispose
+		await dbContext.DisposeAsync();
+
+		// Act
+		await thumbnailQuery.RenameAsync("5478349895834","after");
+
+		// Assert
+		var item2 = await thumbnailQuery.Get("after");
+		
+		Assert.IsTrue(item2.FirstOrDefault()!.Large);
+	}
 }

@@ -149,7 +149,21 @@ public class ThumbnailQuery : IThumbnailQuery
 	
 	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
 	{
-		var beforeOrNewItems = await _context.Thumbnails.Where(p =>
+		try
+		{
+			return await RenameInternalAsync(_context, beforeFileHash, newFileHash);
+		}
+		// InvalidOperationException can also be disposed
+		catch (InvalidOperationException)
+		{
+			if ( _scopeFactory == null ) throw;
+			return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(), beforeFileHash, newFileHash);
+		}
+	}
+	
+	private static async Task<bool> RenameInternalAsync(ApplicationDbContext dbContext, string beforeFileHash, string newFileHash)
+	{
+		var beforeOrNewItems = await dbContext.Thumbnails.Where(p =>
 			p.FileHash == beforeFileHash || p.FileHash == newFileHash).ToListAsync();
 		
 		var beforeItem = beforeOrNewItems.FirstOrDefault(p => p.FileHash == beforeFileHash);
@@ -157,17 +171,17 @@ public class ThumbnailQuery : IThumbnailQuery
 
 		if ( beforeItem == null) return false;
 
-		_context.Thumbnails.Remove(beforeItem);
+		dbContext.Thumbnails.Remove(beforeItem);
 
 		if ( newItem != null )
 		{
-			_context.Thumbnails.Remove(newItem);
+			dbContext.Thumbnails.Remove(newItem);
 		}
 		
-		await _context.Thumbnails.AddRangeAsync(new ThumbnailItem(newFileHash, 
+		await dbContext.Thumbnails.AddRangeAsync(new ThumbnailItem(newFileHash, 
 			beforeItem.TinyMeta, beforeItem.Small, beforeItem.Large, beforeItem.ExtraLarge, beforeItem.Reasons));
 		
-		await _context.SaveChangesAsync();
+		await dbContext.SaveChangesAsync();
 		
 		return true;
 	}
