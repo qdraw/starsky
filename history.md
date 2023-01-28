@@ -52,6 +52,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Changed)  _Back-end_ Add thumbnail query delete for not found items (PR #1032)
 - [x] (Fixed)  _Back-end_ starskyWebHtmlCli missing db context and crashed (PR #1032)
 - [x] (Fixed)  _Back-end_ fixing import disposed exception (issue #1033 / PR #1034)
+- [x] (Security) _Back-end_ Run default user in container as non-root (PR #1035)
 
 # version 0.5.3 - 2023-01-23
 
