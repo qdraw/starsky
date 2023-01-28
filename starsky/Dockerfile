@@ -143,4 +143,4 @@ RUN chown app:app /app
 USER app
 
 ENV ASPNETCORE_Environment=Production
-CMD ASPNETCORE_URLS=http://*:$PORT dotnet starsky.dll
+ENTRYPOINT ["dotnet", "starsky.dll"]

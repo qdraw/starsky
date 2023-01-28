@@ -36,7 +36,7 @@ namespace starsky.foundation.platform.Helpers
 			var settings = await MergeJsonFiles(appSettings.BaseDirectoryProject);
 			
 			// Make sure is wrapped in a AppContainer app
-			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(new AppContainerAppSettings{ App = settings});
+			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(settings);
 
 			builder
 				.AddJsonStream(new MemoryStream(utf8Bytes))
@@ -67,37 +67,49 @@ namespace starsky.foundation.platform.Helpers
 			};
 		}
 
-		internal static async Task<AppSettings> MergeJsonFiles(string baseDirectoryProject)
+		internal static async Task<AppContainerAppSettings> MergeJsonFiles(string baseDirectoryProject)
 		{
 			var paths = Order(baseDirectoryProject);
-			var appSettingsList = new List<AppSettings>();
+			var appSettingsList = new List<AppContainerAppSettings>();
 
 			foreach ( var path in paths.Where(File.Exists) )
 			{
-				using ( var openStream = File.OpenRead(path) )
-				{
-					var appSettings = await JsonSerializer.DeserializeAsync<AppContainerAppSettings>(openStream, new JsonSerializerOptions
-					{
-						PropertyNameCaseInsensitive = true,
-						Converters =
-						{
-							new JsonBoolQuotedConverter(),
-						},
-					});
-					appSettingsList.Add(appSettings!.App);
-				}
+				var appSettings = await Read(path);
+				appSettingsList.Add(appSettings);
 			}
 
-			if ( !appSettingsList.Any() ) return new AppSettings();
+			if ( !appSettingsList.Any() ) return new AppContainerAppSettings{App = new AppSettings()};
 			var appSetting = appSettingsList.FirstOrDefault()!;
 			
 			for ( var i = 1; i < appSettingsList.Count; i++ )
 			{
 				var currentAppSetting = appSettingsList[i];
-				AppSettingsCompareHelper.Compare(appSetting, currentAppSetting);
+				AppSettingsCompareHelper.Compare(appSetting.App, currentAppSetting.App);
 			}
 
 			return appSetting;
+		}
+
+		internal static async Task<AppContainerAppSettings> Read(string path)
+		{
+			if ( !File.Exists(path) )
+			{
+				return new AppContainerAppSettings();
+			}
+			
+			using ( var openStream = File.OpenRead(path) )
+			{
+				return  await JsonSerializer
+					.DeserializeAsync<AppContainerAppSettings>(openStream,
+						new JsonSerializerOptions
+						{
+							PropertyNameCaseInsensitive = true,
+							Converters =
+							{
+								new JsonBoolQuotedConverter(),
+							},
+						});
+			}
 		}
 
 		/// <summary>

@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore;
+﻿using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
+using starsky.foundation.platform.Helpers;
 
 namespace starsky
 {
 	public static class Program
 	{
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
-			CreateWebHostBuilder(args).Build().Run();
+			await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(args);
+			await CreateWebHostBuilder(args).Build().RunAsync();
 		}
 
 		private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
@@ -21,6 +24,5 @@ namespace starsky
 					options.AddServerHeader = false;
 				})
 				.UseStartup<Startup>();
-	
 	}
 }
