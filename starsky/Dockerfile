@@ -12,7 +12,7 @@
 
 # Stage 1 Front-end
 # # docker buildx imagetools inspect node:18-alpine
-FROM --platform=$BUILDPLATFORM node:18-alpine as react-build
+FROM --platform=$BUILDPLATFORM node:18-alpine AS react-build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
