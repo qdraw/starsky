@@ -57,6 +57,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Changed)  _Back-end_ set default port to 4000 (PR #1036)
 - [x] (Added)  _Back-end_ add feature flag GeoFilesSkipDownloadOnStartup, recommend to keep false or null (PR #1036)
 - [x] (Added)  _Back-end_ add feature flag ExiftoolSkipDownloadOnStartup, recommend to keep false or null (PR #1036)
+- [x] (Added)  _Back-end_ add unit tests for dependency injection helpers (PR #1038)
 
 # version 0.5.3 - 2023-01-23
 
