@@ -181,6 +181,8 @@ public class ServiceCollectionExtensionsTest
 		{
 			_exception = exception;
 		}
+
+		public override string FullName { get; } = "test";
 		
 		public override Type[] GetExportedTypes()
 		{
