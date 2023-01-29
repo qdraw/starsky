@@ -110,6 +110,30 @@ public class PortProgramHelperTest
 		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
 	}
 	
+	[TestMethod]
+	public async Task SkipForAppSettingsJsonFile_ShouldIgnore_DueAppSettingsFile2()
+	{
+		Environment.SetEnvironmentVariable("PORT","");
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
+		
+		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-333.json");
+		var stream = PlainTextFileHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
+			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            }\n           " +
+			"\n        }\n    }\n }");
+		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,appSettingsPath);
+		
+		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(appSettingsPath);
+
+		Assert.AreEqual(true,result);
+		Assert.AreEqual(null,Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
+
+		Environment.SetEnvironmentVariable("PORT",_prePort);
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS",_preAspNetUrls);
+		
+		// remove afterwards
+		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
+	}
+	
 		
 	[TestMethod]
 	public async Task SkipForAppSettingsJsonFile_ShouldFalse()

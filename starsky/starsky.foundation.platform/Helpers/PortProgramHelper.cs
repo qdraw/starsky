@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.platform.Helpers;
 
@@ -28,7 +26,8 @@ public static class PortProgramHelper
 		     appContainer.Kestrel?.Endpoints?.Https?.Url == null ) return false;
 		
 		Console.WriteLine("Kestrel Endpoints are set in appsettings.json, " +
-		                  "this results in skip setting the PORT environment variable");
+		                  "this results in skip setting the PORT and default " +
+		                  "ASPNETCORE_URLS environment variable");
 		return true;
 	}
 
