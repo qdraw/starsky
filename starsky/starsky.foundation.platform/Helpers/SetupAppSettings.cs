@@ -36,7 +36,7 @@ namespace starsky.foundation.platform.Helpers
 			var settings = await MergeJsonFiles(appSettings.BaseDirectoryProject);
 			
 			// Make sure is wrapped in a AppContainer app
-			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(settings);
+			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(new AppContainerAppSettings{ App = settings});
 
 			builder
 				.AddJsonStream(new MemoryStream(utf8Bytes))
@@ -74,8 +74,8 @@ namespace starsky.foundation.platform.Helpers
 
 			foreach ( var path in paths.Where(File.Exists) )
 			{
-				var appSettings = await Read(path);
-				appSettingsList.Add(appSettings?.App);
+				var appSettings = await ReadAppSettings.Read(path);
+				appSettingsList.Add(appSettings!.App);
 			}
 
 			if ( !appSettingsList.Any() ) return new AppSettings();
@@ -88,28 +88,6 @@ namespace starsky.foundation.platform.Helpers
 			}
 
 			return appSetting;
-		}
-
-		internal static async Task<AppContainerAppSettings> Read(string path)
-		{
-			if ( !File.Exists(path) )
-			{
-				return new AppContainerAppSettings();
-			}
-			
-			using ( var openStream = File.OpenRead(path) )
-			{
-				return  await JsonSerializer
-					.DeserializeAsync<AppContainerAppSettings>(openStream,
-						new JsonSerializerOptions
-						{
-							PropertyNameCaseInsensitive = true,
-							Converters =
-							{
-								new JsonBoolQuotedConverter(),
-							},
-						});
-			}
 		}
 
 		/// <summary>

@@ -20,7 +20,7 @@ public static class PortProgramHelper
 		// Set port from environment variable
 		var port = Environment.GetEnvironmentVariable("PORT");
 
-		var appContainer = await SetupAppSettings.Read(appSettingsPath);
+		var appContainer = await ReadAppSettings.Read(appSettingsPath);
 		if ( appContainer.Kestrel?.Endpoints?.Http?.Url != null || appContainer.Kestrel?.Endpoints?.Https?.Url != null)	
 		{
 			return;
