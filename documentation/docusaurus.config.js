@@ -96,6 +96,12 @@ const config = {
 					},
 					{
 						type: "doc",
+						docId: "developer-guide/readme",
+						position: "left",
+						label: "Developer Guide",
+					},
+					{
+						type: "doc",
 						docId: "api/readme",
 						position: "left",
 						label: "API",

@@ -5,7 +5,7 @@ This document is auto generated
 
 | Path                                              | Type  | Description                                                                     | 
 |---------------------------------------------------|-------|---------------------------------------------------------------------------------|
-| __/api/account/status__                           | GET   | Check the account status of the login                                           |
+| __/api/account/status__                           | GET   | Check the account status of the current user                                    |
 | __/account/login__                                | GET   | Login form page (HTML)                                                          |
 | __/api/account/login__                            | POST  | Login the current HttpContext in                                                |
 | __/api/account/logout__                           | POST  | Logout the current HttpContext out                                              |
@@ -33,7 +33,7 @@ This document is auto generated
 | __/api/download-photo__                           | GET   | Select manually the original or thumbnail                                       |
 | _Parameters: f (string, 'sub path' to find the file), isThumbnail (true = 1000px thumb (if supported)), cache (true                       _ |
 | _ = send client headers to cache)                                                                                                         _ |
-| __/error__                                        | GET   | Return Error page                                                               |
+| __/error__                                        | GET   | Return Error page (HTML)                                                        |
 | __/api/export/create-zip__                        | POST  | Export source files to an zip archive                                           |
 | _Parameters: f (subPath to files), collections (enable files with the same name (before the extension)), thumbnail                        _ |
 | _ (export thumbnails)                                                                                                                     _ |
@@ -53,11 +53,11 @@ This document is auto generated
 | __/preferences__                                  | GET   | Preferences page (HTML)                                                         |
 | __/account/register__                             | GET   | View the Register form (HTML)                                                   |
 | __/api/import__                                   | POST  | Import a file using the structure format                                        |
-| __/api/import/thumbnail__                         | POST  | Upload thumbnail to ThumbnailTempFolderMake sure that the filename is correct...|
 | __/api/import/fromUrl__                           | POST  | Import file from web-url (only whitelisted domains) and import this file into...|
 | _Parameters: fileUrl (the url), filename (the filename (optional, random used if empty)), structure (use structure                        _ |
 | _ (optional))                                                                                                                             _ |
 | __/api/import/history__                           | GET   | Today's imported files                                                          |
+| __/api/import/thumbnail__                         | POST  | Upload thumbnail to ThumbnailTempFolderMake sure that the filename is correct...|
 | __/api/index__                                    | GET   | The database-view of a directory                                                |
 | _Parameters: f (subPath), colorClass (filter on colorClass (use int)), collections (to combine files with the same                        _ |
 | _ name before the extension), hidedelete (ignore deleted files), sort (how to orderBy, defaults to fileName)                              _ |
