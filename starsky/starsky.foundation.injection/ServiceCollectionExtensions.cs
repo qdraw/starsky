@@ -4,9 +4,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.injection
 {
     public static class ServiceCollectionExtensions
@@ -173,7 +175,7 @@ namespace starsky.foundation.injection
 	        return assemblies.ToArray();
         }
         
-        private static IEnumerable<Type?> GetExportedTypes(Assembly assembly)
+        internal static IEnumerable<Type?> GetExportedTypes(Assembly assembly)
         {
             try
             {

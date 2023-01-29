@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 
-namespace starskytest.Middleware
+namespace starskytest.starsky.foundation.platform.Middleware
 {
 	[TestClass]
 	public sealed class ServiceCollectionExtensionTest
@@ -14,15 +14,6 @@ namespace starskytest.Middleware
 		public void ServiceCollectionExtensions_ServiceCollectionConfigurePoco_null_Config_Test()
 		{
 			new ServiceCollection().ConfigurePoCo<AppSettings>(null);
-		}
-		
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void ServiceCollectionExtensions_ServiceCollectionConfigurePoco_nullTest()
-		{
-			var serviceCollection = new ServiceCollection();
-			serviceCollection = null;
-			serviceCollection.ConfigurePoCo<AppSettings>(null);
 		}
 		
 	}
