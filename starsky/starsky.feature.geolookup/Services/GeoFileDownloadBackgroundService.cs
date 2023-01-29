@@ -29,14 +29,24 @@ namespace starsky.feature.geolookup.Services
 		/// <returns>CompletedTask</returns>
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
+			await DownloadAsync(stoppingToken);
+		}
+		
+		internal async Task DownloadAsync(CancellationToken _ = default)
+		{
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
-				var console = scope.ServiceProvider.GetRequiredService<IConsole>();
+				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
 
 				// Geo Helper has a direct need of this, other are downloaded when needed
 				// This Background service is for running offline 
-				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.Geo ) return;
+				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.Geo) return;
+				if ( appSettings.GeoFilesSkipDownloadOnStartup == true )
+				{
+					logger.LogInformation("GeoFilesSkipDownloadOnStartup is true, skip download");
+					return;
+				}
 
 				var geoFileDownload = scope.ServiceProvider.GetRequiredService<IGeoFileDownload>();
 				try
@@ -45,8 +55,7 @@ namespace starsky.feature.geolookup.Services
 				}
 				catch ( FileNotFoundException e )
 				{
-					console.WriteLine("> Not allowed to write to disk:");
-					console.WriteLine("> " + e);
+					logger.LogError(e, "Not allowed to write to disk (catch-ed exception)");
 				}
 			}
 		}

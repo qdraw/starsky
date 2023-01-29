@@ -61,15 +61,17 @@ namespace starsky.feature.geolookup.Services
 		public async Task CommandLineAsync(string[] args)
 		{
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
-
+			// Set type of GeoReverseLookup
+			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
+			
 			// Download ExifTool 
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
 			
 			// Geo cities1000 download
-			await _geoFileDownload.DownloadAsync();
-			
-			// Set type of GeoReverseLookup
-			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
+			if ( _appSettings.GeoFilesSkipDownloadOnStartup != true )
+			{
+				await _geoFileDownload.DownloadAsync();
+			}
 			
 			if ( ArgsHelper.NeedHelp(args) ||
 			     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1

@@ -791,6 +791,9 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public int? ThumbnailGenerationIntervalInMinutes { get; set; } = 15;
 
+		public bool? GeoFilesSkipDownloadOnStartup { get; set; } = false;
+		public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
+
 		/// <returns>AppSettings duplicated</returns>
 		/// <summary>
 		/// Duplicate this item in memory. AND remove _databaseConnection 

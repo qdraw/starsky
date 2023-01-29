@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Attributes;
 using starskyGeoCli;
 using starskytest.FakeCreateAn;
 
@@ -10,27 +9,25 @@ namespace starskytest.starskyGeoCli
 	[TestClass]
 	public sealed class starskyGeoCliTest
 	{
-		[ExcludeFromCoverage]
 		[TestMethod]
-		public void StarskyGeoCli_HelpVerbose()
+		public async Task StarskyGeoCli_HelpVerbose()
 		{
 			var args = new List<string> {
 				"-h","-v"
 			}.ToArray();
-			Program.Main(args);
+			await Program.Main(args);
 			Assert.IsNotNull(args);
 		}
         
-		[ExcludeFromCoverage]
 		[TestMethod]
-		public void StarskyGeoCli_HelpTest()
+		public async Task StarskyGeoCli_HelpTest()
 		{
 			var newImage = new CreateAnImage();
 			var args = new List<string> {"-h","-v","-c","test","-d", "InMemoryDatabase", 
 				"-b", newImage.BasePath, "--thumbnailtempfolder", 
 				newImage.BasePath, "-e", newImage.FullFilePath 
 			}.ToArray();
-			Program.Main(args);
+			await Program.Main(args);
 			Assert.IsNotNull(args);
 		}
         
