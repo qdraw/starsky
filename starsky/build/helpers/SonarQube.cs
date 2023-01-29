@@ -116,12 +116,12 @@ namespace helpers
 			var mainRepoPath = Directory.GetParent(".")?.FullName;
         
 			var (gitBranchName,_) = ReadAsync(GitCommand, " branch --show-current", mainRepoPath!).Result;
-		
-			// allow to overwrite the branch name
-			if (branchName == "" && !string.IsNullOrEmpty(gitBranchName)) {
-				branchName = gitBranchName; // fallback as (no branch)
-			}
 
+			// allow to overwrite the branch name
+			if (string.IsNullOrEmpty(branchName) && !string.IsNullOrEmpty(gitBranchName)) {
+				branchName = gitBranchName.Trim(); // fallback as (no branch)
+			}
+			
 			// replace default value to master
 			if (branchName == "(no branch)" || string.IsNullOrEmpty(branchName)) {
 				branchName = DefaultBranchName;

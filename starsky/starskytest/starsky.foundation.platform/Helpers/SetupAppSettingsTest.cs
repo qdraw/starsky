@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public async Task SetLocalAppData_ShouldRead()
 		{
 			var appDataFolderFullPath =
-				Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "setup_app_settings_test");
+				Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)!, "setup_app_settings_test");
 			
 			_hostStorage.CreateDirectory(appDataFolderFullPath);
 			var path = Path.Combine(appDataFolderFullPath, "appsettings.json");

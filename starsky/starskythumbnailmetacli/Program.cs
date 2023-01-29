@@ -30,7 +30,7 @@ namespace starskythumbnailmetacli
 			RegisterDependencies.Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            
+			
 			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.MetaThumbnail);
 			services.AddApplicationInsightsLogging(appSettings);
 			

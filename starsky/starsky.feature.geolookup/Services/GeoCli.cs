@@ -61,15 +61,17 @@ namespace starsky.feature.geolookup.Services
 		public async Task CommandLineAsync(string[] args)
 		{
 			_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
-
+			// Set type of GeoReverseLookup
+			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
+			
 			// Download ExifTool 
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
 			
 			// Geo cities1000 download
-			await _geoFileDownload.DownloadAsync();
-			
-			// Set type of GeoReverseLookup
-			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
+			if ( _appSettings.GeoFilesSkipDownloadOnStartup != true )
+			{
+				await _geoFileDownload.DownloadAsync();
+			}
 			
 			if ( ArgsHelper.NeedHelp(args) ||
 			     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1
@@ -151,21 +153,28 @@ namespace starsky.feature.geolookup.Services
     
 			// Loop though all options
 			fileIndexList.AddRange(toMetaFilesUpdate);
-    
+
+			await RenameFileHash(fileIndexList);
+			// dont updated in the database
+			// that's not the scope of this command
+		}
+
+		private async Task RenameFileHash(IEnumerable<FileIndexItem> fileIndexList)
+		{
 			// update thumbs to avoid unnecessary re-generation
 			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).
-				Select(g => g.First())
-				.ToList() )
+				         Select(g => g.First())
+				         .ToList() )
 			{
 				var newThumb = (await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath!)).Key;
 				if ( item.FileHash == newThumb ) continue;
 				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(
 					item.FileHash!, newThumb);
 				if ( _appSettings.IsVerbose() )
+				{
 					_console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);
+				}
 			}
-			
-			// dont updated in the database
 		}
 	}
 }

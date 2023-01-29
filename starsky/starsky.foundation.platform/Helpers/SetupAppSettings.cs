@@ -74,18 +74,8 @@ namespace starsky.foundation.platform.Helpers
 
 			foreach ( var path in paths.Where(File.Exists) )
 			{
-				using ( var openStream = File.OpenRead(path) )
-				{
-					var appSettings = await JsonSerializer.DeserializeAsync<AppContainerAppSettings>(openStream, new JsonSerializerOptions
-					{
-						PropertyNameCaseInsensitive = true,
-						Converters =
-						{
-							new JsonBoolQuotedConverter(),
-						},
-					});
-					appSettingsList.Add(appSettings!.App);
-				}
+				var appSettings = await ReadAppSettings.Read(path);
+				appSettingsList.Add(appSettings!.App);
 			}
 
 			if ( !appSettingsList.Any() ) return new AppSettings();

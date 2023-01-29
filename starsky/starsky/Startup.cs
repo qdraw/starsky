@@ -54,7 +54,10 @@ namespace starsky
 			_configuration = SetupAppSettings.AppSettingsToBuilder().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+       /// <summary>
+       /// This method gets called by the runtime. Use this method to add services to the container.
+       /// </summary>
+       /// <param name="services">where from to configure</param>
         public void ConfigureServices(IServiceCollection services)
         {
 	        _appSettings = SetupAppSettings.ConfigurePoCoAppSettings(services, _configuration);

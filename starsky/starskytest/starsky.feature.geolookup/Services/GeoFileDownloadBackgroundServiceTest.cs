@@ -17,7 +17,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly IGeoFileDownload _geoFileDownload;
-		private readonly FakeConsoleWrapper _console;
+		private readonly FakeIWebLogger _logger;
 
 		public GeoFileDownloadBackgroundServiceTest()
 		{
@@ -25,14 +25,14 @@ namespace starskytest.starsky.feature.geolookup.Services
 			services.AddSingleton<AppSettings>();
 			services.AddSingleton<BackgroundService, GeoFileDownloadBackgroundService>();
 			services.AddSingleton<IGeoFileDownload, FakeIGeoFileDownload>();
-			services.AddSingleton<IConsole, FakeConsoleWrapper>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
 			var serviceProvider = services.BuildServiceProvider();
 			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_geoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>();
 			
-			var console = serviceProvider.GetRequiredService<IConsole>();
-			_console = console as FakeConsoleWrapper;
+			var logger = serviceProvider.GetRequiredService<IWebLogger>();
+			_logger = logger as FakeIWebLogger;
 		}
 		
 		[TestMethod]
@@ -40,17 +40,43 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(new CancellationToken());
 			var value = _geoFileDownload as FakeIGeoFileDownload;
-			Assert.AreEqual(1, value.Count);
+			Assert.AreEqual(1, value?.Count);
 		}
 		
 		[TestMethod]
 		public async Task StartAsyncNotAllowedToWriteToDisk()
 		{
 			var value = _geoFileDownload as FakeIGeoFileDownload;
-			value.Count = int.MaxValue;
+			value!.Count = int.MaxValue;
 			await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(new CancellationToken());
 		
-			Assert.IsTrue(_console.WrittenLines.LastOrDefault().Contains("Not allowed to write to disk"));
+			Assert.IsTrue(_logger.TrackedExceptions.LastOrDefault().Item2?.Contains("Not allowed to write to disk"));
+		}
+		
+		[TestMethod]
+		public async Task StartAsync_Skip()
+		{
+			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
+			var before = appSettings.GeoFilesSkipDownloadOnStartup;
+			appSettings.GeoFilesSkipDownloadOnStartup = true;
+			await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(new CancellationToken());
+			var value = _geoFileDownload as FakeIGeoFileDownload;
+			appSettings.GeoFilesSkipDownloadOnStartup = before;
+			
+			Assert.AreEqual(0, value?.Count);
+		}
+		
+		[TestMethod]
+		public async Task StartAsync_Skip2()
+		{
+			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<AppSettings>();
+			var before = appSettings.ApplicationType;
+			appSettings.GeoFilesSkipDownloadOnStartup = true;
+			await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(new CancellationToken());
+			var value = _geoFileDownload as FakeIGeoFileDownload;
+			appSettings.ApplicationType = before;
+			
+			Assert.AreEqual(0, value?.Count);
 		}
 	}
 }

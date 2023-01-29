@@ -53,6 +53,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed)  _Back-end_ starskyWebHtmlCli missing db context and crashed (PR #1032)
 - [x] (Fixed)  _Back-end_ fixing import disposed exception (issue #1033 / PR #1034)
 - [x] (Security) _Back-end_ Run default user in container as non-root (PR #1035)
+- [x] (Changed)  _Back-end_ move port environment variable to application instead of docker file (PR #1036)
+- [x] (Changed)  _Back-end_ set default port to 4000 (PR #1036)
+- [x] (Added)  _Back-end_ add feature flag GeoFilesSkipDownloadOnStartup, recommend to keep false or null (PR #1036)
+- [x] (Added)  _Back-end_ add feature flag ExiftoolSkipDownloadOnStartup, recommend to keep false or null (PR #1036)
 
 # version 0.5.3 - 2023-01-23
 

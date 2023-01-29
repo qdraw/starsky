@@ -136,7 +136,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 
-			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).DownloadExifTool(_appSettings.IsWindows);
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings, 
+				new FakeIWebLogger() ).DownloadExifTool(_appSettings.IsWindows);
+			
 			Assert.IsTrue(result);
 
 			if ( _hostFileSystem.ExistFolder(_exifToolWindowsTempFolderPath) )
@@ -251,7 +253,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
 
-			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).DownloadExifTool(true);
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings, 
+				new FakeIWebLogger() ).DownloadExifTool(true);
+			
 			Assert.IsFalse(result);
 		}
 
@@ -268,7 +272,23 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var logger = new FakeIWebLogger();
 			var result = await new ExifToolDownload(httpClientHelper,appSettings,  logger).DownloadExifTool(true);
 			Assert.IsFalse(result);
-			Assert.IsTrue(logger.TrackedInformation[0].Item2.Contains("Skipped due AddSwaggerExportExitAfter setting"));
+			Assert.IsTrue(logger.TrackedInformation[0].Item2.Contains("Skipped due true of AddSwaggerExport " +
+				"and AddSwaggerExportExitAfter setting"));
+		}
+		
+		[TestMethod]
+		public async Task DownloadExifTool_Skip_ExiftoolSkipDownloadOnStartup()
+		{
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+
+			var appSettings = new AppSettings
+			{
+				ExiftoolSkipDownloadOnStartup = true,
+			};
+			var logger = new FakeIWebLogger();
+			var result = await new ExifToolDownload(httpClientHelper,appSettings,  logger).DownloadExifTool(true);
+			Assert.IsFalse(result);
+			Assert.IsTrue(logger.TrackedInformation[0].Item2.Contains("Skipped due true of ExiftoolSkipDownloadOnStartup setting"));
 		}
 
 		[TestMethod]
@@ -513,7 +533,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			try
 			{
 				await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
-					.DownloadForWindows("exiftool-11.99.zip", new List<string>().ToArray(), true);
+					.DownloadForWindows("exiftool-11.99.zip", new List<string>().ToArray(), 
+						true);
 			}
 			catch ( HttpRequestException httpRequestException )
 			{
