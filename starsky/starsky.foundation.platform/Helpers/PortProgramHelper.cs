@@ -10,26 +10,35 @@ namespace starsky.foundation.platform.Helpers;
 
 public static class PortProgramHelper
 {
-	public static async Task SetEnvPortAspNetUrlsAndSetDefault(string[] args)
+	public static async Task SetEnvPortAspNetUrlsAndSetDefault(string[] args, string appSettingsPath)
 	{
-		await SetEnvPortAspNetUrls(args, Path.Join(new AppSettings().BaseDirectoryProject, "appsettings.json"));
+		if ( await SkipForAppSettingsJsonFile(appSettingsPath) )
+		{
+			return;
+		}
+		
+		SetEnvPortAspNetUrls(args);
 		SetDefaultAspNetCoreUrls(args);
 	}
+	
+	internal static async Task<bool> SkipForAppSettingsJsonFile(string appSettingsPath)
+	{
+		var appContainer = await ReadAppSettings.Read(appSettingsPath);
+		if ( appContainer.Kestrel?.Endpoints?.Http?.Url == null &&
+		     appContainer.Kestrel?.Endpoints?.Https?.Url == null ) return false;
+		
+		Console.WriteLine("Kestrel Endpoints are set in appsettings.json, " +
+		                  "this results in skip setting the PORT environment variable");
+		return true;
+	}
 
-	public static async Task SetEnvPortAspNetUrls(IEnumerable<string> args, string appSettingsPath)
+	internal static void SetEnvPortAspNetUrls(IEnumerable<string> args)
 	{
 		// Set port from environment variable
 		var portString = Environment.GetEnvironmentVariable("PORT");
 		
-		if (args.Contains("--urls") || string.IsNullOrEmpty(portString) || !int.TryParse(portString, out var port)) return;
-
-		var appContainer = await ReadAppSettings.Read(appSettingsPath);
-		if ( appContainer.Kestrel?.Endpoints?.Http?.Url != null || appContainer.Kestrel?.Endpoints?.Https?.Url != null)	
-		{
-			Console.WriteLine("Kestrel Endpoints are set in appsettings.json, " +
-			                  "this results in skip setting the PORT environment variable");
-			return;
-		}
+		if (args.Contains("--urls") || string.IsNullOrEmpty(portString) 
+		    || !int.TryParse(portString, out var port)) return;
 
 		SetEnvironmentVariableForPort(port);
 	}
@@ -42,7 +51,7 @@ public static class PortProgramHelper
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", $"http://*:{port}");
 	}
 
-	public static void SetDefaultAspNetCoreUrls(IEnumerable<string> args)
+	internal static void SetDefaultAspNetCoreUrls(IEnumerable<string> args)
 	{
 		var aspNetCoreUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
 		if (args.Contains("--urls") || !string.IsNullOrEmpty(aspNetCoreUrls)) return;

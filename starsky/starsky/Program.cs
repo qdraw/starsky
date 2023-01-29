@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 
 namespace starsky
 {
@@ -9,7 +11,9 @@ namespace starsky
 	{
 		public static async Task Main(string[] args)
 		{
-			await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(args);
+			await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(args,
+				Path.Join(new AppSettings().BaseDirectoryProject,
+					"appsettings.json"));
 			await CreateWebHostBuilder(args).Build().RunAsync();
 		}
 

@@ -23,12 +23,13 @@ public class PortProgramHelperTest
 	}
 	
 	[TestMethod]
-	public async Task SetEnvPortAspNetUrls_ShouldSet()
+	public void SetEnvPortAspNetUrls_ShouldSet()
 	{
 		Environment.SetEnvironmentVariable("PORT","8000");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 
-		await PortProgramHelper.SetEnvPortAspNetUrls(new List<string>(),null);
+		PortProgramHelper.SetEnvPortAspNetUrls(new List<string>());
+
 		Assert.AreEqual("http://*:8000",Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 		
 		Environment.SetEnvironmentVariable("PORT",_prePort);
@@ -41,7 +42,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("PORT","8000");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 	
-		await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(Array.Empty<string>());
+		await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(Array.Empty<string>(),string.Empty);
 		Assert.AreEqual("http://*:8000",Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 		
 		Environment.SetEnvironmentVariable("PORT",_prePort);
@@ -49,43 +50,73 @@ public class PortProgramHelperTest
 	}
 	
 	[TestMethod]
-	public async Task SetEnvPortAspNetUrls_ShouldIgnore()
+	public void SetEnvPortAspNetUrls_ShouldIgnore()
 	{
 		Environment.SetEnvironmentVariable("PORT","");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 
-		await PortProgramHelper.SetEnvPortAspNetUrls(new List<string>(),null);
+		PortProgramHelper.SetEnvPortAspNetUrls(new List<string>());
 		Assert.AreEqual(null,Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 		
 		Environment.SetEnvironmentVariable("PORT",_prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS",_preAspNetUrls);
 	}
-	
-		
-	[TestMethod]
-	public async Task SetEnvPortAspNetUrls_ShouldIgnore_DueAppSettingsFile()
-	{
-		Environment.SetEnvironmentVariable("PORT","9000");
-		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 
-		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-test.json");
+	[TestMethod]
+	public async Task SetEnvPortAspNetUrlsAndSetDefault_ShouldIgnore_DueAppSettingsFile1()
+	{
+		Environment.SetEnvironmentVariable("PORT","");
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
+		
+		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-222.json");
 		var stream = PlainTextFileHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
 			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            },\n            \"Http\": {\n      " +
 			"          \"Url\": \"http://*:8000\"\n            }\n        }\n    }\n }");
 		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,appSettingsPath);
 		
-		await PortProgramHelper.SetEnvPortAspNetUrls(new List<string>(),appSettingsPath);
+		await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(Array.Empty<string>(),appSettingsPath);
+
+		Assert.AreEqual(null,Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
+
+		Environment.SetEnvironmentVariable("PORT",_prePort);
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS",_preAspNetUrls);
 		
 		// remove afterwards
 		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
-		
-		// should not set default
-		Assert.AreEqual(null,Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
-		
-		Environment.SetEnvironmentVariable("PORT",_prePort);
-		Environment.SetEnvironmentVariable("ASPNETCORE_URLS",_preAspNetUrls);
 	}
 	
+	
+	[TestMethod]
+	public async Task SkipForAppSettingsJsonFile_ShouldIgnore_DueAppSettingsFile()
+	{
+		Environment.SetEnvironmentVariable("PORT","");
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
+		
+		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-111.json");
+		var stream = PlainTextFileHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
+			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            },\n            \"Http\": {\n      " +
+			"          \"Url\": \"http://*:8000\"\n            }\n        }\n    }\n }");
+		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,appSettingsPath);
+		
+		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(appSettingsPath);
+
+		Assert.AreEqual(true,result);
+		Assert.AreEqual(null,Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
+
+		Environment.SetEnvironmentVariable("PORT",_prePort);
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS",_preAspNetUrls);
+		
+		// remove afterwards
+		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
+	}
+	
+		
+	[TestMethod]
+	public async Task SkipForAppSettingsJsonFile_ShouldFalse()
+	{
+		var result = await PortProgramHelper.SkipForAppSettingsJsonFile(string.Empty);
+		Assert.AreEqual(false,result);
+	}
 		
 	[TestMethod]
 	public void SetDefaultAspNetCoreUrls_ShouldSet()
@@ -94,7 +125,10 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 	
 		PortProgramHelper.SetDefaultAspNetCoreUrls(Array.Empty<string>());
-		Assert.AreEqual("http://localhost:4000;https://localhost:4001",Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
+		
+		// should set to default
+		Assert.AreEqual("http://localhost:4000;https://localhost:4001",
+			Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 		
 		Environment.SetEnvironmentVariable("PORT",_prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS",_preAspNetUrls);
@@ -107,6 +141,8 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://localhost:4000");
 	
 		PortProgramHelper.SetDefaultAspNetCoreUrls(Array.Empty<string>());
+		
+		// should set port to 4000
 		Assert.AreEqual("http://localhost:4000",Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 		
 		Environment.SetEnvironmentVariable("PORT",_prePort);
