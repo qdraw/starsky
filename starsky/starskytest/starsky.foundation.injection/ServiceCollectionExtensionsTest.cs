@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.injection;
@@ -14,7 +16,7 @@ public interface ITestInjectionClass
 [TestClass]
 public class ServiceCollectionExtensionsTest
 {
-	public class TestInjectionClass : ITestInjectionClass
+	private class TestInjectionClass : ITestInjectionClass
 	{
 		public bool Enabled { get; set; } = true;
 	}
@@ -162,6 +164,61 @@ public class ServiceCollectionExtensionsTest
 			typeof(TestInjectionClass),overwriteInjectionLifetime.Type);
 		// expect exception
 	}
-	
 
+	[TestMethod]
+	public void GetExportedTypes_Default()
+	{
+		var result = ServiceCollectionExtensions.GetExportedTypes(typeof(TestInjectionClass).Assembly);
+		var count = result.Count();
+		Assert.IsTrue(count >= 100);
+	}
+	
+	public class AssemblyTestClass : Assembly
+	{
+		private readonly Exception _exception;
+
+		public AssemblyTestClass(Exception exception)
+		{
+			_exception = exception;
+		}
+		
+		public override Type[] GetExportedTypes()
+		{
+			throw _exception;
+		}
+	}
+	
+	[TestMethod]
+	public void GetExportedTypes_NotSupportedException()
+	{
+		var result = ServiceCollectionExtensions.GetExportedTypes(new AssemblyTestClass(new NotSupportedException()));
+		Assert.AreEqual(Type.EmptyTypes,result);
+	}
+	
+	[TestMethod]
+	public void GetExportedTypes_FileLoadException()
+	{
+		var result = ServiceCollectionExtensions.GetExportedTypes(new AssemblyTestClass(new FileLoadException()));
+		Assert.AreEqual(Type.EmptyTypes,result);
+	}
+	
+	[TestMethod]
+	public void GetExportedTypes_ReflectionTypeLoadException()
+	{
+		var exception = new ReflectionTypeLoadException(new Type[]{typeof(bool), typeof(byte), null}, 
+			new Exception[]{null, new Exception()});
+		var result = ServiceCollectionExtensions.GetExportedTypes(new AssemblyTestClass(exception));
+		var count = result.Count();
+
+		Assert.AreEqual(2,count);
+	}
+	
+		
+	[TestMethod]
+	[ExpectedException(typeof(InvalidOperationException))]
+	public void GetExportedTypes_NullRefException()
+	{
+		var exception = new NullReferenceException();
+		ServiceCollectionExtensions.GetExportedTypes(new AssemblyTestClass(exception));
+	}
 }
