@@ -13,4 +13,15 @@ public class KestrelContainerTest
 		Assert.IsNotNull(kestrelContainer);
 		Assert.IsNull(kestrelContainer.Endpoints);
 	}
+	
+	[TestMethod]
+	public void KestrelContainerTest_Default1()
+	{
+		var kestrelContainer = new KestrelContainer
+		{
+			Endpoints = new KestrelContainerEndpoints()
+		};
+		Assert.IsNotNull(kestrelContainer);
+		Assert.IsNotNull(kestrelContainer.Endpoints);
+	}
 }
