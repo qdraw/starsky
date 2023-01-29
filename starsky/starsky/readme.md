@@ -87,6 +87,9 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 32. `NoAccountLocalhost` No login needed when on localhost, used in Desktop App
 33. `VideoUseLocalTime` Use localtime by Camera make and model instead of UTC
 34. `SyncOnStartup` Sync Database on changes since latest start _default true_
+35. `ThumbnailGenerationIntervalInMinutes` Interval to generate thumbnails, to disable use value lower than 3 _default 15_ 
+36. `GeoFilesSkipDownloadOnStartup` Skip download of GeoFiles on startup, _recommend to keep this false or null_ - _default false_
+37. `ExiftoolSkipDownloadOnStartup` Skip download of Exiftool on startup, _recommend to keep this false or null_ - _default false_
 
 ### Appsettings.json example
 ```json

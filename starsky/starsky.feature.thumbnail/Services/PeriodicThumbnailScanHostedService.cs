@@ -22,11 +22,11 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 {
 	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _factory;
-	private int _executionCount = 0;
+	private int _executionCount;
 
 	internal TimeSpan Period { get; set; }
 
-	internal int MinimumIntervalInMinutes { get; set; } = 2;
+	internal int MinimumIntervalInMinutes { get; set; } = 3;
 	
 	internal bool IsEnabled { get; set; }
 	
