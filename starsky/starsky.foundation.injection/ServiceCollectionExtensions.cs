@@ -173,7 +173,7 @@ namespace starsky.foundation.injection
 	        return assemblies.ToArray();
         }
         
-        private static IEnumerable<Type?> GetExportedTypes(Assembly assembly)
+        internal static IEnumerable<Type?> GetExportedTypes(Assembly assembly)
         {
             try
             {
