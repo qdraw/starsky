@@ -20,6 +20,8 @@ public static class PortProgramHelper
 	{
 		// Set port from environment variable
 		var portString = Environment.GetEnvironmentVariable("PORT");
+		
+		if (args.Contains("--urls") || string.IsNullOrEmpty(portString) || !int.TryParse(portString, out var port)) return;
 
 		var appContainer = await ReadAppSettings.Read(appSettingsPath);
 		if ( appContainer.Kestrel?.Endpoints?.Http?.Url != null || appContainer.Kestrel?.Endpoints?.Https?.Url != null)	
@@ -27,7 +29,6 @@ public static class PortProgramHelper
 			return;
 		}
 
-		if (args.Contains("--urls") || string.IsNullOrEmpty(portString) || !int.TryParse(portString, out var port)) return;
 		SetEnvironmentVariableForPort(port);
 	}
 

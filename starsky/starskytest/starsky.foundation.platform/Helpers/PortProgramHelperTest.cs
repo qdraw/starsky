@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Storage;
 
 namespace starskytest.starsky.foundation.platform.Helpers;
 
@@ -51,6 +55,31 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 
 		await PortProgramHelper.SetEnvPortAspNetUrls(new List<string>(),null);
+		Assert.AreEqual(null,Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
+		
+		Environment.SetEnvironmentVariable("PORT",_prePort);
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS",_preAspNetUrls);
+	}
+	
+		
+	[TestMethod]
+	public async Task SetEnvPortAspNetUrls_ShouldIgnore_DueAppSettingsFile()
+	{
+		Environment.SetEnvironmentVariable("PORT","");
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
+
+		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-test.json");
+		var stream = PlainTextFileHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
+			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            },\n            \"Http\": {\n      " +
+			"          \"Url\": \"http://*:8000\"\n            }\n        }\n    }\n }");
+		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,appSettingsPath);
+		
+		await PortProgramHelper.SetEnvPortAspNetUrls(new List<string>(),appSettingsPath);
+		
+		// remove afterwards
+		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
+		
+		// should not set default
 		Assert.AreEqual(null,Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 		
 		Environment.SetEnvironmentVariable("PORT",_prePort);
