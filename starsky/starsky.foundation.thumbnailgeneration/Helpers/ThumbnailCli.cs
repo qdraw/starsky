@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -18,7 +19,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		private readonly IThumbnailService _thumbnailService;
 
 		public ThumbnailCli(AppSettings appSettings, 
-			IConsole console, IThumbnailService thumbnailService, IThumbnailCleaner thumbnailCleaner, 
+			IConsole console, IThumbnailService thumbnailService, 
+			IThumbnailCleaner thumbnailCleaner, 
 			ISelectorStorage selectorStorage)
 		{
 			_appSettings = appSettings;
@@ -52,6 +54,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 
 			if (new ArgsHelper(_appSettings).GetThumbnail(args))
 			{
+				if (_appSettings.IsVerbose()) _console.WriteLine($">> GetThumbnail True ({DateTime.UtcNow:HH:mm:ss})");
+				
 				var storage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 
 				var isFolderOrFile = storage.IsFolderOrFile(subPath);
@@ -60,7 +64,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 
 				await _thumbnailService.CreateThumbnailAsync(subPath);
 				
-				_console.WriteLine("Thumbnail Done!");
+				_console.WriteLine($"Thumbnail Done! ({DateTime.UtcNow:HH:mm:ss})");
 			}
             
 			if ( ArgsHelper.NeedCleanup(args) )
