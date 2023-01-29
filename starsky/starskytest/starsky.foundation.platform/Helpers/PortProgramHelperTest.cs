@@ -65,7 +65,7 @@ public class PortProgramHelperTest
 	[TestMethod]
 	public async Task SetEnvPortAspNetUrls_ShouldIgnore_DueAppSettingsFile()
 	{
-		Environment.SetEnvironmentVariable("PORT","");
+		Environment.SetEnvironmentVariable("PORT","9000");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 
 		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-test.json");

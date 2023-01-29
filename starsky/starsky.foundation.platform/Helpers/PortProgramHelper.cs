@@ -26,6 +26,8 @@ public static class PortProgramHelper
 		var appContainer = await ReadAppSettings.Read(appSettingsPath);
 		if ( appContainer.Kestrel?.Endpoints?.Http?.Url != null || appContainer.Kestrel?.Endpoints?.Https?.Url != null)	
 		{
+			Console.WriteLine("Kestrel Endpoints are set in appsettings.json, " +
+			                  "this results in skip setting the PORT environment variable");
 			return;
 		}
 
