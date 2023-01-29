@@ -38,6 +38,7 @@ namespace starskytest.starskySynchronizeCli
 			// also see:
 			// starsky/starskytest/root/ProgramTest.cs
 			// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
+			// starskytest/starskythumbnailcli/ProgramTest.cs
 		}
 		
 		[TestMethod]

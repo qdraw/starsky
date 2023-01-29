@@ -19,6 +19,8 @@ namespace starskytest.starskyGeoCli
 		private static string _exiftoolSkipDownloadOnStartup;
 		// also see:
 		// starsky/starskytest/root/ProgramTest.cs
+		// starskytest/starskythumbnailcli/ProgramTest.cs
+		// starsky/starskytest/starskySynchronizeCli/ProgramTest.cs
 		
 		public starskyGeoCliTest()
 		{
@@ -36,6 +38,8 @@ namespace starskytest.starskyGeoCli
 			
 			// also see:
 			// starsky/starskytest/root/ProgramTest.cs
+			// starskytest/starskythumbnailcli/ProgramTest.cs
+			// starsky/starskytest/starskySynchronizeCli/ProgramTest.cs
 		}
 		
 		[TestMethod]
