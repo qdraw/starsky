@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ public static class PortProgramHelper
 	public static async Task SetEnvPortAspNetUrls(IEnumerable<string> args, string appSettingsPath)
 	{
 		// Set port from environment variable
-		var port = Environment.GetEnvironmentVariable("PORT");
+		var portString = Environment.GetEnvironmentVariable("PORT");
 
 		var appContainer = await ReadAppSettings.Read(appSettingsPath);
 		if ( appContainer.Kestrel?.Endpoints?.Http?.Url != null || appContainer.Kestrel?.Endpoints?.Https?.Url != null)	
@@ -26,11 +27,18 @@ public static class PortProgramHelper
 			return;
 		}
 
-		if (args.Contains("--urls") ||string.IsNullOrEmpty(port) && !int.TryParse(port, out _)) return;
-		Console.WriteLine($"Set port from environment variable: {port}");
+		if (args.Contains("--urls") || string.IsNullOrEmpty(portString) || !int.TryParse(portString, out var port)) return;
+		SetEnvironmentVariableForPort(port);
+	}
+
+	[SuppressMessage("Usage", "S5332: Using http protocol is insecure. Use https instead.")]
+	private static void SetEnvironmentVariableForPort(int port)
+	{
+		Console.WriteLine($"Set port from environment variable: {port} " +
+		                  $"\nPro tip: Its recommended to use a https proxy like nginx or traefik");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", $"http://*:{port}");
 	}
-	
+
 	public static void SetDefaultAspNetCoreUrls(IEnumerable<string> args)
 	{
 		var aspNetCoreUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
