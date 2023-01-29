@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public async Task SetLocalAppData_ShouldRead()
 		{
 			var appDataFolderFullPath =
-				Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "setup_app_settings_test");
+				Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)!, "setup_app_settings_test");
 			
 			_hostStorage.CreateDirectory(appDataFolderFullPath);
 			var path = Path.Combine(appDataFolderFullPath, "appsettings.json");
@@ -78,7 +78,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				" \"StorageFolder\": \"/data/test\"\n " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 
-			var result = (await SetupAppSettings.MergeJsonFiles(testDir)).App;
+			var result = (await SetupAppSettings.MergeJsonFiles(testDir));
 			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 		}
 
@@ -86,7 +86,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public async Task MergeJsonFiles_NoFileFound()
 		{
 			var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_not_found");
-			var result = (await SetupAppSettings.MergeJsonFiles(testDir)).App;
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
 			Assert.AreEqual(result.Verbose, new AppSettings().Verbose);
 		}
 
@@ -109,7 +109,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.patch.json"));
 			
-			var result = (await SetupAppSettings.MergeJsonFiles(testDir)).App;
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
 			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 			Assert.AreEqual(false, result.AddSwagger);
 		}
@@ -133,7 +133,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
 				" }\n}\n"), Path.Combine(testDir, $"{SetupAppSettings.AppSettingsMachineNameWithDot()}json"));
 			
-			var result = (await SetupAppSettings.MergeJsonFiles(testDir)).App;
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
 			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 			Assert.AreEqual(false, result.AddSwagger);
 		}
@@ -156,7 +156,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			
 			Environment.SetEnvironmentVariable("app__appsettingspath", Path.Combine(testDir, "appsettings_ref_patch.json"));
 			
-			var result = (await SetupAppSettings.MergeJsonFiles(testDir)).App;
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
 			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 			Assert.AreEqual(false, result.AddSwagger);
 			

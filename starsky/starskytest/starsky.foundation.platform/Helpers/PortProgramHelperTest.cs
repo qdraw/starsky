@@ -24,7 +24,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("PORT","8000");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 
-		await PortProgramHelper.SetEnvPortAspNetUrls(new List<string>());
+		await PortProgramHelper.SetEnvPortAspNetUrls(new List<string>(),null);
 		Assert.AreEqual("http://*:8000",Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 		
 		Environment.SetEnvironmentVariable("PORT",_prePort);
@@ -50,7 +50,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("PORT","");
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 
-		await PortProgramHelper.SetEnvPortAspNetUrls(new List<string>());
+		await PortProgramHelper.SetEnvPortAspNetUrls(new List<string>(),null);
 		Assert.AreEqual(null,Environment.GetEnvironmentVariable("ASPNETCORE_URLS"));
 		
 		Environment.SetEnvironmentVariable("PORT",_prePort);

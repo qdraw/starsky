@@ -11,16 +11,16 @@ public static class PortProgramHelper
 {
 	public static async Task SetEnvPortAspNetUrlsAndSetDefault(string[] args)
 	{
-		await SetEnvPortAspNetUrls(args);
+		await SetEnvPortAspNetUrls(args, Path.Join(new AppSettings().BaseDirectoryProject, "appsettings.json"));
 		SetDefaultAspNetCoreUrls(args);
 	}
 
-	public static async Task SetEnvPortAspNetUrls(IEnumerable<string> args)
+	public static async Task SetEnvPortAspNetUrls(IEnumerable<string> args, string appSettingsPath)
 	{
 		// Set port from environment variable
 		var port = Environment.GetEnvironmentVariable("PORT");
 
-		var appContainer = await SetupAppSettings.MergeJsonFiles(new AppSettings().BaseDirectoryProject);
+		var appContainer = await SetupAppSettings.Read(appSettingsPath);
 		if ( appContainer.Kestrel?.Endpoints?.Http?.Url != null || appContainer.Kestrel?.Endpoints?.Https?.Url != null)	
 		{
 			return;

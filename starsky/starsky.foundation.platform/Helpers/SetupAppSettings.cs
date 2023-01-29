@@ -67,24 +67,24 @@ namespace starsky.foundation.platform.Helpers
 			};
 		}
 
-		internal static async Task<AppContainerAppSettings> MergeJsonFiles(string baseDirectoryProject)
+		internal static async Task<AppSettings> MergeJsonFiles(string baseDirectoryProject)
 		{
 			var paths = Order(baseDirectoryProject);
-			var appSettingsList = new List<AppContainerAppSettings>();
+			var appSettingsList = new List<AppSettings>();
 
 			foreach ( var path in paths.Where(File.Exists) )
 			{
 				var appSettings = await Read(path);
-				appSettingsList.Add(appSettings);
+				appSettingsList.Add(appSettings?.App);
 			}
 
-			if ( !appSettingsList.Any() ) return new AppContainerAppSettings{App = new AppSettings()};
+			if ( !appSettingsList.Any() ) return new AppSettings();
 			var appSetting = appSettingsList.FirstOrDefault()!;
 			
 			for ( var i = 1; i < appSettingsList.Count; i++ )
 			{
 				var currentAppSetting = appSettingsList[i];
-				AppSettingsCompareHelper.Compare(appSetting.App, currentAppSetting.App);
+				AppSettingsCompareHelper.Compare(appSetting, currentAppSetting);
 			}
 
 			return appSetting;
