@@ -78,7 +78,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				" \"StorageFolder\": \"/data/test\"\n " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 
-			var result = (await SetupAppSettings.MergeJsonFiles(testDir));
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
 			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 		}
 
