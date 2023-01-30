@@ -1,4 +1,4 @@
-# Electron
+# Electron (for desktop)
 
 Electron is a framework for building desktop applications using JavaScript, HTML, and CSS. 
 By embedding Chromium and Node.js into its binary, 

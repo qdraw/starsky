@@ -1,4 +1,4 @@
-# Cypress
+# Cypress testing
 
 Cypress is a front end testing tool built for the web. 
 This project uses Cypress to test the user interface of the application.
