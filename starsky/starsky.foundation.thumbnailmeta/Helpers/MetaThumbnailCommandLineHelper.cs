@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.thumbnailmeta.Interfaces;
@@ -50,9 +51,9 @@ namespace starsky.foundation.thumbnailmeta.Helpers
 			}
 
 			var statusResultsWithSubPaths = await _metaExifThumbnailService.AddMetaThumbnail(subPath!);
-			_console.WriteLine("next: run update status");
+			_console.WriteLine($"next: run update status ({DateTime.UtcNow:HH:mm:ss})");
 			await _statusThumbnailService.UpdateStatusThumbnail(statusResultsWithSubPaths);
-			_console.WriteLine("Done!");
+			_console.WriteLine($"Done! ({DateTime.UtcNow:HH:mm:ss})");
 		}
 	}
 }

@@ -33,8 +33,8 @@ namespace starsky.foundation.platform.Helpers
 			// unescaped regex:
 			// [^\/]+(?=\.[\w]+\.$)|[^\/]+$
 			var extensionRegex =
-				new Regex("[^\\/]+(?=\\.[\\w]+\\.$)|[^\\/]+$",
-					RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
+				new Regex("[^\\/]+(?=\\.[\\w]+\\.$)|[^\\/]+$", // set slower due timeouts
+					RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(300));
 			return extensionRegex.Match(filePath).Value;
 		}
 

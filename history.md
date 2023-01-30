@@ -58,6 +58,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Added)  _Back-end_ add feature flag GeoFilesSkipDownloadOnStartup, recommend to keep false or null (PR #1036)
 - [x] (Added)  _Back-end_ add feature flag ExiftoolSkipDownloadOnStartup, recommend to keep false or null (PR #1036)
 - [x] (Added)  _Back-end_ add unit tests for dependency injection helpers (PR #1038)
+- [x] (Fixed)  _Back-end_  GetFileName Regex timeout (PR #1041)
 
 # version 0.5.3 - 2023-01-23
 
