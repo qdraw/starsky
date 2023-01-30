@@ -52,7 +52,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 					.ParseSubfolders(getSubPathRelative)!;
 			}
 
-			if (new ArgsHelper(_appSettings).GetThumbnail(args))
+			if (ArgsHelper.GetThumbnail(args))
 			{
 				if (_appSettings.IsVerbose()) _console.WriteLine($">> GetThumbnail True ({DateTime.UtcNow:HH:mm:ss})");
 				

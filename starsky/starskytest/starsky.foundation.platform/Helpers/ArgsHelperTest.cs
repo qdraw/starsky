@@ -241,7 +241,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			_appSettings.StorageFolder = new CreateAnImage().BasePath;
 			var args = new List<string> {"-t", "true"}.ToArray();
-			Assert.IsTrue(new ArgsHelper(_appSettings).GetThumbnail(args));
+			Assert.IsTrue(ArgsHelper.GetThumbnail(args));
 		}   
         
 		[TestMethod]
