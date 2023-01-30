@@ -271,8 +271,8 @@ function filterColorClassBeforeAdding(
  * @param state - current state
  */
 function UpdateColorClassUsageActiveListLoop(state: IArchiveProps) {
-  for (let index = 0; index < state.fileIndexItems.length; index++) {
-    const colorClass = state.fileIndexItems[index].colorClass;
+  for (const fileIndexItem of state.fileIndexItems) {
+    const colorClass = fileIndexItem.colorClass;
     if (colorClass === undefined) continue;
     UpdateColorClassUsageActiveList(state, colorClass);
   }
