@@ -33,7 +33,7 @@ const Select: React.FunctionComponent<SelectPropTypes> = ({
     >
       {selectOptions.map((value, index) => {
         return (
-          <option key={index} value={value}>
+          <option key={value} value={value}>
             {value}
           </option>
         );
