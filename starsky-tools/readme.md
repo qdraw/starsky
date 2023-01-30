@@ -16,7 +16,7 @@
     -   [starskyTest](../starsky/starskytest/readme.md) _mstest unit tests_
 -   **[starsky-tools](../starsky-tools/readme.md) nodejs tools to add-on tasks**
 -   [starskydesktop](../starskydesktop/readme.md) _Desktop Application_
-    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
+    -   [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
 -   [Changelog](../history.md) _Release notes and history_
 
 ## Starsky Tools docs
@@ -30,6 +30,7 @@
 -   [end2end](end2end/readme.md) Cypress end2end testing
 -   [localtunnel](localtunnel/readme.md) debug clientapp (port 3000 + 5000) on mobile
 -   [mail](mail/readme.md) imap mail client to import files in Starsky
+-   [mock](mock/readme.md) mock of api
 -   [sync](sync/readme.md) sync, not working
 -   [thumbnail](thumbnail/readme.md) remote client to generate thumbnails
 -   [release-tools](release-tools/readme.md) pipeline helpers for release end2end

@@ -101,12 +101,6 @@ const config = {
 						label: "Developer Guide",
 					},
 					{
-						type: "doc",
-						docId: "api/readme",
-						position: "left",
-						label: "API",
-					},
-					{
 						label: "Download",
 						href: "/download",
 					},

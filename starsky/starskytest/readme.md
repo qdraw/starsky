@@ -23,7 +23,7 @@ To know that the application is working like expected, there are test create.  S
 Those unit test does not require any configuration or external dependencies like a webservice.
 The main application has Exiftool as external dependency that is installed automatically, but you don't need this for the starskyTest.
 
-### With Cake
+### With Nuke
 
 When running the build script, inside `starskytest\coverage.report`
 

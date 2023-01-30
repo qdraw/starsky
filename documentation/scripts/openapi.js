@@ -116,7 +116,7 @@ function parseAndWrite(showLog = false) {
     console.log(apiOutputReadme);
   }
 
-  fs.writeFileSync('docs/api/readme.md', apiOutputReadme, 'utf8');
+  fs.writeFileSync('docs/developer-guide/api/readme.md', apiOutputReadme, 'utf8');
 }
 
 if (require.main === module) {

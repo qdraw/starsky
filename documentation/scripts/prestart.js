@@ -163,6 +163,9 @@ copyFileSync(
 
 copyFileSync("starsky-tools/mail/readme.md", "advanced-options/starsky-tools/mail/readme.md");
 
+copyFileSync("starsky-tools/mock/readme.md", "advanced-options/starsky-tools/mock/readme.md");
+
+
 copyFileSync(
   "starsky-tools/thumbnail/readme.md",
   "advanced-options/starsky-tools/thumbnail/readme.md"
