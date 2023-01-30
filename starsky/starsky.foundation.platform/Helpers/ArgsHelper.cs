@@ -660,7 +660,7 @@ namespace starsky.foundation.platform.Helpers
 		{
 			var isThumbnail = true;
 			
-			for (int arg = 0; arg < args.Count; arg++)
+			for (var arg = 0; arg < args.Count; arg++)
 			{
 				if ((args[arg].ToLower() == "--thumbnail" || args[arg].ToLower() == "-t") 
 				    && (arg + 1) != args.Count && bool.TryParse(args[arg + 1], out var isThumbnail2))
@@ -669,7 +669,6 @@ namespace starsky.foundation.platform.Helpers
 				}
 			}
 			
-			if (_appSettings.IsVerbose()) Console.WriteLine(">> GetThumbnail " + isThumbnail);
 			return isThumbnail;
 		}
 	 
