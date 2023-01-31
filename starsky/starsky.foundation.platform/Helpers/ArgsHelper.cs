@@ -656,7 +656,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="args">args input</param>
 		/// <returns>bool</returns>
-		public bool GetThumbnail(IReadOnlyList<string> args)
+		public static bool GetThumbnail(IReadOnlyList<string> args)
 		{
 			var isThumbnail = true;
 			

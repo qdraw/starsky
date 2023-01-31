@@ -165,7 +165,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
     );
 
     useKeyboardEvent(
-      /^([c])$/,
+      /^c$/,
       (event: KeyboardEvent) => {
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();
@@ -356,7 +356,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
                 history.location.search + "&details=true",
                 item
               )}
-              key={index}
+              key={item}
               className={index !== 1 ? "box" : "box box--child"}
               data-test="collections"
             >

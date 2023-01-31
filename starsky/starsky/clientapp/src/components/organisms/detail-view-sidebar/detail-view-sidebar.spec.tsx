@@ -547,7 +547,7 @@ describe("DetailViewSidebar", () => {
     it("Press c to copy", () => {
       let cCopyIsCalled = false;
       function keyboardCallback(regex: RegExp, callback: Function) {
-        if (regex.source === "^([c])$") {
+        if (regex.source === "^c$") {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
             cancelable: true,

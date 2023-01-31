@@ -6,7 +6,9 @@ module.exports = {
     // "@storybook/addon-links"
   ],
   core: {
-    builder: "webpack5"
+    builder: "webpack5",
+    disableTelemetry: true,
+    enableCrashReports: false
   },
   webpackFinal: async (config) => {
     // build-storybook url
