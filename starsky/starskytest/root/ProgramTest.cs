@@ -16,6 +16,7 @@ public class ProgramTest
 	private static string _thumbnailGenerationIntervalInMinutes;
 	private static string _geoFilesSkipDownloadOnStartup;
 	private static string _exiftoolSkipDownloadOnStartup;
+	private static string _enablePackageTelemetry;
 
 	public ProgramTest()
 	{
@@ -30,6 +31,8 @@ public class ProgramTest
 			Environment.GetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup");
 		_exiftoolSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup");
+		_enablePackageTelemetry =
+			Environment.GetEnvironmentVariable("app__EnablePackageTelemetry");
 		
 		// see also:
 		// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
@@ -46,6 +49,7 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__thumbnailGenerationIntervalInMinutes","0");
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup","true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
+		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
 
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();

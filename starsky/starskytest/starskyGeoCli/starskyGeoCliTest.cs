@@ -40,6 +40,14 @@ namespace starskytest.starskyGeoCli
 			// starsky/starskytest/root/ProgramTest.cs
 			// starskytest/starskythumbnailcli/ProgramTest.cs
 			// starsky/starskytest/starskySynchronizeCli/ProgramTest.cs
+			
+			Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:9514");
+			Environment.SetEnvironmentVariable("app__useDiskWatcher","false");
+			Environment.SetEnvironmentVariable("app__SyncOnStartup","false");
+			Environment.SetEnvironmentVariable("app__thumbnailGenerationIntervalInMinutes","0");
+			Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup","true");
+			Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
+			Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
 		}
 		
 		[TestMethod]
