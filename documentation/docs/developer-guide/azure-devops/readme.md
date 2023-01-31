@@ -11,7 +11,8 @@ continuous integration/continuous deployment (CI/CD) pipelines, and testing tool
 
 In this project the Azure Devops is **private** and used to build the application for internal usage.
 However the yaml files are public and can be used as a reference for other projects.
-It is not needed to use Azure Devops for this project. All the build steps can be done via [Github Actions](../github-actions/readme.md).
+It is not needed to use Azure Devops for this project. 
+All the build steps can be done via [Github Actions](../github-actions/readme.md).
 
 ## Azure Devops pipelines
 
