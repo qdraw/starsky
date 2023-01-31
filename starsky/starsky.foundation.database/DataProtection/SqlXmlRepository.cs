@@ -86,8 +86,12 @@ namespace starsky.foundation.database.DataProtection
 			{
 				LocalDefault(_dbContext);
 			}
-			catch ( DbUpdateException )
+			catch ( Exception exception )
 			{
+				if ( exception is not RetryLimitExceededException && 
+				     exception is not MySqlConnector.MySqlException &&
+				     exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
+				
 				var retryInterval = _dbContext.GetType().FullName?.Contains("test") == true ? 
 					TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(5);
 				try
@@ -99,7 +103,6 @@ namespace starsky.foundation.database.DataProtection
 				{
 					_logger.LogError(aggregateException, "[SqlXmlRepository] catch-ed AggregateException");
 				}
-
 			}
 		}
 	}
