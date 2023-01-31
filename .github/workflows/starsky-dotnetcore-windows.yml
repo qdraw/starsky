@@ -25,16 +25,23 @@ jobs:
 
     runs-on: windows-latest
 
+    env:
+      WEBSITE_SITE_NAME: "ci"
+
     steps:
+    
     - uses: actions/checkout@v2
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.405
+        
     - name: BuildNetCore
       shell: pwsh
       working-directory: ./starsky
       run: pwsh build.ps1 --Target BuildNetCore --no-sonar --no-dependencies --no-publish --skip --no-logo 
+      
     - name: TestNetCore
       shell: pwsh
       working-directory: ./starsky
