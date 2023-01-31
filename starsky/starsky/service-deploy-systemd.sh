@@ -43,6 +43,11 @@ for ((i = 1; i <= $#; i++ )); do
       ANYWHERE=true
   fi  
   
+  if [[ ${ARGUMENTS[CURRENT]} == "--no-telemetry" ]];
+  then
+    NO_TELEMETRY=true
+  fi  
+  
   if [ $i -gt 1 ]; then
     PREV=$(($i-2))
 
@@ -87,6 +92,9 @@ if [ "$ANYWHERE" = true ] ; then
 fi
 echo "--port" $PORT $ANYWHERESTATUSTEXT
 
+if [ "$NO_TELEMETRY" = true ] ; then
+    echo "--no-telemetry"
+fi
 
 mkdir -p $HOME"/.config/systemd/user/"
 
@@ -127,6 +135,9 @@ echo -e "SyslogIdentifier=${OUTPUT_DIR}" >> $SYSTEMD_SERVICE_PATH
 # We can even set environment variables
 echo -e "Environment=ASPNETCORE_ENVIRONMENT=Production" >> $SYSTEMD_SERVICE_PATH
 echo -e "Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false" >> $SYSTEMD_SERVICE_PATH
+if [ "$NO_TELEMETRY" = true ] ; then
+    echo -e "Environment=APP__ENABLEPACKAGETELEMETRY=false" >> $SYSTEMD_SERVICE_PATH
+fi
 echo -e "\n[Install]" >> $SYSTEMD_SERVICE_PATH
 # When a systemd user instance starts, it brings up the per user target default.target
 echo -e "WantedBy=default.target" >> $SYSTEMD_SERVICE_PATH
