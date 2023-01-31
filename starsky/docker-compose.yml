@@ -41,6 +41,8 @@ services:
       args:
         - IS__DEMO=true # arg name is ISDEMO 
         - TEST=false
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
     environment:
       - PORT=${STARSKY_PORT}
       - app__verbose=true
