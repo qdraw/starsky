@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>starsky.feature.realtime</RootNamespace>
     <ProjectGuid>{4a749ec1-4e6d-4c68-b69c-00c5c80f5660}</ProjectGuid>
-    <Version>0.5.4</Version>
+    <Version>0.5.5</Version>
     <Nullable>enable</Nullable>
 </PropertyGroup>
 
