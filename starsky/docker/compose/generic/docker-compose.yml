@@ -9,6 +9,8 @@ version: '3.5'
 #   HTTPS reverse proxy such as Traefik or Caddy. Your files and passwords will otherwise be transmitted
 #   in clear text and can be intercepted by anyone, including your provider, hackers, and governments
 #
+#                     Make sure you run this docker compose outside of the repository folder
+#
 # Setup Guides:
 # - https://docs.qdraw.nl/getting-started/docker-compose/
 #
