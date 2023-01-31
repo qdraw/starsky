@@ -95,6 +95,7 @@ namespace starsky.foundation.database.DataProtection
 				
 				var retryInterval = _dbContext.GetType().FullName?.Contains("test") == true ? 
 					TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(5);
+				
 				try
 				{
 					RetryHelper.Do(
