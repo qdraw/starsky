@@ -98,6 +98,12 @@ else
             
             echo "build "$SERVICE_NAME_LOWER_CASE" service "$NO_CACHE_ARG" "$UNIT_TEST_RUN_ARG
             docker compose build $PROGRESS_LOGGER_ARG $SERVICE_NAME_LOWER_CASE $NO_CACHE_ARG $UNIT_TEST_RUN_ARG
+            if [ $? != 0 ] 
+            then 
+              printf '%s%s%s\n' $COLOR_RED 'Build failed' $COLOR_REST
+              printf '%s%s%s\n' $COLOR_RED '        NOT going to run up all service' $COLOR_REST
+              exit 1
+            fi
         fi    
     done
     
