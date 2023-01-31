@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -176,6 +177,57 @@ public class SqlXmlRepositoryTest
 		
 		Assert.IsNotNull(error);
 
+	}
+	
+	private class StoreElementException2RetryLimitExceededException : ApplicationDbContext
+	{
+		public StoreElementException2RetryLimitExceededException(DbContextOptions options) : base(options)
+		{
+		}
+		public override DbSet<DataProtectionKey> DataProtectionKeys => throw new RetryLimitExceededException("general");
+	}
+	
+	[TestMethod]
+	public void SqlXmlRepositoryTest_StoreElement_Exception_RetryLimitExceededException()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+			.Options;
+
+		var logger =  new FakeIWebLogger();
+		var repo =
+			new SqlXmlRepository(
+				new StoreElementException2RetryLimitExceededException(options), null!, logger);
+		
+		repo.StoreElement(new XElement("x1", "x1"), "hi");
+
+		var error = logger.TrackedExceptions.FirstOrDefault(p =>
+			p.Item2.Contains("AggregateException"));
+		
+		Assert.IsNotNull(error);
+	}
+	
+	private class StoreElementException2OtherException : ApplicationDbContext
+	{
+		public StoreElementException2OtherException(DbContextOptions options) : base(options)
+		{
+		}
+		public override DbSet<DataProtectionKey> DataProtectionKeys => throw new NullReferenceException("general");
+	}
+	
+	[TestMethod]
+	[ExpectedException(typeof(NullReferenceException))]
+	public void SqlXmlRepositoryTest_StoreElement_Exception_Other()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+			.Options;
+
+		var logger =  new FakeIWebLogger();
+		var repo =
+			new SqlXmlRepository(
+				new StoreElementException2OtherException(options), null!, logger);
+		repo.StoreElement(new XElement("x1", "x1"), "hi");
 	}
 	
 }

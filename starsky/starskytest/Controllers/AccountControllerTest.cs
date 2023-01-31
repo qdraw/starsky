@@ -22,6 +22,7 @@ using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -70,6 +71,7 @@ namespace starskytest.Controllers
             
 			services.AddSingleton<IUserManager, UserManager>();
 			services.AddSingleton<AppSettings, AppSettings>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
 			services.AddLogging();
 
@@ -90,7 +92,7 @@ namespace starskytest.Controllers
 			builder.UseInMemoryDatabase("test123");
 			var options = builder.Options;
 			_dbContext = new ApplicationDbContext(options);
-			_userManager = new UserManager(_dbContext,_appSettings);
+			_userManager = new UserManager(_dbContext,_appSettings, new FakeIWebLogger());
 			_selectorStorage = new FakeSelectorStorage(new StorageHostFullPathFilesystem());
 
 			_antiForgery = new FakeAntiforgery();
@@ -216,7 +218,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task AccountController_Model_is_not_correct_NoUsersActive()
 		{
-			var controller = new AccountController(new UserManager(_dbContext,_appSettings), _appSettings,_antiForgery, _selectorStorage);
+			var controller = new AccountController(new UserManager(_dbContext,_appSettings, new FakeIWebLogger()), _appSettings,_antiForgery, _selectorStorage);
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
 			controller.ControllerContext.HttpContext = httpContext;
 

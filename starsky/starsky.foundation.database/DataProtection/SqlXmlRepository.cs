@@ -88,7 +88,8 @@ namespace starsky.foundation.database.DataProtection
 			}
 			catch ( Exception exception )
 			{
-				if ( exception is not RetryLimitExceededException && 
+				if ( exception is not DbUpdateException && 
+				     exception is not RetryLimitExceededException && 
 				     exception is not MySqlConnector.MySqlException &&
 				     exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
 				
