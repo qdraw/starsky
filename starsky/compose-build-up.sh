@@ -1,8 +1,17 @@
 #!/bin/bash
-COLOR_REST="$(tput sgr0)"
-COLOR_RED="$(tput setaf 1)"
-COLOR_GREEN="$(tput setaf 2)"
-COLOR_BLUE="$(tput setaf 4)"
+
+if command -v tput &> /dev/null
+then
+    COLOR_REST="$(tput sgr0)"
+    COLOR_RED="$(tput setaf 1)"
+    COLOR_GREEN="$(tput setaf 2)"
+    COLOR_BLUE="$(tput setaf 4)"
+else
+    COLOR_REST=""
+    COLOR_RED=""
+    COLOR_GREEN=""
+    COLOR_BLUE=""
+fi
 
 START_TIME=$(date +%s)
 
