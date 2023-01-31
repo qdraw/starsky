@@ -9,6 +9,8 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    env:
+      WEBSITE_SITE_NAME: "ci"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
