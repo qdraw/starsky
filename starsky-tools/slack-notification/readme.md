@@ -1,3 +1,9 @@
+---
+title: Slack Notification
+---
+
+[< starsky/starsky-tools docs](../readme.md)
+
 # Slack Notification
 
 This script is used in some piplelines to display notifications in a Slack group
@@ -18,4 +24,4 @@ export SLACK_MESSAGE=example message
 node slack-notification
 ```
 
-There are no external dependencies required
+There are **no** external dependencies required

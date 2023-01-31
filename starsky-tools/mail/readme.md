@@ -1,3 +1,7 @@
+---
+title: Mail
+---
+
 [< starsky/starsky-tools docs](../readme.md)
 
 # Node Mail Docs

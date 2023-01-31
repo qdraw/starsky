@@ -1,3 +1,7 @@
+---
+sidebar_position: 7
+---
+
 # Security Testing Guide
 
 ## Reporting a Vulnerability

@@ -55,6 +55,7 @@ ProjectSection(SolutionItems) = preProject
 	..\readme.md = ..\readme.md
 	..\SECURITY.md = ..\SECURITY.md
 	..\HACKING.md = ..\HACKING.md
+	..\CONTRIBUTING.md = ..\CONTRIBUTING.md
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starsky.sln", "starsky.sln", "{0F47FD1D-CE79-4069-AFD4-252ED9D9445E}"

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 8
 ---
 
 # Github Actions CI
@@ -23,16 +23,20 @@ There are multiple github actions used by this project. Bellow is a list of all 
 Run weekly
 Automatically upgrade the .NET SDK version and upgrade nuget packages file when a new version is released.
 
+[![Dotnet sdk version auto upgrade](https://github.com/qdraw/starsky/actions/workflows/auto-dotnet-sdk-version-upgrade.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/auto-dotnet-sdk-version-upgrade.yml)
+
 ```bash
 cd starsky-tools/build-tools/
 npm run nuget-package-list
 ```
 
-> [auto-dotnet-sdk-version-upgrade.yml](https://github.com/qdraw/starsky/actions/workflows/auto-dotnet-sdk-version-upgrade.yml) 
+> [auto-dotnet-sdk-version-upgrade.yml](https://github.com/qdraw/starsky/actions/workflows/auto-dotnet-sdk-version-upgrade.yml)
  
 ## Application Version Auto update 
 Run on push and manual trigger
 Upgrade the application version in the csproj file and package.json file
+
+[![Application Version Auto update](https://github.com/qdraw/starsky/actions/workflows/auto-update-application-version.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/auto-update-application-version.yml)
 
 ```bash
 cd starsky-tools/build-tools/
@@ -45,6 +49,8 @@ npm run app-version-update
 On push on master branch
 Creates a list of nuget packages and their version in the nuget-package-list file
 
+[![Auto update Nuget packages list](https://github.com/qdraw/starsky/actions/workflows/auto-update-nuget-packages-list.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/auto-update-nuget-packages-list.yml)
+
 ```bash
 cd starsky-tools/build-tools/
 npm run nuget-package-list
@@ -55,6 +61,8 @@ npm run nuget-package-list
 ## Auto Update Swagger
 
 Update json file with the latest swagger file
+
+[![Auto Update Swagger](https://github.com/qdraw/starsky/actions/workflows/auto-update-swagger-dotnet.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/auto-update-swagger-dotnet.yml)
 
 ```bash
 cd starsky/starsky
@@ -70,7 +78,9 @@ npm run nuget-package-list
 > [auto-update-swagger-dotnet.yml](https://github.com/qdraw/starsky/actions/workflows/auto-update-swagger-dotnet.yml)
 
 ## auto clientapp create react app upgrade
-Bootstrap the clientapp with the latest create react app version
+Bootstrap the client react app with the latest create react app version
+
+[![auto clientapp create react app upgrade](https://github.com/qdraw/starsky/actions/workflows/auto-upgrade-clientapp-create-react-app.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/auto-upgrade-clientapp-create-react-app.yml)
 
 ```bash
 cd starsky-tools/build-tools/
@@ -81,6 +91,8 @@ npm run clientapp-create-react-app-update
 
 ## Auto Documentation create Docusaurus upgrade
 Bootstrap the docs with the latest Docusaurus version
+
+[![Auto Documentation create Docusaurus upgrade](https://github.com/qdraw/starsky/actions/workflows/auto-upgrade-documentation-create-docusaurus.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/auto-upgrade-documentation-create-docusaurus.yml)
 
 ```bash
 cd starsky-tools/build-tools/
@@ -93,8 +105,10 @@ npm run documentation-create-docusaurus-update
 Build for the ClientApp on linux
 Runs on pull request and push on the master branch
 
+[![ClientApp React Linux CI](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml)
+
 ```bash
-cd .tarsky/starsky/clientapp
+cd starsky/starsky/clientapp
 npm ci
 npm npm run build
 npm run test:ci
@@ -106,8 +120,10 @@ npm run test:ci
 Build for the ClientApp on Windows
 Runs on pull request and push on the master branch
 
+[![ClientApp React Windows CI](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-windows-ci.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-windows-ci.yml)
+
 ```bash
-cd .tarsky/starsky/clientapp
+cd starsky/starsky/clientapp
 npm ci
 npm npm run build
 npm run test:ci

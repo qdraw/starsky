@@ -109,14 +109,14 @@ function trimString(string, length) {
 function parseAndWrite(showLog = false) {
   const output = parseSwagger();
 
-  let apiOutputReadme = `# API Endpoint Documentation\nThe API has two ways of authentication using Cookie Authentication via the \`/api/account/login\` endpoint and Basic Authentication\n`;
+  let apiOutputReadme = `---\nsidebar_position: 6\n---\n\n# API Endpoint Documentation\nThe API has two ways of authentication using Cookie Authentication via the \`/api/account/login\` endpoint and Basic Authentication\n`;
   apiOutputReadme += "\nThis document is auto generated";
   apiOutputReadme += `\n\n${output}`;
   if (showLog) {
     console.log(apiOutputReadme);
   }
 
-  fs.writeFileSync('docs/api/readme.md', apiOutputReadme, 'utf8');
+  fs.writeFileSync('docs/developer-guide/api/readme.md', apiOutputReadme, 'utf8');
 }
 
 if (require.main === module) {
