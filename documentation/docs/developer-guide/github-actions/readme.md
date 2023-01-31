@@ -2,12 +2,18 @@
 sidebar_position: 2
 ---
 
-# Github Actions
+# Github Actions CI
 
 GitHub Actions makes it easy to automate all your software workflows, now with world-class CI/CD.
 Build, test, and deploy your code right from GitHub.
 
-[View all github actions](https://github.com/qdraw/starsky/tree/master/.github/workflows)
+[View all github actions on github](https://github.com/qdraw/starsky/tree/master/.github/workflows)
+
+## Important pipelines
+
+- [Build desktop app (Create Desktop Release on tag for .Net Core and Electron)](#create-desktop-release-on-tag-for-net-core-and-electron)
+- [Docker Hub on new version (Create Release on tag for docker hub)](#create-release-on-tag-for-docker-hub)
+- [Docker unstable build (Docker buildx multi-arch CI unstable master)](#docker-buildx-multi-arch-ci-unstable-master)
 
 # All github actions used by this project
 

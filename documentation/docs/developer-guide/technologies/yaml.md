@@ -1,4 +1,4 @@
-# Introduction to YAML
+# YAML files
 
 [YAML](https://en.wikipedia.org/wiki/YAML) is a human-friendly format that we use for metadata exports and configuration
 files because of its simplicity and widespread support. The name originally meant *Yet Another Markup Language*.
