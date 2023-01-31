@@ -27,9 +27,14 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    
+    env:
+      WEBSITE_SITE_NAME: "ci"
 
     steps:
+    
     - uses: actions/checkout@v2
+    
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -69,9 +74,12 @@ jobs:
           bash build.sh --Target TestNetCore --skip --no-dependencies --no-publish --no-logo
 
   trigger_pipe_release_desktop:
+  
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
-    # needs nothting
+    
+    # needs nothing - no dependencies
+
     steps:
       - name: trigger release-on-tag-netcore-desktop-electron
         shell: bash
