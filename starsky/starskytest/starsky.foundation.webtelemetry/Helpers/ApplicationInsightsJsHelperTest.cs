@@ -21,10 +21,12 @@ using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Services;
 using starskycore.Helpers;
+using starskytest.FakeMocks;
 
 namespace starskytest.Helpers
 {
@@ -87,7 +89,8 @@ namespace starskytest.Helpers
 
 			services.AddSingleton<IUserManager, UserManager>();
 			var mockTelemetryChannel = new MockTelemetryChannel();
-			
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+
 			_telemetryConfiguration = new TelemetryConfiguration
 			{
 				TelemetryChannel = mockTelemetryChannel,

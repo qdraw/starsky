@@ -10,7 +10,9 @@ using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.platform.Middleware
 {
@@ -31,6 +33,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			services.AddSingleton(context);
 
 			services.AddSingleton<AppSettings>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
 			services.AddSingleton<IUserManager, UserManager>();
 

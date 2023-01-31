@@ -17,6 +17,7 @@ using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -41,9 +42,7 @@ namespace starskytest.Middleware
 			services
 				.AddDbContext<ApplicationDbContext>(b =>
 					b.UseInMemoryDatabase("test1234").UseInternalServiceProvider(efServiceProvider));
-
-			// todo: breaking in net core 3.0
-			// services.AddDefaultIdentity<ApplicationUser>() .AddRoles<ApplicationRole>() .AddEntityFrameworkStores<MyApplicationContext>();
+			
 			services.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -51,6 +50,7 @@ namespace starskytest.Middleware
 			services.AddSingleton<IAuthenticationService, NoOpAuth>();
 			services.AddSingleton<IUserManager, UserManager>();
 			services.AddSingleton<AppSettings, AppSettings>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
 			services.AddLogging();
 
@@ -75,7 +75,7 @@ namespace starskytest.Middleware
 			builder.UseInMemoryDatabase("123456789");
 			var options = builder.Options;
 			var context2 = new ApplicationDbContext(options);
-			_userManager = new UserManager(context2,new AppSettings());
+			_userManager = new UserManager(context2,new AppSettings(), new FakeIWebLogger());
             
 		}
 

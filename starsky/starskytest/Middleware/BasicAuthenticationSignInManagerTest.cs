@@ -10,6 +10,7 @@ using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.Middleware
 {
@@ -39,7 +40,7 @@ namespace starskytest.Middleware
 			builder.UseInMemoryDatabase("test");
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_userManager = new UserManager(context,new AppSettings());
+			_userManager = new UserManager(context,new AppSettings(), new FakeIWebLogger());
 		}
 
 		[TestMethod]

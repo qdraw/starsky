@@ -13,6 +13,7 @@
     <None Include=".dockerignore" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="compose-build-up.sh" />
     <Content Include="Dockerfile" />
     <Content Include=".env" />
       <Content Include=".dockerignore" />

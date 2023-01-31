@@ -1,7 +1,4 @@
-﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
@@ -20,8 +18,12 @@ using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using AuthenticationProperties = Microsoft.AspNetCore.Authentication.AuthenticationProperties;
+
+// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.accountmanagement.Services
@@ -32,13 +34,15 @@ namespace starsky.foundation.accountmanagement.Services
 		private readonly ApplicationDbContext _dbContext;
 		private readonly IMemoryCache _cache;
 		private readonly AppSettings _appSettings;
+		private readonly IWebLogger _logger;
 
-		public UserManager(ApplicationDbContext dbContext, AppSettings appSettings,
+		public UserManager(ApplicationDbContext dbContext, AppSettings appSettings, IWebLogger logger,
 			IMemoryCache memoryCache = null )
 		{
 			_dbContext = dbContext;
 			_cache = memoryCache;
 			_appSettings = appSettings;
+			_logger = logger;
 		}
 	    
 		private bool IsCacheEnabled()
@@ -127,20 +131,28 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <returns></returns>
 		public async Task<List<User>> AllUsersAsync()
 		{
-			List<User> allUsers;
 			if (IsCacheEnabled() && _cache.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult))
 			{
-				allUsers = ( List<User> ) objectAllUsersResult;
-			}
-			else
-			{
-				allUsers = await _dbContext.Users.TagWith("AllUsersAsync").ToListAsync();
-				if(IsCacheEnabled())
-					_cache.Set(AllUsersCacheKey, allUsers, 
-						new TimeSpan(99,0,0));
+				return ( List<User> ) objectAllUsersResult;
 			}
 
-			return allUsers;
+			try
+			{
+				var allUsers = await _dbContext.Users.TagWith("AllUsersAsync").ToListAsync();
+				if ( IsCacheEnabled() )
+				{
+					_cache.Set(AllUsersCacheKey, allUsers, 
+						new TimeSpan(99,0,0));
+				}
+				return allUsers;
+			}
+			catch ( RetryLimitExceededException exception)
+			{
+				_logger.LogError(exception,
+					"[User Manager] RetryLimitExceededException [catch-ed]");
+			}
+
+			return new List<User>();
 		}
 
 		/// <summary>

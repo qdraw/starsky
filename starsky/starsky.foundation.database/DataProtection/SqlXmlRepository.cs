@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
@@ -40,7 +41,8 @@ namespace starsky.foundation.database.DataProtection
 			}
 			catch ( Exception exception )
 			{
-				if ( exception is not MySqlConnector.MySqlException &&
+				if ( exception is not RetryLimitExceededException && 
+				     exception is not MySqlConnector.MySqlException &&
 				     exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
     			
 				// MySqlConnector.MySqlException (0x80004005): Table 'starsky.DataProtectionKeys' doesn't exist
@@ -84,10 +86,16 @@ namespace starsky.foundation.database.DataProtection
 			{
 				LocalDefault(_dbContext);
 			}
-			catch ( DbUpdateException )
+			catch ( Exception exception )
 			{
+				if ( exception is not DbUpdateException && 
+				     exception is not RetryLimitExceededException && 
+				     exception is not MySqlConnector.MySqlException &&
+				     exception is not Microsoft.Data.Sqlite.SqliteException ) throw;
+				
 				var retryInterval = _dbContext.GetType().FullName?.Contains("test") == true ? 
 					TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(5);
+				
 				try
 				{
 					RetryHelper.Do(
@@ -97,7 +105,6 @@ namespace starsky.foundation.database.DataProtection
 				{
 					_logger.LogError(aggregateException, "[SqlXmlRepository] catch-ed AggregateException");
 				}
-
 			}
 		}
 	}

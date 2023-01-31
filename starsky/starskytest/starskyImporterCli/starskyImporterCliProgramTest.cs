@@ -39,6 +39,10 @@ namespace starskytest.starskyImporterCli
 			// starsky/starskytest/root/ProgramTest.cs
 			// starskytest/starskythumbnailcli/ProgramTest.cs
 			// starsky/starskytest/starskySynchronizeCli/ProgramTest.cs
+			
+			Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup","true");
+			Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
+			Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
 		}
 
 		

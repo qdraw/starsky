@@ -14,6 +14,7 @@ using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.accountmangement.Services
 {
@@ -39,7 +40,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task ValidateAsync_CredentialType_NotFound()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			var result = await userManager.ValidateAsync("not-found", "test", "test");
 			
@@ -50,7 +51,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task SignInNull()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), null));
 		}
 		
@@ -58,7 +59,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task SignInNoUserId()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), new User()));
 		}
 		
@@ -66,7 +67,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task SignInSystemArgumentNullException()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			// not having SignUpAsync registered
 			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), new User{Id = 1}));
 		}
@@ -74,7 +75,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void GetUserClaims_NoId()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			var claims = userManager.GetUserClaims(new User());
 			Assert.AreEqual(0,claims.Count());
@@ -83,7 +84,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void GetUserClaims_Null()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			var claims = userManager.GetUserClaims(null);
 			Assert.AreEqual(0,claims.Count());
@@ -92,7 +93,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void GetUserClaims_ShouldReturnClaims()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			var claims = userManager
 				.GetUserClaims(new User { Name = "test", Id = 1 }).ToList();
@@ -105,7 +106,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void GetUserClaims_ShouldReturnEmail()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			var claims = userManager
 				.GetUserClaims(new User { Name = "test", Id = 1, Credentials = new List<Credential>
@@ -121,7 +122,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void GetUserClaims_ShouldNotFailDueMissingEmail()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			var claims = userManager
 				.GetUserClaims(new User { Name = "test", Id = 1, Credentials = null}).ToList();
@@ -135,7 +136,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task ValidateAsync_Credential_NotFound()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			if ( !_dbContext.CredentialTypes.Any(p => p.Code == "email") )
 			{
@@ -153,7 +154,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task ValidateAsync_User_NotFound()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			if ( !_dbContext.CredentialTypes.Any(p => p.Code == "email") )
 			{
@@ -182,7 +183,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task ValidateAsync_LockoutEnabled()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			await userManager.SignUpAsync("lockout@google.com", "email", "lockout@google.com", "pass");
 
@@ -202,7 +203,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task ValidateAsync_3thTry()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			await userManager.SignUpAsync("try3@google.com", "email", "try3@google.com", "pass");
 
@@ -222,7 +223,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task ValidateAsync_ResetCountAfterSuccessLogin()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			await userManager.SignUpAsync("reset@google.com", "email", "reset@google.com", "pass");
 
@@ -247,7 +248,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task ValidateAsync_LockoutExpired()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			await userManager.SignUpAsync("lockout2@google.com", "email", "lockout2@google.com", "pass");
 
@@ -266,7 +267,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task UserManager_WrongPassword()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			await userManager.SignUpAsync("user01", "email", "test@google.com", "pass");
 
@@ -278,7 +279,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task UserManager_LoginPassword_DefaultFlow()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
 
@@ -293,7 +294,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			{
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
 				AccountRegisterFirstRoleAdmin = false
-			},_memoryCache);
+			},new FakeIWebLogger() ,_memoryCache);
 
 			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
 
@@ -309,7 +310,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			{
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
 				AccountRegisterFirstRoleAdmin = true
-			},_memoryCache);
+			}, new FakeIWebLogger(), _memoryCache);
 			
 			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).ToList() )
 			{
@@ -330,7 +331,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			{
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
 				AccountRegisterFirstRoleAdmin = true
-			},_memoryCache);
+			}, new FakeIWebLogger(), _memoryCache);
 			
 			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).ToList() )
 			{
@@ -351,7 +352,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			{
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
 				AccountRegisterFirstRoleAdmin = true
-			},_memoryCache);
+			}, new FakeIWebLogger(), _memoryCache);
 			
 			var result = await userManager.SignUpAsync("user01", "email", string.Empty, "pass");
 			
@@ -365,7 +366,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			{
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
 				AccountRegisterFirstRoleAdmin = true
-			},_memoryCache);
+			}, new FakeIWebLogger(), _memoryCache);
 			
 			var result = await userManager.SignUpAsync("user01", "email", "dont@mail.me", string.Empty);
 			
@@ -379,7 +380,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			{
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
 				AccountRegisterFirstRoleAdmin = true
-			},_memoryCache);
+			}, new FakeIWebLogger(), _memoryCache);
 			
 			var result = await userManager.SignUpAsync("user01", "wrong-type1", "dont@mail.me", "122344");
 			
@@ -389,7 +390,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task UserManager_ChangePassword_ChangeSecret()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			await userManager.SignUpAsync("user01", "email", "dont@mail.us", "pass123456789");
 
@@ -401,7 +402,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void ChangeSecret_Credential_WrongTypeCode()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			var result = userManager.ChangeSecret("wrongtype", "dont@mail.us", "pass123456789");
 			
@@ -411,7 +412,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task ChangeSecret_Credential_NotFound()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			_dbContext.CredentialTypes.Add(
 				new CredentialType { Code = "email", Name = "email", Id = 99});
@@ -432,7 +433,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task UserManager_NoPassword_ExistingAccount()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.SignUpAsync("user02", "email", "dont@mail.us", "pass");
 			
 			var result = await userManager.ValidateAsync("email", "dont@mail.us", null);
@@ -442,7 +443,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task UserManager_AllUsers_testCache()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser"});
 
 			var user = (await userManager.AllUsersAsync()).FirstOrDefault(p => p.Name == "cachedUser");
@@ -452,7 +453,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task UserManager_RemoveUser()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
 			await userManager.SignUpAsync("to_remove", "email", "to_remove@mail.us", "pass123456789");
 
@@ -467,7 +468,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task AddToRole()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.SignUpAsync("AddToRole", "email", "AddToRole@mail.us", "pass123456789");
 			
 			var user = userManager.GetUser("email", "AddToRole@mail.us");
@@ -487,7 +488,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void AddToRole_WrongCode()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			var count = _dbContext.Roles.Count();
 			userManager.AddToRole(new User(),"dsfnlksdfn");
 			
@@ -497,7 +498,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task RemoveFromRole()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.SignUpAsync("RemoveFromRole", "email", "RemoveFromRole@mail.us", "pass123456789");
 			
 			var user = userManager.GetUser("email", "RemoveFromRole@mail.us");
@@ -514,7 +515,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void RemoveFromRole_WrongCode()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			var count = _dbContext.Roles.Count();
 			userManager.AddToRole(new User(),"dsfnlksdfn");
 			
@@ -524,7 +525,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task GetUser()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.SignUpAsync("GetUser", "email", "GetUser@mail.us", "pass123456789");
 
 			var user = userManager.GetUser("email", "GetUser@mail.us");
@@ -535,7 +536,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void GetUser_credentialTypeNull_IdDoesNotExist()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			var user = userManager.GetUser("email", "sfkknfdlknsdfl@mail.us");
 			Assert.IsNull(user);
 		}
@@ -544,7 +545,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task GetUser_IdDoesNotExist()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddDefaultCredentialType("email");
 			
 			var user = userManager.GetUser("email", "sfkknfdlknsdfl@mail.us");
@@ -555,21 +556,21 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public void PreflightValidate_Fail_stringEmpty()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			Assert.IsFalse(userManager.PreflightValidate(string.Empty, string.Empty, string.Empty));
 		}
 		
 		[TestMethod]
 		public void PreflightValidate_Fail_wrongEmail()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			Assert.IsFalse(userManager.PreflightValidate("no_mail", "123456789012345", "123456789012345"));
 		}
 		
 		[TestMethod]
 		public void PreflightValidate_Ok()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			Assert.IsTrue(userManager.PreflightValidate("dont@mail.me", "123456789012345", "123456789012345"));
 		}
 
@@ -577,7 +578,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public void GetCurrentUserId_NotLoggedIn()
 		{
 			var context = new DefaultHttpContext();
-			var currentUserId = new UserManager(_dbContext, new AppSettings(), _memoryCache)
+			var currentUserId = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache)
 				.GetCurrentUserId(context);
 			Assert.AreEqual(-1, currentUserId);
 		}
@@ -585,7 +586,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task CachedCredential_CheckCache()
 		{
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			var credType = new CredentialType { Id = 15, Code = "email1", Name = "1"};
 
 			_memoryCache.Remove(UserManager.CredentialCacheKey(credType,"test_cache_add"));
@@ -629,7 +630,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			_dbContext.Permissions.Add(new Permission { Id = 101, Code = "test", Name = "t"});
 			_dbContext.SaveChanges();
-			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			var result = userManager.GetUserPermissionClaims(new Role { Id = 99 }).ToList();
 
 			Assert.AreEqual(1, result.Count);
@@ -640,7 +641,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task Cache_ExistsByUserTableId_HitResult()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser", Id = 1});
 
 			var result = await userManager.Exist(1);
@@ -651,7 +652,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task Cache_ExistsByUserTableId_NotFound()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser", Id = 1});
 
 			var result = await userManager.Exist(9822);
@@ -663,7 +664,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task Db_ExistsByUserTableId_HitResult()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
 			var id = await userManager.SignUpAsync(string.Empty, "email", "t", "t");
 			Assert.IsNotNull(id);
 
@@ -675,7 +676,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task Db_ExistsByUserTableId_NotFound()
 		{
-			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
 
 			var result = await userManager.Exist(852);
 			
