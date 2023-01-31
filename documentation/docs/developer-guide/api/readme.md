@@ -1,3 +1,7 @@
+---
+sidebar_position: 6
+---
+
 # API Endpoint Documentation
 The API has two ways of authentication using Cookie Authentication via the `/api/account/login` endpoint and Basic Authentication
 

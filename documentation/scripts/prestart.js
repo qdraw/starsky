@@ -184,4 +184,39 @@ copyFileSync(
 copyFileSync("starsky-tools/sync/readme.md", "advanced-options/starsky-tools/sync/readme.md");
 
 
+touchSync("developer-guide/contributing/__do_not_edit_this__folder");
+
+writeFile(
+	"developer-guide/contributing/_category_.json",
+	JSON.stringify({
+		label: "Contributing",
+		position: 8,
+		link: {
+			type: "generated-index",
+			description: "contributing instructions"
+		},
+	})
+);
+
+copyFileSync(
+	"CONTRIBUTING.md",
+	"developer-guide/contributing/CONTRIBUTING.md"
+);
+
+copyFileSync(
+	"SECURITY.md",
+	"developer-guide/contributing/SECURITY.md"
+);
+
+copyFileSync(
+	"PULL_REQUEST_TEMPLATE.md",
+	"developer-guide/contributing/PULL_REQUEST_TEMPLATE.md"
+);
+
+copyFileSync(
+	"HACKING.md",
+	"developer-guide/contributing/HACKING.md"
+);
+
+
 parseAndWrite();

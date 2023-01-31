@@ -109,7 +109,7 @@ function trimString(string, length) {
 function parseAndWrite(showLog = false) {
   const output = parseSwagger();
 
-  let apiOutputReadme = `# API Endpoint Documentation\nThe API has two ways of authentication using Cookie Authentication via the \`/api/account/login\` endpoint and Basic Authentication\n`;
+  let apiOutputReadme = `---\nsidebar_position: 6\n---\n\n# API Endpoint Documentation\nThe API has two ways of authentication using Cookie Authentication via the \`/api/account/login\` endpoint and Basic Authentication\n`;
   apiOutputReadme += "\nThis document is auto generated";
   apiOutputReadme += `\n\n${output}`;
   if (showLog) {

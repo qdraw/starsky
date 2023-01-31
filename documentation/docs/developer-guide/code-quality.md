@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # Quality and Best Practices
 
 **The quality of code has a practical impact on both your agility and the cost of development:** [^1]

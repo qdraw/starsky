@@ -40,7 +40,7 @@ and 'Raspberry Pi Zero (W) (2017)' those two are arm/v6 and the app will not run
 
 ## Changelog
 All notable changes to this project will be documented in the following file:
-[Changelog on github](https://qdraw.github.io/starsky/history.html)
+[Changelog on github](https://docs.qdraw.nl/docs/advanced-options/history)
 
 ## Github & source code download
 When you want to build and inspect the source code yourself,
