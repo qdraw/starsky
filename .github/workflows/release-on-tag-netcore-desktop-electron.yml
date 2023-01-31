@@ -259,7 +259,7 @@ jobs:
             - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 (Intel 64 bits)
 
             ## Changelog
-            [There is an changelog to see the recent changes](https://qdraw.github.io/starsky/history.html)
+            [There is an changelog to see the recent changes](https://docs.qdraw.nl/docs/advanced-options/history)
           draft: true
           prerelease: false
            
