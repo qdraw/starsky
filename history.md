@@ -40,8 +40,10 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
+# version 0.5.5 _(Unreleased)_ - 2023-02-??
+- nothing yet
 
-# version 0.5.4 _(Unreleased)_ - 2023-01-??
+# version 0.5.4 - 2023-01-31
 
 - [x] (Added)  _Back-end_ App insights metrics for internal queues (PR #1028)
 - [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/disk/mkdir` (PR #1030)
@@ -59,6 +61,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Added)  _Back-end_ add feature flag ExiftoolSkipDownloadOnStartup, recommend to keep false or null (PR #1036)
 - [x] (Added)  _Back-end_ add unit tests for dependency injection helpers (PR #1038)
 - [x] (Fixed)  _Back-end_  GetFileName Regex timeout (PR #1041)
+- [x] (Added)  _Docs_ Improve documentation (PR #1042, #1043)
 
 # version 0.5.3 - 2023-01-23
 
