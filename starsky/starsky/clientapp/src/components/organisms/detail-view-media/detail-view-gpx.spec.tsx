@@ -177,7 +177,7 @@ describe("DetailViewGpx", () => {
       expect(spyGet).toBeCalledTimes(1);
     });
 
-    it("zoom out 1", async () => {
+    it("detail view gpx - zoom out 1", async () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
@@ -226,7 +226,9 @@ describe("DetailViewGpx", () => {
       expect(polylineSpy).toBeCalled();
 
       const zoom_out = gpx.queryByTestId("zoom_out");
-      act(() => {
+
+      // add await
+      await act(() => {
         zoom_out?.click();
       });
 

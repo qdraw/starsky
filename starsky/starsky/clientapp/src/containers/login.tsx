@@ -71,7 +71,7 @@ const Login: React.FC<ILoginProps> = () => {
   const MessageLogout = language.text("Uitloggen", "Logout");
   const MessageCreateAccount = language.text("Account maken", "Create account");
 
-  // We don't want to login twich
+  // We don't want to login twice
   const [isLogin, setLogin] = React.useState(true);
 
   const accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
@@ -116,7 +116,7 @@ const Login: React.FC<ILoginProps> = () => {
         if (`/${history.location.search}` === returnUrl) {
           returnUrl += "&details=true";
         }
-        history.navigate(returnUrl, { replace: true });
+        await history.navigate(returnUrl, { replace: true });
       }
     } catch (err: any) {
       setLoading(false);
@@ -145,7 +145,7 @@ const Login: React.FC<ILoginProps> = () => {
         </div>
       ) : null}
 
-      {accountStatus.statusCode === 500 ? (
+      {accountStatus.statusCode === 500 || accountStatus.statusCode === 503 ? (
         <div className="content">
           <div data-test="message-database-connection" className="warning-box">
             {MessageDatabaseConnection}
@@ -224,7 +224,7 @@ const Login: React.FC<ILoginProps> = () => {
           </div>
         </>
       ) : null}
-      {!isLogin && accountStatus.data ? (
+      {!isLogin && accountStatus.data && accountStatus.statusCode <= 400 ? (
         <>
           <div className="content" data-test="logout-content">
             <div className="content--header">{MessageLogout}</div>

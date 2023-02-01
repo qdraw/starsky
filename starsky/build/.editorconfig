@@ -1,3 +1,6 @@
+# Editorconfig of build project only
+# there is also a global editorconfig in the root of the solution
+
 [*.cs]
 dotnet_style_qualification_for_field = false:warning
 dotnet_style_qualification_for_property = false:warning

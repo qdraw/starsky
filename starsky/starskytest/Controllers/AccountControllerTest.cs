@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
@@ -54,7 +55,7 @@ namespace starskytest.Controllers
 			{
 				var actionContext = factory.GetService<IActionContextAccessor>()
 					.ActionContext;
-				return new UrlHelper(actionContext);
+				return new UrlHelper(actionContext!);
 			});
 
 
@@ -120,7 +121,7 @@ namespace starskytest.Controllers
 			var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+			httpContext!.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			httpContext.RequestServices = _serviceProvider;
 			
 			AccountController controller = new AccountController(_userManager,_appSettings,_antiForgery, _selectorStorage);
@@ -144,7 +145,7 @@ namespace starskytest.Controllers
 			// Try login > result login false
 			await controller.LoginPost(login);
 			// Test login
-			Assert.AreEqual(false,httpContext.User.Identity.IsAuthenticated);
+			Assert.AreEqual(false,httpContext.User.Identity?.IsAuthenticated);
             
 			// Reset the model state, 
 			// to avoid errors on RegisterViewModel
@@ -167,7 +168,7 @@ namespace starskytest.Controllers
 			// Try login again > now it must be succesfull
 			await controller.LoginPost(login);
 			// Test login
-			Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
+			Assert.AreEqual(true,httpContext.User.Identity?.IsAuthenticated);
             
 			// The logout is mocked so this will not actual log it out;
 			// controller.Logout() not crashing is good enough;
@@ -175,6 +176,7 @@ namespace starskytest.Controllers
             
 			// And clean afterwards
 			var itemWithId = _dbContext.Users.FirstOrDefault(p => p.Name == newAccount.Name);
+			Assert.IsNotNull(itemWithId);
 			_dbContext.Users.Remove(itemWithId);
 			await _dbContext.SaveChangesAsync();
 		}
@@ -220,13 +222,14 @@ namespace starskytest.Controllers
 		{
 			var controller = new AccountController(new UserManager(_dbContext,_appSettings, new FakeIWebLogger()), _appSettings,_antiForgery, _selectorStorage);
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+			Assert.IsNotNull(httpContext);
 			controller.ControllerContext.HttpContext = httpContext;
 
 			var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "NoUsersActive"};
             
 			var actionResult = await controller.Register(registerViewModel) as JsonResult;
             
-			Assert.AreEqual("Model is not correct", actionResult.Value as string);
+			Assert.AreEqual("Model is not correct", actionResult?.Value as string);
 		}
 
 		[TestMethod]
@@ -234,6 +237,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings,_antiForgery, _selectorStorage);
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+			Assert.IsNotNull(httpContext);
 			controller.ControllerContext.HttpContext = httpContext;
 
 			var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "Forbid"};
@@ -249,11 +253,12 @@ namespace starskytest.Controllers
 		{
 			var controller = new AccountController(_userManager, _appSettings,_antiForgery, _selectorStorage);
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+			Assert.IsNotNull(httpContext);
 			controller.ControllerContext.HttpContext = httpContext;
 
 			var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
 			var actionResult = await controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
-			Assert.AreEqual(401,actionResult.StatusCode);
+			Assert.AreEqual(401,actionResult?.StatusCode);
 		}
         
 		[TestMethod]
@@ -272,7 +277,7 @@ namespace starskytest.Controllers
             
 			var actionResult = await controller.ChangeSecret(changePasswordViewModel) as BadRequestObjectResult;
 	        
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 
  
@@ -291,9 +296,9 @@ namespace starskytest.Controllers
 			var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
             
 			var actionResult = await controller.ChangeSecret(changePasswordViewModel) as JsonResult;
-			var actualResult = actionResult.Value as ChangeSecretResult;
+			var actualResult = actionResult?.Value as ChangeSecretResult;
 	        
-			Assert.IsTrue(actualResult.Success);
+			Assert.IsTrue(actualResult?.Success);
 		}
 
 		[TestMethod]
@@ -314,7 +319,7 @@ namespace starskytest.Controllers
 				ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
             
 			var actionResult = await controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
-			Assert.AreEqual(401,actionResult.StatusCode);
+			Assert.AreEqual(401,actionResult?.StatusCode);
 		}
         
 
@@ -323,6 +328,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new AccountController(new FakeUserManagerActiveUsers(), new AppSettings{IsAccountRegisterOpen = false}, _antiForgery,_selectorStorage);
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+			Assert.IsNotNull(httpContext);
 			controller.ControllerContext.HttpContext = httpContext;
 
 			var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "blockedByDefault"};
@@ -354,18 +360,19 @@ namespace starskytest.Controllers
 			Assert.AreEqual("Account Created",actionResult.Value);
 	        
 			var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == user.Name);
+			Assert.IsNotNull(getUser);
 			_dbContext.Users.Remove(getUser);
 			await _dbContext.SaveChangesAsync();
 		}
         
         
 		[TestMethod]
-		public void AccountController_IndexGetLoginSuccessful()
+		public async Task AccountController_IndexGetLoginSuccessful()
 		{
 			var user = new User() { Name = "JohnDoe1"};
 		    
 			_dbContext.Users.Add(user);
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
 
 			var controller = new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
 			{
@@ -375,13 +382,14 @@ namespace starskytest.Controllers
 				}}
 			};
 
-			controller.Status();
+			await controller.Status();
 			Assert.AreEqual(200,controller.Response.StatusCode);
 		    
 			// And clean afterwards
 			var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == user.Name);
+			Assert.IsNotNull(getUser);
 			_dbContext.Users.Remove(getUser);
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
 		}
 	    
 		[TestMethod]
@@ -405,8 +413,22 @@ namespace starskytest.Controllers
 		    
 			// keep 401, is used by the warmup script
 			var index = await controller.Status() as UnauthorizedObjectResult;
-			Assert.AreEqual(401,index.StatusCode);
-		    
+			Assert.AreEqual(401,index?.StatusCode);
+		}
+		
+		[TestMethod]
+		public async Task Status_Fail()
+		{
+			var controller = new AccountController(new FakeIUserManger(new UserOverviewModel(){IsSuccess = false}), _appSettings, _antiForgery, _selectorStorage)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext
+				{
+					User = null!
+				}}
+			};
+
+			await controller.Status();
+			Assert.AreEqual(503,controller.Response.StatusCode);
 		}
 	    
 		[TestMethod]
@@ -422,7 +444,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, new FakeSelectorStorage());
 			var result = controller.LoginGet() as ContentResult;
-			Assert.AreEqual("Please check if the client code exist",result.Content);
+			Assert.AreEqual("Please check if the client code exist",result?.Content);
 		}
 	    
 		[TestMethod]
@@ -435,6 +457,7 @@ namespace starskytest.Controllers
 			_serviceProvider.GetRequiredService<IUserManager>();
 
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+			Assert.IsNotNull(httpContext);
 			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			httpContext.RequestServices = _serviceProvider;
             
@@ -476,7 +499,8 @@ namespace starskytest.Controllers
 			// login > it must be succesfull
 			await controller.LoginPost(login);
 			// Test login
-			Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
+			Assert.IsNotNull(httpContext);
+			Assert.AreEqual(true,httpContext.User.Identity?.IsAuthenticated);
             
 			// The logout is mocked so this will not actual log it out;
 			// controller.Logout() not crashing is good enough;
@@ -497,7 +521,7 @@ namespace starskytest.Controllers
 			// Try login again > now it must be succesfull
 			await controller.LoginPost(login);
 			// Test login
-			Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
+			Assert.AreEqual(true,httpContext.User.Identity?.IsAuthenticated);
             
 			// The logout is mocked so this will not actual log it out;
 			// controller.Logout() not crashing is good enough;
@@ -505,6 +529,7 @@ namespace starskytest.Controllers
 
 			// Clean afterwards            
 			var user = _dbContext.Users.FirstOrDefault(p => p.Name == userId);
+			Assert.IsNotNull(user);
 			_dbContext.Users.Remove(user);
 			await _dbContext.SaveChangesAsync();
 		}
@@ -521,7 +546,7 @@ namespace starskytest.Controllers
 			var actionResult = await controller.RegisterStatus() as JsonResult;
             
 			Assert.AreEqual(202,controller.Response.StatusCode);
-			Assert.AreEqual("RegisterStatus open", actionResult.Value as string);
+			Assert.AreEqual("RegisterStatus open", actionResult?.Value as string);
 		}
         
 		[TestMethod]
@@ -536,7 +561,7 @@ namespace starskytest.Controllers
 			var actionResult = await controller.RegisterStatus() as JsonResult;
 	   
 			Assert.AreEqual(403,controller.Response.StatusCode);
-			Assert.AreEqual("Account Register page is closed", actionResult.Value as string);
+			Assert.AreEqual("Account Register page is closed", actionResult?.Value as string);
 		}
         
 		[TestMethod]
@@ -551,7 +576,7 @@ namespace starskytest.Controllers
 			var actionResult = await controller.RegisterStatus() as JsonResult;
 	   
 			Assert.AreEqual(200,controller.Response.StatusCode);
-			Assert.AreEqual("RegisterStatus open", actionResult.Value as string);
+			Assert.AreEqual("RegisterStatus open", actionResult?.Value as string);
 		}
         
 		[TestMethod]
@@ -565,7 +590,7 @@ namespace starskytest.Controllers
 
 			var actionResult = await controller.Status() as JsonResult;
             
-			Assert.AreEqual("There are no accounts, you must create an account first", actionResult.Value as string);
+			Assert.AreEqual("There are no accounts, you must create an account first", actionResult?.Value as string);
 		}
 		
 		[TestMethod]
@@ -582,15 +607,17 @@ namespace starskytest.Controllers
 
 			var actionResult = await controller.Status() as UnauthorizedObjectResult;
 			
-			Assert.AreEqual(401,actionResult?.StatusCode);;
+			Assert.AreEqual(401,actionResult?.StatusCode);
             // and NOT: There are no accounts, you must create an account first
 		}
         
 		[TestMethod]
 		public async Task AccountController_Login_CheckCredentials()
 		{
-			var httpContext = new DefaultHttpContext();
-			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"));
+			var httpContext = new DefaultHttpContext
+			{
+				User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"))
+			};
 
 			var controller =
 				new AccountController(new FakeUserManagerActiveUsers(
@@ -601,22 +628,24 @@ namespace starskytest.Controllers
 				};
 	        
 			var actionResult = await controller.Status() as JsonResult;
-			var user = actionResult.Value as UserIdentifierStatusModel;
+			var user = actionResult?.Value as UserIdentifierStatusModel;
 			Assert.AreEqual("test", 
-				user.CredentialsIdentifiers.FirstOrDefault());
-			Assert.AreEqual(99, user.Id);
-			Assert.AreEqual("t1", user.Name);
-			Assert.AreEqual(DateTime.MinValue, user.Created);
+				user?.CredentialsIdentifiers.FirstOrDefault());
+			Assert.AreEqual(99, user?.Id);
+			Assert.AreEqual("t1", user?.Name);
+			Assert.AreEqual(DateTime.MinValue, user?.Created);
 		}
         
 		[TestMethod]
 		public async Task AccountController_LoginUserDoesNotExistInDatabase()
 		{
-			var httpContext = new DefaultHttpContext();
-			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"));
+			var httpContext = new DefaultHttpContext
+			{
+				User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"))
+			};
 
 			var controller =
-				new AccountController(new FakeUserManagerActiveUsers("test1",null), // <-- null
+				new AccountController(new FakeUserManagerActiveUsers("test1"), // <-- null
 					_appSettings, _antiForgery, _selectorStorage)	
 				{
 					ControllerContext = {HttpContext = httpContext}
@@ -641,10 +670,12 @@ namespace starskytest.Controllers
 			};
 
 			var actionResult = controller.Permissions() as JsonResult;
-			var list = actionResult.Value as IEnumerable<string>;
+			var list = actionResult?.Value as IEnumerable<string>;
+			Assert.IsNotNull(list);
 
 			var expectedPermission =
-				claims.Claims.Where(p => p.Type == "Permission").FirstOrDefault().Value;
+				claims.Claims.FirstOrDefault(p => p.Type == "Permission")?.Value;
+			Assert.IsNotNull(expectedPermission);
 			Assert.AreEqual(expectedPermission,list.FirstOrDefault());
 		}
 	}
