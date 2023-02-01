@@ -463,7 +463,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
         
 		[TestMethod]
-		public void Query_UpdateItem_List_InvalidOperationException()
+		public async Task Query_UpdateItem_List_InvalidOperationException()
 		{
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
@@ -478,9 +478,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			var fakeQuery = new Query(appDbInvalidOperationException,  new AppSettings(), scope,new FakeIWebLogger());
 			
-			fakeQuery.UpdateItem(new List<FileIndexItem>());
+			await fakeQuery.UpdateItemAsync(new List<FileIndexItem>());
 
-			Assert.AreEqual(2, appDbInvalidOperationException.Count);
+			Assert.AreEqual(1, appDbInvalidOperationException.Count);
 		}
 		
 		[TestMethod]

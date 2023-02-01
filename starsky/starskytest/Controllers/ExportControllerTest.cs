@@ -362,7 +362,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void ExportControllerTest__ThumbTrue__FilePathToFileName()
+		public async Task ExportControllerTest__ThumbTrue__FilePathToFileName()
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
@@ -373,7 +373,7 @@ namespace starskytest.Controllers
 				Path.Combine("test","thumb.jpg")
 			};
 
-			_query.AddItem(new FileIndexItem
+			await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "file.jpg",
 				ParentDirectory = "/test",

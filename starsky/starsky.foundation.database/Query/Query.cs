@@ -266,7 +266,8 @@ namespace starsky.foundation.database.Query
 	        async Task LocalQuery(DbContext context, FileIndexItem fileIndexItem)
 	        {
 		        //  Update te last edited time manual
-		        fileIndexItem.SetLastEdited();
+		        //fileIndexItem.SetLastEdited();
+		        
 		        context.Attach(fileIndexItem).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;
@@ -439,6 +440,7 @@ namespace starsky.foundation.database.Query
         /// </summary>
         /// <param name="updateStatusContent">content to updated</param>
         /// <returns>this item</returns>
+        [Obsolete("Use UpdateItemAsync instead")]
         public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
         {
 	        void LocalUpdateItemQuery(ApplicationDbContext context)
@@ -481,56 +483,7 @@ namespace starsky.foundation.database.Query
 
             return updateStatusContent;
         }
-        
-        /// <summary>
-        /// Update a list of items in the index
-        /// Used for the API/update endpoint
-        /// </summary>
-        /// <param name="updateStatusContentList">list of items to be updated</param>
-        /// <returns>the same list, and updated in the database</returns>
-        public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
-        {
-	        void LocalQuery(ApplicationDbContext context)
-	        {
-		        foreach ( var item in updateStatusContentList )
-		        {
-			        item.SetLastEdited();
-			        context.Attach(item).State = EntityState.Modified;
-		        }
-		        context.SaveChanges();
-	        }
 
-	        try
-	        {
-		        LocalQuery(_context);
-	        }
-	        catch (ObjectDisposedException)
-	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        LocalQuery(context);
-	        }
-	        catch (InvalidOperationException invalidOperationException)
-	        {
-		        _logger.LogError(invalidOperationException, "[List<>UpdateItem] InvalidOperationException");
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        LocalQuery(context);
-	        }
-	        catch (DbUpdateConcurrencyException concurrencyException)
-	        {
-		        SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-		        try
-		        {
-			        _context.SaveChanges();
-		        }
-		        catch ( DbUpdateConcurrencyException e)
-		        {
-			        _logger.LogError(e, "[List<>UpdateItem] save failed after DbUpdateConcurrencyException");
-		        }
-	        }
-	        
-	        CacheUpdateItem(updateStatusContentList);
-	        return updateStatusContentList;
-        }
         
         /// <summary>
         /// Is Cache enabled, null object or feature toggle disabled
@@ -711,6 +664,7 @@ namespace starsky.foundation.database.Query
 	    /// </summary>
 	    /// <param name="updateStatusContent">the item</param>
 	    /// <returns>item with id</returns>
+	    [Obsolete("Use AddItemAsync instead")]
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
         {        
 	        if( string.IsNullOrWhiteSpace(updateStatusContent.FileName) 

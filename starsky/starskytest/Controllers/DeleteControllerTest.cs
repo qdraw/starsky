@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -106,7 +107,7 @@ namespace starskytest.Controllers
 
 		}
         
-		private FileIndexItem InsertSearchData(bool delete = false)
+		private async Task<FileIndexItem> InsertSearchData(bool delete = false)
 		{
 			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
 	        
@@ -114,7 +115,7 @@ namespace starskytest.Controllers
 			{
 				var isDelete = string.Empty;
 				if (delete) isDelete = "!delete!";
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = _createAnImage.FileName,
 					ParentDirectory = "/",
@@ -128,9 +129,9 @@ namespace starskytest.Controllers
 
         
 		[TestMethod]
-		public void ApiController_Delete_API_HappyFlow_Test()
+		public async Task ApiController_Delete_API_HappyFlow_Test()
 		{
-			var createAnImage = InsertSearchData(true);
+			var createAnImage = await InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 			
 			// RealFs Storage
@@ -156,16 +157,20 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void ApiController_Delete_API_RemoveNotAllowedFile_Test()
+		public async Task ApiController_Delete_API_RemoveNotAllowedFile_Test()
 		{
 	        
 			// re add data
-			var createAnImage = InsertSearchData();
+			var createAnImage = await InsertSearchData();
+	        Assert.IsNotNull(createAnImage?.FilePath);
 	        
 			// Clean existing items to avoid errors
-			var itemByHash = _query.SingleItem(createAnImage.FilePath);
+			var itemByHash = _query.SingleItem(createAnImage!.FilePath);
+			Assert.IsNotNull(itemByHash);
+			Assert.IsNotNull(itemByHash.FileIndexItem);
+
 			itemByHash.FileIndexItem.Tags = string.Empty;
-			_query.UpdateItem(itemByHash.FileIndexItem);
+			await _query.UpdateItemAsync(itemByHash.FileIndexItem);
 	        
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 	        
@@ -176,20 +181,20 @@ namespace starskytest.Controllers
 			var controller = new DeleteController(deleteItem);
 			
 			var notFoundResult = controller.Delete(createAnImage.FilePath) as NotFoundObjectResult;
-			Assert.AreEqual(404,notFoundResult.StatusCode);
+			Assert.AreEqual(404,notFoundResult?.StatusCode);
 			var jsonCollection = notFoundResult.Value as List<FileIndexItem>;
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,
-				jsonCollection.FirstOrDefault().Status);
+				jsonCollection?.FirstOrDefault()?.Status);
 
-			_query.RemoveItem(_query.SingleItem(createAnImage.FilePath).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(createAnImage.FilePath).FileIndexItem);
 		}
 		
 		        
 		[TestMethod]
-		public void ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool()
+		public async Task ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool()
 		{
-			_query.AddItem(new FileIndexItem
+			await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "345678765434567.jpg",
 				ParentDirectory = "/",
@@ -202,7 +207,7 @@ namespace starskytest.Controllers
 			var notFoundResult = controller.Delete("/345678765434567.jpg") as NotFoundObjectResult;
 			Assert.AreEqual(404,notFoundResult.StatusCode);
 
-			_query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
 		}
 
 	}

@@ -61,9 +61,11 @@ namespace starsky.foundation.sync.Helpers
 			// future: read json sidecar
 			await SetFileHashStatus(filePath, fileHash, updatedDatabaseItem);
 			updatedDatabaseItem.SetAddToDatabase();
-			updatedDatabaseItem.SetLastEdited();
+			var info = _subPathStorage.Info(filePath);
+			
+			updatedDatabaseItem.LastEdited = info.LastWriteTime;
 			updatedDatabaseItem.IsDirectory = false;
-			updatedDatabaseItem.Size = _subPathStorage.Info(filePath).Size;
+			updatedDatabaseItem.Size = info.Size;
 			updatedDatabaseItem.ParentDirectory = parentDirectory;
 			updatedDatabaseItem.FileName = fileName;
 			

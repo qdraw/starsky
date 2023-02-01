@@ -104,15 +104,15 @@ namespace starskytest.Controllers
 			_exifTool = new FakeExifTool(_iStorage,_appSettings);
 		}
         
-		private void InsertSearchData(bool delete = false)
+		private async Task InsertSearchData(bool delete = false)
 		{
-			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
+			var fileHashCode = (await new FileHash(_iStorage).GetHashCodeAsync(_createAnImage.DbPath)).Key;
 	        
-			if (string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)))
+			if (string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)))
 			{
 				var isDelete = string.Empty;
 				if (delete) isDelete = "!delete!";
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = _createAnImage.FileName,
 					ParentDirectory = "/",
@@ -216,7 +216,7 @@ namespace starskytest.Controllers
 		public async Task Replace_ChangedFileIndexItemNameContent()
 		{
 			var createAnImage = new CreateAnImage();
-			InsertSearchData();
+			await InsertSearchData();
 			var serviceScopeFactory = NewScopeFactory();
 			
 			var fakeIMetaUpdateService =  _serviceProvider.GetService<IMetaUpdateService>() as

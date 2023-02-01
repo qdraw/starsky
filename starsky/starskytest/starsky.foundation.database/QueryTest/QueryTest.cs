@@ -694,7 +694,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public void Query_UpdateItem_Multiple_DisposedItem()
+		public async Task Query_UpdateItem_Multiple_DisposedItem()
 		{
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
@@ -704,19 +704,19 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        
 			var item = new FileIndexItem("/test/010101.jpg");
 			dbContext.FileIndex.Add(item);
-			dbContext.SaveChanges();
+			await dbContext.SaveChangesAsync();
 	        
 			// Important to dispose!
-			dbContext.Dispose();
+			await dbContext.DisposeAsync();
 
 			item.Tags = "test";
-			query.UpdateItem(new List<FileIndexItem>{item});
+			await query.UpdateItemAsync(new List<FileIndexItem>{item});
 
 			var getItem = query.GetObjectByFilePath("/test/010101.jpg");
 			Assert.IsNotNull(getItem);
 			Assert.AreEqual("test", getItem.Tags);
 
-			query.RemoveItem(getItem);
+			await query.RemoveItemAsync(getItem);
 		}
 
 		[TestMethod]
@@ -1144,7 +1144,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public void Query_updateStatusContentList()
+		public async Task Query_updateStatusContentList()
 		{
 			// for updateing multiple items
 			var toupdate = new List<FileIndexItem>{new FileIndexItem
@@ -1154,13 +1154,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				ParentDirectory = "/3456784567890987654",
 				FileHash = "3456784567890987654"
 			}};
-			_query.AddItem(toupdate.FirstOrDefault());
+			await _query.AddItemAsync(toupdate.FirstOrDefault());
 
 			foreach (var item in toupdate)
 			{
 				item.Tags = "updated";
 			}
-			_query.UpdateItem(toupdate);
+			await _query.UpdateItemAsync(toupdate);
 
 			var fileObjectByFilePath = _query.GetObjectByFilePath("/3456784567890987654/3456784567890987654.jpg");
 			Assert.AreEqual("updated",fileObjectByFilePath.Tags);
@@ -1183,7 +1183,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 				item.Tags = "updated";
 			}
-			_query.UpdateItem(toupdate);
+			
+			await _query.UpdateItemAsync(toupdate);
 
 			var fileObjectByFilePath = await _query.GetObjectByFilePathAsync("/8118/9278521.jpg");
 			Assert.AreEqual("updated",fileObjectByFilePath.Tags);

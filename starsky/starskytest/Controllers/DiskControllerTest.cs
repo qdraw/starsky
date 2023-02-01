@@ -103,22 +103,22 @@ namespace starskytest.Controllers
 			
 		}
 
-		private FileIndexItem InsertSearchData()
+		private async Task<FileIndexItem> InsertSearchData()
 		{
 			_iStorage = new FakeIStorage(new List<string> { "/" }, 
 				new List<string> { _createAnImage.DbPath });
-			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
+			var fileHashCode = (await new FileHash(_iStorage).GetHashCodeAsync(_createAnImage.DbPath)).Key;
 			
-			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
+			if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)) )
 			{
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "/",
 					ParentDirectory = "/",
 					IsDirectory = true
 				});
 
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = _createAnImage.FileName,
 					ParentDirectory = "/",
@@ -173,7 +173,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task SyncControllerTest_Rename_Good()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 
 			var context = new ControllerContext
 			{
@@ -202,7 +202,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task SyncControllerTest_Rename_WithCurrentStatusDisabled()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 
 			var context = new ControllerContext
 			{
@@ -232,7 +232,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task SyncControllerTest_Rename_Good_SocketUpdate()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 
 			var context = new ControllerContext
 			{
@@ -262,7 +262,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task SyncControllerTest_Mkdir_Good()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var context = new ControllerContext
 			{
 				HttpContext = new DefaultHttpContext()
@@ -287,7 +287,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task SyncControllerTest_Mkdir_Good_SocketUpdate()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var context = new ControllerContext
 			{
 				HttpContext = new DefaultHttpContext()
@@ -317,7 +317,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task SyncControllerTest_Mkdir_Exist()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var context = new ControllerContext
 			{
 				HttpContext = new DefaultHttpContext()
