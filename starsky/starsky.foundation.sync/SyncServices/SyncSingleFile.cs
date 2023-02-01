@@ -169,7 +169,7 @@ namespace starsky.foundation.sync.SyncServices
 			// when last edited is the same
 			var (isLastEditTheSame, lastEdit) = CompareLastEditIsTheSame(dbItem);
 			dbItem.LastEdited = lastEdit;
-			dbItem.Size = _subPathStorage.Info(dbItem.FilePath).Size;
+			dbItem.Size = _subPathStorage.Info(dbItem.FilePath!).Size;
 
 			if (isLastEditTheSame) return new Tuple<bool, bool?, FileIndexItem>(true, null, dbItem);
 			
@@ -341,13 +341,15 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns></returns>
 		private Tuple<bool,DateTime> CompareLastEditIsTheSame(FileIndexItem dbItem)
 		{
-			var lastWriteTime = _subPathStorage.Info(dbItem.FilePath).LastWriteTime;
+			var lastWriteTime = _subPathStorage.Info(dbItem.FilePath!).LastWriteTime;
 			if ( lastWriteTime.Year == 1 )
 			{
 				return new Tuple<bool, DateTime>(false, lastWriteTime);
 			}
 			
-			var isTheSame = dbItem.LastEdited == lastWriteTime;
+			var diffInSeconds = (lastWriteTime - dbItem.LastEdited).TotalSeconds;
+			var isTheSame = diffInSeconds == 0;
+
 			dbItem.LastEdited = lastWriteTime;
 			return new Tuple<bool, DateTime>(isTheSame, lastWriteTime);
 		}
