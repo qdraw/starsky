@@ -194,19 +194,26 @@ namespace starsky.Controllers
         [Authorize]
         public async Task<IActionResult> ChangeSecret(ChangePasswordViewModel model)
         {
-	        if ( User.Identity?.IsAuthenticated == false ) return Unauthorized("please login first");
+	        if ( User.Identity?.IsAuthenticated != true )
+	        {
+		        return Unauthorized("please login first");
+	        }
 
-	        if ( !ModelState.IsValid || model.ChangedPassword != model.ChangedConfirmPassword )
+	        if ( !ModelState.IsValid ||
+	             model.ChangedPassword != model.ChangedConfirmPassword )
+	        {
 		        return BadRequest("Model is not correct");
+	        }
 	        
-	        var currentUserId =
-		        _userManager.GetCurrentUser(HttpContext).Id;
-
+	        var currentUserId = _userManager.GetCurrentUser(HttpContext).Id;
 	        var credential = _userManager.GetCredentialsByUserId(currentUserId);
 
 	        // Re-check password
-	        var validateResult = await 
-		        _userManager.ValidateAsync("Email", credential.Identifier, model.Password);
+	        var validateResult = await _userManager.ValidateAsync(
+		        "Email", 
+		        credential.Identifier, 
+		        model.Password);
+	        
 	        if ( !validateResult.Success )
 	        {
 		        return Unauthorized("Password is not correct");
