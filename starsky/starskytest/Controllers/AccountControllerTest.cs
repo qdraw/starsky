@@ -629,6 +629,23 @@ namespace starskytest.Controllers
 			Assert.AreEqual(403,controller.Response.StatusCode);
 			Assert.AreEqual("Account Register page is closed", actionResult?.Value as string);
 		}
+		
+		[TestMethod]
+		public async Task RegisterStatus_RejectDueNotLogin_AlreadyAccounts()
+		{
+			var controller = new AccountController(new FakeIUserManger(new UserOverviewModel(new List<User>{new User()})), 
+				_appSettings, _antiForgery, _selectorStorage)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext
+				{
+					User = null!
+				}}
+			};
+
+			await controller.RegisterStatus();
+			
+			Assert.AreEqual(403,controller.Response.StatusCode);
+		}
         
 		[TestMethod]
 		public async Task AccountController_RegisterStatus_ActiveUsers_AppSettingOpen()
