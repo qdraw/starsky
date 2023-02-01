@@ -413,6 +413,23 @@ namespace starskytest.Controllers
 			_dbContext.Users.Remove(getUser);
 			await _dbContext.SaveChangesAsync();
 		}
+		
+		[TestMethod]
+		public async Task Register_RejectDueNotLogin_AlreadyAccounts()
+		{
+			var controller = new AccountController(new FakeIUserManger(new UserOverviewModel(new List<User>{new User()})), 
+				_appSettings, _antiForgery, _selectorStorage)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext
+				{
+					User = null!
+				}}
+			};
+
+			await controller.Register(new RegisterViewModel());
+			
+			Assert.AreEqual(403,controller.Response.StatusCode);
+		}
         
         
 		[TestMethod]
