@@ -122,6 +122,36 @@
               "extensions": {},
               "unresolvedReference": false
             },
+            "503": {
+              "description": "database connection error",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
             "409": {
               "description": "Current User does not exist in database",
               "headers": {},
