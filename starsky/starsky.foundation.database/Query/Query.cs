@@ -265,9 +265,6 @@ namespace starsky.foundation.database.Query
         {
 	        async Task LocalQuery(DbContext context, FileIndexItem fileIndexItem)
 	        {
-		        //  Update te last edited time manual
-		        //fileIndexItem.SetLastEdited();
-		        
 		        context.Attach(fileIndexItem).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;

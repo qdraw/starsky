@@ -341,7 +341,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns></returns>
 		private Tuple<bool,DateTime> CompareLastEditIsTheSame(FileIndexItem dbItem)
 		{
-			var lastWriteTime = _subPathStorage.Info(dbItem.FilePath!).LastWriteTime;
+			var lastWriteTime = _subPathStorage.Info(dbItem.FilePath!).LastWriteTime.ToUniversalTime();
 			if ( lastWriteTime.Year == 1 )
 			{
 				return new Tuple<bool, DateTime>(false, lastWriteTime);

@@ -63,7 +63,7 @@ namespace starsky.foundation.sync.Helpers
 			updatedDatabaseItem.SetAddToDatabase();
 			var info = _subPathStorage.Info(filePath);
 			
-			updatedDatabaseItem.LastEdited = info.LastWriteTime;
+			updatedDatabaseItem.LastEdited = info.LastWriteTime.ToUniversalTime();
 			updatedDatabaseItem.IsDirectory = false;
 			updatedDatabaseItem.Size = info.Size;
 			updatedDatabaseItem.ParentDirectory = parentDirectory;
