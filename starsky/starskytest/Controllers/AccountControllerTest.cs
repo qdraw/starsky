@@ -206,6 +206,32 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task LoginPost_RejectStatusCode_noData()
+		{
+			var controller = new AccountController(new FakeIUserManger(new UserOverviewModel(new List<User>
+			{
+				new User()
+				{
+					Credentials = new List<Credential>
+					{
+						new Credential
+						{
+							Identifier = "test", 
+							Secret = "test", // this is the password - in real world this is hashed and salted
+							Extra = string.Empty, // in mock no salt is error case
+						}
+					}
+				}
+			})),_appSettings,_antiForgery, _selectorStorage);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			
+			await controller.LoginPost(new LoginViewModel{Email = "test",
+				Password = "test"});
+			
+			Assert.AreEqual(500,controller.Response.StatusCode);
+		}
+		
+		[TestMethod]
 		public async Task LoginPost_FailedSignIn()
 		{
 			AccountController controller = new AccountController(new FakeUserManagerActiveUsers(),_appSettings,_antiForgery, _selectorStorage);

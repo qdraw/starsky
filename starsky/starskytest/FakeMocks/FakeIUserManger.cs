@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.accountmanagement.Interfaces;
@@ -54,12 +55,19 @@ public class FakeIUserManger : IUserManager
 
 	public Task<ValidateResult> ValidateAsync(string credentialTypeCode, string identifier, string secret)
 	{
-		throw new System.NotImplementedException();
+		var validateResult = new ValidateResult();
+		var result = _userOverviewModel.Users.FirstOrDefault(p => p.Credentials?.FirstOrDefault()?.Identifier == identifier);
+		if ( result?.Credentials?.FirstOrDefault()?.Secret == secret )
+		{
+			validateResult.Success = true;
+		}
+		return Task.FromResult(validateResult);
 	}
 
 	public Task<bool> SignIn(HttpContext httpContext, User user, bool isPersistent = false)
 	{
-		throw new System.NotImplementedException();
+		// should contain salt value to be successful!
+		return Task.FromResult(!string.IsNullOrEmpty(user?.Credentials?.FirstOrDefault()?.Extra));
 	}
 
 	public void SignOut(HttpContext httpContext)
