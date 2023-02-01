@@ -134,8 +134,8 @@ namespace starsky.foundation.database.Interfaces
         Task<string?> GetSubPathByHashAsync(string fileHash);
 
         Task<List<FileIndexItem>> GetObjectsByFileHashAsync(
-	        List<string> fileHashesList);
-
+	        List<string> fileHashesList, int retryCount = 3);
+        
 	    void ResetItemByHash(string fileHash);
 
 	    /// <summary>

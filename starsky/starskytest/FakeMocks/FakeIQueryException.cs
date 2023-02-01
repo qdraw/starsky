@@ -121,7 +121,7 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(GetSubPathByHash(fileHash));
 		}
 
-		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
+		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList, int retryCount = 2)
 		{
 			throw _exception;
 		}
