@@ -30,9 +30,9 @@ namespace starskytest.FakeMocks
 
 		public List<User> Users { get; set; } = new List<User>();
 
-		public Task<List<User>> AllUsersAsync()
+		public Task<UserOverviewModel> AllUsersAsync()
 		{
-			return Task.FromResult(new List<User>{CurrentUser});
+			return Task.FromResult(new UserOverviewModel(new List<User>{CurrentUser}));
 		}
 
 		public void AddUserToCache(User user)

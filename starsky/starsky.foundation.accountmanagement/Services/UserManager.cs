@@ -129,11 +129,11 @@ namespace starsky.foundation.accountmanagement.Services
 		/// Return the number of users in the database
 		/// </summary>
 		/// <returns></returns>
-		public async Task<List<User>> AllUsersAsync()
+		public async Task<UserOverviewModel> AllUsersAsync()
 		{
 			if (IsCacheEnabled() && _cache.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult))
 			{
-				return ( List<User> ) objectAllUsersResult;
+				return new UserOverviewModel(( List<User> ) objectAllUsersResult);
 			}
 
 			try
@@ -144,7 +144,7 @@ namespace starsky.foundation.accountmanagement.Services
 					_cache.Set(AllUsersCacheKey, allUsers, 
 						new TimeSpan(99,0,0));
 				}
-				return allUsers;
+				return new UserOverviewModel(allUsers);
 			}
 			catch ( RetryLimitExceededException exception)
 			{
@@ -152,7 +152,7 @@ namespace starsky.foundation.accountmanagement.Services
 					"[User Manager] RetryLimitExceededException [catch-ed]");
 			}
 
-			return new List<User>();
+			return new UserOverviewModel();
 		}
 
 		/// <summary>
@@ -161,7 +161,7 @@ namespace starsky.foundation.accountmanagement.Services
 		internal async Task AddUserToCache(User user)
 		{
 			if ( !IsCacheEnabled() ) return;
-			var allUsers = await AllUsersAsync();
+			var allUsers = (await AllUsersAsync()).Users;
 			if ( allUsers.Any(p => p.Id == user.Id) )
 			{
 				var indexOf = allUsers.IndexOf(allUsers.Find(p => p.Id == user.Id));
@@ -181,7 +181,7 @@ namespace starsky.foundation.accountmanagement.Services
 		private async Task RemoveUserFromCacheAsync(User user)
 		{
 			if ( !IsCacheEnabled() ) return;
-			var allUsers = await AllUsersAsync();
+			var allUsers = (await AllUsersAsync()).Users;
 			allUsers.Remove(user);
 			_cache.Set(AllUsersCacheKey, allUsers, 
 				new TimeSpan(99,0,0));
@@ -208,7 +208,7 @@ namespace starsky.foundation.accountmanagement.Services
 				return await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == userTableId);
 			}
 			
-			var users = await AllUsersAsync();
+			var users = (await AllUsersAsync()).Users;
 			return users.FirstOrDefault(p => p.Id == userTableId);
 		}
 
@@ -532,7 +532,7 @@ namespace starsky.foundation.accountmanagement.Services
 				return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
 			}
 			
-			var userData = (await AllUsersAsync()).FirstOrDefault(p => p.Id == credential.UserId);
+			var userData = (await AllUsersAsync()).Users.FirstOrDefault(p => p.Id == credential.UserId);
 			if ( userData == null )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.UserNotFound);
