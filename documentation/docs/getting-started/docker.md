@@ -6,15 +6,21 @@ Before you proceed, make sure you have [Docker](https://store.docker.com/search?
 installed on your system. It is available for Mac, Linux, and Windows.
 
 ## Play With Docker
-If you don’t know it yet, I highly recommend to give [Play With Docker](https://play-with-docker.com/) a try. 
+If you want to try Docker, I highly recommend to give [Play With Docker](https://labs.play-with-docker.com/) a try. 
 Also known as PWD, it’s an online playground where you can test all the latest Docker features 
 without having to install anything locally. Once in PWD, you can create an instance, 
 and you’ll feel as if you’re in the shell of a [Linux VM](https://www.linux.com/learn/why-when-and-how-use-virtual-machine).
 
+# Different locations for Docker images
+
+- `qdraw/starsky` is the image name, you can find it on [Docker Hub](https://hub.docker.com/r/qdraw/starsky)
+- `ghcr.io/qdraw/starsky:master` is the latest image from the master branch, you can find it on GitHub Container Registry
+
+On Docker Hub you can find tags by version number, for example `qdraw/starsky:0.5.4`
 
 ## Run Docker image with MySQL
 
-Scroll below for example with SQLite
+Scroll below for example with SQLite, the snippet below is for MariaDB/MySQL.
 
 ```
 docker run -d \
@@ -29,16 +35,16 @@ docker run -d \
     -e app__storageFolder="/app/pictures" \
     -e DOTNET_USE_POLLING_FILE_WATCHER="true" \
     -e DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE="false" \
+    --add-host=host.docker.internal:host-gateway \
     -e app__databaseConnection="Server=host.docker.internal;port=6499;database=starsky_db;uid=starsky_sql;pwd=change__this__password__please_this_unsafe" \
     -v /app/storage \
     -v ~/Pictures:/app/pictures \
     qdraw/starsky
 ```
 
-Scroll below for more information:
+Scroll below for more information about docker commands you can use.
 
 ## Run Docker image with SQLite
-
 
 ```
 docker run -d \

@@ -40,8 +40,11 @@ To update all child projects to have the same version run the following script
 ```
 node starsky-tools/build-tools/app-version-update.js
 ```
+
 # version 0.5.5 _(Unreleased)_ - 2023-02-??
-- nothing yet
+
+- [x] (Fixed)  _Back-end_ Make warning work again when database is missing (Issue #1045, PR #1044, #1046)
+- [x] (Fixed)  _Back-end_ Add retry when thumbnail cleaning and database errors (Issue #1040, PR #1046)
 
 # version 0.5.4 - 2023-01-31
 

@@ -56,7 +56,7 @@ namespace starsky.foundation.accountmanagement.Interfaces
 
     public interface IUserManager
     {
-	    Task<List<User>> AllUsersAsync();
+	    Task<UserOverviewModel> AllUsersAsync();
 	    
 	    /// <summary>
 	    /// Add a new user, including Roles and UserRoles

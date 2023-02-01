@@ -38,15 +38,24 @@ namespace starsky.Controllers
 		/// <response code="401">when not logged in</response>
 		/// <response code="406">There are no accounts, you must create an account first</response>
 		/// <response code="409">Current User does not exist in database</response>
+		/// <response code="503">database connection error</response>
 		/// <returns>account name, id, and create date</returns>
 		[HttpGet("/api/account/status")]
 		[ProducesResponseType(typeof(UserIdentifierStatusModel), 200)]
 		[ProducesResponseType(typeof(string), 401)]
 		[ProducesResponseType(typeof(string), 406)]
+		[ProducesResponseType(typeof(string), 503)]
 		[Produces("application/json")]
 		public async Task<IActionResult> Status()
 		{
-			if ( ! (await _userManager.AllUsersAsync()).Any() && _appSettings.NoAccountLocalhost != true )
+			var userOverview = await _userManager.AllUsersAsync();
+			if ( !userOverview.IsSuccess)
+			{
+				Response.StatusCode = 503;
+				return Json("Database error");
+			}
+			
+			if ( ! userOverview.Users.Any() && _appSettings.NoAccountLocalhost != true )
 			{
 				Response.StatusCode = 406;
 				return Json("There are no accounts, you must create an account first");
@@ -132,7 +141,7 @@ namespace starsky.Controllers
             } 
             
             await _userManager.SignIn(HttpContext, validateResult.User, model.RememberMe);
-            if ( User.Identity.IsAuthenticated)
+            if ( User.Identity?.IsAuthenticated == true)
             {
 	            return Json("Login Success");
             }
@@ -185,19 +194,26 @@ namespace starsky.Controllers
         [Authorize]
         public async Task<IActionResult> ChangeSecret(ChangePasswordViewModel model)
         {
-	        if ( !User.Identity.IsAuthenticated ) return Unauthorized("please login first");
+	        if ( User.Identity?.IsAuthenticated != true )
+	        {
+		        return Unauthorized("please login first");
+	        }
 
-	        if ( !ModelState.IsValid || model.ChangedPassword != model.ChangedConfirmPassword )
+	        if ( !ModelState.IsValid ||
+	             model.ChangedPassword != model.ChangedConfirmPassword )
+	        {
 		        return BadRequest("Model is not correct");
+	        }
 	        
-	        var currentUserId =
-		        _userManager.GetCurrentUser(HttpContext).Id;
-
+	        var currentUserId = _userManager.GetCurrentUser(HttpContext).Id;
 	        var credential = _userManager.GetCredentialsByUserId(currentUserId);
 
 	        // Re-check password
-	        var validateResult = await 
-		        _userManager.ValidateAsync("Email", credential.Identifier, model.Password);
+	        var validateResult = await _userManager.ValidateAsync(
+		        "Email", 
+		        credential.Identifier, 
+		        model.Password);
+	        
 	        if ( !validateResult.Success )
 	        {
 		        return Unauthorized("Password is not correct");
@@ -229,7 +245,7 @@ namespace starsky.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-	        if ( await IsAccountRegisterClosed(User.Identity.IsAuthenticated) )
+	        if ( await IsAccountRegisterClosed(User.Identity?.IsAuthenticated == true) )
 	        {
 		        Response.StatusCode = 403;
 		        return Json("Account Register page is closed");
@@ -254,7 +270,7 @@ namespace starsky.Controllers
         private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
         {
 	        if ( userIdentityIsAuthenticated ) return false;
-	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsersAsync()).Any();
+	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsersAsync()).Users.Any();
         }
         
         /// <summary>
@@ -270,8 +286,8 @@ namespace starsky.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> RegisterStatus()
         {
-	        if ( !(await _userManager.AllUsersAsync()).Any() ) Response.StatusCode = 202;
-	        if ( !await IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
+	        if ( !(await _userManager.AllUsersAsync()).Users.Any() ) Response.StatusCode = 202;
+	        if ( !await IsAccountRegisterClosed(User.Identity?.IsAuthenticated == true) ) return Json("RegisterStatus open");
 	        Response.StatusCode = 403;
 	        return Json("Account Register page is closed");
         }

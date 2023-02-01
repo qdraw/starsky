@@ -237,7 +237,7 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(GetSubPathByHash(fileHash));
 		}
 
-		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
+		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList, int retryCount = 2)
 		{
 			var result = _content.Where(p =>
 					fileHashesList.Contains(p.FileHash!)).ToList();

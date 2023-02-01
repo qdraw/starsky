@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -446,8 +447,31 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser"});
 
-			var user = (await userManager.AllUsersAsync()).FirstOrDefault(p => p.Name == "cachedUser");
+			var user = (await userManager.AllUsersAsync()).Users.FirstOrDefault(p => p.Name == "cachedUser");
 			Assert.IsNotNull(user);
+		}
+						
+		private class AppDbContextRetryLimitExceededException : ApplicationDbContext
+		{
+			public AppDbContextRetryLimitExceededException(DbContextOptions options) : base(options)
+			{
+			}
+			public override DbSet<User> Users => throw new RetryLimitExceededException("general");
+		}
+		
+		[TestMethod]
+		public async Task UserManager_AllUsers_RetryException()
+		{
+			var logger = new FakeIWebLogger();
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var userManager = new UserManager(new AppDbContextRetryLimitExceededException(options),new AppSettings(), logger, new FakeMemoryCache());
+			var users = (await userManager.AllUsersAsync()).Users;
+			
+			Assert.AreEqual(0, users.Count);
+			Assert.IsTrue(logger.TrackedExceptions?.LastOrDefault().Item2.Contains("RetryLimitExceededException"));
 		}
 		
 		[TestMethod]
@@ -461,7 +485,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			Assert.AreEqual(true, result.Success);
 			
-			var user = (await userManager.AllUsersAsync()).FirstOrDefault(p => p.Name == "to_remove");
+			var user = (await userManager.AllUsersAsync()).Users.FirstOrDefault(p => p.Name == "to_remove");
 			Assert.IsNull(user);
 		}
 		
@@ -483,7 +507,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			Assert.AreEqual(AccountRoles.AppAccountRoles.Administrator.ToString(), result.Code);
 		}
-
+		
 
 		[TestMethod]
 		public void AddToRole_WrongCode()

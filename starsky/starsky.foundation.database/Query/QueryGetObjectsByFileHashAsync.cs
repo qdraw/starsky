@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
@@ -14,7 +16,7 @@ namespace starsky.foundation.database.Query
 	public partial class Query : IQuery
 	{
 		
-		public async Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
+		public async Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList, int retryCount = 2)
 		{
 			if ( !fileHashesList.Any() ) return new List<FileIndexItem>();
 			
@@ -33,8 +35,13 @@ namespace starsky.foundation.database.Query
 				}
 				return FormatOk(result);
 			}
+
+			async Task<List<FileIndexItem>> LocalDefaultQuery()
+			{
+				return await LocalQuery(_context);
+			}
 			
-			return await LocalQuery(_context);
+			return await RetryHelper.DoAsync(LocalDefaultQuery, TimeSpan.FromSeconds(3), retryCount);
 		}
 	}
 }
