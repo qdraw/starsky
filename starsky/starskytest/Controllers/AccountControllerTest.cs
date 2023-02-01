@@ -326,6 +326,29 @@ namespace starskytest.Controllers
 	        
 			Assert.IsTrue(actualResult?.Success);
 		}
+		
+		[TestMethod]
+		public async Task ChangeSecret_RejectDueNotLogin()
+		{
+			var controller = new AccountController(new FakeIUserManger(new UserOverviewModel()), _appSettings, _antiForgery, _selectorStorage)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext
+				{
+					User = null!
+				}}
+			};
+
+			var changePasswordViewModel = new ChangePasswordViewModel
+			{
+				Password = "oldPassword", 
+				ChangedPassword = "newPassword", 
+				ChangedConfirmPassword = "newPassword"
+			};
+            
+			var actionResult = await controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
+			
+			Assert.AreEqual(401,actionResult?.StatusCode);
+		}
 
 		[TestMethod]
 		public async Task AccountController_ChangeSecret_PasswordChange_Rejected_Injected()
