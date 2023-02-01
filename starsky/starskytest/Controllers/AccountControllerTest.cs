@@ -223,7 +223,10 @@ namespace starskytest.Controllers
 					}
 				}
 			})),_appSettings,_antiForgery, _selectorStorage);
-			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			controller.ControllerContext.HttpContext = new DefaultHttpContext
+			{
+				User = new ClaimsPrincipal()
+			};
 			
 			await controller.LoginPost(new LoginViewModel{Email = "test",
 				Password = "test"});
@@ -334,7 +337,7 @@ namespace starskytest.Controllers
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext
 				{
-					User = null!
+					User = new ClaimsPrincipal()
 				}}
 			};
 
@@ -422,7 +425,7 @@ namespace starskytest.Controllers
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext
 				{
-					User = null!
+					User = new ClaimsPrincipal()
 				}}
 			};
 
@@ -638,7 +641,7 @@ namespace starskytest.Controllers
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext
 				{
-					User = null!
+					User = new ClaimsPrincipal()
 				}}
 			};
 
