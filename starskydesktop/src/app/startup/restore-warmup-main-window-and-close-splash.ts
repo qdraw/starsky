@@ -5,7 +5,9 @@ import createCheckForUpdatesContainerWindow from "../updates-warning-window/upda
 import { CloseSplash } from "../warmup/splash";
 import { WarmupServer } from "../warmup/warmup-server";
 
-export function RestoreMainWindowAndCloseSplash(splashWindows: BrowserWindow[]) {
+export function RestoreMainWindowAndCloseSplash(
+  splashWindows: BrowserWindow[]
+) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   restoreMainWindow().then(() => {
     createCheckForUpdatesContainerWindow().catch(() => {});
@@ -13,7 +15,10 @@ export function RestoreMainWindowAndCloseSplash(splashWindows: BrowserWindow[]) 
   CloseSplash(splashWindows[0]);
 }
 
-export default function RestoreWarmupMainWindowAndCloseSplash(splashWindows: BrowserWindow[], isRemote : boolean) {
+export default function RestoreWarmupMainWindowAndCloseSplash(
+  splashWindows: BrowserWindow[],
+  isRemote: boolean
+) {
   if (!isRemote) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     WarmupServer(appPort).then(() => {
