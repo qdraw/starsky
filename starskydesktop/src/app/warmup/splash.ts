@@ -12,7 +12,7 @@ export async function SetupSplash(): Promise<BrowserWindow[]> {
       partition: "persist:main"
     },
   });
-  
+
   await splash.loadFile(
     path.join(__dirname, "client", "pages", "splash", "splash.html")
   );
