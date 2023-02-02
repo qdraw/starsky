@@ -19,16 +19,19 @@ jest.mock("electron", () => {
       getVersion: () => "99.99.99",
       getPath: () => "tmp",
       getLocale: () => "en",
-      on: () => "en"
-    }
+      on: () => "en",
+    },
   };
 });
 
 describe("window state keeper", () => {
   describe("windowStateKeeper", () => {
-    it("default output", async () => {
-      jest.spyOn(appConfig, "has").mockReset();
-      const result = await windowStateKeeper("test");
+    it("windowStateKeeper default output", async () => {
+      jest.spyOn(appConfig, "has").mockClear();
+      jest.spyOn(appConfig, "has").mockImplementationOnce(() => {
+        return Promise.resolve(false);
+      });
+      const result = await windowStateKeeper("test3");
       expect(result.x).toBeUndefined();
       expect(result.y).toBeUndefined();
       expect(result.width).toBe(1000);
@@ -41,7 +44,10 @@ describe("window state keeper", () => {
       });
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve({
-          x: 10, y: 11, width: 12, height: 13
+          x: 10,
+          y: 11,
+          width: 12,
+          height: 13,
         });
       });
       const result = await windowStateKeeper("test");
@@ -59,7 +65,7 @@ describe("window state keeper", () => {
         resize: jest.fn(),
         move: jest.fn(),
         close: jest.fn(),
-        on: onMock
+        on: onMock,
       } as any);
 
       expect(onMock).toHaveBeenCalled();
@@ -79,7 +85,7 @@ describe("window state keeper", () => {
           y: 11,
           width: 12,
           height: 13,
-          isMaximized: false
+          isMaximized: false,
         });
       });
       const appConfigSetSpy = jest
@@ -99,7 +105,7 @@ describe("window state keeper", () => {
           y: 11,
           width: 12,
           height: 13,
-          isMaximized: false
+          isMaximized: false,
         }),
         isMaximized: () => true,
 
@@ -108,7 +114,7 @@ describe("window state keeper", () => {
           if (event === "resize") {
             callback();
           }
-        }
+        },
       } as any);
 
       expect(appConfigSetSpy).toHaveBeenCalled();
@@ -117,7 +123,7 @@ describe("window state keeper", () => {
         isMaximized: true,
         width: 20,
         x: 10,
-        y: 11
+        y: 11,
       });
     });
 
@@ -131,7 +137,7 @@ describe("window state keeper", () => {
           y: 11,
           width: 41,
           height: 41,
-          isMaximized: false
+          isMaximized: false,
         });
       });
       const appConfigSetSpy = jest
@@ -152,7 +158,7 @@ describe("window state keeper", () => {
           y: 11,
           width: 12,
           height: 13,
-          isMaximized: false
+          isMaximized: false,
         }),
         isMaximized: () => true,
 
@@ -161,7 +167,7 @@ describe("window state keeper", () => {
           if (event === "resize") {
             callback();
           }
-        }
+        },
       } as any);
 
       expect(appConfigSetSpy).toHaveBeenCalled();
@@ -170,7 +176,7 @@ describe("window state keeper", () => {
         isMaximized: true,
         width: 20,
         x: 10,
-        y: 11
+        y: 11,
       });
     });
   });

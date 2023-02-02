@@ -23,9 +23,7 @@ export async function windowStateKeeper(
     if (await appConfig.has(`windowState.${windowName}`)) {
       const result = await appConfig.get(`windowState.${windowName}`);
       windowState = result as unknown as IWindowsState;
-      if (!Number.isNaN(windowState.x) && !Number.isNaN(windowState.y)) {
-        return;
-      }
+      return;
     }
 
     // Default
