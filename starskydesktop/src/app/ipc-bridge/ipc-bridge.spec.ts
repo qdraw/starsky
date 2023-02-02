@@ -1,11 +1,14 @@
+/* eslint-disable function-paren-newline */
+/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable @typescript-eslint/ban-types */
 import { BrowserWindow, net } from "electron";
 import * as appConfig from "electron-settings";
 import { AppVersionIpcKey } from "../config/app-version-ipc-key.const";
 import { DefaultImageApplicationIpcKey } from "../config/default-image-application-settings-ipc-key.const";
+import * as GetBaseUrlFromSettings from "../config/get-base-url-from-settings";
 import {
   LocationIsRemoteIpcKey,
-  LocationUrlIpcKey
+  LocationUrlIpcKey,
 } from "../config/location-ipc-keys.const";
 import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
 import * as fileSelectorWindow from "../file-selector-window/file-selector-window";
@@ -18,7 +21,7 @@ import {
   DefaultImageApplicationCallback,
   LocationIsRemoteCallback,
   LocationUrlCallback,
-  UpdatePolicyCallback
+  UpdatePolicyCallback,
 } from "./ipc-bridge";
 
 jest.mock("electron-settings", () => {
@@ -85,7 +88,9 @@ describe("ipc bridge", () => {
 
       jest
         .spyOn(createMainWindow, "default")
-        .mockImplementationOnce(() => Promise.resolve({ once: jest.fn() } as any));
+        .mockImplementationOnce(() =>
+          Promise.resolve({ once: jest.fn() } as any)
+        );
 
       jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
@@ -109,7 +114,9 @@ describe("ipc bridge", () => {
 
       jest
         .spyOn(createMainWindow, "default")
-        .mockImplementationOnce(() => Promise.resolve({ once: jest.fn() } as any));
+        .mockImplementationOnce(() =>
+          Promise.resolve({ once: jest.fn() } as any)
+        );
 
       jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
@@ -145,11 +152,14 @@ describe("ipc bridge", () => {
 
       const event = { reply: jest.fn() } as unknown as Electron.IpcMainEvent;
       // is remote?
-      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve(false);
-      }).mockImplementationOnce(() => {
-        return Promise.resolve(false);
-      });
+      jest
+        .spyOn(appConfig, "get")
+        .mockImplementationOnce(() => {
+          return Promise.resolve(false);
+        })
+        .mockImplementationOnce(() => {
+          return Promise.resolve(false);
+        });
 
       await LocationUrlCallback(event, null);
 
@@ -170,6 +180,15 @@ describe("ipc bridge", () => {
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(true);
       });
+      jest
+        .spyOn(GetBaseUrlFromSettings, "GetBaseUrlFromSettings")
+        .mockImplementationOnce(() => {
+          return Promise.resolve({
+            isLocal: true,
+            isValid: null,
+            location: "http://localhost:9609",
+          });
+        });
       await LocationUrlCallback(event, null);
       expect(event.reply).toHaveBeenCalled();
       expect(event.reply).toHaveBeenCalledWith(LocationUrlIpcKey, {
@@ -189,6 +208,15 @@ describe("ipc bridge", () => {
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve("__url_from_config__");
       });
+      jest
+        .spyOn(GetBaseUrlFromSettings, "GetBaseUrlFromSettings")
+        .mockImplementationOnce(() => {
+          return Promise.resolve({
+            isLocal: false,
+            isValid: null,
+            location: "__url_from_config__",
+          });
+        });
 
       await LocationUrlCallback(event, null);
       expect(event.reply).toHaveBeenCalled();
@@ -224,9 +252,12 @@ describe("ipc bridge", () => {
           return Promise.resolve();
         });
 
-      jest
-        .spyOn(createMainWindow, "default")
-        .mockImplementationOnce(() => Promise.resolve({ once: jest.fn() } as any));
+      jest.spyOn(createMainWindow, "default").mockImplementationOnce(
+        () =>
+          // eslint-disable-next-line implicit-arrow-linebreak
+          Promise.resolve({ once: jest.fn() } as any)
+        // eslint-disable-next-line function-paren-newline
+      );
 
       jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
@@ -406,7 +437,10 @@ describe("ipc bridge", () => {
         .mockImplementationOnce(() => Promise.resolve(null));
       await DefaultImageApplicationCallback(event, null);
       expect(event.reply).toHaveBeenCalled();
-      expect(event.reply).toHaveBeenCalledWith(DefaultImageApplicationIpcKey, null);
+      expect(event.reply).toHaveBeenCalledWith(
+        DefaultImageApplicationIpcKey,
+        null
+      );
     });
 
     it("set reset of DefaultImageApplicationCallback", async () => {
@@ -423,7 +457,10 @@ describe("ipc bridge", () => {
       await DefaultImageApplicationCallback(event, { reset: true });
 
       expect(event.reply).toHaveBeenCalled();
-      expect(event.reply).toHaveBeenCalledWith(DefaultImageApplicationIpcKey, false);
+      expect(event.reply).toHaveBeenCalledWith(
+        DefaultImageApplicationIpcKey,
+        false
+      );
     });
 
     it("should give successfull showOpenDialog", async () => {
@@ -435,7 +472,9 @@ describe("ipc bridge", () => {
 
       jest
         .spyOn(fileSelectorWindow, "fileSelectorWindow")
-        .mockImplementationOnce(() => Promise.resolve(["result_from_fileSelectorWindow"]));
+        .mockImplementationOnce(() =>
+          Promise.resolve(["result_from_fileSelectorWindow"])
+        );
 
       jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
         return Promise.resolve();
@@ -446,7 +485,7 @@ describe("ipc bridge", () => {
       expect(event.reply).toHaveBeenCalled();
       expect(event.reply).toHaveBeenCalledWith(
         DefaultImageApplicationIpcKey,
-        "result_from_fileSelectorWindow",
+        "result_from_fileSelectorWindow"
       );
     });
 
@@ -460,7 +499,9 @@ describe("ipc bridge", () => {
       jest
         .spyOn(fileSelectorWindow, "fileSelectorWindow")
         // eslint-disable-next-line prefer-promise-reject-errors
-        .mockImplementationOnce(() => Promise.reject(["result_from_fileSelectorWindow"]));
+        .mockImplementationOnce(() =>
+          Promise.reject(["result_from_fileSelectorWindow"])
+        );
 
       jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
         return Promise.resolve();
