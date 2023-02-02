@@ -18,7 +18,8 @@ namespace starskytest.starsky.foundation.storage.Services
 		{
 			var structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
 			var importItem = new StructureService(new FakeIStorage(), structure);
-			var fileName = importItem.ParseFileName(new DateTime(), string.Empty, "jpg" );
+			var fileName = importItem.ParseFileName(new DateTime(), 
+				string.Empty, "jpg" );
 			Assert.AreEqual("00010101_000000.jpg", fileName);
 		}
 		
@@ -27,7 +28,8 @@ namespace starskytest.starsky.foundation.storage.Services
 		{
 			var structure = "/yyyyMMdd_HHmmss_\\\\\\h\\\\\\m.ext";
 			var importItem = new StructureService(new FakeIStorage(), structure);
-			var fileName = importItem.ParseFileName(new DateTime(), string.Empty, "jpg" );
+			var fileName = importItem.ParseFileName(new DateTime(), 
+				string.Empty, "jpg" );
 			Assert.AreEqual("00010101_000000_hm.jpg", fileName);
 		}
 		
@@ -36,7 +38,8 @@ namespace starskytest.starsky.foundation.storage.Services
 		{
 			var structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_\\d.ext";
 			var importItem = new StructureService(new FakeIStorage(), structure);
-			var fileName = importItem.ParseFileName(new DateTime(), string.Empty, "jpg" );
+			var fileName = importItem.ParseFileName(new DateTime(), 
+				string.Empty, "jpg" );
 			Assert.AreEqual("00010101_000000_d.jpg", fileName);
 		}
 
@@ -56,8 +59,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		[ExpectedException(typeof(FieldAccessException))]
 		public void ParseFileName_FieldAccessException_Null()
 		{
-			string structure = null;
-			new StructureService(new FakeIStorage(), structure).ParseSubfolders(
+			new StructureService(new FakeIStorage(), null!).ParseSubfolders(
 				new DateTime(2020, 01, 01, 01, 01, 01));
 			// ExpectedException
 		}
@@ -143,7 +145,8 @@ namespace starskytest.starsky.foundation.storage.Services
 		public void ParseSubfolders_GetExistingFolder()
 		{
 			var storage = new FakeIStorage(
-				new List<string>{"/", "/2020","/2020/01","/2020/01/2020_01_01 test","/2020/01/2020_01_01 test/ignore"},
+				new List<string>{"/", "/2020","/2020/01",
+					"/2020/01/2020_01_01 test","/2020/01/2020_01_01 test/ignore"},
 				new List<string>());
 			
 			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
@@ -235,9 +238,9 @@ namespace starskytest.starsky.foundation.storage.Services
 		[TestMethod]
 		public void ParseSubfolders_Int_RelativeToday()
 		{
-			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			var result = new StructureService(new FakeIStorage(),structure).ParseSubfolders(0);
-			Assert.IsTrue(result.Contains(DateTime.Now.ToString("yyyy_MM_dd")));
+			Assert.IsTrue(result?.Contains(DateTime.Now.ToString("yyyy_MM_dd")));
 		}
 	}
 }
