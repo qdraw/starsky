@@ -64,5 +64,9 @@ export function copyWithId(identifier: string, toName: string) {
     }
   }
 
-  fs.renameSync(afterCopyPath, afterCopyTo);
+  try {
+    fs.renameSync(afterCopyPath, afterCopyTo);
+  } catch (error) {
+    console.log(error);
+  }
 }
