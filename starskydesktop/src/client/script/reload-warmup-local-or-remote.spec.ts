@@ -2,7 +2,7 @@
 import { AppVersionIpcKey } from "../../app/config/app-version-ipc-key.const";
 import {
   LocationIsRemoteIpcKey,
-  LocationUrlIpcKey
+  LocationUrlIpcKey,
 } from "../../app/config/location-ipc-keys.const";
 import { IPreloadApi } from "../../preload/IPreloadApi";
 import * as checkForUpdates from "./check-for-updates";
@@ -13,6 +13,13 @@ declare global {
   // eslint-disable-next-line vars-on-top, no-var
   var api: IPreloadApi;
 }
+
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
 
 describe("reload redirect", () => {
   describe("warmupLocalOrRemote", () => {
@@ -30,8 +37,8 @@ describe("reload redirect", () => {
             configurable: true,
             value: (e: string) => {
               return assignSpy(e);
-            }
-          }
+            },
+          },
         }
       );
     });
@@ -53,7 +60,7 @@ describe("reload redirect", () => {
     it("should get remote ipc key and app version", () => {
       window.api = {
         send: jest.fn(),
-        receive: jest.fn()
+        receive: jest.fn(),
       };
       warmupLocalOrRemote();
       expect(window.api.send).toHaveBeenCalled();
@@ -82,7 +89,7 @@ describe("reload redirect", () => {
         send: jest.fn(),
         receive: (_, func) => {
           func({ location: "test" });
-        }
+        },
       };
 
       const checkForUpdatesSpy = jest
