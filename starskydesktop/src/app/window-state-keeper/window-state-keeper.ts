@@ -22,8 +22,10 @@ export async function windowStateKeeper(
     // Restore from appConfig
     if (await appConfig.has(`windowState.${windowName}`)) {
       const result = await appConfig.get(`windowState.${windowName}`);
-      windowState = (result as unknown) as IWindowsState;
-      return;
+      windowState = result as unknown as IWindowsState;
+      if (!Number.isNaN(windowState.x) && !Number.isNaN(windowState.y)) {
+        return;
+      }
     }
 
     // Default
@@ -32,7 +34,7 @@ export async function windowStateKeeper(
       y: undefined,
       width: 1000,
       height: 800,
-      isMaximized: false
+      isMaximized: false,
     };
   }
 
@@ -56,7 +58,7 @@ export async function windowStateKeeper(
 
   function track(win: BrowserWindow) {
     window = win;
-    ["resize", "move", "close"].forEach((event : string) => {
+    ["resize", "move", "close"].forEach((event: string) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       win.on(event as any, saveState);
     });
@@ -70,6 +72,6 @@ export async function windowStateKeeper(
     width: windowState.width,
     height: windowState.height,
     isMaximized: windowState.isMaximized,
-    track
+    track,
   };
 }
