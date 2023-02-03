@@ -45,6 +45,10 @@ node starsky-tools/build-tools/app-version-update.js
 
 - [x] (Fixed)  _Back-end_ Make warning work again when database is missing (Issue #1045, PR #1044, #1046)
 - [x] (Fixed)  _Back-end_ Add retry when thumbnail cleaning and database errors (Issue #1040, PR #1046)
+- [x] (Fixed)  _Desktop_ Windows Desktop App did not start (PR #1047)
+- [x] (Fixed)  _Back-end_ Add auto install ./build.ps1 for Windows package manager for .NET and node (PR #1047)
+- [x] (Fixed)  _Desktop_ Upgrade Electron to 22.1.0 and fix tests (PR #1047)
+
 
 # version 0.5.4 - 2023-01-31
 

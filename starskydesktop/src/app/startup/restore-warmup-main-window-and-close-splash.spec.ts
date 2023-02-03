@@ -26,9 +26,11 @@ jest.mock("electron", () => {
 
 describe("RestoreWarmupMainWindowAndCloseSplash", () => {
   it("should close splash window", () => {
-    const window = {
-      close: jest.fn(),
-    };
+    const window = [
+      {
+        close: jest.fn(),
+      },
+    ];
 
     const restoreMainWindowSpy = jest
       .spyOn(restoreMainWindow, "restoreMainWindow")
@@ -37,18 +39,22 @@ describe("RestoreWarmupMainWindowAndCloseSplash", () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     RestoreWarmupMainWindowAndCloseSplash.default(window as any, true);
 
-    expect(window.close).toHaveBeenCalled();
+    expect(window[0].close).toHaveBeenCalled();
     expect(restoreMainWindowSpy).toHaveBeenCalled();
   });
 
   it("should close splash window 2", () => {
-    const window = {
-      close: jest.fn(),
-    };
+    const window = [
+      {
+        close: jest.fn(),
+      },
+    ];
 
-    const warmupServerSpy = jest.spyOn(WarmupServer, "WarmupServer").mockImplementationOnce(() => {
-      return Promise.resolve(true);
-    });
+    const warmupServerSpy = jest
+      .spyOn(WarmupServer, "WarmupServer")
+      .mockImplementationOnce(() => {
+        return Promise.resolve(true);
+      });
 
     const restoreMainWindowSpy = jest
       .spyOn(restoreMainWindow, "restoreMainWindow")

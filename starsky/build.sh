@@ -77,7 +77,7 @@ function INSTALL_DOTNET_VIA_WEBSITE_PKG {
      fi 
 }
 
-echo "     os: " "$(uname)" "ci: " $CI "tf: "  $TF_BUILD  "install check: " $FORCE_INSTALL_CHECK
+echo "     os: " "$(uname)" "ci: " $CI "tfbuild: "  $TF_BUILD  " install check: " $FORCE_INSTALL_CHECK
 # install dotnet via website   
 if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
     SET_DOTNET_VERSION_TO_VAR

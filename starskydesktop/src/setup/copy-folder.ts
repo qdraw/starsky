@@ -17,7 +17,7 @@ function copyFileSync(source: string, target: string) {
 export function copyFolderRecursiveSync(
   source: string,
   target: string,
-  match: RegExp = null,
+  match: RegExp = null
 ) {
   let files = [];
 
@@ -64,5 +64,11 @@ export function copyWithId(identifier: string, toName: string) {
     }
   }
 
-  fs.renameSync(afterCopyPath, afterCopyTo);
+  try {
+    fs.renameSync(afterCopyPath, afterCopyTo);
+  } catch (error) {
+    console.log(error);
+  }
+
+  console.log("-- copy folder done --");
 }
