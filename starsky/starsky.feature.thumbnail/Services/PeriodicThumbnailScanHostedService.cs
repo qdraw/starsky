@@ -84,7 +84,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 			await service.StartBackgroundQueue(DateTime.UtcNow.Add(Period));
 			_executionCount++;
 			// Executed PeriodicThumbnailScanHostedService
-			_logger.LogInformation(
+			_logger.LogDebug(
 				$"Executed {nameof(PeriodicThumbnailScanHostedService)} -" +
 				$" Count: {_executionCount} ({DateTime.UtcNow:HH:mm:ss})");
 			return true;
