@@ -13,9 +13,10 @@ namespace starsky
 	{
 		public static async Task Main(string[] args)
 		{
-			await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(args,
-				Path.Join(new AppSettings().BaseDirectoryProject,
-					"appsettings.json"));
+			var appSettingsPath = Path.Join(
+				new AppSettings().BaseDirectoryProject,
+				"appsettings.json");
+			await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(args,appSettingsPath);
 			var builder = CreateWebHostBuilder(args);
 			var startup = new Startup();
 			startup.ConfigureServices(builder.Services);
