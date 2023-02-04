@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
@@ -17,15 +18,25 @@ namespace starsky
 			await CreateWebHostBuilder(args).Build().RunAsync();
 		}
 
-		private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-			WebHost.CreateDefaultBuilder(args)
-				.ConfigureKestrel((_, options) =>
+		private static IHostBuilder CreateWebHostBuilder(string[] args) =>
+			Host.CreateDefaultBuilder(args)
+				.UseWindowsService()
+				.ConfigureWebHost(options =>
 				{
-					// instead of UseKestrel @see: https://stackoverflow.com/a/55926191
-					options.Limits.MaxRequestLineSize = 65536; //64Kb
-					// AddServerHeader removes the header: Server: Kestrel
-					options.AddServerHeader = false;
-				})
-				.UseStartup<Startup>();
+					options.UseKestrel();
+					options.ConfigureKestrel(k =>
+					{
+						// instead of UseKestrel @see: https://stackoverflow.com/a/55926191
+						k.Limits.MaxRequestLineSize = 65536; //64Kb
+						// AddServerHeader removes the header: Server: Kestrel
+						k.AddServerHeader = false;
+					});
+					
+					// Configure IIS for Windows
+					options.UseIIS();
+					options.UseIISIntegration();
+					
+					options.UseStartup<Startup>();
+				});
 	}
 }
