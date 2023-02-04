@@ -42,7 +42,39 @@ docker run -d \
     qdraw/starsky
 ```
 
-Scroll below for more information about docker commands you can use.
+### Next install mysql/MariaDb
+
+Run the following command to run MariaDb in Docker
+Make sure you have **replaced** the root and user password
+
+```
+docker run -d \
+  --name=mariadb \
+  --add-host=host.docker.internal:host-gateway \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e MYSQL_ROOT_PASSWORD=change__this__root__password__please_this_unsafe \
+  -e TZ=UTC \
+  -e MYSQL_DATABASE=starsky_db `#optional` \
+  -e MYSQL_USER=starsky_sql `#optional` \
+  -e MYSQL_PASSWORD=change__this__password__please_this_unsafe `#optional` \
+  -p 6499:3306 \
+  -v /opt/mariadb:/config \
+  --restart unless-stopped \
+  lscr.io/linuxserver/mariadb
+```  
+
+## restore
+
+To restore a existing database run the following command:
+Read more about this in the MariaDB documentation
+
+```
+docker exec -i mariadb mysql -uroot -pchange__this__root__password__please_this_unsafe starsky < $HOME/__starsky__temp.sql
+```
+
+:: Note
+    Scroll below for more information about docker commands you can use.
 
 ## Run Docker image with SQLite
 
