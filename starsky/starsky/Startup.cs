@@ -10,6 +10,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -226,7 +227,7 @@ namespace starsky
         /// <param name="app">ApplicationBuilder</param>
         /// <param name="env">Hosting Env</param>
         /// <param name="applicationLifetime">application Lifetime</param>
-        public void Configure(IApplicationBuilder app, IHostEnvironment env, IHostApplicationLifetime applicationLifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
 	        app.UseResponseCompression();
 
