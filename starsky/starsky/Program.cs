@@ -21,9 +21,12 @@ namespace starsky
 			var builder = CreateWebHostBuilder(args);
 			var startup = new Startup();
 			startup.ConfigureServices(builder.Services);
+			builder.Host.UseWindowsService();
+
 			var app = builder.Build();
 			var hostLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 			startup.Configure(app, builder.Environment, hostLifetime);
+			
 			await app.RunAsync();
 		}
 		
@@ -47,8 +50,6 @@ namespace starsky
 			builder.WebHost.UseIIS();
 			builder.WebHost.UseIISIntegration();
 			
-			builder.Host.UseWindowsService();
-
 			return builder;
 		}
 	}
