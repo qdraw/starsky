@@ -37,7 +37,6 @@ namespace starsky
 			};
 			var builder = WebApplication.CreateBuilder(settings);
 
-			builder.Host.UseWindowsService();
 			builder.WebHost.ConfigureKestrel(k =>
 			{
 				k.Limits.MaxRequestLineSize = 65536; //64Kb
@@ -47,6 +46,8 @@ namespace starsky
 			
 			builder.WebHost.UseIIS();
 			builder.WebHost.UseIISIntegration();
+			
+			builder.Host.UseWindowsService();
 
 			return builder;
 		}
