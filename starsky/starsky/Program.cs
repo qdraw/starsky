@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +29,12 @@ namespace starsky
 		
 		private static WebApplicationBuilder CreateWebHostBuilder(string[] args)
 		{
-			var settings = new WebApplicationOptions { Args = args };
+			var settings = new WebApplicationOptions
+			{
+				Args = args,
+				//set ContentRootPath so that builder.Host.UseWindowsService() doesn't crash when running as a service
+				ContentRootPath = AppContext.BaseDirectory,
+			};
 			var builder = WebApplication.CreateBuilder(settings);
 
 			builder.Host.UseWindowsService();
