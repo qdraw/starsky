@@ -2,7 +2,7 @@
 
 param(
     [Parameter(Mandatory=$false)][switch]$help,
-    [Parameter(Mandatory=$false)][string]$port='5000',
+    [Parameter(Mandatory=$false)][string]$port='4000',
     [Parameter(Mandatory=$false)][switch]$anyWhere,
     [Parameter(Mandatory=$false)][string]$outPut,
     [Parameter(Mandatory=$false)][string]$serviceName='starsky',
@@ -22,7 +22,7 @@ switch ([System.Environment]::OSVersion.Platform)
 
 if ($help -eq $True) {
     write-host "help"
-    write-host "-port 5000"
+    write-host "-port 4000"
     write-host "-anyWhere"
     write-host "-output folder_path"
     write-host "-serviceName name_service"
@@ -143,7 +143,7 @@ if ($anyWhere -eq $true) {
     $cmdArgsAdd = '--urls "http://*:' + $port + '"'
 }
 If($noTelemetry -eq $true) {
-     $cmdArgsAdd += " --app:enablePackageTelemetry=false"
+     $cmdArgsAdd += " --app:enablePackageTelemetry=False"
 }
 
 write-host "args: "$cmdArgsAdd
