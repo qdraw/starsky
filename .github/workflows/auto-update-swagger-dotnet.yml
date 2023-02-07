@@ -47,6 +47,10 @@ jobs:
         app__AddSwagger: "true"
         app__AddSwaggerExport: "true"
         app__AddSwaggerExportExitAfter: "true"
+        app__SyncOnStartup: "false"
+        app__thumbnailGenerationIntervalInMinutes: 0
+        app__EnablePackageTelemetry: "false"
+        app__useDiskWatcher: "false"
       run: dotnet run --no-launch-profile
 
     - name: Copy
