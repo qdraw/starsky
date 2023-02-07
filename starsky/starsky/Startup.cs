@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Globalization;
 using System.IO;
@@ -43,15 +44,15 @@ namespace starsky
     public sealed class Startup
     {
         private readonly IConfigurationRoot _configuration;
-        private AppSettings _appSettings;
+        private AppSettings? _appSettings;
 
-        public Startup()
+        public Startup(string[]? args = null)
 		{
 			if ( !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__appsettingspath")) )
 			{
 				Console.WriteLine("app__appsettingspath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
 			}
-			_configuration = SetupAppSettings.AppSettingsToBuilder().ConfigureAwait(false).GetAwaiter().GetResult();
+			_configuration = SetupAppSettings.AppSettingsToBuilder(args).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
        /// <summary>
@@ -238,7 +239,7 @@ namespace starsky
 	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 	        app.UseForwardedHeaders();
 	        
-	        if ( !env.IsDevelopment() &&  _appSettings.UseHttpsRedirection == true )
+	        if ( !env.IsDevelopment() &&  _appSettings?.UseHttpsRedirection == true )
 	        {
 		        app.UseHttpsRedirection();
 	        }
@@ -320,7 +321,7 @@ namespace starsky
 		        configuration.TelemetryProcessorChainBuilder.Build();
 
 		        var onStoppedSync = new FlushApplicationInsights(app);
-		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
+		        applicationLifetime.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
         }
         

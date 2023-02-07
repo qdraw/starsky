@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +28,7 @@ namespace starsky.foundation.platform.Helpers
 		/// Default appSettings.json to builder
 		/// </summary>
 		/// <returns>ConfigBuilder</returns>
-		public static async Task<IConfigurationRoot> AppSettingsToBuilder()
+		public static async Task<IConfigurationRoot> AppSettingsToBuilder(string[]? args = null)
 		{
 			var appSettings = new AppSettings();
 			var builder = new ConfigurationBuilder();
@@ -42,6 +43,11 @@ namespace starsky.foundation.platform.Helpers
 				// overwrite envs
 				// current dir gives problems on linux arm
 				.AddEnvironmentVariables();
+			
+			if ( args != null )
+			{
+				builder.AddCommandLine(args);
+			}	
 				
 			return builder.Build();
 		}
