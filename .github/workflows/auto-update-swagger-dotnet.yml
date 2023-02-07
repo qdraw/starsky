@@ -51,6 +51,8 @@ jobs:
         app__thumbnailGenerationIntervalInMinutes: 0
         app__EnablePackageTelemetry: "false"
         app__useDiskWatcher: "false"
+        app__GeoFilesSkipDownloadOnStartup: "false"
+        app__ExiftoolSkipDownloadOnStartup: "false"
       run: dotnet run --no-launch-profile
 
     - name: Copy
