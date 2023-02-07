@@ -96,9 +96,10 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 			const sdkVersion = await getSdkVersionByTarget();
 			process.env["SDK_VERSION"] = sdkVersion;
 			console.log(`SDK_VERSION: ${sdkVersion}`);
-			// ::set-output is deprecated
-			console.log(`::set-output name=SDK_VERSION::${sdkVersion}`);
-			// process.env["GITHUB_STATE"] += ` SDK_VERSION=${sdkVersion} `;
+
+			if (fs.existsSync(process.env["GITHUB_OUTPUT"])) {
+				fs.appendFileSync(process.env["GITHUB_OUTPUT"], `\nSDK_VERSION=${sdkVersion}`);
+			}
 
             if (process.env.TF_BUILD) {
                 console.log(`##vso[task.setvariable variable=SDK_VERSION;]${sdkVersion}`);
@@ -289,7 +290,9 @@ async function getBlobSdkReleaseNotesPage(blobObject) {
 	const findVersion = resultsReleaseJsonFile.releases.find(p => p.sdk.version === blobObject[0]);
 	if (findVersion && findVersion["release-notes"]) {
 		process.env["SDK_RELEASE_NOTES"] = findVersion["release-notes"];
-		console.log(`::set-output name=SDK_RELEASE_NOTES::${findVersion["release-notes"]}`);
+		if (fs.existsSync(process.env["GITHUB_OUTPUT"])) {
+			fs.appendFileSync(process.env["GITHUB_OUTPUT"], `\nSDK_RELEASE_NOTES=${findVersion["release-notes"]}`);
+		}
         if (process.env.TF_BUILD) {
             console.log(`##vso[task.setvariable variable=SDK_RELEASE_NOTES;]${findVersion["release-notes"]}`);
         }
