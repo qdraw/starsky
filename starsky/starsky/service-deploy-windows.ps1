@@ -40,8 +40,8 @@ If($outPut -eq "") {
     $scriptRootPath = (Split-Path $MyInvocation.MyCommand.Path -Parent)
     $outPut = $scriptRootPath
 }
-$exePath = Join-Path $outPut $exeName
 
+$exePath = Join-Path $outPut $exeName
 
 if ((Test-Path -Path $exePath) -eq $false) {
     write-host "-output path doesn't exist." $exePath
@@ -49,30 +49,11 @@ if ((Test-Path -Path $exePath) -eq $false) {
     exit 1
 } 
 
-write-host $exePath
-
+write-host "next close windows of mmc.exe"
 Invoke-Expression -Command "taskkill /F /IM mmc.exe"
 
-$currentService = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
 
-If([string]::IsNullOrWhitespace($currentService) -eq $false) {
-    write-host "first delete service with the same name: "$currentService
-
-    $filter = "Name='" + $serviceName + "'"
-    $service = Get-WmiObject -Class Win32_Service -Filter $filter
-    $service.delete()
-    #  for powershell 6+
-    # Remove-Service -Name ServiceName
-    # or sc.exe delete ServiceName
-}
-
-$appSettingsPath = Join-Path -Path $outPut -ChildPath "appsettings.json"
-
-$jsonAppSettings = (Get-Content -Raw $appSettingsPath | ConvertFrom-Json )
-
-write-host $jsonAppSettings
-
-function ReinstallService ($localServiceName, $binaryPath, $description, $login, $password, $startUpType, $displayName)
+function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $description, $login, $password, $startUpType, $displayName)
 {
     Write-Host "Trying to create service: $localServiceName - $binaryPath"
 
@@ -98,6 +79,9 @@ function ReinstallService ($localServiceName, $binaryPath, $description, $login,
         $serviceToRemove = Get-WmiObject -Class Win32_Service -Filter "name='$localServiceName'"
 
         $serviceToRemove.delete()
+        #  for powershell 6+
+        # Remove-Service -Name ServiceName
+        # or sc.exe delete ServiceName
         Write-Host "Service removed: $localServiceName"
     }
 
@@ -118,7 +102,10 @@ function ReinstallService ($localServiceName, $binaryPath, $description, $login,
 
     # Creating Windows Service using all provided parameters
     Write-Host "Installing service: $localServiceName"
-    New-Service -name $localServiceName -binaryPathName $binaryPath -Description $description -displayName $displayName -startupType $startUpType -credential $mycreds
+
+    $binaryPathName = "'$binaryPath' $cmdArgs"
+    New-Service -name $localServiceName -binaryPathName $binaryPathName -Description $description -displayName $displayName `
+        -startupType $startUpType -credential $mycreds
 
     Write-Host "Installation completed: $localServiceName"
 
@@ -144,4 +131,4 @@ function ReinstallService ($localServiceName, $binaryPath, $description, $login,
   # https://stackoverflow.com/questions/14708825/how-to-create-a-windows-service-in-powershell-for-network-service-account
 }
 
-ReinstallService $serviceName $exePath "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App"
+ReinstallService $serviceName $exePath, "--port 5000" "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App"
