@@ -36,7 +36,7 @@ jobs:
       - name: unzip folder with pwsh
         shell: powershell
         run:  |
-          $folder=${{ steps.create_temp_folder.outputs.folder_path }}
+          $folder="${{ steps.create_temp_folder.outputs.folder_path }}"
           Expand-Archive -Path (Join-Path -Path $folder -ChildPath "starsky-win-x64.zip")  -DestinationPath $folder
 
       - name: Test service
