@@ -1,6 +1,6 @@
 {
   "name": "dropbox-import",
-  "version": "0.5.5",
+  "version": "0.5.5-beta.0",
   "description": "",
   "main": "dropbox-import.js",
   "scripts": {
