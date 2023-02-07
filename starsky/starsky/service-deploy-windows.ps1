@@ -6,7 +6,8 @@ param(
     [Parameter(Mandatory=$false)][switch]$anyWhere,
     [Parameter(Mandatory=$false)][string]$outPut,
     [Parameter(Mandatory=$false)][string]$serviceName='starsky',
-    [Parameter(Mandatory=$false)][string]$exeName='starsky.exe'
+    [Parameter(Mandatory=$false)][string]$exeName='starsky.exe',
+    [Parameter(Mandatory=$false)][switch]$noTelemetry=$false
 )
 
 # for powershell 5
@@ -19,11 +20,6 @@ switch ([System.Environment]::OSVersion.Platform)
      }
 }
 
-if($IsWindows -eq $False) {
-  Write-host "This script is currently for windows only"
-  exit 0
-}
-
 if ($help -eq $True) {
     write-host "help"
     write-host "-port 5000"
@@ -34,7 +30,12 @@ if ($help -eq $True) {
     exit 0
 }
 
-write-host "-port"$port "-anywhere"$anyWhere "-serviceName"$serviceName
+write-host "-port"$port "-anywhere"$anyWhere "-serviceName"$serviceName "-noTelemetry"$noTelemetry
+
+if($IsWindows -eq $False) {
+  Write-host "This script is currently for windows only"
+  exit 0
+}
 
 If($outPut -eq "") {
     $scriptRootPath = (Split-Path $MyInvocation.MyCommand.Path -Parent)
@@ -140,6 +141,9 @@ $cmdArgsAdd = '--urls "http://localhost:' + $port + '"'
 
 if ($anyWhere -eq $true) {
     $cmdArgsAdd = '--urls "http://*:' + $port + '"'
+}
+If($noTelemetry -eq $true) {
+     $cmdArgsAdd += " --no-telemetry"
 }
 
 write-host "args: "$cmdArgsAdd
