@@ -3,11 +3,10 @@ on:
   schedule:
     - cron:  '45 0 * * *'
   push:
-    branches: |
-      master
-    paths: |
-      .github/workflows/end2end-windows-ci.yml
-    
+    branches: [ master ]
+    paths:
+    - '.github/workflows/end2end-windows-ci.yml'
+
 name: end2end on windows-ci
 
 jobs:
