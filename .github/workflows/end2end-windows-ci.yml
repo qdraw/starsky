@@ -33,10 +33,11 @@ jobs:
         working-directory: ./starsky/starsky
         run: .\github-artifacts-download.ps1 -output ${{ steps.create_temp_folder.outputs.folder_path }} -token ${{ secrets.GITHUB_TOKEN }}
 
-      - name: pm2-new-instance
-        shell: bash
-        working-directory: ./starsky/starsky
-        run: bash pm2-new-instance.sh --output ${{ steps.create_temp_folder.outputs.folder_path }} || true
+      - name: unzip folder with pwsh
+        shell: powershell
+        run:  |
+          $folder="${{ steps.create_temp_folder.outputs.folder_path }}"
+          Expand-Archive -Path (Join-Path -Path $folder -ChildPath "starsky-win-x64.zip")  -DestinationPath $folder
 
       - name: Test service
         shell: powershell
@@ -45,7 +46,7 @@ jobs:
           cp service-deploy-windows.ps1 "${{ steps.create_temp_folder.outputs.folder_path }}/service-deploy-windows_temp.ps1"
           cd ${{ steps.create_temp_folder.outputs.folder_path }}
           write-host ${{ steps.create_temp_folder.outputs.folder_path }}
-          .\service-deploy-windows_temp.ps1 -anywhere -port 4000 -notelemetry
+          .\service-deploy-windows_temp.ps1 -anywhere -port 4000 -notelemetry -output ${{ steps.create_temp_folder.outputs.folder_path }}
 
       - name: Test service starskygeocli
         shell: bash

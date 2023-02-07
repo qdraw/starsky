@@ -32,7 +32,7 @@ jobs:
         dotnet-version: 6.0.405
 
     - name: Cache nuget packages (*nix)
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
         path: ~/.nuget/packages
@@ -47,6 +47,12 @@ jobs:
         app__AddSwagger: "true"
         app__AddSwaggerExport: "true"
         app__AddSwaggerExportExitAfter: "true"
+        app__SyncOnStartup: "false"
+        app__thumbnailGenerationIntervalInMinutes: 0
+        app__EnablePackageTelemetry: "false"
+        app__useDiskWatcher: "false"
+        app__GeoFilesSkipDownloadOnStartup: "true"
+        app__ExiftoolSkipDownloadOnStartup: "true"
       run: dotnet run --no-launch-profile
 
     - name: Copy
@@ -59,23 +65,21 @@ jobs:
       run: node scripts/openapi.js
 
     - name: Commit changes
-      uses: EndBug/add-and-commit@v4
+      uses: EndBug/add-and-commit@v9
       with:
         author_name: SwaggerUpdateBot
         author_email: qdraw@users.noreply.github.com
         message: "[Swagger] Auto commited swagger/openapi list"
         add: "documentation/static/openapi/openapi.json"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Commit changes
-      uses: EndBug/add-and-commit@v4
+      uses: EndBug/add-and-commit@v9
       with:
         author_name: SwaggerUpdateBot
         author_email: qdraw@users.noreply.github.com
         message: "[Swagger] Auto commited swagger/openapi list"
         add: "docs/api/readme.md"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
 

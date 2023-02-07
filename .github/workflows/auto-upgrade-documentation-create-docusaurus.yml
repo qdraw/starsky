@@ -29,10 +29,10 @@ jobs:
       
         if [[ `git status --porcelain` ]]; then
           echo "There are files not committed yet"
-          echo "::set-output name=CHANGED::true"
+          echo "CHANGED=true" >> $GITHUB_OUTPUT
         else 
           echo "not changed"
-          echo "::set-output name=CHANGED::false"
+          echo "CHANGED=false" >> $GITHUB_OUTPUT
         fi
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}

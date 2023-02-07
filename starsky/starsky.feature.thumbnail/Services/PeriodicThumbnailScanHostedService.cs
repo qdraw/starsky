@@ -57,6 +57,10 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 	internal async Task StartBackgroundAsync(bool startDirect, CancellationToken cancellationToken)
 	{
 		if ( startDirect ) await RunJob(cancellationToken);
+		if ( IsEnabled == false)
+		{
+			return;
+		}
 		
 		using var timer = new PeriodicTimer(Period);
 		while (
@@ -70,13 +74,14 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 	internal async Task<bool?> RunJob(CancellationToken cancellationToken = default)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
-		
+
 		if (! IsEnabled )
 		{
 			_logger.LogInformation(
 				$"Skipped {nameof(PeriodicThumbnailScanHostedService)}");
 			return false;
 		}
+
 		try
 		{
 			await using var asyncScope = _factory.CreateAsyncScope();

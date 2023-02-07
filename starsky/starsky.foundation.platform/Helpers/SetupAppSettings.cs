@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.platform.Extensions;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -59,9 +58,11 @@ namespace starsky.foundation.platform.Helpers
 			return $"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
 		}
 
-		private static List<string> Order(string baseDirectoryProject)
+		private static IEnumerable<string> Order(string baseDirectoryProject)
 		{
 			var appSettingsMachine = AppSettingsMachineNameWithDot();
+			var appSettingsPath =
+				Environment.GetEnvironmentVariable("app__appsettingspath") ?? string.Empty;
 			return new List<string>
 			{
 				Path.Combine(baseDirectoryProject, "appsettings.json"),
@@ -69,8 +70,8 @@ namespace starsky.foundation.platform.Helpers
 				Path.Combine(baseDirectoryProject, "appsettings.patch.json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "patch.json"),
-				Environment.GetEnvironmentVariable("app__appsettingspath")
-			};
+				appSettingsPath
+			}.Where(p => !string.IsNullOrEmpty(p));
 		}
 
 		internal static async Task<AppSettings> MergeJsonFiles(string baseDirectoryProject)
