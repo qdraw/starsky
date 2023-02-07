@@ -18,12 +18,12 @@ jobs:
       - name: Create temp folder
         shell: bash
         id: create_temp_folder
-        run: mkdir starsky-run && cd starsky-run && echo "folder_path=$(pwd)" >> $GITHUB_OUTPUT
+        run: mkdir starsky-run && cd starsky-run && echo "folder_path=$(pwd)" >> $GITHUB_OUTPUT && echo $GITHUB_OUTPUT
 
       - name: github-artifacts-download
         shell: powershell
         working-directory: ./starsky/starsky
-        run: .\github-artifacts-download.ps1 -output ${{ steps.create_temp_folder.outputs.folder_path }} --token ${{ secrets.GITHUB_TOKEN }}
+        run: .\github-artifacts-download.ps1 -output ${{ steps.create_temp_folder.outputs.folder_path }} -token ${{ secrets.GITHUB_TOKEN }}
 
       - name: pm2-new-instance
         shell: bash
