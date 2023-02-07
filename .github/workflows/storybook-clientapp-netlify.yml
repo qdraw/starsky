@@ -33,7 +33,7 @@ jobs:
         run: npm run build-storybook
 
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v1.2
+        uses: nwtgck/actions-netlify@v2.0
         with:
           publish-dir: './starsky/starsky/clientapp/storybook-static'
           production-branch: master
