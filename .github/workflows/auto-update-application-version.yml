@@ -32,6 +32,5 @@ jobs:
         author_email: qdraw@users.noreply.github.com
         message: "Auto commited Application Version update"
         add: "."
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 

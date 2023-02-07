@@ -31,5 +31,4 @@ jobs:
         author_email: qdraw@users.noreply.github.com
         message: "[NugetPackagesListUpdate] Auto commited nugetPackages list"
         add: "starsky/nuget-packages-list.json"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
