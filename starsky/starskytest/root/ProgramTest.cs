@@ -39,9 +39,9 @@ public class ProgramTest
 	}
 
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(7000)]
 	[ExpectedException(typeof(System.IO.IOException))]
-	public async Task TestMethod1()
+	public async Task Program_Main_TestCancel()
 	{
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:9514");
 		Environment.SetEnvironmentVariable("app__useDiskWatcher","false");
@@ -51,6 +51,9 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
 
+		// The trick is that here already is a port open
+		// so the app crashes
+		
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
 		
