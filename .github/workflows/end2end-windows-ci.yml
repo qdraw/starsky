@@ -26,7 +26,7 @@ jobs:
           mkdir starsky-run 
           cd starsky-run 
           Add-Content -Path $env:GITHUB_OUTPUT -Value "folder_path=$((Get-Location).Path)"
-          Get-Content $GITHUB_OUTPUT -Raw
+          Get-Content $env:GITHUB_OUTPUT -Raw
 
       - name: github-artifacts-download
         shell: powershell
