@@ -32,7 +32,7 @@ namespace starsky.Controllers
         }
         
 		/// <summary>
-		/// Check the account status of the current user
+		/// Check the account status of the current logged in user
 		/// </summary>
 		/// <response code="200">logged in</response>
 		/// <response code="401">when not logged in</response>
