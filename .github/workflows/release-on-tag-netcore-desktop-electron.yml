@@ -28,43 +28,43 @@ jobs:
         run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test    
    
       - name: Upload linux-arm as build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: linux-arm
           path: ./starsky/starsky-linux-arm.zip
     
       - name: Upload linux-arm64 as build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: linux-arm64
           path: ./starsky/starsky-linux-arm64.zip
  
       - name: Upload win-x64 as build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: win-x64
           path: ./starsky/starsky-win-x64.zip
   
       - name: Upload linux-x64 as build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: linux-x64
           path: ./starsky/starsky-linux-x64.zip         
 
       - name: Upload osx-x64 as build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: osx-x64
           path: ./starsky/starsky-osx-x64.zip      
  
       - name: Upload osx-arm64 as build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: osx-arm64
           path: ./starsky/starsky-osx-arm64.zip      
  
       - name: Upload slack-notification as build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: starsky-tools-slack-notification
           path: ./starsky-tools/slack-notification      
@@ -112,7 +112,7 @@ jobs:
         run: npm run mac
    
       - name: Upload starsky-mac-x64-desktop as build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: starsky-mac-x64-desktop
           path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg   
@@ -150,7 +150,7 @@ jobs:
         run: npm run windows
      
       - name: Upload starsky-win-x64-desktop as build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: starsky-win-x64-desktop
           path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe   
