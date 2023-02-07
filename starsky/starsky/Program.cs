@@ -19,10 +19,10 @@ namespace starsky
 				"appsettings.json");
 			await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(args,appSettingsPath);
 			var builder = CreateWebHostBuilder(args);
-			var startup = new Startup();
+			var startup = new Startup(args);
 			startup.ConfigureServices(builder.Services);
 			builder.Host.UseWindowsService();
-
+			
 			var app = builder.Build();
 			var hostLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 			startup.Configure(app, builder.Environment, hostLifetime);
@@ -49,7 +49,7 @@ namespace starsky
 			
 			builder.WebHost.UseIIS();
 			builder.WebHost.UseIISIntegration();
-			
+
 			return builder;
 		}
 	}
