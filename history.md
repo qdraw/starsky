@@ -4,7 +4,7 @@
 
 - [By App documentation](starsky/readme.md) _database photo index & import index project_
   - [starsky](starsky/starsky/readme.md) _web api application / interface_
-    - [clientapp](starsky/starsky/clientapp/readme.md) _react front-end application_
+    - [client app](starsky/starsky/clientapp/readme.md) _react front-end application_
   - [starskyImporterCli](starsky/starskyimportercli/readme.md) _import command line interface_
   - [starskyGeoCli](starsky/starskygeocli/readme.md) _gpx sync and reverse 'geo tagging'_
   - [starskyWebHtmlCli](starsky/starskywebhtmlcli/readme.md) _publish web images to a content package_
@@ -41,16 +41,22 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 
-# version 0.5.5 _(Unreleased)_ - 2023-02-??
+# version 0.5.5 _(Unreleased)_ - 2023-02-?? {#v055}
+- nothing yet
+
+# version 0.5.5-beta.0 - 2023-02-07 {#v055beta0}
 
 - [x] (Fixed)  _Back-end_ Make warning work again when database is missing (Issue #1045, PR #1044, #1046)
 - [x] (Fixed)  _Back-end_ Add retry when thumbnail cleaning and database errors (Issue #1040, PR #1046)
 - [x] (Fixed)  _Desktop_ Windows Desktop App did not start (PR #1047)
-- [x] (Fixed)  _Back-end_ Add auto install ./build.ps1 for Windows package manager for .NET and node (PR #1047)
+- [x] (Fixed)  _Back-end_ Add auto install `./build.ps1` for Windows package manager (winget) for .NET and node (PR #1047)
 - [x] (Fixed)  _Desktop_ Upgrade Electron to 22.1.0 and fix tests (PR #1047)
+- [x] (Updated)  _CI_ Update Github Actions (20230206, PR #1063, #1062, #1061, #1060, #1059)
+- [x] (Updated)  _Docs_ Update Docusaurus (PR #1055, #1049)
+- [x] (Added)  _Back-end_ Add option for cmd line args for web app (PR #1054)
+- [x] (Added)  _Back-end_ Service deploy script for Windows (PR #1053)
 
-
-# version 0.5.4 - 2023-01-31
+# version 0.5.4 - 2023-01-31 {#v054}
 
 - [x] (Added)  _Back-end_ App insights metrics for internal queues (PR #1028)
 - [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/disk/mkdir` (PR #1030)
