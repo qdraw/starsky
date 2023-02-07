@@ -73,6 +73,7 @@ describe('Archive (from upload) (21)', () => {
       
       if (!config.isEnabled || Cypress.platform === 'win32') {
         cy.log(`test skipped isEnabled: ${config.isEnabled} platform: ${Cypress.platform}` )
+        resolve();
         return;
       }
 
