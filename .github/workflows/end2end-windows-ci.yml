@@ -49,19 +49,19 @@ jobs:
           .\service-deploy-windows_temp.ps1 -anywhere -port 4000 -notelemetry -output ${{ steps.create_temp_folder.outputs.folder_path }}
 
       - name: Test service starskygeocli
-        shell: bash
+        shell: powershell
         working-directory: ${{ steps.create_temp_folder.outputs.folder_path }}
         run:  |
           .\starskygeocli.exe -h -v
           .\starskyadmincli.exe -h -v
 
       - name: pm2-warmup
-        shell: bash
+        shell: powershell
         working-directory: ./starsky/starsky
         run: .\pm2-warmup.ps1 -port 4000
 
       - name: Run Cypress in Electron 
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
         env:
           CYPRESS_BASE_URL: http://localhost:4000
           cypress_name: local
@@ -71,7 +71,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         with:
           install-command: npm ci --legacy-peer-deps --no-fund --no-audit
-          command: npm run e2e:env:record -- --tag "ubuntu-ci"
+          command: npm run e2e:env:record -- --tag "windows-ci"
           working-directory: starsky-tools/end2end  
 
       - name: Upload screenshots (always)
