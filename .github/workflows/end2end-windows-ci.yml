@@ -45,7 +45,7 @@ jobs:
           cp service-deploy-windows.ps1 "${{ steps.create_temp_folder.outputs.folder_path }}/service-deploy-windows_temp.ps1"
           cd ${{ steps.create_temp_folder.outputs.folder_path }}
           write-host ${{ steps.create_temp_folder.outputs.folder_path }}
-          .\service-deploy-windows_temp.ps1 -anywhere -port 4000 -notelemetry
+          .\service-deploy-windows_temp.ps1 -anywhere -port 4000 -notelemetry -output ${{ steps.create_temp_folder.outputs.folder_path }}
 
       - name: Test service starskygeocli
         shell: bash
