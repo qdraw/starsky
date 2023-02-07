@@ -21,9 +21,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Create temp folder
-        shell: bash
+        shell: powershell
         id: create_temp_folder
-        run: mkdir starsky-run && cd starsky-run && echo "folder_path=$(pwd)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+        run: mkdir starsky-run && cd starsky-run && echo "folder_path=$((Get-Location).Path)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
 
       - name: github-artifacts-download
         shell: powershell
