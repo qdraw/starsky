@@ -154,7 +154,7 @@ async function updateDockerEnvFile(filePathList) {
 
 	for (const envDockerFilePath of envDockerFilePathList) {
 		let buffer = await readFile(envDockerFilePath);
-		console.log("✓ " + envDockerFilePath);
+		console.log("✅ ✓ " + envDockerFilePath);
 		let fileContent = buffer.toString("utf8");
 		fileContent = replaceEnvDockerFileContent(
 			fileContent,
@@ -186,7 +186,7 @@ function replaceEnvDockerFileContent(fileContent, what, sdkResult) {
 				sdkResult
 			); // sdkResult = to version
 			console.log(
-				"  ✓  replaceEnvDockerFileContent - build/base " +
+				"    ✅ ✓  replaceEnvDockerFileContent - build/base " +
 					replacedResult
 			);
 			fileContent = fileContent.replace(
@@ -222,7 +222,7 @@ async function updateMcrDockerFile(filePathList) {
 	);
 	for (const dockerFilePath of dockerFilePathList) {
 		let buffer = await readFile(dockerFilePath);
-		console.log("✓ " + dockerFilePath);
+		console.log("✅ ✓ " + dockerFilePath);
 		let fileContent = buffer.toString("utf8");
 		fileContent = replaceMcrFileContent(fileContent, "sdk", sdkResult);
 		fileContent = replaceMcrFileContent(
@@ -251,7 +251,7 @@ function replaceMcrFileContent(fileContent, what, sdkResult) {
 				/(\d|\.)+ AS$/g,
 				sdkResult + " AS"
 			); // sdkResult = to version
-			console.log("  ✓  replaceMcrFileContent " + replacedResult);
+			console.log("   ✅ ✓  replaceMcrFileContent " + replacedResult);
 			fileContent = fileContent.replace(
 				sdkfromBuildPlatformMatch,
 				replacedResult
@@ -274,7 +274,7 @@ function replaceMcrFileContent(fileContent, what, sdkResult) {
 				sdkResult
 			); // sdkResult = to version
 			console.log(
-				"  ✓  replaceMcrFileContent - build/base " + replacedResult
+				"  ✅ ✓  replaceMcrFileContent - build/base " + replacedResult
 			);
 			fileContent = fileContent.replace(
 				buildBaseImageMatch,
@@ -429,7 +429,7 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 				}
 				await writeFile(filePath, fileContent);
 				console.log(
-					`✓ ${filePath} - Azure Yml is updated to ${sdkVersion}`
+					`✅ ✓ ${filePath} - Azure Yml is updated to ${sdkVersion}`
 				);
 			}
 
@@ -447,7 +447,7 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 				buildBaseImageVariableRegex.exec(fileContent);
 			if (buildBaseImageVariableMatch != null) {
 				console.log(
-					`✓ ${filePath} - Azure Yml (build/base) is updated to ${newRunTimeVersion.replace(
+					`✅ ✓ ${filePath} - Azure Yml (build/base) is updated to ${newRunTimeVersion.replace(
 						".x",
 						""
 					)}`
@@ -498,7 +498,7 @@ async function replaceAzureDockerYmlFile(fileContent, what) {
 				/(\d|\.)+\"$/g,
 				targetVersion + '"'
 			); // sdkResult = to version
-			console.log("  ✓  Azure Yml - build/base " + replacedResult);
+			console.log("  ✅ ✓  Azure Yml - build/base " + replacedResult);
 			fileContent = fileContent.replace(
 				buildBaseImageMatch,
 				replacedResult
@@ -530,7 +530,7 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 
 				await writeFile(filePath, fileContent);
 				console.log(
-					`✓ ${filePath} - Github Yml is updated to ${sdkVersion}`
+					`✅ ✓ ${filePath} - Github Yml is updated to ${sdkVersion}`
 				);
 			}
 		}
@@ -672,13 +672,26 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 			let buffer = await readFile(filePath);
 			let fileContent = buffer.toString("utf8");
 
+			let beforeTargetFramework = "";
+			const matchResults = fileContent.match(targetFrameworkRegex);
+			if (matchResults.length === 1) {
+				beforeTargetFramework = matchResults[0]
+					.replace("<TargetFramework>", "")
+					.replace("</TargetFramework>", "");
+			}
+
 			fileContent = fileContent.replace(
 				targetFrameworkRegex,
 				`<TargetFramework>${lastNet}<\/TargetFramework>`
 			);
 
 			await writeFile(filePath, fileContent);
-			console.log(`✓ ${filePath} - .NET is updated to ${lastNet}`);
+
+			if (lastNet !== beforeTargetFramework) {
+				console.log(`✅ ✓ ${filePath} - .NET is updated to ${lastNet}`);
+			} else {
+				console.log(`🙏 ${filePath} - .NET is the same: ${lastNet}`);
+			}
 
 			if (!usedTargetFrameworkMonikers[filePath]) {
 				usedTargetFrameworkMonikers[filePath] = [];
@@ -890,18 +903,24 @@ async function updateSingleNugetPackageVersion(filePath) {
 							);
 							await writeFile(filePath, fileContent);
 
-							console.log(
-								`✓ ${filePath} - ${toUpdatePackageName} is updated to ${newVersion}`
-							);
+							if (toUpdatePackageVersion !== newVersion) {
+								console.log(
+									`✓ ${filePath} - ${toUpdatePackageName} is updated from ${toUpdatePackageVersion} to ${newVersion}`
+								);
+							} else {
+								console.log(
+									`🙏  ${filePath} - ${toUpdatePackageName} is ${toUpdatePackageVersion}`
+								);
+							}
 						} else {
 							console.log(
-								`✖ ${filePath} - ${toUpdatePackageName} is skipped to ${toUpdatePackageVersion}`
+								`❌ ✖ ${filePath} - ${toUpdatePackageName} is skipped to ${toUpdatePackageVersion}`
 							);
 						}
 					}
 				} else {
 					console.log(
-						"✖ " + filePath + " - Version tag is not included"
+						"❌ ✖ " + filePath + " - Version tag is not included"
 					);
 				}
 			}
