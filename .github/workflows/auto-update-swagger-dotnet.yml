@@ -63,14 +63,13 @@ jobs:
       run: node scripts/openapi.js
 
     - name: Commit changes
-      uses: EndBug/add-and-commit@v4
+      uses: EndBug/add-and-commit@v9
       with:
         author_name: SwaggerUpdateBot
         author_email: qdraw@users.noreply.github.com
         message: "[Swagger] Auto commited swagger/openapi list"
         add: "documentation/static/openapi/openapi.json"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Commit changes
       uses: EndBug/add-and-commit@v9
