@@ -143,7 +143,7 @@ if ($anyWhere -eq $true) {
     $cmdArgsAdd = '--urls "http://*:' + $port + '"'
 }
 If($noTelemetry -eq $true) {
-     $cmdArgsAdd += " --no-telemetry"
+     $cmdArgsAdd += " --app:enablePackageTelemetry=false"
 }
 
 write-host "args: "$cmdArgsAdd
