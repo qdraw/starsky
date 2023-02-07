@@ -13,7 +13,7 @@ stdin.addListener("data", function(d) {
 	const value = d.toString().trim();
 	checkNewVersion(value);
 	console.log("you entered: [" +
-		d.toString().trim() + "]");
+		value + "]");
 });
 
 
