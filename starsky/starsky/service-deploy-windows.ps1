@@ -77,6 +77,11 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
     {
         # using WMI to remove Windows service because PowerShell does not have CmdLet for this
         $serviceToRemove = Get-WmiObject -Class Win32_Service -Filter "name='$localServiceName'"
+        $id = $serviceToRemove   |  Select-Object -ExpandProperty ProcessId
+     
+        Stop-Process -ID $id -Force
+
+        write-host "next delete:"
 
         $serviceToRemove.delete()
         #  for powershell 6+
@@ -131,4 +136,12 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
   # https://stackoverflow.com/questions/14708825/how-to-create-a-windows-service-in-powershell-for-network-service-account
 }
 
-ReinstallService $serviceName $exePath "-urls http://*:5100" "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App"
+$cmdArgsAdd = '--urls "http://localhost:' + $port + '"'
+
+if ($anyWhere -eq $true) {
+    $cmdArgsAdd = '--urls "http://*:' + $port + '"'
+}
+
+write-host "args: "$cmdArgsAdd
+
+ReinstallService $serviceName $exePath $cmdArgsAdd "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App"
