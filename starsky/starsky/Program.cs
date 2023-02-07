@@ -26,8 +26,15 @@ namespace starsky
 			var app = builder.Build();
 			var hostLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 			startup.Configure(app, builder.Environment, hostLifetime);
-			
-			await app.RunAsync();
+
+			try
+			{
+				await app.RunAsync();
+			}
+			catch ( TaskCanceledException )
+			{
+				// do nothing
+			}
 		}
 		
 		private static WebApplicationBuilder CreateWebHostBuilder(string[] args)
