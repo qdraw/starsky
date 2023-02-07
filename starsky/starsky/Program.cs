@@ -18,6 +18,7 @@ namespace starsky
 				new AppSettings().BaseDirectoryProject,
 				"appsettings.json");
 			await PortProgramHelper.SetEnvPortAspNetUrlsAndSetDefault(args,appSettingsPath);
+			
 			var builder = CreateWebHostBuilder(args);
 			var startup = new Startup(args);
 			startup.ConfigureServices(builder.Services);
