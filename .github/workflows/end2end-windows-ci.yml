@@ -23,7 +23,11 @@ jobs:
       - name: Create temp folder
         shell: powershell
         id: create_temp_folder
-        run: mkdir starsky-run && cd starsky-run && echo "folder_path=$((Get-Location).Path)" >> $GITHUB_OUTPUT && Get-Content $GITHUB_OUTPUT -Raw
+        run: | 
+          mkdir starsky-run 
+          cd starsky-run 
+          Add-Content -Path $GITHUB_OUTPUT -Value "folder_path=$((Get-Location).Path)" >> 
+          Get-Content $GITHUB_OUTPUT -Raw
 
       - name: github-artifacts-download
         shell: powershell
