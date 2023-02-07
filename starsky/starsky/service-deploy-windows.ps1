@@ -103,7 +103,7 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
     # Creating Windows Service using all provided parameters
     Write-Host "Installing service: $localServiceName"
 
-    $binaryPathName = "'$binaryPath' $cmdArgs"
+    $binaryPathName = "$binaryPath $cmdArgs"
     New-Service -name $localServiceName -binaryPathName $binaryPathName -Description $description -displayName $displayName `
         -startupType $startUpType -credential $mycreds
 
@@ -131,4 +131,4 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
   # https://stackoverflow.com/questions/14708825/how-to-create-a-windows-service-in-powershell-for-network-service-account
 }
 
-ReinstallService $serviceName $exePath, "--port 5000" "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App"
+ReinstallService $serviceName $exePath "-urls http://*:5100" "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App"
