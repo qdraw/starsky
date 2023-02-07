@@ -51,7 +51,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		await StartBackgroundAsync(true, stoppingToken);
+		await StartBackgroundAsync(IsEnabled, stoppingToken);
 	}
 
 	internal async Task StartBackgroundAsync(bool startDirect, CancellationToken cancellationToken)
@@ -73,14 +73,14 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 	internal async Task<bool?> RunJob(CancellationToken cancellationToken = default)
 	{
-		cancellationToken.ThrowIfCancellationRequested();
-
 		if (! IsEnabled )
 		{
 			_logger.LogInformation(
 				$"Skipped {nameof(PeriodicThumbnailScanHostedService)}");
 			return false;
 		}
+		
+		cancellationToken.ThrowIfCancellationRequested();
 
 		try
 		{
