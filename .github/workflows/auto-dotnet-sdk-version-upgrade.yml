@@ -69,7 +69,7 @@ jobs:
         draft: false
         
     - name: Merge current branch into -> auto_dotnet_sdk_version_upgrade
-      uses: everlytic/branch-merge@1.1.2
+      uses: everlytic/branch-merge@1.1.5
       if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
       with:
         github_token: ${{ secrets.WORKFLOW_GITHUB }}
