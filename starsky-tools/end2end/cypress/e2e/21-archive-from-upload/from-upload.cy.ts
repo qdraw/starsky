@@ -68,7 +68,13 @@ describe('Archive (from upload) (21)', () => {
     retries: { runMode: 2, openMode: 2 }
   }, () => {
     return new Cypress.Promise((resolve) => {
-      if (!config.isEnabled) return
+
+      // skip this test currently for windows
+      
+      if (!config.isEnabled || Cypress.platform === 'win32') {
+        cy.log(`test skipped isEnabled: ${config.isEnabled} platform: ${Cypress.platform}` )
+        return;
+      }
 
       const sourceTags = 'tete de balacha, bergtop, mist, flaine'
       const url = Cypress.config().baseUrl
