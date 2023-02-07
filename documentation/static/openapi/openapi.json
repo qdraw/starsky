@@ -22,7 +22,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Check the account status of the current user",
+          "summary": "Check the account status of the current logged in user",
           "parameters": [],
           "responses": {
             "200": {
