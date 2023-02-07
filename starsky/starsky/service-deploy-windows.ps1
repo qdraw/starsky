@@ -149,3 +149,6 @@ If($noTelemetry -eq $true) {
 write-host "args: "$cmdArgsAdd
 
 ReinstallService $serviceName $exePath $cmdArgsAdd "Windows service" "NT AUTHORITY\NETWORK SERVICE" "" "Automatic" "Starsky Web App"
+
+write-host "done"
+exit 0
