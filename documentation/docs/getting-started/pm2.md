@@ -22,6 +22,8 @@ Download this bash script and run it with bash
 Its recommend to download the script in empty folder.
 The script unzips lots of dll's and files in the folder the script is located.
 
+This script assumes that you are using Linux or Mac OS
+
 ```bash
 mkdir -p /opt/starsky/starsky
 cd /opt/starsky/starsky
