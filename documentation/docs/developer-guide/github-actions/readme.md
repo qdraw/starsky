@@ -143,9 +143,17 @@ Deploy docs site to github pages
 
 ## end2end on ubuntu-ci
 Cypress end to end testing on ubuntu ci
-Runs a systemd service and a cypress test
+Runs a systemd service and a cypress test. See [Cypress Dashboard](https://cloud.cypress.io/projects/1yeai3/runs?tags=[{"disabled":false,"label":"windows-ci","labelProperties":{"color":"#dadade"},"suggested":false,"value":"windows-ci"}]&timeRange={"startDate":"1970-01-01","endDate":"2038-01-19"}) 
 
 > [end2end-ubuntu-ci.yml](https://github.com/qdraw/starsky/actions/workflows/end2end-ubuntu-ci.yml)
+
+## end2end on windows-ci
+Cypress end to end testing on windows ci
+Runs a windows service and a cypress test
+
+> [end2end-windows-ci.yml](https://github.com/qdraw/starsky/actions/workflows/end2end-windows-ci.yml)
+
+
 
 ## Create Release on tag for docker hub
 On tag push create a release for docker hub
