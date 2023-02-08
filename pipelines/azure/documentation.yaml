@@ -32,6 +32,9 @@ variables:
   DOCS_BASE_URL: $(baseUrl) # dir in domain
   GOOGLE_VERIFICATION: $(googleVerification) # generate html file
   G_TAG: $(gTag) # google analytics
+  ALGOLIA_APP_ID: $(algoliaAppId)
+  ALGOLIA_API_KEY: $(algoliaApiKey)
+  ALGOLIA_INDEX_NAME: $(algoliaIndexName)
 
 stages:
 - stage: builddocumentation
@@ -56,6 +59,9 @@ stages:
         baseUrl: $(DOCS_BASE_URL)
         googleVerification: $(GOOGLE_VERIFICATION)
         gtag: $(G_TAG)
+        algoliaAppId: $(ALGOLIA_APP_ID)
+        algoliaApiKey: $(ALGOLIA_API_KEY)
+        algoliaIndexName: $(ALGOLIA_INDEX_NAME)
 
     - task: Bash@3
       enabled: true
