@@ -261,11 +261,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task SingleFile_FileAlreadyExist_With_Changed_FileHash()
 		{
-			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+			const string currentFilePath = "/test_date2.jpg";
+			_iStorageFake.FileCopy("/test.jpg", currentFilePath);
+			(_iStorageFake as FakeIStorage)!.SetDateTime(currentFilePath,DateTime.UtcNow);
+			
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync(currentFilePath);
 				
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem("/test.jpg")
+				new FileIndexItem(currentFilePath)
 				{
 					FileHash = "THIS_IS_THE_OLD_HASH",
 					Size = 99999999 // % % % that's not the right size % % %
@@ -274,18 +278,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, null, new FakeIWebLogger());
-			var result = await sync.SingleFile("/test.jpg");
+			var result = await sync.SingleFile(currentFilePath);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
 
-			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FilePath == currentFilePath);
 			Assert.AreEqual(1,count);
 			
-			var detailView = fakeQuery.SingleItem("/test.jpg");
+			var detailView = fakeQuery.SingleItem(currentFilePath);
 			
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg",fileIndexItem?.FilePath);
+			Assert.AreEqual(currentFilePath,fileIndexItem?.FilePath);
 			Assert.AreEqual(fileHash, fileIndexItem?.FileHash);
 			
 			// Should be around now-ish

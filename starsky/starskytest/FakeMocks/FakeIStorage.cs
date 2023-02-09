@@ -15,8 +15,8 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIStorage : IStorage
 	{
-		private List<string> _outputSubPathFolders = new List<string>();
-		private List<string> _outputSubPathFiles  = new List<string>();
+		private readonly List<string> _outputSubPathFolders = new List<string>();
+		private readonly List<string> _outputSubPathFiles  = new List<string>();
 
 		private readonly  Dictionary<string, DateTime> _lastEditDict = new Dictionary<string, DateTime>();
 
@@ -30,7 +30,7 @@ namespace starskytest.FakeMocks
 		/// <param name="byteListSource"></param>
 		/// <param name="lastEdited"></param>
 		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
-			IReadOnlyList<byte[]> byteListSource = null, List<DateTime> lastEdited = null)
+			IReadOnlyList<byte[]> byteListSource = null, IReadOnlyList<DateTime> lastEdited = null)
 		{
 	
 			if ( outputSubPathFolders != null )
@@ -59,7 +59,7 @@ namespace starskytest.FakeMocks
 
 			if ( lastEdited != null && lastEdited.Any() )
 			{
-				for ( int i = 0; i < _outputSubPathFiles.Count; i++ )
+				for ( var i = 0; i < _outputSubPathFiles.Count; i++ )
 				{
 					_lastEditDict.Add(_outputSubPathFiles[i],lastEdited[i]);
 				}
@@ -327,6 +327,18 @@ namespace starskytest.FakeMocks
 		{
 			return Task.FromResult(WriteStream(stream, path));
 		}
+		
+		public bool SetDateTime(string path, DateTime dateTime)
+		{
+			if ( _lastEditDict == null ) return false;
+			if ( _lastEditDict.Any(p => p.Key == path) )
+			{
+				_lastEditDict[path] = dateTime;
+				return true;
+			}
+			_lastEditDict.Add(path, dateTime);
+			return true;
+		}
 
 		public virtual StorageInfo Info(string path)
 		{
@@ -353,11 +365,17 @@ namespace starskytest.FakeMocks
 			{
 				lastEdit = _lastEditDict.FirstOrDefault(p => p.Key == path).Value;
 			}
+
+			long len = 0;
+			if ( result?.Length != null)
+			{
+				len = result.Length;
+			}
 			
 			return new StorageInfo
 			{
 				IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.File,
-				Size = result.Length,
+				Size = len,
 				LastWriteTime = lastEdit
 			};
 

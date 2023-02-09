@@ -132,6 +132,7 @@ namespace starsky.foundation.sync.SyncServices
 				).ToList(), false);
 			foreach ( var newItem in newItemsList )
 			{
+				// only for new items that needs to be added to the db
 				var newItemIndex = dbItems.FindIndex(
 					p => p.FilePath == newItem.FilePath);
 				if ( newItemIndex < 0 ) continue;

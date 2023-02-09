@@ -157,7 +157,7 @@ namespace starsky.feature.metaupdate.Services
 			}
 			
 			// set last edited
-			fileIndexItem.LastEdited = _iStorage.Info(fileIndexItem.FilePath!).LastWriteTime.ToUniversalTime();
+			fileIndexItem.LastEdited = _iStorage.Info(fileIndexItem.FilePath!).LastWriteTime;
 
 			// Do a database sync + cache sync
 			// Clone to avoid reference when cache exist

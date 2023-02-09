@@ -236,13 +236,7 @@ namespace starsky.foundation.sync.SyncServices
 							query, _memoryCache, _logger)
 						.Remove(databaseItems, updateDelegate);
 
-					foreach ( var item in databaseItems )
-					{
-						_console.Write(item.Status == FileIndexItem.ExifStatus
-							.NotFoundSourceMissing
-							? "≠"
-							: "•");
-					}
+					DisplayInlineConsole(databaseItems);
 				
 					return databaseItems;
 				}, _appSettings.MaxDegreesOfParallelism);
@@ -255,6 +249,30 @@ namespace starsky.foundation.sync.SyncServices
 			}
 		
 			return results;
+		}
+
+		private void DisplayInlineConsole(List<FileIndexItem> databaseItems)
+		{
+			foreach ( var item in databaseItems )
+			{
+				switch ( item.Status )
+				{
+					case FileIndexItem.ExifStatus
+						.NotFoundSourceMissing:	
+						_console.Write("≠"); 
+						break;
+
+					case FileIndexItem.ExifStatus.Ok:
+						_console.Write("•"); 
+						break;
+					case FileIndexItem.ExifStatus.OkAndSame:
+						_console.Write("⩮"); 
+						break;
+					default:
+						_console.Write("⁑");
+						break;
+				}
+			}
 		}
 
 		internal static List<FileIndexItem> PathsToUpdateInDatabase(
