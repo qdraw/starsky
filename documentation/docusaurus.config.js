@@ -17,17 +17,6 @@ if (process.env.DOCS_BASE_URL && process.env.DOCS_BASE_URL.startsWith("/")) {
 console.log(`url ${url}`);
 console.log(`baseUrl ${baseUrl}`);
 
-const algolia = {};
-if (process.env.ALGOLIA_APP_ID && process.env.ALGOLIA_API_KEY && process.env.ALGOLIA_INDEX_NAME) {
-	console.log(`Algolia enabled`);
-	algolia.algolia = {
-		appId: process.env.ALGOLIA_APP_ID,
-		apiKey: process.env.ALGOLIA_API_KEY,
-		indexName: process.env.ALGOLIA_INDEX_NAME,
-		searchPagePath: 'search'
-	}
-}
-
 const gtag = {};
 if (process.env.GTAG) {
 	console.log('gtag enabled');
@@ -83,6 +72,10 @@ const config = {
 		],
 	],
 
+	plugins: [
+		require.resolve('@cmfcmf/docusaurus-search-local')
+	],
+
 	themeConfig:
 		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
 		({
@@ -128,7 +121,6 @@ const config = {
 					},
 				],
 			},
-			...algolia,
 			footer: {
 				style: "dark",
 				links: [

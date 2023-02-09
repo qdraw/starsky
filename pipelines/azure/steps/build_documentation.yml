@@ -4,9 +4,6 @@ parameters:
   baseUrl: "/"
   googleVerification: ""
   gtag: ""
-  algoliaAppId: ""
-  algoliaApiKey: ""
-  algoliaIndexName: ""
 
 steps:
 
@@ -37,17 +34,9 @@ steps:
         $env:GOOGLE_VERIFICATION = "${{ parameters.googleVerification }}"
         $env:GTAG = "${{ parameters.gtag }}"
 
-        $env:ALGOLIA_APP_ID = "${{ parameters.algoliaAppId }}"
-        $env:ALGOLIA_API_KEY = "${{ parameters.algoliaApiKey }}"
-        $env:ALGOLIA_INDEX_NAME = "${{ parameters.algoliaIndexName }}"
-
         Write-Host "DOCS_URL $Env:DOCS_URL"
         Write-Host "DOCS_BASE_URL $Env:DOCS_BASE_URL"
         Write-Host "GOOGLE_VERIFICATION $Env:GOOGLE_VERIFICATION"
-
-        Write-Host "ALGOLIA_APP_ID $Env:ALGOLIA_APP_ID"
-        Write-Host "ALGOLIA_API_KEY $Env:ALGOLIA_API_KEY"
-        Write-Host "ALGOLIA_INDEX_NAME $Env:ALGOLIA_INDEX_NAME"
 
         npm run build
         

@@ -1,0 +1,13 @@
+#
+# robots.txt for Starsky
+#       It is useless to follow the links... All information is public....
+#		{date}
+# Please note: There are a lot of pages on this site, and there are
+# some misbehaved spiders out there that go _way_ too fast. If you're
+# irresponsible, your access to the site may be blocked.
+
+
+Sitemap: {domain}/sitemap.xml
+
+User-agent: *
+Allow: /

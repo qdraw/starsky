@@ -50,9 +50,6 @@ The following variables are used:
 - `$(googleVerification)` - googleVerification key, starts with `google`
 - `$(gTag)` - google analytics key, starts with `G-`
 - `$(url)` - domain of docs site currently: `https://docs.qdraw.nl`
-- `$(algoliaAppId)` algolia app id
-- `$(algoliaApiKey)` algolia app key
-- `$(algoliaIndexName)` algolia app index name
 
 ### azure-pipeline nightly audit
 

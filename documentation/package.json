@@ -21,6 +21,7 @@
     "update": "node ../starsky-tools/build-tools/documentation-create-docusaurus-update.js"
   },
   "dependencies": {
+    "@cmfcmf/docusaurus-search-local": "^0.11.0",
     "@docusaurus/core": "2.3.1",
     "@docusaurus/preset-classic": "2.3.1",
     "@mdx-js/react": "^1.6.22",

@@ -9,7 +9,7 @@ Starsky is compatible with [SQLite 3](sqlite.md) and [MariaDB 10.5.12+](https://
 Official support for MySQL 8 is discontinued as Oracle seems to have stopped shipping new features and enhancements.
 As a result, the testing effort required before each release is no longer feasible.
 
-Our [configuration examples](../docker.md) are usually based on the [current stable version](https://mariadb.com/kb/en/mariadb-server-release-dates/) to take advantage of performance improvements. This does not mean that [older versions](../readme.mdx#databases) are no longer supported and you must upgrade immediately.
+Our [configuration examples](../docker/docker.md) are usually based on the [current stable version](https://mariadb.com/kb/en/mariadb-server-release-dates/) to take advantage of performance improvements. This does not mean that [older versions](../readme.mdx#databases) are no longer supported and you must upgrade immediately.
 
 We recommend not using the `:latest` tag for the MariaDB Docker image and to upgrade manually by changing the tag once we had a chance to test a new major version, e.g.:
 
@@ -24,14 +24,14 @@ services:
 
 First, verify that you are using the correct port (default is `3306`) and host:
 
-- in the internal Docker network, the default hostname is `mariadb` (same as the [service](../docker.md))
+- in the internal Docker network, the default hostname is `mariadb` (same as the [service](../docker/docker.md))
 - avoid changing the default network configuration, unless you are experienced with this
 - avoid using IP addresses other than `127.0.0.1` (localhost) directly, as they can change
 - only use `localhost` or `127.0.0.1` if the database port [has been exposed](https://docs.docker.com/compose/compose-file/compose-file-v3/#ports) as described below and you are on the same computer (host)
 - we recommend [configuring a local hostname](../../assets/getting-started-index-pihole-local-dns.png) to access other hosts on your network
 
 To connect to MariaDB from your host or home network, you need to expose port `3306` in your `docker-compose.yml`
-and [restart the service for changes to take effect](../docker-compose.md#step-2-start-the-server):
+and [restart the service for changes to take effect](../docker/docker-compose.md#step-2-start-the-server):
 
 ```yaml
 services:
@@ -52,7 +52,7 @@ If this doesn't help, check the [Docker Logs](docker.md#viewing-logs) for messag
 - [ ] If [symbolic links](https://en.wikipedia.org/wiki/Symbolic_link) are mounted or used within the *storage* folder, replace them with the actual paths and verify that they are accessible
 - [ ] If the MariaDB service has been "killed" or otherwise automatically terminated, this can point to a [memory problem](docker.md#adding-swap) (add swap and/or memory; remove or increase usage limits)
 - [ ] In case the logs also show "disk full", "quota exceeded", or "no space left" errors, either [the disk containing the *storage* folder is full](docker.md#disk-space) (add storage) or a disk usage limit is configured (remove or increase it)
-- [ ] Log messages that contain "no route to host" may also indicate a general network configuration problem (follow our [examples](../docker.md))
+- [ ] Log messages that contain "no route to host" may also indicate a general network configuration problem (follow our [examples](../docker/docker.md))
 - [ ] You have to resort to [alternative Docker images](../raspberry-pi.md#older-armv7-based-devices) to run MariaDB on ARMv7-based devices and those with a 32-bit operating system
 
 ## Bad Performance
@@ -83,7 +83,7 @@ Enter the MariaDB "root" password specified in your `docker-compose.yml` when pr
 
 ### Auto Upgrade
 
-To enable automatic schema updates, set `MARIADB_AUTO_UPGRADE` to a non-empty value in your `docker-compose.yml` as shown in our [config example](../docker.md):
+To enable automatic schema updates, set `MARIADB_AUTO_UPGRADE` to a non-empty value in your `docker-compose.yml` as shown in our [config example](../docker/docker.md):
 
 ```yaml
 services:
@@ -174,7 +174,7 @@ command and restart the `mariadb` service as described above.
 
 When moving MariaDB to another computer, cloud server, or virtual machine:
 
-- [ ] Move the complete *storage* folder along with it and preserve the [file permissions](docker.md#file-permissions)
+- [ ] Move the complete *storage* folder along with it and preserve the [file permissions](../docker/docker.md#file-permissions)
 - [ ] **or** restore your index [from an SQL dump](https://mariadb.com/kb/en/mysqldump/) (backup file)
 - [ ] Perform a [version upgrade](#version-upgrade) if necessary
 - [ ] Make sure that Starsky can access the database on the new host
@@ -184,7 +184,7 @@ When moving MariaDB to another computer, cloud server, or virtual machine:
 ## Unicode Support
 
 If the logs show "incorrect string value" database errors and you are running a custom MariaDB or MySQL
-server that is not based on our [default configuration](../docker.md):
+server that is not based on our [default configuration](../docker/docker.md):
 
 - [ ] Full [Unicode](https://home.unicode.org/basic-info/faq/) support [must be enabled](https://mariadb.com/kb/en/setting-character-sets-and-collations/#example-changing-the-default-character-set-to-utf-8), e.g. using the `mysqld` command parameters `--character-set-server=utf8mb4` and `--collation-server=utf8mb4_unicode_ci`
 - [ ] Note that an existing database may use a different character set if you imported it from another server
