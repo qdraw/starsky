@@ -81,10 +81,10 @@ public class PeriodicThumbnailScanHostedServiceTest
 
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(new AppSettings
 			{
-				ThumbnailGenerationIntervalInMinutes = -1
+				ThumbnailGenerationIntervalInMinutes = 0
 			},
 			new FakeIWebLogger(),
-			scopeFactory);
+			scopeFactory){MinimumIntervalInMinutes = 0, IsEnabled = true};
 		var cancelToken = new CancellationTokenSource();
 		cancelToken.Cancel();
 		

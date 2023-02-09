@@ -1,8 +1,11 @@
 ---
-sidebar_position: 8
+sidebar_position: 20
 ---
 
 # Linux SystemD
+
+Systemd is an init system and system manager for Linux operating systems. It is a collection of programs and libraries, not a single binary. Systemd is responsible for starting and managing processes on the system, including system services, user programs, and daemons. It provides a standard interface for controlling and interacting with these processes, as well as a number of features to improve the system's reliability, performance, and management.
+
 
 ## 1. Download the script
 

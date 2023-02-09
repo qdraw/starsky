@@ -1,0 +1,89 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '45 0 * * */3'
+  push:
+    branches: [ master ]
+    paths:
+    - '.github/workflows/end2end-windows-ci.yml'
+
+name: end2end on windows-ci
+
+jobs:
+  test:
+    name: Test
+    runs-on: windows-latest
+    env:
+      WEBSITE_SITE_NAME: "ci"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create temp folder
+        shell: powershell
+        id: create_temp_folder
+        run: | 
+          mkdir starsky-run 
+          cd starsky-run 
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "folder_path=$((Get-Location).Path)"
+          Get-Content $env:GITHUB_OUTPUT -Raw
+
+      - name: github-artifacts-download
+        shell: powershell
+        working-directory: ./starsky/starsky
+        run: .\github-artifacts-download.ps1 -output ${{ steps.create_temp_folder.outputs.folder_path }} -token ${{ secrets.GITHUB_TOKEN }}
+
+      - name: unzip folder with pwsh
+        shell: powershell
+        run:  |
+          $folder="${{ steps.create_temp_folder.outputs.folder_path }}"
+          Expand-Archive -Path (Join-Path -Path $folder -ChildPath "starsky-win-x64.zip")  -DestinationPath $folder
+
+      - name: Test service
+        shell: powershell
+        working-directory: ./starsky/starsky
+        run:  |
+          cp service-deploy-windows.ps1 "${{ steps.create_temp_folder.outputs.folder_path }}/service-deploy-windows_temp.ps1"
+          cd ${{ steps.create_temp_folder.outputs.folder_path }}
+          write-host ${{ steps.create_temp_folder.outputs.folder_path }}
+          .\service-deploy-windows_temp.ps1 -anywhere -port 4000 -notelemetry -output ${{ steps.create_temp_folder.outputs.folder_path }}
+
+      - name: Test service starskygeocli
+        shell: powershell
+        working-directory: ${{ steps.create_temp_folder.outputs.folder_path }}
+        run:  |
+          .\starskygeocli.exe -h -v
+          .\starskyadmincli.exe -h -v
+
+      - name: pm2-warmup
+        shell: powershell
+        working-directory: ./starsky/starsky
+        run: .\pm2-warmup.ps1 -port 4000
+
+      - name: Run Cypress in Electron 
+        uses: cypress-io/github-action@v5
+        env:
+          CYPRESS_BASE_URL: http://localhost:4000
+          cypress_name: local
+          cypress_AUTH_USER: demo@qdraw.nl
+          cypress_AUTH_PASS:  demo@qdraw.nl
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        with:
+          install-command: npm ci --legacy-peer-deps --no-fund --no-audit
+          command: npm run e2e:env:record -- --tag "windows-ci"
+          working-directory: starsky-tools/end2end  
+
+      - name: Upload screenshots (always)
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: cypress-screenshots
+          path: starsky-tools/end2end/cypress/screenshots
+
+      - name: Upload videos (always)
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: cypress-videos
+          path: starsky-tools/end2end/cypress/videos 

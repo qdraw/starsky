@@ -32,8 +32,8 @@ app.on("ready", () => {
   DockMenu();
 
   IsRemote().then(async (isRemote) => {
-    const splashWindow = await SetupSplash();
-    RestoreWarmupMainWindowAndCloseSplash(splashWindow, isRemote);
+    const splashWindows = await SetupSplash();
+    RestoreWarmupMainWindowAndCloseSplash(splashWindows, isRemote);
   });
 
   app.on("activate", () => {

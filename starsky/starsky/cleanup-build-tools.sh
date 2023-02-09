@@ -44,6 +44,7 @@ do
     fi
 done
 
+echo "next: delete coverage files"
 
 # coverage files
 if [ -f "$PARENT_DIR""/starskytest/coverage-merge-cobertura.xml" ] 
@@ -66,6 +67,9 @@ then
     rm  "$PARENT_DIR""/starskytest/netcore-coverage.opencover.xml"
 fi
 # end coverage files
+
+echo "next: delete dependency files"
+
 
 # dependency files
 if [ -d "$PARENT_DIR""/starsky/bin/Release/"$NET_MONIKER"/dependencies" ] 
@@ -105,6 +109,8 @@ else
     echo "Skip: remove sonar cache. -> "$PARENT_DIR"/.sonarqube"
 fi
 
+echo "next clean npm"
+
 if command -v npm &> /dev/null
 then
     echo "clean npm"
@@ -115,6 +121,9 @@ fi
 echo "remove obj folder"
 find $PARENT_DIR -name "obj" -type d -exec rm -r "{}" \;
 echo "end rm obj"
+
+echo "next clean dotnet"
+
 
 if command -v dotnet &> /dev/null
 then
@@ -162,6 +171,8 @@ then
 else
     echo "Skip: remove electron cache [linux] -> "$HOME"/.cache/electron"
 fi
+
+echo "Next clean electron builder cache [macOS]"
 
 if [ -d $HOME"/Library/Caches/electron" ] 
 then

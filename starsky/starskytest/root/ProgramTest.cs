@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -41,7 +42,7 @@ public class ProgramTest
 	[TestMethod]
 	[Timeout(5000)]
 	[ExpectedException(typeof(System.IO.IOException))]
-	public async Task TestMethod1()
+	public async Task Program_Main_TestCancel()
 	{
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:9514");
 		Environment.SetEnvironmentVariable("app__useDiskWatcher","false");
@@ -51,10 +52,40 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
 
+		// The trick is that here already is a port open
+		// so the app crashes
+		
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
 		
 		await Task.Factory.StartNew(() => app.RunAsync(), TaskCreationOptions.LongRunning);
+
+		// next wait for port is opened
+		var requested = 0;
+		while ( requested < 5 )
+		{
+			using HttpClient client = new();
+			try
+			{
+				var responseMessage = await client.GetAsync("http://localhost:9514");
+				if ( responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound )
+				{
+					requested = int.MaxValue;
+					continue;
+				}
+				requested++;
+			}
+			catch ( HttpRequestException )
+			{
+				requested++;
+			}
+		}
+
+		if ( requested != int.MaxValue )
+		{
+			throw new TimeoutException();
+		}
+		// end wait for port is opened
 
 		await Program.Main(Array.Empty<string>());
 	}

@@ -39,3 +39,32 @@
 .hero--primary h1{
   text-shadow: #000 0 0 10px;
 }
+
+/* Change menubar */
+.navbar {
+  background-color: #263238;
+}
+
+.navbar__title,
+.navbar__link {
+  color: white;
+}
+.navbar__link--active {
+  background: #37474f;
+}
+.navbar__link:hover {
+  background: #37474f;
+  color: white;
+}
+
+/* change dark light mode toggle */
+
+.toggleButton_node_modules-\@docusaurus-theme-classic-lib-theme-ColorModeToggle-styles-module svg {
+  color: white;
+}
+
+.toggleButton_node_modules-\@docusaurus-theme-classic-lib-theme-ColorModeToggle-styles-module:hover {
+  background: #37474f!important;
+}
+
+

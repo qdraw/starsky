@@ -11,7 +11,7 @@ Problems with the user interface can be caused by a bug or an incompatible brows
 
 ## Try Another Browser ##
 
-To test if you have a general problem that is not browser-specific, [open the Web UI](../docker-compose) in other browsers:
+To test if you have a general problem that is not browser-specific, [open the Web UI](../docker/docker-compose.md) in other browsers:
 
 - if you are using [Firefox Nightly](https://www.mozilla.org/en-US/firefox/channel/desktop/), try the [stable version](https://www.mozilla.org/en-US/firefox/all/#product-desktop-release) and [Chrome](https://www.google.com/chrome/) or [Chromium](https://www.chromium.org/getting-involved/download-chromium)
 - if you have browser plugins installed, try disabling them to see if this makes a difference

@@ -4,7 +4,7 @@
 
 - [By App documentation](starsky/readme.md) _database photo index & import index project_
   - [starsky](starsky/starsky/readme.md) _web api application / interface_
-    - [clientapp](starsky/starsky/clientapp/readme.md) _react front-end application_
+    - [client app](starsky/starsky/clientapp/readme.md) _react front-end application_
   - [starskyImporterCli](starsky/starskyimportercli/readme.md) _import command line interface_
   - [starskyGeoCli](starsky/starskygeocli/readme.md) _gpx sync and reverse 'geo tagging'_
   - [starskyWebHtmlCli](starsky/starskywebhtmlcli/readme.md) _publish web images to a content package_
@@ -23,7 +23,7 @@
 
 Semantic Versioning 2.0.0 is from version 0.1.6+
 
-## The following statuses are used
+### The following statuses are used
 
 - Added _for new features_
 - Breaking change _fix or feature that would cause existing functionality to change_
@@ -33,20 +33,24 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - Fixed _for any bug fixes_
 - Security _in case of vulnerabilities_
 
-## Update app version in child projects
+## List of versions
 
-To update all child projects to have the same version run the following script
+## version 0.5.5 _(Unreleased)_ - 2023-02-?? {#v0.5.5}
+- nothing yet
 
-```
-node starsky-tools/build-tools/app-version-update.js
-```
-
-# version 0.5.5 _(Unreleased)_ - 2023-02-??
+## version 0.5.5-beta.0 - 2023-02-07 {#v0.5.5-beta.0}
 
 - [x] (Fixed)  _Back-end_ Make warning work again when database is missing (Issue #1045, PR #1044, #1046)
 - [x] (Fixed)  _Back-end_ Add retry when thumbnail cleaning and database errors (Issue #1040, PR #1046)
+- [x] (Fixed)  _Desktop_ Windows Desktop App did not start (PR #1047)
+- [x] (Fixed)  _Back-end_ Add auto install `./build.ps1` for Windows package manager (winget) for .NET and node (PR #1047)
+- [x] (Fixed)  _Desktop_ Upgrade Electron to 22.1.0 and fix tests (PR #1047)
+- [x] (Updated)  _CI_ Update Github Actions (20230206, PR #1063, #1062, #1061, #1060, #1059)
+- [x] (Updated)  _Docs_ Update Docusaurus (PR #1055, #1049)
+- [x] (Added)  _Back-end_ Add option for cmd line args for web app (PR #1054)
+- [x] (Added)  _Back-end_ Service deploy script for Windows (PR #1053)
 
-# version 0.5.4 - 2023-01-31
+## version 0.5.4 - 2023-01-31
 
 - [x] (Added)  _Back-end_ App insights metrics for internal queues (PR #1028)
 - [x] (Added)  _Back-end_ no request validation and 400 status code for `/api/disk/mkdir` (PR #1030)
@@ -66,7 +70,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed)  _Back-end_  GetFileName Regex timeout (PR #1041)
 - [x] (Added)  _Docs_ Improve documentation (PR #1042, #1043)
 
-# version 0.5.3 - 2023-01-23
+## version 0.5.3 - 2023-01-23
 
 - [x] (Security) _Back-end_ Add Regex timeouts to avoid DoS (PR #1012)
 - [x] (Added)  _Docs_ Add section about how to install desktop, macOS and Linux (PR #1015)
@@ -83,7 +87,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Changed)  _Back-end_  Move `api/import/thumbnail` to separate controller, but does **not** change url (PR #1022)
 - [x] (Added)  _Back-end_ Add Periodic Thumbnail Create service (PR #1022)
 
-# version 0.5.2 - 2022-12-22
+## version 0.5.2 - 2022-12-22
 
 - [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.404 (Runtime: 6.0.12)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.12/6.0.12.md) (PR #997)
 - [x] (Changed) _Front-end_ Upgrade Create React App / Typescript / storybook  (PR #998)
@@ -95,7 +99,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Desktop_ Upgrade dependencies desktop / add script update deps in docs (PR #1003) 
 - [x] (Fixed) _Front-end_ Geo updates are now realtime and Update documentation (PR #1005)
 
-# version 0.5.1 - 2022-12-10
+## version 0.5.1 - 2022-12-10
 
 - [x] (Added) _Docs_ New documentation site (PR #971)
 - [x] (Changed) _Back-end_ First user after registration is Admin to avoid issues with editing storage folder (PR #977)
@@ -111,7 +115,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Desktop_ Fix settings names remove valueOf (PR #987)
 - [x] (Fixed) _Back-end_ Seed Data CLI & Docker with deps bugfixes (PR #993)
 
-# version 0.5.0 - 2022-11-18
+## version 0.5.0 - 2022-11-18
 
 - [x] (Changed) _Desktop_ Save minimum size for windows (all platforms) (PR #948)
 - [x] (Changed) _Back-end_ Windows OS Camera Timezone issues and SQLite startup issues (PR #952)
@@ -123,7 +127,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] **(Breaking Change)** _Back-end_ Only allow 0.5.x desktop apps to connect (PR #966)
 - [x] (Changed) _General_ Milestone 2 is closed: https://github.com/qdraw/starsky/milestone/2
 
-## Summary of breaking changes in 0.5.0-beta.0-9 versions
+### Summary of breaking changes in 0.5.0-beta.0-9 versions
 
 - [x] (0.5.0-beta.9) _App_ Rename StarskyApp to StarskyDesktop (PR #887)
 - [x] (0.5.0-beta.9) _Back-end_ Use Application Insights Connection String (PR #920)
@@ -140,7 +144,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (0.5.0-beta.0) _Back-end_ rename "/api/sync/rename" to /api/disk/rename (PR #574)
 - [x] (0.5.0-beta.0) _Back-end_ Dropped support for older Mac OS version: now 10.15+ is required
 
-# version 0.5.0-beta.9 - 2022-11-04
+## version 0.5.0-beta.9 - 2022-11-04
 
 - [x] (Changed) _Back-end_ Last Edited is updated when Single Sync a file (PR #916)
 - [x] (Changed) _Back-end_ Code style quality, move search to feature, sealed classes (PR #917, #919, #922, #921)
@@ -152,7 +156,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Changed) _App_ Upgrade Electron to 21.x (PR #887)
 - [x] **(Breaking Change)** _App_ Rename StarskyApp to StarskyDesktop (PR #887)
 
-# version 0.5.0-beta.8 - 2022-10-11
+## version 0.5.0-beta.8 - 2022-10-11
 
 - [x] (Security) _Back-end_ Upgrade Nuget packages (PR #878)
 - [x] (Security) _Back-end_ Update Security Headers e.g. CSP, Permissions Policy (PR #880, #881)
@@ -171,7 +175,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Security) _Front-end_ Client App - Create React App - Upgrade dependencies (PR #910)
 - [x] (Issue) _Tools_ Upgrade Cypress end2end testing tool to v10 (PR #911)
 
-# version 0.5.0-beta.7 - 2022-09-20
+## version 0.5.0-beta.7 - 2022-09-20
 
 - [x] (Changed) _Back-end_ _Change is overwritten in same release_ Upgrade to .NET 6 - SDK 6.0.302 (Runtime: 6.0.7) (PR #838)
 - [x] (Fixed) _Back-end_ Null reference exceptions on mysql (PR #789 & Issue #787)
@@ -182,7 +186,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.401 (Runtime: 6.0.9)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.9/6.0.9.md) (PR #870)
 - [x] (Issue) _Tools_ Re-enable end2end test in CI (2022-09-20)
 
-# version 0.5.0-beta.6 - 2022-07-13
+## version 0.5.0-beta.6 - 2022-07-13
 
 - [x] (Changed) _Front-end_ Upgrade React 17.x to React 18.x (Part 2) CreateRoot change (PR #748)
 - [x] (Fixed) _Front-end_ Also allow realtime updates on home page (PR #748)
@@ -197,7 +201,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Added) _Back-end_ Add 'osx-arm64' target to download and build scripts (PR #815)
 - [x] (Issue) Need to be fixed issue: #771
 
-# version 0.5.0-beta.5 - 2022-05-11
+## version 0.5.0-beta.5 - 2022-05-11
 
 - [x] (Changed) _Back-end_ Upgraded in same release ~ Upgrade to .NET 6 - SDK 6.0.202 (Runtime: 6.0.4) (PR #720)
 - [x] (Changed) _Front-end_ Upgrade React 17.x to React 18.x (except createRoot change) (PR #724)
@@ -213,7 +217,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _App_ In the StarskyApp click with the middle mouse button on item gives a blank page (Issue #743 / PR #743)
 - [x] (Fixed) _App_ In the StarskyApp Reload waiting to go to app keeps hanging (Issue #737 / PR #743)
 
-# version 0.5.0-beta.4 - 2022-04-15
+## version 0.5.0-beta.4 - 2022-04-15
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.201 (Runtime: 6.0.3) (PR #674)
 - [x] (Added) _Back-end_ Added package telemetry (Disable using: EnablePackageTelemetry setting) (PR #657)
@@ -244,7 +248,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Change) _Back-end_ Retry when: Can't replace active reader (mysql) (PR #723)
 - [x] (Change) _Back-end_ Fix for sizes larger than int.MaxValue (no PR 15/4)
 
-# version 0.5.0-beta.3 - 2022-03-09
+## version 0.5.0-beta.3 - 2022-03-09
 
 - [x] (Breaking change) _Back-end_ Upgrade to .NET 6 - SDK 6.0.200 (PR #642)
 - [x] (Breaking change) _Back-end_ Change mirror locations (exiftool/geonames) (PR #642)
@@ -264,14 +268,14 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Back-end_ Add properties to `default-init-launchSettings.json` (PR #673)
 - [x] (Fixed) _Back-end_ Skip ExifTool Download when setting `AddSwaggerExportExitAfter` (PR #676)
 
-# version 0.5.0-beta.2 - 2022-02-18
+## version 0.5.0-beta.2 - 2022-02-18
 
 - [x] (Changed) _Back-end_ Add correct connect-src url for websocket without port (PR #606)
 - [x] (Changed) _Back-end_ UTC Time fix for quicktime based videos (PR #617)
 - [x] (Fixed) _Back-end_ Unit test fix for dates that does not contain 1 (PR #617)
 - [x] (Fixed) _Back-end_ AddRangeAsync fix for DbUpdateConcurrencyException (PR #634)
 
-# version 0.5.0-beta.1 - 2022-01-11
+## version 0.5.0-beta.1 - 2022-01-11
 
 - [x] (Changed) _Back-end_ Add request tracking for FSW SyncWatcherConnector (PR #589)
 - [x] (Changed) _Tools_ Add insider script for download Github artifacts (PR #589)
@@ -284,7 +288,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Added) _Back-end_ ARW SubIfd does contain multiple objects (PR #639)
 - [x] (Fixed) _Back-end_ When zoom, edit and go back the image is gone (PR #638)
 
-# version 0.5.0-beta.0 - 2021-12-29
+## version 0.5.0-beta.0 - 2021-12-29
 
 - [x] (Breaking change) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
 - [x] (Removed) _CLI_ Removed Net framework version which is replaced by .NET Core (PR #563)
@@ -314,7 +318,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Changed) _App_ Missing content length (PR #587)
 - [x] (Changed) _App_ Use generic OSX id (PR #588)
 
-# version 0.4.13 - 2021-12-15
+## version 0.4.13 - 2021-12-15
 
 - [x] (Added) _CLI_ Add csv option for import CLI (PR #510)
 - [x] (Fixed) _Tools_ Dotnet SDK updater build tools (Work in progress) (PR #510)
@@ -356,7 +360,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Back-end_ Fix FlushApplicationInsights.FlushAsync System.NullReferenceException (PR #557)
 - [x] (Changed) _Back-end_ Upgrade SDK Version to 3.1.416 & Runtime version to 3.1.22 (PR #558)
 
-# version 0.4.12 - 2021-11-04
+## version 0.4.12 - 2021-11-04
 
 - [x] (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
 - [x] (Changed) _Back-end_ Database migration for AccessFailedCount, LockoutEnabled and LockoutEnd in Users table (PR #443 & #445)
@@ -374,7 +378,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Added) _Back-end_ Add to docker hub and multi-arch build with buildx
 - [x] (Added) _Back-end_ use docker hub to pull images: `docker pull qdraw/starsky`
 
-# version 0.4.11 - 2021-09-17
+## version 0.4.11 - 2021-09-17
 
 - [x] (Security) _Back-end_ Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)
 - [x] (Fixed) _Back-end_ Make StorageFolder setting more clear (PR #429)
@@ -386,7 +390,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Added) _Back-end_ more logging for exiftool downloader (PR #434)
 - [x] (Added) _Back-end_ Fix websocket exception issues (PR #442 Issue #440 #436)
 
-# version 0.4.10 - 2021-07-15
+## version 0.4.10 - 2021-07-15
 
 - [x] (Fixed) _Back-end_ Performance change, FileIndexItem uses less memory in the application (PR #410)
 - [x] (Fixed) _Back-end_ Change Replace to use a single database query and update to empty string (PR #412)
@@ -412,7 +416,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Changed) _Back-end_ Enable useDiskWatcher by default, so file changes are picked up directly (PR #423)
 - [x] (Added) _App_ Logs are stored by default in AppData or Application Support or .config folder (PR #423)
 
-# version 0.4.9 - 2021-06-17
+## version 0.4.9 - 2021-06-17
 
 - [x] (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
 - [x] (Fixed) _Front-end_ Fix for keeps loading forever if use fileList (archive) fails (issue #382 & PR #392)
@@ -424,7 +428,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Back-end_ Skip socket push when item is not changed (Issue #399 & PR #402)
 - [x] (Fixed) _Back-end_ When updating the tags fast, the tool isn't keep track _(now only works when cache is enabled)_ (PR #402)
 
-# version 0.4.8 - 2021-05-07
+## version 0.4.8 - 2021-05-07
 
 - [x] (Changed) _Front-end_ Make Archive UI more white & Dark mode UI fixes (PR #358)
 - [x] (Added) _Front-end_ In select mode press delete key should move to trash in archive & search view (PR #360 / Issue #357)
@@ -438,7 +442,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Front-end_ Force sync is not endless loading after socket update (Issue #371 & PR #375)
 - [x] (Fixed) _Back-end_ Publish name with underscore breaks publish api (Issue #369 & PR #376)
 
-# version 0.4.7 - 2021-04-11
+## version 0.4.7 - 2021-04-11
 
 - [x] (Changed) _Back-end_ add cache for health check and timeout for 10 seconds on health calls (PR #332)
 - [x] (Fixed) _Front-end_ Zoom function for mobile (DetailView) (PR #327/ Issue #317)
@@ -458,7 +462,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Back-end_ Rename service should now work with useDiskWatcher:true (Issue #352 / pull #354 & #355)
 - [x] (Fixed) _Back-end_ Delete floating folders in database on scan synchronize (pull #354)
 
-# version 0.4.6 - 2021-03-21
+## version 0.4.6 - 2021-03-21
 
 - [x] (Added) _Front-end_ add prefilled selected option for
 - [x] (Added) _Front-end_ add sort option for fileName and ImageFormat but only on archive pages
@@ -477,7 +481,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Front-end_ Detailview command click on close keeps loading (PR #324 Issue #316)
 - [x] (Changed) _Front-end_ Rename of 'Close' to 'Parent Folder' because its looks like closing a window and it is't the same (PR #324)
 
-# version 0.4.5 - 2021-02-14
+## version 0.4.5 - 2021-02-14
 
 - [x] (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
 - [x] (Fixed) _Front-end_ Displaying files in realtime works now _issue #275_
@@ -494,7 +498,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Security) _Frond-end_ Upgrade ClientApp CRA _(Create React App 4.0.2 2021-02-03)_
 - [x] (Security) _Back-end_ Upgrade .NET Core (TargetFramework) to 3.1.12 (using SDK 3.1.112)
 
-# version 0.4.4 - 2021-01-10
+## version 0.4.4 - 2021-01-10
 
 - [x] (Security) _App_ npm audit fix node_modules/ini 1.3.8
 - [x] (Fixed) _Front-end_ When updating tags in sidebar and refresh afterwards its now not the old value anymore
@@ -505,7 +509,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _App_ when changing from local to remote it should add watcher be updated - issue #271
 - [x] (Fixed) _Front-end_ hide 'sign in instead' button on register page when there are no users yet
 
-# version 0.4.3 - 2020-12-24
+## version 0.4.3 - 2020-12-24
 
 - [x] (Fixed) _Back-end_ the latest version isn't checked right, it takes the oldest version to compare with
 - [x] (Changed) _App_ Rewrite of desktop application
@@ -520,7 +524,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Back-end_ Handling errors for ConcurrencyException when saving #175
 - [x] (Fixed) _Back-end_ Handling errors on: DbUpdateConcurrencyException on RemoveItem #261
 
-# version 0.4.2 - 2020-12-09
+## version 0.4.2 - 2020-12-09
 
 - [x] (Changed) _Docs_ Update docs and remove old projects from docs
 - [x] (Security) _Frond-end_ Upgrade ClientApp CRA _(Create React App 4.0.1 2020-11-23)_
@@ -536,7 +540,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Added) _Front-end_ Socket notification close causes app crash
 - [x] (Added) _Front-end_ Swipe image set loading state forever
 
-# version 0.4.1 - 2020-11-27
+## version 0.4.1 - 2020-11-27
 
 - [x] (Fixed) _Back-end_ Extra security headers for browsers
 - [x] (Added) _Back-end_ Change fileHash behavior to have more timeout time
@@ -551,7 +555,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x] (Fixed) _Back-end_ Item exist but not in folder cache, it now add this item to cache #228
 - [x] (Added) _Back-end_ Check if Exiftool exist before running the import CLI
 
-# version 0.4.0 - 2020-11-14
+## version 0.4.0 - 2020-11-14
 
 _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 
@@ -574,7 +578,7 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x] (Deprecated) _App_ The current app-settings (so only the default app/remote location) are going to change.
       if you update those could be gone. but you could set them again
 
-# version 0.4.0-beta.2 - 2020-11-04
+## version 0.4.0-beta.2 - 2020-11-04
 
 - [x] (Changed) _Front-end_ Enable sockets client side option by default
 - [x] (Changed) _Back-end_ UseRealtime (sockets) backend option changed to enable by default
@@ -583,7 +587,7 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x] (Added) _Front-end_ Clientside check for latest version (click away for 4 days)
 - [x] (Added) _App_ Check for latest version and click away for 4 days
 
-# version 0.4.0-beta.1 - 2020-10-31
+## version 0.4.0-beta.1 - 2020-10-31
 
 _First release on Github Releases_
 
@@ -604,7 +608,7 @@ _First release on Github Releases_
 - [x] (Added) _App_ Use separate config vars when in non-package mode and production
 - [x] (Added) _Back-end_ Logout page is working again
 
-# version 0.4.0-beta.0 - 2020-10-19
+## version 0.4.0-beta.0 - 2020-10-19
 
 _New Feature: In this release websockets are used (note: when using reverse config)_
 
@@ -631,7 +635,7 @@ _New Feature: In this release websockets are used (note: when using reverse conf
 - [x] (Added) _Front-end_ Add link in "/account/login" to account register when user is already logged-in
 - [x] (Fixed) _Back-end_ Upload with direct path is working again
 
-# version 0.3.3 - 2020-10-10
+## version 0.3.3 - 2020-10-10
 
 _In the next major release websockets are used, please note when using a reverse proxy_
 
@@ -654,7 +658,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x] (Fixed) _Front-end_ When typing a suggestion remove the field gives you the main menu back
 - [x] (Security) _App_ update Electron to 9.3.1
 
-# version 0.3.2 - 2020-09-19
+## version 0.3.2 - 2020-09-19
 
 - [x] (Fixed) _Front-end_ DetailView - DateTime push in DetailView has no influence on colorClass anymore
 - [x] (Fixed) _Front-end_ DetailView - Links to collections are always with `details=true`
@@ -675,7 +679,7 @@ _In the next major release websockets are used, please note when using a reverse
       You should enable before going to production. Always disabled in debug/develop mode
 - [x] (Added) _CLI_ Show DateTime when the Assemblies are build with the flags: `-h -v`
 
-# version 0.3.1 - 2020-09-08
+## version 0.3.1 - 2020-09-08
 
 - [x] (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
 - [x] (Added) _Front-end_ Client Side caching for 3 minutes to avoid requests and speed on slow devices
@@ -695,7 +699,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x] (Added) _Back-end_ Add Response compression in ASP.NET Core
 - [x] (Fixed) _Back-end_ Change Cache time to 365 days for clientapp and wwwroot
 
-# version 0.3.0 - 2020-09-02
+## version 0.3.0 - 2020-09-02
 
 _Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_
 
@@ -712,14 +716,14 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Fixed) _Front-end_ For Archive and Search: When in select mode and navigate next to
       the select mode is still on but there are no items selected
 
-# version 0.3.0-beta.1 - 2020-08-16
+## version 0.3.0-beta.1 - 2020-08-16
 
 - [x] **(Breaking change)** _Back-end_ Manifest (\_settings.json) for exporting
 - [x] **(Breaking change)** _Back-end_ AppSettings config for: AppSettingsPublishProfiles **(need manual config changes)**
 - [x] (Added) Add new Publish UI in Web Interface
 - [x] (Fixed) _Back-end_ change `/api/delete` collections default option
 
-# version 0.3.0-beta.0 - 2020-08-11
+## version 0.3.0-beta.0 - 2020-08-11
 
 - [x] (Added) _Back-end_ Update meta information for folders
 - [x] (Added) _Back-end_ Write component
@@ -734,14 +738,14 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Added) _Back-end_ Creating thumbnails from Web Interface (no status)
 - [x] (Changed) _Front-end_ Move options from display options to Synchronize manually in the UI
 
-# version 0.2.7 - 2020-07-31
+## version 0.2.7 - 2020-07-31
 
 - [x] (Security) _Back-end_ Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)
 - [x] (Fixed) _Back-end_ Fix GPS Tracking issue with 'Local' time.
 - [x] (Deprecated) Starsky Net Framework will be unsupported in 0.3
 - [x] (Added) _Back-end_ Docker support,
 
-# version 0.2.6 - 2020-06-08
+## version 0.2.6 - 2020-06-08
 
 - [x] (Added) _Back-end_ Option for shared `AppSettings`
 - [x] (Added) _Back-end_ API to update some `appSettings` from the UI
@@ -766,7 +770,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Fixed) _App_ StarskyApp should see map Issue #52
 - [x] (Fixed) _Front-end_ Download folders with + (plus) not found Issue #54
 
-# version 0.2.5 - 2020-05-22
+## version 0.2.5 - 2020-05-22
 
 - [x] (Added) _Tools_ Azure pipeline for starskyApp
 - [x] (Added) _Tools_ app-version-update.js, add more folders and check input for matching sem-ver
@@ -785,7 +789,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Changed) _App_ First version of the Starsky Desktop App, required a build for at least v0.2.5
 - [x] (Added) _Back-end_ Version Health API to match MAJOR and MINOR version for example 0.2
 
-# version 0.2.4 - 2020-05-10
+## version 0.2.4 - 2020-05-10
 
 - [x] (Added) _Tools_ Easy internal version upgrade Starsky Version
 - [x] (Added) _Tools_ add check for ProjectGuids to be valid/exist and non-duplicate
@@ -800,7 +804,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Fixed) _Back-end_ Fix for imageFormat GPX. does now support wihout xml prefix
 - [x] (Fixed) _Back-end_ Bugfix for Importer to allow .XMP files read and copy
 
-# version 0.2.3 - 2020-05-04
+## version 0.2.3 - 2020-05-04
 
 - [x] (Fixed) _Back-end_ New users could not sign up
 - [x] (Fixed) _Front-end_ Register page has wrong title
@@ -823,7 +827,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Fixed) _Back-end_ Export fail (Object Disposed)
 - [x] (Fixed) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
 
-# version 0.2.2 - 2020-04-17
+## version 0.2.2 - 2020-04-17
 
 **Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2**
 
@@ -843,7 +847,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x] (Fixed) _Back-end_ QuickTime DateTime creates error while checking GPX files
 - [x] (Added) _Front-end_ 'Scroll to Top' when to next search result page
 
-# version 0.2.1 - 2020-04-08
+## version 0.2.1 - 2020-04-08
 
 _Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2_
 
@@ -857,7 +861,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (Security) _Frond-end_ Upgrade ClientApp CRA _(Create React App 3.4.1 2020-03-20)_
 - [x] (Changed) _Back-end_ Use vstest instead of mstest
 
-# version 0.2.0 - 2020-03-20
+## version 0.2.0 - 2020-03-20
 
 _Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2_
 
@@ -877,7 +881,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (version) \_Back-end **breaking change** remame `"Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/`
 - [x] (version) _Back-end_ **namespace changes** Introduction of feature/foundation projects
 
-# version 0.1.17 - 2020-03-07
+## version 0.1.17 - 2020-03-07
 
 _Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2_
 
@@ -900,7 +904,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) _Back-end_ search fix bug where Make/Model is giving a Exception (fixed)
 - [x] (bugfix) _Front-end_ clientside bug dateTime is not displayed correct
 
-# version 0.1.16 - 2020-02-23
+## version 0.1.16 - 2020-02-23
 
 - [x] (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
 - [x] (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json`
@@ -923,7 +927,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (feature) _Front-end_ Show warning when there are connection issues
 - [x] (feature) _Back-end_ Search: support for complex and/or operators `(this || or) && that`
 
-# version 0.1.15 - 2020-02-06
+## version 0.1.15 - 2020-02-06
 
 - [x] (bugfix) _Front-end_ Drag'n drop is now only with files
 - [x] (version) _Back-end_ _Legacy starsky.netframework_ 0.1.15 release included
@@ -932,7 +936,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (version) _Back-end_ _rename_ starskySyncNetFrameworkCli and starskyImporterNetFrameworkCli
 - [x] (version) _Back-end_ **breaking change** add Software as field in database (run migrations)
 
-# version 0.1.14 - 2020-02-04
+## version 0.1.14 - 2020-02-04
 
 - [x] (bugfix) _back-end_ Security fixes in controllers
 - [x] (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
@@ -947,7 +951,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (feature) _Front-end_ _Back-end_ Health view, to make more clear when the server time is not correct
 - [x] (feature) _Front-end_ _Back-end_ Health view (feature) when a disk is full, show a warning
 
-# version 0.1.13 - 2020-01-25
+## version 0.1.13 - 2020-01-25
 
 - [x] (remove) _V1_ Removal of Old Layout (V1) and All Razor Views
 - [x] (feature) _Front-end_ _API_ Add new account in React
@@ -960,7 +964,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) export poll after 206 'not ready'
 - [x] (feature) _Front-end_ make folder layout smooth responsive
 
-# version 0.1.12 - 2020-01-15
+## version 0.1.12 - 2020-01-15
 
 - [x] (bugfix) _Front-end_ Add Loading in Move dialog
 - [x] (feature) _Front-end_ Move file in menu
@@ -981,7 +985,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) _Front-end_ When changing search page there is a preloader icon shown
 - [x] (feature) _Front-end_ clear search cache after updating values in detailview
 
-# version 0.1.11 - 2020-01-02
+## version 0.1.11 - 2020-01-02
 
 - [x] (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
 - [x] (bugfix) _Front-end_ _Archive_ when press 'Select' the images are not reloaded (Fixed)
@@ -1002,7 +1006,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) _Front-end_ Rotation in Detailview on iPad OS 13+ is working (fixed)
 - [x] (feature) _API_ Add is Valid Filename check on rename API (`/api/rename`)
 
-# version 0.1.10 - 2019-12-15
+## version 0.1.10 - 2019-12-15
 
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
 - [x] (version) _Front-end_ Upgrade ClientApp from React 16.9.0 to 16.9.15 _(Create React App 3.3.0, 5 Dec 2019)_
@@ -1011,7 +1015,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) _Front-end_ Improve Unit test coverage (at least 80% on coverage-report _561 mstest and 271 jest tests_)
 - [] (bug) _Front-end_ `/starsky` paths are not supported **not fixed**
 
-# version 0.1.9 - 2019-12-01
+## version 0.1.9 - 2019-12-01
 
 _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 
@@ -1026,7 +1030,7 @@ _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 - [x] Update build pipeline to support multiple runtimes in 1 run
 - [x] Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 
-# version 0.1.8 - 2019-11-10
+## version 0.1.8 - 2019-11-10
 
 - (bugfix) ignore directories without reading rights (instead of crashing)
 - (change) Import API has now a limit of 320 MB instead of 32MB
@@ -1044,7 +1048,7 @@ _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 - [x] Add unit tests for importing raw's with .xmp files
 - [x] (starsky-tools) add Dropbox import helper tool
 
-# version 0.1.7 - 2019-09-27
+## version 0.1.7 - 2019-09-27
 
 _Works with .NET Core SDK 3.0.100_
 
@@ -1070,7 +1074,7 @@ _Works with .NET Core SDK 3.0.100_
 - (dotnet) Microsoft.AspNetCore.App 2.2.7 is added as dependency to avoid mixed version errors
 - (bugfix) menu-archive press TrashSelection gives no 404 error anymore
 
-# version 0.1.6 - 2019-09-12
+## version 0.1.6 - 2019-09-12
 
 **For this version you need to downgrade the .NET Core SDK to SDK 2.2.401**
 
@@ -1103,7 +1107,7 @@ _Works with .NET Core SDK 3.0.100_
 - **API change** change number of search results per page from 20 to 120
 - _Legacy starsky.netframework_ 0.1.6 release included
 
-# version 0.1.5.9 - 2019-08-19
+## version 0.1.5.9 - 2019-08-19
 
 _Version number does not match SemVer_
 
@@ -1111,7 +1115,7 @@ _Version number does not match SemVer_
 - **Breaking Change** Entity Framework add database Field for FocalLength
 - _Legacy starsky.netframework_ 0.1.5.9 release included
 
-# version 0.1.5.8 - 2019-08-14
+## version 0.1.5.8 - 2019-08-14
 
 _Version number does not match SemVer_
 
@@ -1119,7 +1123,7 @@ _Version number does not match SemVer_
 - Rollback version due Entity Framework performance issues with MySQL
 - Swagger is enabled
 
-## The following changes from 0.1.5.7 are included in this release
+### The following changes from 0.1.5.7 are included in this release
 
 - **Breaking API change** from `/account?json=true` to `/account/status` `api`
 - **Breaking API change** from `/api/` to `/api/index`
@@ -1127,12 +1131,12 @@ _Version number does not match SemVer_
 - [x] XMP disable option when importing using a flag (used for copying photos)
 - _Legacy starsky.netframework_ 0.1.5.8 release included
 
-# version 0.1.5.7 - 2019-08-09
+## version 0.1.5.7 - 2019-08-09
 
 _Version number does not match SemVer_
 
 - Update Dot NET version to the `.Net Core 3 Preview 7` (TargetFramework) release
-- Update to C# version 8
+- Update to C## version 8
 - Keep the core .netstandard2.0 for NetFramework reference
 - **Breaking API change** from `/account?json=true` to `/account/status` `api`
 - **Breaking API change** from `/api/` to `/api/index`
@@ -1141,7 +1145,7 @@ _Version number does not match SemVer_
 - [x] XMP disable option when importing using a flag (used for copying photos)
 - _Legacy starsky.netframework_ 0.1.5.7 release included
 
-# version 0.1.5.6 - 2019-08-07
+## version 0.1.5.6 - 2019-08-07
 
 - change '/api/info' to support readonly meta display
 - add /suggest/all to show all suggestions
@@ -1149,7 +1153,7 @@ _Version number does not match SemVer_
 - fix localisation issue with starskyWebHtmlCli
 - add copy of content folder in bin with starskyWebHtmlCli
 
-# version 0.1.5.5 - 2019-05-17
+## version 0.1.5.5 - 2019-05-17
 
 - implement search suggestions API `/suggest?t=d`
 - search suggestions are always lowercase
@@ -1158,7 +1162,7 @@ _Version number does not match SemVer_
 - bugfix: spaces where not rendered correctly during the 'update' call in archive view
 - **bugfix: you could login without password**
 
-# version 0.1.5.4 - 2019-04-24
+## version 0.1.5.4 - 2019-04-24
 
 - fix: for readonly there is no TIFF label
 - Front-end copy ctrl+shift+c visual feedback
@@ -1170,7 +1174,7 @@ _Version number does not match SemVer_
   Update all your clients at once to avoid issues between -3 and -4
 - _Legacy starsky.netframework_ 0.1.5.4 release included
 
-# version 0.1.5.3 - 2019-03-31
+## version 0.1.5.3 - 2019-03-31
 
 - refactoring connection to ExifTool to use iStorage
 - refactoring thumbnail service
@@ -1195,7 +1199,7 @@ _Version number does not match SemVer_
 - [x] check: export to zip
 - [x] check: legacy releases
 
-# version 0.1.5.2 - 2019-03-22
+## version 0.1.5.2 - 2019-03-22
 
 - exifTool implementation write bug fixed
 - [x] Performance upgrade xmp/tiff files (does not check filehash again)
@@ -1207,13 +1211,13 @@ _Version number does not match SemVer_
 - Already exist: config scheme overwrite feature for command line e.g. --scheme:/yyyy
 - _Legacy starsky.netframework_ 0.1.5.2 release included
 
-# version 0.1.5.1 - 2019-03-17
+## version 0.1.5.1 - 2019-03-17
 
 - Breaking Change: added `LastEdited` field
 - Add `LastEdited` to search as field
 - _Legacy starsky.netframework_ 0.1.5.1 release included
 
-# version 0.1.5 - 2019-03-17
+## version 0.1.5 - 2019-03-17
 
 - add partial support for || (or) queries using search
   - the type datetime e.g. `-datetime=1 || -datetime=2` is not supported yet
@@ -1231,14 +1235,14 @@ _Version number does not match SemVer_
 - Add Collections to DetailView model
 - Add more Update/Replace Tests
 
-# version 0.1.4 - 2019-03-01
+## version 0.1.4 - 2019-03-01
 
 - fix issue where login fails results in a error 500
 - http push headers update (add /api/info to push on detailView)
 - Initial release of the `sync/rename` api (not implemented in the front-end)
 - Mark FilesHelper as deprecated, use IStorage now
 
-# version 0.1.3 - 2019-02-13
+## version 0.1.3 - 2019-02-13
 
 - fix issues on exporting
 - fix issue on Sync (-p option)
@@ -1250,7 +1254,7 @@ _Version number does not match SemVer_
 - Create build scripts using Cake
 - _Legacy starsky.netframework_ 0.1.3 release included
 
-# version 0.1.2 - 2019-02-01
+## version 0.1.2 - 2019-02-01
 
 - starskywebftpcli
 - add json export for starskyWebHtmlCli
@@ -1259,22 +1263,22 @@ _Version number does not match SemVer_
 - add 'import/FromUrl' api
 - _Legacy starsky.netframework_ 0.1.2 release included
 
-## Known issues in this release: _(all fixed in 0.1.3)_
+### Known issues in this release: _(all fixed in 0.1.3)_
 
 - [x] Export: When export a gpx file this is ignored
 - [x] Export: When export a thumbnail of a Raw file, the zip has no files
 - [x] Sync: Feature for selecting a folder with the sync cli does not work correctly
 - [x] UI: zooming in on iPad triggers next/prev
 
-# version 0.1.1 - 2019-01-25
+## version 0.1.1 - 2019-01-25
 
 - add ignore index feature to importer
 - _Legacy starsky.netframework_ 0.1.1 release included
 
-# version 0.1.0 - 2019-01-22
+## version 0.1.0 - 2019-01-22
 
 - initial release
 
-# version 0.0.1 - 2018-03-08
+## version 0.0.1 - 2018-03-08
 
 - Initial commit

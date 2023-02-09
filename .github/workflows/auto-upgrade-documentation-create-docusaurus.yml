@@ -29,10 +29,10 @@ jobs:
       
         if [[ `git status --porcelain` ]]; then
           echo "There are files not committed yet"
-          echo "::set-output name=CHANGED::true"
+          echo "CHANGED=true" >> $GITHUB_OUTPUT
         else 
           echo "not changed"
-          echo "::set-output name=CHANGED::false"
+          echo "CHANGED=false" >> $GITHUB_OUTPUT
         fi
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
@@ -57,7 +57,7 @@ jobs:
         draft: false
         
     - name: Merge current branch into -> auto_documentation_create_docusaurus_update
-      uses: everlytic/branch-merge@1.1.2
+      uses: everlytic/branch-merge@1.1.5
       if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
       with:
         github_token: ${{ secrets.WORKFLOW_GITHUB }}

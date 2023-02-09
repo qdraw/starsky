@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.platform.Extensions;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -28,7 +28,7 @@ namespace starsky.foundation.platform.Helpers
 		/// Default appSettings.json to builder
 		/// </summary>
 		/// <returns>ConfigBuilder</returns>
-		public static async Task<IConfigurationRoot> AppSettingsToBuilder()
+		public static async Task<IConfigurationRoot> AppSettingsToBuilder(string[]? args = null)
 		{
 			var appSettings = new AppSettings();
 			var builder = new ConfigurationBuilder();
@@ -43,6 +43,11 @@ namespace starsky.foundation.platform.Helpers
 				// overwrite envs
 				// current dir gives problems on linux arm
 				.AddEnvironmentVariables();
+			
+			if ( args != null )
+			{
+				builder.AddCommandLine(args);
+			}	
 				
 			return builder.Build();
 		}
@@ -53,9 +58,11 @@ namespace starsky.foundation.platform.Helpers
 			return $"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
 		}
 
-		private static List<string> Order(string baseDirectoryProject)
+		private static IEnumerable<string> Order(string baseDirectoryProject)
 		{
 			var appSettingsMachine = AppSettingsMachineNameWithDot();
+			var appSettingsPath =
+				Environment.GetEnvironmentVariable("app__appsettingspath") ?? string.Empty;
 			return new List<string>
 			{
 				Path.Combine(baseDirectoryProject, "appsettings.json"),
@@ -63,8 +70,8 @@ namespace starsky.foundation.platform.Helpers
 				Path.Combine(baseDirectoryProject, "appsettings.patch.json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "patch.json"),
-				Environment.GetEnvironmentVariable("app__appsettingspath")
-			};
+				appSettingsPath
+			}.Where(p => !string.IsNullOrEmpty(p));
 		}
 
 		internal static async Task<AppSettings> MergeJsonFiles(string baseDirectoryProject)

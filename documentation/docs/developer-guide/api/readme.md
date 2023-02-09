@@ -9,7 +9,7 @@ This document is auto generated
 
 | Path                                              | Type  | Description                                                                     | 
 |---------------------------------------------------|-------|---------------------------------------------------------------------------------|
-| __/api/account/status__                           | GET   | Check the account status of the current user                                    |
+| __/api/account/status__                           | GET   | Check the account status of the current logged in user                          |
 | __/account/login__                                | GET   | Login form page (HTML)                                                          |
 | __/api/account/login__                            | POST  | Login the current HttpContext in                                                |
 | __/api/account/logout__                           | POST  | Logout the current HttpContext out                                              |

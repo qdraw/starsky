@@ -13,12 +13,12 @@ jobs:
       WEBSITE_SITE_NAME: "ci"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create temp folder
         shell: bash
         id: create_temp_folder
-        run: mkdir starsky-run && cd starsky-run && echo "::set-output name=folder_path::$(pwd)"
+        run: mkdir starsky-run && cd starsky-run && echo "folder_path=$(pwd)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
 
       - name: github-artifacts-download
         shell: bash
@@ -59,7 +59,7 @@ jobs:
           systemctl --user -l status starsky
 
       - name: Run Cypress in Electron 
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
         env:
           CYPRESS_BASE_URL: http://localhost:4000
           cypress_name: local
@@ -73,14 +73,14 @@ jobs:
           working-directory: starsky-tools/end2end  
 
       - name: Upload screenshots (always)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: cypress-screenshots
           path: starsky-tools/end2end/cypress/screenshots
 
       - name: Upload videos (always)
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: cypress-videos

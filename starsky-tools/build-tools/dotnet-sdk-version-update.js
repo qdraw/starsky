@@ -7,7 +7,7 @@
 
 const { join, dirname } = require("path");
 const { readFile, writeFile } = require("fs").promises;
-const { readFileSync, existsSync } = require("fs");
+const { readFileSync, existsSync, appendFileSync } = require("fs");
 const { getFiles } = require("./lib/get-files-directory");
 const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
@@ -20,7 +20,7 @@ const aspNetCorePackages = [
 	"Microsoft.AspNetCore.",
 	"Microsoft.Extensions.",
 	"Microsoft.EntityFrameworkCore",
-	"Microsoft.Data.Sqlite.Core"
+	"Microsoft.Data.Sqlite.Core",
 ];
 
 // allow version as single argument
@@ -34,12 +34,13 @@ console.log(`searchPath: ${searchPath}`);
 if (argv) {
 	// regex: ^(\d+\.)?(\d+\.)?(\*|x|\d+)$
 	for (const argItem of argv) {
-		if (argItem.match(new RegExp("^(\\d+\\.)?(\\d+\\.)?(\\*|x|\\d+)$", "i"))) {
+		if (
+			argItem.match(new RegExp("^(\\d+\\.)?(\\d+\\.)?(\\*|x|\\d+)$", "i"))
+		) {
 			newRunTimeVersion = argItem;
-		}
-		else if (existsSync(argItem)) {
+		} else if (existsSync(argItem)) {
 			searchPath = argItem;
-			console.log(`use: path: ${argItem}`)
+			console.log(`use: path: ${argItem}`);
 		}
 	}
 }
@@ -67,7 +68,8 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 		.then(async (filePathList) => {
 			const sortedFilterPathList = sortFilterOnExeCSproj(filePathList);
 
-			if (newTargetVersion) { // newTargetVersion -> is that there is a result
+			if (newTargetVersion) {
+				// newTargetVersion -> is that there is a result
 				await updateRuntimeFrameworkVersion(
 					sortedFilterPathList,
 					newTargetVersion
@@ -78,13 +80,18 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 					newRunTimeVersion
 				);
 
-				const refFrameworkMonikerByPath = await addReferencedProjectMonikers(frameworkMonikerByPath);
+				const refFrameworkMonikerByPath =
+					await addReferencedProjectMonikers(frameworkMonikerByPath);
 
-				const sortedFrameworkMonikerByPath = await sortNetFrameworkMoniker(refFrameworkMonikerByPath);
+				const sortedFrameworkMonikerByPath =
+					await sortNetFrameworkMoniker(refFrameworkMonikerByPath);
 
 				await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
 
-				console.log('---done');
+				console.log("---done");
+				setTimeout(() => {
+					process.exit(0);
+				}, 100);
 			}
 		})
 		.catch((err) => {
@@ -96,13 +103,19 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 			const sdkVersion = await getSdkVersionByTarget();
 			process.env["SDK_VERSION"] = sdkVersion;
 			console.log(`SDK_VERSION: ${sdkVersion}`);
-			// ::set-output is deprecated
-			console.log(`::set-output name=SDK_VERSION::${sdkVersion}`);
-			// process.env["GITHUB_STATE"] += ` SDK_VERSION=${sdkVersion} `;
 
-            if (process.env.TF_BUILD) {
-                console.log(`##vso[task.setvariable variable=SDK_VERSION;]${sdkVersion}`);
-            }
+			if (existsSync(process.env["GITHUB_OUTPUT"])) {
+				appendFileSync(
+					process.env["GITHUB_OUTPUT"],
+					`\nSDK_VERSION=${sdkVersion}`
+				);
+			}
+
+			if (process.env.TF_BUILD) {
+				console.log(
+					`##vso[task.setvariable variable=SDK_VERSION;]${sdkVersion}`
+				);
+			}
 
 			await updateAzureYmlFile(filePathList, sdkVersion);
 			await updateGithubYmlFile(filePathList, sdkVersion);
@@ -119,93 +132,154 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 async function updateDockerEnvFile(filePathList) {
 	const targetVersion = newRunTimeVersion.replace(".x", "");
 
-	const envDockerFilePathList = filePathList.filter(p => p.endsWith(".env"));
+	const envDockerFilePathList = filePathList.filter((p) =>
+		p.endsWith(".env")
+	);
 
 	// aspnet is runtime for asp.net apps
-	const aspNetResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list");
-	const sdkResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/sdk/tags/list");
+	const aspNetResults = await httpsGet(
+		"https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list"
+	);
+	const sdkResults = await httpsGet(
+		"https://mcr.microsoft.com/v2/dotnet/sdk/tags/list"
+	);
 
-	const aspNetResult = aspNetResults.tags.find(p => p === targetVersion);
-	const sdkResult = sdkResults.tags.find(p => p === targetVersion);
+	const aspNetResult = aspNetResults.tags.find((p) => p === targetVersion);
+	const sdkResult = sdkResults.tags.find((p) => p === targetVersion);
 
 	if (newRunTimeVersion.includes(".x") && aspNetResult !== sdkResult) {
-		console.log('DockerFile versions dont match');
+		console.log("DockerFile versions dont match");
 		return;
 	}
 
 	for (const envDockerFilePath of envDockerFilePathList) {
 		let buffer = await readFile(envDockerFilePath);
-		console.log("✓ " + envDockerFilePath);
+		console.log("✅ ✓ " + envDockerFilePath);
 		let fileContent = buffer.toString("utf8");
-		fileContent = replaceEnvDockerFileContent(fileContent, "sdk",sdkResult);
-		fileContent = replaceEnvDockerFileContent(fileContent, "aspnet",aspNetResult);
+		fileContent = replaceEnvDockerFileContent(
+			fileContent,
+			"sdk",
+			sdkResult
+		);
+		fileContent = replaceEnvDockerFileContent(
+			fileContent,
+			"aspnet",
+			aspNetResult
+		);
 		await writeFile(envDockerFilePath, fileContent);
 	}
-
 }
 
 function replaceEnvDockerFileContent(fileContent, what, sdkResult) {
 	// replace variables with sdk version
-	const buildBaseImageRegex = new RegExp("((BUILD)|(BASE))_?(IMAGE)=mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+", "ig");
+	const buildBaseImageRegex = new RegExp(
+		"((BUILD)|(BASE))_?(IMAGE)=mcr\\.microsoft\\.com/dotnet/" +
+			what +
+			":(d|.)+",
+		"ig"
+	);
 	const buildBaseImageMatches = fileContent.match(buildBaseImageRegex);
 	if (buildBaseImageMatches) {
 		for (const buildBaseImageMatch of buildBaseImageMatches) {
-			const replacedResult = buildBaseImageMatch.replace(/(\d|\.)+$/g,sdkResult); // sdkResult = to version
-			console.log("  ✓  replaceEnvDockerFileContent - build/base " + replacedResult);
-			fileContent = fileContent.replace(buildBaseImageMatch, replacedResult);
+			const replacedResult = buildBaseImageMatch.replace(
+				/(\d|\.)+$/g,
+				sdkResult
+			); // sdkResult = to version
+			console.log(
+				"    ✅ ✓  replaceEnvDockerFileContent - build/base " +
+					replacedResult
+			);
+			fileContent = fileContent.replace(
+				buildBaseImageMatch,
+				replacedResult
+			);
 		}
 	}
 	return fileContent;
 }
 
-
 async function updateMcrDockerFile(filePathList) {
 	const targetVersion = newRunTimeVersion.replace(".x", "");
 
 	// aspnet is runtime for asp.net apps
-	const aspNetResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list");
-	const sdkResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/sdk/tags/list");
+	const aspNetResults = await httpsGet(
+		"https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list"
+	);
+	const sdkResults = await httpsGet(
+		"https://mcr.microsoft.com/v2/dotnet/sdk/tags/list"
+	);
 
-	const aspNetResult = aspNetResults.tags.find(p => p === targetVersion);
-	const sdkResult = sdkResults.tags.find(p => p === targetVersion);
+	const aspNetResult = aspNetResults.tags.find((p) => p === targetVersion);
+	const sdkResult = sdkResults.tags.find((p) => p === targetVersion);
 
 	if (newRunTimeVersion.includes(".x") && aspNetResult !== sdkResult) {
-		console.log('DockerFile versions dont match');
+		console.log("DockerFile versions dont match");
 		return;
 	}
 
-	const dockerFilePathList = filePathList.filter(p => p.endsWith("Dockerfile"));
+	const dockerFilePathList = filePathList.filter((p) =>
+		p.endsWith("Dockerfile")
+	);
 	for (const dockerFilePath of dockerFilePathList) {
 		let buffer = await readFile(dockerFilePath);
-		console.log("✓ " + dockerFilePath);
+		console.log("✅ ✓ " + dockerFilePath);
 		let fileContent = buffer.toString("utf8");
-		fileContent = replaceMcrFileContent(fileContent, "sdk",sdkResult);
-		fileContent = replaceMcrFileContent(fileContent, "aspnet",aspNetResult);
+		fileContent = replaceMcrFileContent(fileContent, "sdk", sdkResult);
+		fileContent = replaceMcrFileContent(
+			fileContent,
+			"aspnet",
+			aspNetResult
+		);
 		await writeFile(dockerFilePath, fileContent);
 	}
-
 }
 
 function replaceMcrFileContent(fileContent, what, sdkResult) {
 	// FROM (--platform=\$BUILDPLATFORM)?( )?mcr\.microsoft\.com\/dotnet\/sdk:(\d|\.)+ AS
-	const sdkFromBuildPlatformRegex = new RegExp("FROM (--platform=\\$BUILDPLATFORM)?( )?mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+ AS", "g");
-	const sdkfromBuildPlatformMatches = fileContent.match(sdkFromBuildPlatformRegex);
+	const sdkFromBuildPlatformRegex = new RegExp(
+		"FROM (--platform=\\$BUILDPLATFORM)?( )?mcr\\.microsoft\\.com/dotnet/" +
+			what +
+			":(d|.)+ AS",
+		"g"
+	);
+	const sdkfromBuildPlatformMatches = fileContent.match(
+		sdkFromBuildPlatformRegex
+	);
 	if (sdkfromBuildPlatformMatches) {
 		for (const sdkfromBuildPlatformMatch of sdkfromBuildPlatformMatches) {
-			const replacedResult = sdkfromBuildPlatformMatch.replace(/(\d|\.)+ AS$/g,sdkResult + " AS"); // sdkResult = to version
-			console.log("  ✓  replaceMcrFileContent " + replacedResult);
-			fileContent = fileContent.replace(sdkfromBuildPlatformMatch, replacedResult);
+			const replacedResult = sdkfromBuildPlatformMatch.replace(
+				/(\d|\.)+ AS$/g,
+				sdkResult + " AS"
+			); // sdkResult = to version
+			console.log("   ✅ ✓  replaceMcrFileContent " + replacedResult);
+			fileContent = fileContent.replace(
+				sdkfromBuildPlatformMatch,
+				replacedResult
+			);
 		}
 	}
 
 	// replace variables with sdk version
-	const buildBaseImageRegex = new RegExp("ARG ((BUILD)|(BASE))_(IMAGE)=mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+", "g");
+	const buildBaseImageRegex = new RegExp(
+		"ARG ((BUILD)|(BASE))_(IMAGE)=mcr\\.microsoft\\.com/dotnet/" +
+			what +
+			":(d|.)+",
+		"g"
+	);
 	const buildBaseImageMatches = fileContent.match(buildBaseImageRegex);
 	if (buildBaseImageMatches) {
 		for (const buildBaseImageMatch of buildBaseImageMatches) {
-			const replacedResult = buildBaseImageMatch.replace(/(\d|\.)+$/g,sdkResult); // sdkResult = to version
-			console.log("  ✓  replaceMcrFileContent - build/base " + replacedResult);
-			fileContent = fileContent.replace(buildBaseImageMatch, replacedResult);
+			const replacedResult = buildBaseImageMatch.replace(
+				/(\d|\.)+$/g,
+				sdkResult
+			); // sdkResult = to version
+			console.log(
+				"  ✅ ✓  replaceMcrFileContent - build/base " + replacedResult
+			);
+			fileContent = fileContent.replace(
+				buildBaseImageMatch,
+				replacedResult
+			);
 		}
 	}
 
@@ -213,15 +287,17 @@ function replaceMcrFileContent(fileContent, what, sdkResult) {
 }
 
 async function getByBlobMicrosoft(targetVersion, isRuntime) {
-	var what = "latest-sdk"
-	if (isRuntime) what = "latest-runtime"
+	var what = "latest-sdk";
+	if (isRuntime) what = "latest-runtime";
 
 	const resultsDotnetCli = await httpsGet(
 		"https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json"
 	);
 
 	if (resultsDotnetCli["releases-index"] !== undefined) {
-		const versionObject = resultsDotnetCli["releases-index"].find(p => p["channel-version"] === targetVersion);
+		const versionObject = resultsDotnetCli["releases-index"].find(
+			(p) => p["channel-version"] === targetVersion
+		);
 		if (versionObject && versionObject[what].startsWith(targetVersion)) {
 			return [versionObject[what], versionObject];
 		}
@@ -231,12 +307,10 @@ async function getByBlobMicrosoft(targetVersion, isRuntime) {
 }
 
 async function getByGithubReleases(targetVersion, isRuntime) {
-	let url = "https://api.github.com/repos/dotnet/sdk/releases"
+	let url = "https://api.github.com/repos/dotnet/sdk/releases";
 	if (isRuntime) url = "https://api.github.com/repos/dotnet/core/releases";
 
-	const results = await httpsGet(
-		url
-	);
+	const results = await httpsGet(url);
 	if (results.message && results.message.startsWith("API rate limit")) {
 		console.log(results.message);
 		return [];
@@ -255,7 +329,9 @@ async function getByGithubReleases(targetVersion, isRuntime) {
 	}
 
 	if (versions.length === 0) {
-		console.log(`\n[Github] There are no versions matching ${targetVersion}`);
+		console.log(
+			`\n[Github] There are no versions matching ${targetVersion}`
+		);
 		return;
 	}
 
@@ -282,22 +358,28 @@ async function getBlobSdkReleaseNotesPage(blobObject) {
 	const releaseJsonFile = blobObject[1]["releases.json"];
 	if (!releaseJsonFile) return;
 
-	const resultsReleaseJsonFile = await httpsGet(
-		releaseJsonFile
-	);
+	const resultsReleaseJsonFile = await httpsGet(releaseJsonFile);
 
-	const findVersion = resultsReleaseJsonFile.releases.find(p => p.sdk.version === blobObject[0]);
+	const findVersion = resultsReleaseJsonFile.releases.find(
+		(p) => p.sdk.version === blobObject[0]
+	);
 	if (findVersion && findVersion["release-notes"]) {
 		process.env["SDK_RELEASE_NOTES"] = findVersion["release-notes"];
-		console.log(`::set-output name=SDK_RELEASE_NOTES::${findVersion["release-notes"]}`);
-        if (process.env.TF_BUILD) {
-            console.log(`##vso[task.setvariable variable=SDK_RELEASE_NOTES;]${findVersion["release-notes"]}`);
-        }
+		if (existsSync(process.env["GITHUB_OUTPUT"])) {
+			appendFileSync(
+				process.env["GITHUB_OUTPUT"],
+				`\nSDK_RELEASE_NOTES=${findVersion["release-notes"]}`
+			);
+		}
+		if (process.env.TF_BUILD) {
+			console.log(
+				`##vso[task.setvariable variable=SDK_RELEASE_NOTES;]${findVersion["release-notes"]}`
+			);
+		}
 		return findVersion["release-notes"];
 	}
 	return null;
 }
-
 
 async function updateAzureYmlFile(filePathList, sdkVersion) {
 	await filePathList.forEach(async (filePath) => {
@@ -347,7 +429,7 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 				}
 				await writeFile(filePath, fileContent);
 				console.log(
-					`✓ ${filePath} - Azure Yml is updated to ${sdkVersion}`
+					`✅ ✓ ${filePath} - Azure Yml is updated to ${sdkVersion}`
 				);
 			}
 
@@ -357,44 +439,70 @@ async function updateAzureYmlFile(filePathList, sdkVersion) {
 			//   buildImage: "mcr.microsoft.com/dotnet/sdk:6.0"
 			//   baseImage: "mcr.microsoft.com/dotnet/aspnet:6.0"
 
-			var buildBaseImageVariableRegex = new RegExp("(build|base)Image: ?\"mcr.microsoft.com", "ig");
-			const buildBaseImageVariableMatch = buildBaseImageVariableRegex.exec(fileContent);
+			var buildBaseImageVariableRegex = new RegExp(
+				'(build|base)Image: ?"mcr.microsoft.com',
+				"ig"
+			);
+			const buildBaseImageVariableMatch =
+				buildBaseImageVariableRegex.exec(fileContent);
 			if (buildBaseImageVariableMatch != null) {
 				console.log(
-					`✓ ${filePath} - Azure Yml (build/base) is updated to ${newRunTimeVersion.replace(".x", "")}`
+					`✅ ✓ ${filePath} - Azure Yml (build/base) is updated to ${newRunTimeVersion.replace(
+						".x",
+						""
+					)}`
 				);
-				fileContent = await replaceAzureDockerYmlFile(fileContent, "sdk");
-				fileContent = await replaceAzureDockerYmlFile(fileContent, "aspnet");
+				fileContent = await replaceAzureDockerYmlFile(
+					fileContent,
+					"sdk"
+				);
+				fileContent = await replaceAzureDockerYmlFile(
+					fileContent,
+					"aspnet"
+				);
 				await writeFile(filePath, fileContent);
 			}
-
 		}
 	});
 }
 
 async function replaceAzureDockerYmlFile(fileContent, what) {
-
 	const targetVersion = newRunTimeVersion.replace(".x", "");
 
 	// aspnet is runtime for asp.net apps
-	const aspNetResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list");
-	const sdkResults = await httpsGet("https://mcr.microsoft.com/v2/dotnet/sdk/tags/list");
+	const aspNetResults = await httpsGet(
+		"https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list"
+	);
+	const sdkResults = await httpsGet(
+		"https://mcr.microsoft.com/v2/dotnet/sdk/tags/list"
+	);
 
-	const aspNetResult = aspNetResults.tags.find(p => p === targetVersion);
-	const sdkResult = sdkResults.tags.find(p => p === targetVersion);
+	const aspNetResult = aspNetResults.tags.find((p) => p === targetVersion);
+	const sdkResult = sdkResults.tags.find((p) => p === targetVersion);
 
 	if (newRunTimeVersion.includes(".x") && aspNetResult !== sdkResult) {
-		console.log('DockerFile versions dont match');
+		console.log("DockerFile versions dont match");
 		return;
 	}
 
-	const buildBaseImageRegex = new RegExp("((BUILD)|(BASE))_?(IMAGE): \"mcr\\.microsoft\\.com\/dotnet\/"+ what +":(\d|\.)+", "ig");
+	const buildBaseImageRegex = new RegExp(
+		'((BUILD)|(BASE))_?(IMAGE): "mcr\\.microsoft\\.com/dotnet/' +
+			what +
+			":(d|.)+",
+		"ig"
+	);
 	const buildBaseImageMatches = fileContent.match(buildBaseImageRegex);
 	if (buildBaseImageMatches) {
 		for (const buildBaseImageMatch of buildBaseImageMatches) {
-			const replacedResult = buildBaseImageMatch.replace(/(\d|\.)+\"$/g,targetVersion +"\""); // sdkResult = to version
-			console.log("  ✓  Azure Yml - build/base " + replacedResult);
-			fileContent = fileContent.replace(buildBaseImageMatch, replacedResult);
+			const replacedResult = buildBaseImageMatch.replace(
+				/(\d|\.)+\"$/g,
+				targetVersion + '"'
+			); // sdkResult = to version
+			console.log("  ✅ ✓  Azure Yml - build/base " + replacedResult);
+			fileContent = fileContent.replace(
+				buildBaseImageMatch,
+				replacedResult
+			);
 		}
 	}
 	return fileContent;
@@ -422,23 +530,27 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 
 				await writeFile(filePath, fileContent);
 				console.log(
-					`✓ ${filePath} - Github Yml is updated to ${sdkVersion}`
+					`✅ ✓ ${filePath} - Github Yml is updated to ${sdkVersion}`
 				);
 			}
 		}
 	});
 }
 
-async function addReferencedProjectMonikers(frameworkMonikerByPath){
-
+async function addReferencedProjectMonikers(frameworkMonikerByPath) {
 	// make sure referenced projects netmonikers are included
-	for (let [filePath,_] of Object.entries(frameworkMonikerByPath)) {
+	for (let [filePath, _] of Object.entries(frameworkMonikerByPath)) {
 		const referencedFiles = await getProjectReferences(filePath);
 		for (const refPath of referencedFiles) {
 			if (!frameworkMonikerByPath[refPath]) {
 				continue;
 			}
-			frameworkMonikerByPath[filePath] = [...new Set([...frameworkMonikerByPath[filePath], ...frameworkMonikerByPath[refPath]])]
+			frameworkMonikerByPath[filePath] = [
+				...new Set([
+					...frameworkMonikerByPath[filePath],
+					...frameworkMonikerByPath[refPath],
+				]),
+			];
 		}
 	}
 
@@ -446,66 +558,78 @@ async function addReferencedProjectMonikers(frameworkMonikerByPath){
 }
 
 async function sortNetFrameworkMoniker(frameworkMonikerByPath) {
-
-    // references
-	for (let [filePath,netMonikers] of Object.entries(frameworkMonikerByPath)) {
-		const referencedProjectPaths = await getReferencedProjectPaths(filePath);
-        // console.log(filePath + ' referencedProjectPaths')
-        // console.log(referencedProjectPaths)
+	// references
+	for (let [filePath, netMonikers] of Object.entries(
+		frameworkMonikerByPath
+	)) {
+		const referencedProjectPaths = await getReferencedProjectPaths(
+			filePath
+		);
+		// console.log(filePath + ' referencedProjectPaths')
+		// console.log(referencedProjectPaths)
 
 		for (const refPath of referencedProjectPaths) {
 			for (const netMoniker of netMonikers) {
 				if (!frameworkMonikerByPath[refPath]) {
-					console.log('[x] Missing ' + refPath);
+					console.log("[x] Missing " + refPath);
 					frameworkMonikerByPath[refPath] = [];
-				} 
+				}
 				if (!frameworkMonikerByPath[refPath].includes(netMoniker)) {
-					frameworkMonikerByPath[refPath].push(netMoniker)
+					frameworkMonikerByPath[refPath].push(netMoniker);
 				}
 			}
 		}
 	}
 
-
 	// console.log('frameworkMonikerByPath[filePath]');
 	// console.log(frameworkMonikerByPath);
 
-    // Re-order versions
-    const updatedFrameworkMonikerByPath = [];
+	// Re-order versions
+	const updatedFrameworkMonikerByPath = [];
 
-    for (let [filePath,netMonikers] of Object.entries(frameworkMonikerByPath)) {
-        const newStyleDotNetRegex = new RegExp('^net\\d', 'i');
+	for (let [filePath, netMonikers] of Object.entries(
+		frameworkMonikerByPath
+	)) {
+		const newStyleDotNetRegex = new RegExp("^net\\d", "i");
 
-        const newStylenetMonikers  = netMonikers.filter((x)=> newStyleDotNetRegex.test(x)).sort((a,b)=>b.localeCompare(a));
-        const oldStylenetMonikers  = netMonikers.filter((x)=> !newStyleDotNetRegex.test(x)).sort((a,b)=>b.localeCompare(a));
+		const newStylenetMonikers = netMonikers
+			.filter((x) => newStyleDotNetRegex.test(x))
+			.sort((a, b) => b.localeCompare(a));
+		const oldStylenetMonikers = netMonikers
+			.filter((x) => !newStyleDotNetRegex.test(x))
+			.sort((a, b) => b.localeCompare(a));
 
-        updatedFrameworkMonikerByPath[filePath] = [...newStylenetMonikers,...oldStylenetMonikers]
+		updatedFrameworkMonikerByPath[filePath] = [
+			...newStylenetMonikers,
+			...oldStylenetMonikers,
+		];
 	}
 
 	return updatedFrameworkMonikerByPath;
 }
 
-
 async function getReferencedProjectPaths(filePath) {
 	const localProjectPackagesPaths = await getProjectReferences(filePath);
 
-    let updatedLocalProjectPackagesPaths = [];
+	let updatedLocalProjectPackagesPaths = [];
 
 	// add the references of that packages also to the list
-    for (const singlePath of localProjectPackagesPaths) {
-        const localProjectPackagesPathsRecurisive = await getProjectReferences(singlePath);
+	for (const singlePath of localProjectPackagesPaths) {
+		const localProjectPackagesPathsRecurisive = await getProjectReferences(
+			singlePath
+		);
 
-        for (const item of localProjectPackagesPathsRecurisive) {
-            updatedLocalProjectPackagesPaths.push(item);
-        }
-    }
+		for (const item of localProjectPackagesPathsRecurisive) {
+			updatedLocalProjectPackagesPaths.push(item);
+		}
+	}
 	return updatedLocalProjectPackagesPaths;
 }
 
 async function getProjectReferences(filePath) {
-    let buffer = await readFile(filePath);
+	let buffer = await readFile(filePath);
 	let fileContent = buffer.toString("utf8");
-	const currentDirName = dirname(filePath)
+	const currentDirName = dirname(filePath);
 
 	const localProjectReferenceRegex = new RegExp(
 		'<ProjectReference Include=".+" />',
@@ -515,39 +639,46 @@ async function getProjectReferences(filePath) {
 		localProjectReferenceRegex
 	);
 
-    let localProjectPackagesPaths = [];
+	let localProjectPackagesPaths = [];
 
 	for (const result of localProjectReferenceMatches) {
-
 		let name = result[0]
 			.replace('<ProjectReference Include="', "")
 			.replace(/" \/>$/, "")
-			.replace(/\\/ig,"/");
+			.replace(/\\/gi, "/");
 
 		// console.log(join(currentDirName,name));
 
-		const combinedPath = join(currentDirName,name);
+		const combinedPath = join(currentDirName, name);
 
 		localProjectPackagesPaths.push(combinedPath);
 	}
 
-    return localProjectPackagesPaths;
+	return localProjectPackagesPaths;
 }
 
 async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
-
-	for (let [filePath,usedTargetFrameworkMonikers] of Object.entries(sortedFrameworkMonikerByPath)) {
-
-		if (usedTargetFrameworkMonikers.find(p => p.startsWith("net"))) {
+	for (let [filePath, usedTargetFrameworkMonikers] of Object.entries(
+		sortedFrameworkMonikerByPath
+	)) {
+		if (usedTargetFrameworkMonikers.find((p) => p.startsWith("net"))) {
 			const lastNet = usedTargetFrameworkMonikers[0];
 
 			var targetFrameworkRegex = new RegExp(
-				"<TargetFramework>.+<\/TargetFramework>",
+				"<TargetFramework>.+</TargetFramework>",
 				"g"
 			);
 
 			let buffer = await readFile(filePath);
 			let fileContent = buffer.toString("utf8");
+
+			let beforeTargetFramework = "";
+			const matchResults = fileContent.match(targetFrameworkRegex);
+			if (matchResults.length === 1) {
+				beforeTargetFramework = matchResults[0]
+					.replace("<TargetFramework>", "")
+					.replace("</TargetFramework>", "");
+			}
 
 			fileContent = fileContent.replace(
 				targetFrameworkRegex,
@@ -555,21 +686,24 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 			);
 
 			await writeFile(filePath, fileContent);
-			console.log(
-				`✓ ${filePath} - .NET is updated to ${lastNet}`
-			);
+
+			if (lastNet !== beforeTargetFramework) {
+				console.log(`✅ ✓ ${filePath} - .NET is updated to ${lastNet}`);
+			} else {
+				console.log(`🙏 ${filePath} - .NET is the same: ${lastNet}`);
+			}
 
 			if (!usedTargetFrameworkMonikers[filePath]) {
-				usedTargetFrameworkMonikers[filePath] = []
+				usedTargetFrameworkMonikers[filePath] = [];
 			}
-			usedTargetFrameworkMonikers[filePath].push(lastNet)
-		}	
+			usedTargetFrameworkMonikers[filePath].push(lastNet);
+		}
 	}
 }
 
 async function getNetMonikerByCsProjFilePath(filePath) {
 	var targetFrameworkRegex = new RegExp(
-		"<TargetFramework>.+<\/TargetFramework>",
+		"<TargetFramework>.+</TargetFramework>",
 		"g"
 	);
 
@@ -578,16 +712,16 @@ async function getNetMonikerByCsProjFilePath(filePath) {
 
 	const matchResults = fileContent.match(targetFrameworkRegex);
 	if (matchResults.length !== 1) {
-		return ""
+		return "";
 	}
-	return matchResults[0].replace("<TargetFramework>","").replace("</TargetFramework>","");
+	return matchResults[0]
+		.replace("<TargetFramework>", "")
+		.replace("</TargetFramework>", "");
 }
 
 async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 	for (const filePath of filePathList) {
-		if (
-			filePath.endsWith(".csproj")
-		) {
+		if (filePath.endsWith(".csproj")) {
 			let buffer = await readFile(filePath);
 			let fileContent = buffer.toString("utf8");
 
@@ -616,7 +750,8 @@ async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 							filePath +
 							" - RuntimeFrameworkVersion tag is not included"
 					);
-				} else  { // fileXmlMatch != null
+				} else {
+					// fileXmlMatch != null
 					fileContent = fileContent.replace(
 						runtimeFrameworkVersionXMLRegex,
 						`<RuntimeFrameworkVersion>${newTargetVersion}</RuntimeFrameworkVersion>`
@@ -632,9 +767,10 @@ async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 }
 
 async function updateNugetPackageVersions(filePathList) {
-	const frameworkMonikerByPath = {}
+	const frameworkMonikerByPath = {};
 	for (const filePath of filePathList) {
-		frameworkMonikerByPath[filePath] = await updateSingleNugetPackageVersion(filePath);
+		frameworkMonikerByPath[filePath] =
+			await updateSingleNugetPackageVersion(filePath);
 	}
 	return frameworkMonikerByPath;
 }
@@ -643,15 +779,13 @@ async function updateSingleNugetPackageVersion(filePath) {
 	let usedTargetFrameworkMonikers = [];
 	// '///starsky/starsky.foundation.consoletelemetry/starsky.foundation.consoletelemetry.csproj': [ 'net6.0', 'netstandard2.0', 'netstandard2.1' ],
 
-	if (
-		filePath.endsWith(".csproj")
-	) {
+	if (filePath.endsWith(".csproj")) {
 		let buffer = await readFile(filePath);
 		let fileContent = buffer.toString("utf8");
 
-		// unescaped: <PackageReference Include="[a-z.]+" Version="[0-9.]+" ?/?>
+		// unescaped: <PackageReference Include="[a-z.]+" Version="[0-9.]+" ?/?>?
 		const packageReferenceRegex = new RegExp(
-			'<PackageReference Include="[a-z.]+" Version="[0-9.]+" ?/?>',
+			'<PackageReference Include="[a-z.]+" Version="[0-9.]+" ?/?>?',
 			"ig"
 		);
 
@@ -671,7 +805,8 @@ async function updateSingleNugetPackageVersion(filePath) {
 
 			for (const aspNetName of aspNetCorePackages) {
 				if (name.startsWith(aspNetName)) {
-					toUpdatePackages.push([name, version, result[0]]);
+					const newId = [name, version, result[0]];
+					toUpdatePackages.push(newId);
 				}
 			}
 		}
@@ -708,27 +843,56 @@ async function updateSingleNugetPackageVersion(filePath) {
 
 							// NetMoniker
 							if (sortfindedVersions[0]["@id"]) {
-								const versionSpecificData = await httpsGet(sortfindedVersions[0]["@id"]);
-								const catalogEntryData = await httpsGet(versionSpecificData.catalogEntry);
+								const versionSpecificData = await httpsGet(
+									sortfindedVersions[0]["@id"]
+								);
+								const catalogEntryData = await httpsGet(
+									versionSpecificData.catalogEntry
+								);
 
-								const netStandardlist = catalogEntryData.dependencyGroups.filter(p => p.targetFramework.toLowerCase().includes(".netstandard"))
-								const netList = catalogEntryData.dependencyGroups.filter(p => p.targetFramework.toLowerCase().startsWith("net"));
+								const netStandardlist =
+									catalogEntryData.dependencyGroups.filter(
+										(p) =>
+											p.targetFramework
+												.toLowerCase()
+												.includes(".netstandard")
+									);
+								const netList =
+									catalogEntryData.dependencyGroups.filter(
+										(p) =>
+											p.targetFramework
+												.toLowerCase()
+												.startsWith("net")
+									);
 
-								for (const item of [...netStandardlist,...netList]) {
-									const parsedName = item.targetFramework.replace(/^\./ig,"").toLowerCase()
+								for (const item of [
+									...netStandardlist,
+									...netList,
+								]) {
+									const parsedName = item.targetFramework
+										.replace(/^\./gi, "")
+										.toLowerCase();
 
-									if (!usedTargetFrameworkMonikers.includes(parsedName) ) {
-										usedTargetFrameworkMonikers.push(parsedName)										
+									if (
+										!usedTargetFrameworkMonikers.includes(
+											parsedName
+										)
+									) {
+										usedTargetFrameworkMonikers.push(
+											parsedName
+										);
 									}
 								}
 							} //e.
 
+							// unescaped: (Version=")([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?(" ?)
 							const versionXMLRegex = new RegExp(
-								'(Version=")([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(" )',
+								'(Version=")([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(" ?)',
 								"g"
 							);
 
-							const updatedPackageReference = toUpdatePackageReference.replace(
+							const updatedPackageReference =
+								toUpdatePackageReference.replace(
 									versionXMLRegex,
 									`Version="${newVersion}" `
 								);
@@ -739,80 +903,90 @@ async function updateSingleNugetPackageVersion(filePath) {
 							);
 							await writeFile(filePath, fileContent);
 
-							console.log(
-								`✓ ${filePath} - ${toUpdatePackageName} is updated to ${newVersion}`
-							);
+							if (toUpdatePackageVersion !== newVersion) {
+								console.log(
+									`✓ ${filePath} - ${toUpdatePackageName} is updated from ${toUpdatePackageVersion} to ${newVersion}`
+								);
+							} else {
+								console.log(
+									`🙏  ${filePath} - ${toUpdatePackageName} is ${toUpdatePackageVersion}`
+								);
+							}
 						} else {
 							console.log(
-								`✖ ${filePath} - ${toUpdatePackageName} is skipped to ${toUpdatePackageVersion}`
+								`❌ ✖ ${filePath} - ${toUpdatePackageName} is skipped to ${toUpdatePackageVersion}`
 							);
 						}
 					}
 				} else {
 					console.log(
-						"✖ " + filePath + " - Version tag is not included"
+						"❌ ✖ " + filePath + " - Version tag is not included"
 					);
 				}
 			}
 		} // e. toupdate
-
 	}
 	return [...new Set(usedTargetFrameworkMonikers)];
 }
-
 
 function sortFilterOnExeCSproj(filePathList) {
 	const exeFilePathList = [];
 	const libsFilePathList = [];
 
 	for (const filePath of filePathList) {
-
 		if (!filePath.endsWith(".csproj")) {
 			continue;
 		}
-		
 
 		let buffer = readFileSync(filePath);
 		let fileContent = buffer.toString("utf8");
 
 		// <OutputType>Exe<\/OutputType>|(Microsoft\.NET\.Sdk\.Web)|(Microsoft\.NET\.Test\.Sdk)
 		const isExeRegex = new RegExp(
-			'<OutputType>Exe<\/OutputType>|(Microsoft\.NET\.Sdk\.Web)|(Microsoft\.NET\.Test\.Sdk)',
+			"<OutputType>Exe</OutputType>|(Microsoft.NET.Sdk.Web)|(Microsoft.NET.Test.Sdk)",
 			"ig"
 		);
 
-		const isExeMatches = fileContent.match(
-			isExeRegex
-		);
+		const isExeMatches = fileContent.match(isExeRegex);
 
 		if (!isExeMatches) {
 			libsFilePathList.push(filePath);
 			continue;
 		}
 		exeFilePathList.push(filePath);
-		
 	}
-	return [...libsFilePathList,...exeFilePathList];
+	return [...libsFilePathList, ...exeFilePathList];
 }
 
 async function updateGlobalJsonFiles(filePathList, sdkVersionInput) {
 	const sdkVersion = sdkVersionInput.replace(".x", "");
 
-	const globalJsonPathList = filePathList.filter(p => p.endsWith("global.json"));
+	const globalJsonPathList = filePathList.filter((p) =>
+		p.endsWith("global.json")
+	);
 	for (const filePath of globalJsonPathList) {
 		let globalJsonFile = {};
 		try {
-			globalJsonFile = JSON.parse(readFileSync(filePath).toString("utf8"));
+			globalJsonFile = JSON.parse(
+				readFileSync(filePath).toString("utf8")
+			);
 		} catch (error) {
 			console.log("✖ " + filePath + " - " + error);
 		}
 
-    // the global json needs to have a strictVersion property to be auto-upgraded
-    if (globalJsonFile?.strictVersion !== true) {
-      console.log("✖ " + filePath + " - strictVersion is not enabled so skip upgrade globalJson file");
-    }
-		
-		if (globalJsonFile?.strictVersion === true && globalJsonFile?.sdk?.version !== sdkVersion) {
+		// the global json needs to have a strictVersion property to be auto-upgraded
+		if (globalJsonFile?.strictVersion !== true) {
+			console.log(
+				"✖ " +
+					filePath +
+					" - strictVersion is not enabled so skip upgrade globalJson file"
+			);
+		}
+
+		if (
+			globalJsonFile?.strictVersion === true &&
+			globalJsonFile?.sdk?.version !== sdkVersion
+		) {
 			globalJsonFile.sdk.version = sdkVersion;
 			await writeFile(filePath, JSON.stringify(globalJsonFile, null, 4));
 		}

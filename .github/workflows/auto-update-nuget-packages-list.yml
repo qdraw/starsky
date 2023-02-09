@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
     - name: Checkout repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: 16.x
       
@@ -25,11 +25,10 @@ jobs:
       run: npm run nuget-package-list
 
     - name: Commit changes
-      uses: EndBug/add-and-commit@v4
+      uses: EndBug/add-and-commit@v9
       with:
         author_name: DocsUpdateBot
         author_email: qdraw@users.noreply.github.com
         message: "[NugetPackagesListUpdate] Auto commited nugetPackages list"
         add: "starsky/nuget-packages-list.json"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}

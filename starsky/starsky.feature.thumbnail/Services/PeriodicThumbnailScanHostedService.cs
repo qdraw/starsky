@@ -51,12 +51,16 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		await StartBackgroundAsync(true, stoppingToken);
+		await StartBackgroundAsync(IsEnabled, stoppingToken);
 	}
 
 	internal async Task StartBackgroundAsync(bool startDirect, CancellationToken cancellationToken)
 	{
 		if ( startDirect ) await RunJob(cancellationToken);
+		if ( IsEnabled == false)
+		{
+			return;
+		}
 		
 		using var timer = new PeriodicTimer(Period);
 		while (
@@ -69,14 +73,15 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 	internal async Task<bool?> RunJob(CancellationToken cancellationToken = default)
 	{
-		cancellationToken.ThrowIfCancellationRequested();
-		
 		if (! IsEnabled )
 		{
 			_logger.LogInformation(
 				$"Skipped {nameof(PeriodicThumbnailScanHostedService)}");
 			return false;
 		}
+		
+		cancellationToken.ThrowIfCancellationRequested();
+
 		try
 		{
 			await using var asyncScope = _factory.CreateAsyncScope();
@@ -84,7 +89,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 			await service.StartBackgroundQueue(DateTime.UtcNow.Add(Period));
 			_executionCount++;
 			// Executed PeriodicThumbnailScanHostedService
-			_logger.LogInformation(
+			_logger.LogDebug(
 				$"Executed {nameof(PeriodicThumbnailScanHostedService)} -" +
 				$" Count: {_executionCount} ({DateTime.UtcNow:HH:mm:ss})");
 			return true;

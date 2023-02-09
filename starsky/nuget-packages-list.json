@@ -1,5 +1,6 @@
 [
   "Microsoft.AspNetCore.Mvc.NewtonsoftJson 6.0.13",
+  "Microsoft.Extensions.Hosting.WindowsServices 6.0.1",
   "SQLitePCLRaw.lib.e_sqlite3.linux 1.1.14",
   "Swashbuckle.AspNetCore 6.5.0",
   "Microsoft.Extensions.Caching.Abstractions 6.0.0",

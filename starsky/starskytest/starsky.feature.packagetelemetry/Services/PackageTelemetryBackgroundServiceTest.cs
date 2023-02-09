@@ -59,6 +59,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
 				.GetService<AppSettings>();
 			appSettings!.ApplicationType = AppSettings.StarskyAppType.WebController;
+			appSettings.EnablePackageTelemetry = true;
 		
 			var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
 			

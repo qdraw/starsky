@@ -4,7 +4,7 @@
         <RuntimeFrameworkVersion>6.0.13</RuntimeFrameworkVersion>
         <Description>An attempt to create a database driven photo library</Description>
         <!-- use node script to update version -->
-        <Version>0.5.5</Version>
+        <Version>0.5.5-beta.0</Version>
         <!-- SonarQube needs this -->
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
@@ -54,6 +54,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.1" />
         <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
@@ -110,6 +111,10 @@
         <Content Include="gatekeeper-mac-os-helper.command">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+		<None Remove="service-deploy-windows.ps1" />
+		<Content Include="service-deploy-windows.ps1">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>		
         <Content Update="appsettings.default.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>

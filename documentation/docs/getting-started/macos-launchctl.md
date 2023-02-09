@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 21
 ---
 
 # macOS Launchctl
@@ -28,7 +28,7 @@ It is an important part of macOS security and helps to keep your Mac safe from t
 
 **We currently don't have any code signing for starsky, so you will need to work around Gatekeeper**
 
-## 1. Download the script
+## 1. Download the script that downloads the binaries
 
 The guide will assume you run it on a Mac OS machine.
 Its recommend to download the script in empty folder.

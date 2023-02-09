@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
 
 # Setup server app
@@ -10,13 +10,13 @@ There are multiple ways of installing Starsky:
 
 1. **As background service (systemd or pm2 service)** <br />
    Run it as system service. All dependencies are included in the application
-   There are multiple options to run it as a service, see [systemd](linux-systemd.md), [macOS launchctl](macos-launchctl.md) or [pm2](pm2.md) for more information
+   There are multiple options to run it as a service, see [systemd](linux-systemd.md), [macOS launchctl](macos-launchctl.md), [windows service](windows-as-server/windows-service.md) or [pm2](pm2.md) for more information
 
 2. **Docker** <br />
-   When using Docker we recommend running Starsky with Docker Compose when hosting it on a private server. It is available for Mac, Linux, and Windows.
+   When using Docker we recommend running Starsky with Docker Compose when hosting it on a private server. It is available for Mac, Linux, and Windows. [Read more about docker configuration here](docker/docker-compose.md)
 
 3. **In IIS** (Windows Pro and Server Only)<br />
-   When running the Pro and Server version of windows the IIS webserver can be used
+   When running the Pro and Server version of windows the IIS webserver can be used [Read more about IIS configuration here](windows-as-server/iis.md)
 
 Once the initial setup is complete, our [First Steps 👣 ](first-steps) tutorial guides you through the user interface and settings to ensure your library is indexed according to your individual preferences.
 

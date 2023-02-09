@@ -95,10 +95,10 @@ fs.writeFileSync(path.join(documentationAppFolderPath, 'package.json.bak'), JSON
 fs.writeFileSync(path.join(documentationAppFolderPath, 'package.json'), JSON.stringify(myAppPackageJson, null, 2));
 fs.writeFileSync(path.join(documentationAppFolderPath, 'package-lock.json'), JSON.stringify(myAppPackageLockJson, null, 2));
 
-// npm ci
-function npmCi() {
-  console.log('run > npm ci --no-audit --legacy-peer-deps | in: ' + documentationAppFolderPath);
-  const npmCiOne = spawnSync('npm', ['ci', '--no-audit', '--legacy-peer-deps'], {
+// npm install
+function npmBasicInstall() {
+  console.log('run > npm install --no-audit --legacy-peer-deps | in: ' + documentationAppFolderPath);
+  const npmCiOne = spawnSync('npm', ['install', '--no-audit', '--legacy-peer-deps'], {
       cwd: documentationAppFolderPath,
       env: process.env,
       encoding: 'utf-8'
@@ -109,7 +109,7 @@ function npmCi() {
   console.log(npmCiOne.stout ? updateSpawn.stout : "");
 }
 
-npmCi();
+npmBasicInstall();
 
 function npmUnInstall(packageName) {
 
@@ -162,7 +162,7 @@ function npmInstall(packageName, force, dev) {
 // install other packages here
 // for example: docusaurus-plugin-openapi (which is not used at the moment)
 
-npmCi();
+npmBasicInstall();
 
 // clean afterwards
 if (process.env.DEBUG !== "true") {
