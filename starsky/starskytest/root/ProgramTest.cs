@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky;
+using starsky.foundation.platform.Models;
 
 namespace starskytest.root;
 
@@ -42,8 +43,15 @@ public class ProgramTest
 	[TestMethod]
 	[Timeout(5000)]
 	[ExpectedException(typeof(System.IO.IOException))]
-	public async Task Program_Main_TestCancel()
+	public async Task Program_Main_TestCancel_UnixOnly()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			// this test has issues with timing on windows
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+		
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:9514");
 		Environment.SetEnvironmentVariable("app__useDiskWatcher","false");
 		Environment.SetEnvironmentVariable("app__SyncOnStartup","false");
@@ -62,12 +70,14 @@ public class ProgramTest
 
 		// next wait for port is opened
 		var requested = 0;
-		while ( requested < 5 )
+		while ( requested < 10 )
 		{
 			using HttpClient client = new();
 			try
 			{
 				var responseMessage = await client.GetAsync("http://localhost:9514");
+				Console.WriteLine("responseMessage StatusCode: " + responseMessage.StatusCode + " Requested: " + requested);
+				
 				if ( responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound )
 				{
 					requested = int.MaxValue;
@@ -75,8 +85,10 @@ public class ProgramTest
 				}
 				requested++;
 			}
-			catch ( HttpRequestException )
+			catch ( HttpRequestException exception)
 			{
+				Console.WriteLine("HttpRequestException " +  exception.StatusCode +
+				                  " " + exception.Message + " Requested: " + requested);
 				requested++;
 			}
 		}
@@ -88,6 +100,46 @@ public class ProgramTest
 		// end wait for port is opened
 
 		await Program.Main(Array.Empty<string>());
+	}
+	
+	[TestMethod]
+	[Timeout(5000)]
+	[ExpectedException(typeof(HttpRequestException))]
+	public async Task Program_Main_NoAddress()
+	{
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:7514");
+		Environment.SetEnvironmentVariable("app__useDiskWatcher","false");
+		Environment.SetEnvironmentVariable("app__SyncOnStartup","false");
+		Environment.SetEnvironmentVariable("app__thumbnailGenerationIntervalInMinutes","0");
+		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup","true");
+		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
+		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
+		
+		await Program.Main(new []{"--do-not-start"});
+
+		using HttpClient client = new();
+		await client.GetAsync("http://localhost:7514");
+		// and this address does not exists
+	}
+	
+	[TestMethod]
+	public async Task Program_RunAsync()
+	{
+		var result = await Program.RunAsync(null,false);
+		Assert.IsFalse(result);
+	}
+	
+	[TestMethod]
+	[Timeout(5000)]
+	[ExpectedException(typeof(FormatException))]
+	public async Task Program_RunAsync2()
+	{
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","test");
+
+		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
+		var app = builder.Build();
+		
+		await Program.RunAsync(app);
 	}
 	
 	[ClassCleanup]

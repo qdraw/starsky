@@ -56,8 +56,12 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 
 	internal async Task StartBackgroundAsync(bool startDirect, CancellationToken cancellationToken)
 	{
-		if ( startDirect ) await RunJob(cancellationToken);
-		if ( IsEnabled == false)
+		if ( startDirect )
+		{
+			await RunJob(cancellationToken);
+		}
+		
+		if ( !IsEnabled)
 		{
 			return;
 		}
