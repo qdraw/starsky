@@ -239,7 +239,8 @@ function replaceRobotsTxt() {
     return;
   }
 
-  const filename = path.join(documenationDirectory, path.join("build", "robots.txt"));
+  fs.mkdirSync( path.join(documenationDirectory, "build"), { recursive: true });
+  const filename = path.join(documenationDirectory, "build", "robots.txt");
   fs.writeFileSync(filename, robots);
 }
 
