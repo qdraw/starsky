@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -39,7 +40,7 @@ public class ProgramTest
 	}
 
 	[TestMethod]
-	[Timeout(7000)]
+	[Timeout(5000)]
 	[ExpectedException(typeof(System.IO.IOException))]
 	public async Task Program_Main_TestCancel()
 	{
@@ -58,6 +59,33 @@ public class ProgramTest
 		var app = builder.Build();
 		
 		await Task.Factory.StartNew(() => app.RunAsync(), TaskCreationOptions.LongRunning);
+
+		// next wait for port is opened
+		var requested = 0;
+		while ( requested < 5 )
+		{
+			using HttpClient client = new();
+			try
+			{
+				var responseMessage = await client.GetAsync("http://localhost:9514");
+				if ( responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound )
+				{
+					requested = int.MaxValue;
+					continue;
+				}
+				requested++;
+			}
+			catch ( HttpRequestException )
+			{
+				requested++;
+			}
+		}
+
+		if ( requested != int.MaxValue )
+		{
+			throw new TimeoutException();
+		}
+		// end wait for port is opened
 
 		await Program.Main(Array.Empty<string>());
 	}
