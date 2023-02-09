@@ -9,7 +9,7 @@ if (process.env.DOCS_URL && process.env.DOCS_URL.startsWith("https://")) {
 	url = process.env.DOCS_URL;
 }
 
-let baseUrl = "/"
+let baseUrl = "/";
 if (process.env.DOCS_BASE_URL && process.env.DOCS_BASE_URL.startsWith("/")) {
 	baseUrl = process.env.DOCS_BASE_URL;
 }
@@ -19,11 +19,11 @@ console.log(`baseUrl ${baseUrl}`);
 
 const gtag = {};
 if (process.env.GTAG) {
-	console.log('gtag enabled');
+	console.log("gtag enabled");
 	gtag.gtag = {
-		trackingID: process.env.GTAG ? process.env.GTAG : 'G-999X9XX9XX',
+		trackingID: process.env.GTAG ? process.env.GTAG : "G-999X9XX9XX",
 		anonymizeIP: true,
-	}
+	};
 }
 
 /** @type {import('@docusaurus/types').Config} */
@@ -62,18 +62,27 @@ const config = {
 				},
 				blog: {
 					postsPerPage: 5,
-					showReadingTime: true
+					showReadingTime: true,
 				},
 				theme: {
 					customCss: require.resolve("./src/css/custom.css"),
 				},
-				...gtag
+				...gtag,
 			}),
 		],
 	],
 
 	plugins: [
-		require.resolve('@cmfcmf/docusaurus-search-local')
+		[
+			require.resolve("@cmfcmf/docusaurus-search-local"),
+			{
+				indexDocs: true,
+				indexDocSidebarParentCategories: 3,
+				indexPages: true,
+				indexBlog: true,
+				maxSearchResults: 8,
+			},
+		],
 	],
 
 	themeConfig:
