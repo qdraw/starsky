@@ -39,14 +39,14 @@ namespace starskytest.Controllers
 			_searchSuggest = new SearchSuggestionsService(context,_memoryCache, null!, new AppSettings());
 		}
 
-		private void InjectMockedData()
+		private async Task InjectMockedData()
 		{
-			if (!string.IsNullOrEmpty(_query.GetSubPathByHash("hash_9"))) return;
+			if (!string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("hash_9"))) return;
 			    
 			for ( var i = 0; i < 10; i++ )
 			{
 				var tags = i % 2 == 1 ? "enter, sandman, exit, live" : "enter, sandman, exit";
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = $"{i}.jpg",
 					FileHash = $"hash_{i}",
@@ -59,7 +59,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task Suggestion_IsMoreThan10()
 		{
-			InjectMockedData();
+			await InjectMockedData();
 			var controller = new SearchSuggestController(_searchSuggest);
 			var result = await controller.Suggest("e") as JsonResult;
 			var list = result!.Value as List<string>;
@@ -82,7 +82,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task Suggestion_IsLessThan10()
 		{
-			InjectMockedData();
+			await InjectMockedData();
 			var controller = new SearchSuggestController(_searchSuggest);
 			var result = await controller.Suggest("l") as JsonResult; // search for live
 			var list = result!.Value as List<string>;
@@ -92,7 +92,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task AllResultsCheck()
 		{
-			InjectMockedData();
+			await InjectMockedData();
 			var controller = new SearchSuggestController(_searchSuggest);
 			var result = await controller.All() as JsonResult; // search for live
 			var list = result!.Value as List<KeyValuePair<string, int>>;
@@ -113,7 +113,7 @@ namespace starskytest.Controllers
 			// Clean cache if not exist
 			_memoryCache.Remove(nameof(SearchSuggestionsService));
 	        
-			InjectMockedData();
+			await InjectMockedData();
 			var controller = new SearchSuggestController(_searchSuggest);
 			await controller.Inflate();
 	        

@@ -43,43 +43,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 		
-		private static FileIndexItem _insertSearchDatahiJpgInput;
-		private static FileIndexItem _insertSearchDatahi2JpgInput;
-		private static FileIndexItem _insertSearchDatahi2SubfolderJpgInput;
-
-		private void InsertSearchData()
-		{
-			if ( !string.IsNullOrEmpty(
-				_query.GetSubPathByHash("09876543456789")) ) return;
-			
-			_insertSearchDatahiJpgInput = _query.AddItem(new FileIndexItem
-			{
-				FileName = "hi.jpg",
-				ParentDirectory = "/basic",
-				FileHash = "09876543456789",
-				ColorClass = ColorClassParser.Color.Winner, // 1
-				Tags = "",
-				Title = "",
-				IsDirectory = false
-			});
-
-			_insertSearchDatahi2JpgInput = _query.AddItem(new FileIndexItem
-			{
-				FileName = "hi2.jpg",
-				Tags = "!delete!",
-				ParentDirectory = "/basic",
-				IsDirectory = false
-			});
-			
-			_insertSearchDatahi2SubfolderJpgInput =  _query.AddItem(new FileIndexItem
-			{
-				FileName = "hi2.jpg",
-				ParentDirectory = "/basic/subfolder",
-				FileHash = "234567876543",
-				IsDirectory = false
-			});
-		}
-		
 		[TestMethod]
 		public async Task GetAllObjectsAsync_GetResult()
 		{

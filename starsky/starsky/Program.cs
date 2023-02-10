@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,14 +29,26 @@ namespace starsky
 			var hostLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 			startup.Configure(app, builder.Environment, hostLifetime);
 
+			await RunAsync(app, !args.Contains("--do-not-start"));
+		}
+
+		internal static async Task<bool> RunAsync(WebApplication webApplication,
+			bool startImmediately = true)
+		{
+			if ( !startImmediately )
+			{
+				return false;
+			}
+			
 			try
 			{
-				await app.RunAsync();
+				await webApplication.RunAsync();
 			}
 			catch ( TaskCanceledException )
 			{
-				// do nothing
+				return false;
 			}
+			return true;
 		}
 		
 		private static WebApplicationBuilder CreateWebHostBuilder(string[] args)

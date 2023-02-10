@@ -138,7 +138,7 @@ namespace starsky.feature.metaupdate.Services
 				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage,_readMeta, _thumbnailQuery);
 
 				// to avoid diskWatcher catch up
-				_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem, TimeSpan.FromSeconds(10));
+				_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem, TimeSpan.FromSeconds(5));
 					
 				// Do an Exif Sync for all files, including thumbnails
 				var (exifResult,newFileHashes) = await exifTool.UpdateAsync(fileIndexItem, 
@@ -155,6 +155,9 @@ namespace starsky.feature.metaupdate.Services
 			{
 				await new FileIndexItemJsonParser(_iStorage).WriteAsync(fileIndexItem);
 			}
+			
+			// set last edited
+			fileIndexItem.LastEdited = _iStorage.Info(fileIndexItem.FilePath!).LastWriteTime;
 
 			// Do a database sync + cache sync
 			// Clone to avoid reference when cache exist

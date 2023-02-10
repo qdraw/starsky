@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -27,9 +28,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		private readonly FakeIWebLogger _logger;
 
 		[TestMethod]
-		public void QueryNoCache_SingleItem_Test()
+		public async Task QueryNoCache_SingleItem_Test()
 		{
-			_query.AddItem(new FileIndexItem
+			await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "nocache.jpg",
 				ParentDirectory = "/nocache",

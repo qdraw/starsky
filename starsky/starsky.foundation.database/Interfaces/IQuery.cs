@@ -150,14 +150,10 @@ namespace starsky.foundation.database.Interfaces
 	    Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths,
 		    int fallbackDelay = 5000);
 	    
-        FileIndexItem AddItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem);
 
         Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList);
         
-        FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
-        List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList);
-
         Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent);
         Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList);
 

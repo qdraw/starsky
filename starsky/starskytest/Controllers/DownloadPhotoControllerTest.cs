@@ -39,7 +39,7 @@ namespace starskytest.Controllers
 			_query = new Query(context, new AppSettings(), scopeFactory, new FakeIWebLogger(), memoryCache);
 		}
 
-		private FileIndexItem InsertSearchData()
+		private async Task<FileIndexItem> InsertSearchData()
 		{
 			var item = new FileIndexItem
 			{
@@ -49,9 +49,9 @@ namespace starskytest.Controllers
 				ColorClass = ColorClassParser.Color.Winner // 1
 			};
 
-			if ( string.IsNullOrEmpty(_query.GetSubPathByHash("home0012304590")) )
+			if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("home0012304590")) )
 			{
-				_query.AddItem(item);
+				await _query.AddItemAsync(item);
 			}
 			return item;
 		}
@@ -120,7 +120,7 @@ namespace starskytest.Controllers
 		public async Task DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test()
 		{
 			// Arrange
-			var fileIndexItem = InsertSearchData();
+			var fileIndexItem = await InsertSearchData();
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 			
 			// Act
@@ -198,7 +198,7 @@ namespace starskytest.Controllers
 		public async Task DownloadPhoto_isThumbnailFalse_ReturnFileStream_Test()
 		{
 			// Arrange
-			var fileIndexItem = InsertSearchData();
+			var fileIndexItem = await InsertSearchData();
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 	        
 			// Act
@@ -214,7 +214,7 @@ namespace starskytest.Controllers
 		public async Task DownloadPhoto_isThumbnailTrue_ReturnAThumb_ReturnFileStream_Test()
 		{
 			// Arrange
-			var fileIndexItem = InsertSearchData();
+			var fileIndexItem = await InsertSearchData();
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 
 			// Act
@@ -236,7 +236,7 @@ namespace starskytest.Controllers
 		public async Task ApiController_DownloadPhoto_SourceImageIsMissing_Test()
 		{
 			// Arrange
-			var fileIndexItem = InsertSearchData();
+			var fileIndexItem = await InsertSearchData();
 			
 			// so the item does not exist on disk
 			var storage = ArrangeStorage();
@@ -254,7 +254,7 @@ namespace starskytest.Controllers
 		public async Task DownloadPhoto_Thumb_base_folder_not_found_Test()
 		{
 			// Arrange
-			var fileIndexItem = InsertSearchData();
+			var fileIndexItem = await InsertSearchData();
 			var storage =
 				new FakeIStorage(null, new List<string>{"/test.jpg"}, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});

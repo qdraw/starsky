@@ -66,6 +66,8 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 
 			appSettings.SyncOnStartup = false;
 			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService,logger);
+			
+			// Assert
 			await startupSync.StartUpSync();
 
 			var setting = await settingsService.GetSetting<DateTime>(SettingsType

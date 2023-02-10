@@ -6,12 +6,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+#nullable enable
 
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
@@ -79,7 +79,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var detailView = fakeQuery.SingleItem("/test.jpg");
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg", fileIndexItem.FilePath);
+			Assert.AreEqual("/test.jpg", fileIndexItem?.FilePath);
 			
 			// should not duplicate add items
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
@@ -120,7 +120,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			// should add files to db
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/level/deep/test.jpg", fileIndexItem.FilePath);
+			Assert.AreEqual("/level/deep/test.jpg", fileIndexItem?.FilePath);
 			
 			// should not duplicate add items
 			var count= (await fakeQuery.GetAllFilesAsync("/level/deep"))
@@ -170,7 +170,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var detailView = fakeQuery.SingleItem("/test.jpg");
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg", fileIndexItem.FilePath);
+			Assert.AreEqual("/test.jpg", fileIndexItem?.FilePath);
 		}
 
 		[TestMethod]
@@ -270,38 +270,42 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task MultiFile_FileAlreadyExist_With_Changed_FileHash()
 		{
-			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+			const string currentFilePath = "/test_date.jpg";
+			_iStorageFake.FileCopy("/test.jpg", currentFilePath);
+			(_iStorageFake as FakeIStorage)!.SetDateTime(currentFilePath,DateTime.UtcNow);
+			
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync(currentFilePath);
 				
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem("/test.jpg")
+				new FileIndexItem(currentFilePath)
 				{
 					FileHash = "THIS_IS_THE_OLD_HASH",
-					Size = 99999999 // % % % that's not the right size % % %
+					Size = 99999999, // % % % that's not the right size % % %
 				}
 			});
 			
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 				_iStorageFake, null, new FakeIWebLogger());
-			var result = await sync.MultiFile(new List<string>{"/test.jpg"});
+			var result = await sync.MultiFile(new List<string>{currentFilePath});
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 
-			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FilePath == currentFilePath);
 			Assert.AreEqual(1,count);
 			
-			var detailView = fakeQuery.SingleItem("/test.jpg");
+			var detailView = fakeQuery.SingleItem(currentFilePath);
 			
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
-			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+			Assert.AreEqual(currentFilePath,fileIndexItem?.FilePath);
+			Assert.AreEqual(fileHash, fileIndexItem?.FileHash);
 			
 			// Should be around now-ish
-			Assert.AreEqual(DateTime.UtcNow.Day, fileIndexItem.LastEdited.Day);
-			Assert.AreEqual(DateTime.UtcNow.Month, fileIndexItem.LastEdited.Month);
-			Assert.AreEqual(DateTime.UtcNow.Hour, fileIndexItem.LastEdited.Hour);
-			Assert.AreEqual(DateTime.UtcNow.Minute, fileIndexItem.LastEdited.Minute);
+			Assert.AreEqual(DateTime.UtcNow.Day, fileIndexItem?.LastEdited.Day);
+			Assert.AreEqual(DateTime.UtcNow.Month, fileIndexItem?.LastEdited.Month);
+			Assert.AreEqual(DateTime.UtcNow.Hour, fileIndexItem?.LastEdited.Hour);
+			Assert.AreEqual(DateTime.UtcNow.Minute, fileIndexItem?.LastEdited.Minute);
 		}
 
 		[TestMethod]
@@ -355,8 +359,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
-			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+			Assert.AreEqual("/test.jpg",fileIndexItem?.FilePath);
+			Assert.AreEqual(fileHash, fileIndexItem?.FileHash);
 		}
 		
 		[TestMethod]
@@ -402,7 +406,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task MultiFile_DbItem_NoContent_NoItemInDb()
 		{
-			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
 			var item = new FileIndexItem("/test.jpg")
 			{
 				FileHash = "THIS_IS_THE_OLD_HASH",
@@ -434,10 +437,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, null, new FakeIWebLogger());
 			await sync.MultiFile(new List<FileIndexItem>{item}); // % % % % Enter item here % % % % % 
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 
-			Assert.AreNotEqual(string.Empty, fileIndexItem.Tags);
-			Assert.AreEqual("the tags should not be updated", fileIndexItem.Tags);
+			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
 		}
 
 		[TestMethod]
@@ -462,10 +465,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, null,new FakeIWebLogger());
 			await sync.MultiFile(new List<string>{"/test.xmp"});
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 			
-			Assert.AreEqual(1,fileIndexItem.SidecarExtensionsList.Count);
-			Assert.AreEqual("xmp",fileIndexItem.SidecarExtensionsList.ToList()[0]);
+			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
+			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);
 			
 			var fileIndexItem2 = fakeQuery.SingleItem("/test.xmp")?.FileIndexItem;
 			Assert.IsNull(fileIndexItem2);
@@ -494,10 +497,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, null, new FakeIWebLogger());
 			await sync.MultiFile(new List<FileIndexItem>{item});
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 			
-			Assert.AreEqual(1,fileIndexItem.SidecarExtensionsList.Count);
-			Assert.AreEqual("xmp",fileIndexItem.SidecarExtensionsList.ToList()[0]);
+			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
+			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);
 		}
 		
 		[TestMethod]
@@ -519,7 +522,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			await sync.MultiFile(new List<string>{"/color_class_test.jpg"});
 			
-			var fileIndexItem = fakeQuery.SingleItem("/color_class_test.jpg").FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/color_class_test.jpg")?.FileIndexItem;
 			
 			Assert.IsNotNull(fileIndexItem);
 			Assert.AreEqual(fileHash, fileIndexItem.FileHash);

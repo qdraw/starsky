@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -39,11 +40,11 @@ namespace starskytest.Controllers
 				new FakeIWebLogger(), memoryCache);
 		}
 
-		private void InsertSearchData()
+		private async Task InsertSearchData()
 		{
-			if (string.IsNullOrEmpty(_query.GetSubPathByHash("home0012304590")))
+			if (string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("home0012304590")))
 			{
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "hi.jpg",
 					ParentDirectory = "/homecontrollertest",
@@ -52,7 +53,7 @@ namespace starskytest.Controllers
 				});
                 
 				// There must be a parent folder
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "homecontrollertest",
 					ParentDirectory = "",
@@ -62,9 +63,9 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void HomeControllerIndexDetailViewTest()
+		public async Task HomeControllerIndexDetailViewTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var controller = new IndexController(_query, new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Index("/homecontrollertest/hi.jpg",null,true) as JsonResult;
@@ -74,9 +75,9 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void HomeControllerIndexIndexViewModelTest()
+		public async Task HomeControllerIndexIndexViewModelTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var controller = new IndexController(_query,new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.Index("/homecontrollertest",null,true) as JsonResult;

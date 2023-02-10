@@ -19,7 +19,6 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		public FileIndexItem()
 		{
-			SetLastEdited();
 			if ( AddToDatabase.Year == 0 ) SetAddToDatabase();
 		}
 
@@ -31,7 +30,6 @@ namespace starsky.foundation.database.Models
 		{
 			SetFilePath(subPath);
 			IsDirectory = false;
-			SetLastEdited();
 		}
 	    
 		/// <summary>

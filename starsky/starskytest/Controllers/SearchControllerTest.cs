@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -52,9 +53,9 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void SearchControllerTest_Index_OneKeyword()
+		public async Task SearchControllerTest_Index_OneKeyword()
 		{
-			var item0 = _query.AddItem(new FileIndexItem
+			var item0 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "Test.jpg",
 				ParentDirectory = "/",
@@ -71,7 +72,7 @@ namespace starskytest.Controllers
 			Assert.AreEqual("test",searchViewResult?.SearchQuery);
 			Assert.AreEqual(nameof(FileIndexItem.Tags),searchViewResult?.SearchIn?[0]);
 
-			_query.RemoveItem(item0);
+			await _query.RemoveItemAsync(item0);
 		}
 
 		[TestMethod]
@@ -84,16 +85,16 @@ namespace starskytest.Controllers
 		}
         
 		[TestMethod]
-		public void SearchControllerTest_RelativeApi_Prev()
+		public async Task SearchControllerTest_RelativeApi_Prev()
 		{
-			var item0 = _query.AddItem(new FileIndexItem
+			var item0 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
 				Tags = "test",
 				FileHash = "FileHash1"
 			});
-			var item1 = _query.AddItem(new FileIndexItem
+			var item1 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test1.jpg",
 				ParentDirectory = "/",
@@ -107,21 +108,21 @@ namespace starskytest.Controllers
 			Assert.AreEqual("/test.jpg",relativeObjects!.PrevFilePath);
 			Assert.AreEqual("FileHash1",relativeObjects.PrevHash);
 
-			_query.RemoveItem(item0);
-			_query.RemoveItem(item1);
+			await _query.RemoveItemAsync(item0);
+			await _query.RemoveItemAsync(item1);
 		}
         
 		[TestMethod]
-		public void SearchControllerTest_RelativeApi_Next()
+		public async Task SearchControllerTest_RelativeApi_Next()
 		{
-			var item0 = _query.AddItem(new FileIndexItem
+			var item0 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
 				Tags = "test",
 				FileHash = "FileHash1"
 			});
-			var item1 = _query.AddItem(new FileIndexItem
+			var item1 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test1.jpg",
 				ParentDirectory = "/",
@@ -136,8 +137,8 @@ namespace starskytest.Controllers
 			Assert.AreEqual("/test1.jpg",relativeObjects!.NextFilePath);
 			Assert.AreEqual("FileHash2",relativeObjects.NextHash);
 
-			_query.RemoveItem(item0);
-			_query.RemoveItem(item1);
+			await _query.RemoveItemAsync(item0);
+			await _query.RemoveItemAsync(item1);
 		}
 
 		[TestMethod]
@@ -150,16 +151,16 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void SearchRelative_LastItem()
+		public async Task SearchRelative_LastItem()
 		{
-			var item0 = _query.AddItem(new FileIndexItem
+			var item0 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
 				Tags = "test",
 				FileHash = "FileHash1"
 			});
-			var item1 = _query.AddItem(new FileIndexItem
+			var item1 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test1.jpg",
 				ParentDirectory = "/",
@@ -173,8 +174,8 @@ namespace starskytest.Controllers
 			Assert.IsNull(relativeObjects?.NextFilePath);
 			Assert.IsNull(relativeObjects?.NextHash);
 
-			_query.RemoveItem(item0);
-			_query.RemoveItem(item1);
+			await _query.RemoveItemAsync(item0);
+			await _query.RemoveItemAsync(item1);
 		}
 
 		[TestMethod]
@@ -198,7 +199,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void RemoveCache_CacheDisabled()
 		{
-			var controller = new SearchController(new SearchService(null));
+			var controller = new SearchController(new SearchService(null!));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;

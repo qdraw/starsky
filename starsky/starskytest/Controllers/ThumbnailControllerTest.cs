@@ -44,9 +44,9 @@ namespace starskytest.Controllers
 				null, new FakeIWebLogger(), memoryCache);
 		}
 
-		private FileIndexItem InsertSearchData()
+		private async Task<FileIndexItem> InsertSearchData()
 		{
-			var fileHash = "home0012304590";
+			const string fileHash = "home0012304590";
 			var item = new FileIndexItem
 			{
 				FileName = "test.jpg",
@@ -55,9 +55,9 @@ namespace starskytest.Controllers
 				ColorClass = ColorClassParser.Color.Winner // 1
 			};
 
-			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHash)) )
+			if ( string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHash)) )
 			{
-				_query.AddItem(item);
+				await _query.AddItemAsync(item);
 			}
 			return item;
 		}
@@ -120,7 +120,7 @@ namespace starskytest.Controllers
 		{
 			// Arrange
 			var storage = ArrangeStorage();
-			var createAnImage = InsertSearchData();
+			var createAnImage = await InsertSearchData();
 
 			// Act
 			// Create thumbnail in fake storage
@@ -144,7 +144,7 @@ namespace starskytest.Controllers
 		{
 			// Arrange
 			var storage = ArrangeStorage();
-			var createAnImage = InsertSearchData();
+			var createAnImage = await InsertSearchData();
 
 			// Act
 			// Create thumbnail in fake storage
@@ -186,9 +186,9 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public void Thumbnail_ShowOriginalImage_API_Test()
+		public async Task Thumbnail_ShowOriginalImage_API_Test()
 		{
-			var createAnImage = InsertSearchData();
+			var createAnImage = await InsertSearchData();
 			var storage = ArrangeStorage();
 
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
@@ -206,18 +206,18 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void Thumbnail_IsMissing_ButOriginalExist_butNoIsSingleItemFlag_API_Test()
+		public async Task Thumbnail_IsMissing_ButOriginalExist_butNoIsSingleItemFlag_API_Test()
 		{
 			// Photo exist in database but " + "isSingleItem flag is Missing
-			var createAnImage = InsertSearchData();
+			var createAnImage = await InsertSearchData();
 			var storage = ArrangeStorage();
 
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = controller.Thumbnail(createAnImage.FileHash, false, true) as JsonResult;
-			var thumbnailAnswer = actionResult.StatusCode; // always null for some reason ?!
-			Assert.AreEqual("Thumbnail is not ready yet",actionResult.Value);
+			var thumbnailAnswer = actionResult?.StatusCode; // always null for some reason ?!
+			Assert.AreEqual("Thumbnail is not ready yet",actionResult?.Value);
 		}
 
 		[TestMethod]
@@ -347,7 +347,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task ByZoomFactor_ShowOriginalImage_API_Test()
 		{
-			var createAnImage = InsertSearchData();
+			var createAnImage = await InsertSearchData();
 			var storage = ArrangeStorage();
 
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
@@ -367,13 +367,14 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task ByZoomFactor_ShowOriginalImage_NoFileHash_API_Test()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var storage = ArrangeStorage();
 
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = await controller.ByZoomFactor("____", 1, "/test.jpg") as FileStreamResult;
+			Assert.IsNotNull(actionResult);
 			var thumbnailAnswer = actionResult.ContentType;
 			
 			controller.Response.Headers.TryGetValue("x-filename", out var value ); 
@@ -475,9 +476,9 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public void ListSizesByHash_ExpectLarge()
+		public async Task ListSizesByHash_ExpectLarge()
 		{
-			var item = _query.AddItem(new FileIndexItem("/test123.jpg")
+			var item = await _query.AddItemAsync(new FileIndexItem("/test123.jpg")
 			{
 				FileHash = "01234567890123456789123456"
 			});
@@ -494,21 +495,22 @@ namespace starskytest.Controllers
 			
 			// Thumbnail exist
 			Assert.AreNotEqual(null,actionResult);
-			var thumbnailAnswer = actionResult.Value as ThumbnailSizesExistStatusModel;
+			var thumbnailAnswer = actionResult?.Value as ThumbnailSizesExistStatusModel;
 
+			Assert.IsNotNull(thumbnailAnswer);
 			Assert.AreEqual(202, controller.Response.StatusCode);
 			Assert.AreEqual(true,thumbnailAnswer.Large);
 			Assert.AreEqual(false,thumbnailAnswer.ExtraLarge);
 			Assert.AreEqual(false,thumbnailAnswer.TinyMeta);
 
-			_query.RemoveItem(item);
+			await _query.RemoveItemAsync(item);
 		}
 		
 		[TestMethod]
-		public void ListSizesByHash_AllExist_exceptTinyMeta()
+		public async Task ListSizesByHash_AllExist_exceptTinyMeta()
 		{
-			var hash = "01234567890123456789123456";
-			var item = _query.AddItem(new FileIndexItem("/test123.jpg")
+			const string hash = "01234567890123456789123456";
+			var item = await _query.AddItemAsync(new FileIndexItem("/test123.jpg")
 			{
 				FileHash = hash
 			});
@@ -528,8 +530,9 @@ namespace starskytest.Controllers
 			var actionResult = controller.ListSizesByHash(hash) as JsonResult;
 			
 			// Thumbnail exist
-			Assert.AreNotEqual(null, actionResult);
+			Assert.IsNotNull(actionResult);
 			var thumbnailAnswer = actionResult.Value as ThumbnailSizesExistStatusModel;
+			Assert.IsNotNull(thumbnailAnswer);
 
 			Assert.AreEqual(200, controller.Response.StatusCode);
 			Assert.AreEqual(true,thumbnailAnswer.Large);
@@ -548,13 +551,13 @@ namespace starskytest.Controllers
 			
 			var controller = new ThumbnailController(_query,storageSelector);;
 			var actionResult = controller.ListSizesByHash("../") as BadRequestResult;
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
-		public void ListSizesByHash_IgnoreRaw()
+		public async Task ListSizesByHash_IgnoreRaw()
 		{
-			var item = _query.AddItem(new FileIndexItem("/test123.arw")
+			var item = await _query.AddItemAsync(new FileIndexItem("/test123.arw")
 			{
 				FileHash = "91234567890123456789123451"
 			});

@@ -181,7 +181,9 @@ namespace starsky.feature.packagetelemetry.Services
 			var formEncodedData = new FormUrlEncodedContent(telemetryDataItems);
 
 			if ( _appSettings.EnablePackageTelemetryDebug != true )
+			{
 				return await PostData(formEncodedData);
+			}
 			
 			foreach ( var (key, value) in telemetryDataItems )
 			{

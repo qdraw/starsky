@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky;
+using starsky.foundation.platform.Models;
 
 namespace starskytest.root;
 
@@ -38,56 +39,67 @@ public class ProgramTest
 		// see also:
 		// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
 	}
-
+	
 	[TestMethod]
 	[Timeout(5000)]
-	[ExpectedException(typeof(System.IO.IOException))]
-	public async Task Program_Main_TestCancel()
+	[ExpectedException(typeof(HttpRequestException))]
+	public async Task Program_Main_NoAddress_UnixOnly()
 	{
-		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:9514");
+		if ( new AppSettings().IsWindows )
+		{
+			// this test has issues with timing on windows
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+		
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:7514");
 		Environment.SetEnvironmentVariable("app__useDiskWatcher","false");
 		Environment.SetEnvironmentVariable("app__SyncOnStartup","false");
 		Environment.SetEnvironmentVariable("app__thumbnailGenerationIntervalInMinutes","0");
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup","true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
-
-		// The trick is that here already is a port open
-		// so the app crashes
 		
+		await Program.Main(new []{"--do-not-start"});
+
+		using HttpClient client = new();
+		await client.GetAsync("http://localhost:7514");
+		// and this address does not exists
+	}
+	
+	[TestMethod]
+	[Timeout(5000)]
+	public async Task Program_RunAsync()
+	{
+		var result = await Program.RunAsync(null,false);
+		Assert.IsFalse(result);
+	}
+	
+	[TestMethod]
+	[Timeout(5000)]
+	public async Task Program_RunAsync_ReturnedTrue()
+	{
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
 		
-		await Task.Factory.StartNew(() => app.RunAsync(), TaskCreationOptions.LongRunning);
+		var result = await Task.Factory.StartNew(() => Program.RunAsync(app), TaskCreationOptions.LongRunning);
+		
+		await app.StopAsync();
+		
+		Assert.IsNotNull(result);
+	}
+	
+	[TestMethod]
+	[Timeout(5000)]
+	[ExpectedException(typeof(FormatException))]
+	public async Task Program_RunAsync_InvalidUrl()
+	{
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","test");
 
-		// next wait for port is opened
-		var requested = 0;
-		while ( requested < 5 )
-		{
-			using HttpClient client = new();
-			try
-			{
-				var responseMessage = await client.GetAsync("http://localhost:9514");
-				if ( responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound )
-				{
-					requested = int.MaxValue;
-					continue;
-				}
-				requested++;
-			}
-			catch ( HttpRequestException )
-			{
-				requested++;
-			}
-		}
-
-		if ( requested != int.MaxValue )
-		{
-			throw new TimeoutException();
-		}
-		// end wait for port is opened
-
-		await Program.Main(Array.Empty<string>());
+		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
+		var app = builder.Build();
+		
+		await Program.RunAsync(app);
 	}
 	
 	[ClassCleanup]

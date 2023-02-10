@@ -89,26 +89,32 @@ namespace starsky.foundation.sync.SyncServices
 			var statusItems =  _syncSingleFile.CheckForStatusNotOk(dbItems.Select(p => p.FilePath)).ToList();
 			foreach ( var statusItem in statusItems )
 			{
-				var dbItemSearched = dbItems.FirstOrDefault(p =>
+				var dbItemSearchedIndex = dbItems.FindIndex(p =>
 					p.FilePath == statusItem.FilePath);
+				var dbItemSearched = dbItems[dbItemSearchedIndex];
+				
 				if ( dbItemSearched == null || (dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex 
+				                                // why statusItem.Status?
 				                                && statusItem.Status == FileIndexItem.ExifStatus.Ok))
 				{
 					continue;
 				}
 				
-				dbItemSearched.Status = statusItem.Status;
+				dbItems[dbItemSearchedIndex].Status = statusItem.Status;
 				
 				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok } )
 				{
 					// there is still a check if the file is not changed see: SizeFileHashIsTheSame
-					dbItemSearched.Status = FileIndexItem.ExifStatus.OkAndSame;
+					dbItems[dbItemSearchedIndex].Status = FileIndexItem.ExifStatus.OkAndSame;
 				}
 			}
 		
 			// Multi thread check for file hash
-			var isSameUpdatedItemList = await dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame).ForEachAsync(
-				async dbItem => await _syncSingleFile.SizeFileHashIsTheSame(dbItem), _appSettings.MaxDegreesOfParallelism);
+			var isSameUpdatedItemList = await dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)
+				.ForEachAsync(
+					async dbItem => await _syncSingleFile.SizeFileHashIsTheSame(dbItem),
+					_appSettings.MaxDegreesOfParallelism);
+			
 			if ( isSameUpdatedItemList != null )
 			{
 				foreach ( var (_,_,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> !p.Item1) )
@@ -126,6 +132,7 @@ namespace starsky.foundation.sync.SyncServices
 				).ToList(), false);
 			foreach ( var newItem in newItemsList )
 			{
+				// only for new items that needs to be added to the db
 				var newItemIndex = dbItems.FindIndex(
 					p => p.FilePath == newItem.FilePath);
 				if ( newItemIndex < 0 ) continue;

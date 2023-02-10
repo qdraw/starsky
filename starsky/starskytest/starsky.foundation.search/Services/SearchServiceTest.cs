@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.search.Services;
+using starsky.feature.search.ViewModels;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.feature.search.Services;
-using starsky.feature.search.ViewModels;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.search.Services
+namespace starskytest.starsky.foundation.search.Services
 {
 	[TestClass]
 	public sealed class SearchServiceTest
@@ -37,18 +38,16 @@ namespace starskytest.starsky.feature.search.Services
 			_dbContext = new ApplicationDbContext(options);
 			_search = new SearchService(_dbContext,null,null, new FakeIWebLogger());
 			_query = new Query(_dbContext,
-				new AppSettings(), null, new FakeIWebLogger(),_memoryCache);
+				new AppSettings(), null!, new FakeIWebLogger(),_memoryCache);
 		}
-	    
-		private const int NumberOfResultsInView = 120;
-		private const int NumberOfFakeResults = 241;
 
+		private const int NumberOfFakeResults = 241;
 	    
-		public void InsertSearchData()
+		public async Task InsertSearchData()
 		{
 			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane")))
 			{
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "schipholairplane.jpg",
 					ParentDirectory = "/stations",
@@ -68,7 +67,7 @@ namespace starskytest.starsky.feature.search.Services
 
 			if (string.IsNullOrEmpty(_query.GetSubPathByHash("lelystadcentrum")))
 			{
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "lelystadcentrum.jpg",
 					ParentDirectory = "/stations",
@@ -81,7 +80,7 @@ namespace starskytest.starsky.feature.search.Services
             
 			if (string.IsNullOrEmpty(_query.GetSubPathByHash("lelystadcentrum2")))
 			{
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "lelystadcentrum2.jpg",
 					ParentDirectory = "/stations2",
@@ -98,7 +97,7 @@ namespace starskytest.starsky.feature.search.Services
 			if (string.IsNullOrEmpty(_query.GetSubPathByHash("stationdeletedfile")))
 			{
 				// add directory to search for
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "stations",
 					ParentDirectory = "/",
@@ -107,7 +106,7 @@ namespace starskytest.starsky.feature.search.Services
 					DateTime = new DateTime(2013,1,1,1,1,1),
 				});
         
-				_query.AddItem(new FileIndexItem
+				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "deletedfile.jpg",
 					ParentDirectory = "/stations",
@@ -124,7 +123,7 @@ namespace starskytest.starsky.feature.search.Services
 				for (var i = 0; i < NumberOfFakeResults; i++)
 				{
 					// NumberOfFakeResults > used for three pages
-					_query.AddItem(new FileIndexItem
+					await _query.AddItemAsync(new FileIndexItem
 					{
 						FileName = "cityloop" + i + ".jpg",
 						ParentDirectory = "/cities",
@@ -178,7 +177,7 @@ namespace starskytest.starsky.feature.search.Services
 		[TestMethod]
 		public void SearchService_RemoveCache_Disabled_Test()
 		{
-			var search = new SearchService(_dbContext,null); // cache is null!
+			var search = new SearchService(_dbContext); // cache is null!
 			Assert.AreEqual(null,search.RemoveCache("test"));
 		}
 	    
@@ -197,227 +196,224 @@ namespace starskytest.starsky.feature.search.Services
 		}
 
 		[TestMethod]
-		public void SearchService_SearchNull()
+		public async Task SearchService_SearchNull()
 		{
-			InsertSearchData();
-			Assert.AreEqual(0, _search.Search(null).SearchCount);
+			await InsertSearchData();
+			Assert.AreEqual(0, _search.Search(null!).SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_SearchCountStationTest()
+		public async Task SearchService_SearchCountStationTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			// With deleted files is it 3
 			
 			Assert.AreEqual(2, _search.Search("station").SearchCount);
 		}
 		
 		[TestMethod]
-		public void SearchService_SoftwareSearch()
+		public async Task SearchService_SoftwareSearch()
 		{
-			InsertSearchData();
+			await InsertSearchData();
         
 			Assert.AreEqual(1, _search.Search("-software:photo").SearchCount);
 		}
 
 		[TestMethod]
-		public void SearchService_SearchLastPageCityloopTest()
+		public async Task SearchService_SearchLastPageCityloopTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(2, _search.Search("cityloop").LastPageNumber);
 		}
 	    
 	    
 		[TestMethod]
-		public void SearchService_SearchForDatetime()
+		public async Task SearchService_SearchForDatetime()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-Datetime=\"2016-01-01 01:01:01\"").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchForDatetimeSmallerThen()
+		public async Task SearchService_SearchForDatetimeSmallerThen()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(2, _search.Search("-Datetime<\"2013-01-01 02:01:01\"").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchForLastEdited()
+		public async Task SearchService_SearchForLastEdited()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-LastEdited=\"2020-10-10 10:10:10\"").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchForDatetimeGreaterThen()
+		public async Task SearchService_SearchForDatetimeGreaterThen()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(NumberOfFakeResults+1, _search.Search("-Datetime>\"2018-01-01 01:01:01\"").SearchCount);
 		}
 
 		[TestMethod]
-		public void SearchSchipholDescriptionTest()
+		public async Task SearchSchipholDescriptionTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-Description:Schiphol").SearchCount);
 		}
    
 		[TestMethod]
-		public void SearchService_SearchSchipholFilenameTest()
+		public async Task SearchService_SearchSchipholFilenameTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-filename:'schipholairplane.jpg'").SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_SearchSchipholTitleTest()
+		public async Task SearchService_SearchSchipholTitleTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-title:Schiphol").SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_Make_Search()
+		public async Task SearchService_Make_Search()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-Make:Apple").SearchCount);
 			// schipholairplane.jpg
 		}
 
 		[TestMethod]
-		public void SearchService_Make_SearchNonExist()
+		public async Task SearchService_Make_SearchNonExist()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(0, _search.Search("-Make:SE").SearchCount);
 			// NOT schipholairplane.jpg
 		}
         
 		[TestMethod]
-		public void SearchService_Model_Search()
+		public async Task SearchService_Model_Search()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-Model:SE").SearchCount);
 			// schipholairplane.jpg
 		}
         
 		[TestMethod]
-		public void SearchService_NotQueryCityloop240()
+		public async Task SearchService_NotQueryCityloop240()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(NumberOfFakeResults-1, _search.Search("-filehash:cityloop -filehash-cityloop240").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchSchipholFileHashTest()
+		public async Task SearchService_SearchSchipholFileHashTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-filehash:schipholairplane").SearchCount);
 		}
 	    
 	    
 		[TestMethod]
-		public void SearchService_SearchCityloopTest()
+		public async Task SearchService_SearchCityloopTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(NumberOfFakeResults, _search.Search("cityloop").SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_SearchStationLelystadTest()
+		public async Task SearchService_SearchStationLelystadTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("station lelystad").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchStationLelystadQuotedTest()
+		public async Task SearchService_SearchStationLelystadQuotedTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("\"station\" \"lelystad\"").SearchCount);
 		}
 
 		[TestMethod]
-		public void SearchService_SearchParenthesisTreinTest()
+		public async Task SearchService_SearchParenthesisTreinTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("\"de trein\"").SearchCount);
 		}
 	    
-	    
 		[TestMethod]
-		public void SearchService_SearchIOSDoubleParenthesisTreinTest()
+		public async Task SearchService_SearchIOSDoubleParenthesisTreinTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("“!delete!”").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchIOSSingleParenthesisTreinTest()
+		public async Task SearchService_SearchIOSSingleParenthesisTreinTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("‘!delete!’").SearchCount);
 		}
 	    
-	    
 		[TestMethod]
-		public void SearchService_SearchNonParenthesisTreinTest()
+		public async Task SearchService_SearchNonParenthesisTreinTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("de trein").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchCityloopCaseSensitiveTest()
+		public async Task SearchService_SearchCityLoopCaseSensitiveTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			//    Check case sensitive!
 			Assert.AreEqual(NumberOfFakeResults, _search.Search("CityLoop").SearchCount);
 		}
 
 		[TestMethod]
-		public void SearchService_SearchCityloopTrimTest()
+		public async Task SearchService_SearchCityLoopTrimTest()
 		{
 			// Test TRIM
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(NumberOfFakeResults, _search.Search("   cityloop    ").SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_SearchCityloopFilePathTest()
+		public async Task SearchService_SearchCityLoopFilePathTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(NumberOfFakeResults, _search.Search("-FilePath:cityloop").SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_SearchCityloopFileNameTest()
+		public async Task SearchService_SearchCityLoopFileNameTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(NumberOfFakeResults, _search.Search("-FilePath:cityloop").SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_SearchCityloopParentDirectoryTest()
+		public async Task SearchService_SearchCityloopParentDirectoryTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(NumberOfFakeResults, _search.Search("-ParentDirectory:/cities").SearchCount);
 		}
 	    
 	    
 		[TestMethod]
-		public void SearchService_SearchForDirectories()
+		public async Task SearchService_SearchForDirectories()
 		{
-			InsertSearchData();
-			var t = _query.GetObjectByFilePath("/stations");
+			await InsertSearchData();
 		    
 			Assert.AreEqual(1, _search.Search("-isDirectory:true -inurl:stations").SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_SearchInUrlTest()
+		public async Task SearchService_SearchInUrlTest()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			// Not 3, because one file is marked as deleted!
 			// todo: check the value of this one
 			Assert.AreEqual(5, _search.Search("-inurl:/stations").SearchCount);
@@ -425,66 +421,66 @@ namespace starskytest.starsky.feature.search.Services
 		}
 
 		[TestMethod]
-		public void SearchService_SearchNarrowFileNameTags()
+		public async Task SearchService_SearchNarrowFileNameTags()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			// Not 2 > but needs to be narrow
 			// todo: check the value of this one
 			Assert.AreEqual(1, _search.Search("lelystad -ParentDirectory:/stations2").SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_SearchNarrow2FileNameTags()
+		public async Task SearchService_SearchNarrow2FileNameTags()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-ParentDirectory:/station -ParentDirectory:2").SearchCount);
 		}
 
 		[TestMethod]
-		public void SearchService_SearchForDateTimeBetween()
+		public async Task SearchService_SearchForDateTimeBetween()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-DateTime>2015-01-01T01:01:01 -DateTime<2017-01-01T01:01:01").SearchCount);
 			// lowercase is the same
 			Assert.AreEqual(1, _search.Search("-DateTime>2015-01-01t01:01:01 -DateTime<2017-01-01t01:01:01").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchOnOnlyDay()
+		public async Task SearchService_SearchOnOnlyDay()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 
 			var item = _search.Search("-DateTime=2016-01-01");
 			Assert.AreEqual(1, item.SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchOnToday()
+		public async Task SearchService_SearchOnToday()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 
 			var item = _search.Search("-DateTime=0");
 			Assert.AreEqual(1, item.SearchCount);
 		}
         
 		[TestMethod]
-		public void SearchService_Searchaddtodatabase()
+		public async Task SearchService_Searchaddtodatabase()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-addtodatabase>2015-01-01T01:01:01 -addtodatabase<2017-01-01T01:01:01").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchForImageFormat()
+		public async Task SearchService_SearchForImageFormat()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-ImageFormat:jpg").SearchCount);
 		}
 	    
 		[TestMethod]
-		public void SearchService_SearchForColorClass()
+		public async Task SearchService_SearchForColorClass()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			Assert.AreEqual(1, _search.Search("-ColorClass:2").SearchCount);
 			// red aka WinnerAlt
 		}
@@ -575,14 +571,14 @@ namespace starskytest.starsky.feature.search.Services
 		}
 
 		[TestMethod]
-		public void SearchService_SearchForDeletedFiles()
+		public async Task SearchService_SearchForDeletedFiles()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 
 			var del = _search.Search("!delete!");
-			var count = del.FileIndexItems?.Count;
+			var count = del.FileIndexItems.Count;
 			Assert.AreEqual(1,count);
-			Assert.AreEqual("stationdeletedfile", del.FileIndexItems?.FirstOrDefault()?.FileHash);
+			Assert.AreEqual("stationdeletedfile", del.FileIndexItems.FirstOrDefault()?.FileHash);
 		}
 
 		[TestMethod]
@@ -608,38 +604,38 @@ namespace starskytest.starsky.feature.search.Services
 				});
 			var searchService = new SearchService(_dbContext,fakeCache);
 			var result = searchService.Search("t"); // <= t is only to detect in fakeCache
-			Assert.AreEqual(1,result.FileIndexItems?.Count);
+			Assert.AreEqual(1,result.FileIndexItems.Count);
 		}
 	    
 
 		[TestMethod]
-		public void SearchService_thisORThisFileHashes()
+		public async Task SearchService_thisORThisFileHashes()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var result = _search.Search("-FileHash=stationdeletedfile || -FileHash=lelystadcentrum2",0,false);
-			Assert.AreEqual(2,result.FileIndexItems?.Count);
+			Assert.AreEqual(2,result.FileIndexItems.Count);
 		}
 	    
 		[TestMethod]
-		public void SearchService_DescriptionImageFormat()
+		public async Task SearchService_DescriptionImageFormat()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var result = _search.Search("-Description=lelystadcentrum2 -ImageFormat=tiff",0,false);
-			Assert.AreEqual(1,result.FileIndexItems?.Count);
+			Assert.AreEqual(1,result.FileIndexItems.Count);
 		}
 	    
 		[TestMethod]
-		public void SearchService_DescriptionOne()
+		public async Task SearchService_DescriptionOne()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var result = _search.Search("-Description=lelystadcentrum2",0,false);
-			Assert.AreEqual(1,result.FileIndexItems?.Count);
+			Assert.AreEqual(1,result.FileIndexItems.Count);
 		}
 
 		[TestMethod]
-		public void SearchService_thisORAndCombination()
+		public async Task SearchService_thisORAndCombination()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var result = _search.Search("-FileName=lelystadcentrum.jpg || -FileHash=lelystadcentrum && lelystad",
 				0,false);
 			//  -FileHash=lelystadcentrum2 && station >= 1 item
@@ -647,15 +643,15 @@ namespace starskytest.starsky.feature.search.Services
 			// the and applies to all previous items
 			// lelystadcentrum && lelystadcentrum2 are items
 			// station = duplicate in this example but triggers other results when using || instead of &&
-			Assert.AreEqual(2,result.FileIndexItems?.Count);
+			Assert.AreEqual(2,result.FileIndexItems.Count);
 		}
 
 		[TestMethod]
-		public void SearchService_thisORDefaultKeyword()
+		public async Task SearchService_thisORDefaultKeyword()
 		{
-			InsertSearchData();
+			await InsertSearchData();
 			var result = _search.Search("station || lelystad",0,false);
-			Assert.AreEqual(3,result.FileIndexItems?.Count);
+			Assert.AreEqual(3,result.FileIndexItems.Count);
 		}
 
 		[TestMethod]

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +12,8 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -26,7 +23,6 @@ namespace starskytest.starsky.feature.rename.Services
 	public sealed class RenameServiceTest
 	{
 		private readonly Query _query;
-		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _newImage;
 		private readonly StorageSubPathFilesystem _iStorageSubPath;
 
@@ -44,35 +40,26 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			_newImage = new CreateAnImage();
 
-			_appSettings = new AppSettings
+			var appSettings = new AppSettings
 			{
 				StorageFolder = PathHelper.AddBackslash(_newImage.BasePath),
 				ThumbnailTempFolder = _newImage.BasePath
 			};
-			_query = new Query(context, _appSettings, null,
+			_query = new Query(context, appSettings, null,
 				new FakeIWebLogger(),memoryCache);
 
 			if ( _query.GetAllFiles("/").All(p => p.FileName != _newImage.FileName) )
 			{
-				_query.AddItem(new FileIndexItem
+				context.FileIndex.Add(new FileIndexItem
 				{
 					FileName = _newImage.FileName,
 					ParentDirectory = "/",
 					AddToDatabase = DateTime.UtcNow,
 				});
+				context.SaveChanges();
 			}
-			
-			var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 
-			var readMeta = new ReadMeta(iStorage,_appSettings,memoryCache, new FakeIWebLogger());
-			
-			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
-			
-			var services = new ServiceCollection();
-			var selectorStorage = new FakeSelectorStorage(iStorage);
-
-			//_sync = new Synchronize(_appSettings, _query, selectorStorage, new FakeIWebLogger());
-
+			_iStorageSubPath = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 		}
 
 		[TestMethod]
@@ -202,9 +189,9 @@ namespace starskytest.starsky.feature.rename.Services
 		private FileIndexItem _parentFolder;
 		//private Synchronize _sync;
 
-		private void CreateFoldersAndFilesInDatabase()
+		private async Task CreateFoldersAndFilesInDatabase()
 		{
-			_folderExist = _query.AddItem(new FileIndexItem
+			_folderExist = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "exist",
 				ParentDirectory = "/",
@@ -213,14 +200,14 @@ namespace starskytest.starsky.feature.rename.Services
 				IsDirectory = true
 			});
 			
-			_fileInExist = _query.AddItem(new FileIndexItem
+			_fileInExist = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "file.jpg",
 				ParentDirectory = "/exist",
 				IsDirectory = false
 			});
 
-			_folder1Exist = _query.AddItem(new FileIndexItem
+			_folder1Exist = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "folder1",
 				ParentDirectory = "/",
@@ -228,7 +215,7 @@ namespace starskytest.starsky.feature.rename.Services
 				FileHash = "3497867df894587",
 			});
 			
-			_parentFolder = _query.AddItem(new FileIndexItem
+			_parentFolder = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "/",
 				ParentDirectory = "/",
@@ -249,7 +236,7 @@ namespace starskytest.starsky.feature.rename.Services
 		{
 			// RenameFsTest_MoveFileToSameFolder_Items
 			
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var iStorage = new FakeIStorage(new List<string>{_folderExist.FilePath},
 				new List<string>{_fileInExist.FilePath});
@@ -277,7 +264,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_RenameOneFile_JsonSidecarFile()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var iStorage = new FakeIStorage(new List<string>{_folderExist.FilePath},
 				new List<string>{_fileInExist.FilePath,JsonSidecarLocation.JsonLocation(_fileInExist.FilePath)});
@@ -300,7 +287,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_RenameOneFile_ToWrongNewFileName()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var iStorage = new FakeIStorage(new List<string>
 			{
@@ -322,7 +309,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_FileToNonExistFolder_Items()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
@@ -361,7 +348,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_File_To_ExistFolder_MoveToTheSamePath()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/", "/exist" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
@@ -376,7 +363,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_File_To_ExistFolder() // there is a separate sidecar json test
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/", "/test" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
@@ -406,7 +393,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_File_To_ExistFolder_Json_SidecarFile()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/", "/test" };
 			var initFileList = new List<string> { _fileInExist.FilePath, JsonSidecarLocation.JsonLocation(_fileInExist.FilePath) };
@@ -437,9 +424,9 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_mergeTwoFolders()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 			
-			var existSubFolder = _query.AddItem(new FileIndexItem
+			var existSubFolder = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "subfolder",
 				ParentDirectory = _folder1Exist.FilePath,
@@ -447,7 +434,7 @@ namespace starskytest.starsky.feature.rename.Services
 				FileHash = "InjectedAsExistSubFolder"
 			});
 			
-			var existSubFolderChildJpg = _query.AddItem(new FileIndexItem
+			var existSubFolderChildJpg = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "child.jpg",
 				ParentDirectory = _folder1Exist.FilePath + "/subfolder",
@@ -537,7 +524,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_MoveAFolderIntoAFile()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 			var iStorage = new FakeIStorage();
 			var renameFs = await new RenameService(_query, iStorage).Rename(_folderExist.FilePath, _fileInExist.FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, renameFs[0].Status);
@@ -638,15 +625,15 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 		
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_FileToDeleted_SingleItem_WithCollectionsEnabled()
+		public async Task InputOutputSubPathsPreflight_FileToDeleted_SingleItem_WithCollectionsEnabled()
 		{
 			var itemInChildFolderPath1 = "/child_folder/test_22.jpg";
 			var collectionItemPath1 = "/child_folder/test_22.dng";
 
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
-			_query.AddItem(new FileIndexItem(collectionItemPath1));
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath1));
+			await _query.AddItemAsync(new FileIndexItem(collectionItemPath1));
 
-			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			await _query.AddParentItemsAsync(itemInChildFolderPath1);
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
 				new List<string>{itemInChildFolderPath1, collectionItemPath1});
 
@@ -669,15 +656,15 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 		
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_FileToDeleted_SingleItem_Change_FileName_And_Extension_WithCollections()
+		public async Task InputOutputSubPathsPreflight_FileToDeleted_SingleItem_Change_FileName_And_Extension_WithCollections()
 		{
 			var itemInChildFolderPath1 = "/child_folder/test_23.jpg";
 			var collectionItemPath1 = "/child_folder/test_23.dng";
 
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
-			_query.AddItem(new FileIndexItem(collectionItemPath1));
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath1));
+			await _query.AddItemAsync(new FileIndexItem(collectionItemPath1));
 
-			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			await _query.AddParentItemsAsync(itemInChildFolderPath1);
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
 				new List<string>{itemInChildFolderPath1, collectionItemPath1});
 
@@ -700,15 +687,15 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 		
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_FileToDeleted_SingleItem_Change_Extension_WithCollections()
+		public async Task InputOutputSubPathsPreflight_FileToDeleted_SingleItem_Change_Extension_WithCollections()
 		{
 			var itemInChildFolderPath1 = "/child_folder/test_24.jpg";
 			var collectionItemPath1 = "/child_folder/test_24.dng";
 
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
-			_query.AddItem(new FileIndexItem(collectionItemPath1));
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath1));
+			await _query.AddItemAsync(new FileIndexItem(collectionItemPath1));
 
-			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			await _query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
 				new List<string>{itemInChildFolderPath1, collectionItemPath1});
 
@@ -726,8 +713,8 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(0, fileIndexResultsList.Count );
 
 			// this does only preflight
-			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(collectionItemPath1).FileIndexItem);
 		}
 		
 		[TestMethod]
@@ -781,15 +768,15 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_FileToFolder_SingleItemWithCollectionsEnabled()
+		public async Task InputOutputSubPathsPreflight_FileToFolder_SingleItemWithCollectionsEnabled()
 		{
 			var itemInChildFolderPath1 = "/child_folder/test_07.jpg";
 			var collectionItemPath1 = "/child_folder/test_07.png";
 
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
-			_query.AddItem(new FileIndexItem(collectionItemPath1));
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath1));
+			await _query.AddItemAsync(new FileIndexItem(collectionItemPath1));
 
-			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			await _query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
 				new List<string>{itemInChildFolderPath1, collectionItemPath1});
 
@@ -805,12 +792,12 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			Assert.AreEqual(0, fileIndexResultsList.Count );
 			
-			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(collectionItemPath1).FileIndexItem);
 		}
 		
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_FileToFolder_MultipleFiles_CollectionsTrue()
+		public async Task InputOutputSubPathsPreflight_FileToFolder_MultipleFiles_CollectionsTrue()
 		{
 			// write test that has input /test.jpg;/test2.jpg > /test;/test2 and both has 2 or 3 collection files
 			// the other should be ok
@@ -821,12 +808,12 @@ namespace starskytest.starsky.feature.rename.Services
 			var itemInChildFolderPath2 = "/child_folder/test_02.jpg";
 			var collectionItemPath2 = "/child_folder/test_02.png";
 			
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
-			_query.AddItem(new FileIndexItem(collectionItemPath1));
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath2));
-			_query.AddItem(new FileIndexItem(collectionItemPath2));
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath1));
+			await _query.AddItemAsync(new FileIndexItem(collectionItemPath1));
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath2));
+			await _query.AddItemAsync(new FileIndexItem(collectionItemPath2));
 			
-			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			await _query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2","/other"}, 
 				new List<string>{itemInChildFolderPath1, collectionItemPath1, 
 					itemInChildFolderPath2, collectionItemPath2});
@@ -847,14 +834,14 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			Assert.AreEqual(0, fileIndexResultsList.Count );
 
-			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath2).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(collectionItemPath2).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(collectionItemPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(itemInChildFolderPath2).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(collectionItemPath2).FileIndexItem);
 		}
 			
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_FileToFolder_MultipleFiles_CollectionsFalse_Aka_Disabled()
+		public async Task InputOutputSubPathsPreflight_FileToFolder_MultipleFiles_CollectionsFalse_Aka_Disabled()
 		{
 			// write test that has input /test.jpg;/test2.jpg > /test;/test2 and both has 2 or 3 collection files
 			// But this one's are not used
@@ -866,12 +853,12 @@ namespace starskytest.starsky.feature.rename.Services
 			var itemInChildFolderPath2 = "/child_folder/test_06.jpg";
 			var collectionItemPath2 = "/child_folder/test_06.png";
 			
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
-			_query.AddItem(new FileIndexItem(collectionItemPath1));
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath2));
-			_query.AddItem(new FileIndexItem(collectionItemPath2));
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath1));
+			await _query.AddItemAsync(new FileIndexItem(collectionItemPath1));
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath2));
+			await _query.AddItemAsync(new FileIndexItem(collectionItemPath2));
 			
-			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			await _query.AddParentItemsAsync(itemInChildFolderPath1);
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2","/other"}, 
 				new List<string>{itemInChildFolderPath1, collectionItemPath1, 
 					itemInChildFolderPath2, collectionItemPath2});
@@ -889,24 +876,24 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			Assert.AreEqual(0, fileIndexResultsList.Count );
 
-			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath2).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(collectionItemPath2).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(collectionItemPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(itemInChildFolderPath2).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(collectionItemPath2).FileIndexItem);
 		}
 		
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_FileToFolder_MultipleFiles_PartlyNotFound()
+		public async Task InputOutputSubPathsPreflight_FileToFolder_MultipleFiles_PartlyNotFound()
 		{
 			var itemInChildFolderPath1 = "/child_folder/test_03.jpg";
 			var collectionItemPath1 = "/child_folder/test_03.png";
 			
 			var itemInChildFolderPath2 = "/child_folder/test_04.jpg";
 			
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
-			_query.AddItem(new FileIndexItem(collectionItemPath1));
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath1));
+			await _query.AddItemAsync(new FileIndexItem(collectionItemPath1));
 			
-			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			await _query.AddParentItemsAsync(itemInChildFolderPath1);
 			
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2","/other"}, 
 				new List<string>{itemInChildFolderPath1, collectionItemPath1});
@@ -925,8 +912,8 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(1, fileIndexResultsList.Count );
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, fileIndexResultsList[0].Status );
 
-			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(collectionItemPath1).FileIndexItem);
 		}
 
 		[TestMethod]
