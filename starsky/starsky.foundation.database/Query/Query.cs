@@ -380,7 +380,6 @@ namespace starsky.foundation.database.Query
 	        }
         }
 
-
         /// <summary>
         /// Retry when an Exception has occured
         /// </summary>
@@ -430,57 +429,6 @@ namespace starsky.foundation.database.Query
 		        }
 	        }
         }
-        
-        /// <summary>
-        /// Update one single item in the database
-        /// For the API/update endpoint
-        /// </summary>
-        /// <param name="updateStatusContent">content to updated</param>
-        /// <returns>this item</returns>
-        [Obsolete("Use UpdateItemAsync instead")]
-        public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
-        {
-	        void LocalUpdateItemQuery(ApplicationDbContext context)
-	        {
-		        //  Update te last edited time manual
-		        updateStatusContent.SetLastEdited();
-		        context.Attach(updateStatusContent).State = EntityState.Modified;
-				context.SaveChanges();
-		        context.Attach(updateStatusContent).State = EntityState.Detached;
-		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
-	        }
-	        
-	        try
-	        {
-		        LocalUpdateItemQuery(_context);
-	        }
-	        catch ( ObjectDisposedException error)
-	        {
-		        _logger.LogInformation(error,"[UpdateItem] catch-ed ObjectDisposedException");
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        LocalUpdateItemQuery(context);
-	        }
-	        catch (InvalidOperationException)
-	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        LocalUpdateItemQuery(context);
-	        }
-	        catch (DbUpdateConcurrencyException concurrencyException)
-	        {
-		        SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-		        try
-		        {
-			        _context.SaveChanges();
-		        }
-		        catch ( DbUpdateConcurrencyException e)
-		        {
-			        _logger.LogError(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
-		        }
-	        }
-
-            return updateStatusContent;
-        }
-
         
         /// <summary>
         /// Is Cache enabled, null object or feature toggle disabled
@@ -656,40 +604,7 @@ namespace starsky.foundation.database.Query
 	        return true;
         }
 
-	    /// <summary>
-	    /// Add a new item to the database
-	    /// </summary>
-	    /// <param name="updateStatusContent">the item</param>
-	    /// <returns>item with id</returns>
-	    [Obsolete("Use AddItemAsync instead")]
-        public FileIndexItem AddItem(FileIndexItem updateStatusContent)
-        {        
-	        if( string.IsNullOrWhiteSpace(updateStatusContent.FileName) 
-	            && updateStatusContent.IsDirectory == false) 
-		        throw new MissingFieldException("use filename (exception: the root folder can have no name)");
-
-	        try
-	        {
-		        _context.FileIndex.Add(updateStatusContent);
-		        _context.SaveChanges();
-	        }
-	        catch ( ObjectDisposedException )
-	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        context.FileIndex.Add(updateStatusContent);
-		        context.SaveChanges();
-	        }
-	        catch ( DbUpdateConcurrencyException e)
-	        {
-		        _logger.LogInformation("AddItem catch-ed DbUpdateConcurrencyException (ignored)", e);
-	        }
-            
-            AddCacheItem(updateStatusContent);
-
-			return updateStatusContent;
-        }
-	    
-	    /// <summary>
+        /// <summary>
 	    /// Add a new item to the database
 	    /// </summary>
 	    /// <param name="fileIndexItem">the item</param>
