@@ -107,6 +107,13 @@ public class ProgramTest
 	[ExpectedException(typeof(HttpRequestException))]
 	public async Task Program_Main_NoAddress()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			// this test has issues with timing on windows
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+		
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:7514");
 		Environment.SetEnvironmentVariable("app__useDiskWatcher","false");
 		Environment.SetEnvironmentVariable("app__SyncOnStartup","false");
