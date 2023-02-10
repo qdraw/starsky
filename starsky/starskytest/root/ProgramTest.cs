@@ -105,7 +105,7 @@ public class ProgramTest
 	[TestMethod]
 	[Timeout(5000)]
 	[ExpectedException(typeof(HttpRequestException))]
-	public async Task Program_Main_NoAddress()
+	public async Task Program_Main_NoAddress_UnixOnly()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -138,8 +138,22 @@ public class ProgramTest
 	
 	[TestMethod]
 	[Timeout(5000)]
+	public async Task Program_RunAsync_ReturnedTrue()
+	{
+		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
+		var app = builder.Build();
+		
+		var result = await Task.Factory.StartNew(() => Program.RunAsync(app), TaskCreationOptions.LongRunning);
+		
+		await app.StopAsync();
+		
+		Assert.IsNotNull(result);
+	}
+	
+	[TestMethod]
+	[Timeout(5000)]
 	[ExpectedException(typeof(FormatException))]
-	public async Task Program_RunAsync2()
+	public async Task Program_RunAsync_InvalidUrl()
 	{
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","test");
 
