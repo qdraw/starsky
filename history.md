@@ -36,7 +36,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## List of versions
 
 ## version 0.5.5 _(Unreleased)_ - 2023-02-?? {#v0.5.5}
-- nothing yet
+
+- [x] (Fixed)  _Back-end_ Remove UpdateItem and AddItem from IQuery, instead use async (PR #1067)
+- [x] (Fixed)  _Back-end_ Sync compare on last edited date time instead on DateTime.Now (PR #1067)
 
 ## version 0.5.5-beta.0 - 2023-02-07 {#v0.5.5-beta.0}
 

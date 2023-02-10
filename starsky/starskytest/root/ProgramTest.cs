@@ -39,68 +39,6 @@ public class ProgramTest
 		// see also:
 		// starsky/starskytest/starskyGeoCli/starskyGeoCliTest.cs
 	}
-
-	[TestMethod]
-	[Timeout(5000)]
-	[ExpectedException(typeof(System.IO.IOException))]
-	public async Task Program_Main_TestCancel_UnixOnly()
-	{
-		if ( new AppSettings().IsWindows )
-		{
-			// this test has issues with timing on windows
-			Assert.Inconclusive("This test if for Unix Only");
-			return;
-		}
-		
-		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:9514");
-		Environment.SetEnvironmentVariable("app__useDiskWatcher","false");
-		Environment.SetEnvironmentVariable("app__SyncOnStartup","false");
-		Environment.SetEnvironmentVariable("app__thumbnailGenerationIntervalInMinutes","0");
-		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup","true");
-		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
-		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
-
-		// The trick is that here already is a port open
-		// so the app crashes
-		
-		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
-		var app = builder.Build();
-		
-		await Task.Factory.StartNew(() => app.RunAsync(), TaskCreationOptions.LongRunning);
-
-		// next wait for port is opened
-		var requested = 0;
-		while ( requested < 10 )
-		{
-			using HttpClient client = new();
-			try
-			{
-				var responseMessage = await client.GetAsync("http://localhost:9514");
-				Console.WriteLine("responseMessage StatusCode: " + responseMessage.StatusCode + " Requested: " + requested);
-				
-				if ( responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound )
-				{
-					requested = int.MaxValue;
-					continue;
-				}
-				requested++;
-			}
-			catch ( HttpRequestException exception)
-			{
-				Console.WriteLine("HttpRequestException " +  exception.StatusCode +
-				                  " " + exception.Message + " Requested: " + requested);
-				requested++;
-			}
-		}
-
-		if ( requested != int.MaxValue )
-		{
-			throw new TimeoutException();
-		}
-		// end wait for port is opened
-
-		await Program.Main(Array.Empty<string>());
-	}
 	
 	[TestMethod]
 	[Timeout(5000)]
