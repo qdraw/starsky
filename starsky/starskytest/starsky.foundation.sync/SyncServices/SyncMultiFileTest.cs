@@ -499,8 +499,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 			
-			Assert.AreEqual(1,fileIndexItem.SidecarExtensionsList.Count);
-			Assert.AreEqual("xmp",fileIndexItem.SidecarExtensionsList.ToList()[0]);
+			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
+			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);
 		}
 		
 		[TestMethod]

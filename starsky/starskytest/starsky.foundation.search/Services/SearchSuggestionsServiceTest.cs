@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.search.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starsky.feature.search.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.search.Services
+namespace starskytest.starsky.foundation.search.Services
 {
 	[TestClass]
 	public sealed class SearchSuggestionsServiceTest
@@ -34,18 +34,18 @@ namespace starskytest.starsky.feature.search.Services
 			var options = builder.Options;
 			_dbContext = new ApplicationDbContext(options);
 			_suggest = new SearchSuggestionsService(_dbContext,_memoryCache,new FakeIWebLogger(),new AppSettings());
-			_query = new Query(_dbContext, new AppSettings(), null, new FakeIWebLogger(),_memoryCache);
+			_query = new Query(_dbContext, new AppSettings(), null!, new FakeIWebLogger(),_memoryCache);
 		}
 		
 		[TestInitialize]
-		public void TestInitialize()
+		public async Task TestInitialize()
 		{
 
 			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane2--suggestions")))
 			{
 				for ( int i = 0; i < 9; i++ )
 				{
-					_query.AddItem(new FileIndexItem
+					await _query.AddItemAsync(new FileIndexItem
 					{
 						FileName = "schipholairplane2.jpg",
 						ParentDirectory = "/stations",
@@ -59,7 +59,7 @@ namespace starskytest.starsky.feature.search.Services
 			{
 				for ( int i = 0; i < 9; i++ )
 				{
-					_query.AddItem(new FileIndexItem
+					await _query.AddItemAsync(new FileIndexItem
 					{
 						FileName = "schipholairplane1.jpg",
 						ParentDirectory = "/stations",
@@ -137,10 +137,6 @@ namespace starskytest.starsky.feature.search.Services
 		[TestMethod]
 		public async Task SearchSuggestionsService_MySqlError()
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-            
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseMySql("Server=test;database=test;uid=test;pwd=test;", new MariaDbServerVersion("10.2"));
 			var options = builder.Options;

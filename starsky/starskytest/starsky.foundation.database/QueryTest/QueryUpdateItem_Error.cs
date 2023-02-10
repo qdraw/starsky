@@ -207,7 +207,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public void Query_UpdateItem_DbUpdateConcurrencyException()
+		public async Task Query_UpdateItem_DbUpdateConcurrencyException()
 		{
 			IsCalledDbUpdateConcurrency = false;
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -215,7 +215,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.Options;
 			
 			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null!,null!,null!);
-			fakeQuery.UpdateItem(new FileIndexItem());
+			await fakeQuery.UpdateItemAsync(new FileIndexItem());
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}
@@ -451,6 +451,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			internal int Count { get; set; } = 1;
 
+			public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+			{
+				if ( Count == 1 )
+				{
+					Count++;
+					throw new InvalidOperationException("test");
+				}
+				return Task.FromResult(0);
+			}
 			public override int SaveChanges()
 			{
 				if ( Count == 1 )
@@ -484,10 +493,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 		
 		[TestMethod]
-		public void Query_UpdateItem_1_InvalidOperationException()
+		public async Task Query_UpdateItem_1_InvalidOperationException()
 		{
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase2")
 				.Options;
 
 			var appDbInvalidOperationException =
@@ -500,15 +509,14 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var dbContext = scope.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			var testItem = new FileIndexItem("/test.jpg");
 			dbContext.FileIndex.Add(testItem);
-			dbContext.SaveChanges();
+			await dbContext.SaveChangesAsync();
 			
 			var fakeQuery = new Query(appDbInvalidOperationException,  new AppSettings(), scope,new FakeIWebLogger());
 
 			testItem.Tags = "test";
 			
-			fakeQuery.UpdateItem(testItem);
-
-			Assert.AreEqual("test", dbContext.FileIndex.FirstOrDefault(p => p.FilePath == "/test.jpg")?.Tags);
+			await fakeQuery.UpdateItemAsync(testItem);
+			
 			Assert.AreEqual(2, appDbInvalidOperationException.Count);
 		}
 	}

@@ -277,7 +277,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
         
 		[TestMethod]
-		public void QueryAddSingleItemGetAllRecursiveTest_DisposedItem()
+		public async Task QueryAddSingleItemGetAllRecursiveTest_DisposedItem()
 		{
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
@@ -287,18 +287,18 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// item sub folder
 			var item = new FileIndexItem("/test_1231331/sub/test_0191919.jpg");
 			dbContext.FileIndex.Add(item);
-			dbContext.SaveChanges();
+			await dbContext.SaveChangesAsync();
 	        
 			// normal item
 			var item2 = new FileIndexItem("/test_1231331/test_0191919.jpg");
 			dbContext.FileIndex.Add(item2);
-			dbContext.SaveChanges();
+			await dbContext.SaveChangesAsync();
 	        
 			// Important to dispose!
-			dbContext.Dispose();
+			await dbContext.DisposeAsync();
 
 			item.Tags = "test";
-			query.UpdateItem(item);
+			await query.UpdateItemAsync(item);
 
 			var getItem = query.GetAllRecursive("/test_1231331");
 			Assert.IsNotNull(getItem);
@@ -469,7 +469,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var getDisplay = _query.DisplayFileFolders("/12345678987654").ToList();
 			Assert.AreEqual(0, getDisplay.Count);
 		}
-        
         
 		[TestMethod]
 		public async Task QueryFolder_DisplayFileFolders_OneItemInFolder_DisposedItem()
@@ -872,7 +871,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				_query
 					.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_003.jpg").FileIndexItem;
 			single003.Tags = "!delete!";
-			_query.UpdateItem(single003);
+			await _query.UpdateItemAsync(single003);
             
 			// Request new; item must be updated in cache
 			single004 = 
@@ -881,7 +880,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
             
 			// For avoiding conflicts when running multiple unit tests
 			single004.FileIndexItem.Tags = "!delete!";
-			_query.UpdateItem(single004.FileIndexItem);
+			await _query.UpdateItemAsync(single004.FileIndexItem);
             
 		}
 
