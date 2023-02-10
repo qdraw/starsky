@@ -246,7 +246,102 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			await _query.RemoveItemAsync(queryResult[0]);
 		}
+		
+		[TestMethod]
+		public async Task Folder_ChildItemDateTimeLastEditNotChanged()
+		{
+			var storage =  new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/same_test"
+				}, 
+				new List<string>
+				{
+					"/same_test/test.jpg",
+				},
+				new List<byte[]>
+				{
+					CreateAnImage.Bytes,
+				}, new List<DateTime>{new DateTime(2000,01,01,01,01,01)});
+			
+			await _query.AddItemAsync(new FileIndexItem("/same_test/test.jpg")
+			{
+				LastEdited = new DateTime(2000,01,01,01,01,01)
+			});
+			
+			var queryResultBefore = await _query.GetAllFilesAsync("/same_test");
+			Assert.AreEqual(1, queryResultBefore.Count);
 
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+			
+			var result = (await syncFolder.Folder(
+				"/same_test")).Where(p => p.FilePath != "/").ToList();
+
+			Assert.AreEqual(2, result.Count); // folder and item in folder
+			Assert.AreEqual(1, result.Count(p => p.FileName == "test.jpg")); 
+			Assert.AreEqual(1, result.Count(p => p.FileName == "same_test")); 
+			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result[0].Status);
+
+			
+			var queryResult = await _query.GetAllFilesAsync("/same_test");
+			Assert.AreEqual(1, queryResult.Count); 
+			Assert.AreEqual(1, queryResult.Count(p => p.FileName == "test.jpg")); 
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, queryResult.FirstOrDefault(p => p.FileName == "test.jpg")?.Status); 
+
+			await _query.RemoveItemAsync(queryResult[0]);
+		}
+
+				
+		[TestMethod]
+		public async Task Folder_ChildItemDateTimeLastEditChanged()
+		{
+			var storage =  new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/same_test"
+				}, 
+				new List<string>
+				{
+					"/same_test/test.jpg",
+				},
+				new List<byte[]>
+				{
+					CreateAnImage.Bytes,
+				}, new List<DateTime>{new DateTime(3000,01,01,01,01,01)});
+			
+			await _query.AddItemAsync(new FileIndexItem("/same_test/test.jpg")
+			{
+				LastEdited = new DateTime(2000,01,01,01,01,01)
+			});
+			
+			var queryResultBefore = await _query.GetAllFilesAsync("/same_test");
+			Assert.AreEqual(1, queryResultBefore.Count);
+
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+			
+			var result = (await syncFolder.Folder(
+				"/same_test")).Where(p => p.FilePath != "/").ToList();
+
+			Assert.AreEqual(2, result.Count); // folder and item in folder
+			Assert.AreEqual(1, result.Count(p => p.FileName == "test.jpg")); 
+			Assert.AreEqual(1, result.Count(p => p.FileName == "same_test")); 
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
+
+			
+			var queryResult = await _query.GetAllFilesAsync("/same_test");
+			Assert.AreEqual(1, queryResult.Count); 
+			Assert.AreEqual(1, queryResult.Count(p => p.FileName == "test.jpg")); 
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, queryResult.FirstOrDefault(p => p.FileName == "test.jpg")?.Status); 
+
+			await _query.RemoveItemAsync(queryResult[0]);
+		}
+		
 		[TestMethod]
 		public async Task Folder_ShouldAddFolderItSelfAndParentFolders()
 		{
