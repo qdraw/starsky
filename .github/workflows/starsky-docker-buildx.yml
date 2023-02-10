@@ -1,12 +1,16 @@
 on:
   push:
     branches: [ master ]
+    paths:
+    - '.github/workflows/starsky-docker-buildx.yml'
+    - 'starsky/**'
+    
   pull_request:
     branches: [ master ]
     paths:
     - '.github/workflows/starsky-docker-buildx.yml'
     - 'starsky/Dockerfile'
-    - 'starsky/docker_demo_setup.sh'
+    
   workflow_dispatch:
   
 name: Docker buildx multi-arch CI unstable master
