@@ -178,9 +178,9 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		public void ReplaceServiceTest_replaceStringWithNothingNull()
+		public async Task ReplaceServiceTest_replaceStringWithNothingNull()
 		{
-			var item0 = _query.AddItem(new FileIndexItem
+			var item0 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
@@ -190,7 +190,7 @@ namespace starskytest.Services
 			var output = _metaReplace.Replace("/test2.jpg;/test.jpg",
 				nameof(FileIndexItem.Tags),"!delete!",null,false);
 			
-			_query.RemoveItem(item0);
+			await _query.RemoveItemAsync(item0);
 			Assert.IsNotNull(output);
 		}
 

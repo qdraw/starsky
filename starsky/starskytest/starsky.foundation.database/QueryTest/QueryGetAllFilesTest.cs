@@ -99,7 +99,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 		
 		[TestMethod]
-		public void GetAllFiles_DisposedItem()
+		public async Task GetAllFilesAsync_DisposedItem()
 		{
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
@@ -109,15 +109,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// item sub folder
 			var item = new FileIndexItem("/test_821827/test_0191919.jpg");
 			dbContext.FileIndex.Add(item);
-			dbContext.SaveChanges();
+			await dbContext.SaveChangesAsync();
 	        
 			// Important to dispose!
-			dbContext.Dispose();
+			await dbContext.DisposeAsync();
 
 			item.Tags = "test";
-			query.UpdateItem(item);
+			await query.UpdateItemAsync(item);
 
-			var getItem = query.GetAllFiles("/test_821827");
+			var getItem = await query.GetAllFilesAsync("/test_821827");
 			Assert.IsNotNull(getItem);
 			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
 

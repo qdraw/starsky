@@ -202,9 +202,9 @@ namespace starskytest.starsky.feature.rename.Services
 		private FileIndexItem _parentFolder;
 		//private Synchronize _sync;
 
-		private void CreateFoldersAndFilesInDatabase()
+		private async Task CreateFoldersAndFilesInDatabase()
 		{
-			_folderExist = _query.AddItem(new FileIndexItem
+			_folderExist = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "exist",
 				ParentDirectory = "/",
@@ -213,14 +213,14 @@ namespace starskytest.starsky.feature.rename.Services
 				IsDirectory = true
 			});
 			
-			_fileInExist = _query.AddItem(new FileIndexItem
+			_fileInExist = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "file.jpg",
 				ParentDirectory = "/exist",
 				IsDirectory = false
 			});
 
-			_folder1Exist = _query.AddItem(new FileIndexItem
+			_folder1Exist = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "folder1",
 				ParentDirectory = "/",
@@ -228,7 +228,7 @@ namespace starskytest.starsky.feature.rename.Services
 				FileHash = "3497867df894587",
 			});
 			
-			_parentFolder = _query.AddItem(new FileIndexItem
+			_parentFolder = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "/",
 				ParentDirectory = "/",
@@ -249,7 +249,7 @@ namespace starskytest.starsky.feature.rename.Services
 		{
 			// RenameFsTest_MoveFileToSameFolder_Items
 			
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var iStorage = new FakeIStorage(new List<string>{_folderExist.FilePath},
 				new List<string>{_fileInExist.FilePath});
@@ -277,7 +277,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_RenameOneFile_JsonSidecarFile()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var iStorage = new FakeIStorage(new List<string>{_folderExist.FilePath},
 				new List<string>{_fileInExist.FilePath,JsonSidecarLocation.JsonLocation(_fileInExist.FilePath)});
@@ -300,7 +300,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_RenameOneFile_ToWrongNewFileName()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var iStorage = new FakeIStorage(new List<string>
 			{
@@ -322,7 +322,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_FileToNonExistFolder_Items()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
@@ -361,7 +361,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_File_To_ExistFolder_MoveToTheSamePath()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/", "/exist" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
@@ -376,7 +376,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_File_To_ExistFolder() // there is a separate sidecar json test
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/", "/test" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
@@ -406,7 +406,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_File_To_ExistFolder_Json_SidecarFile()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/", "/test" };
 			var initFileList = new List<string> { _fileInExist.FilePath, JsonSidecarLocation.JsonLocation(_fileInExist.FilePath) };
@@ -437,7 +437,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_FakeIStorage_mergeTwoFolders()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 			
 			var existSubFolder = _query.AddItem(new FileIndexItem
 			{
@@ -537,7 +537,7 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public async Task RenameFsTest_MoveAFolderIntoAFile()
 		{
-			CreateFoldersAndFilesInDatabase();
+			await CreateFoldersAndFilesInDatabase();
 			var iStorage = new FakeIStorage();
 			var renameFs = await new RenameService(_query, iStorage).Rename(_folderExist.FilePath, _fileInExist.FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, renameFs[0].Status);
