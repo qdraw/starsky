@@ -347,8 +347,7 @@ namespace starsky.foundation.sync.SyncServices
 				return new Tuple<bool, DateTime>(false, lastWriteTime);
 			}
 			
-			var diffInSeconds = (lastWriteTime - dbItem.LastEdited).TotalSeconds;
-			var isTheSame = diffInSeconds == 0;
+			var isTheSame = dbItem.LastEdited == lastWriteTime;
 
 			dbItem.LastEdited = lastWriteTime;
 			return new Tuple<bool, DateTime>(isTheSame, lastWriteTime);
