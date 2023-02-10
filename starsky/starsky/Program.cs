@@ -46,7 +46,6 @@ namespace starsky
 			}
 			catch ( TaskCanceledException )
 			{
-				// do nothing
 				return false;
 			}
 			return true;

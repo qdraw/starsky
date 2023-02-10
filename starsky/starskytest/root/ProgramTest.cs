@@ -130,6 +130,7 @@ public class ProgramTest
 	}
 	
 	[TestMethod]
+	[Timeout(5000)]
 	public async Task Program_RunAsync()
 	{
 		var result = await Program.RunAsync(null,false);
