@@ -5,18 +5,18 @@ interface IDetailViewInfoMakeModelApertureProps {
   fileIndexItem: IFileIndexItem;
 }
 
+function ShowISOIfExistCompontent(fileIndexItemInside: IFileIndexItem) {
+  return (
+    <>
+      {fileIndexItemInside.isoSpeed !== 0 ? (
+        <>ISO {fileIndexItemInside.isoSpeed}</>
+      ) : null}
+    </>
+  );
+}
+
 const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMakeModelApertureProps> =
   memo(({ fileIndexItem }) => {
-    function ShowISOIfExistCompontent(fileIndexItemInside: IFileIndexItem) {
-      return (
-        <>
-          {fileIndexItemInside.isoSpeed !== 0 ? (
-            <>ISO {fileIndexItemInside.isoSpeed}</>
-          ) : null}
-        </>
-      );
-    }
-
     return (
       <>
         {fileIndexItem.make &&
