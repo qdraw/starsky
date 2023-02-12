@@ -279,27 +279,25 @@ namespace starsky.feature.search.Services
 		    _logger?.LogInformation($"search --> {model.SearchQuery}");
 
 		    var predicate = PredicateBuilder.False<FileIndexItem>();
-		    for ( int i = 0; i < predicates.Count; i++ )
+		    for ( var i = 0; i < predicates.Count; i++ )
 		    {
 			    if ( i == 0 )
 			    {
-		    
 				    predicate = predicates[i];
+				    continue;
 			    }
-			    else
-			    {
-				    var item = predicates[i - 1];
-				    var item2 = predicates[i];
+			    
+			    var item = predicates[i - 1];
+			    var item2 = predicates[i];
 				    
-				    // Search for OR
-				    if ( !model.SearchOperatorContinue(i, model.SearchIn.Count) )
-				    {
-					    predicate =  item.Or(item2);
-					    continue;
-				    }
-
-				    predicate =  item.AndAlso(item2);
+			    // Search for OR
+			    if ( !model.SearchOperatorContinue(i, model.SearchIn.Count) )
+			    {
+				    predicate =  item.Or(item2);
+				    continue;
 			    }
+
+			    predicate =  item.AndAlso(item2);
 		    }
 
 		    model.FileIndexItems = sourceList.Where(predicate).ToList();

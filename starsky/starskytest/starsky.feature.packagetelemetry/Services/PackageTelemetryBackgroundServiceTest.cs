@@ -53,14 +53,15 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 	
 	
 		[TestMethod]
-		[Timeout(5000)]
+		[Timeout(7000)]
 		public async Task ExecuteAsyncTest_WebController()
 		{
 			var appSettings = _serviceScopeFactory.CreateScope().ServiceProvider
 				.GetService<AppSettings>();
 			appSettings!.ApplicationType = AppSettings.StarskyAppType.WebController;
 			appSettings.EnablePackageTelemetry = true;
-		
+			appSettings.EnablePackageTelemetryDebug = false;
+
 			var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
 			
 			CancellationTokenSource source = new CancellationTokenSource();

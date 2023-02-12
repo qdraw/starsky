@@ -69,9 +69,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
             
 			if ( ArgsHelper.NeedCleanup(args) )
 			{
-				_console.WriteLine("Next: Start Thumbnail Cache cleanup (-x true)");
+				_console.WriteLine($"Next: Start Thumbnail Cache cleanup (-x true) ({DateTime.UtcNow:HH:mm:ss})");
 				await _thumbnailCleaner.CleanAllUnusedFilesAsync();
-				_console.WriteLine("Cleanup Done!");
+				_console.WriteLine($"Cleanup Done! ({DateTime.UtcNow:HH:mm:ss})");
 			}
 
 		}

@@ -289,7 +289,7 @@ namespace starsky.feature.import.Services
 		{
 			if ( _appSettings.ImportIgnore.Any(p => inputFileFullPath.Key.Contains(p)) )
 			{
-				if ( _appSettings.IsVerbose() ) _console.WriteLine($"❌ skip due rules: {inputFileFullPath.Key} ");
+				ConsoleIfVerbose($"❌ skip due rules: {inputFileFullPath.Key} ");
 				return new ImportIndexItem{ 
 					Status = ImportStatus.Ignore, 
 					FilePath = inputFileFullPath.Key,
@@ -300,7 +300,7 @@ namespace starsky.feature.import.Services
 			
 			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) )
 			{
-				if ( _appSettings.IsVerbose() ) _console.WriteLine($"❌ not found: {inputFileFullPath.Key}");
+				ConsoleIfVerbose($"❌ not found: {inputFileFullPath.Key}");
 				return new ImportIndexItem{ 
 					Status = ImportStatus.NotFound, 
 					FilePath = inputFileFullPath.Key,
@@ -317,10 +317,7 @@ namespace starsky.feature.import.Services
 			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
 			     !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
 			{
-				if ( _appSettings.IsVerbose() )
-				{
-					_console.WriteLine($"❌ extension not supported: {inputFileFullPath.Key}");
-				}
+				ConsoleIfVerbose($"❌ extension not supported: {inputFileFullPath.Key}");
 				return new ImportIndexItem
 				{
 					Status = ImportStatus.FileError, 
@@ -333,10 +330,7 @@ namespace starsky.feature.import.Services
 				new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath.Key);
 			if ( !hashList.Value )
 			{
-				if ( _appSettings.IsVerbose() )
-				{
-					_console.WriteLine($"❌ FileHash error {inputFileFullPath.Key}");
-				}
+				ConsoleIfVerbose($"❌ FileHash error {inputFileFullPath.Key}");
 				return new ImportIndexItem
 				{
 					Status = ImportStatus.FileError, 
@@ -347,10 +341,7 @@ namespace starsky.feature.import.Services
 			
 			if (importSettings.IndexMode && await _importQuery!.IsHashInImportDbAsync(hashList.Key) )
 			{
-				if ( _appSettings.IsVerbose() )
-				{
-					_console.WriteLine($"🤷 Ignored, exist already {inputFileFullPath.Key}");
-				}
+				ConsoleIfVerbose($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 				return new ImportIndexItem
 				{
 					Status = ImportStatus.IgnoredAlreadyImported, 
@@ -374,6 +365,14 @@ namespace starsky.feature.import.Services
 			importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure);
 		
 			return importIndexItem;
+		}
+		
+		private void ConsoleIfVerbose(string message)
+		{
+			if ( _appSettings.IsVerbose() )
+			{
+				_console.WriteLine(message);
+			}
 		}
 
 
