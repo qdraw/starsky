@@ -88,6 +88,9 @@
         <None Remove="coverage-report.zip" />
         <None Remove="TestResults\**" />
         <None Remove="coverage-merge-sonarqube.xml" />
+        <None Update="FakeCreateAn\CreateAnTagGzLongerThan100CharsFileName\longer_than_100_chars_linux.tar.gz">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />

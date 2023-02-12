@@ -3,16 +3,19 @@ using System.Reflection;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
-namespace starskytest.FakeCreateAn.CreateAnImageCorrupt
+namespace starskytest.FakeCreateAn.CreateAnTagGzLongerThan100CharsFileName
 {
-	public class CreateAnImageCorrupt
+	/// <summary>
+	/// tar -czvf  long.tar.gz 0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy.txt
+	/// </summary>
+	public class CreateAnTagGzLongerThan100CharsFileName
 	{
-		public CreateAnImageCorrupt()
+		public CreateAnTagGzLongerThan100CharsFileName()
 		{
 			var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			if ( string.IsNullOrEmpty(dirName) ) return;
 			var path = Path.Combine(dirName, "FakeCreateAn",
-				"CreateAnImageCorrupt", "corrupt.jpg");
+				"CreateAnTagGzLongerThan100CharsFileName", "longer_than_100_chars_linux.tar.gz");
 
 			Bytes = StreamToBytes(path);
 		}
@@ -28,6 +31,6 @@ namespace starskytest.FakeCreateAn.CreateAnImageCorrupt
 
 		public readonly byte[] Bytes;
 
+		public static readonly string FileName = "0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy.txt";
 	}
 }
-
