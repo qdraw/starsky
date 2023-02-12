@@ -31,6 +31,6 @@ namespace starskytest.FakeCreateAn.CreateAnTagGzLongerThan100CharsFileName
 
 		public readonly byte[] Bytes;
 
-		public static readonly string FileName = "0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy.txt";
+		public const string FileName = "0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy.txt";
 	}
 }
