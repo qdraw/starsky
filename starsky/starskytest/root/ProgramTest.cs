@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 
 namespace starskytest.root;
@@ -82,7 +83,9 @@ public class ProgramTest
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
 		
-		var result = await Task.Factory.StartNew(() => Program.RunAsync(app), TaskCreationOptions.LongRunning);
+		var result = await Task.Factory.StartNew(async () => 
+			await Program.RunAsync(app).TimeoutAfter(100), 
+			TaskCreationOptions.LongRunning);
 		
 		await app.StopAsync();
 		
