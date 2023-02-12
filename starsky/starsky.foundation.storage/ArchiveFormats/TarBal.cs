@@ -14,9 +14,12 @@ namespace starsky.foundation.storage.ArchiveFormats
 	public sealed class TarBal
 	{
 		private readonly IStorage _storage;
-		public TarBal(IStorage storage)
+		private readonly char _pathSeparator;
+
+		public TarBal(IStorage storage, char pathSeparator = '/')
 		{
 			_storage = storage;
+			_pathSeparator = pathSeparator;
 		}
 
 		/// <summary>
@@ -49,6 +52,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 		/// </summary>
 		/// <param name="stream">The <i>.tar</i> to extract.</param>
 		/// <param name="outputDir">Output directory to write the files.</param>
+		/// <param name="cancellationToken">cancel token</param>
 		public async Task ExtractTar(Stream stream, string outputDir, CancellationToken cancellationToken)
 		{
 			var buffer = new byte[100];
@@ -99,8 +103,8 @@ namespace starsky.foundation.storage.ArchiveFormats
 
 		private async Task CreateFileOrDirectory(string outputDir, string name, long size, Stream stream, CancellationToken cancellationToken)
 		{
-			var output = Path.Combine(outputDir, name);
-					
+			var output = $"{outputDir}{_pathSeparator}{name}";
+			
 			if ( !_storage.ExistFolder(FilenamesHelper.GetParentPath(output)) )
 			{
 				_storage.CreateDirectory(FilenamesHelper.GetParentPath(output));
