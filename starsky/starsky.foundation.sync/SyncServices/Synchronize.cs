@@ -21,6 +21,7 @@ namespace starsky.foundation.sync.SyncServices
 	[Service(typeof(ISynchronize), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class Synchronize : ISynchronize
 	{
+		private readonly ISyncAddThumbnailTable _syncAddThumbnail;
 		private readonly IStorage _subPathStorage;
 		private readonly SyncSingleFile _syncSingleFile;
 		private readonly SyncRemove _syncRemove;
@@ -28,8 +29,10 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, IMemoryCache memoryCache = null)
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, 
+			ISyncAddThumbnailTable syncAddThumbnail, IMemoryCache memoryCache = null)
 		{
+			_syncAddThumbnail = syncAddThumbnail;
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, null, logger);
@@ -55,12 +58,15 @@ namespace starsky.foundation.sync.SyncServices
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					return await _syncFolder.Folder(subPath, updateDelegate, childDirectoriesAfter);
+					var syncFolder = await _syncFolder.Folder(subPath,
+						updateDelegate, childDirectoriesAfter);
+					return await _syncAddThumbnail.SyncThumbnailTableAsync(syncFolder);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
-					var item = await _syncSingleFile.SingleFile(subPath, updateDelegate);
-					return new List<FileIndexItem>{item};
+					var syncFile = await _syncSingleFile.SingleFile(subPath, updateDelegate);
+					return await _syncAddThumbnail.SyncThumbnailTableAsync(new List<FileIndexItem>{syncFile});
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					return await _syncRemove.Remove(subPath, updateDelegate);
+					var syncDeleted = await _syncRemove.RemoveAsync(subPath, updateDelegate);
+					return await _syncAddThumbnail.SyncThumbnailTableAsync(syncDeleted);
 				default:
 					throw new AggregateException("enum is not valid");
 			}

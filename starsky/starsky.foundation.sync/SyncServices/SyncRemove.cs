@@ -48,10 +48,10 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="subPath">subPath</param>
 		/// <param name="updateDelegate"></param>
 		/// <returns></returns>
-		public async Task<List<FileIndexItem>> Remove(string subPath,
+		public async Task<List<FileIndexItem>> RemoveAsync(string subPath,
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
-			return await Remove(new List<string> {subPath}, updateDelegate);
+			return await RemoveAsync(new List<string> {subPath}, updateDelegate);
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="subPaths">list of sub paths</param>
 		/// <param name="updateDelegate">SocketUpdateDelegate</param>
 		/// <returns>file with status</returns>
-		public async Task<List<FileIndexItem>> Remove(List<string> subPaths,
+		public async Task<List<FileIndexItem>> RemoveAsync(List<string> subPaths,
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			// Get folders
@@ -105,7 +105,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="databaseItems">input of files with deleted status (NotFoundSourceMissing)</param>
 		/// <param name="updateDelegate"></param>
 		/// <returns>Gives only back the files that are deleted</returns>
-		public async Task<List<FileIndexItem>> Remove(
+		public async Task<List<FileIndexItem>> RemoveAsync(
 			IEnumerable<FileIndexItem> databaseItems,
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
@@ -114,7 +114,7 @@ namespace starsky.foundation.sync.SyncServices
 					p.Status is FileIndexItem.ExifStatus
 						.NotFoundSourceMissing).Select(p => p.FilePath).ToList();
 			
-			return await Remove(deleted, updateDelegate);
+			return await RemoveAsync(deleted, updateDelegate);
 		}
 		
 		private async Task LoopOverSidecarFiles(List<string> subPaths)
