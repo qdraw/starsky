@@ -51,6 +51,12 @@ workflows:
       - name: npm run macarm64
         working_directory: starskydesktop
         script: npm run macarm64
+      - name: rm starsky-mac-x64-desktop.zip || true
+        working_directory: starskydesktop/dist-prod
+        script: rm starsky-mac-x64-desktop.zip || true
+      - name: rm starsky-mac-arm64-desktop.zip || true
+        working_directory: starskydesktop/dist-prod
+        script: rm starsky-mac-arm64-desktop.zip || true
       - name: zip starsky-mac-x64-desktop.zip starsky-mac-x64-desktop.dmg
         working_directory: starskydesktop/dist-prod
         script: zip starsky-mac-x64-desktop.zip starsky-mac-x64-desktop.dmg
