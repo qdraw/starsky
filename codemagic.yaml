@@ -35,20 +35,21 @@ workflows:
       - name: npm install
         working_directory: starskydesktop
         script: npm install --no-fund --no-audit
-      - name: npm install winston
+      - name: npm install winston (only needed for codemagic)
         working_directory: starskydesktop
         script: npm install winston --no-fund --no-audit
-      - name: npm install minimist
+      - name: npm install minimist (only needed for codemagic)
         working_directory: starskydesktop
         script: npm install minimist --no-fund --no-audit
-      - name: npm install rxjs
+      - name: npm install rxjs (only needed for codemagic)
         working_directory: starskydesktop
         script: npm install rxjs --no-fund --no-audit
       - name: npm run macarm64
         working_directory: starskydesktop
         script: npm run macarm64
     artifacts:
-      - starskydesktop/dist-prod/*.dmg
+      - starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg
+      - starskydesktop/dist-prod/starsky-mac-arm64-desktop.dmg
       - starsky/starsky-osx-x64.zip
       - starsky/starsky-osx-arm64.zip
 
