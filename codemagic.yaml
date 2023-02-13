@@ -1,5 +1,8 @@
 workflows:
   desktop-app-mac-m1:
+    environment:
+      groups:
+        - starsky  
     instance_type: mac_mini_m1
     triggering:
       events:
@@ -12,20 +15,11 @@ workflows:
       npm: 8.19.2
       xcode: latest
     scripts:
-      - name: ls starskydesktop
-        working_directory: starskydesktop
-        script: ls -lah
-      - name: ls starsky
-        working_directory: starsky
-        script: ls -lah        
-      - name: which npm
-        script: which npm && npm -v
-      - name: which python
-        script: which python
-      - name: which python3
-        script: which python3        
-      - name: build .net
-        script: ./starsky/build.sh --runtime osx-arm64,osx-x64
+      - name: npm install
+        working_directory: starsky/starsky
+        script: bash  github-artifacts-download.sh --token $WORKFLOW_GITHUB --output /Users/builder/clone/starsky
+      # - name: build .net
+      #   script: ./starsky/build.sh --runtime osx-arm64,osx-x64
       - name: npm install
         working_directory: starskydesktop
         script: npm install --no-fund --no-audit
