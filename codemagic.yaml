@@ -1,21 +1,20 @@
 workflows:
   desktop-app-mac-m1:
-    environment:
-      groups:
-        - starsky  
     instance_type: mac_mini_m1
     triggering:
       events:
         - push
-      branch_patterns: 
+      branch_patterns:
         - pattern: master_disabled
       cancel_previous_builds: true
     environment:
+      groups:
+        - starsky
       node: 18.12.1
       npm: 8.19.2
       xcode: latest
     scripts:
-      - name: npm install
+      - name: download binaries from github actions
         working_directory: starsky/starsky
         script: bash  github-artifacts-download.sh --token $WORKFLOW_GITHUB --output /Users/builder/clone/starsky
       # - name: build .net
@@ -25,24 +24,24 @@ workflows:
         script: npm install --no-fund --no-audit
       - name: npm run macarm64
         working_directory: starskydesktop
-        script: npm run macarm64 
+        script: npm run macarm64
     artifacts:
       - starskydesktop/dist-prod/*.dmg
       - starsky/starsky-osx-x64.zip
       - starsky/starsky-osx-arm64.zip
-      
+
   build:
     instance_type: mac_mini_m1
     triggering:
       events:
         - push
-      branch_patterns: 
+      branch_patterns:
         - pattern: master_disabled
       cancel_previous_builds: true
     environment:
       node: 18.12.1
       npm: 8.19.2
-    scripts:      
+    scripts:
       - name: build.sh
         working_directory: starsky
         script: export FORCE_INSTALL_CHECK=true && ./build.sh --no-publish --no-dependencies --no-tests
