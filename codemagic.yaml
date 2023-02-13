@@ -15,22 +15,22 @@ workflows:
       xcode: latest
     scripts:
       - name: download binaries from github actions
-        working_directory: starsky/starsky
+        working_directory: starsky
         script: bash  github-artifacts-download.sh --token $WORKFLOW_GITHUB --output /Users/builder/clone/starsky --runtime osx-x64
       - name: unzip osx-x64
-        working_directory: starsky/starsky
+        working_directory: starsky
         script: unzip starsky-osx-x64.zip -d osx-x64
       - name: reset rights osx-x64
-        working_directory: starsky/starsky/osx-x64
+        working_directory: starsky/osx-x64
         script: bash pm2-restore-x-rights.sh
       - name: download binaries from github actions
-        working_directory: starsky/starsky
+        working_directory: starsky
         script: bash  github-artifacts-download.sh --token $WORKFLOW_GITHUB --output /Users/builder/clone/starsky --runtime osx-arm64
       - name: unzip osx-arm64
-        working_directory: starsky/starsky
+        working_directory: starsky
         script: unzip starsky-osx-arm64.zip -d osx-arm64
       - name: reset rights osx-arm64
-        working_directory: starsky/starsky/osx-arm64
+        working_directory: starsky/osx-arm64
         script: bash pm2-restore-x-rights.sh
       - name: npm install
         working_directory: starskydesktop
