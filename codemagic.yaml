@@ -52,10 +52,10 @@ workflows:
         working_directory: starskydesktop
         script: npm run macarm64
       - name: zip starsky-mac-x64-desktop.zip starsky-mac-x64-desktop.dmg
-        working_directory: starskydesktop/dist
+        working_directory: starskydesktop/dist-prod
         script: zip starsky-mac-x64-desktop.zip starsky-mac-x64-desktop.dmg
       - name: zip starsky-mac-arm64-desktop.zip starsky-mac-arm64-desktop.dmg
-        working_directory: starskydesktop/dist
+        working_directory: starskydesktop/dist-prod
         script: zip starsky-mac-arm64-desktop.zip starsky-mac-arm64-desktop.dmg
     artifacts:
       - starskydesktop/dist-prod/starsky-mac-x64-desktop.zip
