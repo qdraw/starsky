@@ -13,6 +13,10 @@ workflows:
       node: 18.12.1
       npm: 8.19.2
       xcode: latest
+    cache:
+      cache_paths:
+        - ~/Library/Caches/electron
+        - ~/.npm
     scripts:
       - name: download binaries osx-x64 from github actions
         working_directory: starsky/starsky
