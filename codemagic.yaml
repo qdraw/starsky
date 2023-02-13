@@ -32,15 +32,18 @@ workflows:
       - name: reset rights osx-arm64
         working_directory: starsky/osx-arm64
         script: bash pm2-restore-x-rights.sh
+      - name: npm install
+        working_directory: starskydesktop
+        script: npm install --no-fund --no-audit
       - name: npm install winston
         working_directory: starskydesktop
         script: npm install winston --no-fund --no-audit
       - name: npm install minimist
         working_directory: starskydesktop
         script: npm install minimist --no-fund --no-audit
-      - name: npm install
+      - name: npm install rxjs
         working_directory: starskydesktop
-        script: npm install --no-fund --no-audit
+        script: npm install rxjs --no-fund --no-audit
       - name: npm run macarm64
         working_directory: starskydesktop
         script: npm run macarm64
