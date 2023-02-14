@@ -65,14 +65,22 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		{
 			return;
 		}
-		
-		using var timer = new PeriodicTimer(Period);
-		while (
-			!cancellationToken.IsCancellationRequested &&
-			await timer.WaitForNextTickAsync(cancellationToken))
+
+		try
 		{
-			await RunJob(cancellationToken);
+			using var timer = new PeriodicTimer(Period);
+			while (
+				!cancellationToken.IsCancellationRequested &&
+				await timer.WaitForNextTickAsync(cancellationToken) )
+			{
+				await RunJob(cancellationToken);
+			}
 		}
+		catch ( OperationCanceledException exception )
+		{
+			_logger.LogError("catch-ed", exception);
+		}
+
 	}
 
 	internal async Task<bool?> RunJob(CancellationToken cancellationToken = default)
