@@ -234,7 +234,7 @@ namespace starsky.foundation.sync.SyncServices
 				
 					await new SyncRemove(_appSettings, _setupDatabaseTypes,
 							query, _memoryCache, _logger)
-						.Remove(databaseItems, updateDelegate);
+						.RemoveAsync(databaseItems, updateDelegate);
 
 					DisplayInlineConsole(databaseItems);
 				

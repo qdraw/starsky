@@ -69,13 +69,14 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
                 write-host "you will be asked for an admin"
                 $installCommand = 'winget install dotnet-sdk-' + $firstCharOfVersion + ' -v ' + $shouldBeNetVersion + '  --disable-interactivity' 
                 Invoke-Expression -Command $installCommand 
-    
             }
             else {
                 write-host "version not found so skip"
             }
         }
     }
+
+    write-host "next: check right version of nodejs"
 
     if ($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) {
         if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
@@ -92,15 +93,23 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
 
         if (Test-Path -Path $nvmRcFile) {
             $nvmVersion = Get-Content $nvmRcFile
-            write-host $nvmRcFile  " exist "  $nvmVersion
-            $nvmInstallVersionCommand = "nvm install "+$nvmVersion
-            Invoke-Expression -Command $nvmInstallVersionCommand
-            $nvmSwitchVersionCommand = "nvm use "+$nvmVersion
-            Invoke-Expression -Command $nvmSwitchVersionCommand
+
+            $nvmCurrentCommand = "nvm current";
+            if ($nvmVersion -ne (Invoke-Expression -Command $nvmCurrentCommand)) {
+                write-host "next switch to "$nvmVersion
+                write-host "There might be an admin window"
+
+                $nvmInstallVersionCommand = "nvm install "+$nvmVersion
+                Invoke-Expression -Command $nvmInstallVersionCommand
+                $nvmSwitchVersionCommand = "nvm use "+$nvmVersion
+                Invoke-Expression -Command $nvmSwitchVersionCommand
+            }
+            else {
+                write-host "already the right version " $nvmVersion
+            }
         }           
     }
 }
-
 
 # If dotnet CLI is installed globally and it matches requested version, use for execution
 if ($null -ne (Get-Command "dotnet" -ErrorAction SilentlyContinue) -and `

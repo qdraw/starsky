@@ -80,7 +80,7 @@ function ReinstallService ($localServiceName, $binaryPath, $cmdArgs, $descriptio
         $serviceToRemove = Get-WmiObject -Class Win32_Service -Filter "name='$localServiceName'"
         $id = $serviceToRemove   |  Select-Object -ExpandProperty ProcessId
      
-        Stop-Process -ID $id -Force
+        Stop-Process -ID $id -Force -ErrorAction SilentlyContinue
 
         write-host "next delete:"
 

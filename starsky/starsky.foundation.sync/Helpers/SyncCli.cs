@@ -73,7 +73,7 @@ namespace starsky.foundation.sync.Helpers
 			{
 				timeText.Append($" or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min");
 			}
-			timeText.Append(' '+')');
+			timeText.Append(") ");
 			return timeText.ToString();
 		}
 	}
