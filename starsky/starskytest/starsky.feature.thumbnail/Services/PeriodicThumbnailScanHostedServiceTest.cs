@@ -119,7 +119,6 @@ public class PeriodicThumbnailScanHostedServiceTest
 	
 	[TestMethod]
 	[Timeout(5000)]
-	[ExpectedException(typeof(OperationCanceledException))]
 	public async Task StartBackgroundAsync_ShouldRun_SlowTest()
 	{
 		var services = new ServiceCollection();
@@ -143,8 +142,10 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var cancelToken = new CancellationTokenSource();
 		cancelToken.CancelAfter(200);
 		
-		await periodicThumbnailScanHostedService.StartBackgroundAsync(false,
+		var result = await periodicThumbnailScanHostedService.StartBackgroundAsync(false,
 			cancelToken.Token);
+		
+		Assert.IsNull(result);
 	}
 
 	[TestMethod]

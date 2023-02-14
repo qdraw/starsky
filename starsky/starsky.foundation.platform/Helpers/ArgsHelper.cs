@@ -327,6 +327,9 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
 			_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
 			_console.WriteLine($"ApplicationInsightsConnectionString {_appSettings.ApplicationInsightsConnectionString} ");
+			_console.WriteLine("ExiftoolSkipDownloadOnStartup "+ _appSettings.ExiftoolSkipDownloadOnStartup);
+			_console.WriteLine("GeoFilesSkipDownloadOnStartup "+ _appSettings.GeoFilesSkipDownloadOnStartup);
+
 			if ( !string.IsNullOrEmpty(_appSettings.ApplicationInsightsConnectionString) )
 			{
 				_console.WriteLine($"ApplicationInsightsDatabaseTracking {_appSettings.ApplicationInsightsDatabaseTracking} \n" +

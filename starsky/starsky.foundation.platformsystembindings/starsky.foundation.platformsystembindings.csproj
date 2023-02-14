@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <!-- to bind with mac OS -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{e5d174bc-961a-46e9-ae91-ca10fdf5f5f3}</ProjectGuid>
+        <RootNamespace>starsky.foundation.platformSystemBindings</RootNamespace>
+    </PropertyGroup>
+
+</Project>

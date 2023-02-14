@@ -1,8 +1,6 @@
-using starsky.foundation.platform.Interfaces;
-using System;
 using System.Runtime.InteropServices;
 
-namespace starsky.foundation.platform.Trash;
+namespace starsky.foundation.platformSystemBindings.Trash;
 
 /// <summary>
 /// @see: https://stackoverflow.com/questions/3282418/send-a-file-to-the-recycle-bin
@@ -10,12 +8,6 @@ namespace starsky.foundation.platform.Trash;
 /// </summary>
 public class WindowsShellTrashBindingHelper
 {
-	private IWebLogger _logger;
-
-	public WindowsShellTrashBindingHelper(IWebLogger logger)
-	{
-		_logger = logger;
-	}
 
 	/// <summary>
 	/// Possible flags for the SHFileOperation method.
@@ -73,15 +65,12 @@ public class WindowsShellTrashBindingHelper
 		FO_RENAME = 0x0004,
 	}
 
-
-
 	/// <summary>
 	/// SHFILEOPSTRUCT for SHFileOperation from COM
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
 	private struct SHFILEOPSTRUCT
 	{
-
 		public IntPtr hwnd;
 		[MarshalAs(UnmanagedType.U4)]
 		public FileOperationType wFunc;
@@ -102,7 +91,8 @@ public class WindowsShellTrashBindingHelper
 	/// </summary>
 	/// <param name="path">Location of directory or file to recycle</param>
 	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-	public (bool, string) Send(string path, FileOperationFlags flags)
+	public static (bool, string) Send(string path, FileOperationFlags flags = FileOperationFlags.FOF_NOCONFIRMATION |
+		FileOperationFlags.FOF_WANTNUKEWARNING)
 	{
 		try
 		{
@@ -118,19 +108,7 @@ public class WindowsShellTrashBindingHelper
 		}
 		catch ( Exception ex)
 		{
-			_logger.LogError(ex.Message, ex);
 			return (false, ex.Message);
 		}
 	}
-
-	/// <summary>
-	/// Send file to recycle bin.  Display dialog, display warning if files are too big to fit (FOF_WANTNUKEWARNING)
-	/// </summary>
-	/// <param name="path">Location of directory or file to recycle</param>
-	public (bool, string) Send(string path)
-	{
-		return Send(path, FileOperationFlags.FOF_NOCONFIRMATION |
-			FileOperationFlags.FOF_WANTNUKEWARNING);
-	}
-
 }

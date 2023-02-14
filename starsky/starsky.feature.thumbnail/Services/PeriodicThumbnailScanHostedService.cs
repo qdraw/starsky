@@ -54,7 +54,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		await StartBackgroundAsync(IsEnabled, stoppingToken);
 	}
 
-	internal async Task StartBackgroundAsync(bool startDirect, CancellationToken cancellationToken)
+	internal async Task<bool?> StartBackgroundAsync(bool startDirect, CancellationToken cancellationToken)
 	{
 		if ( startDirect )
 		{
@@ -63,7 +63,7 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		
 		if ( !IsEnabled)
 		{
-			return;
+			return false;
 		}
 
 		try
@@ -78,9 +78,10 @@ public class PeriodicThumbnailScanHostedService : BackgroundService
 		}
 		catch ( OperationCanceledException exception )
 		{
-			_logger.LogError("catch-ed", exception);
+			_logger.LogError("[StartBackgroundAsync] catch-ed OperationCanceledException", exception);
 		}
-
+		
+		return null;
 	}
 
 	internal async Task<bool?> RunJob(CancellationToken cancellationToken = default)

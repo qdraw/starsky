@@ -1,6 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.platform.Trash;
-using starskytest.FakeMocks;
+using starsky.foundation.platformSystemBindings.Trash;
 
 namespace starskytest.starsky.foundation.platform.Trash;
 
@@ -11,8 +10,14 @@ public class WindowsShellTrashBindingHelperTest
 	[TestMethod]
 	public void WindowsShellTrashBindingHelper1()
 	{
-		var service = new WindowsShellTrashBindingHelper(new FakeIWebLogger());
-		var result = service.Send("C:\\temp\\test.bmp");
+		var result = WindowsShellTrashBindingHelper.Send("C:\\temp\\test.bmp");
+		Assert.AreEqual(false,result.Item1);
+	}
+	
+	[TestMethod]
+	public void WindowsShellTrashBindingHelper12()
+	{
+		var result = WindowsShellTrashBindingHelper.Send("C:\\temp\\test.bmp");
 		Assert.AreEqual(false,result.Item1);
 	}
 }

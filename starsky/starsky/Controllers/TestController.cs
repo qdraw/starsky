@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Trash;
 using System;
+using starsky.foundation.platform.Models;
+using starsky.foundation.platformSystemBindings.Trash;
 
 namespace starsky.Controllers
 {
@@ -19,8 +20,16 @@ namespace starsky.Controllers
 		public IActionResult Trash()
 		{
 			_logger.LogInformation("UserInteractive: " + Environment.UserInteractive);
-			var result = new WindowsShellTrashBindingHelper(_logger).Send("C:\\temp\\test.bmp");
-			return Json(result);
+
+			if ( new AppSettings().IsWindows )
+			{
+				var result = WindowsShellTrashBindingHelper.Send("C:\\temp\\test.bmp");
+				return Json(result);
+			}
+			
+			MacOsTrashBindingHelper.Main();
+			Console.WriteLine("test");
+			return Json(true);
 		}
 	}
 }
