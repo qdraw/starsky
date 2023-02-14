@@ -31,6 +31,7 @@ for ((i = 1; i <= $#; i++ )); do
       echo "(optional) --port 4823"
       echo "(optional) --output "$OUTPUT_DIR
       echo "(optional) --anywhere (to allow access from anywhere, defaults to false)"
+      echo "(optional) --remove (to remove the service)"
       exit 0
   fi
       
@@ -40,7 +41,12 @@ for ((i = 1; i <= $#; i++ )); do
   if [[ ${ARGUMENTS[CURRENT]} == "--anywhere" ]];
   then
       ANYWHERE=true
-  fi  
+  fi
+  
+    if [[ ${ARGUMENTS[CURRENT]} == "--remove" ]];
+    then
+        REMOVE_SERVICE=true
+    fi  
   
   if [ $i -gt 1 ]; then
     PREV=$(($i-2))
@@ -103,6 +109,10 @@ if launchctl list com.$SERVICE_NAME | grep -q "$SERVICE_NAME";then
 
     echo "list should be none:"    
     launchctl list | grep -i $SERVICE_NAME || echo none
+fi
+
+if [ "$REMOVE_SERVICE" = true ] ; then
+    exit 0
 fi
 
 if [ ! -f $LAUNCHD_SERVICE_PATH ]
