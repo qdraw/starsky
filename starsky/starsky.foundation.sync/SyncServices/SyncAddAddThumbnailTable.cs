@@ -21,7 +21,8 @@ public class SyncAddAddThumbnailTable : ISyncAddThumbnailTable
 	public async Task<List<FileIndexItem>> SyncThumbnailTableAsync(List<FileIndexItem> fileIndexItems)
 	{
 		var addObjects = fileIndexItems
-			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok && p.FileHash != null)
+			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok && 
+			            !string.IsNullOrEmpty(p.FileHash) && p.IsDirectory == false)
 			.DistinctBy(p => p.FileHash)
 			.Select(p => p.FileHash)
 			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash!)).ToList();

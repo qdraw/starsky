@@ -40,8 +40,17 @@ namespace starsky.foundation.sync.SyncServices
 			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger,memoryCache);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 		}
-		
-		public async Task<List<FileIndexItem>> Sync(string subPath, 
+
+		public async Task<List<FileIndexItem>> Sync(string subPath,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			DateTime? childDirectoriesAfter = null)
+		{
+			return await _syncAddThumbnail.SyncThumbnailTableAsync(
+				await SyncWithoutThumbnail(subPath, updateDelegate,
+					childDirectoriesAfter));
+		}
+
+		private async Task<List<FileIndexItem>> SyncWithoutThumbnail(string subPath, 
 			ISynchronize.SocketUpdateDelegate updateDelegate = null,
 			DateTime? childDirectoriesAfter = null)
 		{
@@ -60,13 +69,12 @@ namespace starsky.foundation.sync.SyncServices
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
 					var syncFolder = await _syncFolder.Folder(subPath,
 						updateDelegate, childDirectoriesAfter);
-					return await _syncAddThumbnail.SyncThumbnailTableAsync(syncFolder);
+					return syncFolder;
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 					var syncFile = await _syncSingleFile.SingleFile(subPath, updateDelegate);
-					return await _syncAddThumbnail.SyncThumbnailTableAsync(new List<FileIndexItem>{syncFile});
+					return new List<FileIndexItem>{syncFile};
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					var syncDeleted = await _syncRemove.RemoveAsync(subPath, updateDelegate);
-					return await _syncAddThumbnail.SyncThumbnailTableAsync(syncDeleted);
+					return await _syncRemove.RemoveAsync(subPath, updateDelegate);
 				default:
 					throw new AggregateException("enum is not valid");
 			}

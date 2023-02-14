@@ -28,9 +28,9 @@ public class ThumbnailQuery : IThumbnailQuery
 	
 	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
-		if ( thumbnailItems.Any(p => p.FileHash == null ) )
+		if ( thumbnailItems.Any(p => string.IsNullOrEmpty(p.FileHash) ) )
 		{
-			throw new ArgumentNullException(nameof(thumbnailItems));
+			throw new ArgumentNullException(nameof(thumbnailItems), "[AddThumbnailRangeAsync] FileHash is null or empty");
 		}
 		return AddThumbnailRangeInternalRetryDisposedAsync(thumbnailItems);
 	}
@@ -122,6 +122,11 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task RemoveThumbnailsAsync(List<string> deletedFileHashes)
 	{
+		if ( !deletedFileHashes.Any() )
+		{
+			return;
+		}
+		
 		try
 		{
 			await RemoveThumbnailsInternalAsync(_context, deletedFileHashes);
@@ -188,7 +193,9 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task<List<ThumbnailItem>> UnprocessedGeneratedThumbnails()
 	{
-		return await _context.Thumbnails.Where(p => p.ExtraLarge == null || p.Large == null || p.Small == null).ToListAsync();
+		return await _context.Thumbnails.Where(p => ( p.ExtraLarge == null 
+			                                            || p.Large == null || p.Small == null) 
+		                                            && !string.IsNullOrEmpty(p.FileHash)).ToListAsync();
 	}
 
 	public async Task<bool> UpdateAsync(ThumbnailItem item)
@@ -219,12 +226,12 @@ public class ThumbnailQuery : IThumbnailQuery
 	/// <param name="updateThumbnailNewItemsList"></param>
 	/// <returns></returns>
 	internal static async Task<(List<ThumbnailItem> newThumbnailItems,
-		List<ThumbnailItem> updateThumbnailItems, List<ThumbnailItem> equalThumbnailItems)> 
+			List<ThumbnailItem> updateThumbnailItems, List<ThumbnailItem> equalThumbnailItems)> 
 		CheckForDuplicates(ApplicationDbContext context, 
 			IEnumerable<ThumbnailItem?> updateThumbnailNewItemsList)
 	{
 		var nonNullItems = updateThumbnailNewItemsList.Where(item => item != null && 
-		                                       item.FileHash != null!).Distinct().ToList();
+			item.FileHash != null!).Distinct().ToList();
 		
 		var dbThumbnailItems = await context.Thumbnails
 			.Where(p => nonNullItems.Select(x => x!.FileHash)
@@ -277,5 +284,3 @@ public class ThumbnailQuery : IThumbnailQuery
 	}
 
 }
-
-
