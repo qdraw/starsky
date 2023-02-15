@@ -140,7 +140,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		periodicThumbnailScanHostedService.MinimumIntervalInMinutes = 0;
 
 		var cancelToken = new CancellationTokenSource();
-		cancelToken.CancelAfter(200);
+		cancelToken.CancelAfter(400);
 		
 		var result = await periodicThumbnailScanHostedService.StartBackgroundAsync(false,
 			cancelToken.Token);

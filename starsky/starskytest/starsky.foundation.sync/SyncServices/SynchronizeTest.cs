@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -114,7 +115,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 						CreateAnImage.Bytes
 					})), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), new FakeMemoryCache());
 
-			var result = await sync.Sync(new List<string> {"/test.jpg", "/test2.jpg"});
+			var result = (await sync.Sync(new List<string> {"/test.jpg", "/test2.jpg"}))
+				.Where(p => p.FilePath != "/").ToList();
 
 			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);

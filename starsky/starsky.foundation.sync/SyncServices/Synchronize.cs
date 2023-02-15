@@ -28,6 +28,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IConsole _console;
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
+		private readonly SyncMultiFile _syncMultiFile;
 
 		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, 
 			ISyncAddThumbnailTable syncAddThumbnail, IMemoryCache memoryCache = null)
@@ -39,9 +40,30 @@ namespace starsky.foundation.sync.SyncServices
 			_syncRemove = new SyncRemove(appSettings, query, memoryCache, logger);
 			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger,memoryCache);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
+			_syncMultiFile = new SyncMultiFile(appSettings, query, _subPathStorage, memoryCache, logger);
+		}
+
+		public async Task<List<FileIndexItem>> Sync(string subPath,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			DateTime? childDirectoriesAfter = null)
+		{
+			return await _syncAddThumbnail.SyncThumbnailTableAsync(
+				await SyncWithoutThumbnail(subPath, updateDelegate,
+					childDirectoriesAfter));
 		}
 		
-		public async Task<List<FileIndexItem>> Sync(string subPath, 
+		/// <summary>
+		/// Sync list by subPaths
+		/// </summary>
+		/// <param name="subPaths"></param>
+		/// <returns></returns>
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths)
+		{
+			var results = await _syncMultiFile.MultiFile(subPaths);
+			return await _syncAddThumbnail.SyncThumbnailTableAsync(results);
+		}
+
+		private async Task<List<FileIndexItem>> SyncWithoutThumbnail(string subPath, 
 			ISynchronize.SocketUpdateDelegate updateDelegate = null,
 			DateTime? childDirectoriesAfter = null)
 		{
@@ -60,30 +82,17 @@ namespace starsky.foundation.sync.SyncServices
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
 					var syncFolder = await _syncFolder.Folder(subPath,
 						updateDelegate, childDirectoriesAfter);
-					return await _syncAddThumbnail.SyncThumbnailTableAsync(syncFolder);
+					return syncFolder;
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 					var syncFile = await _syncSingleFile.SingleFile(subPath, updateDelegate);
-					return await _syncAddThumbnail.SyncThumbnailTableAsync(new List<FileIndexItem>{syncFile});
+					return new List<FileIndexItem>{syncFile};
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					var syncDeleted = await _syncRemove.RemoveAsync(subPath, updateDelegate);
-					return await _syncAddThumbnail.SyncThumbnailTableAsync(syncDeleted);
+					return await _syncRemove.RemoveAsync(subPath, updateDelegate);
 				default:
 					throw new AggregateException("enum is not valid");
 			}
 		}
 
-		public async Task<List<FileIndexItem>> Sync(List<string> subPaths)
-		{
-			// there is a sync multi file
-			var results = new List<FileIndexItem>();
-			foreach ( var subPath in subPaths )
-			{
-				results.AddRange(await Sync(subPath));
-			}
-			return results;
-		}
-		
-				
 		internal static string DateTimeDebug()
 		{
 			return ": " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", 
