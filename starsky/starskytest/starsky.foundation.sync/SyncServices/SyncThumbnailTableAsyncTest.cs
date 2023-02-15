@@ -23,16 +23,19 @@ public class SyncThumbnailTableAsyncTest
 		builderDb.UseInMemoryDatabase(nameof(SyncThumbnailTableAsyncTest));
 		var options = builderDb.Options;
 		var dbContext = new ApplicationDbContext(options);
+
+		const string fileHash = "SyncThumbnailTableAsyncTest_WithRealDbContext";
 		
-		dbContext.Thumbnails.Add(new ThumbnailItem("test3",true,true,null,null));
+		dbContext.Thumbnails.Add(new ThumbnailItem(fileHash,true,true,null,null));
 		await dbContext.SaveChangesAsync();
 		
 		var sync = new SyncAddAddThumbnailTable(new ThumbnailQuery(dbContext,null));
+		
 		var content = await sync.SyncThumbnailTableAsync(
 			new List<FileIndexItem>
 			{
 				new FileIndexItem { 
-					FileHash = "test3", 
+					FileHash = fileHash, 
 					IsDirectory = false, 
 					Status = FileIndexItem.ExifStatus.Ok
 				}
@@ -43,11 +46,11 @@ public class SyncThumbnailTableAsyncTest
 		// should not overwrite the existing data
 		var item =
 			await dbContext.Thumbnails.FirstOrDefaultAsync(p =>
-				p.FileHash == "test3");
+				p.FileHash == fileHash);
 
 		Assert.IsNotNull(item);
 		Assert.AreEqual(true, item.TinyMeta);
-		Assert.AreEqual(null, item.Small);
+		Assert.AreEqual(true, item.Small);
 		Assert.AreEqual(null, item.Large);
 		Assert.AreEqual(null, item.Large);
 	}

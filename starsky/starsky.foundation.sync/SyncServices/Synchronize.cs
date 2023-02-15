@@ -28,6 +28,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IConsole _console;
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
+		private readonly SyncMultiFile _syncMultiFile;
 
 		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, 
 			ISyncAddThumbnailTable syncAddThumbnail, IMemoryCache memoryCache = null)
@@ -39,6 +40,7 @@ namespace starsky.foundation.sync.SyncServices
 			_syncRemove = new SyncRemove(appSettings, query, memoryCache, logger);
 			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger,memoryCache);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
+			_syncMultiFile = new SyncMultiFile(appSettings, query, _subPathStorage, memoryCache, logger);
 		}
 
 		public async Task<List<FileIndexItem>> Sync(string subPath,
@@ -48,6 +50,17 @@ namespace starsky.foundation.sync.SyncServices
 			return await _syncAddThumbnail.SyncThumbnailTableAsync(
 				await SyncWithoutThumbnail(subPath, updateDelegate,
 					childDirectoriesAfter));
+		}
+		
+		/// <summary>
+		/// Sync list by subPaths
+		/// </summary>
+		/// <param name="subPaths"></param>
+		/// <returns></returns>
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths)
+		{
+			var results = await _syncMultiFile.MultiFile(subPaths);
+			return await _syncAddThumbnail.SyncThumbnailTableAsync(results);
 		}
 
 		private async Task<List<FileIndexItem>> SyncWithoutThumbnail(string subPath, 
@@ -80,18 +93,6 @@ namespace starsky.foundation.sync.SyncServices
 			}
 		}
 
-		public async Task<List<FileIndexItem>> Sync(List<string> subPaths)
-		{
-			// there is a sync multi file
-			var results = new List<FileIndexItem>();
-			foreach ( var subPath in subPaths )
-			{
-				results.AddRange(await Sync(subPath));
-			}
-			return results;
-		}
-		
-				
 		internal static string DateTimeDebug()
 		{
 			return ": " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", 
