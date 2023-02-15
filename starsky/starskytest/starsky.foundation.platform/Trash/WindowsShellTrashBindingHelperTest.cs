@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Trash;
 
@@ -10,14 +11,14 @@ public class WindowsShellTrashBindingHelperTest
 	[TestMethod]
 	public void WindowsShellTrashBindingHelper1()
 	{
-		var result = WindowsShellTrashBindingHelper.Trash("C:\\temp\\test.bmp");
+		var result = WindowsShellTrashBindingHelper.Trash("C:\\temp\\test.bmp", OSPlatform.Windows);
 		Assert.AreEqual(false,result.Item1);
 	}
 	
 	[TestMethod]
 	public void WindowsShellTrashBindingHelper12()
 	{
-		var result = WindowsShellTrashBindingHelper.Trash("C:\\temp\\test.bmp");
+		var result = WindowsShellTrashBindingHelper.Trash("C:\\temp\\test.bmp", OSPlatform.Windows);
 		Assert.AreEqual(false,result.Item1);
 	}
 }
