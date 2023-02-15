@@ -79,32 +79,29 @@ namespace starsky.foundation.native.Trash
         }
 
         [DllImport(FoundationFramework)]
-        public static extern IntPtr CFStringCreateWithBytes(IntPtr allocator, IntPtr buffer, 
+        private static extern IntPtr CFStringCreateWithBytes(IntPtr allocator, IntPtr buffer, 
 	        long bufferLength, CfStringEncoding encoding, bool isExternalRepresentation);
 
         [DllImport(FoundationFramework)]
-        public static extern IntPtr CFArrayCreate(IntPtr allocator, IntPtr values, long numValues, IntPtr callbackStruct);
+        private static extern IntPtr CFArrayCreate(IntPtr allocator, IntPtr values, long numValues, IntPtr callbackStruct);
 
         [DllImport(FoundationFramework)]
-        public static extern void CFRetain(IntPtr handle);
-
-        [DllImport(FoundationFramework)]
-        public static extern void CFRelease(IntPtr handle);
+        private static extern void CFRelease(IntPtr handle);
 
         [DllImport(AppKitFramework, CharSet = CharSet.Ansi)]
-        public static extern IntPtr objc_getClass(string name);
+        private static extern IntPtr objc_getClass(string name);
 
         [DllImport(AppKitFramework)]
-        public static extern IntPtr NSSelectorFromString(IntPtr cfstr);
+        private static extern IntPtr NSSelectorFromString(IntPtr cfstr);
 
         [DllImport(FoundationFramework, EntryPoint="objc_msgSend")]
-        public static extern IntPtr objc_msgSend_retIntPtr(IntPtr target, IntPtr selector);
+        private static extern IntPtr objc_msgSend_retIntPtr(IntPtr target, IntPtr selector);
 
         [DllImport(FoundationFramework, EntryPoint="objc_msgSend")]
-        public static extern void objc_msgSend_retVoid_IntPtr_IntPtr(IntPtr target, IntPtr selector, IntPtr param1, IntPtr param2);
+        private static extern void objc_msgSend_retVoid_IntPtr_IntPtr(IntPtr target, IntPtr selector, IntPtr param1, IntPtr param2);
 
         [DllImport(FoundationFramework, EntryPoint="objc_msgSend")]
-        public static extern IntPtr objc_msgSend_retIntPtr_IntPtr(IntPtr target, IntPtr selector, IntPtr param);
+        private static extern IntPtr objc_msgSend_retIntPtr_IntPtr(IntPtr target, IntPtr selector, IntPtr param);
 
         public enum CfStringEncoding : uint
         {
