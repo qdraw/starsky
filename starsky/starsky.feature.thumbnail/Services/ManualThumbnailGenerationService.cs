@@ -88,7 +88,6 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 		{
 			if ( item.Tags!.Contains("!delete!") ) continue;
 
-			item.SetLastEdited();
 			item.LastChanged = new List<string> {"LastEdited", "FileHash"};
 			result.Add(item);
 		}
