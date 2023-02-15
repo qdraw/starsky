@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,7 +30,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task Sync_NotFound()
 		{
-			var sync = new Synchronize(_appSettings, new FakeIQuery(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeMemoryCache());
+			var sync = new Synchronize(_appSettings, new FakeIQuery(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), new FakeMemoryCache());
 			var result = await sync.Sync("/not_found.jpg");
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
@@ -40,7 +41,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var sync = new Synchronize(new AppSettings(), new FakeIQuery(), 
 				new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}, 
-					new List<string>{"/test.jpg"})), new FakeIWebLogger(), new FakeMemoryCache());
+					new List<string>{"/test.jpg"})), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), new FakeMemoryCache());
 			
 			var result = await sync.Sync("/test.jpg");
 
@@ -61,7 +62,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<byte[]>
 					{
 						CreateAnImage.Bytes
-					})), new FakeIWebLogger(), new FakeMemoryCache());
+					})), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), new FakeMemoryCache());
 			
 			var result = await sync.Sync("/");
 
@@ -81,7 +82,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<byte[]>
 					{
 						CreateAnImage.Bytes
-					})), new FakeIWebLogger(), new FakeMemoryCache());
+					})), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), new FakeMemoryCache());
 
 			var dsStore = await sync.Sync("/.DS_Store");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, dsStore[0].Status);
@@ -96,7 +97,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<byte[]>
 					{
 						CreateAnImage.Bytes
-					})), new FakeIWebLogger(), new FakeMemoryCache());
+					})), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), new FakeMemoryCache());
 
 			var dsStore = await sync.Sync("/desktop.ini");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, dsStore[0].Status);
@@ -112,9 +113,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					{
 						CreateAnImage.Bytes,
 						CreateAnImage.Bytes
-					})), new FakeIWebLogger(), new FakeMemoryCache());
+					})), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), new FakeMemoryCache());
 
-			var result = await sync.Sync(new List<string> {"/test.jpg", "/test2.jpg"});
+			var result = (await sync.Sync(new List<string> {"/test.jpg", "/test2.jpg"}))
+				.Where(p => p.FilePath != "/").ToList();
 
 			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);

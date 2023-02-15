@@ -56,7 +56,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		public async Task FileNotOnDrive()
 		{
 			var remove = new SyncRemove(_appSettings, _query, null, null);
-			var result= await remove.Remove("/not_found");
+			var result= await remove.RemoveAsync("/not_found");
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
@@ -70,7 +70,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var item = await 
 				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object.jpg");
 			item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
-			var result= await remove.Remove(new List<FileIndexItem>{item});
+			var result= await remove.RemoveAsync(new List<FileIndexItem>{item});
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);
@@ -90,7 +90,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var item = await 
 				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object_Ignore_wrongStatus.jpg");
 			item.Status = FileIndexItem.ExifStatus.Ok;
-			var result= await remove.Remove(new List<FileIndexItem>{item});
+			var result= await remove.RemoveAsync(new List<FileIndexItem>{item});
 			
 			Assert.AreEqual(0, result.Count);
 
@@ -105,7 +105,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		public async Task SingleItem_Folder_Remove()
 		{
 			var remove = new SyncRemove(_appSettings, _query, null, null);
-			var result= await remove.Remove("/folder_no_content");
+			var result= await remove.RemoveAsync("/folder_no_content");
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
@@ -137,7 +137,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var query = new FakeIQuery(queryContent);
 			var remove = new SyncRemove(_appSettings, query, null, null);
 
-			var result= await remove.Remove(new List<string>{"/sidecar_test/test.xmp","/sidecar_test2/test.xmp"});
+			var result= await remove.RemoveAsync(new List<string>{"/sidecar_test/test.xmp","/sidecar_test2/test.xmp"});
 
 			Assert.AreEqual(2, result.Count);
 			

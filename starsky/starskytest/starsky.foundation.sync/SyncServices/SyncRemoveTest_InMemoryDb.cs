@@ -53,7 +53,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var result= await new SyncRemove(_appSettings, _query, 
-				new FakeMemoryCache(), new FakeIWebLogger()).Remove("/Folder_With_ChildItems");
+				new FakeMemoryCache(), new FakeIWebLogger()).RemoveAsync("/Folder_With_ChildItems");
 			
 			Assert.AreEqual(3, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);

@@ -93,7 +93,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 						new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes, FakeCreateAn.CreateAnImageNoExif.Bytes}));
 			
 			await new ManualBackgroundSyncService(
-					new Synchronize(appSettings, query, item, new FakeIWebLogger(), memoryCache),
+					new Synchronize(appSettings, query, item, new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), memoryCache),
 					query,
 					new FakeIWebSocketConnectionsService(),
 					memoryCache, 

@@ -322,7 +322,6 @@ namespace starsky.foundation.database.Query
 	        {
 		        foreach ( var item in fileIndexItems )
 		        {
-			        item.SetLastEdited();
 			        try
 			        {
 				        context.Attach(item).State = EntityState.Modified;
