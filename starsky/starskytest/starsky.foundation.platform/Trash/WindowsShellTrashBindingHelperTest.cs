@@ -10,14 +10,14 @@ public class WindowsShellTrashBindingHelperTest
 	[TestMethod]
 	public void WindowsShellTrashBindingHelper1()
 	{
-		var result = WindowsShellTrashBindingHelper.Send("C:\\temp\\test.bmp");
+		var result = WindowsShellTrashBindingHelper.Trash("C:\\temp\\test.bmp");
 		Assert.AreEqual(false,result.Item1);
 	}
 	
 	[TestMethod]
 	public void WindowsShellTrashBindingHelper12()
 	{
-		var result = WindowsShellTrashBindingHelper.Send("C:\\temp\\test.bmp");
+		var result = WindowsShellTrashBindingHelper.Trash("C:\\temp\\test.bmp");
 		Assert.AreEqual(false,result.Item1);
 	}
 }

@@ -90,8 +90,21 @@ public class WindowsShellTrashBindingHelper
 	/// Send file to recycle bin
 	/// </summary>
 	/// <param name="path">Location of directory or file to recycle</param>
+	/// <param name="platform">should be windows</param>
 	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-	public static (bool, string) Send(string path, FileOperationFlags flags = FileOperationFlags.FOF_NOCONFIRMATION |
+	public static (bool?, string) Trash(string path, OSPlatform platform, FileOperationFlags flags = FileOperationFlags.FOF_NOCONFIRMATION |
+	                                                                                                 FileOperationFlags.FOF_WANTNUKEWARNING)
+	{
+		if ( platform != OSPlatform.Windows )
+		{
+			return (null, "Not supported on this platform");
+		}
+
+		return TrashInternal(path, flags);
+	}
+
+	public static (bool, string) TrashInternal(string path, FileOperationFlags flags =
+		FileOperationFlags.FOF_NOCONFIRMATION |
 		FileOperationFlags.FOF_WANTNUKEWARNING)
 	{
 		try
@@ -104,7 +117,6 @@ public class WindowsShellTrashBindingHelper
 			};
 			var result = SHFileOperation(ref fs).ToString();
 			return (true, result);
-
 		}
 		catch ( Exception ex)
 		{

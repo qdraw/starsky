@@ -6,52 +6,52 @@ namespace starsky.foundation.native.Trash
 	/// <summary>
 	/// @see: https://stackoverflow.com/a/44669560
 	/// </summary>
-    public class MacOsTrashBindingHelper
+    public static class MacOsTrashBindingHelper
     {
-        public static void Main()
+
+	    public static bool? Trash(List<string> filesFullPath, OSPlatform platform)
+	    {
+		    if ( platform != OSPlatform.OSX )
+		    {
+			    return null;
+		    }
+		    
+		    TrashInternal(filesFullPath);
+		    return true;
+	    }
+
+
+	    internal static void TrashInternal(List<string> filesFullPath)
         {
-	        Directory.CreateDirectory("/tmp/test");
-	        
-            var testFile = "/tmp/test/test.jpg";
-            File.WriteAllText(testFile, "example file content");
+            var urls = new List<IntPtr>();
+            foreach ( var filePath in filesFullPath )
+            {
+	            var cfStrTestFile = CreateCfString(filePath);
+	            var nsUrl = objc_getClass("NSURL");
+	            var fileUrl = objc_msgSend_retIntPtr_IntPtr(nsUrl, GetSelector("fileURLWithPath:"), cfStrTestFile);
+	            CFRelease(cfStrTestFile);
+	            urls.Add(fileUrl);
+            }
 
-            Console.WriteLine("write done");
-
-            var cfstrTestFile = CreateCFString(testFile);
-            var nsURL = objc_getClass("NSURL");
-            var fileUrl = objc_msgSend_retIntPtr_IntPtr(nsURL, GetSelector("fileURLWithPath:"), cfstrTestFile);
-            CFRelease(cfstrTestFile);
-
-            var urlArray = CreateCFArray(new IntPtr[] {fileUrl});
-            Console.WriteLine(urlArray);
+            var urlArray = CreateCfArray(urls.ToArray());
 
             var nsWorkspace = objc_getClass("NSWorkspace");
             var sharedWorkspace = objc_msgSend_retIntPtr(nsWorkspace, GetSelector("sharedWorkspace"));
 
-            Console.WriteLine("sharedWorkspace");
-            Console.WriteLine(sharedWorkspace);
-
-            objc_msgSend_retVoid_IntPtr_IntPtr(sharedWorkspace, 
-	            GetSelector("recycleURLs:completionHandler:"), urlArray, IntPtr.Zero);
+            var completionHandler = GetSelector("recycleURLs:completionHandler:") ;
             
-            Console.WriteLine("recycleURLs:completionHandler:");
+            // https://developer.apple.com/documentation/appkit/nsworkspace/1530465-recycle
+            objc_msgSend_retVoid_IntPtr_IntPtr(sharedWorkspace, 
+	            completionHandler, 
+	            urlArray, IntPtr.Zero);
             
             CFRelease(urlArray);
-            Console.WriteLine("CFRelease:urlArray:");
-
-            CFRelease(fileUrl);
-            Console.WriteLine("CFRelease(fileUrl)");
-
-            CFRelease(sharedWorkspace);
-            Console.WriteLine("sharedWorkspace");
-
-            // sleep since we didn't go through the troubles of creating a block object as a callback
-            //Thread.Sleep(1000);
+            // CFRelease the fileUrl, sharedWorkspace, nsWorkspace gives a crash (error 139)
         }
 
-        public static IntPtr GetSelector(string name)
+        internal static IntPtr GetSelector(string name)
         {
-            IntPtr cfstrSelector = CreateCFString(name);
+            IntPtr cfstrSelector = CreateCfString(name);
             IntPtr selector = NSSelectorFromString(cfstrSelector);
             CFRelease(cfstrSelector);
             return selector;
@@ -60,18 +60,18 @@ namespace starsky.foundation.native.Trash
         private const string FoundationFramework = "/System/Library/Frameworks/Foundation.framework/Foundation";
         private const string AppKitFramework = "/System/Library/Frameworks/AppKit.framework/AppKit";
 
-        public unsafe static IntPtr CreateCFString(string aString)
+        internal unsafe static IntPtr CreateCfString(string aString)
         {
             var bytes = Encoding.Unicode.GetBytes(aString);
             fixed (byte* b = bytes) {
                 var cfStr = CFStringCreateWithBytes(IntPtr.Zero, (IntPtr)b, bytes.Length, 
-	                CFStringEncoding.UTF16, false);
+	                CfStringEncoding.UTF16, false);
                 return cfStr;
             }
         }
 
         // warning: this doesn't call retain/release on the elements in the array
-        public unsafe static IntPtr CreateCFArray(IntPtr[] objectes)
+        internal unsafe static IntPtr CreateCfArray(IntPtr[] objectes)
         {
             fixed(IntPtr* vals = objectes) {
                  return CFArrayCreate(IntPtr.Zero, (IntPtr)vals, objectes.Length, IntPtr.Zero);
@@ -80,7 +80,7 @@ namespace starsky.foundation.native.Trash
 
         [DllImport(FoundationFramework)]
         public static extern IntPtr CFStringCreateWithBytes(IntPtr allocator, IntPtr buffer, 
-	        long bufferLength, CFStringEncoding encoding, bool isExternalRepresentation);
+	        long bufferLength, CfStringEncoding encoding, bool isExternalRepresentation);
 
         [DllImport(FoundationFramework)]
         public static extern IntPtr CFArrayCreate(IntPtr allocator, IntPtr values, long numValues, IntPtr callbackStruct);
@@ -106,10 +106,7 @@ namespace starsky.foundation.native.Trash
         [DllImport(FoundationFramework, EntryPoint="objc_msgSend")]
         public static extern IntPtr objc_msgSend_retIntPtr_IntPtr(IntPtr target, IntPtr selector, IntPtr param);
 
-        [DllImport(FoundationFramework, EntryPoint="objc_msgSend")]
-        public static extern void objc_msgSend_retVoid(IntPtr target, IntPtr selector);
-
-        public enum CFStringEncoding : uint
+        public enum CfStringEncoding : uint
         {
             UTF16 = 0x0100,
             UTF16BE = 0x10000100,
