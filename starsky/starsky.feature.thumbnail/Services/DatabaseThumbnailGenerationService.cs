@@ -106,8 +106,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 				                       $" items: {string.Join(",",removedItems)}");
 				continue;
 			}
-			
-			fileIndexItem.SetLastEdited();
+
 			resultData.Add(fileIndexItem);
 		}
 		

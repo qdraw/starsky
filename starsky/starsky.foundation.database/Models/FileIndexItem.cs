@@ -373,14 +373,6 @@ namespace starsky.foundation.database.Models
 		/// The last edited DateTime value
 		/// </value>
 		public DateTime LastEdited { get; set; }
-
-		/// <summary>
-		/// Update te last edited time manual
-		/// </summary>
-		public void SetLastEdited()
-		{
-			LastEdited = DateTime.UtcNow;
-		}
 	    
 		/// <summary>
 		/// Update the add to Database Date
