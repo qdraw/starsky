@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace starsky.foundation.platformSystemBindings.Trash;
+namespace starsky.foundation.native.Trash;
 
 /// <summary>
 /// @see: https://stackoverflow.com/questions/3282418/send-a-file-to-the-recycle-bin

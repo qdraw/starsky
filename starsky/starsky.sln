@@ -161,7 +161,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "generic", "generic", "{3522
 		docker\compose\generic\docker-compose.yml = docker\compose\generic\docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.platformsystembindings", "starsky.foundation.platformsystembindings\starsky.foundation.platformsystembindings.csproj", "{0072F697-4E18-4B5F-80DF-530361D3E847}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.native", "starsky.foundation.native\starsky.foundation.native.csproj", "{0072F697-4E18-4B5F-80DF-530361D3E847}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

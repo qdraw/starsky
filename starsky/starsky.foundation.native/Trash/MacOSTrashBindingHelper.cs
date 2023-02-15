@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace starsky.foundation.platformSystemBindings.Trash
+namespace starsky.foundation.native.Trash
 {
 	/// <summary>
 	/// @see: https://stackoverflow.com/a/44669560

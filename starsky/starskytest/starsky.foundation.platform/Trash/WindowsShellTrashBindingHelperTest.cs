@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.platformSystemBindings.Trash;
+using starsky.foundation.native.Trash;
 
 namespace starskytest.starsky.foundation.platform.Trash;
 

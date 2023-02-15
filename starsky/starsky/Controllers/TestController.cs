@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Interfaces;
 using System;
+using starsky.foundation.native.Trash;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platformSystemBindings.Trash;
 
 namespace starsky.Controllers
 {
@@ -28,8 +28,10 @@ namespace starsky.Controllers
 			}
 			
 			MacOsTrashBindingHelper.Main();
+			
 			Console.WriteLine("test");
-			return Json(true);
+			var content = OsxClipboard.GetText();
+			return Json(content);
 		}
 	}
 }
