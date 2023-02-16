@@ -151,19 +151,60 @@ public class WindowsShellTrashBindingHelperTest
 	[TestMethod]
 	public void SHQueryRecycleBinWrapper_InvalidDrive()
 	{
-		var (hResult, info, pSHQueryRBInfo) = WindowsShellTrashBindingHelper.SHQueryRecycleBinWrapper("ZZ:\\");
+		var (hResult, info, pShQueryRbInfo) = WindowsShellTrashBindingHelper
+			.SHQueryRecycleBinWrapper("ZZ:\\");
 		
 		// Shell32.dll is not available on Linux or Mac OS
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
 			Assert.AreEqual(null, hResult);
 			Assert.IsTrue(info.Contains("Unable to load shared library"));
-			Assert.AreEqual(0, pSHQueryRBInfo.i64NumItems);
+			Assert.AreEqual(0, pShQueryRbInfo.i64NumItems);
 			return;
 		}
 
 		Assert.AreEqual(-2147024893, hResult);
 		Assert.IsTrue(info.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes"));
-		Assert.AreEqual(0, pSHQueryRBInfo.i64NumItems);
+		Assert.AreEqual(0, pShQueryRbInfo.i64NumItems);
+	}
+
+	[TestMethod]
+	public void SHQueryRecycleBinInfo1_Success()
+	{
+		var result = WindowsShellTrashBindingHelper.SHQueryRecycleBinInfo(0, @"C:\",
+			new WindowsShellTrashBindingHelper.SHQUERYRBINFO
+			{
+				i64Size = 10252,
+				i64NumItems = 1
+			});
+		Assert.AreEqual(@"Success! Drive C:\ contains 1 item(s) in 10.252 bytes",result);
+	}
+	
+	[TestMethod]
+	public void SHQueryRecycleBinInfo1_Fail()
+	{
+		var result = WindowsShellTrashBindingHelper.SHQueryRecycleBinInfo(1, @"C:\",
+			new WindowsShellTrashBindingHelper.SHQUERYRBINFO());
+		Assert.AreEqual(@"Fail! Drive C:\ contains 0 item(s) in 0 bytes",result);
+	}
+	
+	[TestMethod]
+	public void DriveHasRecycleBin_InvalidDrive()
+	{
+		var (driveHasBin, status, info) = WindowsShellTrashBindingHelper
+			.DriveHasRecycleBin("ZZ:\\");
+		
+		// Shell32.dll is not available on Linux or Mac OS
+		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		{
+			Assert.AreEqual(false, driveHasBin);
+			Assert.AreEqual(0, status);
+			Assert.IsTrue(info.Contains("Unable to load shared library"));
+			return;
+		}
+
+		Assert.AreEqual(false, driveHasBin);
+		Assert.AreEqual(-2147024893, status);
+		Assert.IsTrue(info.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes"));
 	}
 }

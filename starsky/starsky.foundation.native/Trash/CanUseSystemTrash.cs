@@ -21,6 +21,6 @@ public static class CanUseSystemTrash
 			return driveHasBin;
 		}
 		
-		return true; // yes is true
+		return true;
 	}
 }
