@@ -76,7 +76,7 @@ public class WindowsShellTrashBindingHelper
 	/// SHFILEOPSTRUCT for SHFileOperation from COM
 	/// 
 	/// </summary>
-	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
 	internal struct SHFILEOPSTRUCT
 	{
 		public IntPtr hwnd;
@@ -91,7 +91,7 @@ public class WindowsShellTrashBindingHelper
 		public string lpszProgressTitle;
 	}
 
-	[DllImport("shell32.dll", CharSet = CharSet.Auto)]
+	[DllImport("shell32.dll", CharSet = CharSet.Unicode)]
 	private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
 
 	/// <summary>
