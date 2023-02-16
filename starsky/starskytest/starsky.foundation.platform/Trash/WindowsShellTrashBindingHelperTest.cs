@@ -211,20 +211,19 @@ public class WindowsShellTrashBindingHelperTest
 	[TestMethod]
 	public void DriveHasRecycleBin_C_Drive()
 	{
-		var (driveHasBin, status, info) = WindowsShellTrashBindingHelper
+		var (driveHasBin, items, info) = WindowsShellTrashBindingHelper
 			.DriveHasRecycleBin();
 		
 		// Shell32.dll is not available on Linux or Mac OS
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
-			Assert.AreEqual(0,status);
+			Assert.AreEqual(0,items);
 			Assert.AreEqual(false, driveHasBin);
 			Assert.IsTrue(info.Contains("Unable to load shared library"));
 			return;
 		}
 
-		Assert.AreEqual(0,status);
-		Assert.AreEqual(false, driveHasBin);
-		Assert.IsTrue(info.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes"));
+		Assert.AreEqual(true, 0 >= items);
+		Assert.AreEqual(true, driveHasBin);
 	}
 }
