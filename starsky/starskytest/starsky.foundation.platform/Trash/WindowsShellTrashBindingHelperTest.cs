@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -37,39 +38,48 @@ public class WindowsShellTrashBindingHelperTest
 	}
 
 	[TestMethod]
+	public void WindowsShellTrashBindingHelperTest_NonWindows()
+	{
+		var result = WindowsShellTrashBindingHelper.Trash("destPath", OSPlatform.Linux);
+		
+		Assert.AreEqual(null, result.Item1);
+		Assert.IsTrue(result.Item2.Contains("Not supported"));
+	}
+
+	[TestMethod]
 	public void FileOperationTrash_FOF_SILENT()
 	{
-		Assert.AreEqual(0x0004, (ushort)WindowsShellTrashBindingHelper.FileOperationTrash.FOF_SILENT);
+		Assert.AreEqual(0x0004, (ushort)WindowsShellTrashBindingHelper.ShFileOperations.FOF_SILENT);
 	}
 
 	[TestMethod]
 	public void FileOperationTrash_FOF_NOCONFIRMATION()
 	{
-		Assert.AreEqual(0x0010, (ushort)WindowsShellTrashBindingHelper.FileOperationTrash.FOF_NOCONFIRMATION);
+		Assert.AreEqual(0x0010, (ushort)WindowsShellTrashBindingHelper.ShFileOperations.FOF_NOCONFIRMATION);
 	}
 	
 	[TestMethod]
 	public void FileOperationTrash_FOF_ALLOWUNDO()
 	{
-		Assert.AreEqual(0x0040, (ushort)WindowsShellTrashBindingHelper.FileOperationTrash.FOF_ALLOWUNDO);
+		Assert.AreEqual(0x0040, (ushort)WindowsShellTrashBindingHelper.ShFileOperations.FOF_ALLOWUNDO);
 	}
 	
 	[TestMethod]
 	public void FileOperationTrash_FOF_SIMPLEPROGRESS()
 	{
-		Assert.AreEqual(0x0100, (ushort)WindowsShellTrashBindingHelper.FileOperationTrash.FOF_SIMPLEPROGRESS);
+		Assert.AreEqual(0x0100, (ushort)WindowsShellTrashBindingHelper.ShFileOperations.FOF_SIMPLEPROGRESS);
 	}
 	
 	[TestMethod]
 	public void FileOperationTrash_FOF_NOERRORUI()
 	{
-		Assert.AreEqual(0x0400, (ushort)WindowsShellTrashBindingHelper.FileOperationTrash.FOF_NOERRORUI);
+		Assert.AreEqual(0x0400, (ushort)WindowsShellTrashBindingHelper.ShFileOperations.FOF_NOERRORUI);
 	}
 	
 	[TestMethod]
 	public void FileOperationTrash_FOF_WANTNUKEWARNING()
 	{
-		Assert.AreEqual(0x4000, (ushort)WindowsShellTrashBindingHelper.FileOperationTrash.FOF_WANTNUKEWARNING);
+		Assert.AreEqual(0x4000, (ushort)WindowsShellTrashBindingHelper.ShFileOperations.FOF_WANTNUKEWARNING);
 	}
 	
 	[TestMethod]
@@ -94,5 +104,32 @@ public class WindowsShellTrashBindingHelperTest
 	public void FileOperationType_FO_RENAME()
 	{
 		Assert.AreEqual((uint)0x0004, (uint)WindowsShellTrashBindingHelper.FileOperationType.FO_RENAME);
+	}
+
+	[TestMethod]
+	public void SHFILEOPSTRUCT1()
+	{
+		var t = new WindowsShellTrashBindingHelper.SHFILEOPSTRUCT
+		{
+			hwnd = IntPtr.Zero,
+			wFunc =
+				WindowsShellTrashBindingHelper.FileOperationType.FO_COPY,
+			pFrom = "C:\\test\\test.txt",
+			pTo = "C:\\test\\test.txt",
+			fFlags = WindowsShellTrashBindingHelper.ShFileOperations.FOF_ALLOWUNDO,
+			fAnyOperationsAborted = true,
+			hNameMappings = IntPtr.Zero,
+			lpszProgressTitle= "test"
+		};
+		
+		Assert.AreEqual(IntPtr.Zero, t.hwnd);
+		Assert.AreEqual(WindowsShellTrashBindingHelper.FileOperationType.FO_COPY, t.wFunc);
+		Assert.AreEqual("C:\\test\\test.txt", t.pFrom);
+		Assert.AreEqual("C:\\test\\test.txt", t.pTo);
+		Assert.AreEqual(WindowsShellTrashBindingHelper.ShFileOperations.FOF_ALLOWUNDO, t.fFlags);
+		Assert.AreEqual(true, t.fAnyOperationsAborted);
+		Assert.AreEqual(IntPtr.Zero, t.hNameMappings);
+		Assert.AreEqual("test", t.lpszProgressTitle);
+		
 	}
 }

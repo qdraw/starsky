@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.native.Trash;
 
 /// <summary>
@@ -8,6 +10,7 @@ namespace starsky.foundation.native.Trash;
 /// @see: https://stackoverflow.com/a/17618
 /// </summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("Usage", "S101: Rename struct 'SHFILEOPSTRUCT' to match pascal case naming rules, consider using 'Shfileopstruct'.")]
 public class WindowsShellTrashBindingHelper
 {
 
@@ -15,7 +18,7 @@ public class WindowsShellTrashBindingHelper
 	/// Possible flags for the SHFileOperation method.
 	/// </summary>
 	[Flags]
-	public enum FileOperationTrash : ushort
+	public enum ShFileOperations : ushort
 	{
 		/// <summary>
 		/// Do not show a dialog during the process
@@ -74,14 +77,14 @@ public class WindowsShellTrashBindingHelper
 	/// 
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-	private struct SHFILEOPSTRUCT
+	internal struct SHFILEOPSTRUCT
 	{
 		public IntPtr hwnd;
 		[MarshalAs(UnmanagedType.U4)]
 		public FileOperationType wFunc;
 		public string pFrom;
 		public string pTo;
-		public FileOperationTrash fFlags;
+		public ShFileOperations fFlags;
 		[MarshalAs(UnmanagedType.Bool)]
 		public bool fAnyOperationsAborted;
 		public IntPtr hNameMappings;
@@ -99,8 +102,8 @@ public class WindowsShellTrashBindingHelper
 	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
 	public static (bool?, string) Trash(string path, 
 		OSPlatform platform, 
-		FileOperationTrash flags = FileOperationTrash.FOF_NOCONFIRMATION |
-		                           FileOperationTrash.FOF_WANTNUKEWARNING)
+		ShFileOperations flags = ShFileOperations.FOF_NOCONFIRMATION |
+		                           ShFileOperations.FOF_WANTNUKEWARNING)
 	{
 		if ( platform != OSPlatform.Windows )
 		{
@@ -110,9 +113,9 @@ public class WindowsShellTrashBindingHelper
 		return TrashInternal(path, flags);
 	}
 
-	public static (bool, string) TrashInternal(string path, FileOperationTrash flags =
-		FileOperationTrash.FOF_NOCONFIRMATION |
-		FileOperationTrash.FOF_WANTNUKEWARNING)
+	public static (bool, string) TrashInternal(string path, ShFileOperations flags =
+		ShFileOperations.FOF_NOCONFIRMATION |
+		ShFileOperations.FOF_WANTNUKEWARNING)
 	{
 		try
 		{
@@ -120,7 +123,7 @@ public class WindowsShellTrashBindingHelper
 			{
 				wFunc = FileOperationType.FO_DELETE,
 				pFrom = path + '\0' + '\0',
-				fFlags = FileOperationTrash.FOF_ALLOWUNDO | flags
+				fFlags = ShFileOperations.FOF_ALLOWUNDO | flags
 			};
 			var result = SHFileOperation(ref fs).ToString();
 			return (true, result);
