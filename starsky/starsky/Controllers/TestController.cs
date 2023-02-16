@@ -23,8 +23,9 @@ namespace starsky.Controllers
 		public IActionResult Trash()
 		{
 			_logger.LogInformation("UserInteractive: " + Environment.UserInteractive);
+			_logger.LogInformation($"use trash: {CanUseSystemTrash.UseTrash()}");
 
-			if ( new AppSettings().IsWindows )
+			if ( new AppSettings().IsWindows  )
 			{
 				var result = WindowsShellTrashBindingHelper.Trash("C:\\temp\\test.bmp", OperatingSystemHelper.GetPlatform());
 				return Json(result);
