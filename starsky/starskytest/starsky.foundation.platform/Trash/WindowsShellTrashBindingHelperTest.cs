@@ -164,6 +164,8 @@ public class WindowsShellTrashBindingHelperTest
 		}
 
 		Assert.AreEqual(-2147024893, hResult);
+		info ??= WindowsShellTrashBindingHelper.SHQueryRecycleBinInfo(hResult, "ZZ:\\", pShQueryRbInfo);
+
 		Assert.IsTrue(info.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes"));
 		Assert.AreEqual(0, pShQueryRbInfo.i64NumItems);
 	}
