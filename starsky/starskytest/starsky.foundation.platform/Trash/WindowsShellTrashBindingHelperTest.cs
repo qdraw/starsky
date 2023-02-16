@@ -177,7 +177,7 @@ public class WindowsShellTrashBindingHelperTest
 				i64Size = 10252,
 				i64NumItems = 1
 			});
-		Assert.AreEqual(@"Success! Drive C:\ contains 1 item(s) in 10.252 bytes",result);
+		Assert.AreEqual(@"Success! Drive C:\ contains 1 item(s) in " + $"{10252:#,##0} bytes" ,result);
 	}
 	
 	[TestMethod]
