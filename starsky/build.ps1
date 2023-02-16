@@ -60,18 +60,22 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
         if ($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) {
             write-host "next: install via winget"
 
+            # just to get by those messages
+            Invoke-Expression "winget search dotnet --accept-source-agreements" -ErrorAction SilentlyContinue | Out-Null
+
             $firstCharOfVersion = $shouldBeNetVersion.SubString(0,1)
-            $showCommand = 'winget show dotnet-sdk-' + $firstCharOfVersion + ' -v ' + $shouldBeNetVersion + '  --disable-interactivity' 
+            $showCommand = 'winget show dotnet-sdk-' + $firstCharOfVersion + ' -v ' + $shouldBeNetVersion + ' --disable-interactivity' 
             write-host "next run: " $showCommand
-            Invoke-Expression -Command $showCommand | Out-Null
+            $resultInstall = Invoke-Expression -Command $showCommand -ErrorAction SilentlyContinue
             if ($LASTEXITCODE -eq 0) {
                 write-host "version found - next install" 
                 write-host "you will be asked for an admin"
-                $installCommand = 'winget install dotnet-sdk-' + $firstCharOfVersion + ' -v ' + $shouldBeNetVersion + '  --disable-interactivity' 
+                $installCommand = 'winget install dotnet-sdk-' + $firstCharOfVersion + ' -v ' + $shouldBeNetVersion + ' --disable-interactivity --accept-source-agreements --accept-package-agreements' 
                 Invoke-Expression -Command $installCommand 
             }
             else {
                 write-host "version not found so skip"
+                Write-host $resultInstall
             }
         }
     }
