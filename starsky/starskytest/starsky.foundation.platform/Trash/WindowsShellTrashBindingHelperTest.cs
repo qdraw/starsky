@@ -149,7 +149,7 @@ public class WindowsShellTrashBindingHelperTest
 	}
 
 	[TestMethod]
-	public void SHQueryRecycleBinWrapper1()
+	public void SHQueryRecycleBinWrapper_InvalidDrive()
 	{
 		var (hResult, info, pSHQueryRBInfo) = WindowsShellTrashBindingHelper.SHQueryRecycleBinWrapper("ZZ:\\");
 		
@@ -159,6 +159,11 @@ public class WindowsShellTrashBindingHelperTest
 			Assert.AreEqual(null, hResult);
 			Assert.IsTrue(info.Contains("Unable to load shared library"));
 			Assert.AreEqual(0, pSHQueryRBInfo.i64NumItems);
+			return;
 		}
+
+		Assert.AreEqual(-2147024893, hResult);
+		Assert.IsTrue(info.Contains("Fail! Drive ZZ:\\ contains 0 item(s) in 0 bytes"));
+		Assert.AreEqual(0, pSHQueryRBInfo.i64NumItems);
 	}
 }

@@ -201,11 +201,11 @@ public class WindowsShellTrashBindingHelper
 	{
 		var (hResult, info, pSHQueryRBInfo) = SHQueryRecycleBinWrapper(drivePath);
 
-		if ( hResult == 0 )
+		if ( hResult != 0 )
 		{
 			return (false, null, info);
 		}
-		return ( hResult == 0, ( int )pSHQueryRBInfo.i64NumItems, info);
+		return (hResult == 0, ( int )pSHQueryRBInfo.i64NumItems, info);
 	}
 	
 }
