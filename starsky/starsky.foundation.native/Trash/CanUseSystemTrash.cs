@@ -4,7 +4,7 @@ namespace starsky.foundation.native.Trash;
 
 public static class CanUseSystemTrash
 {
-	public static bool Detect()
+	public static bool UseTrash()
 	{
 		// ReSharper disable once ConvertIfStatementToReturnStatement
 		if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || 
@@ -13,7 +13,13 @@ public static class CanUseSystemTrash
 		{
 			return false;
 		}
+
+		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		{
+			var root = Path.GetPathRoot(System.Reflection.Assembly.GetEntryAssembly()?.Location)!;
+			return WindowsShellTrashBindingHelper.DriveHasRecycleBin(root);
+		}
 		
-		return true;
+		return true; // yes is true
 	}
 }

@@ -46,6 +46,8 @@ public class WindowsShellTrashBindingHelper
 
 	/// <summary>
 	/// File Operation Function Type for SHFileOperation
+	/// @see: https://learn.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-shfileopstructa
+	/// SHFILEOPSTRUCTA
 	/// </summary>
 	public enum FileOperationType : uint
 	{
@@ -69,6 +71,7 @@ public class WindowsShellTrashBindingHelper
 
 	/// <summary>
 	/// SHFILEOPSTRUCT for SHFileOperation from COM
+	/// 
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
 	private struct SHFILEOPSTRUCT
@@ -94,8 +97,10 @@ public class WindowsShellTrashBindingHelper
 	/// <param name="path">Location of directory or file to recycle</param>
 	/// <param name="platform">should be windows</param>
 	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-	public static (bool?, string) Trash(string path, OSPlatform platform, FileOperationTrash flags = FileOperationTrash.FOF_NOCONFIRMATION |
-	                                                                                                 FileOperationTrash.FOF_WANTNUKEWARNING)
+	public static (bool?, string) Trash(string path, 
+		OSPlatform platform, 
+		FileOperationTrash flags = FileOperationTrash.FOF_NOCONFIRMATION |
+		                           FileOperationTrash.FOF_WANTNUKEWARNING)
 	{
 		if ( platform != OSPlatform.Windows )
 		{
@@ -125,4 +130,44 @@ public class WindowsShellTrashBindingHelper
 			return (false, ex.Message);
 		}
 	}
+	
+	
+	// @see: https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetknownfolderitem
+	
+	
+	/// <summary>
+	/// @see: https://stackoverflow.com/questions/7718028/how-do-i-detect-if-a-drive-has-a-recycle-bin-in-c
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	private struct SHQUERYRBINFO
+	{
+		/// DWORD->unsigned int
+		public uint cbSize;
+
+		/// __int64
+		public long i64Size;
+
+		/// __int64
+		public long i64NumItems;
+	}
+
+
+	/// <summary>
+	/// Return Type: HRESULT->LONG->int
+	/// pszRootPath: LPCTSTR->LPCWSTR->WCHAR*
+	/// pSHQueryRBInfo: LPSHQUERYRBINFO->_SHQUERYRBINFO*
+	/// </summary>
+	/// <param name="pszRootPath"></param>
+	/// <param name="pSHQueryRBInfo"></param>
+	/// <returns></returns>
+	[DllImport("shell32.dll", EntryPoint = "SHQueryRecycleBinW")]
+	private static extern int SHQueryRecycleBinW([In] [MarshalAs(UnmanagedType.LPWStr)] string pszRootPath, ref SHQUERYRBINFO pSHQueryRBInfo);
+
+	public static bool DriveHasRecycleBin(string Drive)
+	{
+		SHQUERYRBINFO Info = new SHQUERYRBINFO();
+		Info.cbSize = 20; //sizeof(SHQUERYRBINFO)
+		return SHQueryRecycleBinW(Drive, ref Info) == 0;
+	}
+	
 }
