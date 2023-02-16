@@ -166,11 +166,19 @@ public class WindowsShellTrashBindingHelper
 	[DllImport("shell32.dll", EntryPoint = "SHQueryRecycleBinW")]
 	private static extern int SHQueryRecycleBinW([In] [MarshalAs(UnmanagedType.LPWStr)] string pszRootPath, ref SHQUERYRBINFO pSHQueryRBInfo);
 
-	public static bool DriveHasRecycleBin(string Drive)
+	public static (bool?, string) DriveHasRecycleBin(string Drive)
 	{
-		SHQUERYRBINFO Info = new SHQUERYRBINFO();
-		Info.cbSize = 20; //sizeof(SHQUERYRBINFO)
-		return SHQueryRecycleBinW(Drive, ref Info) == 0;
+		var Info = new SHQUERYRBINFO { 
+			cbSize = 20  //sizeof(SHQUERYRBINFO)
+		};
+		try
+		{
+			return (SHQueryRecycleBinW(Drive, ref Info) == 0, "Ok");
+		}
+		catch ( Exception e )
+		{
+			return ( null, e.Message );
+		}
 	}
 	
 }
