@@ -175,7 +175,7 @@ public class WindowsShellTrashBindingHelper
 			cbSize = Marshal.SizeOf(typeof(SHQUERYRBINFO))
 		};
 
-		int? hResult = null;
+		int? hResult;
 		string info;
 		try
 		{
@@ -184,6 +184,7 @@ public class WindowsShellTrashBindingHelper
 		}
 		catch ( Exception e )
 		{
+			hResult = null;
 			info = e.Message;
 		}
 		return (hResult, info, pSHQueryRBInfo);
@@ -197,15 +198,11 @@ public class WindowsShellTrashBindingHelper
 		       $"item(s) in {pSHQueryRBInfo.i64Size:#,##0} bytes";
 	}
 
-	public static (bool, int?, string) DriveHasRecycleBin(string drivePath = @"C:\")
+	public static (bool, long, string) DriveHasRecycleBin(string drivePath = @"C:\")
 	{
 		var (hResult, info, pSHQueryRBInfo) = SHQueryRecycleBinWrapper(drivePath);
-
-		if ( hResult != 0 )
-		{
-			return (false, null, info);
-		}
-		return (hResult == 0, ( int )pSHQueryRBInfo.i64NumItems, info);
+		
+		return (hResult == 0, pSHQueryRBInfo.i64NumItems, info);
 	}
 	
 }
