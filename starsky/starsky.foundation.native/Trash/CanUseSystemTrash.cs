@@ -17,10 +17,8 @@ public static class CanUseSystemTrash
 		// ReSharper disable once InvertIf
 		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
-			var (driveHasBin,_) = WindowsShellTrashBindingHelper.DriveHasRecycleBin();
-
-			if ( driveHasBin == null ) return false;
-			return true;
+			var (driveHasBin,_,_) = WindowsShellTrashBindingHelper.DriveHasRecycleBin();
+			return driveHasBin;
 		}
 		
 		return true; // yes is true

@@ -103,7 +103,7 @@ public class WindowsShellTrashBindingHelper
 	public static (bool?, string) Trash(string path, 
 		OSPlatform platform, 
 		ShFileOperations flags = ShFileOperations.FOF_NOCONFIRMATION |
-		                           ShFileOperations.FOF_WANTNUKEWARNING)
+		                         ShFileOperations.FOF_WANTNUKEWARNING)
 	{
 		if ( platform != OSPlatform.Windows )
 		{
@@ -134,17 +134,16 @@ public class WindowsShellTrashBindingHelper
 		}
 	}
 
-
-	// @see: https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetknownfolderitem
-
-
 	/// <summary>
 	/// @see: https://stackoverflow.com/questions/7718028/how-do-i-detect-if-a-drive-has-a-recycle-bin-in-c
 	/// @see: https://stackoverflow.com/a/63767356
 	/// @see: https://learn.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-shqueryrbinfo
+	///
+	/// @see: https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetknownfolderitem
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 8)]
-	private struct SHQUERYRBINFO
+	[SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
+	internal struct SHQUERYRBINFO
 	{
 		/// DWORD->unsigned int
 		public int cbSize;
@@ -165,31 +164,48 @@ public class WindowsShellTrashBindingHelper
 	/// <param name="pszRootPath"></param>
 	/// <param name="pSHQueryRBInfo"></param>
 	/// <returns></returns>
-	[DllImport("shell32.dll")]
-	static extern int SHQueryRecycleBin(string pszRootPath, ref SHQUERYRBINFO
-   pSHQueryRBInfo);
+	[DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+	private static extern int SHQueryRecycleBin(string pszRootPath, ref SHQUERYRBINFO
+		pSHQueryRBInfo);
 
-	public static (int?, string) DriveHasRecycleBin()
+	internal static (int?, string, SHQUERYRBINFO) SHQueryRecycleBinWrapper(string drivePath = @"C:\")
 	{
 		var pSHQueryRBInfo = new SHQUERYRBINFO
 		{
 			cbSize = Marshal.SizeOf(typeof(SHQUERYRBINFO))
 		};
+
+		int? hResult = null;
+		string info;
 		try
 		{
-			string drivePath = @"C:\";
-
-			int hresult = SHQueryRecycleBin(drivePath, ref pSHQueryRBInfo);
-			Console.WriteLine("{0} Drive {1} contains {2} item(s) in {3:#,##0} bytes",
-	hresult == 0 ? "Success!" : "Fail!",
-	drivePath, pSHQueryRBInfo.i64NumItems, pSHQueryRBInfo.i64Size);
-
-			return (( int )pSHQueryRBInfo.i64NumItems, "Ok");
+			hResult = SHQueryRecycleBin(drivePath, ref pSHQueryRBInfo);
+			info = SHQueryRecycleBinInfo(hResult, drivePath, pSHQueryRBInfo);
 		}
 		catch ( Exception e )
 		{
-			return ( null, e.Message );
+			info = e.Message;
 		}
+		return (hResult, info, pSHQueryRBInfo);
+	}
+
+	internal static string SHQueryRecycleBinInfo(int? hResult, string drivePath, SHQUERYRBINFO pSHQueryRBInfo)
+	{
+		var successStatus = hResult == 0 ? "Success!" : "Fail!";
+
+		return $"{successStatus} Drive {drivePath} contains {pSHQueryRBInfo.i64NumItems} " +
+		       $"item(s) in {pSHQueryRBInfo.i64Size:#,##0} bytes";
+	}
+
+	public static (bool, int?, string) DriveHasRecycleBin(string drivePath = @"C:\")
+	{
+		var (hResult, info, pSHQueryRBInfo) = SHQueryRecycleBinWrapper(drivePath);
+
+		if ( hResult == 0 )
+		{
+			return (false, null, info);
+		}
+		return ( hResult == 0, ( int )pSHQueryRBInfo.i64NumItems, info);
 	}
 	
 }

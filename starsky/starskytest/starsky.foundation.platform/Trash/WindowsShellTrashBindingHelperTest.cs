@@ -132,4 +132,33 @@ public class WindowsShellTrashBindingHelperTest
 		Assert.AreEqual("test", t.lpszProgressTitle);
 		
 	}
+
+	[TestMethod]
+	public void SHQUERYRBINFO1()
+	{
+		var values = new WindowsShellTrashBindingHelper.SHQUERYRBINFO
+		{
+			cbSize = 20,
+			i64Size = 2,
+			i64NumItems = 3
+		};
+		
+		Assert.AreEqual(20, values.cbSize);
+		Assert.AreEqual(2, values.i64Size);
+		Assert.AreEqual(3, values.i64NumItems);
+	}
+
+	[TestMethod]
+	public void SHQueryRecycleBinWrapper1()
+	{
+		var (hResult, info, pSHQueryRBInfo) = WindowsShellTrashBindingHelper.SHQueryRecycleBinWrapper("ZZ:\\");
+		
+		// Shell32.dll is not available on Linux or Mac OS
+		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		{
+			Assert.AreEqual(null, hResult);
+			Assert.IsTrue(info.Contains("Unable to load shared library"));
+			Assert.AreEqual(0, pSHQueryRBInfo.i64NumItems);
+		}
+	}
 }
