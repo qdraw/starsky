@@ -168,7 +168,7 @@ public class WindowsShellTrashBindingHelper
 	private static extern int SHQueryRecycleBin(string pszRootPath, ref SHQUERYRBINFO
 		pSHQueryRBInfo);
 
-	internal static (int?, string, SHQUERYRBINFO) SHQueryRecycleBinWrapper(string drivePath = @"C:\")
+	internal static (int?, string?, SHQUERYRBINFO) SHQueryRecycleBinWrapper(string drivePath = @"C:\")
 	{
 		var pSHQueryRBInfo = new SHQUERYRBINFO
 		{
@@ -176,11 +176,10 @@ public class WindowsShellTrashBindingHelper
 		};
 
 		int? hResult;
-		string info;
+		string? info = null;
 		try
 		{
 			hResult = SHQueryRecycleBin(drivePath, ref pSHQueryRBInfo);
-			info = SHQueryRecycleBinInfo(hResult, drivePath, pSHQueryRBInfo);
 		}
 		catch ( Exception e )
 		{
@@ -201,6 +200,7 @@ public class WindowsShellTrashBindingHelper
 	public static (bool, long, string) DriveHasRecycleBin(string drivePath = @"C:\")
 	{
 		var (hResult, info, pSHQueryRBInfo) = SHQueryRecycleBinWrapper(drivePath);
+		info ??= SHQueryRecycleBinInfo(hResult, drivePath, pSHQueryRBInfo);
 		
 		return (hResult == 0, pSHQueryRBInfo.i64NumItems, info);
 	}
