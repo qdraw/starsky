@@ -37,12 +37,12 @@ jobs:
       with:
         dotnet-version: 6.0.406
         
-    - name: BuildNetCore
+    - name: Build (Windows)
       shell: pwsh
       working-directory: ./starsky
       run: pwsh build.ps1 --Target BuildNetCore --no-sonar --no-dependencies --no-publish --skip --no-logo 
       
-    - name: TestNetCore
+    - name: Test (Windows)
       shell: pwsh
       working-directory: ./starsky
       run: pwsh build.ps1 --Target TestNetCore --no-sonar --no-dependencies --no-publish --skip --no-logo
