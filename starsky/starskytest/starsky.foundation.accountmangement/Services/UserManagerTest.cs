@@ -489,6 +489,28 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			Assert.IsNull(user);
 		}
 		
+		
+		[TestMethod]
+		public async Task UserManager_RemoveUser_NonExistsCredType()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
+			
+			var result = await userManager.RemoveUser("___email___", "non_exists@mail.us");
+			
+			Assert.AreEqual(false, result.Success);
+		}
+		
+		[TestMethod]
+		public async Task UserManager_RemoveUser_NonExists()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
+			await userManager.AddDefaultCredentialType("email");
+			
+			var result = await userManager.RemoveUser("email", "non_exists@mail.us");
+			
+			Assert.AreEqual(false, result.Success);
+		}
+
 		[TestMethod]
 		public async Task AddToRole()
 		{

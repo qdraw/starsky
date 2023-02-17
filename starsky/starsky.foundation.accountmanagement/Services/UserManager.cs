@@ -1,3 +1,4 @@
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -409,7 +410,7 @@ namespace starsky.foundation.accountmanagement.Services
 	        
 			// Add caching for credentialType
 			if (IsCacheEnabled() && _cache.TryGetValue(key, 
-				out var objectCredentialTypeCode))
+				    out var objectCredentialTypeCode))
 			{
 				return ( Credential ) objectCredentialTypeCode;
 			}
@@ -450,12 +451,12 @@ namespace starsky.foundation.accountmanagement.Services
 		/// </summary>
 		/// <param name="credentialTypeCode">code to get the CredentialType</param>
 		/// <returns>CredentialType</returns>
-		private CredentialType CachedCredentialType(string credentialTypeCode)
+		private CredentialType? CachedCredentialType(string credentialTypeCode)
 		{
 			var cacheKey = "credentialTypeCode_" + credentialTypeCode;
 			// Add caching for credentialType
 			if (IsCacheEnabled() && _cache.TryGetValue(cacheKey, 
-				out var objectCredentialTypeCode))
+				    out var objectCredentialTypeCode))
 			{
 				return ( CredentialType ) objectCredentialTypeCode;
 			}
@@ -467,6 +468,7 @@ namespace starsky.foundation.accountmanagement.Services
 				x.Name,
 				x.Position
 			}).FirstOrDefault();
+			
 			if ( credentialTypeSelect == null ) return null;
 
 			var credentialType = new CredentialType
@@ -618,19 +620,33 @@ namespace starsky.foundation.accountmanagement.Services
 			string identifier)
 		{
 			var credentialType = CachedCredentialType(credentialTypeCode);
-			Credential credential = _dbContext.Credentials.FirstOrDefault(
+			if ( credentialType == null )
+			{
+				return new ValidateResult { Success = false, Error = ValidateResultError.CredentialTypeNotFound };
+			}
+			
+			var credential = _dbContext.Credentials.FirstOrDefault(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+
 			if ( credential == null )
 			{
-				return new ValidateResult { Success = false, Error = ValidateResultError.CredentialNotFound };
+				return new ValidateResult
+				{
+					Success = false, 
+					Error = ValidateResultError.CredentialNotFound
+				};
 			}
 
 			var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == credential.UserId);
 
 			var userRole = await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.UserId == credential.UserId);
 	        
-			if(userRole == null || user == null || credential == null) return new 
-				ValidateResult{Success = false, Error = ValidateResultError.CredentialNotFound};
+			if(userRole == null || user == null) {
+				return new ValidateResult{
+						Success = false, 
+						Error = ValidateResultError.CredentialNotFound
+					};
+			}
 
 			_dbContext.Credentials.Remove(credential);
 			_dbContext.Users.Remove(user);
