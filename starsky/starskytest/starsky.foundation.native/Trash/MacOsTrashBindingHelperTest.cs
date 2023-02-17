@@ -158,6 +158,19 @@ public class MacOsTrashBindingHelperTest
 		MacOsTrashBindingHelper.GetUrls(new List<string>{"value"});
 	}
 	
+	[ExpectedException(typeof(DllNotFoundException))]
+	[TestMethod]
+	public void CreateCfString_OtherOs()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for non-Mac OS Only");
+			return;
+		}
+
+		MacOsTrashBindingHelper.CreateCfString("value");
+	}
+	
 	[TestMethod]
 	public void CfStringEncoding_UTF16()
 	{
