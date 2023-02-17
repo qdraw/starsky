@@ -72,7 +72,7 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				var role = _dbContext.Roles
 					.TagWith("AddDefaultRoles")
-					.FirstOrDefault(p => p.Code!.ToLower().Equals(roleName.ToLower()));
+					.FirstOrDefault(p => p.Code != null && p.Code.ToLower().Equals(roleName.ToLower()));
 
 				if ( role == null )
 				{
@@ -265,7 +265,8 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 
 			// Add a user role based on a user id
-			AddToRole(user, roles.FirstOrDefault( p=> p.Code == roleToAddToUser)!);
+			var roleToAdd = roles.FirstOrDefault(p => p.Code == roleToAddToUser);
+			AddToRole(user, roleToAdd);
 
 			if (credentialType == null)
 			{
@@ -315,11 +316,11 @@ namespace starsky.foundation.accountmanagement.Services
 		/// </summary>
 		/// <param name="user">AccountUser object</param>
 		/// <param name="role">Role object</param>
-		public void AddToRole(User user, Role role)
+		public void AddToRole(User user, Role? role)
 		{
 			var userRole = _dbContext.UserRoles.FirstOrDefault(p => p.User != null && p.User.Id == user.Id);
 			
-			if (userRole != null)
+			if (userRole != null || role == null)
 			{
 				return;                
 			}
@@ -716,7 +717,11 @@ namespace starsky.foundation.accountmanagement.Services
 		public Role? GetRole(string credentialTypeCode, string identifier)
 		{
 			var user = GetUser(credentialTypeCode, identifier);
-			var role = _dbContext.UserRoles.FirstOrDefault(p => p.User.Id == user.Id);
+			if ( user == null )
+			{
+				return null;
+			}
+			var role = _dbContext.UserRoles.FirstOrDefault(p => p.User != null && p.User.Id == user.Id);
 			if ( role == null ) return new Role();
 			var roleId = role.RoleId;
 			return _dbContext.Roles.TagWith("GetRole").FirstOrDefault(p=> p.Id == roleId);
@@ -760,8 +765,11 @@ namespace starsky.foundation.accountmanagement.Services
 			foreach (var roleId in roleIds)
 			{
 				var role = _dbContext.Roles.Find(roleId);
-                    
-				claims.Add(new Claim(ClaimTypes.Role, role!.Code!));
+				if ( role?.Code == null )
+				{
+					continue;
+				}
+				claims.Add(new Claim(ClaimTypes.Role, role.Code));
 				claims.AddRange(GetUserPermissionClaims(role));
 			}
 			return claims;
@@ -777,7 +785,11 @@ namespace starsky.foundation.accountmanagement.Services
 			foreach (var permissionId in permissionIds)
 			{
 				var permission = _dbContext.Permissions.Find(permissionId);
-				claims.Add(new Claim("Permission", permission!.Code!));
+				if ( permission?.Code == null )
+				{
+					continue;
+				}
+				claims.Add(new Claim("Permission", permission.Code!));
 			}
 
 			return claims;

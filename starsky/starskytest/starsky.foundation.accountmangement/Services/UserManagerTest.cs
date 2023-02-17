@@ -542,6 +542,14 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 
 		[TestMethod]
+		public void GetRole_NotExists()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
+			var result = userManager.GetRole("kfsdlnsdf", "sdknflsdf");
+			Assert.IsNull(result);
+		}
+
+		[TestMethod]
 		public async Task RemoveFromRole()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
