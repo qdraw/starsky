@@ -74,4 +74,11 @@ public class MacOsTrashBindingHelperTest
 		
 		File.Delete(trashPath);
 	}
+	
+	[TestMethod]
+	public void CreateCfArray1()
+	{
+		var result = MacOsTrashBindingHelper.CreateCfArray(new List<IntPtr>().ToArray());
+		Assert.IsNotNull(result);
+	}
 }

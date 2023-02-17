@@ -83,10 +83,10 @@ namespace starsky.foundation.native.Trash
         }
 
         // warning: this doesn't call retain/release on the elements in the array
-        internal unsafe static IntPtr CreateCfArray(IntPtr[] objectes)
+        internal unsafe static IntPtr CreateCfArray(IntPtr[] objects)
         {
-            fixed(IntPtr* vals = objectes) {
-                 return CFArrayCreate(IntPtr.Zero, (IntPtr)vals, objectes.Length, IntPtr.Zero);
+            fixed(IntPtr* vals = objects) {
+                 return CFArrayCreate(IntPtr.Zero, (IntPtr)vals, objects.Length, IntPtr.Zero);
             }
         }
 
