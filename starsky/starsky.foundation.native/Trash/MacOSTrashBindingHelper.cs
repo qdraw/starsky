@@ -49,7 +49,6 @@ namespace starsky.foundation.native.Trash
 
             var nsWorkspace = objc_getClass("NSWorkspace");
             var sharedWorkspace = objc_msgSend_retIntPtr(nsWorkspace, GetSelector("sharedWorkspace"));
-
             var completionHandler = GetSelector("recycleURLs:completionHandler:") ;
             
             // https://developer.apple.com/documentation/appkit/nsworkspace/1530465-recycle

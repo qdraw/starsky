@@ -130,6 +130,34 @@ public class MacOsTrashBindingHelperTest
 		Assert.IsNotNull(exception);
 	}
 
+	
+	[ExpectedException(typeof(DllNotFoundException))]
+	[TestMethod]
+	public void TrashInternal_OtherOs()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for non-Mac OS Only");
+			return;
+		}
+
+		MacOsTrashBindingHelper.TrashInternal(new List<string>());
+	}
+	
+		
+	[ExpectedException(typeof(DllNotFoundException))]
+	[TestMethod]
+	public void GetUrls_OtherOs()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for non-Mac OS Only");
+			return;
+		}
+
+		MacOsTrashBindingHelper.GetUrls(new List<string>());
+	}
+	
 	[TestMethod]
 	public void CfStringEncoding_UTF16()
 	{
