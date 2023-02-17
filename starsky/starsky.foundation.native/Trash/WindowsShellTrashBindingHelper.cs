@@ -13,6 +13,39 @@ namespace starsky.foundation.native.Trash;
 [SuppressMessage("Usage", "S101: Rename struct 'SHFILEOPSTRUCT' to match pascal case naming rules, consider using 'Shfileopstruct'.")]
 public class WindowsShellTrashBindingHelper
 {
+	/// <summary>
+	/// Send file to recycle bin
+	/// </summary>
+	/// <param name="path">Location of directory or file to recycle</param>
+	/// <param name="platform">should be windows</param>
+	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
+	public static (bool?, string) Trash(string path, 
+		OSPlatform platform, 
+		ShFileOperations flags = ShFileOperations.FOF_NOCONFIRMATION |
+		                         ShFileOperations.FOF_WANTNUKEWARNING)
+	{
+		if ( platform != OSPlatform.Windows )
+		{
+			return (null, "Not supported on this platform");
+		}
+
+		return TrashInternal(path, flags);
+	}
+
+	/// <summary>
+	/// Send file to recycle bin
+	/// </summary>
+	/// <param name="filesFullPath">Location of directory or file to recycle</param>
+	/// <param name="platform">should be windows</param>
+	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
+	public static (bool?, string) Trash(IEnumerable<string> filesFullPath,
+		OSPlatform platform,
+		ShFileOperations flags = ShFileOperations.FOF_NOCONFIRMATION |
+		                         ShFileOperations.FOF_WANTNUKEWARNING)
+	{
+		var results = filesFullPath.Select(path => Trash(path, platform, flags)).ToList();
+		return results.FirstOrDefault();
+	}
 
 	/// <summary>
 	/// Possible flags for the SHFileOperation method.
@@ -94,24 +127,7 @@ public class WindowsShellTrashBindingHelper
 	[DllImport("shell32.dll", CharSet = CharSet.Unicode)]
 	private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
 
-	/// <summary>
-	/// Send file to recycle bin
-	/// </summary>
-	/// <param name="path">Location of directory or file to recycle</param>
-	/// <param name="platform">should be windows</param>
-	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-	public static (bool?, string) Trash(string path, 
-		OSPlatform platform, 
-		ShFileOperations flags = ShFileOperations.FOF_NOCONFIRMATION |
-		                         ShFileOperations.FOF_WANTNUKEWARNING)
-	{
-		if ( platform != OSPlatform.Windows )
-		{
-			return (null, "Not supported on this platform");
-		}
 
-		return TrashInternal(path, flags);
-	}
 
 	public static (bool, string) TrashInternal(string path, ShFileOperations flags =
 		ShFileOperations.FOF_NOCONFIRMATION |

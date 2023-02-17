@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -41,6 +42,15 @@ public class WindowsShellTrashBindingHelperTest
 	public void WindowsShellTrashBindingHelperTest_NonWindows()
 	{
 		var result = WindowsShellTrashBindingHelper.Trash("destPath", OSPlatform.Linux);
+		
+		Assert.AreEqual(null, result.Item1);
+		Assert.IsTrue(result.Item2.Contains("Not supported"));
+	}
+	
+	[TestMethod]
+	public void WindowsShellTrashBindingHelperTest_List_NonWindows()
+	{
+		var result = WindowsShellTrashBindingHelper.Trash(new List<string>{"destPath"}, OSPlatform.Linux);
 		
 		Assert.AreEqual(null, result.Item1);
 		Assert.IsTrue(result.Item2.Contains("Not supported"));
@@ -107,7 +117,7 @@ public class WindowsShellTrashBindingHelperTest
 	}
 
 	[TestMethod]
-	public void SHFILEOPSTRUCT1()
+	public void Shfileopstruct1()
 	{
 		var t = new WindowsShellTrashBindingHelper.SHFILEOPSTRUCT
 		{
@@ -134,7 +144,7 @@ public class WindowsShellTrashBindingHelperTest
 	}
 
 	[TestMethod]
-	public void SHQUERYRBINFO1()
+	public void Shqueryrbinfo1()
 	{
 		var values = new WindowsShellTrashBindingHelper.SHQUERYRBINFO
 		{
