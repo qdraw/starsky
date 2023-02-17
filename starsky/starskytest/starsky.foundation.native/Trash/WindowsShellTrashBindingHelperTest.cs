@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Trash;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.starsky.foundation.platform.Trash;
+namespace starskytest.starsky.foundation.native.Trash;
 
 [TestClass]
 public class WindowsShellTrashBindingHelperTest
