@@ -53,7 +53,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public async Task SignInNull()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
-			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), null));
+			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), null!));
 		}
 		
 		
@@ -727,6 +727,22 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var result = await userManager.Exist(852);
 			
 			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public async Task ResetAndSuccessTest()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
+			var result = await userManager.ResetAndSuccess(3,999, null);
+			Assert.IsFalse(result.Success);
+		}
+		
+		[TestMethod]
+		public async Task SetLockIfFailedCountIsToHighTest()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
+			var result = await userManager.SetLockIfFailedCountIsToHigh(9999);
+			Assert.IsFalse(result.Success);
 		}
 	}
 }
