@@ -155,7 +155,7 @@ public class MacOsTrashBindingHelperTest
 			return;
 		}
 
-		MacOsTrashBindingHelper.GetUrls(new List<string>());
+		MacOsTrashBindingHelper.GetUrls(new List<string>{"value"});
 	}
 	
 	[TestMethod]
