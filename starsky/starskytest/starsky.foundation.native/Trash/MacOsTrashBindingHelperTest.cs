@@ -76,9 +76,82 @@ public class MacOsTrashBindingHelperTest
 	}
 	
 	[TestMethod]
-	public void CreateCfArray1()
+	public void CreateCfArray__MacOnly()
 	{
+		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for Mac OS Only");
+			return;
+		}
+
 		var result = MacOsTrashBindingHelper.CreateCfArray(new List<IntPtr>().ToArray());
 		Assert.IsNotNull(result);
 	}
+	
+	[TestMethod]
+	public void CreateCfArrayTest_OtherOs()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for non-Mac OS Only");
+			return;
+		}
+
+		string exception = null;
+		try
+		{
+			MacOsTrashBindingHelper.CreateCfArray(new List<IntPtr>().ToArray());
+		}
+		catch ( DllNotFoundException e )
+		{
+			exception = e.Message;
+		}
+		Assert.IsNotNull(exception);
+	}
+	
+	[TestMethod]
+	public void CreateCfStringTest_OtherOs()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for non-Mac OS Only");
+			return;
+		}
+
+		string exception = null;
+		try
+		{
+			MacOsTrashBindingHelper.CreateCfString("test");
+		}
+		catch ( DllNotFoundException e )
+		{
+			exception = e.Message;
+		}
+		Assert.IsNotNull(exception);
+	}
+
+	[TestMethod]
+	public void CfStringEncoding_UTF16()
+	{
+		Assert.AreEqual((uint)0x0100,(uint)MacOsTrashBindingHelper.CfStringEncoding.UTF16);
+	}
+	
+	[TestMethod]
+	public void CfStringEncoding_UTF16Be()
+	{
+		Assert.AreEqual((uint)0x10000100,(uint)MacOsTrashBindingHelper.CfStringEncoding.UTF16BE);
+	}
+	
+	[TestMethod]
+	public void CfStringEncoding_UTF16LE()
+	{
+		Assert.AreEqual((uint)0x14000100,(uint)MacOsTrashBindingHelper.CfStringEncoding.UTF16LE);
+	}
+	
+	[TestMethod]
+	public void CfStringEncoding_Ascii()
+	{
+		Assert.AreEqual((uint)0x0600,(uint)MacOsTrashBindingHelper.CfStringEncoding.ASCII);
+	}
+
 }
