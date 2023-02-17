@@ -64,6 +64,25 @@ docker run -d \
   lscr.io/linuxserver/mariadb
 ```  
 
+### (Optional) Next install phpmyadmin
+
+```
+docker run -d \
+  --name=phpmyadmin \
+  --add-host=host.docker.internal:host-gateway \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=UTC \
+  -e PMA_HOST=host.docker.internal \
+  -e PMA_PORT=6499 \
+  -e MYSQL_ROOT_PASSWORD=change__this__root__password__please_this_unsafe \
+  -e PMA_ARBITRARY=0 `#optional` \
+  -p 10859:80 \
+  -v /opt/phpmyadmin:/config \
+  --restart unless-stopped \
+  lscr.io/linuxserver/phpmyadmin:latest
+```
+
 ## restore
 
 To restore a existing database run the following command:
