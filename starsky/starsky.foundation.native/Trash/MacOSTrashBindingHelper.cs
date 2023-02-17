@@ -4,6 +4,42 @@ using System.Text;
 
 namespace starsky.foundation.native.Trash
 {
+	
+	public static class NSSearchPath {
+
+		[Flags]
+		public enum NSSearchPathDomain : ulong {
+			None = 0,
+			User = 1 << 0,
+			Local = 1 << 1,
+			Network = 1 << 2,
+			System = 1 << 3,
+			All = 0x0ffff,
+		}
+		
+		/// <summary>
+		/// @see: https://github.com/xamarin/xamarin-macios/blob/0f39b2579f0cd1a78a9ac9d1af1a12b46584b067/src/Foundation/Enum.cs
+		/// see: https://developer.apple.com/documentation/foundation/nssearchpathdomainmask?language=objc
+		/// see: https://gist.github.com/vfig/4d82406abeb3b0a0ec78
+		/// </summary>
+		public enum NSSearchPathDirectory : ulong
+		{
+			UserDirectory = 7,
+			TrashDirectory = 102,
+		}
+
+		public static void GetDirectories (NSSearchPathDirectory directory, NSSearchPathDomain domainMask, bool expandTilde = true)
+		{
+			var result = NSSearchPathForDirectoriesInDomains(( nuint )( ulong )directory,
+				( nuint )( ulong )domainMask, expandTilde);
+
+			Console.WriteLine(result);
+		}
+
+		[DllImport ( "/System/Library/Frameworks/Foundation.framework/Foundation")]
+		static extern IntPtr NSSearchPathForDirectoriesInDomains (nuint directory, nuint domainMask, [MarshalAs (UnmanagedType.I1)] bool expandTilde);
+	}
+	
 	/// <summary>
 	/// @see: https://stackoverflow.com/a/44669560
 	/// </summary>
