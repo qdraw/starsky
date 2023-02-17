@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash;
@@ -34,7 +37,7 @@ public class MacOsTrashBindingHelperTest
 	}
 	
 	[TestMethod]
-	public void WindowsShellTrashBindingHelperTest_ShouldRemove_OnMacOS()
+	public async Task Trash_ShouldRemove_OnMacOS()
 	{
 		if ( OperatingSystemHelper.GetPlatform() != OSPlatform.OSX )
 		{
@@ -43,10 +46,13 @@ public class MacOsTrashBindingHelperTest
 		}
 		
 		var createAnImage = new CreateAnImage();
-		var destPath = Path.Combine(createAnImage.BasePath, "starsky_unit_test_remove_to_trash.jpg");
+		var fileName = $"starsky_unit_test_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss", CultureInfo.InvariantCulture)}.jpg";
+		var destPath = Path.Combine(createAnImage.BasePath, fileName);
 		File.Copy(createAnImage.FullFilePath, destPath, true);
 			
 		var result = MacOsTrashBindingHelper.Trash(destPath, OSPlatform.OSX);
+		
+		await Task.Delay(1000);
 
 		Assert.AreEqual( true,result);
 
@@ -55,6 +61,17 @@ public class MacOsTrashBindingHelperTest
 		{
 			File.Delete(destPath);
 		}
-		Assert.AreEqual(false, exists);	
+		Assert.AreEqual(false, exists);
+
+		await Task.Delay(500);
+
+		var trashPath =
+			Path.Combine(Environment.GetFolderPath(
+				Environment.SpecialFolder.UserProfile),
+				".Trash", fileName);
+		
+		Assert.IsTrue(File.Exists(trashPath));
+		
+		File.Delete(trashPath);
 	}
 }

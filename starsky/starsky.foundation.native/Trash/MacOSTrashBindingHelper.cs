@@ -26,20 +26,26 @@ namespace starsky.foundation.native.Trash
 		    TrashInternal(filesFullPath);
 		    return true;
 	    }
+	    
+	    internal static IntPtr[] GetUrls(List<string> filesFullPath)
+	    {
+		    var urls = new List<IntPtr>();
+		    foreach ( var filePath in filesFullPath )
+		    {
+			    var cfStrTestFile = CreateCfString(filePath);
+			    var nsUrl = objc_getClass("NSURL");
+			    var fileUrl = objc_msgSend_retIntPtr_IntPtr(nsUrl, GetSelector("fileURLWithPath:"), cfStrTestFile);
+			    CFRelease(cfStrTestFile);
+			    urls.Add(fileUrl);
+		    }
+		    return urls.ToArray();
+	    }
 
 	    internal static void TrashInternal(List<string> filesFullPath)
         {
-            var urls = new List<IntPtr>();
-            foreach ( var filePath in filesFullPath )
-            {
-	            var cfStrTestFile = CreateCfString(filePath);
-	            var nsUrl = objc_getClass("NSURL");
-	            var fileUrl = objc_msgSend_retIntPtr_IntPtr(nsUrl, GetSelector("fileURLWithPath:"), cfStrTestFile);
-	            CFRelease(cfStrTestFile);
-	            urls.Add(fileUrl);
-            }
+            var urls = GetUrls(filesFullPath);
 
-            var urlArray = CreateCfArray(urls.ToArray());
+            var urlArray = CreateCfArray(urls);
 
             var nsWorkspace = objc_getClass("NSWorkspace");
             var sharedWorkspace = objc_msgSend_retIntPtr(nsWorkspace, GetSelector("sharedWorkspace"));
@@ -57,8 +63,8 @@ namespace starsky.foundation.native.Trash
 
         internal static IntPtr GetSelector(string name)
         {
-            IntPtr cfstrSelector = CreateCfString(name);
-            IntPtr selector = NSSelectorFromString(cfstrSelector);
+            var cfstrSelector = CreateCfString(name);
+            var selector = NSSelectorFromString(cfstrSelector);
             CFRelease(cfstrSelector);
             return selector;
         }
