@@ -6,6 +6,7 @@ using System.IO;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash;
 using starsky.foundation.platform.Models;
+using starskycore.Attributes;
 
 namespace starsky.Controllers
 {
@@ -21,6 +22,7 @@ namespace starsky.Controllers
 
 		[HttpGet("/api/test/trash")]
 		[Produces("application/json")]
+		[ExcludeFromCoverage]
 		public IActionResult Trash()
 		{
 			_logger.LogInformation("UserInteractive: " + Environment.UserInteractive);
