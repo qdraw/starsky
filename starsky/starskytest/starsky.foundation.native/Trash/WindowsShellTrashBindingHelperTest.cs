@@ -235,7 +235,7 @@ public class WindowsShellTrashBindingHelperTest
 			return;
 		}
 
-		Assert.AreEqual(true, 0 >= items);
+		Assert.AreEqual(true, items >= 0);
 		Assert.AreEqual(true, driveHasBin);
 	}
 }
