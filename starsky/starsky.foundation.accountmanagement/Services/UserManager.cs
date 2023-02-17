@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -620,6 +620,11 @@ namespace starsky.foundation.accountmanagement.Services
 			var credentialType = CachedCredentialType(credentialTypeCode);
 			Credential credential = _dbContext.Credentials.FirstOrDefault(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+			if ( credential == null )
+			{
+				return new ValidateResult { Success = false, Error = ValidateResultError.CredentialNotFound };
+			}
+
 			var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == credential.UserId);
 
 			var userRole = await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.UserId == credential.UserId);

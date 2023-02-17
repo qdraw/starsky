@@ -313,7 +313,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				AccountRegisterFirstRoleAdmin = true
 			}, new FakeIWebLogger(), _memoryCache);
 			
-			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).ToList() )
+			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).Where(p => p.Credentials != null).ToList() )
 			{
 				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier);
 			}
@@ -334,7 +334,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				AccountRegisterFirstRoleAdmin = true
 			}, new FakeIWebLogger(), _memoryCache);
 			
-			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).ToList() )
+			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).Where(p => p.Credentials != null).ToList() )
 			{
 				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier);
 			}
