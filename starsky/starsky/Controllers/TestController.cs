@@ -2,16 +2,17 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.IO;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash;
 using starsky.foundation.platform.Models;
 
 namespace starsky.Controllers
 {
+	[ApiExplorerSettings(IgnoreApi=true)]
 	public class TestController : Controller
 	{
-		private IWebLogger _logger;
+		private readonly IWebLogger _logger;
 
 		public TestController(IWebLogger logger)
 		{
@@ -24,17 +25,12 @@ namespace starsky.Controllers
 		{
 			_logger.LogInformation("UserInteractive: " + Environment.UserInteractive);
 			_logger.LogInformation($"use trash: {CanUseSystemTrash.UseTrash()}");
-
-			if ( new AppSettings().IsWindows  )
-			{
-				var result = WindowsShellTrashBindingHelper.Trash("C:\\temp\\test.bmp", OperatingSystemHelper.GetPlatform());
-				return Json(result);
-			}
 			
-			var testFile = "/tmp/test/test.jpg";
-			System.IO.File.WriteAllText(testFile, "example file content");
+			var path = Path.Combine(new AppSettings().TempFolder, "test.bak");
+			System.IO.File.WriteAllText(path, "example file content");
 			
-			MacOsTrashBindingHelper.Trash(new List<string>{testFile}, OperatingSystemHelper.GetPlatform());
+			WindowsShellTrashBindingHelper.Trash(path, OperatingSystemHelper.GetPlatform());
+			MacOsTrashBindingHelper.Trash(new List<string>{path}, OperatingSystemHelper.GetPlatform());
 			
 			return Json("ok");
 		}

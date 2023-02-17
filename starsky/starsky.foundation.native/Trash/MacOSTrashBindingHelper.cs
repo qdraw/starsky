@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -87,7 +88,8 @@ namespace starsky.foundation.native.Trash
 
         [DllImport(FoundationFramework)]
         private static extern void CFRelease(IntPtr handle);
-
+        
+        [SuppressMessage("Usage", "CA2101: Specify marshaling for P/Invoke string arguments")]
         [DllImport(AppKitFramework, CharSet = CharSet.Ansi)]
         private static extern IntPtr objc_getClass(string name);
 
