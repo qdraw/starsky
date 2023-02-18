@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace starskytest.Middleware
 	[TestClass]
 	public sealed class BasicAuthenticationSignInManagerTest
 	{
-		private IUserManager _userManager;
+		private readonly IUserManager _userManager;
 		public IServiceProvider Services { get; set; }
         
 		public BasicAuthenticationSignInManagerTest()
@@ -31,10 +32,12 @@ namespace starskytest.Middleware
 					sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 					sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 					sharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-				});
-            
+				}).AddCookie("Cookies");
+			serviceCollection.AddLogging();
+			
 			Services = serviceCollection.BuildServiceProvider();
 			Services.GetRequiredService<IServiceProvider>();
+			Services.GetRequiredService<IAuthenticationService>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase("test");
@@ -46,7 +49,13 @@ namespace starskytest.Middleware
 		[TestMethod]
 		public async Task BasicAuthenticationSignInManager_TrySignInUser_False_Test()
 		{
-			var httpContext = new DefaultHttpContext();
+			var httpContext = new DefaultHttpContext
+			{
+				HttpContext =
+				{
+					RequestServices = Services
+				}
+			};
 			var authenticationHeaderValue = new BasicAuthenticationHeaderValue("Basic dGVzdDp0ZXN0");
 			// base64 > test:test
 
@@ -55,34 +64,33 @@ namespace starskytest.Middleware
 				authenticationHeaderValue, 
 				_userManager).TrySignInUser();
 			// User is not loged in
-			Assert.AreEqual(false,httpContext.User.Identity.IsAuthenticated);
+			Assert.AreEqual(false,httpContext.User.Identity?.IsAuthenticated);
 		}
-        
-//        BasicAuthenticationSignInManagerTest.BasicAuthenticationSignInManager_TrySignInUser_True_Test
-//    Test method BasicAuthenticationSignInManagerTest.BasicAuthenticationSignInManager_TrySignInUser_True_Test 
-//        threw exception:  System.ArgumentNullException: Value cannot be null.
-//        Parameter name: provider
-//            at ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
-//            at AuthenticationHttpContextExtensions.SignInAsync(HttpContext context, String scheme, 
-//            ClaimsPrincipal principal, AuthenticationProperties properties)
-//            at UserManager.<SignIn>d__11.MoveNext() in /starsky/Services/UserManager.cs:line 203
-//        --- End of stack trace from previous location where exception was thrown ---
-//       
-//        [TestMethod]
-//        public async Task BasicAuthenticationSignInManager_TrySignInUser_True_Test()
-//        {
-//
-//            _userManager.SignUp(string.Empty, "email", "log", "passs");
-//            
-//            var httpContext = new DefaultHttpContext();
-//            var authenticationHeaderValue = new BasicAuthenticationHeaderValue("Basic bG9nOnBhc3Nz");
-//            // base64 > log:passs
-//            await new BasicAuthenticationSignInManager(
-//                httpContext, 
-//                authenticationHeaderValue, 
-//                _userManager).TrySignInUser();
-//            // User is not loged in
-//            Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
-//        }
+		
+        [TestMethod]
+        public async Task BasicAuthenticationSignInManager_TrySignInUser_True_Test()
+        {
+
+            await _userManager.SignUpAsync(string.Empty, "email", "log", "passs");
+            
+            var httpContext = new DefaultHttpContext
+            {
+	            HttpContext =
+	            {
+		            RequestServices = Services
+	            }
+            };
+            var authService = httpContext.RequestServices.GetService<IAuthenticationService>();
+            Assert.IsNotNull(authService);
+            
+            var authenticationHeaderValue = new BasicAuthenticationHeaderValue("Basic bG9nOnBhc3Nz");
+            // base64 > log:passs
+            await new BasicAuthenticationSignInManager(
+                httpContext, 
+                authenticationHeaderValue, 
+                _userManager).TrySignInUser();
+            // User is not loged in
+            Assert.AreEqual(true,httpContext.User.Identity?.IsAuthenticated);
+        }
 	}
 }
