@@ -15,6 +15,7 @@ namespace starsky.Controllers
 	{
 		private readonly IWebLogger _logger;
 
+		[ExcludeFromCoverage]
 		public TestController(IWebLogger logger)
 		{
 			_logger = logger;
