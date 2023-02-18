@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash;
+using starsky.foundation.native.Trash.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
 
@@ -27,13 +28,12 @@ namespace starsky.Controllers
 		public IActionResult Trash()
 		{
 			_logger.LogInformation("UserInteractive: " + Environment.UserInteractive);
-			_logger.LogInformation($"use trash: {CanUseSystemTrash.UseTrash()}");
+			_logger.LogInformation($"use trash: {new TrashService().DetectToUseSystemTrash()}");
 			
 			var path = Path.Combine(new AppSettings().TempFolder, "test.bak");
 			System.IO.File.WriteAllText(path, "example file content");
-			
-			WindowsShellTrashBindingHelper.Trash(path, OperatingSystemHelper.GetPlatform());
-			MacOsTrashBindingHelper.Trash(new List<string>{path}, OperatingSystemHelper.GetPlatform());
+
+			new TrashService().Trash(path);
 			
 			return Json("ok");
 		}

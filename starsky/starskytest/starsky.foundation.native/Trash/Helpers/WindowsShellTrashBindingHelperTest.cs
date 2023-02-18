@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Trash;
+using starsky.foundation.native.Trash.Helpers;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.native.Trash;

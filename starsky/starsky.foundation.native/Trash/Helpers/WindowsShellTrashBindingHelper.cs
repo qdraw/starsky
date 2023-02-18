@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.foundation.native.Trash;
+namespace starsky.foundation.native.Trash.Helpers;
 
 /// <summary>
 /// @see: https://stackoverflow.com/questions/3282418/send-a-file-to-the-recycle-bin
@@ -11,7 +11,7 @@ namespace starsky.foundation.native.Trash;
 /// </summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("Usage", "S101: Rename struct 'SHFILEOPSTRUCT' to match pascal case naming rules, consider using 'Shfileopstruct'.")]
-public class WindowsShellTrashBindingHelper
+public static class WindowsShellTrashBindingHelper
 {
 	/// <summary>
 	/// Send file to recycle bin
@@ -19,7 +19,7 @@ public class WindowsShellTrashBindingHelper
 	/// <param name="path">Location of directory or file to recycle</param>
 	/// <param name="platform">should be windows</param>
 	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-	public static (bool?, string) Trash(string path, 
+	internal static (bool?, string) Trash(string path, 
 		OSPlatform platform, 
 		ShFileOperations flags = ShFileOperations.FOF_NOCONFIRMATION |
 		                         ShFileOperations.FOF_WANTNUKEWARNING)
@@ -38,7 +38,7 @@ public class WindowsShellTrashBindingHelper
 	/// <param name="filesFullPath">Location of directory or file to recycle</param>
 	/// <param name="platform">should be windows</param>
 	/// <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-	public static (bool?, string) Trash(IEnumerable<string> filesFullPath,
+	internal static (bool?, string) Trash(IEnumerable<string> filesFullPath,
 		OSPlatform platform,
 		ShFileOperations flags = ShFileOperations.FOF_NOCONFIRMATION |
 		                         ShFileOperations.FOF_WANTNUKEWARNING)

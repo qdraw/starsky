@@ -11,4 +11,8 @@
         <RootNamespace>starsky.foundation.native</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
+    </ItemGroup>
+
 </Project>

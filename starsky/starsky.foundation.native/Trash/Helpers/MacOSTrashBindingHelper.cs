@@ -1,8 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace starsky.foundation.native.Trash
+[assembly: InternalsVisibleTo("starskytest")]
+namespace starsky.foundation.native.Trash.Helpers
 {
 	
 	/// <summary>
@@ -14,18 +16,24 @@ namespace starsky.foundation.native.Trash
     public static class MacOsTrashBindingHelper
     {
 	    /// <summary>
-	    /// Trash
+	    /// Trash endpoint
 	    /// </summary>
 	    /// <param name="fullPath"></param>
 	    /// <param name="platform"></param>
 	    /// <returns></returns>
-	    public static bool? Trash(string fullPath,
+	    internal static bool? Trash(string fullPath,
 		    OSPlatform platform)
 	    {
 		    return Trash(new List<string>{fullPath}, platform);
 	    }
 
-	    public static bool? Trash(List<string> filesFullPath, OSPlatform platform)
+	    /// <summary>
+	    /// Trash endpoint
+	    /// </summary>
+	    /// <param name="filesFullPath">list of paths</param>
+	    /// <param name="platform">current os</param>
+	    /// <returns>operation succeed</returns>
+	    internal static bool? Trash(List<string> filesFullPath, OSPlatform platform)
 	    {
 		    if ( platform != OSPlatform.OSX )
 		    {

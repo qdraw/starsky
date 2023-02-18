@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash;
+using starsky.foundation.native.Trash.Helpers;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.native.Trash;
