@@ -6,10 +6,19 @@ namespace starsky.foundation.native.Trash
 {
 	
 	/// <summary>
+	/// Trash the file on Mac OS
+	/// There is NO check if the file exists
+	/// 
 	/// @see: https://stackoverflow.com/a/44669560
 	/// </summary>
     public static class MacOsTrashBindingHelper
     {
+	    /// <summary>
+	    /// Trash
+	    /// </summary>
+	    /// <param name="fullPath"></param>
+	    /// <param name="platform"></param>
+	    /// <returns></returns>
 	    public static bool? Trash(string fullPath,
 		    OSPlatform platform)
 	    {
@@ -62,16 +71,16 @@ namespace starsky.foundation.native.Trash
 
         internal static IntPtr GetSelector(string name)
         {
-            var cfstrSelector = CreateCfString(name);
-            var selector = NSSelectorFromString(cfstrSelector);
-            CFRelease(cfstrSelector);
+            var cfStrSelector = CreateCfString(name);
+            var selector = NSSelectorFromString(cfStrSelector);
+            CFRelease(cfStrSelector);
             return selector;
         }
 
         private const string FoundationFramework = "/System/Library/Frameworks/Foundation.framework/Foundation";
         private const string AppKitFramework = "/System/Library/Frameworks/AppKit.framework/AppKit";
 
-        internal unsafe static IntPtr CreateCfString(string aString)
+        internal static unsafe IntPtr CreateCfString(string aString)
         {
             var bytes = Encoding.Unicode.GetBytes(aString);
             fixed (byte* b = bytes) {
@@ -82,10 +91,10 @@ namespace starsky.foundation.native.Trash
         }
 
         // warning: this doesn't call retain/release on the elements in the array
-        internal unsafe static IntPtr CreateCfArray(IntPtr[] objects)
+        internal static unsafe IntPtr CreateCfArray(IntPtr[] objects)
         {
-            fixed(IntPtr* vals = objects) {
-                 return CFArrayCreate(IntPtr.Zero, (IntPtr)vals, objects.Length, IntPtr.Zero);
+            fixed(IntPtr* values = objects) {
+                 return CFArrayCreate(IntPtr.Zero, (IntPtr)values, objects.Length, IntPtr.Zero);
             }
         }
 
@@ -115,6 +124,7 @@ namespace starsky.foundation.native.Trash
         [DllImport(FoundationFramework, EntryPoint="objc_msgSend")]
         private static extern IntPtr objc_msgSend_retIntPtr_IntPtr(IntPtr target, IntPtr selector, IntPtr param);
 
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public enum CfStringEncoding : uint
         {
             UTF16 = 0x0100,

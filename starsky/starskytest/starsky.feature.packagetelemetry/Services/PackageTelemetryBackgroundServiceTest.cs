@@ -64,18 +64,18 @@ namespace starskytest.starsky.feature.packagetelemetry.Services {
 
 			var service = new PackageTelemetryBackgroundService(_serviceScopeFactory);
 			
-			CancellationTokenSource source = new CancellationTokenSource();
-			CancellationToken token = source.Token;
+			var source = new CancellationTokenSource();
 			source.Cancel(); // <- cancel before start
+			var token = source.Token;
 
-			MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
+			var dynMethod = service.GetType().GetMethod("ExecuteAsync", 
 				BindingFlags.NonPublic | BindingFlags.Instance);
 			if ( dynMethod == null )
 				throw new Exception("missing ExecuteAsync");
 			await dynMethod.InvokeAsync(service, new object[]
 			{
 				token
-			});
+			}).WaitAsync(TimeSpan.FromSeconds(1), new CancellationToken());
 
 			var httpProvider = _serviceScopeFactory.CreateScope().ServiceProvider
 				.GetService<IHttpProvider>();

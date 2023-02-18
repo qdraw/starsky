@@ -171,6 +171,19 @@ public class MacOsTrashBindingHelperTest
 		MacOsTrashBindingHelper.CreateCfString("value");
 	}
 	
+	[ExpectedException(typeof(DllNotFoundException))]
+	[TestMethod]
+	public void CreateCfString_GetSelector()
+	{
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.OSX )
+		{
+			Assert.Inconclusive("This test if for non-Mac OS Only");
+			return;
+		}
+
+		MacOsTrashBindingHelper.GetSelector("value");
+	}
+	
 	[TestMethod]
 	public void CfStringEncoding_UTF16()
 	{

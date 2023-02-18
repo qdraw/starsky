@@ -724,7 +724,7 @@ namespace starsky.foundation.platform.Models
 			new CameraMakeModel("Sony","A58")
 		};
 
-		private bool? EnablePackageTelemetryPrivate { get; set; } = null;
+		private bool? EnablePackageTelemetryPrivate { get; set; }
 
 		public bool? EnablePackageTelemetry
 		{
@@ -737,6 +737,7 @@ namespace starsky.foundation.platform.Models
 #if(DEBUG)
 					return false;
 #endif
+					// ReSharper disable once HeuristicUnreachableCode
 					return true;
 #pragma warning restore CS0162
 				}
