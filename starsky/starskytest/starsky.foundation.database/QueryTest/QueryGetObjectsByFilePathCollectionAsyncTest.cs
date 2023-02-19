@@ -39,18 +39,18 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			await _query.AddRangeAsync(new List<FileIndexItem>
 			{
-				new FileIndexItem("/single_item1.jpg"),
-				new FileIndexItem("/single_item2.jpg")
+				new FileIndexItem("/single_item1_async.jpg"),
+				new FileIndexItem("/single_item2_async.jpg")
 			});
 			
-			var result = await (_query as Query).GetObjectsByFilePathCollectionAsync("/single_item1.jpg");
+			var result = await (_query as Query).GetObjectsByFilePathCollectionAsync("/single_item1_async.jpg");
 
 			Assert.AreEqual(1, result.Count);
-			Assert.AreEqual("/single_item1.jpg",result[0].FilePath);
+			Assert.AreEqual("/single_item1_async.jpg",result[0].FilePath);
 
 			await _query.RemoveItemAsync(result[0]);
 			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2.jpg"));
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2_async.jpg"));
 		}
 		
 		[TestMethod]
@@ -58,19 +58,19 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			await _query.AddRangeAsync(new List<FileIndexItem>
 			{
-				new FileIndexItem("/single_item1.jpg"),
-				new FileIndexItem("/single_item2.jpg")
+				new FileIndexItem("/single_item1_collection.jpg"),
+				new FileIndexItem("/single_item2_collection.jpg")
 			});
 			
 			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-				new List<string> {"/single_item1.jpg"});
+				new List<string> {"/single_item1_collection.jpg"});
 
 			Assert.AreEqual(1, result.Count);
-			Assert.AreEqual("/single_item1.jpg",result[0].FilePath);
+			Assert.AreEqual("/single_item1_collection.jpg",result[0].FilePath);
 
 			await _query.RemoveItemAsync(result[0]);
 			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2.jpg"));
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2_collection.jpg"));
 		}
 		
 		[TestMethod]
