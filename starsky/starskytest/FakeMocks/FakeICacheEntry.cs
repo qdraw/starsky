@@ -10,6 +10,7 @@ namespace starskytest.FakeMocks
 	{
 		public void Dispose()
 		{
+			GC.SuppressFinalize(this);
 		}
 
 		public object Key { get; }

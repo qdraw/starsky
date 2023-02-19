@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
@@ -24,6 +25,7 @@ namespace starskytest.FakeMocks
 		}
 		public void Dispose()
 		{
+			GC.SuppressFinalize(this);
 		}
 
 		public bool TryGetValue(object key, out object value)

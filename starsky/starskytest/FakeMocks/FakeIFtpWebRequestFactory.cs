@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
@@ -44,6 +45,7 @@ namespace starskytest.FakeMocks
 	{
 		public void Dispose()
 		{
+			GC.SuppressFinalize(this);
 			// done
 		}
 

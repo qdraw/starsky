@@ -50,6 +50,7 @@ namespace starskytest.starsky.foundation.platform.Services
 
 			public void Dispose()
 			{
+				GC.SuppressFinalize(this);
 			}
 
 			public ILogger CreateLogger(string categoryName)

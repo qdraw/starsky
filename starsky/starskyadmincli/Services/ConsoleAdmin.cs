@@ -57,7 +57,12 @@ namespace starskyAdminCli.Services
 			_console.WriteLine("\nDo you want to \n2. remove account \n3. Toggle User Role \n \n(Enter only the number)");
 			var option = _console.ReadLine();
 
-			Enum.TryParse<ManageAdminOptions>(option, out var selectedOption);
+			if ( !Enum.TryParse<ManageAdminOptions>(option,
+				    out var selectedOption) )
+			{
+				_console.WriteLine("No input selected ends now");
+				return;
+			}
 
 			switch ( selectedOption )
 			{

@@ -3,31 +3,32 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
 	public class CreateAnImage
 	{
+		private const string FileNamePrivate = "0000000000aaaaa__exifreadingtest00.jpg";
 
-		private static readonly string _fileName = "0000000000aaaaa__exifreadingtest00.jpg";
 		// There is an unit test for using directory thumbnails that uses the first image;
 		// starskytest.SyncServiceTest.SyncServiceFirstItemDirectoryTest
 
 		/// <summary>
 		/// The filename *.jpg
 		/// </summary>
-		public string FileName => _fileName;
+		[SuppressMessage("Performance", "CA1822:Mark members as static")]
+		[SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+		public string FileName => FileNamePrivate;
 		/// <summary>
 		/// Database Path/subpath of the iamge
 		/// </summary>
-		public readonly string DbPath = "/" + _fileName;
+		public readonly string DbPath = "/" + FileNamePrivate;
 		/// <summary>
 		/// Full path of the image
 		/// </summary>
 		public readonly string FullFilePath = 
 			(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + 
-			 Path.DirectorySeparatorChar).Replace("./",string.Empty) + _fileName;
+			 Path.DirectorySeparatorChar).Replace("./",string.Empty) + FileNamePrivate;
 		/// <summary>
 		/// The FullFile Path of the Directory of the Assemblies
 		/// </summary>

@@ -55,7 +55,7 @@ namespace starskytest.Helpers
 
 		public void Dispose()
 		{
-			throw new System.NotImplementedException();
+			GC.SuppressFinalize(this);
 		}
 	}
 	

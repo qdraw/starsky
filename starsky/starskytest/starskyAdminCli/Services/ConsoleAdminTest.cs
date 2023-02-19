@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
@@ -65,27 +66,27 @@ namespace starskytest.starskyAdminCli.Services
 		}
 		
 		[TestMethod]
-		public void StarskyAdminCliProgramTest_NoInput()
+		public async Task StarskyAdminCliProgramTest_NoInput()
 		{
 			var console = new FakeConsoleWrapper(new List<string>
 			{
 				string.Empty
 			});
-			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console ).Tool(string.Empty,string.Empty);
+			await new ConsoleAdmin(new FakeUserManagerActiveUsers(), console ).Tool(string.Empty,string.Empty);
 			
 			Assert.AreEqual("No input selected", 
 				console.WrittenLines.LastOrDefault());
 		}
 		
 		[TestMethod]
-		public void StarskyAdminCliProgramTest_Removed()
+		public async Task StarskyAdminCliProgramTest_Removed()
 		{
 			var console = new FakeConsoleWrapper(new List<string>
 			{
 				"test",
 				"2"
 			});
-			new ConsoleAdmin(new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99}), console )
+			await new ConsoleAdmin(new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99}), console )
 				.Tool(string.Empty,string.Empty);
 			
 			Assert.AreEqual("User test is removed", 
@@ -93,21 +94,22 @@ namespace starskytest.starskyAdminCli.Services
 		}
 
 		[TestMethod]
-		public void ToggleUserAdminRole_toAdmin()
+		public async Task ToggleUserAdminRole_toAdmin()
 		{
 			var console = new FakeConsoleWrapper(new List<string>
 			{
 				"test",
 				"3"
 			});
-			new ConsoleAdmin( new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99}),console 
+			await new ConsoleAdmin( new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99}),console 
 			).Tool(string.Empty,string.Empty);
+			
 			Assert.AreEqual("User test has now the role Administrator", 
 				console.WrittenLines.LastOrDefault());
 		}
 		
 		[TestMethod]
-		public void ToggleUserAdminRole_toUser()
+		public async Task ToggleUserAdminRole_toUser()
 		{
 			var console = new FakeConsoleWrapper(new List<string>
 			{
@@ -120,8 +122,27 @@ namespace starskytest.starskyAdminCli.Services
 				Role = new Role {Code = AccountRoles.AppAccountRoles.Administrator.ToString()}
 			};
 			
-			new ConsoleAdmin( userMan,console ).Tool(string.Empty,string.Empty);
+			await new ConsoleAdmin( userMan,console ).Tool(string.Empty,string.Empty);
 			Assert.AreEqual("User test has now the role User", console.WrittenLines.LastOrDefault());
+		}
+		
+				
+		[TestMethod]
+		public async Task ToggleUserAdminRole_toUser_invalidEnum_selected()
+		{
+			var console = new FakeConsoleWrapper(new List<string>
+			{
+				"test",
+				"q"
+			});
+			
+			var userMan = new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99})
+			{
+				Role = new Role {Code = AccountRoles.AppAccountRoles.Administrator.ToString()}
+			};
+			
+			await new ConsoleAdmin( userMan,console ).Tool(string.Empty,string.Empty);
+			Assert.AreEqual("No input selected ends now", console.WrittenLines.LastOrDefault());
 		}
 	}
 }

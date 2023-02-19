@@ -66,6 +66,7 @@ namespace starskytest.FakeMocks
 		public bool IsDisposed { get; set; }
 		void IDisposable.Dispose()
 		{
+			GC.SuppressFinalize(this);
 			IsDisposed = true;
 		}
 	}

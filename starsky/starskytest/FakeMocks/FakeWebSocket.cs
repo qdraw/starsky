@@ -34,6 +34,7 @@ namespace starskytest.FakeMocks
 
 		public override void Dispose()
 		{
+			GC.SuppressFinalize(this);
 		}
 
 		private int FakeReceiveAsyncCounter { get; set; }
