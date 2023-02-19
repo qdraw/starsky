@@ -19,21 +19,19 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		}
 		
 		[TestMethod]
-		public void Test01()
+		public async Task QueueBackgroundWorkItemAsync_DequeueAsync()
 		{
 			var queue = new DiskWatcherBackgroundTaskQueue(_scopeFactory);
-#pragma warning disable CS1998
-			queue.QueueBackgroundWorkItemAsync(async _ =>
-#pragma warning restore CS1998
-			{
-				
-			}, string.Empty);
-			var token = new CancellationToken();
-#pragma warning disable CS4014
-			queue!.DequeueAsync(token);
-#pragma warning restore CS4014
-			Assert.IsNotNull(token);
+			await queue.QueueBackgroundWorkItemAsync(_ => 
+				ValueTask.CompletedTask, 
+				string.Empty);
+			
+			Assert.AreEqual(1,queue.Count());
 
+			var token = new CancellationToken();
+			await queue!.DequeueAsync(token);
+			
+			Assert.AreEqual(0,queue.Count());
 		}
 		
 		[TestMethod]

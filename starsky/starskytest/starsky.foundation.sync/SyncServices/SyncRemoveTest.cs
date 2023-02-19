@@ -137,11 +137,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var query = new FakeIQuery(queryContent);
 			var remove = new SyncRemove(_appSettings, query, null, null);
 
-			var result= await remove.RemoveAsync(new List<string>{"/sidecar_test1/test.xmp","/sidecar_test2/test.xmp"});
+			var result= await remove.RemoveAsync(new List<string>{
+				"/sidecar_test1/test.xmp",
+				"/sidecar_test2/test.xmp"
+			});
 
 			Assert.AreEqual(2, result.Count);
 			
 			var item = await query.GetObjectByFilePathAsync("/sidecar_test1/test.dng");
+			Assert.IsNotNull(item);
 			Assert.AreEqual(0, item?.SidecarExtensionsList.Count);
 			
 			var item2 = await query.GetObjectByFilePathAsync("/sidecar_test2/test.dng");
