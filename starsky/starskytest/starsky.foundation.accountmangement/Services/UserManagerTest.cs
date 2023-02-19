@@ -306,18 +306,17 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task UserManager_LoginPassword_ShouldBeAdminDueFirstPolicy()
 		{
+			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builder.UseInMemoryDatabase(nameof(MetaUpdateService) + "_test");
+			var options = builder.Options;
+			var dbContext = new ApplicationDbContext(options);
 
-			var userManager = new UserManager(_dbContext, new AppSettings
+			var userManager = new UserManager(dbContext, new AppSettings
 			{
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
 				AccountRegisterFirstRoleAdmin = true
 			}, new FakeIWebLogger(), _memoryCache);
 			
-			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).Where(p => p.Credentials != null).ToList() )
-			{
-				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier);
-			}
-
 			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
 
 			var result = userManager.GetRole("email", "login@mail.us");
