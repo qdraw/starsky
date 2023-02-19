@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -60,7 +59,7 @@ namespace starsky.foundation.http.Streaming
             // headerFileName is for uploading on a single file without a multi part form.
 
             // fallback
-            if (headerFileName == null) headerFileName = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+            headerFileName ??= Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
             
             var tempPaths = new List<string>();
 
@@ -128,57 +127,5 @@ namespace starsky.foundation.http.Streaming
             
             return tempPaths;
         }
-
-        
-//        // For reading plain text form fields
-//                    else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))
-//                    {
-//                        formAccumulator = await FormAccumulatorHelper(contentDisposition, section, formAccumulator);
-//                    }
-//        public static async Task<KeyValueAccumulator> FormAccumulatorHelper(ContentDispositionHeaderValue contentDisposition, 
-//            MultipartSection section, KeyValueAccumulator formAccumulator)
-//        {
-//            // Content-Disposition: form-data; name="key"
-//            // value
-//
-//            // Do not limit the key name length here because the 
-//            // multipart headers length limit is already in effect.
-//            var key = HeaderUtilities.RemoveQuotes(contentDisposition.Name);
-//            var encoding = GetEncoding(section);
-//            using (var streamReader = new StreamReader(
-//                section.Body,
-//                encoding,
-//                detectEncodingFromByteOrderMarks: true,
-//                bufferSize: 1024,
-//                leaveOpen: true))
-//            {
-//                // The value length limit is enforced by MultipartBodyLengthLimit
-//                var value = await streamReader.ReadToEndAsync();
-//                if (String.Equals(value, "undefined", StringComparison.OrdinalIgnoreCase))
-//                {
-//                    value = String.Empty;
-//                }
-//                formAccumulator.Append(key.Value, value); // For .NET Core <2.0 remove ".Value" from key
-//
-//                if (formAccumulator.ValueCount > _defaultFormOptions.ValueCountLimit)
-//                {
-//                    throw new InvalidDataException($"Form key count limit {_defaultFormOptions.ValueCountLimit} exceeded.");
-//                }
-//            }
-//            return formAccumulator;
-//        }
-//
-//        public static Encoding GetEncoding(MultipartSection section)
-//        {
-//            MediaTypeHeaderValue mediaType;
-//            var hasMediaTypeHeader = MediaTypeHeaderValue.TryParse(section.ContentType, out mediaType);
-//            // UTF-7 is insecure and should not be honored. UTF-8 will succeed in 
-//            // most cases.
-//            if (!hasMediaTypeHeader || Encoding.UTF7.Equals(mediaType.Encoding))
-//            {
-//                return Encoding.UTF8;
-//            }
-//            return mediaType.Encoding;
-//        }
     }
 }
