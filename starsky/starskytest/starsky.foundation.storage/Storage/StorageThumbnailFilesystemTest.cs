@@ -40,17 +40,21 @@ namespace starskytest.starsky.foundation.storage.Storage
 		}
 		
 		[TestMethod]
-		public void FileMove()
+		public void FileMove_Test()
 		{
 			var createNewImage = new CreateAnImage();
 			
-			_thumbnailStorage.FileMove(_fileNameWithoutExtension, "StorageThumbnailFilesystemTest_FileMove");
+			// first copy for parallel test
+			_thumbnailStorage.FileCopy(_fileNameWithoutExtension, "start_move_file");
+			
+			_thumbnailStorage.FileMove("start_move_file", "StorageThumbnailFilesystemTest_FileMove");
 
-			var path = Path.Combine(createNewImage.BasePath, _fileNameWithoutExtension + ".jpg");
+			var path = Path.Combine(createNewImage.BasePath, "start_move_file" + ".jpg");
 			Assert.IsFalse(File.Exists(path));
 			var path2 = Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg");
 			Assert.IsTrue(File.Exists(path2));
-			
+
+			File.Delete(Path.Combine(createNewImage.BasePath, "start_move_file.jpg"));
 			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg"));
 
 			var createAnImage = new CreateAnImage();
