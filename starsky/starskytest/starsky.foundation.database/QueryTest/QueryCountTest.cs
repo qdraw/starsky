@@ -20,7 +20,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public QueryCountTest()
 		{
 			_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(),_memoryCache) ;
+				.GetService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(),_memoryCache);
 		}
 
 		private IServiceScopeFactory CreateNewScope()
@@ -46,10 +46,19 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public async Task ShouldGive1Result_Predicate()
 		{
-			var itemAsync = await _query.AddItemAsync(new FileIndexItem("/test.jpg"));
-			var result = await _query.CountAsync(p => p.IsDirectory == false);
+			var services = new ServiceCollection();
+			services.AddDbContext<ApplicationDbContext>(options => 
+				options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathAsyncTest) + "ShouldGive1Result_Predicate"));
+			var serviceProvider = services.BuildServiceProvider();
+			
+			var query = new Query(serviceProvider.GetService<ApplicationDbContext>(), new AppSettings(), 
+				null!, new FakeIWebLogger(),_memoryCache);
+			
+			var itemAsync = await query.AddItemAsync(new FileIndexItem("/test.jpg"));
+			var result = await query.CountAsync(p => p.IsDirectory == false);
+			
 			Assert.AreEqual(1,result);
-			await _query.RemoveItemAsync(itemAsync);
+			await query.RemoveItemAsync(itemAsync);
 		}
 	
 	}
