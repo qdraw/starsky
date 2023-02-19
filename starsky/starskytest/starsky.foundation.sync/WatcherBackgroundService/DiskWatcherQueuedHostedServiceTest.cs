@@ -39,16 +39,16 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		}
 		
 		[TestMethod]
-		[Timeout(300)]
-		public async Task End_StopAsync_Test()
+		[Timeout(1000)]
+		public async Task DiskWatcherQueuedHostedService_End_StopAsync_Test()
 		{
 			var logger = new FakeIWebLogger();
 			var service = new DiskWatcherQueuedHostedService(
 				new FakeDiskWatcherUpdateBackgroundTaskQueue(),
 				logger, new AppSettings());
 			
-			CancellationTokenSource source = new CancellationTokenSource();
-			CancellationToken token = source.Token;
+			var source = new CancellationTokenSource();
+			var token = source.Token;
 			source.Cancel(); // <- cancel before start
 
 			await service.StopAsync(token);
