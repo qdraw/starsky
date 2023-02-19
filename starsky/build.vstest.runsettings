@@ -2,10 +2,13 @@
 <RunSettings>
   <MSTest>
     <Parallelize>
-      <Workers>1</Workers>
+      <Workers>3</Workers>
       <Scope>ClassLevel</Scope>
     </Parallelize>
   </MSTest>
+  <RunConfiguration>
+      <MaxCpuCount>0</MaxCpuCount>
+  </RunConfiguration>
   <DataCollectionRunSettings>
     <DataCollectors>
       <DataCollector friendlyName="XPlat code coverage">

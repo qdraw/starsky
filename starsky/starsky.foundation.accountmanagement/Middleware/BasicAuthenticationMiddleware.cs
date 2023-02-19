@@ -22,7 +22,7 @@ namespace starsky.foundation.accountmanagement.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            if (!context.User.Identity.IsAuthenticated)
+            if (context.User.Identity?.IsAuthenticated == false)
             {
                 var basicAuthenticationHeader = GetBasicAuthenticationHeaderValue(context);
                 if (basicAuthenticationHeader.IsValidBasicAuthenticationHeaderValue)

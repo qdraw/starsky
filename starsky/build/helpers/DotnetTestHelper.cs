@@ -60,6 +60,7 @@ namespace helpers
 					Directory.Delete(testResultsFolder,true);
 				}
 
+				// search for: dotnet test
 				DotNetTest(_ => _
 					.SetConfiguration(configuration)
 					// .SetProcessArgumentConfigurator()

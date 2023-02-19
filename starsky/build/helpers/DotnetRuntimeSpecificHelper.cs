@@ -141,6 +141,7 @@ namespace helpers
 			{
 				ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(runtime, solution);
 				// OverwriteRuntimeIdentifier is done via Directory.Build.props
+				// search for: dotnet build
 				DotNetBuild(_ => _
 					.SetProjectFile(solution)
 					.EnableNoRestore()

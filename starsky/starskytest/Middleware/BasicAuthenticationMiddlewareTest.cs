@@ -119,7 +119,7 @@ namespace starskytest.Middleware
 			var basicAuthMiddleware = new BasicAuthenticationMiddleware(_onNext);
 			await basicAuthMiddleware.Invoke(httpContext);
             
-			Assert.AreEqual(true, httpContext.User.Identity.IsAuthenticated);
+			Assert.AreEqual(true, httpContext.User.Identity?.IsAuthenticated);
 
 		}
         

@@ -6,6 +6,13 @@ namespace starsky.foundation.platform.Extensions
 {
 	public static class TimeoutTaskAfter
 	{
+		/// <summary>
+		/// Timeout after a task in milliseconds
+		/// </summary>
+		/// <param name="task">the task</param>
+		/// <param name="timeout">milliseconds</param>
+		/// <typeparam name="TResult">type</typeparam>
+		/// <returns>result of task</returns>
 		public static Task<TResult> TimeoutAfter<TResult>(this Task<TResult> task,
 			int timeout)
 		{
@@ -13,13 +20,14 @@ namespace starsky.foundation.platform.Extensions
 		}
 
 		/// <summary>
+		///  Timeout after a task 
 		/// @see: https://stackoverflow.com/a/22078975/8613589
 		/// </summary>
-		/// <param name="task"></param>
-		/// <param name="timeout"></param>
-		/// <typeparam name="TResult"></typeparam>
-		/// <returns></returns>
-		/// <exception cref="TimeoutException"></exception>
+		/// <param name="task">the task</param>
+		/// <param name="timeout">timespan</param>
+		/// <typeparam name="TResult">task type</typeparam>
+		/// <returns>result of task</returns>
+		/// <exception cref="TimeoutException">when timeouts</exception>
 		public static async Task<TResult> TimeoutAfter<TResult>(this Task<TResult> task, TimeSpan timeout)
 		{
 			if ( timeout <= TimeSpan.Zero ) throw new TimeoutException("timeout less than 0");

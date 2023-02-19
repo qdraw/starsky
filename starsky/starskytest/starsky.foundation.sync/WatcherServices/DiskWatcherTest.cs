@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Interfaces;
@@ -54,7 +53,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 		
 		[TestMethod]
-		[Timeout(600)]
+		[Timeout(2000)]
 		public void Watcher_Error()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
@@ -101,7 +100,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 
 		[TestMethod]
-		[Timeout(400)]
+		[Timeout(2000)]
 		public void Watcher_Changed()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
@@ -157,13 +156,15 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 
 		[TestMethod]
-		[Timeout(200)]
+		[Timeout(2000)]
 		public void Watcher_Retry_Ok()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 
-			var watcher =
-				new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory);
+			var watcher = new DiskWatcher(
+				fakeIFileSystemWatcher,
+				_scopeFactory);
+			
 			var result = watcher.Retry(fakeIFileSystemWatcher);
 			watcher.Dispose();
 			

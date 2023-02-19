@@ -161,6 +161,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "generic", "generic", "{3522
 		docker\compose\generic\docker-compose.yml = docker\compose\generic\docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.native", "starsky.foundation.native\starsky.foundation.native.csproj", "{0072F697-4E18-4B5F-80DF-530361D3E847}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -355,6 +357,10 @@ Global
 		{5B70A0EC-1E7A-496E-94C7-A7ED1628B7EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B70A0EC-1E7A-496E-94C7-A7ED1628B7EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B70A0EC-1E7A-496E-94C7-A7ED1628B7EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0072F697-4E18-4B5F-80DF-530361D3E847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0072F697-4E18-4B5F-80DF-530361D3E847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0072F697-4E18-4B5F-80DF-530361D3E847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0072F697-4E18-4B5F-80DF-530361D3E847}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -413,5 +419,6 @@ Global
 		{110B54C1-9044-4B00-B8E3-DC950D78367B} = {A3C71266-A3AD-4611-8990-846EC0DDA16E}
 		{E638B7CE-3CAC-4772-8D3B-49A202D0975A} = {110B54C1-9044-4B00-B8E3-DC950D78367B}
 		{35222B74-4D4C-4848-A5E3-7C3E084FB2FD} = {E638B7CE-3CAC-4772-8D3B-49A202D0975A}
+		{0072F697-4E18-4B5F-80DF-530361D3E847} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 	EndGlobalSection
 EndGlobal

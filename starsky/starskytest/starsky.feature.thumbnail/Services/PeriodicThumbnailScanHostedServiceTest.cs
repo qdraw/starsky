@@ -236,7 +236,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 	}
 	
 	[TestMethod]
-	[Timeout(300)]
+	[Timeout(2000)]
 	public void ExecuteAsync_StartAsync_Test()
 	{
 		var services = new ServiceCollection();

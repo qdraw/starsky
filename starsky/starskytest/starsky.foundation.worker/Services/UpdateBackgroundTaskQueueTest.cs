@@ -189,7 +189,7 @@ namespace starskytest.starsky.foundation.worker.Services
 		}
 		
 		[TestMethod]
-		[Timeout(300)]
+		[Timeout(1000)]
 		public async Task Update_End_StopAsync_Test()
 		{
 			var logger = new FakeIWebLogger();

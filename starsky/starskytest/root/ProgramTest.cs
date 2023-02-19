@@ -42,7 +42,7 @@ public class ProgramTest
 	}
 	
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(9000)]
 	[ExpectedException(typeof(HttpRequestException))]
 	public async Task Program_Main_NoAddress_UnixOnly()
 	{
@@ -64,20 +64,20 @@ public class ProgramTest
 		await Program.Main(new []{"--do-not-start"});
 
 		using HttpClient client = new();
-		await client.GetAsync("http://localhost:7514");
+		await client.GetAsync("http://localhost:7514").TimeoutAfter(3000);
 		// and this address does not exists
 	}
 	
 	[TestMethod]
-	[Timeout(5000)]
-	public async Task Program_RunAsync()
+	[Timeout(9000)]
+	public async Task Program_RunAsync_Null_False()
 	{
 		var result = await Program.RunAsync(null,false);
 		Assert.IsFalse(result);
 	}
 	
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(9000)]
 	public async Task Program_RunAsync_ReturnedTrue()
 	{
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
@@ -93,7 +93,7 @@ public class ProgramTest
 	}
 	
 	[TestMethod]
-	[Timeout(5000)]
+	[Timeout(9000)]
 	[ExpectedException(typeof(FormatException))]
 	public async Task Program_RunAsync_InvalidUrl()
 	{

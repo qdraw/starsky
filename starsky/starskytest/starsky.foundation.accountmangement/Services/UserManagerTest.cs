@@ -53,7 +53,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public async Task SignInNull()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
-			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), null));
+			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), null!));
 		}
 		
 		
@@ -306,18 +306,17 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		[TestMethod]
 		public async Task UserManager_LoginPassword_ShouldBeAdminDueFirstPolicy()
 		{
+			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builder.UseInMemoryDatabase(nameof(MetaUpdateService) + "_test");
+			var options = builder.Options;
+			var dbContext = new ApplicationDbContext(options);
 
-			var userManager = new UserManager(_dbContext, new AppSettings
+			var userManager = new UserManager(dbContext, new AppSettings
 			{
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
 				AccountRegisterFirstRoleAdmin = true
 			}, new FakeIWebLogger(), _memoryCache);
 			
-			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).ToList() )
-			{
-				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier);
-			}
-
 			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
 
 			var result = userManager.GetRole("email", "login@mail.us");
@@ -334,7 +333,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				AccountRegisterFirstRoleAdmin = true
 			}, new FakeIWebLogger(), _memoryCache);
 			
-			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).ToList() )
+			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).Where(p => p.Credentials != null).ToList() )
 			{
 				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier);
 			}
@@ -489,6 +488,28 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			Assert.IsNull(user);
 		}
 		
+		
+		[TestMethod]
+		public async Task UserManager_RemoveUser_NonExistsCredType()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
+			
+			var result = await userManager.RemoveUser("___email___", "non_exists@mail.us");
+			
+			Assert.AreEqual(false, result.Success);
+		}
+		
+		[TestMethod]
+		public async Task UserManager_RemoveUser_NonExists()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
+			await userManager.AddDefaultCredentialType("email");
+			
+			var result = await userManager.RemoveUser("email", "non_exists@mail.us");
+			
+			Assert.AreEqual(false, result.Success);
+		}
+
 		[TestMethod]
 		public async Task AddToRole()
 		{
@@ -517,6 +538,14 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			userManager.AddToRole(new User(),"dsfnlksdfn");
 			
 			Assert.AreEqual(count, _dbContext.Roles.Count());
+		}
+
+		[TestMethod]
+		public void GetRole_NotExists()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
+			var result = userManager.GetRole("kfsdlnsdf", "sdknflsdf");
+			Assert.IsNull(result);
 		}
 
 		[TestMethod]
@@ -705,6 +734,22 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var result = await userManager.Exist(852);
 			
 			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public async Task ResetAndSuccessTest()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
+			var result = await userManager.ResetAndSuccess(3,999, null);
+			Assert.IsFalse(result.Success);
+		}
+		
+		[TestMethod]
+		public async Task SetLockIfFailedCountIsToHighTest()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
+			var result = await userManager.SetLockIfFailedCountIsToHigh(9999);
+			Assert.IsFalse(result.Success);
 		}
 	}
 }
