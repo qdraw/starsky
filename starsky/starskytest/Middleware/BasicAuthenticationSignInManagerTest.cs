@@ -56,8 +56,8 @@ namespace starskytest.Middleware
 					RequestServices = Services
 				}
 			};
-			var authenticationHeaderValue = new BasicAuthenticationHeaderValue("Basic dGVzdDp0ZXN0");
-			// base64 > test:test
+			var authenticationHeaderValue = new BasicAuthenticationHeaderValue("Basic dGVzdDp3cm9uZw==");
+			// base64 > test:wrong
 
 			await new BasicAuthenticationSignInManager(
 				httpContext, 
