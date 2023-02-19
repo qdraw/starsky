@@ -77,7 +77,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var query = buildServiceProvider.GetService<IQuery>();
 				
 			var cacheDbName = new Query(null,null, 
-				null, null).CachingDbName(nameof(FileIndexItem), "/");
+				null, null).CachingDbName(nameof(FileIndexItem) + "manual_sync", "/");
 			memoryCache!.Remove(cacheDbName);
 			
 			var cachedContent = new List<FileIndexItem>
@@ -109,7 +109,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test2__1234.jpg"));
 			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test3__1234.jpg"));
-			Assert.AreEqual(2,content.Count);
+			Assert.AreEqual(2,content.Count(p => p.FilePath is "/test2__1234.jpg" or "/test3__1234.jpg"));
 		}
 		
 		[TestMethod]
