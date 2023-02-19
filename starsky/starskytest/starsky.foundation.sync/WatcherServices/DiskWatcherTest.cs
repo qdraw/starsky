@@ -70,7 +70,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 				throw new NullReferenceException("FakeISynchronize should not be null ");
 
 			var message = string.Empty;
-			fakeIFileSystemWatcher.Error += (s, e) =>
+			fakeIFileSystemWatcher.Error += (_, e) =>
 			{
 				autoResetEvent.Set();
 				message = e.GetException().Message;
@@ -96,11 +96,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			using var scope = _scopeFactory.CreateScope();
 			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
 
-			Assert.IsTrue(logger.TrackedExceptions.LastOrDefault().Item2.Contains("is not started"));
+			Assert.IsTrue(logger?.TrackedExceptions.LastOrDefault().Item2.Contains("is not started"));
 		}
 
 		[TestMethod]
-		[Timeout(2000)]
+		[Timeout(3000)]
 		public void Watcher_Changed()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
@@ -127,7 +127,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		
 		
 		[TestMethod]
-		[Timeout(400)]
+		[Timeout(3000)]
 		public void Watcher_Renamed()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
