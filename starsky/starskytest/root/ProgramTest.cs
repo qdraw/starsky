@@ -102,7 +102,7 @@ public class ProgramTest
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
 		
-		await Program.RunAsync(app);
+		await Program.RunAsync(app).WaitAsync(TimeSpan.FromMilliseconds(1000));
 	}
 	
 	[ClassCleanup]
