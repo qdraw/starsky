@@ -9,22 +9,44 @@ namespace starsky.foundation.native.Trash;
 [Service(typeof(ITrashService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class TrashService : ITrashService
 {
+
 	/// <summary>
 	/// Is the system trash supported
 	/// </summary>
 	/// <returns>true if supported, false if not supported</returns>
 	public bool DetectToUseSystemTrash()
 	{
+		return DetectToUseSystemTrashInternal(RuntimeInformation.IsOSPlatform, 
+			Environment.UserInteractive, 
+			Environment.UserName);
+	}
+	
+	/// <summary>
+	/// Use to overwrite the RuntimeInformation.IsOSPlatform
+	/// </summary>
+	internal delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
+
+	/// <summary>
+	/// Is the system trash supported
+	/// </summary>
+	/// <param name="runtimeInformationIsOsPlatform">RuntimeInformation.IsOSPlatform</param>
+	/// <param name="environmentUserInteractive">Environment.UserInteractive</param>
+	/// <param name="environmentUserName">Environment.UserName</param>
+	/// <returns>true if supported, false if not supported</returns>
+	internal static bool DetectToUseSystemTrashInternal(IsOsPlatformDelegate runtimeInformationIsOsPlatform, 
+		bool environmentUserInteractive, 
+		string environmentUserName)
+	{
 		// ReSharper disable once ConvertIfStatementToReturnStatement
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || 
-		    RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) || 
-		    Environment.UserName == "root" || !Environment.UserInteractive )
+		if (runtimeInformationIsOsPlatform(OSPlatform.Linux) || 
+		    runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) || 
+		    environmentUserName == "root" || !environmentUserInteractive )
 		{
 			return false;
 		}
 
 		// ReSharper disable once InvertIf
-		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+		if ( runtimeInformationIsOsPlatform(OSPlatform.Windows) )
 		{
 			var (driveHasBin,_,_) = WindowsShellTrashBindingHelper.DriveHasRecycleBin();
 			return driveHasBin;

@@ -14,56 +14,33 @@ public class OperatingSystemHelperTest
 		Assert.IsNotNull(result);
 	}
 
-	private static bool IsWindows(OSPlatform osPlatform)
-	{
-		return osPlatform == OSPlatform.Windows;
-	}
 
-	private static bool IsMacOs(OSPlatform osPlatform)
-	{
-		return osPlatform == OSPlatform.OSX;
-	}
-
-	private static bool IsLinux(OSPlatform osPlatform)
-	{
-		return osPlatform == OSPlatform.Linux;
-	}
-
-	private static bool IsFreeBsd(OSPlatform osPlatform)
-	{
-		return osPlatform == OSPlatform.FreeBSD;
-	}
-	
-	private static bool IsUnknown(OSPlatform osPlatform)
-	{
-		return osPlatform == OSPlatform.Create("Unknown");
-	}
 	
 	[TestMethod]
 	public void OperatingSystemHelper_Windows()
 	{
-		var result = OperatingSystemHelper.GetPlatformInternal(IsWindows);
+		var result = OperatingSystemHelper.GetPlatformInternal(FakeOsOverwrite.IsWindows);
 		Assert.AreEqual(OSPlatform.Windows, result);
 	}
 	
 	[TestMethod]
 	public void OperatingSystemHelper_MacOs()
 	{
-		var result = OperatingSystemHelper.GetPlatformInternal(IsMacOs);
+		var result = OperatingSystemHelper.GetPlatformInternal(FakeOsOverwrite.IsMacOs);
 		Assert.AreEqual(OSPlatform.OSX, result);
 	}
 		
 	[TestMethod]
 	public void OperatingSystemHelper_Linux()
 	{
-		var result = OperatingSystemHelper.GetPlatformInternal(IsLinux);
+		var result = OperatingSystemHelper.GetPlatformInternal(FakeOsOverwrite.IsLinux);
 		Assert.AreEqual(OSPlatform.Linux, result);
 	}
 	
 	[TestMethod]
 	public void OperatingSystemHelper_FreeBsd()
 	{
-		var result = OperatingSystemHelper.GetPlatformInternal(IsFreeBsd);
+		var result = OperatingSystemHelper.GetPlatformInternal(FakeOsOverwrite.IsFreeBsd);
 		Assert.AreEqual(OSPlatform.FreeBSD, result);
 	}
 	
@@ -71,7 +48,7 @@ public class OperatingSystemHelperTest
 	[TestMethod]
 	public void OperatingSystemHelper_Other()
 	{
-		var result = OperatingSystemHelper.GetPlatformInternal(IsUnknown);
+		var result = OperatingSystemHelper.GetPlatformInternal(FakeOsOverwrite.IsUnknown);
 		Assert.AreEqual(OSPlatform.Create("Unknown"), result);
 	}
 }

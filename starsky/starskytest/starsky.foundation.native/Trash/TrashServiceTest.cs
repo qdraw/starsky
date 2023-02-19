@@ -2,6 +2,8 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash;
+using starsky.foundation.native.Trash.Helpers;
+using starskytest.starsky.foundation.native.Helpers;
 
 namespace starskytest.starsky.foundation.native.Trash;
 
@@ -29,5 +31,55 @@ public class TrashServiceTest
 		}
 		
 		Assert.IsTrue(result);
+	}
+	
+	[TestMethod]
+	public void DetectToUseSystemTrashInternal_Root_MacOs()
+	{
+		var result =
+			TrashService.DetectToUseSystemTrashInternal(FakeOsOverwrite.IsMacOs,
+				true, "root");
+		Assert.IsFalse(result);
+	}
+		
+	[TestMethod]
+	public void DetectToUseSystemTrashInternal_InteractiveFalse_MacOs()
+	{
+		var result =
+			TrashService.DetectToUseSystemTrashInternal(FakeOsOverwrite.IsMacOs,
+				false, "test");
+		Assert.IsFalse(result);
+	}
+	
+			
+	[TestMethod]
+	public void DetectToUseSystemTrashInternal_Linux()
+	{
+		var result =
+			TrashService.DetectToUseSystemTrashInternal(FakeOsOverwrite.IsLinux,
+				true, "test");
+		Assert.IsFalse(result);
+	}
+	
+	[TestMethod]
+	public void DetectToUseSystemTrashInternal_Windows_AsWindowsService_InteractiveFalse()
+	{
+		var result =
+			TrashService.DetectToUseSystemTrashInternal(FakeOsOverwrite.IsWindows,
+				false, "test");
+		Assert.IsFalse(result);
+	}
+		
+	[TestMethod]
+	public void DetectToUseSystemTrashInternal_Windows_User()
+	{
+		var (driveHasBin,_,_) = WindowsShellTrashBindingHelper.DriveHasRecycleBin();
+		
+		var result =
+			TrashService.DetectToUseSystemTrashInternal(FakeOsOverwrite.IsWindows,
+				true, "test");
+		
+		// output should be the same, different as WindowsShellTrashBindingHelper DriveHasRecycleBin
+		Assert.AreEqual(driveHasBin, result);
 	}
 }
