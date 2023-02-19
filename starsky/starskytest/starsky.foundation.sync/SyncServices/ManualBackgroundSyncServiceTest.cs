@@ -64,7 +64,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var appSettings = new AppSettings{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, 
-				Verbose = false
+				Verbose = false,
+				DatabaseConnection = "ManualSync_test"
 			};
 			
 			new SetupDatabaseTypes(appSettings, provider).BuilderDb();
@@ -82,10 +83,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var cachedContent = new List<FileIndexItem>
 			{
-				new FileIndexItem("/999_not_found.jpg")
+				new FileIndexItem("/999_not_found_1.jpg")
 			};
 			memoryCache.Set(cacheDbName, cachedContent);
-			await query!.AddItemAsync(new FileIndexItem("/999_not_found.jpg"));
+			await query!.AddItemAsync(new FileIndexItem("/999_not_found_1.jpg"));
 
 			var item = new FakeSelectorStorage(
 					new FakeIStorage(new List<string> { "/" }, 
@@ -110,6 +111,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test2__1234.jpg"));
 			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test3__1234.jpg"));
 			Assert.AreEqual(2,content.Count(p => p.FilePath is "/test2__1234.jpg" or "/test3__1234.jpg"));
+			// should not contain the cached item
+			Assert.AreEqual(0,content.Count(p => p.FilePath is "/999_not_found_1.jpg"));
+
 		}
 		
 		[TestMethod]
