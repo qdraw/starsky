@@ -1,5 +1,6 @@
-using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash;
 
 namespace starskytest.starsky.foundation.native.Trash;
@@ -15,9 +16,18 @@ public class TrashServiceTest
 	}
 	
 	[TestMethod]
-	public void TrashService_Trash1()
+	public void TrashService_Trash()
 	{
 		var result = new TrashService().Trash("test");
-		Assert.IsNotNull(result);
+		
+		// This feature is not working on Linux and FreeBSD
+		if ( OperatingSystemHelper.GetPlatform() == OSPlatform.Linux || 
+		     OperatingSystemHelper.GetPlatform() == OSPlatform.FreeBSD )
+		{
+			Assert.IsNull(result);
+			return;
+		}
+		
+		Assert.IsTrue(result);
 	}
 }
