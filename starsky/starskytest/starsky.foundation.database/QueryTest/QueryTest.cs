@@ -870,7 +870,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var single003 =
 				_query
 					.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_003.jpg").FileIndexItem;
-			single003.Tags = "!delete!";
+			single003.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single003);
             
 			// Request new; item must be updated in cache
@@ -879,7 +879,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(null,single004.RelativeObjects.PrevFilePath);
             
 			// For avoiding conflicts when running multiple unit tests
-			single004.FileIndexItem.Tags = "!delete!";
+			single004.FileIndexItem.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single004.FileIndexItem);
             
 		}

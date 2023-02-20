@@ -519,7 +519,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 
 			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
-			Assert.AreEqual("the tags should not be updated, !delete!", fileIndexItem?.Tags);
+			Assert.AreEqual($"the tags should not be updated, {TrashKeyword.TrashKeywordString}", fileIndexItem?.Tags);
 			Assert.AreEqual(_lastEditedDateTime, fileIndexItem?.LastEdited);
 		}
 		
@@ -855,7 +855,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public void AddDeleteStatus_Deleted()
 		{
-			var item = new FileIndexItem() {Tags = "!delete!"};
+			var item = new FileIndexItem() {Tags = TrashKeyword.TrashKeywordString};
 
 			var result = SyncSingleFile.AddDeleteStatus(item);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);

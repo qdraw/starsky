@@ -575,7 +575,7 @@ namespace starskytest.starsky.foundation.search.Services
 		{
 			await InsertSearchData();
 
-			var del = _search.Search("!delete!");
+			var del = _search.Search(TrashKeyword.TrashKeywordString);
 			var count = del.FileIndexItems.Count;
 			Assert.AreEqual(1,count);
 			Assert.AreEqual("stationdeletedfile", del.FileIndexItems.FirstOrDefault()?.FileHash);

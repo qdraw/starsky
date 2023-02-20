@@ -154,7 +154,7 @@ namespace starsky.foundation.database.Query
             var displayItems = new List<FileIndexItem>();
                 foreach (var item in queryItems)
             {
-                if (item.Tags != null && !item.Tags.Contains("!delete!"))
+                if (item.Tags != null && !item.Tags.Contains(TrashKeyword.TrashKeywordString))
                 {
                     displayItems.Add(item);
                 }

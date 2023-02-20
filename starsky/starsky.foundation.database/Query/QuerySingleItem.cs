@@ -100,7 +100,7 @@ namespace starsky.foundation.database.Query
             }
 
             // To know when a file is deleted
-            if ( currentFileIndexItem.Tags != null && currentFileIndexItem.Tags.Contains("!delete!") )
+            if ( currentFileIndexItem.Tags != null && currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
             {
 	            currentFileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
             }
@@ -117,7 +117,7 @@ namespace starsky.foundation.database.Query
             }
 
             if ( currentFileIndexItem.Tags != null &&
-                 currentFileIndexItem.Tags.Contains("!delete!") )
+                 currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
             {
 	            hideDeleted = false;
             }
