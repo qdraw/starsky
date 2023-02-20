@@ -67,7 +67,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			_insertSearchDatahi2JpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi2.jpg",
-				Tags = "!delete!",
+				Tags = TrashKeyword.TrashKeywordString,
 				ParentDirectory = "/basic",
 				IsDirectory = false
 			});

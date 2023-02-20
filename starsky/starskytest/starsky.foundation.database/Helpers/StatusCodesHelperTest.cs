@@ -111,7 +111,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 				IsDirectory = false,
 				SubPath = "/test.jpg",
 				FileIndexItem = new FileIndexItem{ParentDirectory = "/", 
-					Tags = "!delete!", FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
+					Tags = TrashKeyword.TrashKeywordString, FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
 			};
 			var istorage = new FakeIStorage(new List<string> {"/"}, 
 				new List<string> {"/test.jpg"});

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>starsky.feature.trash</RootNamespace>
+        <ProjectGuid>{21affb47-1f8c-458a-84bb-24959e0fda31}</ProjectGuid>
+        <Version>0.5.6</Version>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj" />
+      <ProjectReference Include="..\starsky.foundation.native\starsky.foundation.native.csproj" />
+      <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj" />
+    </ItemGroup>
+
+</Project>

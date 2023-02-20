@@ -500,7 +500,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				Size =
 					_iStorageFake.Info("/test.jpg").Size, // < right byte size
 				Tags =
-					"the tags should not be updated, !delete!", // <= the tags in /test.jpg is nothing,
+					$"the tags should not be updated, {TrashKeyword.TrashKeywordString}", // <= the tags in /test.jpg is nothing,
 				LastEdited = new DateTime(1999, 01, 02)
 			};
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>

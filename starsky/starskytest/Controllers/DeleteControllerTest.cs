@@ -114,7 +114,7 @@ namespace starskytest.Controllers
 			if (string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)))
 			{
 				var isDelete = string.Empty;
-				if (delete) isDelete = "!delete!";
+				if (delete) isDelete = TrashKeyword.TrashKeywordString;
 				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = _createAnImage.FileName,

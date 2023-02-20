@@ -53,13 +53,13 @@ namespace starsky.foundation.database.Helpers
 
 	    public static FileIndexItem.ExifStatus IsDeletedStatus(FileIndexItem? fileIndexItem)
 	    {
-		    return fileIndexItem?.Tags != null && fileIndexItem.Tags.Contains("!delete!") ? 
+		    return fileIndexItem?.Tags != null && fileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) ? 
 			    FileIndexItem.ExifStatus.Deleted : FileIndexItem.ExifStatus.Default;
 	    }
 	    
 	    public static FileIndexItem.ExifStatus IsDeletedStatus(DetailView? detailView)
 	    {
-		    if (detailView?.FileIndexItem?.Tags != null && detailView.FileIndexItem.Tags.Contains("!delete!"))
+		    if (detailView?.FileIndexItem?.Tags != null && detailView.FileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString))
 		    {
 			    return FileIndexItem.ExifStatus.Deleted;
 		    }

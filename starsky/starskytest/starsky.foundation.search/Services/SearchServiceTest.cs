@@ -111,7 +111,7 @@ namespace starskytest.starsky.foundation.search.Services
 					FileName = "deletedfile.jpg",
 					ParentDirectory = "/stations",
 					FileHash = "stationdeletedfile",
-					Tags = "!delete!",
+					Tags = TrashKeyword.TrashKeywordString,
 					DateTime = new DateTime(2013,1,1,1,1,1),
 					IsDirectory = false
 				});
@@ -347,14 +347,14 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task SearchService_SearchIOSDoubleParenthesisTreinTest()
 		{
 			await InsertSearchData();
-			Assert.AreEqual(1, _search.Search("“!delete!”").SearchCount);
+			Assert.AreEqual(1, _search.Search($"“{TrashKeyword.TrashKeywordString}”").SearchCount);
 		}
 	    
 		[TestMethod]
 		public async Task SearchService_SearchIOSSingleParenthesisTreinTest()
 		{
 			await InsertSearchData();
-			Assert.AreEqual(1, _search.Search("‘!delete!’").SearchCount);
+			Assert.AreEqual(1, _search.Search($"‘{TrashKeyword.TrashKeywordString}’").SearchCount);
 		}
 	    
 		[TestMethod]

@@ -68,4 +68,12 @@ public class TrashService : ITrashService
 		var (windowsTrash,_) = WindowsShellTrashBindingHelper.Trash(fullPath, currentPlatform);
 		return macOsTrash ?? windowsTrash;
 	}
+
+	public bool? Trash(List<string> fullPaths)
+	{
+		var currentPlatform = OperatingSystemHelper.GetPlatform();
+		var macOsTrash = MacOsTrashBindingHelper.Trash(fullPaths, currentPlatform);
+		var (windowsTrash,_) = WindowsShellTrashBindingHelper.Trash(fullPaths, currentPlatform);
+		return macOsTrash ?? windowsTrash;
+	}
 }

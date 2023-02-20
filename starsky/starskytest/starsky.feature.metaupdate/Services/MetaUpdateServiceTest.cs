@@ -134,7 +134,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			});
 
 			var item0 = query.GetObjectByFilePath("/delete/test_delete.jpg");
-			item0!.Tags = "!delete!";
+			item0!.Tags = TrashKeyword.TrashKeywordString;
 			
 			var changedFileIndexItemName = new Dictionary<string, List<string>>
 			{
@@ -163,7 +163,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,fileIndexResultsList[0].Status);
 
 			// db
-			Assert.AreEqual("!delete!",query.GetObjectByFilePath("/delete/test_delete.jpg")!.Tags);
+			Assert.AreEqual(TrashKeyword.TrashKeywordString,query.GetObjectByFilePath("/delete/test_delete.jpg")!.Tags);
 			
 			Assert.AreEqual("noChanges",query.GetObjectByFilePath("/delete/test_delete.jpg")!.Description);
 

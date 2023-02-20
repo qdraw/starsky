@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Models;
-using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -20,7 +18,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var deleteItem = new DeleteItem(new FakeIQuery(), new AppSettings(), selectorStorage);
 			var result = deleteItem.Delete("/not-found", true);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 		}
 
 		[TestMethod]
@@ -32,7 +30,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
 			var result = deleteItem.Delete("/exist-in-db.jpg", true);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
@@ -47,7 +45,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var result = deleteItem.Delete("/readonly/test.jpg", true);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
@@ -62,7 +60,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var result = deleteItem.Delete("/test.jpg", true);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
@@ -75,12 +73,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test.jpg")
-					{Tags = "!delete!"}});
+					{Tags = TrashKeyword.TrashKeywordString}});
 			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
 			var result = deleteItem.Delete("/test.jpg", true);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 			
 			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test.jpg"));
 			Assert.IsFalse(storage.ExistFile("/test.jpg"));
@@ -97,17 +95,17 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {
-					new FileIndexItem("/dir") {IsDirectory = true, Tags = "!delete!" },
+					new FileIndexItem("/dir") {IsDirectory = true, Tags = TrashKeyword.TrashKeywordString },
 
-					new FileIndexItem("/dir/test.jpg") {Tags = "!delete!" },
-					new FileIndexItem("/dir/test.dng") {Tags = "!delete!" }}
+					new FileIndexItem("/dir/test.jpg") {Tags = TrashKeyword.TrashKeywordString },
+					new FileIndexItem("/dir/test.dng") {Tags = TrashKeyword.TrashKeywordString }}
 				);
 			
 			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
 			var result = deleteItem.Delete("/dir/test.jpg", true);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 			
 			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test.jpg"));
 			Assert.IsFalse(storage.ExistFile("/test.jpg"));
@@ -129,12 +127,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test.jpg")
-					{Tags = "!delete!"}});
+					{Tags = TrashKeyword.TrashKeywordString}});
 			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
 			var result = deleteItem.Delete("/test.jpg", true);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 			
 			Assert.IsFalse(storage.ExistFile("/.starsky.test.jpg.json"));
 		}
@@ -149,12 +147,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test.dng")
-					{Tags = "!delete!"}});
+					{Tags = TrashKeyword.TrashKeywordString}});
 			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
 			var result = deleteItem.Delete("/test.dng", true);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 			
 			Assert.IsFalse(storage.ExistFile("/test.xmp"));
 		}
@@ -169,12 +167,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test")
-					{IsDirectory = true, Tags = "!delete!"}});
+					{IsDirectory = true, Tags = TrashKeyword.TrashKeywordString}});
 			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
 			var result = deleteItem.Delete("/test", true);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 			
 			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test"));
 			Assert.IsFalse(storage.ExistFolder("/test"));
@@ -199,7 +197,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {
-					new FileIndexItem("/test"){IsDirectory = true, Tags = "!delete!"},
+					new FileIndexItem("/test"){IsDirectory = true, Tags = TrashKeyword.TrashKeywordString},
 					new FileIndexItem("/test/child_folder"){IsDirectory = true},	
 					new FileIndexItem("/test/child_folder/2"){IsDirectory = true}
 				});
@@ -207,7 +205,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var result = deleteItem.Delete("/test", true);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 	
-				result.FirstOrDefault().Status);
+				result.FirstOrDefault()?.Status);
 			
 			Assert.AreEqual(0,fakeQuery.GetAllFolders().Count);
 			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test"));
@@ -227,7 +225,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test")
-						{IsDirectory = true, Tags = "!delete!"}, new FileIndexItem("/test/image.jpg"), 
+						{IsDirectory = true, Tags = TrashKeyword.TrashKeywordString}, new FileIndexItem("/test/image.jpg"), 
 					new FileIndexItem("/test/image.dng")});
 			
 			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
@@ -252,8 +250,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 			var fakeQuery =
-				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test")
-						{IsDirectory = true, Tags = "!delete!"}, new FileIndexItem("/test/image.jpg"), 
+				new FakeIQuery(new List<FileIndexItem> {
+					new FileIndexItem("/test") {
+							IsDirectory = true, 
+							Tags = TrashKeyword.TrashKeywordString
+					}, 
+					new FileIndexItem("/test/image.jpg"), 
 					new FileIndexItem("/test/image.dng")});
 			
 			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
@@ -279,7 +281,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {
-					new FileIndexItem("/test") {IsDirectory = true, Tags = "!delete!"}, 
+					new FileIndexItem("/test") {IsDirectory = true, Tags = TrashKeyword.TrashKeywordString}, 
 					new FileIndexItem("/test/child") {IsDirectory = true}, 
 					new FileIndexItem("/test/child/child") {IsDirectory = true}, 
 				});

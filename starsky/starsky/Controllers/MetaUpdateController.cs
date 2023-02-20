@@ -54,11 +54,13 @@ namespace starsky.Controllers
 		/// <param name="rotateClock">relative orientation -1 or 1</param>
 		/// <returns>update json (IActionResult Update)</returns>
 		/// <response code="200">the item including the updated content</response>
+		/// <response code="400">parameter `f` is empty and that results in no input files</response>
 		/// <response code="404">item not found in the database or on disk</response>
 		/// <response code="401">User unauthorized</response>
 		[IgnoreAntiforgeryToken]
 		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
 		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
+		[ProducesResponseType(typeof(string), 400)]
 		[HttpPost("/api/update")]
 		[Produces("application/json")]
 		public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, 
@@ -72,7 +74,7 @@ namespace starsky.Controllers
 			
 			var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
 
-			var (fileIndexResultsList, changedFileIndexItemName) =  await _metaPreflight.Preflight(inputModel, 
+			var (fileIndexResultsList, changedFileIndexItemName) =  await _metaPreflight.PreflightAsync(inputModel, 
 				inputFilePaths, append, collections, rotateClock);
 
 			var operationId = HttpContext.GetOperationId();

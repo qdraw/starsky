@@ -50,6 +50,13 @@ namespace starsky.feature.export.Services
 			_logger = logger;
 		}
 
+		/// <summary>
+		/// Export preflight
+		/// </summary>
+		/// <param name="inputFilePaths">list of subPaths</param>
+		/// <param name="collections">is stack collections enabled</param>
+		/// <param name="thumbnail">should export thumbnail or not</param>
+		/// <returns>zipHash, fileIndexResultsList</returns>
 		public Tuple<string, List<FileIndexItem>> Preflight(string[] inputFilePaths, 
 			bool collections = true, 
 			bool thumbnail = false )
@@ -60,7 +67,7 @@ namespace starsky.feature.export.Services
 			foreach ( var subPath in inputFilePaths )
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
-				if ( detailView?.FileIndexItem == null )
+				if ( detailView?.FileIndexItem?.FilePath == null )
 				{
 					StatusCodesHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
@@ -82,7 +89,7 @@ namespace starsky.feature.export.Services
 					// Collection is only relevant for when selecting one file
 					foreach ( var item in 
 						_query.GetAllRecursive(detailView.FileIndexItem.FilePath).
-							Where(item => _iStorage.ExistFile(item.FilePath)) )
+							Where(item => item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
 					{
 						item.Status = FileIndexItem.ExifStatus.Ok;
 						fileIndexResultsList.Add(item);
@@ -94,10 +101,10 @@ namespace starsky.feature.export.Services
 				var collectionSubPathList = DetailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
 				foreach ( var item in collectionSubPathList )
 				{
-					var itemDetailView = _query.SingleItem(item, null, 
-						false, false).FileIndexItem;
-					itemDetailView.Status = FileIndexItem.ExifStatus.Ok;
-					fileIndexResultsList.Add(itemDetailView);
+					var itemFileIndexItem = _query.SingleItem(item, null, 
+						false, false)?.FileIndexItem;
+					itemFileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+					fileIndexResultsList.Add(itemFileIndexItem);
 				}
 			}
 

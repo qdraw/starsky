@@ -76,7 +76,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				_insertSearchDatahi2JpgInput =  await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "hi2.jpg",
-					Tags = "!delete!",
+					Tags = TrashKeyword.TrashKeywordString,
 					ParentDirectory = "/basic",
 					IsDirectory = false
 				});
@@ -370,7 +370,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				FileName = "hi2.jpg",
 				ParentDirectory = "/display",
 				FileHash = "98765432123456",
-				Tags = "!delete!"
+				Tags = TrashKeyword.TrashKeywordString
 			});
             
 			// All Color Classes
@@ -564,7 +564,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var single002 =
 				_query
 					.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_002.jpg").FileIndexItem;
-			single002.Tags = "!delete!";
+			single002.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single002);
             
 			// Request new; and check if content is updated in memory cache
@@ -573,7 +573,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(null,single001.RelativeObjects.NextFilePath);
             
 			// For avoiding conflicts when running multiple unit tests
-			single001.FileIndexItem.Tags = "!delete!";
+			single001.FileIndexItem.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single001.FileIndexItem);
             
 		}

@@ -9,7 +9,7 @@ namespace starskytest.FakeMocks
 	{
 
 		public Task<(List<FileIndexItem> fileIndexResultsList, Dictionary<string, 
-			List<string>> changedFileIndexItemName)> Preflight(FileIndexItem inputModel, 
+			List<string>> changedFileIndexItemName)> PreflightAsync(FileIndexItem inputModel, 
 			string[] inputFilePaths, bool append,
 			bool collections, int rotateClock)
 		{
@@ -33,19 +33,13 @@ namespace starskytest.FakeMocks
 		}
 
 		private static void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView,
-			FileIndexItem inputModel, bool append, int rotateClock)
+			FileIndexItem _, bool _1, int _2)
 		{
-			if ( !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )
+			if (detailView.FileIndexItem?.FilePath != null && !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )
 			{
-				changedFileIndexItemName.Add(detailView.FileIndexItem.FilePath, new List<string>{"Tags"});
+				changedFileIndexItemName.Add(detailView.FileIndexItem!.FilePath, new List<string>{"Tags"});
 			}
 		}
 
-		public void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName,
-			FileIndexItem collectionsFileIndexItem, FileIndexItem statusModel,
-			bool append, int rotateClock)
-		{
-			throw new System.NotImplementedException();
-		}
 	}
 }
