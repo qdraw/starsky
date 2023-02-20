@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 using System.Resources.NetStandard;
 
 namespace starsky.feature.translations;
@@ -14,7 +15,7 @@ public class ContentTranslations
 	
 	public ContentTranslations()
 	{
-		using (ResXResourceWriter resx = new ResXResourceWriter(@".\ContentTranslations.resx"))
+		using (ResXResourceWriter resx = new ResXResourceWriter(@"ContentTranslations.resx"))
 		{
 			resx.AddResource(Home, "Classic American Cars");
 			resx.AddResource(PhotosOfTheWeek, "Make");
@@ -27,7 +28,7 @@ public class ContentTranslations
 	
 	public Dictionary<string, string?> GetDictionary()
 	{
-		using (ResXResourceReader resx = new ResXResourceReader(@".\ContentTranslations.resx", CultureInfo.InvariantCulture))
+		using (ResXResourceReader resx = new ResXResourceReader(@"ContentTranslations.resx"))
 		{
 			return resx.Cast<DictionaryEntry>().ToDictionary(x => x.Key.ToString(), x => x.Value.ToString());
 		}
