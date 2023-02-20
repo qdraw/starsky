@@ -10,13 +10,12 @@ going through a short list of system requirements.
 ### System Requirements ###
 
 - Your device should have at least 3 GB of physical memory and a 64-bit operating system
-- While PhotoPrism has been reported to work on devices with less memory, we take no responsibility for instability or performance problems
-- RAW image conversion and TensorFlow are disabled on systems with 1 GB or less memory
+- While the app has should work on devices with less memory, we take no responsibility for instability or performance problems
 - Indexing large photo and video collections significantly benefits from [local SSD storage](troubleshooting/performance.md#storage) and plenty of memory for caching, especially the conversion of RAW images and the transcoding of videos are very demanding
 - If less than [4 GB of swap space](troubleshooting/docker.md#adding-swap) is configured or a manual memory/swap limit is set, this can cause unexpected restarts, for example, when the indexer temporarily needs more memory to process large files
 - High-resolution panoramic images may require additional swap space and/or physical memory above the recommended minimum
 - We recommend disabling [kernel security](troubleshooting/docker.md#kernel-security) in your
-  [docker-compose.yml](https://dl.photoprism.app/docker/arm64/docker-compose.yml), especially if you do
+  [docker-compose.yml](https://raw.githubusercontent.com/qdraw/starsky/master/starsky/docker/compose/generic/docker-compose.yml), especially if you do
   not have experience with the configuration:
   ```yaml
   starsky:
