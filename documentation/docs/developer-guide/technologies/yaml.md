@@ -35,10 +35,9 @@ container in `docker-compose.yml` files:
 
 ```yaml
 services:
-  photoprism:
+  starsky:
     depends_on:
       - mariadb
-      - nextcloud
     ports:
       # "host:container"
       - "2342:2342"
