@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="ContentTranslations.Resource.en-gb.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ContentTranslations.Resource.en-gb.Designer.cs</LastGenOutput>
+        <DependentUpon>ContentTranslations.Resource.cs</DependentUpon>
+        <LogicalName>$(RootNamespace).ContentTranslations</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Update="ContentTranslations.Resource.nl-nl.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ContentTranslations.Resource.nl-nl.Designer.cs</LastGenOutput>
+        <DependentUpon>ContentTranslations.Resource.cs</DependentUpon>
+        <LogicalName>$(RootNamespace).ContentTranslations</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="ContentTranslations.Resource.en-gb.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ContentTranslations.Resource.en-gb.resx</DependentUpon>
+      </Compile>
+      <Compile Update="ContentTranslations.Resource.nl-nl.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ContentTranslations.Resource.nl-nl.resx</DependentUpon>
+      </Compile>
+      <Compile Update="ContentTranslations.Resource.cs">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="6.0.14" />
+      <PackageReference Include="ResXResourceReader.NetStandard" Version="1.1.0" />
+      <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.settings\starsky.foundation.settings.csproj" />
+    </ItemGroup>
+
+</Project>
