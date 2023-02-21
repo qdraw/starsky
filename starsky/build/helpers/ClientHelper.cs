@@ -31,19 +31,19 @@ namespace helpers
 	
 		public static void ClientCiCommand()
 		{
-			Run(NpmBaseCommand, "ci --legacy-peer-deps --prefer-offline --no-audit --no-fund", ClientAppFolder, 
+			Run(NpmBaseCommand, "ci --legacy-peer-deps --prefer-offline --no-audit --no-fund", GetClientAppFolder(), 
 				false, null, null, false);
 		}
 	
 		public static void ClientBuildCommand()
 		{
-			Run(NpmBaseCommand, "run build", ClientAppFolder, 
+			Run(NpmBaseCommand, "run build", GetClientAppFolder(), 
 				false, null, null, false);
 		}
 	
 		public static void ClientTestCommand()
 		{
-			Run(NpmBaseCommand, "run test:ci", ClientAppFolder, 
+			Run(NpmBaseCommand, "run test:ci", GetClientAppFolder(), 
 				false, null, null, false);
 		}
 	}

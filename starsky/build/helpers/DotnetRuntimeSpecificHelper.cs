@@ -98,7 +98,10 @@ namespace helpers
 				// OverwriteRuntimeIdentifier is done via Directory.Build.props
 				DotNetRestore(_ => _
 					.SetProjectFile(solution)
-					.SetProcessArgumentConfigurator(args => args.Add($"/p:OverwriteRuntimeIdentifier={runtime}")));
+					.SetProcessArgumentConfigurator(args => args
+						.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
+						.Add("/p:noSonar=true")));
+				
 				ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(runtime, solution);
 			}
 		}
@@ -106,26 +109,38 @@ namespace helpers
 		public static void PublishNetCoreGenericCommand(Solution solution,
 			List<string> runtimesWithoutGeneric, Configuration configuration)
 		{
-	    
 			foreach ( var runtime in runtimesWithoutGeneric )
 			{
 				ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(runtime, solution);
 				foreach ( var publishProject in Build.PublishProjectsList )
 				{
+					var publishProjectFullPath = Path.Combine(
+						WorkingDirectory.GetSolutionParentFolder(),
+						publishProject);
+					
+					var outputFullPath = Path.Combine(
+						WorkingDirectory.GetSolutionParentFolder(),
+						runtime);
+					
 					DotNetPublish(_ => _
 						.SetConfiguration(configuration)
 						.EnableNoRestore()
 						.EnableNoBuild()
 						.EnableNoDependencies()
 						.EnableSelfContained()
-						.SetOutput(runtime)
-						.SetProject(publishProject)
+						.SetOutput(outputFullPath)
+						.SetProject(publishProjectFullPath)
 						.SetRuntime(runtime)
-						.EnableNoLogo());
+						.EnableNoLogo()
+						.SetProcessArgumentConfigurator(args => args.Add("/p:noSonar=true"))
+					);
+
 				}
 
 				// to check if the right runtime is published
-				var runtimeDebugFile = Path.Combine(runtime, "_runtime_" + runtime + ".debug");
+				var runtimeDebugFile = Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
+					runtime, "_runtime_" + runtime + ".debug");
+				
 				if ( !File.Exists(runtimeDebugFile) )
 				{
 					File.Create(runtimeDebugFile).Close();

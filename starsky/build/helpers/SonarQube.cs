@@ -220,6 +220,8 @@ namespace helpers
 				.Append($"/d:sonar.login=\"{login}\" ");
 
 			DotNet(sonarArguments.ToString());
+			
+			Console.Write("- - - - - - - - - -  Sonar done - - - - - - - - - - \n");
 		}
 	}	
 }
