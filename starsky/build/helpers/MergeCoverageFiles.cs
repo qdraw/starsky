@@ -33,7 +33,7 @@ namespace helpers
 		public static void Merge(bool noUnitTest)
 		{
 			var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
-				.BaseDirectory).Parent.Parent.Parent.FullName;
+				.BaseDirectory!)!.Parent!.Parent!.Parent!.FullName;
 		
 			if(noUnitTest)
 			{
@@ -41,12 +41,14 @@ namespace helpers
 				return;
 			}
 
-			if (! FileExists(Path.Combine(rootDirectory, $"starsky/clientapp/coverage/cobertura-coverage.xml"))) {
-				throw new FileNotFoundException($"Missing jest coverage file ./starsky/clientapp/coverage/cobertura-coverage.xml");
+			var jestCoverageFile = Path.Combine(rootDirectory, "starsky/clientapp/coverage/cobertura-coverage.xml");
+			if (! FileExists(jestCoverageFile)) {
+				throw new FileNotFoundException($"Missing jest coverage file {jestCoverageFile}");
 			}
 
-			if (! FileExists(Path.Combine(rootDirectory, "starskytest/netcore-coverage.opencover.xml"))) {
-				throw new FileNotFoundException($"Missing .NET Core coverage file ./starskytest/netcore-coverage.opencover.xml");
+			var netCoreCoverageFile = Path.Combine(rootDirectory, "starskytest/netcore-coverage.opencover.xml");
+			if (! FileExists(netCoreCoverageFile)) {
+				throw new FileNotFoundException($"Missing .NET coverage file ${netCoreCoverageFile}");
 			}
 
 			var outputCoverageFile = Path.Combine(rootDirectory,"starskytest/coverage-merge-cobertura.xml");

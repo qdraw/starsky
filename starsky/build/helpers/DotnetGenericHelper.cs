@@ -59,12 +59,13 @@ namespace helpers
 			{
 				Environment.SetEnvironmentVariable("app__DependenciesFolder",genericDepsFullPath);
 				Console.WriteLine("Next: DownloadDependencies");
+				Console.WriteLine("Run: " + Path.Combine(WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj));
 
 				DotNetRun(_ =>  _
 					.SetConfiguration(configuration)
 					.EnableNoRestore()
 					.EnableNoBuild()
-					.SetProjectFile(geoCliCsproj));
+					.SetProjectFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj)));
 			}
 			catch ( Exception exception)
 			{
@@ -93,14 +94,22 @@ namespace helpers
 
 			foreach ( var publishProject in PublishProjectsList )
 			{
+				var publishProjectFullPath = Path.Combine(
+					WorkingDirectory.GetSolutionParentFolder(),
+					publishProject);
+
+				var outputFullPath = Path.Combine(
+					WorkingDirectory.GetSolutionParentFolder(),
+					GenericRuntimeName);
+
 				DotNetPublish(_ => _
 					.SetConfiguration(configuration)
 					.EnableNoRestore()
 					.EnableNoBuild()
 					.EnableNoDependencies()
 					.EnableSelfContained()
-					.SetOutput(GenericRuntimeName)
-					.SetProject(publishProject)
+					.SetOutput(outputFullPath)
+					.SetProject(publishProjectFullPath)
 					.EnableNoLogo());
 			}
 			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
