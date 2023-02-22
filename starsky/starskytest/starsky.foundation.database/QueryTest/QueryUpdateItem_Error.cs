@@ -294,7 +294,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public async Task RemoveItemAsync_SQLiteException()
+		public async Task RemoveItemAsync_SingleItem_SQLiteException()
 		{
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 				.UseInMemoryDatabase("MovieListDatabase")
@@ -318,6 +318,35 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			var fakeQuery = new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
 			await fakeQuery.RemoveItemAsync(item!);
+			
+			Assert.AreEqual(1, sqLiteFailContext.Count);
+		}
+		
+		[TestMethod]
+		public async Task RemoveItemAsync_List_SQLiteException()
+		{
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase("MovieListDatabase")
+				.Options;
+
+			var scope = CreateNewScopeSqliteException();
+			var context = scope.CreateScope().ServiceProvider
+				.GetService<ApplicationDbContext>();
+			if ( context == null )
+			{
+				throw new NullReferenceException(
+					"test context should not be null");
+			}
+			await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
+			await context.SaveChangesAsync();
+			var item = await context.FileIndex.FirstOrDefaultAsync(
+				p => p.FilePath == "/test.jpg");
+
+			var sqLiteFailContext = new SqliteExceptionDbContext(options);
+			Assert.AreEqual(0,sqLiteFailContext.Count);
+
+			var fakeQuery = new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
+			await fakeQuery.RemoveItemAsync(new List<FileIndexItem>{item!});
 			
 			Assert.AreEqual(1, sqLiteFailContext.Count);
 		}

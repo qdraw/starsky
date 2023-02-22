@@ -102,8 +102,8 @@ namespace starsky.foundation.database.Query
 						context.Entry(local).State = EntityState.Detached;
 					}
 				}
-				
-				context.FileIndex.RemoveRange(updateStatusContentList);
+				// keep conditional marker for test
+				context.FileIndex?.RemoveRange(updateStatusContentList);
 				await context.SaveChangesAsync();
 			}
     
