@@ -127,7 +127,7 @@ namespace starsky.foundation.database.Query
 			}
 			catch ( DbUpdateConcurrencyException e)
 			{
-				_logger.LogInformation(e,"[RemoveItemAsync] catch-ed " +
+				_logger.LogInformation(e,"[RemoveItemAsync:List] catch-ed " +
 				                         "DbUpdateConcurrencyException (do nothing)");
 			}
     

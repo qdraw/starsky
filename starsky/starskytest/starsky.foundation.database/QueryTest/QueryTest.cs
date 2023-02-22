@@ -39,7 +39,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new AppSettings{Verbose = false}, serviceScope,_logger ,_memoryCache);
 		}
 
-		private IServiceScopeFactory CreateNewScope()
+		private static IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryTest)));
