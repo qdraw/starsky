@@ -42,7 +42,7 @@ To enable [automatic schema updates](../troubleshooting/mariadb.md#auto-upgrade)
 #### Volumes ####
 
 Since the app is running inside a container, you have to explicitly [mount the host folders](https://docs.docker.com/compose/compose-file/compose-file-v3/#volumes) you want to use.
-PhotoPrism won't be able to see folders that have not been mounted. That's an important security feature.
+The app won't be able to see folders that have not been mounted. That's an important security feature.
 
 ##### /app/storageFolder #####
 
@@ -77,9 +77,10 @@ volumes:
 
 > **TL;DR**<br />
 If *read-only mode* is enabled, all features that require write permission to the *originals/storageFolder* folder
-are disabled, uploading and deleting files. Set `PHOTOPRISM_READONLY` to `"true"`
-in `docker-compose.yml` for this. You can [mount a folder with the `:ro` flag](https://docs.docker.com/compose/compose-file/compose-file-v3/#short-syntax-3) to make Docker block
-write operations as well.
+are disabled, uploading and deleting files. Set `app__ReadOnlyFolders__0` to `"/"`
+in `docker-compose.yml` for this. 
+> You can [mount a folder with the `:ro` flag](https://docs.docker.com/compose/compose-file/compose-file-v3/#short-syntax-3) 
+> to make Docker block write operations as well.
 
 ##### /app/thumbnailTempFolder #####
 
