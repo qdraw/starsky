@@ -20,8 +20,9 @@ export class FileExtensions {
    * @param filename
    */
   public IsValidFileName(filename: string): boolean {
+    // before 02/23  /^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
     const extensionRegex =
-      /^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
+      /^\w(?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
     const fromExtMatchArray = filename.match(extensionRegex);
     return !!fromExtMatchArray;
   }
@@ -71,18 +72,16 @@ export class FileExtensions {
    */
   public GetFileNameWithoutExtension(filePath: string) {
     const fileName = this.GetFileName(filePath);
-    return fileName.replace(new RegExp("\\.[a-zA-Z0-9]{1,4}$"), "");
+    return fileName.replace(/\.[a-zA-Z0-9]{1,4}$/, "");
   }
 
   /**
    * Get File Extension without dot
-   * @param filename the filepath
+   * @param fileNameWithDot the filepath
    */
   public GetFileExtensionWithoutDot(fileNameWithDot: string) {
     if (fileNameWithDot.indexOf(".") === -1) return "";
-    const fileNameMatchArray = fileNameWithDot.match(
-      new RegExp("[^.][a-zA-Z0-9]{1,4}$")
-    );
+    const fileNameMatchArray = fileNameWithDot.match(/[^.][a-zA-Z0-9]{1,4}$/);
     if (!fileNameMatchArray) return "";
     return fileNameMatchArray[0].toLowerCase();
   }
