@@ -608,8 +608,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null!,null!,null!);
-			await fakeQuery.UpdateItemAsync(new List<FileIndexItem>{new FileIndexItem("test")});
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null!,null!,new FakeIWebLogger());
+			await fakeQuery.RemoveItemAsync(new List<FileIndexItem>{new FileIndexItem("test")});
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}
