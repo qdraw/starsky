@@ -59,7 +59,7 @@ namespace starsky.foundation.database.Helpers
 	    
 	    public static FileIndexItem.ExifStatus IsDeletedStatus(DetailView? detailView)
 	    {
-		    if (detailView?.FileIndexItem?.Tags != null && detailView.FileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString))
+		    if (!string.IsNullOrEmpty(detailView?.FileIndexItem?.Tags) && detailView.FileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString))
 		    {
 			    return FileIndexItem.ExifStatus.Deleted;
 		    }
