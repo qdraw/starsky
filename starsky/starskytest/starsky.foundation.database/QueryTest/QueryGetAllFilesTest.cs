@@ -121,7 +121,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.IsNotNull(getItem);
 			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
 
-			query.RemoveItem(getItem.FirstOrDefault());
+			await query.RemoveItemAsync(getItem.FirstOrDefault());
 		}
 		
 		

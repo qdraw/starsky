@@ -223,12 +223,12 @@ namespace starskytest.starsky.feature.rename.Services
 			});
 		}
 
-		private void RemoveFoldersAndFilesInDatabase()
+		private async Task RemoveFoldersAndFilesInDatabase()
 		{
-			_query.RemoveItem(_folderExist);
-			_query.RemoveItem(_folder1Exist);
-			_query.RemoveItem(_fileInExist);
-			_query.RemoveItem(_parentFolder);
+			await _query.RemoveItemAsync(_folderExist);
+			await _query.RemoveItemAsync(_folder1Exist);
+			await _query.RemoveItemAsync(_fileInExist);
+			await _query.RemoveItemAsync(_parentFolder);
 		}
 
 		[TestMethod]
@@ -258,7 +258,7 @@ namespace starskytest.starsky.feature.rename.Services
 
 			Assert.AreEqual(1,renameFs.Count);
 
-			RemoveFoldersAndFilesInDatabase();
+			await RemoveFoldersAndFilesInDatabase();
 		}
 
 		[TestMethod]
@@ -281,7 +281,7 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, 
 				renameFs.FirstOrDefault(p => p.FilePath == "/exist/file.jpg").Status );
 
-			RemoveFoldersAndFilesInDatabase();
+			await RemoveFoldersAndFilesInDatabase();
 		}
 
 		[TestMethod]
@@ -303,7 +303,7 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,renameFs.FirstOrDefault().Status );
 			
-			RemoveFoldersAndFilesInDatabase();
+			await RemoveFoldersAndFilesInDatabase();
 		}
 
 		[TestMethod]
@@ -342,7 +342,7 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual("/nonExist", nonExist.FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, nonExist.Status );
 
-			RemoveFoldersAndFilesInDatabase();
+			await RemoveFoldersAndFilesInDatabase();
 		}
 		
 		[TestMethod]
@@ -357,7 +357,7 @@ namespace starskytest.starsky.feature.rename.Services
 				.Rename(initFileList.FirstOrDefault(), "/exist/", true);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, renameFs.FirstOrDefault().Status );
 
-			RemoveFoldersAndFilesInDatabase();
+			await RemoveFoldersAndFilesInDatabase();
 		}
 		
 		[TestMethod]
@@ -387,7 +387,7 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFsResult.FirstOrDefault().Status );
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFsResult[1].Status );
 
-			RemoveFoldersAndFilesInDatabase();
+			await RemoveFoldersAndFilesInDatabase();
 		}
 		
 		[TestMethod]
@@ -418,7 +418,7 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFs.FirstOrDefault().Status );
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
 
-			RemoveFoldersAndFilesInDatabase();
+			await RemoveFoldersAndFilesInDatabase();
 		}
 		
 		[TestMethod]
@@ -496,7 +496,7 @@ namespace starskytest.starsky.feature.rename.Services
 			await _query.RemoveItemAsync(existSubFolder);
 			await _query.RemoveItemAsync(existSubFolderChildJpg);
 
-			RemoveFoldersAndFilesInDatabase();
+			await RemoveFoldersAndFilesInDatabase();
 		}
 
 		[TestMethod]
@@ -651,8 +651,8 @@ namespace starskytest.starsky.feature.rename.Services
 
 			// this does only preflight
 			
-			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(collectionItemPath1).FileIndexItem);
 		}
 		
 		[TestMethod]
@@ -682,8 +682,8 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(0, fileIndexResultsList.Count );
 
 			// this does only preflight
-			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
-			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem(collectionItemPath1).FileIndexItem);
 		}
 		
 		[TestMethod]

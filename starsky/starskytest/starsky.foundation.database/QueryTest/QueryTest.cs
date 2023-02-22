@@ -108,13 +108,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public void QueryForHomeDoesNotExist_Null()
+		public async Task QueryForHomeDoesNotExist_Null()
 		{
 			// remove if item exist
 			var homeItem = _query.SingleItem("/");
 			if ( homeItem != null )
 			{
-				_query.RemoveItem(homeItem.FileIndexItem);
+				await _query.RemoveItemAsync(homeItem.FileIndexItem);
 		        
 				// Query again if needed
 				homeItem = _query.SingleItem("/");
@@ -304,7 +304,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.IsNotNull(getItem);
 			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
 
-			query.RemoveItem(getItem.FirstOrDefault());
+			await query.RemoveItemAsync(getItem.FirstOrDefault());
 		}
 
 		[TestMethod]

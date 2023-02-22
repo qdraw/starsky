@@ -121,8 +121,10 @@ namespace starsky.foundation.database.Interfaces
         Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(
 	        List<string> filePathList);
         
-        FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent);
+
+        Task<List<FileIndexItem>> RemoveItemAsync(
+	        List<FileIndexItem> updateStatusContentList);
 
         /// <summary>
         /// Clear the directory name from the cache

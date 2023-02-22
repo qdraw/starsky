@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,7 +61,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 		
 		[TestMethod]
-		public void GetNextPrevInFolder_Next_DisposedItem()
+		public async Task GetNextPrevInFolder_Next_DisposedItem()
 		{
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
@@ -84,8 +85,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.IsNotNull(getItem);
 			Assert.AreEqual("/test_1234567832/test_0191922.jpg", getItem.NextFilePath);
 
-			query.RemoveItem(item);
-			query.RemoveItem(item1);
+			await query.RemoveItemAsync(item);
+			await query.RemoveItemAsync(item1);
 
 		}
 	}

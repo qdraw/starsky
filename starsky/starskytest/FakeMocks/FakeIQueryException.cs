@@ -106,6 +106,11 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
+		public Task<List<FileIndexItem>> RemoveItemAsync(List<FileIndexItem> updateStatusContentList)
+		{
+			throw _exception;
+		}
+
 		public bool RemoveCacheParentItem(string directoryName)
 		{
 			throw _exception;

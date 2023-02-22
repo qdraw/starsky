@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
@@ -28,9 +29,9 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(List<FileIndexItem>),200)]
         [ProducesResponseType(typeof(List<FileIndexItem>),404)]
         [Produces("application/json")]
-        public IActionResult Delete(string f, bool collections = false)
+        public async Task<IActionResult> Delete(string f, bool collections = false)
 		{
-			var fileIndexResultsList = _deleteItem.Delete(f, collections);
+			var fileIndexResultsList = await _deleteItem.DeleteAsync(f, collections);
             // When all items are not found
 	        // ok = file is deleted
             if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))

@@ -294,7 +294,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 		
 		[TestMethod]
-		public void Query_RemoveItem_DbUpdateConcurrencyException()
+		public async Task Query_RemoveItem_DbUpdateConcurrencyException()
 		{
 			IsCalledDbUpdateConcurrency = false;
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -302,7 +302,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.Options;
 			
 			var fakeQuery = new Query(new AppDbContextConcurrencyException(options), new AppSettings(),  null!, new FakeIWebLogger());
-			fakeQuery.RemoveItem(new FileIndexItem());
+			await fakeQuery.RemoveItemAsync(new FileIndexItem());
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using starsky.feature.metaupdate.Interfaces;
+using starsky.feature.trash.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
@@ -10,11 +10,18 @@ namespace starsky.Controllers;
 
 public class TrashController : Controller
 {
-	
+	private readonly IMoveToTrashService _moveToTrashService;
+
+	public TrashController(IMoveToTrashService moveToTrashService)
+	{
+		_moveToTrashService = moveToTrashService;
+	}
+
 	/// <summary>
 	/// (beta) Move a file to the trash
 	/// </summary>
 	/// <param name="f">subPath filepath to file, split by dot comma (;)</param>
+	/// <param name="collections">stack collections</param>
 	/// <returns>update json (IActionResult Update)</returns>
 	/// <response code="200">the item including the updated content</response>
 	/// <response code="400">parameter `f` is empty and that results in no input files</response>
@@ -25,7 +32,7 @@ public class TrashController : Controller
 	[ProducesResponseType(typeof(string), 400)]
 	[HttpPost("/api/trash/move-to-trash")]
 	[Produces("application/json")]
-	public async Task<IActionResult> TrashMoveAsync(string f)
+	public async Task<IActionResult> TrashMoveAsync(string f, bool collections = false)
 	{
 		var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 		if ( !inputFilePaths.Any() )
@@ -33,9 +40,7 @@ public class TrashController : Controller
 			return BadRequest("No input files");
 		}
 
-		
-		
-
-		return Json("");
+		var result = await _moveToTrashService.MoveToTrashAsync(inputFilePaths, collections);
+		return Json(result);
 	}
 }
