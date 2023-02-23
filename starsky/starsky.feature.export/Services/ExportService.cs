@@ -67,7 +67,7 @@ namespace starsky.feature.export.Services
 			foreach ( var subPath in inputFilePaths )
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
-				if ( detailView?.FileIndexItem?.FilePath == null )
+				if (string.IsNullOrEmpty(detailView?.FileIndexItem?.FilePath))
 				{
 					StatusCodesHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
