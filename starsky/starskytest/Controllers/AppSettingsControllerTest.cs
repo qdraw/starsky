@@ -130,5 +130,25 @@ namespace starskytest.Controllers
 			Assert.IsTrue(jsonContent.Contains("app\": {"));
 			Assert.IsTrue(jsonContent.Contains("\"StorageFolder\": \""));
 		}
+		
+		[TestMethod]
+		public async Task UpdateAppSettings_UseSystemTrash()
+		{
+			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage());
+			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject {UseSystemTrash = true}) as JsonResult;
+			var result = actionResult?.Value as AppSettings;
+			Assert.IsTrue(result?.UseSystemTrash);
+		}
+		
+		[TestMethod]
+		public async Task UpdateAppSettings_Verbose_IgnoreSystemTrashValue()
+		{
+			var appSettings = new AppSettings();
+			var controller = new AppSettingsController(appSettings, new FakeSelectorStorage());
+			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject {Verbose = true}) as JsonResult;
+			var result = actionResult?.Value as AppSettings;
+			
+			Assert.AreEqual(appSettings.UseSystemTrash, result?.UseSystemTrash);
+		}
 	}
 }

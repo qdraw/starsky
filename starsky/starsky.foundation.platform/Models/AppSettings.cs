@@ -263,13 +263,16 @@ namespace starsky.foundation.platform.Models
         
 
 		/// <summary>
-		/// Type of the database, sqlite, mysql or inmemory
+		/// Type of the database, sqlite, mysql or inMemory
 		/// </summary>
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		[PackageTelemetry]
 		// newtonsoft uses: StringEnumConverter
 		public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
 
+		/// <summary>
+		/// The available database types
+		/// </summary>
 		public enum DatabaseTypeList
 		{
 			Mysql = 1,
@@ -280,6 +283,9 @@ namespace starsky.foundation.platform.Models
 		// DatabaseType > above this one
 		private string _databaseConnection;
 
+		/// <summary>
+		/// Connection string for the database
+		/// </summary>
 		public string DatabaseConnection
 		{
 			get { return _databaseConnection; }
@@ -295,6 +301,9 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		private string _structure;
 		
+		/// <summary>
+		/// Auto storage structure
+		/// </summary>
 		[PackageTelemetry]
 		public string Structure
 		{
@@ -488,6 +497,9 @@ namespace starsky.foundation.platform.Models
 			}
 		}
 
+		/// <summary>
+		/// Create xmp when importing
+		/// </summary>
 		[PackageTelemetry]
 		public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
@@ -511,6 +523,9 @@ namespace starsky.foundation.platform.Models
 			return result != null;
 		}
         
+		/// <summary>
+		/// Use Memory Cache to speed up the application
+		/// </summary>
 		[PackageTelemetry]
 		public bool? AddMemoryCache { get; set; } = true;
         
@@ -546,7 +561,9 @@ namespace starsky.foundation.platform.Models
 		[PackageTelemetry]
 		public bool? DemoUnsafeDeleteStorageFolder { get; set; } = false;
 
-		
+		/// <summary>
+		/// Data for the demo mode
+		/// </summary>
 		public List<AppSettingsKeyValue> DemoData { get; set; } = new List<AppSettingsKeyValue>();
 		
 		/// <summary>
@@ -554,6 +571,9 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		private string _webFtp;
 		
+		/// <summary>
+		/// Connection string for FTP
+		/// </summary>
 		public string WebFtp
 		{
 			get
@@ -618,7 +638,6 @@ namespace starsky.foundation.platform.Models
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		[PackageTelemetry]
 		public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
-		
 		
 		/// <summary>
 		/// Add the default account as admin, other accounts as AccountRegisterDefaultRole
@@ -753,19 +772,26 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Show what is send in console/logger
 		/// </summary>
-		[PackageTelemetry]
 		public bool? EnablePackageTelemetryDebug { get; set; } = false;
 
 		/// <summary>
 		/// Time to wait to avoid duplicate requests in the UseDiskWatcher API
 		/// </summary>
+		[PackageTelemetry]
 		public double UseDiskWatcherIntervalInMilliseconds { get; set; } = 20000;
 
 		/// <summary>
 		/// When sync update last edited time in db, you disable it when you share a database between multiple computers
 		/// </summary>
+		[PackageTelemetry]
 		public bool? SyncAlwaysUpdateLastEditedTime { get; set; } = true;
 
+		/// <summary>
+		/// Use the system trash (if available)
+		/// This system trash is not supported on all platforms
+		/// or when running as a windows service its not supported
+		/// </summary>
+		[PackageTelemetry]
 		public bool? UseSystemTrash { get; set; }
 		
 
@@ -795,7 +821,16 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public int? ThumbnailGenerationIntervalInMinutes { get; set; } = 15;
 
+		/// <summary>
+		/// Skip download GeoFiles on startup
+		/// Recommended to to keep false
+		/// </summary>
 		public bool? GeoFilesSkipDownloadOnStartup { get; set; } = false;
+		
+		/// <summary>
+		/// Skip download ExifTool on startup
+		/// Recommended to to keep false
+		/// </summary>
 		public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
 
 		/// <returns>AppSettings duplicated</returns>
@@ -878,7 +913,6 @@ namespace starsky.foundation.platform.Models
 			
 			return PathHelper.PrefixDbSlash(databaseFilePath);
 		}
-	    
 	    
 		/// <summary>
 		/// Rename a list to database style (short style)
