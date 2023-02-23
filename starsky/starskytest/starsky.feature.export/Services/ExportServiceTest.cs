@@ -88,7 +88,7 @@ public class ExportServiceTest
 	}
 
 	[TestMethod]
-	public void Export_Ignore_Deleted()
+	public void Export_Ignore_Deleted_FolderFile()
 	{
 		var exportService = new ExportService(new FakeIQuery(new List<FileIndexItem>
 			{
@@ -108,5 +108,30 @@ public class ExportServiceTest
 		var (_,fileIndexResultsList) = exportService.Preflight(new List<string> { "/test" }.ToArray());
 		
 		Assert.AreEqual(0, fileIndexResultsList.Count);
+	}
+	
+	
+	[TestMethod]
+	public void Export_Ignore_Deleted_Folder()
+	{
+		var exportService = new ExportService(new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test")
+				{
+					IsDirectory = true
+				},
+				new FileIndexItem("/test/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.Deleted
+				}
+			}), new AppSettings(),
+			// file not included in storage
+			new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"})), new FakeIWebLogger(),
+			new FakeIThumbnailService());
+		
+		var (_,fileIndexResultsList) = exportService.Preflight(new List<string> { "/test/test.jpg" }.ToArray());
+		
+		Assert.AreEqual(0, fileIndexResultsList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok));
+		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing));
 	}
 }
