@@ -73,8 +73,7 @@ public class MoveToTrashService : IMoveToTrashService
 			fileIndexResultsList, inputModel, collections, false, 0);
 	}
 
-	private async Task<List<FileIndexItem>> SystemTrashInQueue(
-		List<FileIndexItem> moveToTrash)
+	private async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
 	{
 		var fullFilePaths = moveToTrash
 			.Where(p => p.FilePath != null)
@@ -83,7 +82,6 @@ public class MoveToTrashService : IMoveToTrashService
 		_systemTrashService.Trash(fullFilePaths);
 
 		await _query.RemoveItemAsync(moveToTrash);
-		return moveToTrash;
 	}
 }
 

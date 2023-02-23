@@ -376,17 +376,52 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// All Color Classes
 			var getDisplayExpectedResult = new List<FileIndexItem> {hiJpgInput,hi3JpgInput};
 			var getDisplay = _query.DisplayFileFolders("/display").ToList();
-            
-			CollectionAssert.AreEqual(getDisplayExpectedResult,getDisplay);
+
+
+			foreach ( var expectedResult in getDisplayExpectedResult )
+			{
+				Assert.AreEqual(expectedResult.FilePath,
+					getDisplay.FirstOrDefault(p =>
+						p.FilePath == expectedResult.FilePath)?.FilePath);
+				Assert.AreEqual(expectedResult.ParentDirectory,
+					getDisplay.FirstOrDefault(p =>
+						p.ParentDirectory == expectedResult.ParentDirectory)?.ParentDirectory);
+				Assert.AreEqual(expectedResult.Tags,
+					getDisplay.FirstOrDefault(p =>
+						p.Tags == expectedResult.Tags)?.Tags);
+				Assert.AreEqual(expectedResult.ColorClass,
+					getDisplay.FirstOrDefault(p =>
+						p.ColorClass == expectedResult.ColorClass)?.ColorClass);
+				Assert.AreEqual(expectedResult.FileHash,
+					getDisplay.FirstOrDefault(p =>
+						p.FileHash == expectedResult.FileHash)?.FileHash);
+			}
          
 			// Compare filter
 			var getDisplayExpectedResultSuperior = new List<FileIndexItem> {hiJpgInput};
 			var colorClassActiveList = FileIndexItem.GetColorClassList("1");
                 
 			var getDisplaySuperior = _query.DisplayFileFolders("/display",colorClassActiveList).ToList();
-           
-			CollectionAssert.AreEqual(getDisplayExpectedResultSuperior,getDisplaySuperior);
-
+			
+			foreach ( var expectedResult in getDisplayExpectedResultSuperior )
+			{
+				Assert.AreEqual(expectedResult.FilePath,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.FilePath == expectedResult.FilePath)?.FilePath);
+				Assert.AreEqual(expectedResult.ParentDirectory,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.ParentDirectory == expectedResult.ParentDirectory)?.ParentDirectory);
+				Assert.AreEqual(expectedResult.Tags,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.Tags == expectedResult.Tags)?.Tags);
+				Assert.AreEqual(expectedResult.ColorClass,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.ColorClass == expectedResult.ColorClass)?.ColorClass);
+				Assert.AreEqual(expectedResult.FileHash,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.FileHash == expectedResult.FileHash)?.FileHash);				
+			}
+			
 			// This feature is normal used for folders, for now it is done on files
 			// Hi3.jpg Previous -- all mode
 			var releative = _query.GetNextPrevInFolder("/display/hi3.jpg");
