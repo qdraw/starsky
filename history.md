@@ -39,6 +39,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Added)  _Back-end_ Internal service for system trash (windows and mac os) (PR #1071)
 - [x] (Changed) _Back-end_ Unit test to multi threaded (PR #1071)
+- [x] (Added) _Back-end_ Add API for System Trash or Meta data trash (PR #1078)
+- [x] (Added) _Back-end_ Add feature toggle `useSystemTrash` (PR #1078)
+- [x] (Removed) _Back-end_ Remove `RemoveItem` sync query (use async instead) (PR #1078)
 
 ## version 0.5.5 - 2023-02-17 {#v0.5.5}
 
@@ -48,9 +51,6 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.406 (Runtime: 6.0.14)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.14/6.0.14.md) (PR #1075)
 - [x] (Changed) _Docs_ Upgrade Docusaurus npm deps (PR #1074)
 - [x] (Changed) _Front-end_ Upgrade client npm deps (PR #1073)
-- [x] (Added) _Back-end_ Add API for System Trash or Meta data trash (PR #1078)
-- [x] (Added) _Back-end_ Add feature toggle `useSystemTrash` (PR #1078)
-- [x] (Removed) _Back-end_ Remove `RemoveItem` sync query (use async instead) (PR #1078)
 
 ## version 0.5.5-beta.0 - 2023-02-07 {#v0.5.5-beta.0}
 
