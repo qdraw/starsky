@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
@@ -23,6 +24,16 @@ namespace starskytest.FakeMocks
 			CompareAllLabelsAndRotation(changedFileIndexItemName,
 				detailView,
 				inputModel, append, rotateClock);
+
+			if ( inputModel.Status == FileIndexItem.ExifStatus.Default )
+			{
+				inputModel.Status = FileIndexItem.ExifStatus.Ok;
+			}
+			
+			if ( (string.IsNullOrEmpty(inputModel.FilePath) || inputModel.FilePath == "/") && inputFilePaths.Any() )
+			{
+				inputModel.FilePath = inputFilePaths.FirstOrDefault();
+			}
 
 			if ( inputModel.FilePath == "/_database_changed_afterwards.jpg" )
 			{

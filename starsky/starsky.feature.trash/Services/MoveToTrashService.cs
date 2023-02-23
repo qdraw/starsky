@@ -4,9 +4,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.native.Trash.Interfaces;
-using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
-using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.feature.trash.Services;
@@ -79,7 +77,7 @@ public class MoveToTrashService : IMoveToTrashService
 	{
 		var fullFilePaths = moveToTrash
 			.Where(p => p.FilePath != null)
-			.Select(p => _appSettings.DatabasePathToFilePath(p.FilePath))
+			.Select(p => _appSettings.DatabasePathToFilePath(p.FilePath, false))
 			.ToList();
 		_systemTrashService.Trash(fullFilePaths);
 
