@@ -2322,7 +2322,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "Remove files from the disk, but the file must contain the !delete! tag",
+          "summary": "Remove files from the disk, but the file must contain the !delete! (TrashKeyword.TrashKeywordString) tag",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -2445,7 +2445,7 @@
               "unresolvedReference": false
             },
             "404": {
-              "description": "item not found on disk or !delete! tag is missing",
+              "description": "item not found on disk or !delete! (TrashKeyword.TrashKeywordString) tag is missing",
               "headers": {},
               "content": {
                 "application/json": {
@@ -8031,6 +8031,36 @@
               "extensions": {},
               "unresolvedReference": false
             },
+            "400": {
+              "description": "parameter `f` is empty and that results in no input files",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
             "401": {
               "description": "User unauthorized",
               "headers": {},
@@ -8889,7 +8919,7 @@
               "unresolvedReference": false
             }
           ],
-          "summary": "List of files with the tag: !delete!\r\nCaching is disabled on this api call",
+          "summary": "List of files with the tag: !delete! (TrashKeyword.TrashKeywordString)\r\nCaching is disabled on this api call",
           "parameters": [
             {
               "unresolvedReference": false,
@@ -10149,6 +10179,241 @@
             },
             "404": {
               "description": "folder not found",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {}
+    },
+    "/api/trash/move-to-trash": {
+      "operations": {
+        "Post": {
+          "tags": [
+            {
+              "name": "Trash",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "(beta) Move a file to the trash",
+          "parameters": [
+            {
+              "unresolvedReference": false,
+              "name": "f",
+              "in": 0,
+              "description": "subPath filepath to file, split by dot comma (;)",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "collections",
+              "in": 0,
+              "description": "stack collections",
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "default": {
+                  "primitiveType": 7,
+                  "anyType": 0,
+                  "value": false
+                },
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "the item including the updated content",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "404": {
+              "description": "item not found in the database or on disk",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "items": {
+                      "readOnly": false,
+                      "writeOnly": false,
+                      "allOf": [],
+                      "oneOf": [],
+                      "anyOf": [],
+                      "required": [],
+                      "properties": {},
+                      "additionalPropertiesAllowed": true,
+                      "enum": [],
+                      "nullable": false,
+                      "deprecated": false,
+                      "extensions": {},
+                      "unresolvedReference": false,
+                      "reference": {
+                        "type": 0,
+                        "id": "FileIndexItem",
+                        "isExternal": false,
+                        "isLocal": true,
+                        "referenceV3": "#/components/schemas/FileIndexItem",
+                        "referenceV2": "#/definitions/FileIndexItem"
+                      }
+                    },
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "400": {
+              "description": "parameter `f` is empty and that results in no input files",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
               "headers": {},
               "content": {},
               "links": {},
@@ -11594,6 +11859,22 @@
             "unresolvedReference": false
           },
           "syncAlwaysUpdateLastEditedTime": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "useSystemTrash": {
             "type": "boolean",
             "readOnly": false,
             "writeOnly": false,
