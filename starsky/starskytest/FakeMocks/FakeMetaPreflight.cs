@@ -14,6 +14,12 @@ namespace starskytest.FakeMocks
 			string[] inputFilePaths, bool append,
 			bool collections, int rotateClock)
 		{
+						
+			if ( inputModel != null && (string.IsNullOrEmpty(inputModel.FilePath) || inputModel.FilePath == "/") && inputFilePaths.Any() )
+			{
+				inputModel.FilePath = inputFilePaths.FirstOrDefault();
+			}
+			
 			var detailView = new DetailView {FileIndexItem = inputModel};
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 
@@ -21,6 +27,7 @@ namespace starskytest.FakeMocks
 			{
 				return Task.FromResult((new List<FileIndexItem>(),changedFileIndexItemName));
 			}
+			
 			CompareAllLabelsAndRotation(changedFileIndexItemName,
 				detailView,
 				inputModel, append, rotateClock);
@@ -29,11 +36,7 @@ namespace starskytest.FakeMocks
 			{
 				inputModel.Status = FileIndexItem.ExifStatus.Ok;
 			}
-			
-			if ( (string.IsNullOrEmpty(inputModel.FilePath) || inputModel.FilePath == "/") && inputFilePaths.Any() )
-			{
-				inputModel.FilePath = inputFilePaths.FirstOrDefault();
-			}
+
 
 			if ( inputModel.FilePath == "/_database_changed_afterwards.jpg" )
 			{

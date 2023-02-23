@@ -24,7 +24,8 @@
           "app__ApplicationInsightsLog": "true",
           "app__EnablePackageTelemetry": "true",
           "app__EnablePackageTelemetryDebug": "true", 
-          "app__DemoUnsafeDeleteStorageFolder": "false"
+          "app__DemoUnsafeDeleteStorageFolder": "false",
+          "app__useSystemTrash": "true"
         }
     }
   }

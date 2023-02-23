@@ -397,6 +397,10 @@ namespace starsky.foundation.database.Query
 		        // https://go.microsoft.com/fwlink/?linkid=2097913
 		        await Task.Delay(delay);
 		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        if ( context == null! )
+		        {
+			        throw new ArgumentException("context is null", nameof(e));
+		        }
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
 		        context.Attach(updateStatusContent).State = EntityState.Detached;
@@ -624,7 +628,7 @@ namespace starsky.foundation.database.Query
 			    await context.SaveChangesAsync();
 			    // Fix for: The instance of entity type 'Item' cannot be tracked because
 			    // another instance with the same key value for {'Id'} is already being tracked
-			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
+			    context.Entry(fileIndexItem).State = EntityState.Detached;
 			    AddCacheItem(fileIndexItem);
 			    return fileIndexItem;
 		    }

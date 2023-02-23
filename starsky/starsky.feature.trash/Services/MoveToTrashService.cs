@@ -41,7 +41,8 @@ public class MoveToTrashService : IMoveToTrashService
 		string[] inputFilePaths, bool collections)
 	{
 		var inputModel = new FileIndexItem { Tags = TrashKeyword.TrashKeywordString };
-		var (fileIndexResultsList, changedFileIndexItemName) =  await _metaPreflight.PreflightAsync(inputModel, inputFilePaths,
+		var (fileIndexResultsList, changedFileIndexItemName) = 
+			await _metaPreflight.PreflightAsync(inputModel, inputFilePaths,
 			false, collections, 0);
 
 		var moveToTrash =
