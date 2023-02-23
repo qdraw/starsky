@@ -1321,5 +1321,17 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(1,result.Count);
 			Assert.AreEqual(dirPath+ "/03.jpg",result[0].FilePath);
 		}
+
+		[TestMethod]
+		[ExpectedException(typeof(AggregateException))]
+		public async Task RetrySaveChangesAsync_AggregateException()
+		{
+			var serviceScope = CreateNewScope();
+			var scope = serviceScope.CreateScope();
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			
+			var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger());
+			await query.RetrySaveChangesAsync(new FileIndexItem(), new Exception(),"test",0);
+		}
 	}
 }

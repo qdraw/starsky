@@ -386,7 +386,7 @@ namespace starsky.foundation.database.Query
         /// <param name="e">Exception</param>
         /// <param name="source">Where from is this called, this helps to debug the code better</param>
         /// <param name="delay">retry delay in milliseconds, 1000 = 1 second</param>
-        private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
+        internal async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
         {
 	        _logger.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source}");
 	        _logger.LogInformation("[RetrySaveChangesAsync] next retry ~>");
@@ -399,7 +399,7 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        if ( context == null! )
 		        {
-			        throw new ArgumentException("context is null", nameof(e));
+			        throw new AggregateException("context is null");
 		        }
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
