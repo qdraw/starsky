@@ -12,7 +12,8 @@
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
         "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
-        "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0"
+        "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
+        "apiEnvEndpoint": "/api/env"
       },
       "heroku-demo" : {
         "isEnabled": true,
@@ -26,7 +27,8 @@
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
         "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
-        "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0"
+        "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
+        "apiEnvEndpoint": "/api/env"
       },
       "no-create-account" : {
         "isEnabled": true,
@@ -40,7 +42,8 @@
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
         "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
-        "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0"
+        "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
+        "apiEnvEndpoint": "/api/env"
       }
     }
 }
