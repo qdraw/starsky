@@ -78,18 +78,15 @@ public class ProgramTest
 	
 	[TestMethod]
 	[Timeout(9000)]
+	[ExpectedException(typeof(TimeoutException))]
 	public async Task Program_RunAsync_ReturnedTrue()
 	{
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:7518");
+		
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
-		
-		var result = await Task.Factory.StartNew(async () => 
-			await Program.RunAsync(app).TimeoutAfter(100), 
-			TaskCreationOptions.LongRunning);
-		
-		await app.StopAsync();
-		
-		Assert.IsNotNull(result);
+
+		await Program.RunAsync(app).TimeoutAfter(1000);
 	}
 	
 	[TestMethod]
