@@ -44,10 +44,10 @@ namespace starsky.feature.metaupdate.Services
 		/// Search and replace in string based fields (only Getting and replacing)
 		/// </summary>
 		/// <param name="f">subPath (split by dot comma ;)</param>
-		/// <param name="search"></param>
-		/// <param name="replace"></param>
-		/// <param name="fieldName"></param>
-		/// <param name="collections"></param>
+		/// <param name="fieldName">e.g. tags</param>
+		/// <param name="search">from</param>
+		/// <param name="replace">to</param>
+		/// <param name="collections">stack collections</param>
 		public async Task<List<FileIndexItem>> Replace(string f, string fieldName, string search, string replace, bool collections)
 		{
 			// when you search for nothing, your fast done

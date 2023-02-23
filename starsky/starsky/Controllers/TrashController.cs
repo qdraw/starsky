@@ -40,7 +40,16 @@ public class TrashController : Controller
 			return BadRequest("No input files");
 		}
 
-		var result = await _moveToTrashService.MoveToTrashAsync(inputFilePaths, collections);
-		return Json(result);
+		var fileIndexResultsList = await _moveToTrashService.MoveToTrashAsync(inputFilePaths, collections);
+		
+		// When all items are not found
+		if ( fileIndexResultsList.All(p =>
+			    p.Status != FileIndexItem.ExifStatus.Ok
+			    && p.Status != FileIndexItem.ExifStatus.Deleted) )
+		{
+			return NotFound(fileIndexResultsList);
+		}
+		
+		return Json(fileIndexResultsList);
 	}
 }

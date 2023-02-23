@@ -62,8 +62,8 @@ namespace starsky.Controllers
 				.Replace(f, fieldName, search, replace, collections);
 		    
 			var resultsOkOrDeleteList = fileIndexResultsList.Where(
-				p => p.Status == FileIndexItem.ExifStatus.Ok || 
-				     p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
+				p => p.Status is FileIndexItem.ExifStatus.Ok or
+					FileIndexItem.ExifStatus.Deleted).ToList();
 			
 			var changedFileIndexItemName = resultsOkOrDeleteList.
 				ToDictionary(item => item.FilePath, item => new List<string> {fieldName});
