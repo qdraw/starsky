@@ -92,7 +92,7 @@ namespace starsky.Controllers
 		}
         
 		/// <summary>
-		/// List of files with the tag: !delete!
+		/// List of files with the tag: !delete! (TrashKeyword.TrashKeywordString)
 		/// Caching is disabled on this api call
 		/// </summary>
 		/// <param name="p">page number</param>
@@ -103,7 +103,7 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public IActionResult Trash(int p = 0)
 		{
-			var model = _search.Search("!delete!", p, false);
+			var model = _search.Search(TrashKeyword.TrashKeywordString, p, false);
 			return Json(model);
 		}
 

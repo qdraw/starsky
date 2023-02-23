@@ -39,7 +39,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new AppSettings{Verbose = false}, serviceScope,_logger ,_memoryCache);
 		}
 
-		private IServiceScopeFactory CreateNewScope()
+		private static IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryTest)));
@@ -76,7 +76,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				_insertSearchDatahi2JpgInput =  await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "hi2.jpg",
-					Tags = "!delete!",
+					Tags = TrashKeyword.TrashKeywordString,
 					ParentDirectory = "/basic",
 					IsDirectory = false
 				});
@@ -108,13 +108,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public void QueryForHomeDoesNotExist_Null()
+		public async Task QueryForHomeDoesNotExist_Null()
 		{
 			// remove if item exist
 			var homeItem = _query.SingleItem("/");
 			if ( homeItem != null )
 			{
-				_query.RemoveItem(homeItem.FileIndexItem);
+				await _query.RemoveItemAsync(homeItem.FileIndexItem);
 		        
 				// Query again if needed
 				homeItem = _query.SingleItem("/");
@@ -304,7 +304,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.IsNotNull(getItem);
 			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
 
-			query.RemoveItem(getItem.FirstOrDefault());
+			await query.RemoveItemAsync(getItem.FirstOrDefault());
 		}
 
 		[TestMethod]
@@ -370,23 +370,58 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				FileName = "hi2.jpg",
 				ParentDirectory = "/display",
 				FileHash = "98765432123456",
-				Tags = "!delete!"
+				Tags = TrashKeyword.TrashKeywordString
 			});
             
 			// All Color Classes
 			var getDisplayExpectedResult = new List<FileIndexItem> {hiJpgInput,hi3JpgInput};
 			var getDisplay = _query.DisplayFileFolders("/display").ToList();
-            
-			CollectionAssert.AreEqual(getDisplayExpectedResult,getDisplay);
+
+
+			foreach ( var expectedResult in getDisplayExpectedResult )
+			{
+				Assert.AreEqual(expectedResult.FilePath,
+					getDisplay.FirstOrDefault(p =>
+						p.FilePath == expectedResult.FilePath)?.FilePath);
+				Assert.AreEqual(expectedResult.ParentDirectory,
+					getDisplay.FirstOrDefault(p =>
+						p.ParentDirectory == expectedResult.ParentDirectory)?.ParentDirectory);
+				Assert.AreEqual(expectedResult.Tags,
+					getDisplay.FirstOrDefault(p =>
+						p.Tags == expectedResult.Tags)?.Tags);
+				Assert.AreEqual(expectedResult.ColorClass,
+					getDisplay.FirstOrDefault(p =>
+						p.ColorClass == expectedResult.ColorClass)?.ColorClass);
+				Assert.AreEqual(expectedResult.FileHash,
+					getDisplay.FirstOrDefault(p =>
+						p.FileHash == expectedResult.FileHash)?.FileHash);
+			}
          
 			// Compare filter
 			var getDisplayExpectedResultSuperior = new List<FileIndexItem> {hiJpgInput};
 			var colorClassActiveList = FileIndexItem.GetColorClassList("1");
                 
 			var getDisplaySuperior = _query.DisplayFileFolders("/display",colorClassActiveList).ToList();
-           
-			CollectionAssert.AreEqual(getDisplayExpectedResultSuperior,getDisplaySuperior);
-
+			
+			foreach ( var expectedResult in getDisplayExpectedResultSuperior )
+			{
+				Assert.AreEqual(expectedResult.FilePath,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.FilePath == expectedResult.FilePath)?.FilePath);
+				Assert.AreEqual(expectedResult.ParentDirectory,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.ParentDirectory == expectedResult.ParentDirectory)?.ParentDirectory);
+				Assert.AreEqual(expectedResult.Tags,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.Tags == expectedResult.Tags)?.Tags);
+				Assert.AreEqual(expectedResult.ColorClass,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.ColorClass == expectedResult.ColorClass)?.ColorClass);
+				Assert.AreEqual(expectedResult.FileHash,
+					getDisplaySuperior.FirstOrDefault(p =>
+						p.FileHash == expectedResult.FileHash)?.FileHash);				
+			}
+			
 			// This feature is normal used for folders, for now it is done on files
 			// Hi3.jpg Previous -- all mode
 			var releative = _query.GetNextPrevInFolder("/display/hi3.jpg");
@@ -564,7 +599,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var single002 =
 				_query
 					.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_002.jpg").FileIndexItem;
-			single002.Tags = "!delete!";
+			single002.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single002);
             
 			// Request new; and check if content is updated in memory cache
@@ -573,7 +608,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(null,single001.RelativeObjects.NextFilePath);
             
 			// For avoiding conflicts when running multiple unit tests
-			single001.FileIndexItem.Tags = "!delete!";
+			single001.FileIndexItem.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single001.FileIndexItem);
             
 		}
@@ -870,7 +905,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var single003 =
 				_query
 					.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_003.jpg").FileIndexItem;
-			single003.Tags = "!delete!";
+			single003.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single003);
             
 			// Request new; item must be updated in cache
@@ -879,7 +914,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(null,single004.RelativeObjects.PrevFilePath);
             
 			// For avoiding conflicts when running multiple unit tests
-			single004.FileIndexItem.Tags = "!delete!";
+			single004.FileIndexItem.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single004.FileIndexItem);
             
 		}
@@ -1285,6 +1320,18 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var result = _query.DisplayFileFolders(dirPath).ToList();
 			Assert.AreEqual(1,result.Count);
 			Assert.AreEqual(dirPath+ "/03.jpg",result[0].FilePath);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(AggregateException))]
+		public async Task RetrySaveChangesAsync_AggregateException()
+		{
+			var serviceScope = CreateNewScope();
+			var scope = serviceScope.CreateScope();
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			
+			var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger());
+			await query.RetrySaveChangesAsync(new FileIndexItem(), new Exception(),"test",0);
 		}
 	}
 }

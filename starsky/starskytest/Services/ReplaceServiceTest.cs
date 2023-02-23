@@ -20,7 +20,6 @@ namespace starskytest.Services
 		
 		private readonly MetaReplaceService _metaReplace;
 		private readonly Query _query;
-		private readonly FakeIStorage _iStorage;
 
 		public ReplaceServiceTest()
 		{
@@ -33,13 +32,13 @@ namespace starskytest.Services
 			builder.UseInMemoryDatabase(nameof(MetaReplaceService));
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
-			_query = new Query(dbContext, new AppSettings(), null, 
+			_query = new Query(dbContext, new AppSettings(), null!, 
 				new FakeIWebLogger(),memoryCache);
 			
-			_iStorage = new FakeIStorage(new List<string>{"/"}, 
+			var iStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test2.jpg", "/readonly/test.jpg", "/test.dng", "/test34598.jpg"});
 			_metaReplace = new MetaReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},
-				new FakeSelectorStorage(_iStorage), new FakeIWebLogger());
+				new FakeSelectorStorage(iStorage), new FakeIWebLogger());
 
 		}
 
@@ -47,7 +46,7 @@ namespace starskytest.Services
 		public async Task ReplaceServiceTest_NotFound()
 		{
 			var output = await _metaReplace.Replace("/not-found.jpg",
-				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+				nameof(FileIndexItem.Tags),TrashKeyword.TrashKeywordString,string.Empty,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,output[0].Status);
 		}
@@ -63,7 +62,7 @@ namespace starskytest.Services
 			}); 
 			
 			var output = await _metaReplace.Replace("/only-found-in-db.jpg",
-				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+				nameof(FileIndexItem.Tags),TrashKeyword.TrashKeywordString,string.Empty,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,output[0].Status);
 			
@@ -81,10 +80,10 @@ namespace starskytest.Services
 			}); 
 			
 			var output = await _metaReplace.Replace("/test2.jpg",
-				nameof(FileIndexItem.Tags),"test1","!delete!",false);
+				nameof(FileIndexItem.Tags),"test1",TrashKeyword.TrashKeywordString,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,output[0].Status);
-			Assert.AreEqual("!delete!, test",output[0].Tags);
+			Assert.AreEqual($"{TrashKeyword.TrashKeywordString}, test",output[0].Tags);
 
 			await _query.RemoveItemAsync(item1);
 		}
@@ -96,11 +95,11 @@ namespace starskytest.Services
 			{
 				FileName = "test2.jpg",
 				ParentDirectory = "/",
-				Tags = "test1, !delete!, test"
+				Tags = $"test1, {TrashKeyword.TrashKeywordString}, test"
 			}); 
 			
 			var output = await _metaReplace.Replace("/test2.jpg",
-				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+				nameof(FileIndexItem.Tags),TrashKeyword.TrashKeywordString,string.Empty,false);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
@@ -124,23 +123,23 @@ namespace starskytest.Services
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
-				Tags = "!delete!"
+				Tags = TrashKeyword.TrashKeywordString
 			});
 			
 			var item1 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test2.jpg",
 				ParentDirectory = "/",
-				Tags = "test1, !delete!, test"
+				Tags = $"test1, {TrashKeyword.TrashKeywordString}, test"
 			}); 
 			
 			var output = await _metaReplace.Replace("/test2.jpg;/test.jpg",
-				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+				nameof(FileIndexItem.Tags),TrashKeyword.TrashKeywordString,string.Empty,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 
-			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.jpg").Tags);
-			Assert.AreEqual("test1, test",output.FirstOrDefault(p => p.FilePath == "/test2.jpg").Tags);
+			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.jpg")?.Tags);
+			Assert.AreEqual("test1, test",output.FirstOrDefault(p => p.FilePath == "/test2.jpg")?.Tags);
 
 			await _query.RemoveItemAsync(item0);
 			await _query.RemoveItemAsync(item1);
@@ -154,24 +153,24 @@ namespace starskytest.Services
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
-				Tags = "!delete!"
+				Tags = TrashKeyword.TrashKeywordString
 			});
 			
 			var item1 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test.dng",
 				ParentDirectory = "/",
-				Tags = "!delete!"
+				Tags = TrashKeyword.TrashKeywordString
 			}); 
 			
 			var output = await _metaReplace.Replace("/test.jpg",
-				nameof(FileIndexItem.Tags),"!delete!",string.Empty,true);
+				nameof(FileIndexItem.Tags),TrashKeyword.TrashKeywordString,string.Empty,true);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[1].Status);
 
-			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.jpg").Tags);
-			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.dng").Tags);
+			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.jpg")?.Tags);
+			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.dng")?.Tags);
 
 			await _query.RemoveItemAsync(item0);
 			await _query.RemoveItemAsync(item1);
@@ -184,11 +183,11 @@ namespace starskytest.Services
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
-				Tags = "!delete!"
+				Tags = TrashKeyword.TrashKeywordString
 			});
 			
 			var output = _metaReplace.Replace("/test2.jpg;/test.jpg",
-				nameof(FileIndexItem.Tags),"!delete!",null,false);
+				nameof(FileIndexItem.Tags),TrashKeyword.TrashKeywordString,null,false);
 			
 			await _query.RemoveItemAsync(item0);
 			Assert.IsNotNull(output);
@@ -211,11 +210,11 @@ namespace starskytest.Services
 			{
 				FileName = "test2.jpg",
 				ParentDirectory = "/",
-				Tags = "test1, !delete!, test"
+				Tags = $"test1, {TrashKeyword.TrashKeywordString}, test"
 			}); 
 			
 			var output = await _metaReplace.Replace("/test2.jpg",
-				nameof(FileIndexItem.Tags).ToLowerInvariant(),"!delete!",string.Empty,false);
+				nameof(FileIndexItem.Tags).ToLowerInvariant(),TrashKeyword.TrashKeywordString,string.Empty,false);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
@@ -230,13 +229,13 @@ namespace starskytest.Services
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/readonly",
-				Tags = "!delete!"
+				Tags = TrashKeyword.TrashKeywordString
 			});
 			
 			var output = await _metaReplace.Replace("/readonly/test.jpg",
-				nameof(FileIndexItem.Tags),"!delete!",null,false);
+				nameof(FileIndexItem.Tags),TrashKeyword.TrashKeywordString,null,false);
 			
-			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, output.FirstOrDefault().Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, output.FirstOrDefault()?.Status);
 			
 			await _query.RemoveItemAsync(item0);
 		}
@@ -246,7 +245,7 @@ namespace starskytest.Services
 		{
 			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !keyword!", Status = FileIndexItem.ExifStatus.Ok}};
 			var result =  MetaReplaceService.SearchAndReplace(items, "Tags", "!keyword!", "");
-			Assert.AreEqual("test",result.FirstOrDefault().Tags);
+			Assert.AreEqual("test",result.FirstOrDefault()?.Tags);
 		}
 		
 		[TestMethod]
@@ -254,15 +253,15 @@ namespace starskytest.Services
 		{
 			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !keyword!", Status = FileIndexItem.ExifStatus.Ok}};
 			var result =  MetaReplaceService.SearchAndReplace(items, "tags", "!keyword!", "");
-			Assert.AreEqual("test",result.FirstOrDefault().Tags);
+			Assert.AreEqual("test",result.FirstOrDefault()?.Tags);
 		}
 		
 		[TestMethod]
 		public void SearchAndReplace_ReplaceDeletedTag_StatusDeleted()
 		{
-			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !delete!", Status = FileIndexItem.ExifStatus.Deleted}};
-			var result =  MetaReplaceService.SearchAndReplace(items, "tags", "!delete!", "");
-			Assert.AreEqual("test",result.FirstOrDefault().Tags);
+			var items = new List<FileIndexItem>{new FileIndexItem{Tags = $"test, {TrashKeyword.TrashKeywordString}", Status = FileIndexItem.ExifStatus.Deleted}};
+			var result =  MetaReplaceService.SearchAndReplace(items, "tags", TrashKeyword.TrashKeywordString, "");
+			Assert.AreEqual("test",result.FirstOrDefault()?.Tags);
 		}
 		
 		[TestMethod]
@@ -272,18 +271,18 @@ namespace starskytest.Services
 			{
 				FileName = "test34598.jpg",
 				ParentDirectory = "/",
-				Tags = "test1, !delete!, test"
+				Tags = $"test1, {TrashKeyword.TrashKeywordString}, test"
 			}); 
 			var item2 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test34598.jpg",
 				ParentDirectory = "/",
-				Tags = "test1, !delete!, test"
+				Tags = $"test1, {TrashKeyword.TrashKeywordString}, test"
 			}); 
 			
 			
 			var output = await _metaReplace.Replace("/test34598.jpg",
-				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+				nameof(FileIndexItem.Tags),TrashKeyword.TrashKeywordString,string.Empty,false);
 
 			await _query.RemoveItemAsync(item1);
 			await _query.RemoveItemAsync(item2);

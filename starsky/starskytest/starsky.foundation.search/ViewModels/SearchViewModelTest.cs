@@ -10,7 +10,7 @@ namespace starskytest.starsky.feature.search.ViewModels
 		[TestMethod]
 		public void SearchViewModelTest_TestIfTrash()
 		{
-			var test = new SearchViewModel {SearchQuery = "!delete!"};
+			var test = new SearchViewModel {SearchQuery = TrashKeyword.TrashKeywordString};
 			Assert.AreEqual(PageViewType.PageType.Trash.ToString(),test.PageType);
 		}
 		

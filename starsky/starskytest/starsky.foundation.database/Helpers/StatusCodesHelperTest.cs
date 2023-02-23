@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -13,9 +14,37 @@ namespace starskytest.starsky.foundation.database.Helpers
 	public sealed class StatusCodesHelperTest
 	{
 		[TestMethod] 
-		public void IsDeletedStatus_Null_Default()
+		public void IsDeletedStatus_Null1_Default()
 		{
 			DetailView detailView = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			var status = StatusCodesHelper.IsDeletedStatus(detailView);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
+		}
+		
+		[TestMethod] 
+		public void IsDeletedStatus_Null2_Default()
+		{
+			var detailView = new DetailView();
+			// ReSharper disable once ExpressionIsAlwaysNull
+			var status = StatusCodesHelper.IsDeletedStatus(detailView);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
+		}
+		
+				
+		[TestMethod] 
+		public void IsDeletedStatus_Null3_Default()
+		{
+			
+			var overWriteFileIndexItem = new FileIndexItem();
+			var propertyObject = overWriteFileIndexItem.GetType().GetProperty(nameof(FileIndexItem.Tags));
+			propertyObject?.SetValue(overWriteFileIndexItem, null, null); // <-- this could not happen
+			// Getter returns string.Empty
+			
+			var detailView = new DetailView
+			{
+				FileIndexItem = overWriteFileIndexItem
+			};
 			// ReSharper disable once ExpressionIsAlwaysNull
 			var status = StatusCodesHelper.IsDeletedStatus(detailView);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
@@ -111,7 +140,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 				IsDirectory = false,
 				SubPath = "/test.jpg",
 				FileIndexItem = new FileIndexItem{ParentDirectory = "/", 
-					Tags = "!delete!", FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
+					Tags = TrashKeyword.TrashKeywordString, FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
 			};
 			var istorage = new FakeIStorage(new List<string> {"/"}, 
 				new List<string> {"/test.jpg"});

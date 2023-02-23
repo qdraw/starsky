@@ -114,7 +114,7 @@ namespace starskytest.Controllers
 			if (string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)))
 			{
 				var isDelete = string.Empty;
-				if (delete) isDelete = "!delete!";
+				if (delete) isDelete = TrashKeyword.TrashKeywordString;
 				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = _createAnImage.FileName,
@@ -147,7 +147,7 @@ namespace starskytest.Controllers
 			var createAnImage1 = new CreateAnImage();
 			Assert.IsNotNull(createAnImage1);
 			
-			var actionResult = controller.Delete(createAnImage.FilePath) as JsonResult;
+			var actionResult = await controller.Delete(createAnImage.FilePath) as JsonResult;
 			Assert.AreNotEqual(null,actionResult);
 			var jsonCollection = actionResult.Value as List<FileIndexItem>;
 			Assert.AreEqual(createAnImage.FilePath,jsonCollection.FirstOrDefault().FilePath);
@@ -180,7 +180,7 @@ namespace starskytest.Controllers
 			var deleteItem = new DeleteItem(_query,_appSettings,selectorStorage);
 			var controller = new DeleteController(deleteItem);
 			
-			var notFoundResult = controller.Delete(createAnImage.FilePath) as NotFoundObjectResult;
+			var notFoundResult = await controller.Delete(createAnImage.FilePath) as NotFoundObjectResult;
 			Assert.AreEqual(404,notFoundResult?.StatusCode);
 			var jsonCollection = notFoundResult.Value as List<FileIndexItem>;
 
@@ -204,7 +204,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
 			var deleteItem = new DeleteItem(_query,_appSettings,selectorStorage);
 			var controller = new DeleteController(deleteItem);
-			var notFoundResult = controller.Delete("/345678765434567.jpg") as NotFoundObjectResult;
+			var notFoundResult = await controller.Delete("/345678765434567.jpg") as NotFoundObjectResult;
 			Assert.AreEqual(404,notFoundResult.StatusCode);
 
 			await _query.RemoveItemAsync(_query.SingleItem("/345678765434567.jpg").FileIndexItem);

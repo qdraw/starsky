@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -29,7 +30,7 @@ namespace starsky.feature.metaupdate.Services
 			_statusCodeHelper = new StatusCodesHelper(appSettings);
 		}
 		
-		public List<FileIndexItem> Delete(string f, bool collections)
+		public async Task<List<FileIndexItem>> DeleteAsync(string f, bool collections)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
             
@@ -91,7 +92,7 @@ namespace starsky.feature.metaupdate.Services
 
 				// when deleting a folder the collections setting does nothing
 				collectionAndInsideDirectoryList.AddRange(
-					_query.GetAllFiles(detailView.FileIndexItem.FilePath).Select(itemInDirectory => itemInDirectory.FilePath)
+					(await _query.GetAllFilesAsync(detailView.FileIndexItem.FilePath)).Select(itemInDirectory => itemInDirectory.FilePath)
 				);
 			}
 
@@ -113,7 +114,7 @@ namespace starsky.feature.metaupdate.Services
 				fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
 	                
 				// remove item from db
-				_query.RemoveItem(detailViewItem.FileIndexItem);
+				await _query.RemoveItemAsync(detailViewItem.FileIndexItem);
 
 				RemoveXmpSideCarFile(detailViewItem);
 				RemoveJsonSideCarFile(detailViewItem);
@@ -127,7 +128,7 @@ namespace starsky.feature.metaupdate.Services
 				{
 					item.Status = FileIndexItem.ExifStatus.Deleted;
 					fileIndexResultsList.Add(item.Clone());
-					_query.RemoveItem(item);
+					await _query.RemoveItemAsync(item);
 				}
 			}
 			return fileIndexResultsList;

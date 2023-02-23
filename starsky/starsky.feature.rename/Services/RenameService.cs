@@ -121,7 +121,7 @@ namespace starsky.feature.rename.Services
 						.Replace(inputFileSubPath, toFileSubPath);
 					p.ParentDirectory = parentDirectory;
 					p.Status = FileIndexItem.ExifStatus.Ok;
-					p.Tags = p.Tags.Replace("!delete!", string.Empty);
+					p.Tags = p.Tags.Replace(TrashKeyword.TrashKeywordString, string.Empty);
 				}
 			);
 

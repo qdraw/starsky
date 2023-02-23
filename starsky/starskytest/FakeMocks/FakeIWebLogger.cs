@@ -48,7 +48,8 @@ namespace starskytest.FakeMocks
 		public void LogInformation(Exception exception, string message, params object[] args)
 		{
 			TrackedInformation.Add((exception, message));
-			Console.WriteLine(exception.Message + message, args);
+			var exceptionMessage = exception.Message.Replace("{","").Replace("}","");
+			Console.WriteLine(exceptionMessage + message, args);
 		}
 
 		public void LogError(string message, params object[] args)

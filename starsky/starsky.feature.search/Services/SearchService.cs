@@ -53,7 +53,7 @@ namespace starsky.feature.search.Services
 			    throw new ArgumentException("Search Input Query is longer then 500 chars");
 		    }
 		    
-		    if ( query == "!delete!" ) enableCache = false;
+		    if ( query == TrashKeyword.TrashKeywordString ) enableCache = false;
 
 		    if ( !enableCache ||
 		         _cache == null || _appSettings?.AddMemoryCache == false )

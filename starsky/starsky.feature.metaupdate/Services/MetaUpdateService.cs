@@ -58,7 +58,6 @@ namespace starsky.feature.metaupdate.Services
 			_thumbnailQuery = thumbnailQuery;
 		}
 
-
 		/// <summary>
 		/// Run Update
 		/// </summary>
@@ -79,7 +78,7 @@ namespace starsky.feature.metaupdate.Services
 		{
 			if ( changedFileIndexItemName == null )
 			{
-				changedFileIndexItemName = (await _metaPreflight.Preflight(inputModel,
+				changedFileIndexItemName = (await _metaPreflight.PreflightAsync(inputModel,
 					fileIndexResultsList.Select(p => p.FilePath).ToArray(), append, collections,
 					rotateClock)).changedFileIndexItemName;
 			}

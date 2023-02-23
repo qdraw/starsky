@@ -111,7 +111,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 					new GenerationResultModel{SubPath = "/test.jpg", Success = true}
 				}, new List<FileIndexItem>{new FileIndexItem("/test.jpg"){
 					Status = FileIndexItem.ExifStatus.Ok,
-					Tags = "!delete!"
+					Tags = TrashKeyword.TrashKeywordString
 				}});
 			
 			Assert.AreEqual(0, result.Count);

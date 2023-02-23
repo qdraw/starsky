@@ -36,7 +36,7 @@ namespace starsky.feature.metaupdate.Services
 
 		public async Task<(List<FileIndexItem> fileIndexResultsList,
 				Dictionary<string, List<string>> changedFileIndexItemName)>
-			Preflight(FileIndexItem inputModel, string[] inputFilePaths,
+			PreflightAsync(FileIndexItem inputModel, string[] inputFilePaths,
 				bool append, bool collections, int rotateClock)
 		{
 			// the result list
@@ -73,7 +73,7 @@ namespace starsky.feature.metaupdate.Services
 						fileIndexUpdateList);
 					continue; 
 				}
-				
+
 				CompareAllLabelsAndRotation(changedFileIndexItemName,
 					fileIndexItem, inputModel, append, rotateClock);
 
@@ -106,6 +106,11 @@ namespace starsky.feature.metaupdate.Services
 			return (fileIndexUpdateList, changedFileIndexItemName);
 		}
 
+		/// <summary>
+		/// Check if the GeoLocation is valid
+		/// If not set the status to OperationNotSupported
+		/// </summary>
+		/// <param name="fileIndexItem">item</param>
 		private static void CheckGeoLocationStatus(FileIndexItem fileIndexItem)
 		{
 			if ( fileIndexItem.Latitude == 0 || fileIndexItem.Longitude == 0 )
@@ -129,7 +134,7 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="statusModel">object that include the changes</param>
 		/// <param name="append">true= for tags to add</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
-		public void CompareAllLabelsAndRotation( Dictionary<string, List<string>> changedFileIndexItemName, 
+		public static void CompareAllLabelsAndRotation( Dictionary<string, List<string>> changedFileIndexItemName, 
 			FileIndexItem collectionsFileIndexItem, FileIndexItem statusModel, bool append, int rotateClock)
 		{
 			if ( changedFileIndexItemName == null || string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )

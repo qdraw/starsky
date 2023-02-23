@@ -237,7 +237,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 	
 	[TestMethod]
 	[Timeout(2000)]
-	public void ExecuteAsync_StartAsync_Test()
+	public void PeriodicThumbnailScanHostedService_ExecuteAsync_StartAsync_Test()
 	{
 		var services = new ServiceCollection();
 		// missing service in service scope

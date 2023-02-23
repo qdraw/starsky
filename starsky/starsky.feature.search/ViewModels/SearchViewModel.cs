@@ -250,7 +250,7 @@ namespace starsky.feature.search.ViewModels
 		    get
 		    {
 			    if (string.IsNullOrEmpty(SearchQuery) ) return PageViewType.PageType.Search.ToString();
-			    return SearchQuery == "!delete!" ? PageViewType.PageType.Trash.ToString() : PageViewType.PageType.Search.ToString();
+			    return SearchQuery == TrashKeyword.TrashKeywordString ? PageViewType.PageType.Trash.ToString() : PageViewType.PageType.Search.ToString();
 		    } 
 	    }
 

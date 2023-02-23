@@ -292,23 +292,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}
-		
-		[TestMethod]
-		public void Query_RemoveItem_DbUpdateConcurrencyException()
-		{
-			IsCalledDbUpdateConcurrency = false;
-			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
-				.Options;
-			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options), new AppSettings(),  null!, new FakeIWebLogger());
-			fakeQuery.RemoveItem(new FileIndexItem());
-			
-			Assert.IsTrue(IsCalledDbUpdateConcurrency);
-		}
 
 		[TestMethod]
-		public async Task RemoveItemAsync_SQLiteException()
+		public async Task RemoveItemAsync_SingleItem_SQLiteException()
 		{
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 				.UseInMemoryDatabase("MovieListDatabase")
@@ -332,6 +318,35 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			var fakeQuery = new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
 			await fakeQuery.RemoveItemAsync(item!);
+			
+			Assert.AreEqual(1, sqLiteFailContext.Count);
+		}
+		
+		[TestMethod]
+		public async Task RemoveItemAsync_List_SQLiteException()
+		{
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase("MovieListDatabase")
+				.Options;
+
+			var scope = CreateNewScopeSqliteException();
+			var context = scope.CreateScope().ServiceProvider
+				.GetService<ApplicationDbContext>();
+			if ( context == null )
+			{
+				throw new NullReferenceException(
+					"test context should not be null");
+			}
+			await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
+			await context.SaveChangesAsync();
+			var item = await context.FileIndex.FirstOrDefaultAsync(
+				p => p.FilePath == "/test.jpg");
+
+			var sqLiteFailContext = new SqliteExceptionDbContext(options);
+			Assert.AreEqual(0,sqLiteFailContext.Count);
+
+			var fakeQuery = new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
+			await fakeQuery.RemoveItemAsync(new List<FileIndexItem>{item!});
 			
 			Assert.AreEqual(1, sqLiteFailContext.Count);
 		}
@@ -518,6 +533,85 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await fakeQuery.UpdateItemAsync(testItem);
 			
 			Assert.AreEqual(2, appDbInvalidOperationException.Count);
+		}
+		
+		[TestMethod]
+		public async Task QueryRemoveItemAsyncTest_SingleItem_InvalidOperationException_SingleItem_AddOneItem()
+		{
+			const string path = "/QueryRemoveItemAsyncTest_InvalidOperationException_SingleItem_AddOneItem";
+
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase2")
+				.Options;
+
+			var appDbInvalidOperationException =
+				new AppDbInvalidOperationException(options);
+			var services = new ServiceCollection();
+			services.AddSingleton(new ApplicationDbContext(options));
+			var serviceProvider = services.BuildServiceProvider();
+			var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+			var dbContext = scope.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			var testItem = new FileIndexItem(path);
+			dbContext.FileIndex.Add(testItem);
+			await dbContext.SaveChangesAsync();
+			
+			var query = new Query(appDbInvalidOperationException,  new AppSettings(), scope,new FakeIWebLogger());
+
+			await query.RemoveItemAsync(testItem);
+			
+			var afterResult = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path);
+			Assert.AreEqual(null, afterResult);
+		}
+		
+				
+		[TestMethod]
+		public async Task QueryRemoveItemAsyncTest_List_InvalidOperationException()
+		{
+			const string path1 = "/QueryRemoveItemAsyncTest_List_InvalidOperationException__1";
+			const string path2 = "/QueryRemoveItemAsyncTest_List_InvalidOperationException__2";
+
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase2")
+				.Options;
+
+			var appDbInvalidOperationException =
+				new AppDbInvalidOperationException(options);
+			var services = new ServiceCollection();
+			services.AddSingleton(new ApplicationDbContext(options));
+			var serviceProvider = services.BuildServiceProvider();
+			var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+			var dbContext = scope.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			var testItem1 = new FileIndexItem(path1);
+			dbContext.FileIndex.Add(testItem1);
+			var testItem2 = new FileIndexItem(path2);
+			dbContext.FileIndex.Add(testItem2);
+			await dbContext.SaveChangesAsync();
+			
+			var query = new Query(appDbInvalidOperationException,  new AppSettings(), scope,new FakeIWebLogger());
+
+			await query.RemoveItemAsync(new List<FileIndexItem>{testItem1,testItem2});
+			
+			var afterResult1 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path1);
+			Assert.AreEqual(null, afterResult1);
+			
+			var afterResult2 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path2);
+			Assert.AreEqual(null, afterResult2);
+		}
+		
+		[TestMethod]
+		public async Task Query_RemoveItemAsync_List_DbUpdateConcurrencyException()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null!,null!,new FakeIWebLogger());
+			await fakeQuery.RemoveItemAsync(new List<FileIndexItem>{new FileIndexItem("test")});
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}
 	}
 }

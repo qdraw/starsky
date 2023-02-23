@@ -410,7 +410,7 @@ namespace starskytest.Services
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 		     
 			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
-			Assert.AreEqual("!delete!", item.Tags);
+			Assert.AreEqual(TrashKeyword.TrashKeywordString, item.Tags);
 		}
 
 		[TestMethod]
@@ -553,7 +553,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage();
 			var item = new ReadMetaExif(fakeStorage, new AppSettings
 			{
-				VideoUseLocalTime = new List<CameraMakeModel>{},
+				VideoUseLocalTime = new List<CameraMakeModel>(),
 				CameraTimeZone = "Europe/London"
 			}, new FakeIWebLogger());
 
@@ -579,7 +579,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage();
 			var item = new ReadMetaExif(fakeStorage, new AppSettings
 			{
-				VideoUseLocalTime = new List<CameraMakeModel>{},
+				VideoUseLocalTime = new List<CameraMakeModel>(),
 				CameraTimeZone = ""
 			}, new FakeIWebLogger());
 

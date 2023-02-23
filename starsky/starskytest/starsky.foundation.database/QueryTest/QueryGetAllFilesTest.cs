@@ -67,7 +67,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			_insertSearchDatahi2JpgInput = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "hi2.jpg",
-				Tags = "!delete!",
+				Tags = TrashKeyword.TrashKeywordString,
 				ParentDirectory = "/basic",
 				IsDirectory = false
 			});
@@ -121,7 +121,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.IsNotNull(getItem);
 			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
 
-			query.RemoveItem(getItem.FirstOrDefault());
+			await query.RemoveItemAsync(getItem.FirstOrDefault());
 		}
 		
 		

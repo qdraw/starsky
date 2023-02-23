@@ -15,12 +15,12 @@ namespace starskytest.starsky.feature.realtime.Services
 	{
 	
 		[TestMethod]
-		public void RealtimeConnectionsService_ShouldPassThough()
+		public async Task RealtimeConnectionsService_ShouldPassThough()
 		{
 			var fakeIWebSocketConnectionsService = new FakeIWebSocketConnectionsService();
 			var fakeINotificationQuery = new FakeINotificationQuery();
 			var service = new RealtimeConnectionsService(fakeIWebSocketConnectionsService, fakeINotificationQuery, new FakeIWebLogger());
-			service.NotificationToAllAsync(
+			await service.NotificationToAllAsync(
 				new ApiNotificationResponseModel<string>(), CancellationToken.None);
 		
 			Assert.AreEqual(1, fakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
@@ -28,16 +28,16 @@ namespace starskytest.starsky.feature.realtime.Services
 		}
 
 		[TestMethod]
-		public void CleanOldMessagesAsync_Exception_Handle_Test()
+		public async Task CleanOldMessagesAsync_Exception_Handle_Test()
 		{
 			var fakeIWebSocketConnectionsService = new FakeIWebSocketConnectionsService();
 			var fakeINotificationQuery = new FakeINotificationQuery(new Exception("t"));
 			var service = new RealtimeConnectionsService(fakeIWebSocketConnectionsService, fakeINotificationQuery, new FakeIWebLogger());
-			service.NotificationToAllAsync(
+			await service.NotificationToAllAsync(
 				new ApiNotificationResponseModel<string>(),
 				CancellationToken.None);
 			
-			service.CleanOldMessagesAsync();
+			await service.CleanOldMessagesAsync();
 			// service has thrown an exception so the remove is ignored
 			Assert.AreEqual(1, fakeINotificationQuery.FakeContent.Count);
 		}

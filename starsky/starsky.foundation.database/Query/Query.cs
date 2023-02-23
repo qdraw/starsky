@@ -386,7 +386,7 @@ namespace starsky.foundation.database.Query
         /// <param name="e">Exception</param>
         /// <param name="source">Where from is this called, this helps to debug the code better</param>
         /// <param name="delay">retry delay in milliseconds, 1000 = 1 second</param>
-        private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
+        internal async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
         {
 	        _logger.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source}");
 	        _logger.LogInformation("[RetrySaveChangesAsync] next retry ~>");
@@ -397,6 +397,10 @@ namespace starsky.foundation.database.Query
 		        // https://go.microsoft.com/fwlink/?linkid=2097913
 		        await Task.Delay(delay);
 		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        if ( context == null! )
+		        {
+			        throw new AggregateException("context is null");
+		        }
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
 		        context.Attach(updateStatusContent).State = EntityState.Detached;
@@ -624,7 +628,7 @@ namespace starsky.foundation.database.Query
 			    await context.SaveChangesAsync();
 			    // Fix for: The instance of entity type 'Item' cannot be tracked because
 			    // another instance with the same key value for {'Id'} is already being tracked
-			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
+			    context.Entry(fileIndexItem).State = EntityState.Detached;
 			    AddCacheItem(fileIndexItem);
 			    return fileIndexItem;
 		    }
@@ -710,114 +714,6 @@ namespace starsky.foundation.database.Query
 
 		    await AddRangeAsync(toAddList);
 		    return toAddList;
-	    }
-
-	    /// <summary>
-	    /// Remove a new item from the database (NOT from the file system)
-	    /// </summary>
-	    /// <param name="updateStatusContent">the FileIndexItem with database data</param>
-	    /// <returns></returns>
-        public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
-        {
-	        void LocalQuery(ApplicationDbContext context)
-	        {
-		        // Detach first https://stackoverflow.com/a/42475617
-		        var local = context.Set<FileIndexItem>()
-			        .Local
-			        .FirstOrDefault(entry => entry.Id.Equals(updateStatusContent.Id));
-		        if (local != null)
-		        {
-			        context.Entry(local).State = EntityState.Detached;
-		        }
-		        
-		        context.Attach(updateStatusContent).State = EntityState.Deleted;
-		        context.FileIndex.Remove(updateStatusContent);
-		        context.SaveChanges();
-		        context.Attach(updateStatusContent).State = EntityState.Detached;
-	        }
-
-	        try
-	        {
-		        LocalQuery(_context);
-	        }
-	        catch ( ObjectDisposedException disposedException)
-	        {
-		        _logger.LogInformation("catch-ed disposedException:",disposedException);
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        LocalQuery(context);
-	        }
-	        catch (DbUpdateConcurrencyException concurrencyException)
-	        {
-		        _logger.LogInformation("catch-ed concurrencyException:",concurrencyException);
-		        try
-		        {
-			        _context.SaveChanges();
-		        }
-		        catch ( DbUpdateConcurrencyException e)
-		        {
-			        _logger.LogInformation(e, "[RemoveItem] save failed after DbUpdateConcurrencyException");
-		        }
-	        }
-	        
-	        // remove parent directory cache
-			RemoveCacheItem(updateStatusContent);
-
-			// remove getFileHash Cache
-			ResetItemByHash(updateStatusContent.FileHash!);
-			return updateStatusContent;
-	    }
-	    
-	    /// <summary>
-	    /// Remove a new item from the database (NOT from the file system)
-	    /// </summary>
-	    /// <param name="updateStatusContent">the FileIndexItem with database data</param>
-	    /// <returns></returns>
-	    [SuppressMessage("ReSharper", "ConditionalAccessQualifierIsNonNullableAccordingToAPIContract")]
-	    public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
-	    {
-		    async Task<bool> LocalRemoveDefaultQuery()
-		    {
-			    await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
-			    return true;
-		    }
-
-		    async Task LocalRemoveQuery(ApplicationDbContext context)
-		    {
-			    // keep conditional marker for test
-			    context.FileIndex?.Remove(updateStatusContent);
-			    await context.SaveChangesAsync();
-		    }
-
-		    try
-		    {
-			    await LocalRemoveQuery(_context);
-		    }
-		    catch ( Microsoft.Data.Sqlite.SqliteException )
-		    {
-			    // Files that are locked
-			    await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
-				    TimeSpan.FromSeconds(2), 4);
-		    }
-		    catch ( ObjectDisposedException )
-		    {
-			    await LocalRemoveDefaultQuery();
-		    }
-		    catch ( InvalidOperationException )
-		    {
-			    await LocalRemoveDefaultQuery();
-		    }
-		    catch ( DbUpdateConcurrencyException e)
-		    {
-			    _logger.LogInformation(e,"[RemoveItemAsync] catch-ed " +
-			                              "DbUpdateConcurrencyException (do nothing)");
-		    }
-
-		    // remove parent directory cache
-		    RemoveCacheItem(updateStatusContent);
-
-		    // remove getFileHash Cache
-		    ResetItemByHash(updateStatusContent.FileHash);
-		    return updateStatusContent;
 	    }
 	    
 	    /// <summary>

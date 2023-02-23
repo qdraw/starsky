@@ -4,4 +4,5 @@ public interface ITrashService
 {
 	bool DetectToUseSystemTrash();
 	bool? Trash(string fullPath);
+	bool? Trash(List<string> fullPaths);
 }

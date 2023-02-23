@@ -766,6 +766,9 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public bool? SyncAlwaysUpdateLastEditedTime { get; set; } = true;
 
+		public bool? UseSystemTrash { get; set; }
+		
+
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
 		// -------------------------------------------------

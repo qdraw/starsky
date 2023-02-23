@@ -58,7 +58,7 @@ public class CleanDemoDataServiceTest
 	
 	[TestMethod]
 	[Timeout(300)]
-	public void ExecuteAsync_StartAsync_Test()
+	public void CleanDemoDataService_ExecuteAsync_StartAsync_Test()
 	{
 		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
 		var service = new CleanDemoDataService(_serviceScopeFactory);

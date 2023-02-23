@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -121,34 +122,37 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var queryContent = new List<FileIndexItem>
 			{
-				new FileIndexItem("/sidecar_test1") {IsDirectory = true},
-				new FileIndexItem("/sidecar_test1/test.dng")
+				new FileIndexItem("/sidecar_test__1") {IsDirectory = true},
+				new FileIndexItem("/sidecar_test__1/test.dng")
 				{
 					SidecarExtensions = "xmp"
 				},
-				new FileIndexItem("/sidecar_test1/test.xmp"),
-				new FileIndexItem("/sidecar_test2") {IsDirectory = true},
-				new FileIndexItem("/sidecar_test2/test.dng")
+				new FileIndexItem("/sidecar_test__1/test.xmp"),
+				new FileIndexItem("/sidecar_test__2") {IsDirectory = true},
+				new FileIndexItem("/sidecar_test__2/test.dng")
 				{
 					SidecarExtensions = "xmp"
 				},
-				new FileIndexItem("/sidecar_test2/test.xmp")
+				new FileIndexItem("/sidecar_test__2/test.xmp")
 			};
 			var query = new FakeIQuery(queryContent);
 			var remove = new SyncRemove(_appSettings, query, null, null);
 
 			var result= await remove.RemoveAsync(new List<string>{
-				"/sidecar_test1/test.xmp",
-				"/sidecar_test2/test.xmp"
+				"/sidecar_test__1/test.xmp",
+				"/sidecar_test__2/test.xmp"
 			});
 
 			Assert.AreEqual(2, result.Count);
 			
-			var item = await query.GetObjectByFilePathAsync("/sidecar_test1/test.dng");
+			var item = await query.GetObjectByFilePathAsync("/sidecar_test__1/test.dng");
 			Assert.IsNotNull(item);
+
+			Console.WriteLine(JsonSerializer.Serialize(item.SidecarExtensionsList));
+			
 			Assert.AreEqual(0, item?.SidecarExtensionsList.Count);
 			
-			var item2 = await query.GetObjectByFilePathAsync("/sidecar_test2/test.dng");
+			var item2 = await query.GetObjectByFilePathAsync("/sidecar_test__2/test.dng");
 			Assert.AreEqual(0, item2?.SidecarExtensionsList.Count);
 		}
 		

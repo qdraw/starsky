@@ -541,7 +541,7 @@ namespace starskytest.Controllers
 			// > TinyMeta is optional and not needed
 			Assert.AreEqual(false,thumbnailAnswer.TinyMeta);
 
-			_query.RemoveItem(item);
+			await _query.RemoveItemAsync(item);
 		}
 		
 		[TestMethod]
@@ -577,7 +577,7 @@ namespace starskytest.Controllers
 
 			Assert.AreEqual(210, controller.Response.StatusCode);
 
-			_query.RemoveItem(item);
+			await _query.RemoveItemAsync(item);
 		}
 	}
 }

@@ -65,7 +65,12 @@ namespace starsky.foundation.platform.Enums
 		/// <summary>
 		/// When clean and adding demo data in application
 		/// </summary>
-		CleanDemoData
+		CleanDemoData,
+		
+		/// <summary>
+		/// Move to trash
+		/// </summary>
+		MoveToTrash
 	}
 }
 

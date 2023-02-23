@@ -216,6 +216,15 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
+		public async Task<List<FileIndexItem>> RemoveItemAsync(List<FileIndexItem> updateStatusContentList)
+		{
+			foreach ( var item in updateStatusContentList )
+			{
+				await RemoveItemAsync(item);
+			}
+			return updateStatusContentList;
+		}
+
 		[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 		public bool RemoveCacheParentItem(string directoryName)
 		{

@@ -183,7 +183,7 @@ namespace starsky.foundation.sync.SyncServices
 			FileIndexItem.ExifStatus exifStatus = FileIndexItem.ExifStatus.Deleted)
 		{
 			if ( dbItem?.Tags == null ) return null;
-			if ( dbItem.Tags.Contains("!delete!") )
+			if ( dbItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
 			{
 				dbItem.Status = exifStatus;
 			}
