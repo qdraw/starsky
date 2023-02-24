@@ -17,7 +17,6 @@ export default defineConfig({
   },
   viewportHeight: 900,
   viewportWidth: 1280,
-  experimentalFetchPolyfill: true,
   screenshotsFolder: 'cypress/screenshots/build',
   e2e: {
     setupNodeEvents (on, config) {
