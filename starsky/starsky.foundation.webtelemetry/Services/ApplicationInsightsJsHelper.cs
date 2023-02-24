@@ -82,8 +82,8 @@ namespace starsky.foundation.webtelemetry.Services
 
 				// set role and roleInstance WebController
 				script += "\n const telemetryInitializer = (envelope) => {";
-				script +=  "\n	envelope.tags[\"ai.cloud.role\"] = \"WebController\";";
-				script +=  $"\n	envelope.tags[\"ai.cloud.roleInstance\"] = \"{Environment.MachineName}\";";
+				script +=  "\n\tenvelope.tags[\"ai.cloud.role\"] = \"WebController\";";
+				script +=  $"\n\tenvelope.tags[\"ai.cloud.roleInstance\"] = \"{Environment.MachineName}\";";
 				script += "\n } ";
 				script += "\n appInsights.addTelemetryInitializer(telemetryInitializer);";
 
