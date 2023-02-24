@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.ApplicationInsights.AspNetCore;
@@ -64,10 +65,11 @@ namespace starsky.foundation.webtelemetry.Services
 				const string setAuthenticatedUserContextItemStart =
 					"appInsights.setAuthenticatedUserContext(\"";
 				const string setAuthenticatedUserContextItemEnd = "\")";
+				
 				script = script.Replace(
 					setAuthenticatedUserContextItemStart + 
 					setAuthenticatedUserContextItemEnd, 
-					setAuthenticatedUserContextItemStart + 
+					$"\n {setAuthenticatedUserContextItemStart}" + 
 					GetCurrentUserId() + 
 					setAuthenticatedUserContextItemEnd);
 
@@ -75,6 +77,16 @@ namespace starsky.foundation.webtelemetry.Services
 				script += "\n appInsights.enableAutoRouteTracking = true;";
 				script += "\n appInsights.disableFetchTracking = false;";
 				script += "\n appInsights.enableAjaxPerfTracking = true;";
+				script += "\n appInsights.enableRequestHeaderTracking = true;";
+				script += "\n appInsights.enableResponseHeaderTracking = true;";
+
+				// set role and roleInstance WebController
+				script += "\n const telemetryInitializer = (envelope) => {";
+				script +=  "\n	envelope.tags[\"ai.cloud.role\"] = \"WebController\";";
+				script +=  $"\n	envelope.tags[\"ai.cloud.roleInstance\"] = \"{Environment.MachineName}\";";
+				script += "\n } ";
+				script += "\n appInsights.addTelemetryInitializer(telemetryInitializer);";
+
 				return script;
 			}
 		}

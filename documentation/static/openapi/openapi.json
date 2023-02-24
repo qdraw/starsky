@@ -1935,6 +1935,35 @@
               "examples": {},
               "content": {},
               "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "UseSystemTrash",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
             }
           ],
           "responses": {
