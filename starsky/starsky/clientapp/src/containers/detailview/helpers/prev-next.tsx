@@ -31,8 +31,7 @@ export class PrevNext {
    * navigation function to go to next photo
    */
   next() {
-    if (!this.relativeObjects) return;
-    if (!this.relativeObjects.nextFilePath) return;
+    if (!this.relativeObjects?.nextFilePath) return;
     if (this.relativeObjects.nextFilePath === this.state.subPath) {
       // when changing next very fast it might skip a check
       new UpdateRelativeObject()
@@ -77,8 +76,7 @@ export class PrevNext {
    * navigation function to go to prev photo
    */
   prev() {
-    if (!this.relativeObjects) return;
-    if (!this.relativeObjects.prevFilePath) return;
+    if (!this.relativeObjects?.prevFilePath) return;
     if (this.relativeObjects.prevFilePath === this.state.subPath) {
       // when changing prev very fast it might skip a check
       new UpdateRelativeObject()
