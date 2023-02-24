@@ -17,8 +17,7 @@ import { UpdateRelativeObject } from "../../shared/update-relative-object";
 import { URLPath } from "../../shared/url-path";
 import MenuDetailViewContainer from "../menu-detailview-container/menu-detailview-container";
 import { moveFolderUp } from "./helpers/move-folder-up";
-import { Next } from "./helpers/next";
-import { Prev } from "./helpers/prev";
+import { PrevNext } from "./helpers/prev-next";
 import { statusRemoved } from "./helpers/status-removed";
 
 const DetailView: React.FC<IDetailView> = () => {
@@ -80,7 +79,7 @@ const DetailView: React.FC<IDetailView> = () => {
     /ArrowLeft/,
     (event: KeyboardEvent) => {
       if (new Keyboard().isInForm(event)) return;
-      new Prev(
+      new PrevNext(
         relativeObjects,
         state,
         isSearchQuery,
@@ -97,7 +96,7 @@ const DetailView: React.FC<IDetailView> = () => {
     /ArrowRight/,
     (event: KeyboardEvent) => {
       if (new Keyboard().isInForm(event)) return;
-      new Next(
+      new PrevNext(
         relativeObjects,
         state,
         isSearchQuery,
@@ -165,7 +164,7 @@ const DetailView: React.FC<IDetailView> = () => {
   useGestures(mainRef, {
     onSwipeLeft: () => {
       if (isUseGestures) {
-        new Next(
+        new PrevNext(
           relativeObjects,
           state,
           isSearchQuery,
@@ -177,7 +176,7 @@ const DetailView: React.FC<IDetailView> = () => {
     },
     onSwipeRight: () => {
       if (isUseGestures) {
-        new Prev(
+        new PrevNext(
           relativeObjects,
           state,
           isSearchQuery,
@@ -261,7 +260,7 @@ const DetailView: React.FC<IDetailView> = () => {
           {relativeObjects.nextFilePath ? (
             <div
               onClick={() =>
-                new Next(
+                new PrevNext(
                   relativeObjects,
                   state,
                   isSearchQuery,
@@ -282,7 +281,7 @@ const DetailView: React.FC<IDetailView> = () => {
           {relativeObjects.prevFilePath ? (
             <div
               onClick={() =>
-                new Prev(
+                new PrevNext(
                   relativeObjects,
                   state,
                   isSearchQuery,

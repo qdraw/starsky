@@ -2,7 +2,7 @@ import { IUseLocation } from "../../../hooks/use-location";
 import { IDetailView, IRelativeObjects } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { moveFolderUp } from "./move-folder-up";
-import { Next } from "./next";
+import { Next } from "./prev-next";
 
 export function statusRemoved(
   state: IDetailView,

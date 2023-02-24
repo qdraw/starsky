@@ -15,7 +15,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 		public void LastValue_Get_ReturnsExpectedValue()
 		{
 			// Arrange
-			var listener = new CpuUsageListener(new FakeIWebLogger());
+			var listener = new CpuUsageListener();
 
 			// Act
 			var result = listener.CpuUsageMean;
@@ -28,7 +28,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 		public void OnEventSourceCreated_EnablesEventsForSystemRuntimeEventSource()
 		{
 			// Arrange
-			var listener = new CpuUsageListener(new FakeIWebLogger());
+			var listener = new CpuUsageListener();
 			var eventSource = new EventSource("System.Runtime");
 
 			// Get the OnEventSourceCreated method using reflection
@@ -46,7 +46,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 		public void OnEventSourceCreated_EnablesEventsForSystemRuntimeEventSource_NoPayLoad2()
 		{
 			// Arrange
-			var listener = new CpuUsageListener(new FakeIWebLogger());
+			var listener = new CpuUsageListener();
 
 			var data = new List<object> { /* insert data here */ };
 			var payload = new ReadOnlyCollection<object>(data);
@@ -63,7 +63,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 		public void OnEventSourceCreated_EnablesEventsForSystemRuntimeEventSource_WrongPayLoadData()
 		{
 			// Arrange
-			var listener = new CpuUsageListener(new FakeIWebLogger());
+			var listener = new CpuUsageListener();
 
 			var data2 = new Dictionary<string, object>
 			{
@@ -85,7 +85,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 		public void OnEventSourceCreated_EnablesEventsForSystemRuntimeEventSource_WrongPayLoadData2()
 		{
 			// Arrange
-			var listener = new CpuUsageListener(new FakeIWebLogger());
+			var listener = new CpuUsageListener();
 
 			var data2 = new Dictionary<string, object>
 			{
@@ -107,7 +107,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 		public void OnEventSourceCreated_EnablesEventsForSystemRuntimeEventSource_WrongPayLoadData3()
 		{
 			// Arrange
-			var listener = new CpuUsageListener(new FakeIWebLogger());
+			var listener = new CpuUsageListener();
 
 			var data2 = new Dictionary<string, object>
 			{
@@ -129,7 +129,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 		public void OnEventSourceCreated_EnablesEventsForSystemRuntimeEventSource_NotDouble()
 		{
 			// Arrange
-			var listener = new CpuUsageListener(new FakeIWebLogger());
+			var listener = new CpuUsageListener();
 
 			var data2 = new Dictionary<string, object>
 			{
@@ -152,7 +152,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 		public void OnEventSourceCreated_EnablesEventsForSystemRuntimeEventSource_HappyFlow()
 		{
 			// Arrange
-			var listener = new CpuUsageListener(new FakeIWebLogger());
+			var listener = new CpuUsageListener();
 
 			var data2 = new Dictionary<string, object>
 			{
