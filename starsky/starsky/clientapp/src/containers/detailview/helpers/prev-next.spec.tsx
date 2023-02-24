@@ -141,6 +141,74 @@ describe("statusRemoved", () => {
     expect(updateSpy).toBeCalledTimes(1);
   });
 
+  it("called 5", () => {
+    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const navigate = jest.fn();
+    history.navigate = () => Promise.resolve(navigate) as any;
+
+    const setIsLoading = jest.fn();
+
+    const updateSpy = jest
+      .spyOn(UpdateRelativeObject.prototype, "Update")
+      .mockImplementationOnce(() => {
+        return Promise.resolve({
+          prevFilePath: "test1",
+          prevHash: "test"
+        } as IRelativeObjects);
+      });
+
+    new PrevNext(
+      {} as IRelativeObjects,
+      {
+        fileIndexItem: {
+          fileHash: "test"
+        },
+        subPath: "test"
+      } as IDetailView,
+      true,
+      history,
+      setIsLoading,
+      jest.fn
+    ).prev();
+
+    expect(setIsLoading).toBeCalledTimes(0);
+    expect(updateSpy).toBeCalledTimes(0);
+  });
+
+  it("called 6", () => {
+    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const navigate = jest.fn();
+    history.navigate = () => Promise.resolve(navigate) as any;
+
+    const setIsLoading = jest.fn();
+
+    const updateSpy = jest
+      .spyOn(UpdateRelativeObject.prototype, "Update")
+      .mockImplementationOnce(() => {
+        return Promise.resolve({
+          prevFilePath: "test1",
+          prevHash: "test"
+        } as IRelativeObjects);
+      });
+
+    new PrevNext(
+      {} as IRelativeObjects,
+      {
+        fileIndexItem: {
+          fileHash: "test"
+        },
+        subPath: "test"
+      } as IDetailView,
+      true,
+      history,
+      setIsLoading,
+      jest.fn
+    ).next();
+
+    expect(setIsLoading).toBeCalledTimes(0);
+    expect(updateSpy).toBeCalledTimes(0);
+  });
+
   it("navigatePrev same so ignore", () => {
     const relative = {
       prevFilePath: "test",
