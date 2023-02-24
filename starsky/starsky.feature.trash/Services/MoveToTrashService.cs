@@ -26,7 +26,7 @@ public class MoveToTrashService : IMoveToTrashService
 		IUpdateBackgroundTaskQueue queue, 
 		ITrashService systemTrashService, IMetaUpdateService metaUpdateService,
 		ITrashConnectionService connectionService
-		)
+	)
 	{
 		_appSettings = appSettings;
 		_query = query;
@@ -43,27 +43,29 @@ public class MoveToTrashService : IMoveToTrashService
 		var inputModel = new FileIndexItem { Tags = TrashKeyword.TrashKeywordString };
 		var (fileIndexResultsList, changedFileIndexItemName) = 
 			await _metaPreflight.PreflightAsync(inputModel, inputFilePaths,
-			false, collections, 0);
+				false, collections, 0);
 
 		var moveToTrash =
 			fileIndexResultsList.Where(p =>
 				p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted).ToList();
-		
-			await _queue.QueueBackgroundWorkItemAsync(async _ =>
-			{
-				if ( _appSettings.UseSystemTrash == true &&
-				     _systemTrashService.DetectToUseSystemTrash() )
-				{
-					await SystemTrashInQueue(moveToTrash);
-					return;
-				}
-				
-				await MetaTrashInQueue(changedFileIndexItemName, 
-					fileIndexResultsList, inputModel, collections);
-				
-			}, "trash");
 
-		return await _connectionService.ConnectionServiceAsync(moveToTrash, FileIndexItem.ExifStatus.Deleted);
+		var isSystemTrash = _appSettings.UseSystemTrash == true &&
+		                    _systemTrashService.DetectToUseSystemTrash();
+		
+		await _queue.QueueBackgroundWorkItemAsync(async _ =>
+		{
+			if ( isSystemTrash )
+			{
+				await SystemTrashInQueue(moveToTrash);
+				return;
+			}
+				
+			await MetaTrashInQueue(changedFileIndexItemName, 
+				fileIndexResultsList, inputModel, collections);
+				
+		}, "trash");
+		
+		return await _connectionService.ConnectionServiceAsync(moveToTrash, isSystemTrash);
 	}
 
 	private async Task MetaTrashInQueue(Dictionary<string, List<string>> changedFileIndexItemName, 
@@ -84,4 +86,3 @@ public class MoveToTrashService : IMoveToTrashService
 		await _query.RemoveItemAsync(moveToTrash);
 	}
 }
-

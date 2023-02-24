@@ -68,7 +68,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       );
 
       const resultDo = await FetchPost(
-        new UrlQuery().UrlUpdateApi(),
+        new UrlQuery().UrlMoveToTrashApi(),
         bodyParams.toString()
       );
 

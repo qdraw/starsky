@@ -48,8 +48,6 @@ public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 		if ( value is not double dValue ) return;
 		CpuUsageMean = dValue;
 		IsReady = true;
-
-		_logger.LogDebug($"CPU Usage: {dValue}%");
 	}
 }
 

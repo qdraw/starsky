@@ -712,7 +712,7 @@ describe("MenuArchive", () => {
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlUpdateApi(),
+        new UrlQuery().UrlMoveToTrashApi(),
         "f=%2Fundefined%2Ftest1.jpg&Tags=%21delete%21&append=true&Colorclass=8&collections=true"
       );
 

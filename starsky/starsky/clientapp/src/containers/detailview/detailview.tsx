@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
-import { ModalOpenClassName } from "../../components/atoms/modal/modal";
 import Preloader from "../../components/atoms/preloader/preloader";
 import ColorClassSelectKeyboard from "../../components/molecules/color-class-select/color-class-select-keyboard";
 import DetailViewGpx from "../../components/organisms/detail-view-media/detail-view-gpx";
@@ -10,19 +9,17 @@ import { DetailViewContext } from "../../contexts/detailview-context";
 import useGestures from "../../hooks/use-gestures/use-gestures";
 import useKeyboardEvent from "../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../hooks/use-location";
-import {
-  IDetailView,
-  IRelativeObjects,
-  newDetailView
-} from "../../interfaces/IDetailView";
+import { IDetailView, newDetailView } from "../../interfaces/IDetailView";
 import { ImageFormat } from "../../interfaces/IFileIndexItem";
-import { INavigateState } from "../../interfaces/INavigateState";
 import DocumentTitle from "../../shared/document-title";
 import { Keyboard } from "../../shared/keyboard";
 import { UpdateRelativeObject } from "../../shared/update-relative-object";
 import { URLPath } from "../../shared/url-path";
-import { UrlQuery } from "../../shared/url-query";
 import MenuDetailViewContainer from "../menu-detailview-container/menu-detailview-container";
+import { moveFolderUp } from "./helpers/move-folder-up";
+import { Next } from "./helpers/next";
+import { Prev } from "./helpers/prev";
+import { statusRemoved } from "./helpers/status-removed";
 
 const DetailView: React.FC<IDetailView> = () => {
   const history = useLocation();
@@ -83,7 +80,14 @@ const DetailView: React.FC<IDetailView> = () => {
     /ArrowLeft/,
     (event: KeyboardEvent) => {
       if (new Keyboard().isInForm(event)) return;
-      prev();
+      new Prev(
+        relativeObjects,
+        state,
+        isSearchQuery,
+        history,
+        setRelativeObjects,
+        setIsLoading
+      ).prev();
     },
     [relativeObjects]
   );
@@ -93,7 +97,14 @@ const DetailView: React.FC<IDetailView> = () => {
     /ArrowRight/,
     (event: KeyboardEvent) => {
       if (new Keyboard().isInForm(event)) return;
-      next();
+      new Next(
+        relativeObjects,
+        state,
+        isSearchQuery,
+        history,
+        setRelativeObjects,
+        setIsLoading
+      ).next();
     },
     [relativeObjects]
   );
@@ -102,27 +113,7 @@ const DetailView: React.FC<IDetailView> = () => {
   useKeyboardEvent(
     /Escape/,
     (event: KeyboardEvent) => {
-      if (!history.location) return;
-      if (new Keyboard().isInForm(event)) return;
-
-      const isPortalActive = !!(document.querySelector(
-        `.${ModalOpenClassName}`
-      ) as HTMLElement);
-      if (isPortalActive) {
-        return;
-      }
-      const url = isSearchQuery
-        ? new UrlQuery().HashSearchPage(history.location.search)
-        : new UrlQuery().updateFilePathHash(
-            history.location.search,
-            state.fileIndexItem.parentDirectory
-          );
-
-      history.navigate(url, {
-        state: {
-          filePath: state.fileIndexItem.filePath
-        } as INavigateState
-      });
+      moveFolderUp(event, history, isSearchQuery, state);
     },
     [state.fileIndexItem]
   );
@@ -152,110 +143,49 @@ const DetailView: React.FC<IDetailView> = () => {
     setUseGestures(true);
   }, [state.subPath]);
 
+  // When item is removed
+  useEffect(() => {
+    statusRemoved(
+      state,
+      relativeObjects,
+      isSearchQuery,
+      history,
+      setRelativeObjects,
+      setIsLoading
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.fileIndexItem?.status, relativeObjects?.nextFilePath]);
+
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = React.useState(true);
-
-  /**
-   * navigation function to go to next photo
-   */
-  function next() {
-    if (!relativeObjects) return;
-    if (!relativeObjects.nextFilePath) return;
-    if (relativeObjects.nextFilePath === state.subPath) {
-      // when changing next very fast it might skip a check
-      new UpdateRelativeObject()
-        .Update(
-          state,
-          isSearchQuery,
-          history.location.search,
-          setRelativeObjects
-        )
-        .then((data) => {
-          navigateNext(data);
-        })
-        .catch(() => {
-          // do nothing on catch error
-        });
-      return;
-    }
-    navigateNext(relativeObjects);
-  }
-
-  /**
-   * Navigate to Next
-   * @param relative object to move from
-   */
-  function navigateNext(relative: IRelativeObjects) {
-    const nextPath = new UrlQuery().updateFilePathHash(
-      history.location.search,
-      relative.nextFilePath,
-      false
-    );
-    // Prevent keeps loading forever
-    if (relative.nextHash !== state.fileIndexItem.fileHash) {
-      setIsLoading(true);
-    }
-
-    history.navigate(nextPath, { replace: true }).then(() => {
-      setIsLoading(false);
-    });
-  }
-
-  /**
-   * navigation function to go to prev photo
-   */
-  function prev() {
-    if (!relativeObjects) return;
-    if (!relativeObjects.prevFilePath) return;
-    if (relativeObjects.prevFilePath === state.subPath) {
-      // when changing prev very fast it might skip a check
-      new UpdateRelativeObject()
-        .Update(
-          state,
-          isSearchQuery,
-          history.location.search,
-          setRelativeObjects
-        )
-        .then((data) => {
-          navigatePrev(data);
-        });
-      return;
-    }
-    navigatePrev(relativeObjects);
-  }
-
-  /**
-   * Navigate to previous
-   * @param relative object to move from
-   */
-  function navigatePrev(relative: IRelativeObjects) {
-    const prevPath = new UrlQuery().updateFilePathHash(
-      history.location.search,
-      relativeObjects.prevFilePath,
-      false
-    );
-
-    // Prevent keeps loading forever
-    if (relative.prevHash !== state.fileIndexItem.fileHash) {
-      setIsLoading(true);
-    }
-
-    history.navigate(prevPath, { replace: true }).then(() => {
-      // when the re-render happens un-expected
-      // window.location.search === history.location.search
-      setIsLoading(false);
-    });
-  }
 
   const mainRef = useRef<HTMLDivElement>(null);
   const [isUseGestures, setUseGestures] = React.useState(true);
 
   useGestures(mainRef, {
     onSwipeLeft: () => {
-      if (isUseGestures) next();
+      if (isUseGestures) {
+        new Next(
+          relativeObjects,
+          state,
+          isSearchQuery,
+          history,
+          setRelativeObjects,
+          setIsLoading
+        ).next();
+      }
     },
     onSwipeRight: () => {
-      if (isUseGestures) prev();
+      if (isUseGestures) {
+        new Prev(
+          relativeObjects,
+          state,
+          isSearchQuery,
+          history,
+          setRelativeObjects,
+          setIsLoading
+        ).prev();
+      }
     }
   });
 
@@ -330,7 +260,16 @@ const DetailView: React.FC<IDetailView> = () => {
 
           {relativeObjects.nextFilePath ? (
             <div
-              onClick={() => next()}
+              onClick={() =>
+                new Next(
+                  relativeObjects,
+                  state,
+                  isSearchQuery,
+                  history,
+                  setRelativeObjects,
+                  setIsLoading
+                ).next()
+              }
               data-test="detailview-next"
               className="nextprev nextprev--next"
             >
@@ -342,7 +281,16 @@ const DetailView: React.FC<IDetailView> = () => {
 
           {relativeObjects.prevFilePath ? (
             <div
-              onClick={() => prev()}
+              onClick={() =>
+                new Prev(
+                  relativeObjects,
+                  state,
+                  isSearchQuery,
+                  history,
+                  setRelativeObjects,
+                  setIsLoading
+                ).prev()
+              }
               data-test="detailview-prev"
               className="nextprev nextprev--prev"
             >
