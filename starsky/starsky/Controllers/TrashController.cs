@@ -42,15 +42,6 @@ public class TrashController : Controller
 
 		var fileIndexResultsList = await _moveToTrashService.MoveToTrashAsync(inputFilePaths, collections);
 		
-		// When all items are not found
-		if ( fileIndexResultsList.All(p =>
-			    p.Status != FileIndexItem.ExifStatus.Ok
-			    && p.Status != FileIndexItem.ExifStatus.Deleted
-			    && p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing) )
-		{
-			return NotFound(fileIndexResultsList);
-		}
-		
 		return Json(fileIndexResultsList);
 	}
 }
