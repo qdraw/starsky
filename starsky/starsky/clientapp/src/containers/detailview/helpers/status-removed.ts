@@ -2,7 +2,7 @@ import { IUseLocation } from "../../../hooks/use-location";
 import { IDetailView, IRelativeObjects } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { moveFolderUp } from "./move-folder-up";
-import { Next } from "./prev-next";
+import { PrevNext } from "./prev-next";
 
 export function statusRemoved(
   state: IDetailView,
@@ -16,7 +16,7 @@ export function statusRemoved(
     state.fileIndexItem?.status === IExifStatus.NotFoundSourceMissing &&
     relativeObjects.nextFilePath
   ) {
-    new Next(
+    new PrevNext(
       relativeObjects,
       state,
       isSearchQuery,
