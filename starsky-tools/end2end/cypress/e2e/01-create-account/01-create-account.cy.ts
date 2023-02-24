@@ -33,16 +33,19 @@ describe('Create Account (01)', () => {
         occassionaly throwing ESOCKETTIMEDOUT errors in CI) */
     cy.visit(config.url, {
       headers: {
-        Connection: 'Keep-Alive'
+        Connection: 'Keep-Alive',
+        'content-type': 'application/x-www-form-urlencoded'
       }
     })
+
+    cy.intercept('/starsky/api/account/register', (req) => {
+      req.headers['content-type'] = 'application/x-www-form-urlencoded'
+    }).as('registerCall')
 
     cy.get(flow.form).within(() => {
       cy.get(flow.fields.name).type(Cypress.env('AUTH_USER'))
       cy.get(flow.fields.password).type(Cypress.env('AUTH_PASS'))
       cy.get(flow.fields.confirmPassword).type(Cypress.env('AUTH_PASS'))
-
-      cy.intercept('POST', '/starsky/api/account/register').as('registerCall')
 
       cy.get(flow.fields.submit)
         .click()
