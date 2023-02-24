@@ -14,7 +14,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 	public sealed class DiskWatcherQueuedHostedServiceTest
 	{
 		[TestMethod]
-		[Timeout(4000)]
+		[Timeout(2000)]
 		public void DiskWatcherQueuedHostedServiceTest_ExecuteAsync_StartAsync_Test()
 		{
 			var logger = new FakeIWebLogger();
