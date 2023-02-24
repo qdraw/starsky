@@ -67,6 +67,80 @@ describe("statusRemoved", () => {
     expect(setIsLoading).toBeCalledTimes(0);
   });
 
+  it("called 3", () => {
+    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const navigate = jest.fn();
+    history.navigate = () => Promise.resolve(navigate) as any;
+
+    const setIsLoading = jest.fn();
+
+    const updateSpy = jest
+      .spyOn(UpdateRelativeObject.prototype, "Update")
+      .mockImplementationOnce(() => {
+        return Promise.resolve({
+          nextFilePath: "test1",
+          nextHash: "test"
+        } as IRelativeObjects);
+      });
+
+    new PrevNext(
+      {
+        nextFilePath: "test",
+        nextHash: "test"
+      } as IRelativeObjects,
+      {
+        fileIndexItem: {
+          fileHash: "test"
+        },
+        subPath: "test"
+      } as IDetailView,
+      true,
+      history,
+      setIsLoading,
+      jest.fn
+    ).next();
+
+    expect(setIsLoading).toBeCalledTimes(0);
+    expect(updateSpy).toBeCalledTimes(1);
+  });
+
+  it("called 4", () => {
+    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const navigate = jest.fn();
+    history.navigate = () => Promise.resolve(navigate) as any;
+
+    const setIsLoading = jest.fn();
+
+    const updateSpy = jest
+      .spyOn(UpdateRelativeObject.prototype, "Update")
+      .mockImplementationOnce(() => {
+        return Promise.resolve({
+          prevFilePath: "test1",
+          prevHash: "test"
+        } as IRelativeObjects);
+      });
+
+    new PrevNext(
+      {
+        prevFilePath: "test",
+        prevHash: "test"
+      } as IRelativeObjects,
+      {
+        fileIndexItem: {
+          fileHash: "test"
+        },
+        subPath: "test"
+      } as IDetailView,
+      true,
+      history,
+      setIsLoading,
+      jest.fn
+    ).prev();
+
+    expect(setIsLoading).toBeCalledTimes(0);
+    expect(updateSpy).toBeCalledTimes(1);
+  });
+
   it("navigatePrev same so ignore", () => {
     const relative = {
       prevFilePath: "test",
