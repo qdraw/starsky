@@ -145,9 +145,11 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				}
 			};
 
-			AppSettingsCompareHelper.Compare(source, to);
+			var compare = AppSettingsCompareHelper.Compare(source, to);
 			
 			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
+			Assert.AreEqual("PublishProfiles".ToLowerInvariant(), compare.FirstOrDefault());
+
 		}
 		
 		[TestMethod]
@@ -169,9 +171,10 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				}}
 			};
 
-			AppSettingsCompareHelper.Compare(source, to);
+			var compare = AppSettingsCompareHelper.Compare(source, to);
 			
 			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(), to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
+			Assert.AreEqual("AccountRolesByEmailRegisterOverwrite".ToLowerInvariant(), compare.FirstOrDefault());
 		}
 		
 		[TestMethod]
