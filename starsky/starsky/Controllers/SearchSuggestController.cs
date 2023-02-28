@@ -40,7 +40,7 @@ namespace starsky.Controllers
 		/// <summary>
 		/// Show all items in the search suggest cache
 		/// </summary>
-		/// <returns>a keylist with search suggestions</returns>
+		/// <returns>a keyList with search suggestions</returns>
 		/// <response code="200">the search results</response>
 		[HttpGet("/api/suggest/all")]
 		[ProducesResponseType(typeof(SearchViewModel),200)] // ok

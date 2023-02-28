@@ -20,17 +20,17 @@ public class TrashController : Controller
 	}
 
 	/// <summary>
-	/// Is the system trash enabled
+	/// Is the system trash supported
 	/// </summary>
 	/// <returns>bool with json (IActionResult Result)</returns>
 	/// <response code="200">the item including the updated content</response>
 	/// <response code="401">User unauthorized</response>
 	[ProducesResponseType(typeof(bool), 200)]
-	[HttpPost("/api/trash/is-enabled")]
+	[HttpGet("/api/trash/detect-to-use-system-trash")]
 	[Produces("application/json")]
-	public IActionResult IsEnabled()
+	public IActionResult DetectToUseSystemTrash()
 	{
-		return Json(_moveToTrashService.IsEnabled());
+		return Json(_moveToTrashService.DetectToUseSystemTrash());
 	}
 	
 	/// <summary>

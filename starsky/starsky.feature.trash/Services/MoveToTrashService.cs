@@ -35,12 +35,34 @@ public class MoveToTrashService : IMoveToTrashService
 		_metaUpdateService = metaUpdateService;
 		_connectionService = connectionService;
 	}
-	public bool IsEnabled()
+	
+	/// <summary>
+	/// Is supported and enabled in the feature toggle
+	/// </summary>
+	/// <returns>Should you use it?</returns>
+	private bool IsEnabled()
 	{
 		return _appSettings.UseSystemTrash == true &&
 		       _systemTrashService.DetectToUseSystemTrash();
 	}
-	
+
+	/// <summary>
+	/// Is it supported to use the system trash
+	/// But it does NOT check if the feature toggle is enabled
+	/// </summary>
+	/// <returns>true if supported</returns>
+	public bool DetectToUseSystemTrash()
+	{
+		return _systemTrashService.DetectToUseSystemTrash();
+	}
+
+	/// <summary>
+	/// Move a file to the internal trash or system trash
+	/// Depends on the feature toggle
+	/// </summary>
+	/// <param name="inputFilePaths">list of paths</param>
+	/// <param name="collections">is stack collections enabled</param>
+	/// <returns>list of files</returns>
 	public async Task<List<FileIndexItem>> MoveToTrashAsync(
 		string[] inputFilePaths, bool collections)
 	{
