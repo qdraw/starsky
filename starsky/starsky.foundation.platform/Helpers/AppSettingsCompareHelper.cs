@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.platform.Helpers
@@ -101,7 +103,12 @@ namespace starsky.foundation.platform.Helpers
 		    Dictionary<string, string>? newDictionaryValue, List<string> differenceList)
 	    {
 		    if ( oldDictionaryValue == null || newDictionaryValue?.Count == 0 ) return;
-		    if ( oldDictionaryValue.Equals(newDictionaryValue) ) return;
+		    if ( JsonSerializer.Serialize(oldDictionaryValue,
+			         DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newDictionaryValue,
+			         DefaultJsonSerializer.CamelCase) )
+		    {
+			    return;
+		    }
 		    
 		    sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newDictionaryValue, null);
 		    differenceList.Add(propertyName.ToLowerInvariant());
@@ -148,7 +155,12 @@ namespace starsky.foundation.platform.Helpers
 		    List<string>? oldListStringValue, List<string>? newListStringValue, List<string> differenceList)
 	    {
 		    if ( oldListStringValue == null || newListStringValue?.Count == 0 ) return;
-		    if ( oldListStringValue.Equals(newListStringValue) ) return;
+		    if ( JsonSerializer.Serialize(oldListStringValue,
+			        DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newListStringValue,
+			        DefaultJsonSerializer.CamelCase) )
+		    {
+			    return;
+		    }
 		    
 		    sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newListStringValue, null);
 		    differenceList.Add(propertyName.ToLowerInvariant());

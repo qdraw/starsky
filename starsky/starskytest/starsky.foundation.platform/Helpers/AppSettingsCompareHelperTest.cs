@@ -84,8 +84,10 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				ReadOnlyFolders = new List<string>{"/same"}
 			};
 
-			AppSettingsCompareHelper.Compare(source, source);
+			var compare = AppSettingsCompareHelper.Compare(source, source);
+				
 			Assert.AreEqual(source.ReadOnlyFolders.FirstOrDefault(), to.ReadOnlyFolders.FirstOrDefault());
+			Assert.AreEqual(0, compare.Count);
 		}
 		
 		[TestMethod]
@@ -153,7 +155,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
-		public void ListAppSettingsStringDictionary()
+		public void ListAppSettingsStringDictionary_Changed()
 		{
 			var source = new AppSettings
 			{
@@ -175,6 +177,28 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			
 			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(), to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
 			Assert.AreEqual("AccountRolesByEmailRegisterOverwrite".ToLowerInvariant(), compare.FirstOrDefault());
+		}
+		
+		[TestMethod]
+		public void ListAppSettingsStringDictionary_Equal()
+		{
+			var source = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
+				{
+				{"zz__example2", "Administrator"
+				}}
+			};
+			
+			var to = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = source.AccountRolesByEmailRegisterOverwrite
+			};
+
+			var compare = AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(), to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
+			Assert.AreEqual(0, compare.Count);
 		}
 		
 		[TestMethod]
