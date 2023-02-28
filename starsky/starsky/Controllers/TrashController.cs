@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.database.Models;
@@ -8,6 +9,7 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.Controllers;
 
+[Authorize]
 public class TrashController : Controller
 {
 	private readonly IMoveToTrashService _moveToTrashService;
@@ -17,6 +19,20 @@ public class TrashController : Controller
 		_moveToTrashService = moveToTrashService;
 	}
 
+	/// <summary>
+	/// Is the system trash enabled
+	/// </summary>
+	/// <returns>bool with json (IActionResult Result)</returns>
+	/// <response code="200">the item including the updated content</response>
+	/// <response code="401">User unauthorized</response>
+	[ProducesResponseType(typeof(bool), 200)]
+	[HttpPost("/api/trash/is-enabled")]
+	[Produces("application/json")]
+	public IActionResult IsEnabled()
+	{
+		return Json(_moveToTrashService.IsEnabled());
+	}
+	
 	/// <summary>
 	/// (beta) Move a file to the trash
 	/// </summary>

@@ -818,6 +818,7 @@ namespace starsky.foundation.platform.Models
 		/// Use the system trash (if available)
 		/// This system trash is not supported on all platforms
 		/// or when running as a windows service its not supported
+		/// Please check IMoveToTrashService.IsEnabled() instead
 		/// </summary>
 		[PackageTelemetry]
 		public bool? UseSystemTrash { get; set; }

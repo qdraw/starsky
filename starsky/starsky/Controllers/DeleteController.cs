@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
 
 namespace starsky.Controllers
 {
+	[Authorize]
 	public sealed class DeleteController : Controller
 	{
 		private readonly IDeleteItem _deleteItem;

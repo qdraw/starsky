@@ -20,7 +20,6 @@ public class MoveToTrashService : IMoveToTrashService
 	private readonly IMetaUpdateService _metaUpdateService;
 	private readonly ITrashConnectionService _connectionService;
 
-
 	public MoveToTrashService(AppSettings appSettings, IQuery query,
 		IMetaPreflight metaPreflight, 
 		IUpdateBackgroundTaskQueue queue, 
@@ -36,6 +35,11 @@ public class MoveToTrashService : IMoveToTrashService
 		_metaUpdateService = metaUpdateService;
 		_connectionService = connectionService;
 	}
+	public bool IsEnabled()
+	{
+		return _appSettings.UseSystemTrash == true &&
+		       _systemTrashService.DetectToUseSystemTrash();
+	}
 	
 	public async Task<List<FileIndexItem>> MoveToTrashAsync(
 		string[] inputFilePaths, bool collections)
@@ -49,12 +53,11 @@ public class MoveToTrashService : IMoveToTrashService
 			fileIndexResultsList.Where(p =>
 				p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted).ToList();
 
-		var isSystemTrash = _appSettings.UseSystemTrash == true &&
-		                    _systemTrashService.DetectToUseSystemTrash();
+		var isSystemTrashEnabled = IsEnabled();
 		
 		await _queue.QueueBackgroundWorkItemAsync(async _ =>
 		{
-			if ( isSystemTrash )
+			if ( isSystemTrashEnabled )
 			{
 				await SystemTrashInQueue(moveToTrash);
 				return;
@@ -65,7 +68,7 @@ public class MoveToTrashService : IMoveToTrashService
 				
 		}, "trash");
 		
-		return await _connectionService.ConnectionServiceAsync(moveToTrash, isSystemTrash);
+		return await _connectionService.ConnectionServiceAsync(moveToTrash, isSystemTrashEnabled);
 	}
 
 	private async Task MetaTrashInQueue(Dictionary<string, List<string>> changedFileIndexItemName, 

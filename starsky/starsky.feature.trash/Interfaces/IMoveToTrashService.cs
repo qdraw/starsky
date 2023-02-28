@@ -6,4 +6,5 @@ public interface IMoveToTrashService
 {
 	Task<List<FileIndexItem>> MoveToTrashAsync(string[] inputFilePaths,
 		bool collections);
+	bool IsEnabled();
 }

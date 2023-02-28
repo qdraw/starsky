@@ -15,7 +15,8 @@
         "apiMkdir": "/starsky/api/disk/mkdir",
         "apiUpdate": "/starsky/api/update",
         "apiRename": "/starsky/api/disk/rename",
-        "apiEnvEndpoint": "/starsky/api/env"
+        "apiEnvEndpoint": "/starsky/api/env",
+        "apiMoveToTrash": "/starsky/api/trash/move-to-trash"
       },
       "heroku-demo" : {
         "isEnabled": true,
@@ -32,7 +33,8 @@
         "apiMkdir": "/starsky/api/disk/mkdir",
         "apiUpdate": "/starsky/api/update",
         "apiRename": "/starsky/api/disk/rename",
-        "apiEnvEndpoint": "/starsky/api/env"
+        "apiEnvEndpoint": "/starsky/api/env",
+        "apiMoveToTrash": "/starsky/api/trash/move-to-trash"
       },
       "no-create-account" : {
         "isEnabled": true,
@@ -49,7 +51,8 @@
         "apiMkdir": "/starsky/api/disk/mkdir",
         "apiUpdate": "/starsky/api/update",
         "apiRename": "/starsky/api/disk/rename",
-        "apiEnvEndpoint": "/starsky/api/env"
+        "apiEnvEndpoint": "/starsky/api/env",
+        "apiMoveToTrash": "/starsky/api/trash/move-to-trash"
       }
     }
   }
