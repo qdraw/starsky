@@ -78,6 +78,12 @@ describe("Desktop move to trash (100)", () => {
   });
 
   it("check if upload is done (90)", () => {
+    
+    if (shouldRunTest === false) {
+      cy.log("shouldRunTest is false, skip test \n due on system trash is not supported")
+      return;
+    }
+
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200);
       expect(res.body.fileIndexItems.length).to.eq(4);
