@@ -403,7 +403,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
-		        context.Attach(updateStatusContent).State = EntityState.Detached;
+		        context.Attach(updateStatusContent).State = EntityState.Unchanged;
 		        await context.DisposeAsync();
 	        }
 
