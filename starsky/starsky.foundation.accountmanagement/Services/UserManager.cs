@@ -219,13 +219,15 @@ namespace starsky.foundation.accountmanagement.Services
 		/// AccountRolesByEmailRegisterOverwrite: Overwrite the default role with a role from the config
 		/// </summary>
 		/// <param name="identifier">email address</param>
+		/// <param name="user">not any except it item itself</param>
 		/// <returns>RoleName in string</returns>
-		internal string GetRoleAddToUser(string identifier)
+		internal string GetRoleAddToUser(string identifier, User user)
 		{
 			var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
-			if (_appSettings.AccountRegisterFirstRoleAdmin == true && !_dbContext.Users.Any() )
+			
+			if (_appSettings.AccountRegisterFirstRoleAdmin == true && !_dbContext.Users.Any(p => p != user) )
 			{
-				roleToAddToUser = AccountRoles.AppAccountRoles.Administrator.ToString();
+				return AccountRoles.AppAccountRoles.Administrator.ToString();
 			}
 
 			if ( _appSettings.AccountRolesByEmailRegisterOverwrite
@@ -282,7 +284,7 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 
 			// Add a user role based on a user id
-			var roleToAdd = roles.FirstOrDefault(p => p.Code == GetRoleAddToUser(identifier));
+			var roleToAdd = roles.FirstOrDefault(p => p.Code == GetRoleAddToUser(identifier,user));
 			AddToRole(user, roleToAdd);
 
 			if (credentialType == null)
