@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "hi-base32": "^0.5.1",
-    "jimp": "^0.16.2",
+    "jimp": "^0.17.8",
     "minimist": "^1.2.7"
   }
 }
