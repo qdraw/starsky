@@ -659,6 +659,7 @@ namespace starsky.foundation.platform.Models
 			get => AccountRolesByEmailRegisterOverwritePrivate;
 			init
 			{
+				if ( value == null ) return;
 				foreach ( var singleValue in value.Where(singleValue => AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
 				{
 					AccountRolesByEmailRegisterOverwritePrivate.TryAdd(

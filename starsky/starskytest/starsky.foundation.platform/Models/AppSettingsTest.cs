@@ -483,6 +483,13 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
+		public void AccountRolesByEmailRegisterOverwrite_Null()
+		{
+			var appSettings = new AppSettings {AccountRolesByEmailRegisterOverwrite = null};
+			Assert.IsTrue(appSettings.AccountRolesByEmailRegisterOverwrite?.Count == 0);
+		}
+		
+		[TestMethod]
 		public void AccountRolesByEmailRegisterOverwrite_ValidRole()
 		{
 			var appSettings = new AppSettings {AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>{{"bogusEmail","Administrator"}}};

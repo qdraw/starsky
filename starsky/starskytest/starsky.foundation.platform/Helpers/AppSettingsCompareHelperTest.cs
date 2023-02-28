@@ -157,7 +157,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
 				{
-				{"zz__example2", "source"
+				{"zz__example2", "Administrator"
 				}}
 			};
 			
@@ -165,13 +165,34 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
 				{
-					{"zz__example2", "test"
+					{"zz__example2", "User"
 				}}
 			};
 
 			AppSettingsCompareHelper.Compare(source, to);
 			
 			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(), to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
+		}
+		
+		[TestMethod]
+		public void ListAppSettingsStringDictionary_IgnoreOverwrite()
+		{
+			var source = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
+				{
+				{"zz__example2", "Administrator"
+				}}
+			};
+			
+			var to = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = null
+			};
+
+			AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(null, to.AccountRolesByEmailRegisterOverwrite?.Keys.FirstOrDefault());
 		}
 		
 		[TestMethod]
