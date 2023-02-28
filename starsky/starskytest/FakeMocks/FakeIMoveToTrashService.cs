@@ -8,10 +8,13 @@ namespace starskytest.FakeMocks;
 
 public class FakeIMoveToTrashService : IMoveToTrashService
 {
-	public FakeIMoveToTrashService(List<FileIndexItem> fileIndexItems)
+	public FakeIMoveToTrashService(List<FileIndexItem> fileIndexItems, bool detectToUseSystemTrash = true)
 	{
 		FileIndexItems = fileIndexItems;
+		DetectToUseSystemTrashToggle = detectToUseSystemTrash;
 	}
+
+	public bool DetectToUseSystemTrashToggle { get; set; }
 
 	public List<FileIndexItem> FileIndexItems { get; set; }
 
@@ -27,5 +30,10 @@ public class FakeIMoveToTrashService : IMoveToTrashService
 			result.Add(new FileIndexItem{FilePath = inputFilePath, Status = exifStatus});
 		}
 		return Task.FromResult(result);
+	}
+
+	public bool DetectToUseSystemTrash()
+	{
+		return DetectToUseSystemTrashToggle;
 	}
 }
