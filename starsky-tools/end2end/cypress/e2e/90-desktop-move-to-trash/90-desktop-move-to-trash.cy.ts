@@ -108,6 +108,12 @@ describe("Desktop move to trash (100)", () => {
   }
 
   it("remove item (90)", () => {
+
+    if (shouldRunTest === false) {
+      cy.log("shouldRunTest is false, skip test")
+      return;
+    }
+
     if (!config.isEnabled) return;
     cy.visit(config.url);
 
@@ -150,6 +156,12 @@ describe("Desktop move to trash (100)", () => {
   });
 
   it("z cleanup trash settings (90)", () => {
+
+    if (shouldRunTest === false) {
+      cy.log("shouldRunTest is false, skip test")
+      return;
+    }
+
     cy.log("cleanup trash settings");
     cy.log(useSystemTrashBeforeStatus);
 
