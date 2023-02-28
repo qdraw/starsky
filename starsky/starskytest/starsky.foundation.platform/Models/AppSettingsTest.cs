@@ -475,5 +475,32 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 #endif
 		
+		[TestMethod]
+		public void AccountRolesByEmailRegisterOverwrite_BogusShouldBeIgnored()
+		{
+			var appSettings = new AppSettings {AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>{{"bogusEmail","bogusRole"}}};
+			Assert.IsTrue(appSettings.AccountRolesByEmailRegisterOverwrite.Count == 0);
+		}
+		
+		[TestMethod]
+		public void AccountRolesByEmailRegisterOverwrite_ValidRole()
+		{
+			var appSettings = new AppSettings {AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>{{"bogusEmail","Administrator"}}};
+			
+			Assert.AreEqual(1,appSettings.AccountRolesByEmailRegisterOverwrite.Count);
+			Assert.AreEqual("Administrator", appSettings.AccountRolesByEmailRegisterOverwrite["bogusEmail"]);
+		}
+		
+		[TestMethod]
+		public void AccountRolesByEmailRegisterOverwrite_ValidRole2()
+		{
+			var appSettings = new AppSettings {AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>{{"bogusEmail","Administrator"}}};
+			Assert.AreEqual(1,appSettings.AccountRolesByEmailRegisterOverwrite.Count);
+
+			appSettings.AccountRolesByEmailRegisterOverwrite.Add("bogusEmail2","Administrator");
+			
+			Assert.AreEqual(2,appSettings.AccountRolesByEmailRegisterOverwrite.Count);
+			Assert.AreEqual("Administrator", appSettings.AccountRolesByEmailRegisterOverwrite["bogusEmail2"]);
+		}
 	}
 }

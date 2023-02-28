@@ -50,6 +50,7 @@ describe("env (01/03)", () => {
 				cy.log(
 					`exiftoolSkipDownloadOnStartup ${parsedData.exiftoolSkipDownloadOnStartup}`
 				);
+				cy.log(`useSystemTrash ${parsedData.useSystemTrash}`);
 			});
 	});
 });

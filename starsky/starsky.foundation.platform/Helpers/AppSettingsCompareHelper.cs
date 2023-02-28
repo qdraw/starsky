@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.platform.Helpers
@@ -76,6 +75,16 @@ namespace starsky.foundation.platform.Helpers
 			            newListPublishProfilesValue, differenceList);
 	            }
 	            
+	            if ( propertyB.PropertyType == typeof(Dictionary<string, string>) )
+	            {
+		            var oldDictionaryValue = ( Dictionary<string, string> ?) 
+			            propertyInfoFromA.GetValue(sourceIndexItem, null);
+		            var newDictionaryValue = ( Dictionary<string, string> ?) 
+			            propertyB.GetValue(updateObject, null);
+		            CompareStringDictionary(propertyB.Name, sourceIndexItem, oldDictionaryValue,
+			            newDictionaryValue, differenceList);
+	            }
+	            
 	            if ( propertyB.PropertyType == typeof(List<AppSettingsKeyValue>) )
 	            {
 		            var oldKeyValuePairStringStringValue = (List<AppSettingsKeyValue>?)propertyInfoFromA.GetValue(sourceIndexItem, null);
@@ -86,6 +95,17 @@ namespace starsky.foundation.platform.Helpers
             }
             return differenceList;
         }
+
+	    private static void CompareStringDictionary(string propertyName, AppSettings sourceIndexItem, 
+		    Dictionary<string, string>? oldDictionaryValue, 
+		    Dictionary<string, string>? newDictionaryValue, List<string> differenceList)
+	    {
+		    if ( oldDictionaryValue == null || newDictionaryValue?.Count == 0 ) return;
+		    if ( oldDictionaryValue.Equals(newDictionaryValue) ) return;
+		    
+		    sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newDictionaryValue, null);
+		    differenceList.Add(propertyName.ToLowerInvariant());
+	    }
 
 	    private static void CompareKeyValuePairStringString(string propertyName, AppSettings sourceIndexItem, 
 		    List<AppSettingsKeyValue>? oldKeyValuePairStringStringValue, 

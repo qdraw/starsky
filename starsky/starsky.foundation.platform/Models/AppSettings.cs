@@ -634,11 +634,39 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// When a new account is created, which Account Role is assigned 
 		/// Defaults to User, but can also be Administrator
+		/// The first account is always Administrator
+		/// and exceptions for specific emails can be set in AccountRolesDefaultByEmailRegisterOverwrite
 		/// </summary>
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		[PackageTelemetry]
 		public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
 		
+
+		/// <summary>
+		/// Value for AccountRolesDefaultByEmailRegisterOverwrite
+		/// </summary>
+		private Dictionary<string, string> AccountRolesByEmailRegisterOverwritePrivate { get; set; } = new Dictionary<string, string>();
+		
+		/// <summary>
+		/// Overwrite when registering a new account to give the account a specific role
+		/// First key is the identifier e.g. "demo@qdraw.nl"
+		/// and the second key is the role name e.g. "Administrator" or "User"
+		/// </summary>
+		/// <remarks>
+		///    { "demo@qdraw.nl": "Administrator" }
+		/// </remarks>
+		public Dictionary<string, string> AccountRolesByEmailRegisterOverwrite {
+			get => AccountRolesByEmailRegisterOverwritePrivate;
+			init
+			{
+				foreach ( var singleValue in value.Where(singleValue => AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
+				{
+					AccountRolesByEmailRegisterOverwritePrivate.TryAdd(
+						singleValue.Key, singleValue.Value);
+				}
+			}
+		} 
+
 		/// <summary>
 		/// Add the default account as admin, other accounts as AccountRegisterDefaultRole
 		/// </summary>

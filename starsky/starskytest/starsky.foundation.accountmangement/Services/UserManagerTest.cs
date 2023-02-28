@@ -751,5 +751,90 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var result = await userManager.SetLockIfFailedCountIsToHigh(9999);
 			Assert.IsFalse(result.Success);
 		}
+		
+		[TestMethod]
+		public async Task UserManager_GetRoleAddToUser_Administrator()
+		{
+			var beforeItem = new User() { Name = "test1234567" };
+			await _dbContext.Users.AddAsync(beforeItem);
+			await _dbContext.SaveChangesAsync();
+			
+			const string testEmail = "dont@mail.me";
+			var userManager = new UserManager(_dbContext,new AppSettings
+			{
+				AddMemoryCache = false,
+				AccountRegisterFirstRoleAdmin = false,
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+				AccountRolesByEmailRegisterOverwrite = {
+				{
+					testEmail, "Administrator"
+				}}
+			}, new FakeIWebLogger(), _memoryCache);
+			
+			var roleAddToUser = userManager.GetRoleAddToUser(testEmail);
+
+			_dbContext.Remove(beforeItem);
+			await _dbContext.SaveChangesAsync();
+			
+			Assert.IsNotNull(roleAddToUser);
+			Assert.AreEqual("Administrator", roleAddToUser);
+		}
+		
+		[TestMethod]
+		public async Task UserManager_GetRoleAddToUser_User()
+		{
+			var beforeItem = new User() { Name = "27898349abc9487" };
+			await _dbContext.Users.AddAsync(beforeItem);
+			await _dbContext.SaveChangesAsync();
+			
+			const string testEmail = "dont2@mail.me";
+			var userManager = new UserManager(_dbContext,new AppSettings
+			{
+				AddMemoryCache = false,
+				AccountRegisterFirstRoleAdmin = false,
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.Administrator,
+				AccountRolesByEmailRegisterOverwrite = {
+				{
+					testEmail, "User"
+				}}
+			}, new FakeIWebLogger(), _memoryCache);
+			
+			var roleAddToUser = userManager.GetRoleAddToUser(testEmail);
+
+			_dbContext.Remove(beforeItem);
+			await _dbContext.SaveChangesAsync();
+			
+			Assert.IsNotNull(roleAddToUser);
+			Assert.AreEqual("User", roleAddToUser);
+		}
+		
+		[TestMethod]
+		public async Task UserManager_GetRoleAddToUser_BogusRole()
+		{
+			var beforeItem = new User() { Name = "27898349abc9487" };
+			await _dbContext.Users.AddAsync(beforeItem);
+			await _dbContext.SaveChangesAsync();
+			
+			const string testEmail = "dont2@mail.me";
+			var userManager = new UserManager(_dbContext,new AppSettings
+			{
+				AddMemoryCache = false,
+				AccountRegisterFirstRoleAdmin = false,
+				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+				AccountRolesByEmailRegisterOverwrite = {
+				{
+					testEmail, "BogusRole"
+				}}
+			}, new FakeIWebLogger(), _memoryCache);
+			
+			var roleAddToUser = userManager.GetRoleAddToUser(testEmail);
+
+			_dbContext.Remove(beforeItem);
+			await _dbContext.SaveChangesAsync();
+			
+			Assert.IsNotNull(roleAddToUser);
+			// does fallback to default role
+			Assert.AreEqual("User", roleAddToUser);
+		}
 	}
 }

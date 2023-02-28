@@ -151,6 +151,30 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
+		public void ListAppSettingsStringDictionary()
+		{
+			var source = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
+				{
+				{"zz__example2", "source"
+				}}
+			};
+			
+			var to = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
+				{
+					{"zz__example2", "test"
+				}}
+			};
+
+			AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(), to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
+		}
+		
+		[TestMethod]
 		public void AppSettingsKeyValue_Compare()
 		{
 			var source = new AppSettings

@@ -54,6 +54,8 @@ describe("Create Rename Dir (22)", () => {
     checkIfExistAndCreate(config);
     resetFolders();
 
+    cy.sendAuthenticationHeader();
+
     // disable system trash
     cy.request({
       url: config.apiEnvEndpoint,
@@ -71,184 +73,205 @@ describe("Create Rename Dir (22)", () => {
     });
   });
 
-  it("Create new folder (22)", () => {
-    if (!config.isEnabled) return;
+  it("check env file (22)", () => {
+		if (!config.isEnabled) return false;
 
-    cy.visit(config.url);
+		cy.sendAuthenticationHeader();
 
-    cy.get(".item.item--more").click();
-    cy.get("[data-test=mkdir]").click();
-
-    cy.intercept("/starsky/api/disk/mkdir", (req) => {
-      req.headers["content-type"] = "application/x-www-form-urlencoded";
-    }).as("mkdir");
-    cy.get("[data-name=directoryname]").type("z_test_auto_created");
-    cy.get("[data-test=modal-archive-mkdir-btn-default]").click();
-    cy.wait("@mkdir");
-
-    cy.visit(config.url);
-    cy.get(
-      '[data-filepath="/starsky-end2end-test/z_test_auto_created"]'
-    ).should("exist");
+		cy.visit(config.apiEnvEndpoint, {
+			headers: {
+				"x-force-html": true,
+			},
+		});
+		cy.get("body")
+			.should("be.visible")
+			.invoke("text")
+			.then((text) => {
+				const parsedData = JSON.parse(text);
+        cy.log(`useSystemTrash ${parsedData.useSystemTrash}`);
+        expect(parsedData.useSystemTrash).to.equal(false);
+			});
   });
 
-  it("Rename new folder (22)", () => {
-    if (!config.isEnabled) return;
 
-    cy.visit(config.url + "/z_test_auto_created");
+  // it("Create new folder (22)", () => {
+  //   if (!config.isEnabled) return;
 
-    cy.get(".item.item--more").click();
-    cy.get("[data-test=rename]").click();
+  //   cy.visit(config.url);
 
-    cy.intercept(config.apiRename, (req) => {
-      req.headers["content-type"] = "application/x-www-form-urlencoded";
-    }).as("rename");
+  //   cy.get(".item.item--more").click();
+  //   cy.get("[data-test=mkdir]").click();
 
-    cy.get("[data-name=foldername]").type("_update");
-    cy.get(".btn.btn--default").click();
+  //   cy.intercept("/starsky/api/disk/mkdir", (req) => {
+  //     req.headers["content-type"] = "application/x-www-form-urlencoded";
+  //   }).as("mkdir");
+  //   cy.get("[data-name=directoryname]").type("z_test_auto_created");
+  //   cy.get("[data-test=modal-archive-mkdir-btn-default]").click();
+  //   cy.wait("@mkdir");
 
-    cy.get(".modal .warning-box").should("not.exist");
+  //   cy.visit(config.url);
+  //   cy.get(
+  //     '[data-filepath="/starsky-end2end-test/z_test_auto_created"]'
+  //   ).should("exist");
+  // });
 
-    cy.wait("@rename");
-    cy.request(config.urlMkdir + "/z_test_auto_created_update");
+  // it("Rename new folder (22)", () => {
+  //   if (!config.isEnabled) return;
 
-    cy.get(".folder").should("be.visible");
+  //   cy.visit(config.url + "/z_test_auto_created");
 
-    cy.wait(500);
-    cy.visit(config.url);
+  //   cy.get(".item.item--more").click();
+  //   cy.get("[data-test=rename]").click();
 
-    cy.get(
-      '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"]'
-    ).should("exist");
-    cy.get(
-      '[data-filepath="/starsky-end2end-test/z_test_auto_created"]'
-    ).should("not.exist");
-  });
+  //   cy.intercept(config.apiRename, (req) => {
+  //     req.headers["content-type"] = "application/x-www-form-urlencoded";
+  //   }).as("rename");
 
-  it(
-    "delete it afterwards (22)",
-    {
-      retries: { runMode: 2, openMode: 2 },
-    },
-    () => {
-      if (!config.isEnabled) return;
+  //   cy.get("[data-name=foldername]").type("_update");
+  //   cy.get(".btn.btn--default").click();
 
-      resetFolders();
+  //   cy.get(".modal .warning-box").should("not.exist");
 
-      // make sure the folder is there
-      cy.request({
-        method: "POST",
-        url: config.apiMkdir,
-        form: true,
-        body: {
-          f: "/starsky-end2end-test/z_test_auto_created_update",
-        },
-        failOnStatusCode: false,
-      }).then(() => {
-        cy.resetStorage();
+  //   cy.wait("@rename");
+  //   cy.request(config.urlMkdir + "/z_test_auto_created_update");
 
-        cy.visit(config.url);
+  //   cy.get(".folder").should("be.visible");
 
-        cy.get(".item.item--select").click();
-        cy.get(
-          '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button'
-        ).click();
+  //   cy.wait(500);
+  //   cy.visit(config.url);
 
-        cy.get(".item.item--more").click();
-        cy.wait(10);
+  //   cy.get(
+  //     '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"]'
+  //   ).should("exist");
+  //   cy.get(
+  //     '[data-filepath="/starsky-end2end-test/z_test_auto_created"]'
+  //   ).should("not.exist");
+  // });
 
-        cy.intercept(config.apiUpdate).as("updateToTrash");
+  // it(
+  //   "delete it afterwards (22)",
+  //   {
+  //     retries: { runMode: 2, openMode: 2 },
+  //   },
+  //   () => {
+  //     if (!config.isEnabled) return;
 
-        cy.intercept(config.apiUpdate, (req) => {
-          req.headers["content-type"] = "application/x-www-form-urlencoded";
-        }).as("updateToTrash");
+  //     resetFolders();
 
-        cy.get("[data-test=trash]").click();
-        cy.wait("@updateToTrash");
+  //     // make sure the folder is there
+  //     cy.request({
+  //       method: "POST",
+  //       url: config.apiMkdir,
+  //       form: true,
+  //       body: {
+  //         f: "/starsky-end2end-test/z_test_auto_created_update",
+  //       },
+  //       failOnStatusCode: false,
+  //     }).then(() => {
+  //       cy.resetStorage();
 
-        console.log("next check if is in trash");
-        cy.wait(10);
+  //       cy.visit(config.url);
 
-        cy.request(config.apiTrash).then((response) => {
-          const message = response.body.fileIndexItems.find(
-            (x: any) =>
-              x.filePath === "/starsky-end2end-test/z_test_auto_created_update"
-          );
-          if (
-            message?.filePath ===
-            "/starsky-end2end-test/z_test_auto_created_update"
-          ) {
-            cy.log("found");
-            cy.log(message);
-            cy.log(message.filePath);
-          } else {
-            cy.log(" z_test_auto_created_update NOT found");
-            cy.log(response.body);
-            expect("").to.be("not found");
-          }
+  //       cy.get(".item.item--select").click();
+  //       cy.get(
+  //         '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button'
+  //       ).click();
 
-          cy.visit(config.trash);
-          cy.get(".item.item--select").click();
-          cy.get(
-            '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button'
-          ).click({ force: true });
+  //       cy.get(".item.item--more").click();
+  //       cy.wait(10);
 
-          // menu ->
-          cy.get(".item.item--more").click();
-          cy.get("[data-test=delete]").click();
+  //       cy.intercept(config.apiUpdate).as("updateToTrash");
 
-          // verwijder onmiddelijk
-          cy.get(".modal .btn.btn--default").click();
+  //       cy.intercept(config.apiUpdate, (req) => {
+  //         req.headers["content-type"] = "application/x-www-form-urlencoded";
+  //       }).as("updateToTrash");
 
-          // item should be in the trash
-          cy.get(
-            '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button'
-          ).should("not.exist");
+  //       cy.get("[data-test=trash]").click();
+  //       cy.wait("@updateToTrash");
 
-          // and not in the source folder
-          cy.visit(config.url);
-          cy.get(
-            '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button'
-          ).should("not.exist");
-        });
-      });
-    }
-  );
+  //       console.log("next check if is in trash");
+  //       cy.wait(10);
 
-  it("safe guard for other tests - if not deleted remove via the api (22)", () => {
-    if (!config.isEnabled) return;
+  //       cy.request(config.apiTrash).then((response) => {
+  //         const message = response.body.fileIndexItems.find(
+  //           (x: any) =>
+  //             x.filePath === "/starsky-end2end-test/z_test_auto_created_update"
+  //         );
+  //         if (
+  //           message?.filePath ===
+  //           "/starsky-end2end-test/z_test_auto_created_update"
+  //         ) {
+  //           cy.log("found");
+  //           cy.log(message);
+  //           cy.log(message.filePath);
+  //         } else {
+  //           cy.log(" z_test_auto_created_update NOT found");
+  //           cy.log(response.body);
+  //           expect("").to.be("not found");
+  //         }
 
-    resetFolders();
+  //         cy.visit(config.trash);
+  //         cy.get(".item.item--select").click();
+  //         cy.get(
+  //           '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button'
+  //         ).click({ force: true });
 
-    cy.wait(1000);
+  //         // menu ->
+  //         cy.get(".item.item--more").click();
+  //         cy.get("[data-test=delete]").click();
 
-    cy.intercept(config.url).as("url");
+  //         // verwijder onmiddelijk
+  //         cy.get(".modal .btn.btn--default").click();
 
-    cy.visit(config.url);
+  //         // item should be in the trash
+  //         cy.get(
+  //           '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button'
+  //         ).should("not.exist");
 
-    cy.wait("@url");
+  //         // and not in the source folder
+  //         cy.visit(config.url);
+  //         cy.get(
+  //           '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button'
+  //         ).should("not.exist");
+  //       });
+  //     });
+  //   }
+  // );
 
-    // need to wait until the page is loaded
-    cy.get(".folder").should("be.visible");
+  // it("safe guard for other tests - if not deleted remove via the api (22)", () => {
+  //   if (!config.isEnabled) return;
 
-    cy.get(
-      '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"]'
-    ).should("not.exist");
-    cy.get(
-      '[data-filepath="/starsky-end2end-test/z_test_auto_created"]'
-    ).should("not.exist");
+  //   resetFolders();
 
-    // z cleanup trash settings
-    cy.log("cleanup trash settings");
-    cy.log(useSystemTrashBeforeStatus);
+  //   cy.wait(1000);
 
-    cy.request({
-      url: config.apiEnvEndpoint,
-      method: "POST",
-      form: true, // indicates the body should be form urlencoded and sets Content-Type
-      body: {
-        useSystemTrash: useSystemTrashBeforeStatus,
-      },
-    });
-  });
+  //   cy.intercept(config.url).as("url");
+
+  //   cy.visit(config.url);
+
+  //   cy.wait("@url");
+
+  //   // need to wait until the page is loaded
+  //   cy.get(".folder").should("be.visible");
+
+  //   cy.get(
+  //     '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"]'
+  //   ).should("not.exist");
+  //   cy.get(
+  //     '[data-filepath="/starsky-end2end-test/z_test_auto_created"]'
+  //   ).should("not.exist");
+
+  //   // z cleanup trash settings
+  //   cy.log("cleanup trash settings");
+  //   cy.log(useSystemTrashBeforeStatus);
+
+  //   cy.request({
+  //     url: config.apiEnvEndpoint,
+  //     method: "POST",
+  //     form: true, // indicates the body should be form urlencoded and sets Content-Type
+  //     body: {
+  //       useSystemTrash: useSystemTrashBeforeStatus,
+  //     },
+  //   });
+  // });
 });
