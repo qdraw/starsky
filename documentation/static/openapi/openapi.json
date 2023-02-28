@@ -10226,6 +10226,69 @@
       "parameters": [],
       "extensions": {}
     },
+    "/api/trash/detect-to-use-system-trash": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "Trash",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Is the system trash supported",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "the item including the updated content",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "boolean",
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "User unauthorized",
+              "headers": {},
+              "content": {},
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {}
+    },
     "/api/trash/move-to-trash": {
       "operations": {
         "Post": {
@@ -11540,6 +11603,38 @@
               "referenceV3": "#/components/schemas/AppAccountRoles",
               "referenceV2": "#/definitions/AppAccountRoles"
             }
+          },
+          "accountRolesByEmailRegisterOverwrite": {
+            "type": "object",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "additionalProperties": {
+              "type": "string",
+              "readOnly": false,
+              "writeOnly": false,
+              "allOf": [],
+              "oneOf": [],
+              "anyOf": [],
+              "required": [],
+              "properties": {},
+              "additionalPropertiesAllowed": true,
+              "enum": [],
+              "nullable": true,
+              "deprecated": false,
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
           },
           "accountRegisterFirstRoleAdmin": {
             "type": "boolean",
