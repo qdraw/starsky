@@ -53,8 +53,9 @@ public class TrashControllerTest
 		
 		var result = controller.DetectToUseSystemTrash() as JsonResult;
 		
-		bool.TryParse(result?.Value?.ToString(), out var resultValue);
+		var tryParseResult = bool.TryParse(result?.Value?.ToString(), out var resultValue);
 		
+		Assert.AreEqual(true, tryParseResult);
 		Assert.AreEqual(true, resultValue);
 	}
 }
