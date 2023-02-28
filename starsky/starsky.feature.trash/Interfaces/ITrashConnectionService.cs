@@ -5,5 +5,5 @@ namespace starsky.feature.trash.Interfaces;
 public interface ITrashConnectionService
 {
 	Task<List<FileIndexItem>> ConnectionServiceAsync(List<FileIndexItem> moveToTrash,
-		FileIndexItem.ExifStatus status);
+		bool isSystemTrash);
 }

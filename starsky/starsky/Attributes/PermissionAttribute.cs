@@ -44,6 +44,8 @@ namespace starsky.Attributes
 				context.Result =  new UnauthorizedResult();
 				return;
 			}
+			
+			// add header for testing
 			context.HttpContext.Response.Headers.TryAdd("x-permission", "true");
 		}
 	}

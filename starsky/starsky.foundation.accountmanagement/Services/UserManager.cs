@@ -215,6 +215,32 @@ namespace starsky.foundation.accountmanagement.Services
 		}
 
 		/// <summary>
+		/// AccountRegisterFirstRoleAdmin: Add first user as admin to avoid editing issues editing the storage location
+		/// AccountRolesByEmailRegisterOverwrite: Overwrite the default role with a role from the config
+		/// </summary>
+		/// <param name="identifier">email address</param>
+		/// <param name="user">not any except it item itself</param>
+		/// <returns>RoleName in string</returns>
+		internal string GetRoleAddToUser(string identifier, User user)
+		{
+			var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
+			
+			if (_appSettings.AccountRegisterFirstRoleAdmin == true && !_dbContext.Users.Any(p => p != user) )
+			{
+				return AccountRoles.AppAccountRoles.Administrator.ToString();
+			}
+
+			if ( _appSettings.AccountRolesByEmailRegisterOverwrite
+			    .TryGetValue(identifier, out var emailsForConfig) && 
+			     AccountRoles.GetAllRoles().Contains(emailsForConfig) )
+			{
+				return emailsForConfig;
+			}
+
+			return roleToAddToUser;
+		}
+
+		/// <summary>
 		/// Add a new user, including Roles and UserRoles
 		/// </summary>
 		/// <param name="name">Nice Name, default string.Emthy</param>
@@ -233,13 +259,6 @@ namespace starsky.foundation.accountmanagement.Services
 			if ( string.IsNullOrEmpty(identifier) || string.IsNullOrEmpty(secret))
 			{
 				return new SignUpResult(success: false, error: SignUpResultError.NullString);
-			}
-	        
-			// Add first user as admin to avoid editing issues editing the storage location
-			var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
-			if (_appSettings.AccountRegisterFirstRoleAdmin == true && !_dbContext.Users.Any() )
-			{
-				roleToAddToUser = AccountRoles.AppAccountRoles.Administrator.ToString();
 			}
 			
 			// The email is stored in the Credentials database
@@ -265,7 +284,7 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 
 			// Add a user role based on a user id
-			var roleToAdd = roles.FirstOrDefault(p => p.Code == roleToAddToUser);
+			var roleToAdd = roles.FirstOrDefault(p => p.Code == GetRoleAddToUser(identifier,user));
 			AddToRole(user, roleToAdd);
 
 			if (credentialType == null)

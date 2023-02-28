@@ -18,7 +18,7 @@ public class TrashConnectionServiceTest
 		var notificationQuery = new FakeINotificationQuery();
 		var trashConnectionService = new TrashConnectionService(webSocketService, notificationQuery);
 		var moveToTrash = new List<FileIndexItem>{new FileIndexItem("/test.jpg")};
-		var result = await trashConnectionService.ConnectionServiceAsync(moveToTrash, FileIndexItem.ExifStatus.NotFoundSourceMissing);
+		var result = await trashConnectionService.ConnectionServiceAsync(moveToTrash, true);
 		
 		Assert.IsNotNull(result);
 		Assert.AreEqual(1,result.Count);
@@ -34,7 +34,7 @@ public class TrashConnectionServiceTest
 		var notificationQuery = new FakeINotificationQuery();
 		var trashConnectionService = new TrashConnectionService(webSocketService, notificationQuery);
 		var moveToTrash = new List<FileIndexItem>{new FileIndexItem("/test.jpg")};
-		var result = await trashConnectionService.ConnectionServiceAsync(moveToTrash, FileIndexItem.ExifStatus.Deleted);
+		var result = await trashConnectionService.ConnectionServiceAsync(moveToTrash, false);
 		
 		Assert.IsNotNull(result);
 		Assert.AreEqual(1,result.Count);
@@ -50,10 +50,9 @@ public class TrashConnectionServiceTest
 		var notificationQuery = new FakeINotificationQuery();
 		var trashConnectionService = new TrashConnectionService(webSocketService, notificationQuery);
 		var moveToTrash = new List<FileIndexItem>{new FileIndexItem("/test.jpg")};
-		 await trashConnectionService.ConnectionServiceAsync(moveToTrash, FileIndexItem.ExifStatus.NotFoundSourceMissing);
+		 await trashConnectionService.ConnectionServiceAsync(moveToTrash, true);
 		 
 		Assert.AreEqual(1,webSocketService.FakeSendToAllAsync.Count);
 		Assert.AreEqual(1,notificationQuery.FakeContent.Count);
-
 	}
 }

@@ -86,6 +86,10 @@ for ((i = 1; i <= $#; i++ )); do
     then
         OUTPUT_DIR="${ARGUMENTS[CURRENT]}"
     fi
+    if [[ ${ARGUMENTS[PREV]} == "--branch" ]];
+    then
+        BRANCH="${ARGUMENTS[CURRENT]}"
+    fi
   fi
 done
 
@@ -125,6 +129,9 @@ fi
 echo ""
 
 ACTIONS_WORKFLOW_URL="https://api.github.com/repos/qdraw/starsky/actions/workflows/"$WORKFLOW_ID"/runs?status=completed&per_page=1&exclude_pull_requests=true"
+if [ ! -z $BRANCH ]; then
+    ACTIONS_WORKFLOW_URL=$ACTIONS_WORKFLOW_URL"&branch="$BRANCH
+fi
 
 # First check if output is not an 401 or 404
 API_GATEWAY_STATUS_CODE=$(curl --write-out %{http_code} \

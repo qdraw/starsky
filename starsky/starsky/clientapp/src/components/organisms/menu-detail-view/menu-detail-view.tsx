@@ -6,7 +6,10 @@ import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../../hooks/use-location";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import { Orientation } from "../../../interfaces/IFileIndexItem";
+import {
+  IFileIndexItem,
+  Orientation
+} from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import { Comma } from "../../../shared/comma";
@@ -167,7 +170,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
       const resultDo = await FetchPost(
-        new UrlQuery().UrlUpdateApi(),
+        new UrlQuery().UrlMoveToTrashApi(),
         bodyParams.toString()
       );
       if (
@@ -181,10 +184,17 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
         setIsLoading(false);
         return;
       }
-      dispatch({ type: "append", tags: "!delete!" });
+
+      let newStatus = (resultDo.data as IFileIndexItem[])?.find(
+        (x) => x.filePath === state.subPath
+      )?.status;
+      if (!newStatus) {
+        newStatus = IExifStatus.Deleted;
+      }
+
       dispatch({
         type: "update",
-        status: IExifStatus.Deleted,
+        status: newStatus,
         lastEdited: new Date().toISOString()
       });
       setIsLoading(false);

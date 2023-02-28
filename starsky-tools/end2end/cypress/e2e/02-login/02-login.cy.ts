@@ -24,7 +24,9 @@ describe('Login (02)', () => {
   }, () => {
     if (!config.isEnabled) return false
 
-    cy.intercept('/starsky/api/account/status').as('status')
+    cy.intercept('/starsky/api/account/status', (req) => {
+      req.headers['content-type'] = 'application/x-www-form-urlencoded'
+    }).as('status')
 
     /* Start flow (connection header prevents script from
         occassionaly throwing ESOCKETTIMEDOUT errors in CI) */
@@ -33,7 +35,12 @@ describe('Login (02)', () => {
         Connection: 'Keep-Alive'
       }
     })
+
     cy.wait('@status')
+
+    cy.intercept('/starsky/api/account/login', (req) => {
+      req.headers['content-type'] = 'application/x-www-form-urlencoded'
+    }).as('login')
 
     cy.get(flow.form).within(() => {
       cy.get(flow.fields.name).type(Cypress.env('AUTH_USER'))

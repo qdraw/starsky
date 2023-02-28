@@ -60,9 +60,18 @@ describe('Upload to folder (10)', () => {
     const fileType = 'image/jpeg'
     const fileInput = '.menu-option--input input[type=file]'
 
-    cy.intercept('/starsky/api/upload').as('upload2')
+    cy.log('next upload 2')
+
+    cy.intercept('/starsky/api/upload', (req) => {
+      req.headers['to'] = config.mkdirPath + "/" + fileName2,
+      req.headers['to2'] = config.mkdirPath + "/" + fileName2
+
+    }).as('upload2')
+
     cy.uploadFile(fileName2, fileType, fileInput)
     cy.wait('@upload2')
+
+    cy.log('upload 2 done')
 
     cy.get('[data-test=upload-files] li').should(($lis) => {
       expect($lis).to.have.length(1)

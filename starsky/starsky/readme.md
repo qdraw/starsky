@@ -38,7 +38,8 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 2.  Use Environment variables to overwrite those base settings
    For `ThumbnailTempFolder` use `app__ThumbnailTempFolder`
    ([source](https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916))  
-3.  Command line argumements in the Cli applications to set in-app environment variables
+    Dictionaries can be used this way: `app__accountRolesByEmailRegisterOverwrite__test@mail.be`
+3.  Command line arguments in the Cli applications to set in-app environment variables
 
 ### Required settings to start
 1. To start it is __not__ mandatory to adjust any settings.
@@ -90,6 +91,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 35. `ThumbnailGenerationIntervalInMinutes` Interval to generate thumbnails, to disable use value lower than 3 _default 15_ 
 36. `GeoFilesSkipDownloadOnStartup` Skip download of GeoFiles on startup, _recommend to keep this false or null_ - _default false_
 37. `ExiftoolSkipDownloadOnStartup` Skip download of Exiftool on startup, _recommend to keep this false or null_ - _default false_
+38. `AccountRolesByEmailRegisterOverwrite` Overwrite the default role for a user by email address, _default empty list_
 
 ### Appsettings.json example
 ```json

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.database.Models;
@@ -8,6 +9,7 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.Controllers;
 
+[Authorize]
 public class TrashController : Controller
 {
 	private readonly IMoveToTrashService _moveToTrashService;
@@ -17,6 +19,20 @@ public class TrashController : Controller
 		_moveToTrashService = moveToTrashService;
 	}
 
+	/// <summary>
+	/// Is the system trash supported
+	/// </summary>
+	/// <returns>bool with json (IActionResult Result)</returns>
+	/// <response code="200">the item including the updated content</response>
+	/// <response code="401">User unauthorized</response>
+	[ProducesResponseType(typeof(bool), 200)]
+	[HttpGet("/api/trash/detect-to-use-system-trash")]
+	[Produces("application/json")]
+	public IActionResult DetectToUseSystemTrash()
+	{
+		return Json(_moveToTrashService.DetectToUseSystemTrash());
+	}
+	
 	/// <summary>
 	/// (beta) Move a file to the trash
 	/// </summary>
@@ -41,14 +57,6 @@ public class TrashController : Controller
 		}
 
 		var fileIndexResultsList = await _moveToTrashService.MoveToTrashAsync(inputFilePaths, collections);
-		
-		// When all items are not found
-		if ( fileIndexResultsList.All(p =>
-			    p.Status != FileIndexItem.ExifStatus.Ok
-			    && p.Status != FileIndexItem.ExifStatus.Deleted) )
-		{
-			return NotFound(fileIndexResultsList);
-		}
 		
 		return Json(fileIndexResultsList);
 	}

@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.worker.CpuEventListener.Interfaces;
 using starskycore.ViewModels;
 
 namespace starsky.Controllers;
 
+[Authorize]
 [ApiExplorerSettings(IgnoreApi = true)]
 public class MetricsDebugController : Controller
 {

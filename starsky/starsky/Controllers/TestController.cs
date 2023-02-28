@@ -3,6 +3,7 @@ using starsky.foundation.platform.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash;
 using starsky.foundation.native.Trash.Helpers;
@@ -11,6 +12,7 @@ using starskycore.Attributes;
 
 namespace starsky.Controllers
 {
+	[Authorize]
 	[ApiExplorerSettings(IgnoreApi=true)]
 	public class TestController : Controller
 	{

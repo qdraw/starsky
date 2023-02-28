@@ -45,6 +45,44 @@ public class MoveToTrashServiceTest
 	}
 	
 	[TestMethod]
+	public async Task InSystemTrash_Status()
+	{
+		const string path = "/test/test.jpg";
+		var trashService = new FakeITrashService();
+		var appSettings = new AppSettings { UseSystemTrash = true };
+		var moveToTrashService = new MoveToTrashService(appSettings, new FakeIQuery(new List<FileIndexItem>{new FileIndexItem(path)
+			{
+				Status = FileIndexItem.ExifStatus.Ok
+			}}), 
+			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(), 
+			trashService, new FakeIMetaUpdateService(), 
+			new FakeITrashConnectionService());
+
+		var result = await moveToTrashService.MoveToTrashAsync(new List<string>{path}.ToArray(), true);
+		
+		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.FirstOrDefault()?.Status);
+	}
+	
+	[TestMethod]
+	public async Task InMetaTrash_Status()
+	{
+		const string path = "/test/test.jpg";
+		var trashService = new FakeITrashService();
+		var appSettings = new AppSettings { UseSystemTrash = false };
+		var moveToTrashService = new MoveToTrashService(appSettings, new FakeIQuery(new List<FileIndexItem>{new FileIndexItem(path)
+			{
+				Status = FileIndexItem.ExifStatus.Ok
+			}}), 
+			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(), 
+			trashService, new FakeIMetaUpdateService(), 
+			new FakeITrashConnectionService());
+
+		var result = await moveToTrashService.MoveToTrashAsync(new List<string>{path}.ToArray(), true);
+		
+		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result.FirstOrDefault()?.Status);
+	}
+	
+	[TestMethod]
 	public async Task InMetaTrash_StatusOk_IsNotSupported_AndEnabled()
 	{
 		const string path = "/test/test.jpg";
@@ -152,5 +190,19 @@ public class MoveToTrashServiceTest
 		Assert.AreEqual(0, trashService.InTrash.Count);
 
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result.FirstOrDefault()?.Tags);
+	}
+	
+	[TestMethod]
+	public void DetectToUseSystemTrash_False()
+	{
+		var trashService = new FakeITrashService(){IsSupported = false};
+		var moveToTrashService = new MoveToTrashService(new AppSettings(), new FakeIQuery(), 
+			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(), 
+			trashService, new FakeIMetaUpdateService(), 
+			new FakeITrashConnectionService());
+
+		var result =  moveToTrashService.DetectToUseSystemTrash();
+		
+		Assert.AreEqual(false, result);
 	}
 }

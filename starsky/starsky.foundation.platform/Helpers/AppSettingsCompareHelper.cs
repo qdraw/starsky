@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
@@ -76,6 +77,16 @@ namespace starsky.foundation.platform.Helpers
 			            newListPublishProfilesValue, differenceList);
 	            }
 	            
+	            if ( propertyB.PropertyType == typeof(Dictionary<string, string>) )
+	            {
+		            var oldDictionaryValue = ( Dictionary<string, string> ?) 
+			            propertyInfoFromA.GetValue(sourceIndexItem, null);
+		            var newDictionaryValue = ( Dictionary<string, string> ?) 
+			            propertyB.GetValue(updateObject, null);
+		            CompareStringDictionary(propertyB.Name, sourceIndexItem, oldDictionaryValue,
+			            newDictionaryValue, differenceList);
+	            }
+	            
 	            if ( propertyB.PropertyType == typeof(List<AppSettingsKeyValue>) )
 	            {
 		            var oldKeyValuePairStringStringValue = (List<AppSettingsKeyValue>?)propertyInfoFromA.GetValue(sourceIndexItem, null);
@@ -87,11 +98,27 @@ namespace starsky.foundation.platform.Helpers
             return differenceList;
         }
 
+	    private static void CompareStringDictionary(string propertyName, AppSettings sourceIndexItem, 
+		    Dictionary<string, string>? oldDictionaryValue, 
+		    Dictionary<string, string>? newDictionaryValue, List<string> differenceList)
+	    {
+		    if ( oldDictionaryValue == null || newDictionaryValue?.Count == 0 ) return;
+		    if ( JsonSerializer.Serialize(oldDictionaryValue,
+			         DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newDictionaryValue,
+			         DefaultJsonSerializer.CamelCase) )
+		    {
+			    return;
+		    }
+		    
+		    sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newDictionaryValue, null);
+		    differenceList.Add(propertyName.ToLowerInvariant());
+	    }
+
 	    private static void CompareKeyValuePairStringString(string propertyName, AppSettings sourceIndexItem, 
 		    List<AppSettingsKeyValue>? oldKeyValuePairStringStringValue, 
 		    List<AppSettingsKeyValue>? newKeyValuePairStringStringValue, List<string> differenceList)
 	    {
-		    if ( oldKeyValuePairStringStringValue == null || newKeyValuePairStringStringValue?.Count == 0 ) return;
+		    if ( oldKeyValuePairStringStringValue == null || newKeyValuePairStringStringValue == null || newKeyValuePairStringStringValue.Count == 0 ) return;
 		    if ( oldKeyValuePairStringStringValue.Equals(newKeyValuePairStringStringValue)) return;
 
 		    sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newKeyValuePairStringStringValue, null);
@@ -128,7 +155,12 @@ namespace starsky.foundation.platform.Helpers
 		    List<string>? oldListStringValue, List<string>? newListStringValue, List<string> differenceList)
 	    {
 		    if ( oldListStringValue == null || newListStringValue?.Count == 0 ) return;
-		    if ( oldListStringValue.Equals(newListStringValue) ) return;
+		    if ( JsonSerializer.Serialize(oldListStringValue,
+			        DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newListStringValue,
+			        DefaultJsonSerializer.CamelCase) )
+		    {
+			    return;
+		    }
 		    
 		    sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newListStringValue, null);
 		    differenceList.Add(propertyName.ToLowerInvariant());

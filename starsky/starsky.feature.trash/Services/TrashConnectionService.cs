@@ -23,8 +23,12 @@ public class TrashConnectionService : ITrashConnectionService
 	}
 	
 	public async Task<List<FileIndexItem>> ConnectionServiceAsync( List<FileIndexItem> moveToTrash, 
-		FileIndexItem.ExifStatus status)
+		bool isSystemTrash)
 	{
+		var status = isSystemTrash
+			? FileIndexItem.ExifStatus.NotFoundSourceMissing
+			: FileIndexItem.ExifStatus.Deleted;
+		
 		foreach ( var item in moveToTrash )
 		{
 			item.Status = status;

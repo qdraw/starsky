@@ -17,8 +17,10 @@ export default defineConfig({
   },
   viewportHeight: 900,
   viewportWidth: 1280,
-  experimentalFetchPolyfill: true,
   screenshotsFolder: 'cypress/screenshots/build',
+  blockHosts: [
+    '*.applicationinsights.azure.com'
+  ],
   e2e: {
     setupNodeEvents (on, config) {
       if (process.env.CYPRESS_BASE_URL && process.env.cypress_name && process.env.cypress_AUTH_USER && process.env.cypress_AUTH_PASS) {

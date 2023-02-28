@@ -39,7 +39,7 @@ namespace starsky.foundation.accountmanagement.Middleware
 				context.Request.Path.Value.EndsWith("api/account/status") ||
 				context.Request.Path.Value.EndsWith("api/env/"));
 
-			if (context.User.Identity.IsAuthenticated && isApiCall)
+			if (context.User.Identity?.IsAuthenticated == true && isApiCall)
 			{
 				var userManager = (IUserManager) context.RequestServices.GetService(typeof(IUserManager));
 

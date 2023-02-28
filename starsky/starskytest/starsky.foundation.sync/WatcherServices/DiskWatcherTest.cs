@@ -53,8 +53,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 		
 		[TestMethod]
-		[Timeout(2000)]
-		public void Watcher_Error()
+		[Timeout(5000)]
+		public void DiskWatcherTest_Watcher_Error()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 			

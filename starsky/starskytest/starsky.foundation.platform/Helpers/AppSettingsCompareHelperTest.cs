@@ -84,8 +84,10 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				ReadOnlyFolders = new List<string>{"/same"}
 			};
 
-			AppSettingsCompareHelper.Compare(source, source);
+			var compare = AppSettingsCompareHelper.Compare(source, source);
+				
 			Assert.AreEqual(source.ReadOnlyFolders.FirstOrDefault(), to.ReadOnlyFolders.FirstOrDefault());
+			Assert.AreEqual(0, compare.Count);
 		}
 		
 		[TestMethod]
@@ -145,10 +147,169 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				}
 			};
 
-			AppSettingsCompareHelper.Compare(source, to);
+			var compare = AppSettingsCompareHelper.Compare(source, to);
 			
 			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
+			Assert.AreEqual("PublishProfiles".ToLowerInvariant(), compare.FirstOrDefault());
+
 		}
+		
+		[TestMethod]
+		public void ListAppSettingsStringDictionary_Changed()
+		{
+			var source = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
+				{
+				{"zz__example2", "Administrator"
+				}}
+			};
+			
+			var to = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
+				{
+					{"zz__example2", "User"
+				}}
+			};
+
+			var compare = AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(), to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
+			Assert.AreEqual("AccountRolesByEmailRegisterOverwrite".ToLowerInvariant(), compare.FirstOrDefault());
+		}
+		
+		[TestMethod]
+		public void ListAppSettingsStringDictionary_Equal()
+		{
+			var source = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
+				{
+				{"zz__example2", "Administrator"
+				}}
+			};
+			
+			var to = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = source.AccountRolesByEmailRegisterOverwrite
+			};
+
+			var compare = AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(source.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault(), to.AccountRolesByEmailRegisterOverwrite.Keys.FirstOrDefault());
+			Assert.AreEqual(0, compare.Count);
+		}
+		
+		[TestMethod]
+		public void ListAppSettingsStringDictionary_IgnoreOverwrite()
+		{
+			var source = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = new Dictionary<string, string>
+				{
+				{"zz__example2", "Administrator"
+				}}
+			};
+			
+			var to = new AppSettings
+			{
+				AccountRolesByEmailRegisterOverwrite = null
+			};
+
+			AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(null, to.AccountRolesByEmailRegisterOverwrite?.Keys.FirstOrDefault());
+		}
+		
+		[TestMethod]
+		public void KeyValuePairStringString_Changed()
+		{
+			var source = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "1",
+						Value = "2"
+					}
+				}
+			};
+			
+			var to = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "3",
+						Value = "4"
+					}
+				}
+			};
+
+			var compare = AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Key, to.DemoData.FirstOrDefault()?.Key);
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Value, to.DemoData.FirstOrDefault()?.Value);
+
+			Assert.AreEqual("DemoData".ToLowerInvariant(), compare.FirstOrDefault());
+		}
+		
+		[TestMethod]
+		public void KeyValuePairStringString_Equal()
+		{
+			var source = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "1",
+						Value = "2"
+					}
+				}
+			};
+			
+			var to = new AppSettings
+			{
+				DemoData = source.DemoData
+			};
+
+			var compare = AppSettingsCompareHelper.Compare(source, to);
+
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Key, to.DemoData.FirstOrDefault()?.Key);
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Value, to.DemoData.FirstOrDefault()?.Value);
+			Assert.AreEqual(0, compare.Count);
+		}
+		
+		[TestMethod]
+		public void KeyValuePairStringString_IgnoreOverwrite()
+		{
+			var source = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "1",
+						Value = "2"
+					}
+				}
+			};
+			
+			var to = new AppSettings
+			{
+				DemoData = null
+			};
+
+			var compare = AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(null, to.DemoData?.FirstOrDefault());
+			Assert.AreEqual(0, compare.Count);
+		}
+
 		
 		[TestMethod]
 		public void AppSettingsKeyValue_Compare()

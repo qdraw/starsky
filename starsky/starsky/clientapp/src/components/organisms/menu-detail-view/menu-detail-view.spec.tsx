@@ -418,7 +418,7 @@ describe("MenuDetailView", () => {
       expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
       expect(spy).toBeCalledWith(
-        new UrlQuery().UrlUpdateApi(),
+        new UrlQuery().UrlMoveToTrashApi(),
         "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true"
       );
 

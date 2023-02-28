@@ -10,12 +10,6 @@ namespace starsky.foundation.worker.CpuEventListener;
 [Service(typeof(ICpuUsageListener), InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 {
-	private readonly IWebLogger _logger;
-
-	public CpuUsageListener(IWebLogger logger)	
-	{
-		_logger = logger;
-	}
 	public double CpuUsageMean { get; private set; }
 	public bool IsReady { get; private set; } = false;
 
@@ -48,8 +42,6 @@ public sealed class CpuUsageListener : EventListener, ICpuUsageListener
 		if ( value is not double dValue ) return;
 		CpuUsageMean = dValue;
 		IsReady = true;
-
-		_logger.LogDebug($"CPU Usage: {dValue}%");
 	}
 }
 

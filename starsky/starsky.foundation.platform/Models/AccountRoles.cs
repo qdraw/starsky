@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace starsky.foundation.platform.Models
 {
 	public static class AccountRoles
@@ -6,6 +9,11 @@ namespace starsky.foundation.platform.Models
 		{
 			User,
 			Administrator
+		}
+		
+		public static IEnumerable<string> GetAllRoles()
+		{
+			return Enum.GetNames(typeof(AppAccountRoles));
 		}
 	}
 }

@@ -238,6 +238,13 @@ export class UrlQuery {
   };
 
   /**
+   * POST to trash this item
+   */
+  public UrlMoveToTrashApi = (): string => {
+    return this.prefix + "/api/trash/move-to-trash";
+  };
+
+  /**
    * GET recent notifications
    */
   public UrlNotificationsGetApi = (keepAliveServerTime: string): string => {

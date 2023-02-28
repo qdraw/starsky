@@ -37,8 +37,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public async Task ShouldGive1Result_BasicQuery()
 		{
+			// make sure the database is empty
+			foreach ( var item in await _query.GetAllRecursiveAsync() )
+			{
+				await _query.RemoveItemAsync(item);
+			}
+			
 			var itemAsync = await _query.AddItemAsync(new FileIndexItem("/test.jpg"));
 			var result = await _query.CountAsync();
+			
 			Assert.AreEqual(1,result);
 			await _query.RemoveItemAsync(itemAsync);
 		}

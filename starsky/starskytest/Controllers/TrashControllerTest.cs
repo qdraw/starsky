@@ -25,7 +25,7 @@ public class TrashControllerTest
 	{
 		var controller = new TrashController(
 			new FakeIMoveToTrashService(new List<FileIndexItem>()));
-		var result = await controller.TrashMoveAsync("/test.jpg", true) as NotFoundObjectResult;
+		var result = await controller.TrashMoveAsync("/test.jpg", true) as JsonResult;
 		var resultValue = result?.Value as List<FileIndexItem>;
 		
 		Assert.AreEqual(1, resultValue?.Count);
@@ -43,5 +43,19 @@ public class TrashControllerTest
 		var resultValue = result?.Value as List<FileIndexItem>;
 		
 		Assert.AreEqual(1, resultValue?.Count);
+	}
+	
+	[TestMethod]
+	public void DetectToUseSystemTrash_Ok()
+	{
+		var controller = new TrashController(
+			new FakeIMoveToTrashService(new List<FileIndexItem>()));
+		
+		var result = controller.DetectToUseSystemTrash() as JsonResult;
+		
+		var tryParseResult = bool.TryParse(result?.Value?.ToString(), out var resultValue);
+		
+		Assert.AreEqual(true, tryParseResult);
+		Assert.AreEqual(true, resultValue);
 	}
 }
