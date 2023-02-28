@@ -223,6 +223,95 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
+		public void KeyValuePairStringString_Changed()
+		{
+			var source = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "1",
+						Value = "2"
+					}
+				}
+			};
+			
+			var to = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "3",
+						Value = "4"
+					}
+				}
+			};
+
+			var compare = AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Key, to.DemoData.FirstOrDefault()?.Key);
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Value, to.DemoData.FirstOrDefault()?.Value);
+
+			Assert.AreEqual("DemoData".ToLowerInvariant(), compare.FirstOrDefault());
+		}
+		
+		[TestMethod]
+		public void KeyValuePairStringString_Equal()
+		{
+			var source = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "1",
+						Value = "2"
+					}
+				}
+			};
+			
+			var to = new AppSettings
+			{
+				DemoData = source.DemoData
+			};
+
+			var compare = AppSettingsCompareHelper.Compare(source, to);
+
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Key, to.DemoData.FirstOrDefault()?.Key);
+			Assert.AreEqual(source.DemoData.FirstOrDefault()?.Value, to.DemoData.FirstOrDefault()?.Value);
+			Assert.AreEqual(0, compare.Count);
+		}
+		
+		[TestMethod]
+		public void KeyValuePairStringString_IgnoreOverwrite()
+		{
+			var source = new AppSettings
+			{
+				DemoData = new List<AppSettingsKeyValue>
+				{
+					new AppSettingsKeyValue
+					{
+						Key = "1",
+						Value = "2"
+					}
+				}
+			};
+			
+			var to = new AppSettings
+			{
+				DemoData = null
+			};
+
+			var compare = AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(null, to.DemoData?.FirstOrDefault());
+			Assert.AreEqual(0, compare.Count);
+		}
+
+		
+		[TestMethod]
 		public void AppSettingsKeyValue_Compare()
 		{
 			var source = new AppSettings

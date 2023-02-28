@@ -118,7 +118,7 @@ namespace starsky.foundation.platform.Helpers
 		    List<AppSettingsKeyValue>? oldKeyValuePairStringStringValue, 
 		    List<AppSettingsKeyValue>? newKeyValuePairStringStringValue, List<string> differenceList)
 	    {
-		    if ( oldKeyValuePairStringStringValue == null || newKeyValuePairStringStringValue?.Count == 0 ) return;
+		    if ( oldKeyValuePairStringStringValue == null || newKeyValuePairStringStringValue == null || newKeyValuePairStringStringValue.Count == 0 ) return;
 		    if ( oldKeyValuePairStringStringValue.Equals(newKeyValuePairStringStringValue)) return;
 
 		    sourceIndexItem.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newKeyValuePairStringStringValue, null);
