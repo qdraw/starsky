@@ -71,7 +71,7 @@ public class MoveToTrashService : IMoveToTrashService
 			await _metaPreflight.PreflightAsync(inputModel, inputFilePaths,
 				false, collections, 0);
 
-		fileIndexResultsList = await AppendChildItemsToTrashList(fileIndexResultsList);
+		(fileIndexResultsList, changedFileIndexItemName) = await AppendChildItemsToTrashList(fileIndexResultsList, changedFileIndexItemName);
 		
 		var moveToTrashList =
 			fileIndexResultsList.Where(p =>
@@ -87,7 +87,7 @@ public class MoveToTrashService : IMoveToTrashService
 				return;
 			}
 				
-			await MetaTrashInQueue(changedFileIndexItemName, 
+			await MetaTrashInQueue(changedFileIndexItemName!, 
 				fileIndexResultsList, inputModel, collections);
 				
 		}, "trash");
@@ -101,24 +101,36 @@ public class MoveToTrashService : IMoveToTrashService
 		await _metaUpdateService.UpdateAsync(changedFileIndexItemName,
 			fileIndexResultsList, inputModel, collections, false, 0);
 	}
-	
+
 	/// <summary>
 	/// For directories add all sub files
 	/// </summary>
 	/// <param name="moveToTrash"></param>
-	internal async Task<List<FileIndexItem>> AppendChildItemsToTrashList(List<FileIndexItem> moveToTrash)
+	/// <param name="changedFileIndexItemName"></param>
+	internal async Task<(List<FileIndexItem>, Dictionary<string,List<string>>?)> AppendChildItemsToTrashList(List<FileIndexItem> moveToTrash,
+		Dictionary<string,List<string>> changedFileIndexItemName)
 	{
-		var childSubPaths = moveToTrash
+		var parentSubPaths = moveToTrash
 			.Where(p => !string.IsNullOrEmpty(p.FilePath) && p.IsDirectory == true)
 			.Select(p => p.FilePath).Cast<string>()
 			.ToList();
 
-		if ( childSubPaths.Any() )
+		if ( !parentSubPaths.Any() )
 		{
-			moveToTrash.AddRange(await _query.GetAllObjectsAsync(childSubPaths));
+			return ( moveToTrash, changedFileIndexItemName );
 		}
 
-		return moveToTrash;
+		var childItems = ( await _query.GetAllObjectsAsync(parentSubPaths) )
+			.Where(p => p.FilePath != null).ToList();
+			
+		moveToTrash.AddRange(childItems);
+		foreach ( var childItem in childItems)
+		{
+			childItem.Tags = childItem.Tags + ", " + TrashKeyword.TrashKeywordString;
+			changedFileIndexItemName.TryAdd(childItem.FilePath!, new List<string> {"tags"});
+		}
+
+		return (moveToTrash,changedFileIndexItemName);
 	}
 
 	internal async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)

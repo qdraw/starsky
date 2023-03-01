@@ -268,7 +268,8 @@ namespace starsky.foundation.database.Query
 		        context.Attach(fileIndexItem).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;
-		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+		        // Clone to avoid reference when cache exists
+		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent.Clone()});
 		        if ( _appSettings.Verbose == true )
 		        {
 			        // Ef core changes debug

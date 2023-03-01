@@ -159,8 +159,7 @@ namespace starsky.feature.metaupdate.Services
 			fileIndexItem.LastEdited = _iStorage.Info(fileIndexItem.FilePath!).LastWriteTime;
 
 			// Do a database sync + cache sync
-			// Clone to avoid reference when cache exist
-			await _query.UpdateItemAsync(fileIndexItem.Clone());
+			await _query.UpdateItemAsync(fileIndexItem);
 			
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache

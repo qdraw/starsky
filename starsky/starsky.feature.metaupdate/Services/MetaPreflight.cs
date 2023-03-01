@@ -14,6 +14,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+#nullable enable
 
 namespace starsky.feature.metaupdate.Services
 {
@@ -22,16 +23,18 @@ namespace starsky.feature.metaupdate.Services
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
-		private readonly IStorage _iStorage;
+		private readonly IStorage? _iStorage;
 		private readonly IWebLogger _logger;
 
-		public MetaPreflight(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IWebLogger logger)
+		public MetaPreflight(IQuery query, AppSettings appSettings, ISelectorStorage? selectorStorage, IWebLogger logger)
 		{
 			_query = query;
 			_appSettings = appSettings;
 			_logger = logger;
-			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(
-				SelectorStorage.StorageServices.SubPath);
+			if ( selectorStorage != null ){
+				_iStorage = selectorStorage.Get(
+					SelectorStorage.StorageServices.SubPath);
+			}
 		}
 
 		public async Task<(List<FileIndexItem> fileIndexResultsList,
@@ -55,7 +58,7 @@ namespace starsky.feature.metaupdate.Services
 			foreach ( var fileIndexItem in resultFileIndexItemsList )
 			{
 				// Files that are not on disk
-				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath!) == 
+				if ( _iStorage!.IsFolderOrFile(fileIndexItem.FilePath!) == 
 				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					StatusCodesHelper.ReturnExifStatusError(fileIndexItem, 
@@ -153,12 +156,12 @@ namespace starsky.feature.metaupdate.Services
 			if ( ! changedFileIndexItemName.ContainsKey(collectionsFileIndexItem.FilePath!) )
 			{
 				// add to list
-				changedFileIndexItemName.Add(collectionsFileIndexItem.FilePath,comparedNamesList);
+				changedFileIndexItemName.Add(collectionsFileIndexItem.FilePath!,comparedNamesList);
 				return;
 			}
 
 			// overwrite list if already exist
-			changedFileIndexItemName[collectionsFileIndexItem.FilePath] = comparedNamesList;
+			changedFileIndexItemName[collectionsFileIndexItem.FilePath!] = comparedNamesList;
 		}
 		
 		/// <summary>

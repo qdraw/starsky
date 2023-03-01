@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -273,9 +274,10 @@ public class MoveToTrashServiceTest
 			new FakeIWebLogger());
 		var addedItem = await query.AddRangeAsync(new List<FileIndexItem>
 		{
-			new FileIndexItem(path){Id = 8830},
+			new FileIndexItem(path){Id = 8830, IsDirectory = true},
 			new FileIndexItem(childItem){Id = 8831}
 		});
+		Console.WriteLine("add done");
 		
 		var metaUpdate = new MetaUpdateService(query, new FakeExifTool(storage, appSettings), 
 			new FakeSelectorStorage(storage), new MetaPreflight(query, appSettings, new FakeSelectorStorage(storage), 
@@ -295,9 +297,15 @@ public class MoveToTrashServiceTest
 
 		await query.RemoveItemAsync(addedItem);
 		
+		// not in system trash
 		Assert.AreEqual(0, trashService.InTrash.Count);
+		
+		// result
+		Assert.AreEqual(2, result.Count);
 
-		Assert.AreEqual(TrashKeyword.TrashKeywordString, result.FirstOrDefault()?.Tags);
+		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[0].Tags);
+		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[1].Tags);
+
 	}
 	
 	[TestMethod]

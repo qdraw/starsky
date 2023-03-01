@@ -16,71 +16,57 @@ namespace starsky.foundation.database.Query
 		/// </summary>
 		/// <param name="fileIndexItemList"></param>
 		/// <returns>items with id</returns>
-		public virtual async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
+		public virtual async Task<List<FileIndexItem>> AddRangeAsync(
+			List<FileIndexItem> fileIndexItemList)
 		{
 			if ( !fileIndexItemList.Any() ) return new List<FileIndexItem>();
 
-			async Task LocalQuery(ApplicationDbContext context, IReadOnlyCollection<FileIndexItem> items)
+			async Task LocalQuery(ApplicationDbContext context,
+				IReadOnlyCollection<FileIndexItem> items)
 			{
 				await context.SaveChangesAsync();
 				await context.FileIndex.AddRangeAsync(items);
 				await context.SaveChangesAsync();
+				foreach ( var item in items )
+				{
+					context.Attach(item).State = EntityState.Detached;
+				}
 			}
 
 			try
 			{
 				await LocalQuery(_context, fileIndexItemList);
 			}
-			catch ( DbUpdateConcurrencyException concurrencyException)
+			catch ( DbUpdateConcurrencyException concurrencyException )
 			{
-				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+				SolveConcurrency.SolveConcurrencyExceptionLoop(
+					concurrencyException.Entries);
 				try
 				{
 					await _context.SaveChangesAsync();
 				}
-				catch ( DbUpdateConcurrencyException e)
+				catch ( DbUpdateConcurrencyException e )
 				{
 					if ( _appSettings.Verbose == true )
 					{
 						_context.ChangeTracker.DetectChanges();
-						_logger?.LogDebug(_context.ChangeTracker.DebugView.LongView);
+						_logger?.LogDebug(_context.ChangeTracker.DebugView
+							.LongView);
 					}
-					_logger?.LogError(e, "[AddRangeAsync] save failed after DbUpdateConcurrencyException");
+
+					_logger?.LogError(e,
+						"[AddRangeAsync] save failed after DbUpdateConcurrencyException");
 				}
 			}
-			catch (ObjectDisposedException)
+			catch ( ObjectDisposedException )
 			{
-				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(), fileIndexItemList);
+				await LocalQuery(
+					new InjectServiceScope(_scopeFactory).Context(),
+					fileIndexItemList);
 			}
 
-			fileIndexItemList = FormatOk(fileIndexItemList, FileIndexItem.ExifStatus.NotFoundNotInIndex);
-			
-			foreach ( var fileIndexItem in fileIndexItemList )
-			{
-				AddCacheItem(fileIndexItem);
-			}
-
-			return fileIndexItemList;
-		}
-		
-		/// <summary>
-		/// (Sync) Add a new item to the database
-		/// </summary>
-		/// <param name="fileIndexItemList"></param>
-		/// <returns>items with id</returns>
-		public List<FileIndexItem> AddRange(List<FileIndexItem> fileIndexItemList)
-		{
-			try
-			{
-				_context.FileIndex.AddRange(fileIndexItemList);
-				_context.SaveChanges();
-			}
-			catch (ObjectDisposedException)
-			{
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				context.FileIndex.AddRange(fileIndexItemList);
-				context.SaveChanges();
-			}
+			fileIndexItemList = FormatOk(fileIndexItemList,
+				FileIndexItem.ExifStatus.NotFoundNotInIndex);
 
 			foreach ( var fileIndexItem in fileIndexItemList )
 			{
@@ -89,6 +75,5 @@ namespace starsky.foundation.database.Query
 
 			return fileIndexItemList;
 		}
-
 	}
 }

@@ -85,7 +85,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public void AddRange()
+		public async Task AddRange()
 		{
 			var expectedResult = new List<FileIndexItem>
 			{
@@ -97,10 +97,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			new Query(dbContext, 
+			await new Query(dbContext, 
 				new AppSettings {
 					AddMemoryCache = false 
-				}, serviceScopeFactory, new FakeIWebLogger(), new FakeMemoryCache()).AddRange(expectedResult);
+				}, serviceScopeFactory, new FakeIWebLogger(), new FakeMemoryCache()).AddRangeAsync(expectedResult);
 			
 			var queryFromDb = dbContext.FileIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
 			Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash, queryFromDb.FirstOrDefault()?.FileHash);
