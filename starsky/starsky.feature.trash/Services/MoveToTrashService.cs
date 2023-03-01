@@ -1,4 +1,5 @@
-﻿using starsky.feature.metaupdate.Interfaces;
+﻿using System.Text;
+using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -126,7 +127,11 @@ public class MoveToTrashService : IMoveToTrashService
 		moveToTrash.AddRange(childItems);
 		foreach ( var childItem in childItems)
 		{
-			childItem.Tags = childItem.Tags + ", " + TrashKeyword.TrashKeywordString;
+			var builder = new StringBuilder(childItem.Tags);
+			builder.Append(", ");
+			builder.Append(TrashKeyword.TrashKeywordString);
+			childItem.Tags = builder.ToString();
+			
 			changedFileIndexItemName.TryAdd(childItem.FilePath!, new List<string> {"tags"});
 		}
 
