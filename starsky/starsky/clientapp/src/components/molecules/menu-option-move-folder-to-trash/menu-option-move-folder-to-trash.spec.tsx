@@ -78,6 +78,8 @@ describe("MenuOptionMoveFolderToTrash", () => {
     expect(screen.getByTestId("move-folder-to-trash")).toBeTruthy();
 
     expect(setEnableMoreMenuSpy).toBeCalledTimes(1);
+    expect(setEnableMoreMenuSpy).toBeCalledWith(false);
+
     expect(modalSpy).toBeCalledTimes(0);
   });
 });
