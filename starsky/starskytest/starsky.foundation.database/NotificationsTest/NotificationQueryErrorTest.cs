@@ -111,12 +111,13 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			{
 			}
 
+			public int MinCount { get; set; }
 			public int Count { get; set; }
 
 			public override int SaveChanges()
 			{
 				Count++;
-				if ( Count == 1 )
+				if ( Count <= MinCount )
 				{
 					throw new DbUpdateConcurrencyException("t",
 						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
@@ -128,7 +129,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 				CancellationToken cancellationToken = default)
 			{
 				Count++;
-				if ( Count == 1 )
+				if ( Count <= MinCount )
 				{
 					throw new DbUpdateConcurrencyException("t",
 						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
@@ -136,16 +137,53 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 				return Task.FromResult(Count);
 			}
 		}
-	
+		
 		[TestMethod]
-		public async Task AddNotification_DbUpdateConcurrencyException()
+		public async Task AddNotification_ConcurrencyException()
 		{
 			IsCalledDbUpdateConcurrency = false;
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new NotificationQuery(new AppDbContextConcurrencyException(options),new FakeIWebLogger());
+			var fakeQuery = new NotificationQuery(new AppDbContextConcurrencyException(options)
+			{
+				MinCount = 1
+			},new FakeIWebLogger());
+			await fakeQuery.AddNotification("");
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+		
+		[TestMethod]
+		public async Task AddNotification_DoubleConcurrencyException()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new NotificationQuery(new AppDbContextConcurrencyException(options)
+			{
+				MinCount = 2
+			},new FakeIWebLogger());
+			await fakeQuery.AddNotification("");
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+		
+		[TestMethod]
+		public async Task AddNotification_3ConcurrencyException()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new NotificationQuery(new AppDbContextConcurrencyException(options)
+			{
+				MinCount = 3
+			},new FakeIWebLogger());
 			await fakeQuery.AddNotification("");
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
