@@ -1,5 +1,4 @@
 import { storiesOf } from "@storybook/react";
-import React from "react";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -20,7 +19,7 @@ storiesOf("components/molecules/menu-option-move-to-trash", module).add(
     } as IArchiveProps;
     return (
       <>
-        <MoreMenu defaultEnableMenu={true}>
+        <MoreMenu enableMoreMenu={true} setEnableMoreMenu={() => {}}>
           <MenuOptionMoveToTrash
             setSelect={() => {}}
             select={["test.jpg"]}

@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import ButtonStyled from "./button-styled";
 
 describe("CurrentLocationButton", () => {
@@ -10,8 +9,9 @@ describe("CurrentLocationButton", () => {
   describe("ButtonStyled", () => {
     it("set type", () => {
       const component = render(<ButtonStyled type={"submit"} />);
-      const button = component.getByRole("button") as HTMLInputElement;
+      const button = screen.getByRole("button") as HTMLInputElement;
       expect(button.type).toEqual("submit");
+      component.unmount();
     });
   });
 });

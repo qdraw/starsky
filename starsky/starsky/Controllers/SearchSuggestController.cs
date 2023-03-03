@@ -59,6 +59,7 @@ namespace starsky.Controllers
 		/// <response code="200">inflate done</response>
 		[HttpGet("/api/suggest/inflate")]
 		[ProducesResponseType(200)] // ok
+		[AllowAnonymous]
 		public async Task<IActionResult> Inflate()
 		{
 			await _suggest.Inflate();

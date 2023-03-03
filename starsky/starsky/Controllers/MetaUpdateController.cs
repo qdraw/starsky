@@ -7,13 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.realtime.Interface;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.worker.Interfaces;
 

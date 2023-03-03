@@ -3,18 +3,26 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
 
 interface IMenuOptionProps {
+  isReadOnly: boolean;
   testName: string;
   isSet: boolean;
   set: React.Dispatch<React.SetStateAction<boolean>>;
-  nl: string;
-  en: string;
+  localization: { nl: string; en: string };
+  setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
-  ({ nl, en, isSet, set, testName }) => {
+  ({
+    localization,
+    isSet,
+    set,
+    testName,
+    isReadOnly = true,
+    setEnableMoreMenu = undefined
+  }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const Message = language.text(nl, en);
+    const Message = language.key(localization);
 
     return (
       <>
@@ -22,8 +30,16 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
           <li
             tabIndex={0}
             data-test={testName}
-            className="menu-option"
-            onClick={() => set(!isSet)}
+            className={!isReadOnly ? "menu-option" : "menu-option disabled"}
+            onClick={() => {
+              if (!isReadOnly) {
+                // close menu
+                if (setEnableMoreMenu) {
+                  setEnableMoreMenu(false);
+                }
+                set(!isSet);
+              }
+            }}
           >
             {Message}
           </li>

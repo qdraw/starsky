@@ -46,7 +46,14 @@ namespace starsky.foundation.database.Notifications
 			{
 				_logger.LogInformation("[AddNotification] try to fix DbUpdateConcurrencyException", concurrencyException);
 				SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-				await _context.SaveChangesAsync();
+				try
+				{
+					await _context.SaveChangesAsync();
+				}
+				catch ( DbUpdateConcurrencyException e)
+				{
+					_logger.LogInformation(e, "[AddNotification] save failed after DbUpdateConcurrencyException");
+				}
 			}
 			
 			return item;

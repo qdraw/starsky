@@ -36,4 +36,9 @@ public class FakeIMoveToTrashService : IMoveToTrashService
 	{
 		return DetectToUseSystemTrashToggle;
 	}
+
+	public bool IsEnabled()
+	{
+		return DetectToUseSystemTrashToggle;
+	}
 }

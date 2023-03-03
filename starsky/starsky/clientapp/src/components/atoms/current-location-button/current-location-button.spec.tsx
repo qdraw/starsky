@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import CurrentLocationButton from "./current-location-button";
 
 describe("CurrentLocationButton", () => {
@@ -10,13 +9,15 @@ describe("CurrentLocationButton", () => {
   describe("context", () => {
     it("no navigator.geolocation wrong_location", async () => {
       const component = render(<CurrentLocationButton />);
-      const button = component.getByRole("button");
+      const button = screen.getByRole("button");
 
       // need to await
       await button.click();
 
-      const list = component.getByRole("button").classList;
+      const list = screen.getByRole("button").classList;
       expect(list).toContain("icon--wrong_location");
+
+      component.unmount();
     });
 
     it("getCurrentPosition success", () => {
@@ -36,14 +37,16 @@ describe("CurrentLocationButton", () => {
 
       const callback = jest.fn();
       const component = render(<CurrentLocationButton callback={callback} />);
-      component.getByRole("button").click();
+      screen.getByRole("button").click();
 
       expect(callback).toBeCalled();
       expect(callback).toBeCalledWith({ latitude: 51.1, longitude: 45.3 });
 
-      expect(component.getByRole("button").classList).toContain(
+      expect(screen.getByRole("button").classList).toContain(
         "icon--location_on"
       );
+
+      component.unmount();
     });
 
     it("getCurrentPosition success no callback", () => {
@@ -62,12 +65,14 @@ describe("CurrentLocationButton", () => {
       (global as any).navigator.geolocation = mockGeolocation;
 
       const component = render(<CurrentLocationButton />);
-      component.getByRole("button").click();
+      screen.getByRole("button").click();
 
       // no callback
-      expect(component.getByRole("button").classList).toContain(
+      expect(screen.getByRole("button").classList).toContain(
         "icon--location_on"
       );
+
+      component.unmount();
     });
 
     it("getCurrentPosition error", async () => {
@@ -82,11 +87,12 @@ describe("CurrentLocationButton", () => {
       const component = render(<CurrentLocationButton callback={callback} />);
 
       // need to await here
-      await component.getByRole("button").click();
+      await screen.getByRole("button").click();
 
-      expect(component.getByRole("button").classList).toContain(
+      expect(screen.getByRole("button").classList).toContain(
         "icon--wrong_location"
       );
+      component.unmount();
     });
   });
 });

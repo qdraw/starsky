@@ -12,7 +12,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.VersionHelpers;
-using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.webtelemetry.Services;
 using starskycore.ViewModels;
@@ -26,7 +25,6 @@ namespace starsky.Controllers
 		private readonly ApplicationInsightsJsHelper _applicationInsightsJsHelper;
 		private readonly ITelemetryService _telemetryService;
 		private readonly IMemoryCache _cache;
-
 
 		public HealthController(HealthCheckService service, ITelemetryService telemetryService, 
 			ApplicationInsightsJsHelper applicationInsightsJsHelper = null, IMemoryCache memoryCache = null)
@@ -49,6 +47,7 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(string), 200)]
 		[ProducesResponseType(typeof(string), 503)]
+		[AllowAnonymous]
 		public async Task<IActionResult> Index()
 		{
 			var result = await CheckHealthAsyncWithTimeout(10000);
@@ -166,6 +165,7 @@ namespace starsky.Controllers
 		[HttpGet("/api/health/application-insights")]
 		[ResponseCache(Duration = 29030400)] // 4 weeks
 		[Produces("application/javascript")]
+		[AllowAnonymous]
 		public IActionResult ApplicationInsights()
 		{
 			return Content(_applicationInsightsJsHelper.ScriptPlain, "application/javascript");
@@ -191,6 +191,7 @@ namespace starsky.Controllers
 		/// <response code="202">Version mismatch</response>
 		/// <response code="400">Missing x-api-version header OR bad formatted version in header</response>
 		[HttpPost("/api/health/version")]
+		[AllowAnonymous]
 		public IActionResult Version(string version = null)
 		{
 			if ( string.IsNullOrEmpty(version) )

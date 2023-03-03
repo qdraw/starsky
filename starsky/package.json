@@ -1,0 +1,8 @@
+{
+  "name": "clientapp",
+  "scripts": {
+    "preinstall": "cd starsky && cd clientapp && npm ci",
+    "start" : "cd starsky && cd clientapp && npm run start",
+    "storybook" : "cd starsky && cd clientapp && npm run storybook"
+  }
+}

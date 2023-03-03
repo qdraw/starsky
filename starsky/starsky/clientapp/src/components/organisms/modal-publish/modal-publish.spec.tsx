@@ -1,4 +1,10 @@
-import { act, createEvent, fireEvent, render } from "@testing-library/react";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  screen
+} from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -41,7 +47,7 @@ describe("ModalPublish", () => {
     );
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.queryByTestId("publish")).toBeTruthy();
+    expect(screen.queryByTestId("publish")).toBeTruthy();
 
     // and clean afterwards
     act(() => {
@@ -94,7 +100,7 @@ describe("ModalPublish", () => {
       ></ModalPublish>
     );
 
-    const formControls = modal
+    const formControls = screen
       .queryAllByTestId("form-control")
       .find((p) => p.getAttribute("data-name") === "item-name");
     const tags = formControls as HTMLElement[][0];
@@ -108,7 +114,7 @@ describe("ModalPublish", () => {
     });
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.queryByTestId("publish")).toBeTruthy();
+    expect(screen.getByTestId("publish")).toBeTruthy();
 
     jest
       .spyOn(FetchPost, "default")
@@ -126,10 +132,10 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockIConnectionDefault2);
 
     await act(async () => {
-      await modal.queryByTestId("publish")?.click();
+      await screen.queryByTestId("publish")?.click();
     });
 
-    expect(modal.queryByTestId("modal-publish-subheader")?.textContent).toBe(
+    expect(screen.queryByTestId("modal-publish-subheader")?.textContent).toBe(
       "One moment please"
     );
 
@@ -186,7 +192,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockIConnectionDefault)
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    const formControls = modal
+    const formControls = screen
       .queryAllByTestId("form-control")
       .find((p) => p.getAttribute("data-name") === "item-name");
     const tags = formControls as HTMLElement[][0];
@@ -200,17 +206,17 @@ describe("ModalPublish", () => {
     });
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.queryByTestId("publish")).toBeTruthy();
+    expect(screen.getByTestId("publish")).toBeTruthy();
 
     jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
     await act(async () => {
-      await modal.queryByTestId("publish")?.click();
+      await screen.getByTestId("publish")?.click();
     });
 
-    expect(modal.queryByTestId("modal-publish-content-text")?.textContent).toBe(
+    expect(screen.getByTestId("modal-publish-content-text")?.textContent).toBe(
       "Something went wrong with exporting Retry this"
     );
 
@@ -267,7 +273,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockIConnectionDefault)
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    const formControls = modal
+    const formControls = screen
       .queryAllByTestId("form-control")
       .find((p) => p.getAttribute("data-name") === "item-name");
     const tags = formControls as HTMLElement[][0];
@@ -281,23 +287,23 @@ describe("ModalPublish", () => {
     });
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.queryByTestId("publish")).toBeTruthy();
+    expect(screen.getByTestId("publish")).toBeTruthy();
 
     jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
     await act(async () => {
-      await modal.queryByTestId("publish")?.click();
+      await screen.getByTestId("publish")?.click();
     });
 
     // and go back to
     await act(async () => {
-      await modal.queryByTestId("publish-retry-export-fail")?.click();
+      await screen.queryByTestId("publish-retry-export-fail")?.click();
     });
 
     // and be at the main window
-    expect(modal.queryByTestId("publish")).not.toBeNull();
+    expect(screen.queryByTestId("publish")).not.toBeNull();
 
     // and clean afterwards
     act(() => {
@@ -379,7 +385,7 @@ describe("ModalPublish", () => {
       ></ModalPublish>
     );
 
-    const formControls = modal
+    const formControls = screen
       .queryAllByTestId("form-control")
       .find((p) => p.getAttribute("data-name") === "item-name");
     const tags = formControls as HTMLElement[][0];
@@ -392,7 +398,7 @@ describe("ModalPublish", () => {
       await fireEvent(tags, inputEvent);
     });
 
-    expect(modal.queryByTestId("modal-publish-warning-box")).toBeTruthy();
+    expect(screen.getByTestId("modal-publish-warning-box")).toBeTruthy();
 
     // and now undo
     await act(async () => {
@@ -405,5 +411,7 @@ describe("ModalPublish", () => {
 
     expect(fetchGetSpy).toBeCalled();
     expect(fetchGetSpy).toBeCalledTimes(1);
+
+    modal.unmount();
   });
 });

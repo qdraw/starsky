@@ -9,7 +9,6 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.SyncServices;
-using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.SyncServices
@@ -17,7 +16,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	[TestClass]
 	public sealed class SyncRemoveTest
 	{
-		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly AppSettings _appSettings;
 		private readonly IQuery _query;
 
@@ -27,7 +25,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
-			(_query, _serviceScopeFactory) = CreateNewExampleData(null);
+			(_query, _) = CreateNewExampleData(null);
 		}
 
 		private Tuple<IQuery, IServiceScopeFactory> CreateNewExampleData(List<FileIndexItem> content)
@@ -70,6 +68,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await _query.AddItemAsync(new FileIndexItem("/FileNotOnDrive_Object.jpg"));
 			var item = await 
 				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object.jpg");
+			Assert.IsNotNull(item);
+
 			item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
 			var result= await remove.RemoveAsync(new List<FileIndexItem>{item});
 			
@@ -90,6 +90,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await _query.AddItemAsync(new FileIndexItem("/FileNotOnDrive_Object_Ignore_wrongStatus.jpg"));
 			var item = await 
 				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object_Ignore_wrongStatus.jpg");
+			Assert.IsNotNull(item);
+			
 			item.Status = FileIndexItem.ExifStatus.Ok;
 			var result= await remove.RemoveAsync(new List<FileIndexItem>{item});
 			
@@ -150,7 +152,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Console.WriteLine(JsonSerializer.Serialize(item.SidecarExtensionsList));
 			
-			Assert.AreEqual(0, item?.SidecarExtensionsList.Count);
+			Assert.AreEqual(0, item.SidecarExtensionsList.Count);
 			
 			var item2 = await query.GetObjectByFilePathAsync("/sidecar_test__2/test.dng");
 			Assert.AreEqual(0, item2?.SidecarExtensionsList.Count);

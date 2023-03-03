@@ -1,5 +1,4 @@
 import { render } from "@testing-library/react";
-import React from "react";
 import { act } from "react-dom/test-utils";
 import {
   IConnectionDefault,
@@ -72,16 +71,13 @@ describe("DropArea", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const callbackSpy = jest.fn();
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        render(
-          <DropArea
-            callback={callbackSpy}
-            endpoint="/import"
-            enableDragAndDrop={true}
-          />
-        );
-      });
+      render(
+        <DropArea
+          callback={callbackSpy}
+          endpoint="/import"
+          enableDragAndDrop={true}
+        />
+      );
 
       // need to await here
       await act(async () => {
@@ -116,10 +112,7 @@ describe("DropArea", () => {
     });
 
     it("Test dragenter", () => {
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
-      });
+      render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
 
       act(() => {
         document.dispatchEvent(createDnDEvent("dragenter"));
@@ -129,10 +122,8 @@ describe("DropArea", () => {
     });
 
     it("Test dragenter and then dragleave", () => {
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
-      });
+      // to use with: => import { act } from 'react-dom/test-utils';
+      render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
 
       act(() => {
         document.dispatchEvent(createDnDEvent("dragenter"));
@@ -148,10 +139,8 @@ describe("DropArea", () => {
     });
 
     it("Test dragover", () => {
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
-      });
+      // to use with: => import { act } from 'react-dom/test-utils';
+      render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
 
       act(() => {
         document.dispatchEvent(createDnDEvent("dragover"));

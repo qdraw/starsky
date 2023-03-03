@@ -20,4 +20,10 @@ public interface IMoveToTrashService
 	/// </summary>
 	/// <returns>true if supported</returns>
 	bool DetectToUseSystemTrash();
+
+	/// <summary>
+	/// Is supported and enabled in the feature toggle
+	/// </summary>
+	/// <returns>Should you use it?</returns>
+	bool IsEnabled();
 }

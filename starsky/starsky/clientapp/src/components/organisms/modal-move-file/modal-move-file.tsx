@@ -8,6 +8,7 @@ import {
   IFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
@@ -31,8 +32,8 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageMove = language.text("Verplaats", "Move");
-  const MessageTo = language.text("naar", "to");
+  const MessageMove = language.key(localization.MessageMove);
+  const MessageTo = language.key(localization.MessageTo);
 
   let usesFileList = useFileList("?f=" + currentFolderPath, true);
 

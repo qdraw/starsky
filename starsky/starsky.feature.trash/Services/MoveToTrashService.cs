@@ -1,4 +1,6 @@
-﻿using starsky.feature.metaupdate.Interfaces;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
+using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -7,6 +9,7 @@ using starsky.foundation.native.Trash.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Interfaces;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.trash.Services;
 
 [Service(typeof(IMoveToTrashService), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -40,7 +43,7 @@ public class MoveToTrashService : IMoveToTrashService
 	/// Is supported and enabled in the feature toggle
 	/// </summary>
 	/// <returns>Should you use it?</returns>
-	private bool IsEnabled()
+	public bool IsEnabled()
 	{
 		return _appSettings.UseSystemTrash == true &&
 		       _systemTrashService.DetectToUseSystemTrash();
@@ -71,7 +74,9 @@ public class MoveToTrashService : IMoveToTrashService
 			await _metaPreflight.PreflightAsync(inputModel, inputFilePaths,
 				false, collections, 0);
 
-		var moveToTrash =
+		(fileIndexResultsList, changedFileIndexItemName) = await AppendChildItemsToTrashList(fileIndexResultsList, changedFileIndexItemName);
+		
+		var moveToTrashList =
 			fileIndexResultsList.Where(p =>
 				p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted).ToList();
 
@@ -81,16 +86,16 @@ public class MoveToTrashService : IMoveToTrashService
 		{
 			if ( isSystemTrashEnabled )
 			{
-				await SystemTrashInQueue(moveToTrash);
+				await SystemTrashInQueue(moveToTrashList);
 				return;
 			}
 				
-			await MetaTrashInQueue(changedFileIndexItemName, 
+			await MetaTrashInQueue(changedFileIndexItemName!, 
 				fileIndexResultsList, inputModel, collections);
 				
 		}, "trash");
 		
-		return await _connectionService.ConnectionServiceAsync(moveToTrash, isSystemTrashEnabled);
+		return await _connectionService.ConnectionServiceAsync(moveToTrashList, isSystemTrashEnabled);
 	}
 
 	private async Task MetaTrashInQueue(Dictionary<string, List<string>> changedFileIndexItemName, 
@@ -100,14 +105,49 @@ public class MoveToTrashService : IMoveToTrashService
 			fileIndexResultsList, inputModel, collections, false, 0);
 	}
 
-	private async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
+	/// <summary>
+	/// For directories add all sub files
+	/// </summary>
+	/// <param name="moveToTrash"></param>
+	/// <param name="changedFileIndexItemName"></param>
+	internal async Task<(List<FileIndexItem>, Dictionary<string,List<string>>?)> AppendChildItemsToTrashList(List<FileIndexItem> moveToTrash,
+		Dictionary<string,List<string>> changedFileIndexItemName)
+	{
+		var parentSubPaths = moveToTrash
+			.Where(p => !string.IsNullOrEmpty(p.FilePath) && p.IsDirectory == true)
+			.Select(p => p.FilePath).Cast<string>()
+			.ToList();
+
+		if ( !parentSubPaths.Any() )
+		{
+			return ( moveToTrash, changedFileIndexItemName );
+		}
+
+		var childItems = ( await _query.GetAllObjectsAsync(parentSubPaths) )
+			.Where(p => p.FilePath != null).ToList();
+			
+		moveToTrash.AddRange(childItems);
+		foreach ( var childItem in childItems)
+		{
+			var builder = new StringBuilder(childItem.Tags);
+			builder.Append(", ");
+			builder.Append(TrashKeyword.TrashKeywordString);
+			childItem.Tags = builder.ToString();
+			
+			changedFileIndexItemName.TryAdd(childItem.FilePath!, new List<string> {"tags"});
+		}
+
+		return (moveToTrash,changedFileIndexItemName);
+	}
+
+	internal async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
 	{
 		var fullFilePaths = moveToTrash
 			.Where(p => p.FilePath != null)
 			.Select(p => _appSettings.DatabasePathToFilePath(p.FilePath, false))
 			.ToList();
 		_systemTrashService.Trash(fullFilePaths);
-
+		
 		await _query.RemoveItemAsync(moveToTrash);
 	}
 }
