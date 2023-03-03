@@ -2053,6 +2053,105 @@
       "parameters": [],
       "extensions": {}
     },
+    "/api/env/features": {
+      "operations": {
+        "Get": {
+          "tags": [
+            {
+              "name": "AppSettingsFeatures",
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          ],
+          "summary": "Show features that used in the frontend app / menu",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "returns the runtime settings of Starsky",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false,
+                    "reference": {
+                      "type": 0,
+                      "id": "AppSettings",
+                      "isExternal": false,
+                      "isLocal": true,
+                      "referenceV3": "#/components/schemas/AppSettings",
+                      "referenceV2": "#/definitions/AppSettings"
+                    }
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            },
+            "401": {
+              "description": "Unauthorized",
+              "headers": {},
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "readOnly": false,
+                    "writeOnly": false,
+                    "allOf": [],
+                    "oneOf": [],
+                    "anyOf": [],
+                    "required": [],
+                    "properties": {},
+                    "additionalPropertiesAllowed": true,
+                    "enum": [],
+                    "nullable": false,
+                    "deprecated": false,
+                    "extensions": {},
+                    "unresolvedReference": false,
+                    "reference": {
+                      "type": 0,
+                      "id": "AppSettings",
+                      "isExternal": false,
+                      "isLocal": true,
+                      "referenceV3": "#/components/schemas/AppSettings",
+                      "referenceV2": "#/definitions/AppSettings"
+                    }
+                  },
+                  "examples": {},
+                  "encoding": {},
+                  "extensions": {}
+                }
+              },
+              "links": {},
+              "extensions": {},
+              "unresolvedReference": false
+            }
+          },
+          "callbacks": {},
+          "deprecated": false,
+          "security": [],
+          "servers": [],
+          "extensions": {}
+        }
+      },
+      "servers": [],
+      "parameters": [],
+      "extensions": {}
+    },
     "/api/cache/list": {
       "operations": {
         "Get": {
