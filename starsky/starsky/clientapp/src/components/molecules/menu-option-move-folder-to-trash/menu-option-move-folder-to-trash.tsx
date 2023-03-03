@@ -21,7 +21,6 @@ const MenuOptionMoveFolderToTrash: React.FunctionComponent<IMenuOptionMoveToTras
         {isModalMoveFolderToTrashOpen ? (
           <ModalMoveFolderToTrash
             handleExit={() => {
-              console.log("test1");
               setModalMoveFolderToTrashOpen(!isModalMoveFolderToTrashOpen);
             }}
             subPath={subPath}
