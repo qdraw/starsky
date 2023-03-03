@@ -635,5 +635,54 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}
+		
+		[TestMethod]
+		public async Task Query_AddRangeAsync_DbUpdateConcurrencyException_Verbose()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),new AppSettings
+			{
+				Verbose = true
+			},null!,new FakeIWebLogger());
+			
+			var fileIndexItemList = new List<FileIndexItem>
+			{
+				new FileIndexItem { FilePath = "test1.jpg" },
+				new FileIndexItem { FilePath = "test2.jpg" }
+			};
+			
+			await fakeQuery.AddRangeAsync(fileIndexItemList);
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+		
+				
+		[TestMethod]
+		public async Task Query_AddRangeAsync_DbUpdateConcurrencyException_Verbose_NoLogger()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),new AppSettings
+			{
+				Verbose = true
+			},null!,null!);
+			
+			var fileIndexItemList = new List<FileIndexItem>
+			{
+				new FileIndexItem { FilePath = "test1.jpg" },
+				new FileIndexItem { FilePath = "test2.jpg" }
+			};
+			
+			await fakeQuery.AddRangeAsync(fileIndexItemList);
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
 	}
 }
