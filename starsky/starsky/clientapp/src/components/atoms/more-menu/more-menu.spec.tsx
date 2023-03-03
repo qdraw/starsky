@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import MoreMenu, { MoreMenuEventCloseConst } from "./more-menu";
 
@@ -11,6 +11,15 @@ describe("More Menu", () => {
     const [_, setEnableMoreMenu] = React.useState(false);
     return <MoreMenu setEnableMoreMenu={setEnableMoreMenu}>test</MoreMenu>;
   }
+
+  it("menu-menu-button should open", () => {
+    render(<MoreMenuWrapper></MoreMenuWrapper>);
+
+    const moreMenuButton = screen.getByTestId("menu-menu-button");
+    moreMenuButton.click();
+
+    expect(moreMenuButton.className).toBe("item item--more");
+  });
 
   it("get childeren", () => {
     const element = render(<MoreMenuWrapper></MoreMenuWrapper>);

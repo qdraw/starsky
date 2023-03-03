@@ -21,6 +21,8 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
 
   const offMoreMenu = () => setEnableMoreMenu(false);
 
+  // todo: Should refactor to avoid the usage in upload files
+  // don't use MoreMenuEventCloseConst in upload files
   useEffect(() => {
     // Bind the event listener
     window.addEventListener(MoreMenuEventCloseConst, offMoreMenu);
@@ -34,6 +36,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
   return (
     <>
       <button
+        data-test="menu-menu-button"
         className={!children ? "item item--more disabled" : "item item--more"}
         onClick={() => {
           setEnableMoreMenu(true);

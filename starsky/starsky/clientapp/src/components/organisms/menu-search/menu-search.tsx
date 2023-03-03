@@ -74,6 +74,8 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   const [sidebar, setSidebar] = React.useState(
     new URLPath().StringToIUrl(history.location.search).sidebar
   );
+  const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
+
   useEffect(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
@@ -84,8 +86,6 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   const [isModalExportOpen, setModalExportOpen] = useState(false);
   // publish modal
   const [isModalPublishOpen, setModalPublishOpen] = useState(false);
-
-  const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
 
   return (
     <>

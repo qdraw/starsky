@@ -1,6 +1,7 @@
 import { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 
 interface IDetailViewExifStatusProps {
@@ -12,25 +13,18 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
-    const MessageReadOnlyFile = language.text(
-      "Alleen lezen bestand",
-      "Read only file"
+    const MessageReadOnlyFile = language.key(localization.MessageReadOnlyFile);
+
+    const MessageNotFoundSourceMissing = language.key(
+      localization.MessageNotFoundSourceMissing
     );
-    const MessageNotFoundSourceMissing = language.text(
-      "Mist in de index",
-      "Misses in the index"
+    const MessageServerError = language.key(
+      localization.MessageServerInputError
     );
-    const MessageServerError = language.text(
-      "Er is iets mis met de input",
-      "Something is wrong with the input"
-    );
-    const MessageDeleted = language.text(
-      "Staat in de prullenmand",
-      "Is in the trash"
-    );
-    const MessageDeletedRestoreInstruction = language.text(
-      "'Zet terug uit prullenmand' om het item te bewerken",
-      "'Restore from Trash' to edit the item"
+    const MessageIsInTheTrash = language.key(localization.MessageIsInTheTrash);
+
+    const MessageDeletedRestoreInstruction = language.key(
+      localization.MessageDeletedRestoreInstruction
     );
 
     const DeleteComponent = (
@@ -41,7 +35,7 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
               data-test="detailview-exifstatus-status-deleted"
               className="warning-box"
             >
-              {MessageDeleted}
+              {MessageIsInTheTrash}
             </div>
             {MessageDeletedRestoreInstruction}
           </>
