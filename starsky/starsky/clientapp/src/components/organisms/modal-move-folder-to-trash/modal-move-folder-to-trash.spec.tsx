@@ -314,4 +314,56 @@ describe("ModalMoveFolderToTrash component", () => {
 
     component.unmount();
   });
+
+  it("should not call FetchPost when subPath is null", () => {
+    const setIsLoading = jest.fn();
+    const handleExit = jest.fn();
+    const props = {
+      isOpen: true,
+      subPath: "",
+      handleExit,
+      setIsLoading
+    };
+    // simulate if a user press on close
+    // use as ==> import * as Modal from './modal';
+    jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+      props.handleExit();
+      return <>{props.children}</>;
+    });
+
+    // spy on fetch
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        ...newIConnectionDefault(),
+        data: [
+          {
+            status: IExifStatus.Ok,
+            fileName: "rootfilename.jpg",
+            fileIndexItem: {
+              description: "",
+              fileHash: undefined,
+              fileName: "test.jpg",
+              filePath: "/test.jpg",
+              isDirectory: false,
+              status: "Ok",
+              tags: "",
+              title: ""
+            }
+          }
+        ],
+        statusCode: 200
+      }
+    );
+    const fetchPostSpy = jest
+      .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    render(<ModalMoveFolderToTrash {...props} />);
+
+    const moveButton = screen.getByTestId("move-folder-to-trash");
+    moveButton.click();
+
+    expect(fetchPostSpy).not.toHaveBeenCalled();
+  });
 });
