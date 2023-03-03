@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
-using starsky.foundation.native.Helpers;
 using starsky.foundation.native.Trash;
-using starsky.foundation.native.Trash.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
 

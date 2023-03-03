@@ -43,7 +43,7 @@ public class MoveToTrashService : IMoveToTrashService
 	/// Is supported and enabled in the feature toggle
 	/// </summary>
 	/// <returns>Should you use it?</returns>
-	private bool IsEnabled()
+	public bool IsEnabled()
 	{
 		return _appSettings.UseSystemTrash == true &&
 		       _systemTrashService.DetectToUseSystemTrash();
