@@ -1,7 +1,7 @@
 {
   "MessageMoveFolderIntoTrashIntroText": {
     "en": "Are you sure you want to move this folder into the trash?",
-    "nl": "Weet u zeker dat u deze map naar de prullenbak wilt verplaatsen?"
+    "nl": "Weet u zeker dat u deze map naar de prullenmand wilt verplaatsen?"
   },
   "MessageCancel": {
     "en": "Cancel",
@@ -9,11 +9,11 @@
   },
   "MessageMoveToTrash": {
     "en": "Move to trash",
-    "nl": "Verplaatsen naar prullenbak"
+    "nl": "Verplaatsen naar prullenmand"
   },
   "MessageMoveCurrentFolderToTrash": {
     "en": "Move current folder to trash",
-    "nl": "Huidige map naar prullenbak"
+    "nl": "Huidige map naar prullenmand"
   },
   "MessageMove": {
     "en": "Move",
@@ -25,7 +25,7 @@
   },
   "MessageRestoreFromTrash": {
     "en": "Restore from trash",
-    "nl": "Herstellen uit prullenbak"
+    "nl": "Herstellen uit prullenmand"
   },
   "MessageSynchronizeManually": {
     "en": "Synchronize manually",
