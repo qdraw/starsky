@@ -92,10 +92,6 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       let deletedFilesCount = 0;
       const afterFileIndexItems: IFileIndexItem[] = [];
 
-      console.log("toodo remove");
-
-      console.log(state.fileIndexItems);
-
       state.fileIndexItems.forEach((item) => {
         if (toRemoveFileList.indexOf(item.filePath) === -1) {
           afterFileIndexItems.push(item);

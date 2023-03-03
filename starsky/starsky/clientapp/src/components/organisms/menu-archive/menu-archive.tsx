@@ -78,10 +78,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   /* only update when the state is changed */
   const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
   useEffect(() => {
-    console.log("state.isReadOnly");
-
-    console.log(state.isReadOnly);
-
     setReadOnly(state.isReadOnly);
   }, [state.isReadOnly]);
 
