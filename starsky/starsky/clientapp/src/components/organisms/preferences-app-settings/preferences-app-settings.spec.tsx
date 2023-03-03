@@ -3,9 +3,9 @@ import {
   createEvent,
   fireEvent,
   render,
+  screen,
   waitFor
 } from "@testing-library/react";
-import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import {
   IConnectionDefault,
@@ -30,7 +30,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettings />);
 
-      const switchButtons = component.queryAllByTestId("switch-button-right");
+      const switchButtons = screen.queryAllByTestId("switch-button-right");
 
       const verbose = switchButtons.find(
         (p) => p.getAttribute("name") === "verbose"
@@ -56,7 +56,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettings />);
 
-      const switchButtons = component.queryAllByTestId("switch-button-right");
+      const switchButtons = screen.queryAllByTestId("switch-button-right");
 
       const verbose = switchButtons.find(
         (p) => p.getAttribute("name") === "verbose"
@@ -90,7 +90,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettings />);
 
-      const formControls = component.queryAllByTestId("form-control");
+      const formControls = screen.queryAllByTestId("form-control");
 
       const storageFolder = formControls.find(
         (p) => p.getAttribute("data-name") === "storageFolder"
@@ -136,7 +136,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettings />);
 
-      const formControls = component
+      const formControls = screen
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "storageFolder");
       const storageFolder = formControls as HTMLInputElement[][0];
@@ -193,7 +193,7 @@ describe("PreferencesAppSettings", () => {
 
       const component = render(<PreferencesAppSettings />);
 
-      const formControls = component
+      const formControls = screen
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "storageFolder");
       const storageFolder = formControls as HTMLInputElement[][0];
@@ -214,7 +214,7 @@ describe("PreferencesAppSettings", () => {
       );
 
       // if failed show extra storage id
-      expect(component.queryByTestId("storage-not-found")).toBeTruthy();
+      expect(screen.getByTestId("storage-not-found")).toBeTruthy();
 
       act(() => {
         component.unmount();
@@ -255,7 +255,7 @@ describe("PreferencesAppSettings", () => {
           });
         });
 
-      const switchButtons = component.queryAllByTestId("switch-button-right");
+      const switchButtons = screen.queryAllByTestId("switch-button-right");
 
       const verbose = switchButtons.find(
         (p) => p.getAttribute("name") === "verbose"
