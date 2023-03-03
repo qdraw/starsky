@@ -11,6 +11,6 @@
   "dependencies": {
     "hi-base32": "^0.5.1",
     "jimp": "^0.22.4",
-    "minimist": "^1.2.7"
+    "minimist": "^1.2.8"
   }
 }
