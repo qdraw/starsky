@@ -99,7 +99,7 @@ const ModalMoveFolderToTrash: React.FunctionComponent<
               handleExit();
               moveFolderIntoTrash();
             }}
-            data-test="force-delete"
+            data-test="move-folder-to-trash"
             className="btn btn--default"
           >
             {MessageMoveToTrash}
