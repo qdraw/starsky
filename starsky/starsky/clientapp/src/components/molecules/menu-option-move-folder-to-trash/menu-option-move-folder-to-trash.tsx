@@ -17,12 +17,13 @@ const MenuOptionMoveFolderToTrash: React.FunctionComponent<IMenuOptionMoveToTras
 
     return (
       <>
-        {/* Modal download */}
+        {/* Modal move folder to trash */}
         {isModalMoveFolderToTrashOpen ? (
           <ModalMoveFolderToTrash
-            handleExit={() =>
-              setModalMoveFolderToTrashOpen(!isModalMoveFolderToTrashOpen)
-            }
+            handleExit={() => {
+              console.log("test1");
+              setModalMoveFolderToTrashOpen(!isModalMoveFolderToTrashOpen);
+            }}
             subPath={subPath}
             setIsLoading={() => {}}
             isOpen={isModalMoveFolderToTrashOpen}
