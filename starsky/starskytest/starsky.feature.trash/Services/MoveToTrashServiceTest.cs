@@ -321,4 +321,29 @@ public class MoveToTrashServiceTest
 		
 		Assert.AreEqual(false, result);
 	}
+
+	[TestMethod]
+	public async Task AppendChildItemsToTrashList_NoAny()
+	{
+		const string path = "/test/test.jpg";
+		var trashService = new FakeITrashService(){IsSupported = false};
+		var appSettings = new AppSettings { UseSystemTrash = true }; // see supported
+		var metaUpdate = new FakeIMetaUpdateService();
+		var moveToTrashService = new MoveToTrashService(appSettings, 
+			new FakeIQuery(new List<FileIndexItem>{new FileIndexItem(path)
+			{
+				Status = FileIndexItem.ExifStatus.Deleted
+			}}), 
+			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(), 
+			trashService, metaUpdate, 
+			new FakeITrashConnectionService());
+
+		var (fileIndexResultsList, _) = await moveToTrashService.AppendChildItemsToTrashList(
+			new List<FileIndexItem>
+			{
+				new FileIndexItem("")
+			}, new Dictionary<string, List<string>>());
+
+		Assert.AreEqual(fileIndexResultsList.FirstOrDefault()?.Status, FileIndexItem.ExifStatus.Default);
+	}
 }

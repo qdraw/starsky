@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.trash.Interfaces;
 using starsky.foundation.database.Interfaces;
@@ -8,6 +9,7 @@ using starsky.foundation.native.Trash.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Interfaces;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.trash.Services;
 
 [Service(typeof(IMoveToTrashService), InjectionLifetime = InjectionLifetime.Scoped)]
