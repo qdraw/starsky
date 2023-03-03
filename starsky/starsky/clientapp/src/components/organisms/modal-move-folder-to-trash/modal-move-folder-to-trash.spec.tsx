@@ -290,4 +290,28 @@ describe("ModalMoveFolderToTrash component", () => {
       expect(historySpy).toBeCalled();
     });
   });
+
+  it("test if handleExit is called", () => {
+    // simulate if a user press on close
+    // use as ==> import * as Modal from './modal';
+    jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+      props.handleExit();
+      return <>{props.children}</>;
+    });
+
+    const handleExitSpy = jest.fn();
+
+    const component = render(
+      <ModalMoveFolderToTrash
+        isOpen={true}
+        subPath={"subPath"}
+        handleExit={handleExitSpy}
+        setIsLoading={jest.fn()}
+      />
+    );
+
+    expect(handleExitSpy).toBeCalled();
+
+    component.unmount();
+  });
 });
