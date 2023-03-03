@@ -1,9 +1,11 @@
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Models;
 
 namespace starsky.Controllers
 {
+	[AllowAnonymous]
 	public sealed class ErrorController : Controller  
 	{
 		private readonly string  _clientApp;

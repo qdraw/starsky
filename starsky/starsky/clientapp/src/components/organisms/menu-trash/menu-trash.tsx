@@ -50,6 +50,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
 
   const history = useLocation();
 
@@ -177,11 +178,19 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
           ) : null}
 
           {/* More menu - When in normal state */}
-          {!select ? <MoreMenu /> : null}
+          {!select ? (
+            <MoreMenu
+              setEnableMoreMenu={setEnableMoreMenu}
+              enableMoreMenu={enableMoreMenu}
+            />
+          ) : null}
 
           {/* More menu - In the select context there are more options */}
           {select && select.length === 0 ? (
-            <MoreMenu>
+            <MoreMenu
+              setEnableMoreMenu={setEnableMoreMenu}
+              enableMoreMenu={enableMoreMenu}
+            >
               <li
                 className="menu-option"
                 data-test="select-all"
@@ -194,7 +203,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
           {/* More menu - When more then 1 item is selected */}
           {select && select.length >= 1 ? (
-            <MoreMenu>
+            <MoreMenu
+              setEnableMoreMenu={setEnableMoreMenu}
+              enableMoreMenu={enableMoreMenu}
+            >
               {select.length === state.fileIndexItems.length ? (
                 <li
                   data-test="undo-selection"

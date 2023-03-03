@@ -17,6 +17,23 @@ describe("keyboard", () => {
     });
   });
 
+  describe("key", () => {
+    it("get different content (dutch)", () => {
+      const result = language.key({
+        nl: "dutch",
+        en: "english"
+      });
+      expect(result).toBe("dutch");
+    });
+    it("get different content (english)", () => {
+      const result = new Language(SupportedLanguages.en).key({
+        nl: "dutch",
+        en: "english"
+      });
+      expect(result).toBe("english");
+    });
+  });
+
   describe("token", () => {
     it("multiple tokens", () => {
       const result = language.token(

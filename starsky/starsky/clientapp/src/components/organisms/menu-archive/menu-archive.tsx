@@ -7,6 +7,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
+import localization from "../../../localization/localization.json";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
 import { Select } from "../../../shared/select";
@@ -19,6 +20,7 @@ import MenuOption from "../../atoms/menu-option/menu-option";
 import ModalDropAreaFilesAdded from "../../atoms/modal-drop-area-files-added/modal-drop-area-files-added";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
+import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder-to-trash/menu-option-move-folder-to-trash";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
 import ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
@@ -56,6 +58,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
+  const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
+
   let { state, dispatch } = React.useContext(ArchiveContext);
   state = defaultStateFallback(state);
 
@@ -74,6 +78,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   /* only update when the state is changed */
   const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
   useEffect(() => {
+    console.log("state.isReadOnly");
+
+    console.log(state.isReadOnly);
+
     setReadOnly(state.isReadOnly);
   }, [state.isReadOnly]);
 
@@ -268,7 +276,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {/* default more menu */}
           {!select ? (
-            <MoreMenu>
+            <MoreMenu
+              setEnableMoreMenu={setEnableMoreMenu}
+              enableMoreMenu={enableMoreMenu}
+            >
               <li
                 className={!isReadOnly ? "menu-option" : "menu-option disabled"}
                 data-test="mkdir"
@@ -284,11 +295,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 {MessageDisplayOptions}
               </li>
               <MenuOption
+                isReadOnly={false}
                 testName="synchronize-manually"
                 isSet={isSynchronizeManuallyOpen}
                 set={setSynchronizeManuallyOpen}
-                nl="Handmatig synchroniseren"
-                en="Synchronize manually"
+                localization={localization.MessageSynchronizeManually}
               />
               {state ? <UploadMenuItem /> : null}
               <li
@@ -302,12 +313,22 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               >
                 {MessageRenameDir}
               </li>
+
+              <MenuOptionMoveFolderToTrash
+                isReadOnly={isReadOnly || state.subPath === "/"}
+                subPath={state.subPath}
+                dispatch={dispatch}
+                setEnableMoreMenu={setEnableMoreMenu}
+              />
             </MoreMenu>
           ) : null}
 
           {/* In the select context there are more options */}
           {select ? (
-            <MoreMenu>
+            <MoreMenu
+              setEnableMoreMenu={setEnableMoreMenu}
+              enableMoreMenu={enableMoreMenu}
+            >
               {select.length === state.fileIndexItems.length ? (
                 <li
                   className="menu-option"
@@ -329,18 +350,18 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               {select.length >= 1 ? (
                 <>
                   <MenuOption
+                    isReadOnly={false}
                     testName="export"
                     isSet={isModalExportOpen}
                     set={setModalExportOpen}
-                    nl="Download"
-                    en="Download"
+                    localization={localization.MessageDownload}
                   />
                   <MenuOption
+                    isReadOnly={false}
                     testName="publish"
                     isSet={isModalPublishOpen}
                     set={setModalPublishOpen}
-                    nl="Publiceren"
-                    en="Publish"
+                    localization={localization.MessagePublish}
                   />
                   <MenuOptionMoveToTrash
                     state={state}
@@ -359,11 +380,12 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 {MessageDisplayOptions}
               </li>
               <MenuOption
+                setEnableMoreMenu={setEnableMoreMenu}
+                isReadOnly={false}
                 testName="synchronize-manually"
                 isSet={isSynchronizeManuallyOpen}
                 set={setSynchronizeManuallyOpen}
-                nl="Handmatig synchroniseren"
-                en="Synchronize manually"
+                localization={localization.MessageSynchronizeManually}
               />
               {state ? <UploadMenuItem /> : null}
             </MoreMenu>

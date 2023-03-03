@@ -14,6 +14,15 @@ export class Language {
   private selectedLanguage: SupportedLanguages;
 
   /**
+   * WIP
+   * @param key
+   * @returns
+   */
+  public key(content: { en: string; nl: string }): string {
+    return this.text(content.nl, content.en);
+  }
+
+  /**
    * Get the right content based on the language
    */
   public text(nl: string, en: string): string {

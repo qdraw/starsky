@@ -11,6 +11,7 @@ import {
   Orientation
 } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
+import localization from "../../../localization/localization.json";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import { Comma } from "../../../shared/comma";
 import { IsEditedNow } from "../../../shared/date";
@@ -43,24 +44,26 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   // Not close anymore because its looks like closing a window
-  const MessageCloseDialog = language.text("Terug naar map", "Parent folder");
+  const MessageCloseDialogBackToFolder = language.text(
+    "Terug naar map",
+    "Parent folder"
+  );
   const MessageCloseDetailScreenDialog = language.text(
     "Sluit detailscherm",
     "Close detail screen"
   );
   const MessageSaved = language.text("Opgeslagen", "Saved");
 
-  const MessageMoveToTrash = language.text(
-    "Verplaats naar prullenmand",
-    "Move to Trash"
-  );
+  const MessageMoveToTrash = language.key(localization.MessageMoveToTrash);
+
   const MessageIncludingWord = language.text("Inclusief: ", "Including: ");
 
-  const MessageRestoreFromTrash = language.text(
-    "Zet terug uit prullenmand",
-    "Restore from Trash"
+  const MessageRestoreFromTrash = language.key(
+    localization.MessageRestoreFromTrash
   );
-  const MessageMove = language.text("Verplaats", "Move");
+
+  const MessageMove = language.key(localization.MessageMove);
+
   const MessageRenameFileName = language.text(
     "Bestandsnaam wijzigen",
     "Rename file name"
@@ -117,6 +120,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(
     state?.fileIndexItem?.status === IExifStatus.Deleted
   );
+  const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
 
   /* only update when the state is changed */
   useEffect(() => {
@@ -393,7 +397,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
                 state.fileIndexItem.parentDirectory
               )}
             >
-              {MessageCloseDialog}
+              {MessageCloseDialogBackToFolder}
             </Link>
           ) : null}
 
@@ -420,7 +424,10 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           >
             Labels
           </button>
-          <MoreMenu>
+          <MoreMenu
+            setEnableMoreMenu={setEnableMoreMenu}
+            enableMoreMenu={enableMoreMenu}
+          >
             {goToParentFolderJSX}
             <li
               tabIndex={0}
@@ -488,11 +495,11 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               {MessageRotateToRight}
             </li>
             <MenuOption
+              isReadOnly={false}
               testName="publish"
               isSet={isModalPublishOpen}
               set={setModalPublishOpen}
-              nl="Publiceren"
-              en="Publish"
+              localization={localization.MessagePublish}
             />
           </MoreMenu>
         </div>

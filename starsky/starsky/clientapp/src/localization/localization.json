@@ -1,0 +1,42 @@
+{
+  "MessageMoveFolderIntoTrashIntroText": {
+    "en": "Are you sure you want to move this folder into the trash?",
+    "nl": "Weet u zeker dat u deze map naar de prullenbak wilt verplaatsen?"
+  },
+  "MessageCancel": {
+    "en": "Cancel",
+    "nl": "Annuleren"
+  },
+  "MessageMoveToTrash": {
+    "en": "Move to trash",
+    "nl": "Verplaatsen naar prullenbak"
+  },
+  "MessageMoveCurrentFolderToTrash": {
+    "en": "Move current folder to trash",
+    "nl": "Huidige map naar prullenbak"
+  },
+  "MessageMove": {
+    "en": "Move",
+    "nl": "Verplaatsen"
+  },
+  "MessageTo": {
+    "en": "to",
+    "nl": "naar"
+  },
+  "MessageRestoreFromTrash": {
+    "en": "Restore from trash",
+    "nl": "Herstellen uit prullenbak"
+  },
+  "MessageSynchronizeManually": {
+    "en": "Synchronize manually",
+    "nl": "Handmatig synchroniseren"
+  },
+  "MessageDownload": {
+    "en": "Download",
+    "nl": "Download"
+  },
+  "MessagePublish": {
+    "en": "Publish",
+    "nl": "Publiceren"
+  }
+}

@@ -4,6 +4,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
@@ -31,10 +32,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
     const undoSelection = () =>
       new Select(select, setSelect, state, history).undoSelection();
 
-    const MessageMoveToTrash = language.text(
-      "Verplaats naar prullenmand",
-      "Move to Trash"
-    );
+    const MessageMoveToTrash = language.key(localization.MessageMoveToTrash);
 
     const history = useLocation();
 

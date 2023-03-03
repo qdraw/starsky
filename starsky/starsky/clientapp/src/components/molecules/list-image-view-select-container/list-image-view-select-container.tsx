@@ -18,12 +18,11 @@ interface IListImageBox {
 }
 
 const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
-  memo((props) => {
-    const item = props.item;
+  memo(({ item, className: propsClassName, onSelectionCallback, children }) => {
     if (item.isDirectory === undefined) item.isDirectory = false;
 
     const [className] = React.useState(
-      !props.className ? "list-image-box" : props.className
+      !propsClassName ? "list-image-box" : propsClassName
     );
 
     const history = useLocation();
@@ -35,6 +34,11 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
     useEffect(() => {
       setSelect(new URLPath().StringToIUrl(history.location.search).select);
     }, [history.location.search]);
+
+    // reset preloader state when a new filePath is loaded
+    useEffect(() => {
+      setPreloaderState(false);
+    }, [item.filePath]);
 
     function toggleSelection(fileName: string): void {
       const urlObject = new URLPath().toggleSelection(
@@ -70,8 +74,8 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
               // multiple select using the shift key
               if (!event.shiftKey) {
                 toggleSelection(item.fileName);
-              } else if (event.shiftKey && props.onSelectionCallback) {
-                props.onSelectionCallback(item.filePath);
+              } else if (event.shiftKey && onSelectionCallback) {
+                onSelectionCallback(item.filePath);
               }
             }}
             className={
@@ -86,7 +90,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
                   item.isDirectory
             }
           >
-            {props.children}
+            {children}
           </button>
         </div>
       );
@@ -117,7 +121,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
             item.isDirectory
           }
         >
-          {props.children}
+          {children}
         </Link>
       </div>
     );

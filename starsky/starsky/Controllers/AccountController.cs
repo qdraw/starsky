@@ -46,6 +46,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(string), 406)]
 		[ProducesResponseType(typeof(string), 503)]
 		[Produces("application/json")]
+		[AllowAnonymous]
 		public async Task<IActionResult> Status()
 		{
 			var userOverview = await _userManager.AllUsersAsync();
@@ -98,6 +99,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(200)]
 		[Produces("text/html")]
 		[SuppressMessage("ReSharper", "UnusedParameter.Global")]
+		[AllowAnonymous]
 		public IActionResult LoginGet(string returnUrl = null, bool? fromLogout = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
@@ -126,6 +128,7 @@ namespace starsky.Controllers
         [ValidateAntiForgeryToken]
 #endif
         [Produces("application/json")]
+        [AllowAnonymous]
         public async Task<IActionResult> LoginPost(LoginViewModel model)
         {
             ValidateResult validateResult = await _userManager.ValidateAsync("Email", model.Email, model.Password);
@@ -157,6 +160,7 @@ namespace starsky.Controllers
         /// <response code="200">successful logout</response>
         [HttpPost("/api/account/logout")]
         [ProducesResponseType(200)]
+        [AllowAnonymous]
         public IActionResult LogoutJson()
         {
 	        _userManager.SignOut(HttpContext);
@@ -171,6 +175,7 @@ namespace starsky.Controllers
         /// <returns></returns>
         [HttpGet("/account/logout")]
         [ProducesResponseType(200)]
+        [AllowAnonymous]
         public IActionResult Logout(string returnUrl = null)
         {
             _userManager.SignOut(HttpContext);
@@ -284,6 +289,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),403)]
         [Produces("application/json")]
+        [AllowAnonymous]
         public async Task<IActionResult> RegisterStatus()
         {
 	        if ( !(await _userManager.AllUsersAsync()).Users.Any() ) Response.StatusCode = 202;

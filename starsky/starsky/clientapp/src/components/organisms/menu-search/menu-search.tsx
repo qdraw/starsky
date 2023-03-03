@@ -7,6 +7,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
@@ -81,7 +82,10 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
 
   // download modal
   const [isModalExportOpen, setModalExportOpen] = useState(false);
+  // publish modal
   const [isModalPublishOpen, setModalPublishOpen] = useState(false);
+
+  const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
 
   return (
     <>
@@ -172,11 +176,19 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
           ) : null}
 
           {/* More menu - When in normal state */}
-          {!select ? <MoreMenu /> : null}
+          {!select ? (
+            <MoreMenu
+              setEnableMoreMenu={setEnableMoreMenu}
+              enableMoreMenu={enableMoreMenu}
+            />
+          ) : null}
 
           {/* More menu - In the select context there are more options */}
           {select && select.length === 0 ? (
-            <MoreMenu>
+            <MoreMenu
+              setEnableMoreMenu={setEnableMoreMenu}
+              enableMoreMenu={enableMoreMenu}
+            >
               <li
                 tabIndex={0}
                 className="menu-option"
@@ -189,7 +201,10 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
 
           {/* More menu - When more then 1 item is selected */}
           {select && select.length >= 1 ? (
-            <MoreMenu>
+            <MoreMenu
+              setEnableMoreMenu={setEnableMoreMenu}
+              enableMoreMenu={enableMoreMenu}
+            >
               {select.length === state.fileIndexItems.length ? (
                 <li
                   data-test="undo-selection"
@@ -209,18 +224,18 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
                 </li>
               ) : null}
               <MenuOption
+                isReadOnly={false}
                 testName="export"
                 isSet={isModalExportOpen}
                 set={setModalExportOpen}
-                nl="Download"
-                en="Download"
+                localization={localization.MessageDownload}
               />
               <MenuOption
+                isReadOnly={false}
                 testName="publish"
                 isSet={isModalPublishOpen}
                 set={setModalPublishOpen}
-                nl="Publiceren"
-                en="Publish"
+                localization={localization.MessagePublish}
               />
               <MenuOptionMoveToTrash
                 state={state}
