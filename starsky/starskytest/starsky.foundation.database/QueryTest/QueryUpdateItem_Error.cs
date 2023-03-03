@@ -155,6 +155,38 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			}
 		}
 		
+		private class AppDbContextDoubleConcurrencyException : ApplicationDbContext
+		{
+			public AppDbContextDoubleConcurrencyException(DbContextOptions options) : base(options)
+			{
+			}
+
+			public int Count { get; set; }
+
+			public override int SaveChanges()
+			{
+				Count++;
+				if ( Count <= 2 )
+				{
+					throw new DbUpdateConcurrencyException("t",
+						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
+				}
+				return Count;
+			}	
+			
+			public override Task<int> SaveChangesAsync(
+				CancellationToken cancellationToken = default)
+			{
+				Count++;
+				if ( Count <= 2 )
+				{
+					throw new DbUpdateConcurrencyException("t",
+						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
+				}
+				return Task.FromResult(Count);
+			}
+		}
+		
 		private class SqliteExceptionDbContext : ApplicationDbContext
 		{
 			public SqliteExceptionDbContext(DbContextOptions options) : base(options)
@@ -637,14 +669,35 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 		
 		[TestMethod]
-		public async Task Query_AddRangeAsync_DbUpdateConcurrencyException_Verbose()
+		public async Task Query_AddRangeAsync_DoubleConcurrencyException()
 		{
 			IsCalledDbUpdateConcurrency = false;
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),new AppSettings
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null!,null!,new FakeIWebLogger());
+			
+			var fileIndexItemList = new List<FileIndexItem>
+			{
+				new FileIndexItem { FilePath = "test1.jpg" },
+				new FileIndexItem { FilePath = "test2.jpg" }
+			};
+			
+			await fakeQuery.AddRangeAsync(fileIndexItemList);
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+		
+		[TestMethod]
+		public async Task Query_AddRangeAsync_DoubleConcurrencyException_Verbose()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new AppDbContextDoubleConcurrencyException(options),new AppSettings
 			{
 				Verbose = true
 			},null!,new FakeIWebLogger());
@@ -655,6 +708,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem { FilePath = "test2.jpg" }
 			};
 			
+			// verbose
 			await fakeQuery.AddRangeAsync(fileIndexItemList);
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -669,7 +723,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),new AppSettings
+			var fakeQuery = new Query(new AppDbContextDoubleConcurrencyException(options),new AppSettings
 			{
 				Verbose = true
 			},null!,null!);
