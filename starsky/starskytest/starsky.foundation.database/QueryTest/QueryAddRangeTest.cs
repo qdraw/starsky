@@ -43,13 +43,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScopeFactory = CreateNewScope();
 			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			
-			await new Query(dbContext,
-					new AppSettings {
-						AddMemoryCache = false,
-						Verbose = true
-					}, serviceScopeFactory,new FakeIWebLogger(), new FakeMemoryCache()
-				).AddRangeAsync(expectedResult);
+
+			var query =  new Query(dbContext,
+				new AppSettings { AddMemoryCache = false, Verbose = true },
+				serviceScopeFactory, new FakeIWebLogger(), new FakeMemoryCache()
+			);
+			await query.AddRangeAsync(expectedResult);
 			
 			var queryFromDb = dbContext.FileIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
 			Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash, queryFromDb.FirstOrDefault()?.FileHash);
