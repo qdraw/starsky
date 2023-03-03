@@ -43,11 +43,22 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				await _query.RemoveItemAsync(item);
 			}
 			
-			var itemAsync = await _query.AddItemAsync(new FileIndexItem("/test.jpg"));
-			var result = await _query.CountAsync();
+			var services = new ServiceCollection();
+			services.AddDbContext<ApplicationDbContext>(options => 
+				options.UseInMemoryDatabase(nameof(ShouldGive1Result_BasicQuery)));
+
+			var query =
+				new Query(
+					services.BuildServiceProvider()
+						.GetService<ApplicationDbContext>(), new AppSettings(),
+					null!, new FakeIWebLogger());
+			
+			
+			var itemAsync = await query.AddItemAsync(new FileIndexItem("/test.jpg"));
+			var result = await query.CountAsync();
 			
 			Assert.AreEqual(1,result);
-			await _query.RemoveItemAsync(itemAsync);
+			await query.RemoveItemAsync(itemAsync);
 		}
 		
 		[TestMethod]
