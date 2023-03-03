@@ -42,6 +42,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Added) _Back-end_ Add API for System Trash or Meta data trash (PR #1078)
 - [x] (Added) _Back-end_ Add feature toggle `useSystemTrash` (PR #1078)
 - [x] (Removed) _Back-end_ Remove `RemoveItem` sync query (use async instead) (PR #1078)
+- [x] (Changed) _Front-end_ Removal of Directories (PR #1085)
+- [x] (Changed) _Back-end_ Remove folder data in `/api/move-to-trash` (PR #1085)
+- [x] (Added) _Front-end_ Add MoreMenu remove current folder (PR #1085)
+- [x] (Changed) _Front-end_ MoreMenu refactor (PR #1085)
 
 ## version 0.5.5 - 2023-02-17 {#v0.5.5}
 
