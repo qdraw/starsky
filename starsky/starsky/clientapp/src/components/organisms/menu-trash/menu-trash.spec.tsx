@@ -41,22 +41,16 @@ describe("MenuTrash", () => {
 
       jest
         .spyOn(React, "useContext")
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        });
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        })
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        });
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
     });
 
     it("open hamburger menu (MenuTrash)", () => {

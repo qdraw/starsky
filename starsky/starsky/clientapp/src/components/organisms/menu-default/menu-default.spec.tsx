@@ -1,5 +1,4 @@
-import { act, render } from "@testing-library/react";
-import React from "react";
+import { act, render, screen } from "@testing-library/react";
 import MenuDefault from "./menu-default";
 
 describe("MenuDefault", () => {
@@ -10,13 +9,14 @@ describe("MenuDefault", () => {
   describe("with Context", () => {
     it("has hamburger", () => {
       const component = render(<MenuDefault isEnabled={true} />);
-      expect(component.queryByTestId("hamburger")).toBeTruthy();
+      expect(screen.getByTestId("hamburger")).toBeTruthy();
+      component.unmount();
     });
 
     it("[menu default]check if on click the hamburger opens", () => {
       const component = render(<MenuDefault isEnabled={true} />);
 
-      const hamburger = component.queryByTestId("hamburger");
+      const hamburger = screen.getByTestId("hamburger");
       expect(hamburger?.querySelector(".open")).toBeFalsy();
 
       act(() => {

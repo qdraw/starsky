@@ -98,6 +98,11 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
       props.callback(defQuery);
     }
 
+    const responseObject2 = useFetch(
+      new UrlQuery().UrlApiFeaturesAppSettings(),
+      "get"
+    );
+
     /**
      * is form active
      */

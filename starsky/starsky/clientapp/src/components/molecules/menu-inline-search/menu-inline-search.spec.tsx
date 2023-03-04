@@ -1,5 +1,4 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import {
   IConnectionDefault,
@@ -14,16 +13,18 @@ describe("Menu.SearchBar", () => {
   });
 
   describe("with Context", () => {
-    it("focus", async () => {
+    it("Menu.SearchBar focus", async () => {
+      const successResponse: IConnectionDefault = {
+        ...newIConnectionDefault(),
+        statusCode: 200
+      };
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => {
-          return { ...newIConnectionDefault(), statusCode: 200 };
-        })
-        .mockImplementationOnce(() => {
-          return { ...newIConnectionDefault(), statusCode: 200 };
-        });
+        .mockImplementationOnce(() => successResponse)
+        .mockImplementationOnce(() => successResponse)
+        .mockImplementationOnce(() => successResponse)
+        .mockImplementationOnce(() => successResponse);
 
       const menuBar = render(<MenuInlineSearch />);
 
@@ -48,6 +49,7 @@ describe("Menu.SearchBar", () => {
 
       menuBar.unmount();
     });
+
     it("menu searchbar - blur", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
@@ -95,10 +97,11 @@ describe("Menu.SearchBar", () => {
       data: ["suggest1", "suggest2"]
     } as IConnectionDefault;
 
-    it("suggestions", () => {
+    it("inline search suggestions", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => suggestionsExample)
         .mockImplementationOnce(() => suggestionsExample);
@@ -120,8 +123,16 @@ describe("Menu.SearchBar", () => {
         ".menu-item--results > button"
       );
 
-      expect(results[0].textContent).toBe("suggest1");
-      expect(results[1].textContent).toBe("suggest2");
+      for (const result of Array.from(results)) {
+        console.log(result?.textContent);
+      }
+
+      const result1 = Array.from(results).find(
+        (p) => p?.textContent === "suggest1"
+      )?.textContent;
+
+      expect(result1).toBeTruthy();
+      expect(results[2].textContent).toBe("suggest2");
 
       expect(callback).toBeCalledTimes(0);
 

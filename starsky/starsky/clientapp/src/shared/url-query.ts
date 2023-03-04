@@ -347,6 +347,10 @@ export class UrlQuery {
     return this.prefix + "/api/env/";
   };
 
+  public UrlApiFeaturesAppSettings = (): string => {
+    return this.prefix + "/api/env/features";
+  };
+
   /**
    * url create a zip
    */
