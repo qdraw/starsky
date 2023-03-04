@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -57,7 +56,7 @@ describe("ModalForceDelete", () => {
       ></ModalForceDelete>
     );
 
-    const forceDelete = modal.queryByTestId("force-delete");
+    const forceDelete = screen.queryByTestId("force-delete");
     expect(forceDelete).toBeTruthy();
     // need to await here
     await forceDelete?.click();
@@ -102,7 +101,7 @@ describe("ModalForceDelete", () => {
       ></ModalForceDelete>
     );
 
-    const forceDelete = modal.queryByTestId("force-delete");
+    const forceDelete = screen.queryByTestId("force-delete");
     expect(forceDelete).toBeTruthy();
     // need to await here
     await forceDelete?.click();

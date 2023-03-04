@@ -3,9 +3,9 @@ import {
   createEvent,
   fireEvent,
   render,
-  RenderResult
+  RenderResult,
+  screen
 } from "@testing-library/react";
-import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
@@ -36,15 +36,17 @@ describe("ModalArchiveMkdir", () => {
         <ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />
       );
 
-      expect(modal.queryByTestId("modal-edit-datetime-non-valid")).toBeTruthy();
+      expect(screen.getByTestId("modal-edit-datetime-non-valid")).toBeTruthy();
 
       // and button is disabled
-      const submitButtonBefore = modal.queryByTestId(
+      const submitButtonBefore = screen.queryByTestId(
         "modal-edit-datetime-btn-default"
       ) as HTMLButtonElement;
       expect(submitButtonBefore).not.toBeNull();
 
       expect(submitButtonBefore.disabled).toBeTruthy();
+
+      modal.unmount();
     });
 
     it("example date no error dialog", () => {
@@ -58,9 +60,9 @@ describe("ModalArchiveMkdir", () => {
       );
 
       // no warning
-      expect(modal.queryByTestId("modal-edit-datetime-non-valid")).toBeFalsy();
+      expect(screen.queryByTestId("modal-edit-datetime-non-valid")).toBeFalsy();
 
-      const submitButtonBefore = modal.queryByTestId(
+      const submitButtonBefore = screen.queryByTestId(
         "modal-edit-datetime-btn-default"
       ) as HTMLButtonElement;
       expect(submitButtonBefore).not.toBeNull();
@@ -74,7 +76,7 @@ describe("ModalArchiveMkdir", () => {
       dataName: string,
       input: string
     ) {
-      const formControls = modal.queryAllByTestId("form-control");
+      const formControls = screen.queryAllByTestId("form-control");
 
       const year = formControls.find(
         (p) => p.getAttribute("data-name") === dataName
@@ -84,10 +86,8 @@ describe("ModalArchiveMkdir", () => {
         textContent: input
       });
 
-      await act(async () => {
-        year.innerHTML = input;
-        await fireEvent(year, blurEventYear);
-      });
+      year.innerHTML = input;
+      await fireEvent(year, blurEventYear);
     }
 
     it("change all options", async () => {
@@ -118,7 +118,7 @@ describe("ModalArchiveMkdir", () => {
       await fireEventOnFormControl(modal, "sec", "5");
 
       await act(async () => {
-        await modal.queryByTestId("modal-edit-datetime-btn-default")?.click();
+        await screen.queryByTestId("modal-edit-datetime-btn-default")?.click();
       });
 
       expect(fetchPostSpy).toBeCalled();

@@ -47,7 +47,7 @@ describe("ModalPublish", () => {
     );
 
     expect(useFetchSpy).toBeCalled();
-    expect(screen.queryByTestId("publish")).toBeTruthy();
+    expect(screen.getByTestId("publish")).toBeTruthy();
 
     // and clean afterwards
     act(() => {

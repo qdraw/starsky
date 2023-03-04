@@ -1,5 +1,4 @@
-import { act, render } from "@testing-library/react";
-import React from "react";
+import { act, render, screen } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -50,8 +49,8 @@ describe("ModalDownload", () => {
     );
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.queryByTestId("thumbnail")).toBeTruthy();
-    expect(modal.queryByTestId("orginal")).toBeTruthy();
+    expect(screen.getByTestId("thumbnail")).toBeTruthy();
+    expect(screen.getByTestId("orginal")).toBeTruthy();
 
     // and clean afterwards
     act(() => {
@@ -97,7 +96,7 @@ describe("ModalDownload", () => {
       ></ModalDownload>
     );
 
-    const thumbnail = modal.queryByTestId("thumbnail");
+    const thumbnail = screen.queryByTestId("thumbnail");
     expect(thumbnail).toBeTruthy();
     thumbnail?.click();
 
@@ -131,8 +130,8 @@ describe("ModalDownload", () => {
 
     expect(useFetchSpy).toBeCalled();
 
-    const btnTest = modal.queryByTestId("btn-test");
-    const orginal = modal.queryByTestId("orginal");
+    const btnTest = screen.queryByTestId("btn-test");
+    const orginal = screen.queryByTestId("orginal");
 
     expect(btnTest).toBeNull();
     expect(orginal).not.toBeNull();

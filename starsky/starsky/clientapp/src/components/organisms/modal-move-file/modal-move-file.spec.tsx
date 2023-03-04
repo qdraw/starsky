@@ -1,5 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
-import React from "react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import * as useFileList from "../../../hooks/use-filelist";
 import { IFileList } from "../../../hooks/use-filelist";
@@ -43,7 +42,7 @@ describe("ModalMoveFile", () => {
       ></ModalMoveFile>
     );
 
-    expect(modal.queryByTestId("preloader-inside")).toBeTruthy();
+    expect(screen.getByTestId("preloader-inside")).toBeTruthy();
 
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
     modal.unmount();
@@ -99,10 +98,10 @@ describe("ModalMoveFile", () => {
       ></ModalMoveFile>
     );
 
-    const btnTest = modal.queryByTestId("btn-test");
+    const btnTest = screen.queryByTestId("btn-test");
     expect(btnTest).toBeTruthy();
 
-    const btnDefault = modal.queryByTestId(
+    const btnDefault = screen.queryByTestId(
       "modal-move-file-btn-default"
     ) as HTMLButtonElement;
 
@@ -155,13 +154,13 @@ describe("ModalMoveFile", () => {
       ></ModalMoveFile>
     );
 
-    const parent = modal.queryByTestId("parent");
+    const parent = screen.queryByTestId("parent");
 
     act(() => {
       parent?.click();
     });
 
-    const btnDefault = modal.queryByTestId(
+    const btnDefault = screen.queryByTestId(
       "modal-move-file-btn-default"
     ) as HTMLButtonElement;
 
@@ -235,14 +234,14 @@ describe("ModalMoveFile", () => {
       ></ModalMoveFile>
     );
 
-    const btnTest = modal.queryByTestId("btn-test");
+    const btnTest = screen.queryByTestId("btn-test");
     expect(btnTest).toBeTruthy();
 
     act(() => {
       btnTest?.click();
     });
 
-    const btnDefault = modal.queryByTestId(
+    const btnDefault = screen.queryByTestId(
       "modal-move-file-btn-default"
     ) as HTMLButtonElement;
     // button isn't disabled anymore
@@ -345,14 +344,14 @@ describe("ModalMoveFile", () => {
           handleExit={() => {}}
         ></ModalMoveFile>
       );
-      const btnTest = modal.queryByTestId("btn-test");
+      const btnTest = screen.queryByTestId("btn-test");
       expect(btnTest).toBeTruthy();
 
       await act(async () => {
         await btnTest?.click();
       });
 
-      const btnDefault = modal.queryByTestId(
+      const btnDefault = screen.queryByTestId(
         "modal-move-file-btn-default"
       ) as HTMLButtonElement;
       // button isn't disabled anymore
@@ -366,7 +365,7 @@ describe("ModalMoveFile", () => {
       await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
       // Test is warning exist
-      expect(modal.queryByTestId("modal-move-file-warning-box")).toBeTruthy();
+      expect(screen.getByTestId("modal-move-file-warning-box")).toBeTruthy();
 
       // and cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
