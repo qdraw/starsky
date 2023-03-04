@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -146,7 +145,7 @@ describe("ColorClassSelectKeyboard", () => {
 
     expect(colorClassUpdateSingleSpy).toBeCalled();
 
-    const close = component.queryByTestId("notification-close");
+    const close = screen.queryByTestId("notification-close");
     close?.click();
 
     expect(component.container.innerHTML).toBe("");
@@ -188,7 +187,7 @@ describe("ColorClassSelectKeyboard", () => {
 
     expect(colorClassUpdateSingleSpy).toBeCalled();
 
-    const close = component.queryByTestId("notification-close");
+    const close = screen.queryByTestId("notification-close");
     close?.click();
 
     expect(component.container.innerHTML).toBe("");

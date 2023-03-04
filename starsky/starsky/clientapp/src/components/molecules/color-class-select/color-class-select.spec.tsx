@@ -1,5 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
-import React from "react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import {
   IConnectionDefault,
@@ -48,7 +47,7 @@ describe("ColorClassSelect", () => {
       />
     );
 
-    const colorClass = wrapper.queryByTestId(
+    const colorClass = screen.queryByTestId(
       "color-class-select-2"
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
@@ -64,6 +63,7 @@ describe("ColorClassSelect", () => {
 
     // Cleanup: To avoid that mocks are shared
     fetchPostSpy.mockReset();
+    wrapper.unmount();
   });
 
   it("onClick disabled", () => {
@@ -80,11 +80,11 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={false}
         filePath={"/test1"}
-        onToggle={(value) => {}}
+        onToggle={() => {}}
       />
     );
 
-    const colorClass = wrapper.queryByTestId(
+    const colorClass = screen.queryByTestId(
       "color-class-select-2"
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
@@ -98,6 +98,7 @@ describe("ColorClassSelect", () => {
 
     // Cleanup: To avoid that mocks are shared
     fetchPostSpy.mockReset();
+    wrapper.unmount();
   });
 
   it("test hide 1 second", async () => {
@@ -120,13 +121,13 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => {}}
+        onToggle={() => {}}
       />
     );
 
     // need to await this click
 
-    let colorClass = wrapper.queryByTestId(
+    let colorClass = screen.queryByTestId(
       "color-class-select-2"
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
@@ -136,7 +137,7 @@ describe("ColorClassSelect", () => {
       await colorClass.click();
     });
 
-    colorClass = wrapper.queryByTestId(
+    colorClass = screen.queryByTestId(
       "color-class-select-2"
     ) as HTMLAnchorElement;
 
@@ -147,7 +148,7 @@ describe("ColorClassSelect", () => {
       await jest.advanceTimersByTime(1200);
     });
 
-    colorClass = wrapper.queryByTestId(
+    colorClass = screen.queryByTestId(
       "color-class-select-2"
     ) as HTMLAnchorElement;
 

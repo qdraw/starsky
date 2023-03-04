@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { act, render } from "@testing-library/react";
-import React from "react";
+import { act, render, screen } from "@testing-library/react";
 import {
   IFileIndexItem,
   newIFileIndexItemArray
@@ -38,11 +37,13 @@ describe("archive-sidebar-selection-list", () => {
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
 
-      const selectionList = component.queryByTestId(
+      const selectionList = screen.queryByTestId(
         "sidebar-selection-list"
       ) as HTMLElement;
 
       expect(selectionList.children[0].textContent).toBe("test.jpg");
+
+      component.unmount();
     });
 
     it("toggleSelection", () => {
@@ -52,7 +53,7 @@ describe("archive-sidebar-selection-list", () => {
 
       const spy = jest.spyOn(URLPath.prototype, "toggleSelection");
 
-      const selectionList = component.queryByTestId(
+      const selectionList = screen.queryByTestId(
         "sidebar-selection-list"
       ) as HTMLElement;
 
@@ -65,13 +66,15 @@ describe("archive-sidebar-selection-list", () => {
       expect(spy).toBeCalledTimes(1);
 
       spy.mockClear();
+
+      component.unmount();
     });
 
     it("allSelection", () => {
       const component = render(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
-      const allSelectionButton = component.queryByTestId("select-all");
+      const allSelectionButton = screen.queryByTestId("select-all");
 
       const spy = jest.spyOn(URLPath.prototype, "GetAllSelection");
 
@@ -82,6 +85,8 @@ describe("archive-sidebar-selection-list", () => {
       expect(spy).toBeCalledTimes(1);
 
       spy.mockClear();
+
+      component.unmount();
     });
   });
 });

@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import ArchiveSidebarLabelEdit from "./archive-sidebar-label-edit";
 
@@ -20,9 +20,9 @@ describe("ArchiveSidebarLabelEdit", () => {
 
     const component = render(<ArchiveSidebarLabelEdit />);
 
-    const item = component.queryByTestId("switch-button-right") as HTMLElement;
+    const item = screen.queryByTestId("switch-button-right") as HTMLElement;
 
-    let formControls = component.queryAllByRole("form-control");
+    let formControls = screen.queryAllByRole("form-control");
     formControls.forEach((element) => {
       // Not Contain
       expect(element).not.toContain("replace-");
@@ -32,9 +32,11 @@ describe("ArchiveSidebarLabelEdit", () => {
       item.click();
     });
 
-    formControls = component.queryAllByRole("form-control");
+    formControls = screen.queryAllByRole("form-control");
     formControls.forEach((element) => {
       expect(element).toContain("replace-");
     });
+
+    component.unmount();
   });
 });
