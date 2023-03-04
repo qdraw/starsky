@@ -1,5 +1,11 @@
 import { globalHistory } from "@reach/router";
-import { act, createEvent, fireEvent, render } from "@testing-library/react";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  screen
+} from "@testing-library/react";
 import React from "react";
 import * as AppContext from "../../../contexts/archive-context";
 import { IArchive } from "../../../interfaces/IArchive";
@@ -19,13 +25,15 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("isReadOnly: true", () => {
     const mainElement = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-    const formControl = mainElement.queryAllByTestId("form-control");
+    const formControl = screen.queryAllByTestId("form-control");
 
     // there are 3 classes [title,info,description]
     formControl.forEach((element) => {
       const disabled = element.classList;
       expect(disabled).toContain("disabled");
     });
+
+    mainElement.unmount();
   });
 
   describe("with context", () => {
