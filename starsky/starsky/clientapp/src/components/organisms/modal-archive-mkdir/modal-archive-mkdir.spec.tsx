@@ -70,11 +70,9 @@ describe("ModalArchiveMkdir", () => {
       ) as HTMLInputElement;
 
       // update component + now press a key
-      act(() => {
-        directoryName.textContent = "a";
-        const inputEvent = createEvent.input(directoryName, { key: "a" });
-        fireEvent(directoryName, inputEvent);
-      });
+      directoryName.textContent = "a";
+      const inputEvent = createEvent.input(directoryName, { key: "a" });
+      fireEvent(directoryName, inputEvent);
 
       // await is needed => there is no button
       await act(async () => {
@@ -82,7 +80,7 @@ describe("ModalArchiveMkdir", () => {
       });
 
       expect(
-        modal.queryByTestId("modal-archive-mkdir-warning-box")
+        screen.getByTestId("modal-archive-mkdir-warning-box")
       ).toBeTruthy();
 
       const submitButtonAfter = button.disabled;
@@ -132,19 +130,17 @@ describe("ModalArchiveMkdir", () => {
         ></ModalArchiveMkdir>
       );
 
-      const button = modal.queryByTestId(
+      const button = screen.queryByTestId(
         "modal-archive-mkdir-btn-default"
       ) as HTMLButtonElement;
 
-      const directoryName = modal.queryByTestId(
+      const directoryName = screen.queryByTestId(
         "form-control"
       ) as HTMLInputElement;
 
-      act(() => {
-        directoryName.textContent = "new folder";
-        const inputEvent = createEvent.input(directoryName, { key: "a" });
-        fireEvent(directoryName, inputEvent);
-      });
+      directoryName.textContent = "new folder";
+      const inputEvent = createEvent.input(directoryName, { key: "a" });
+      fireEvent(directoryName, inputEvent);
 
       // await is needed
       await act(async () => {
