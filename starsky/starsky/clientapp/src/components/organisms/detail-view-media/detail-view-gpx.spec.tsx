@@ -291,7 +291,7 @@ describe("DetailViewGpx", () => {
       await waitFor(() => expect(spyMap).toBeCalled());
 
       // Enable first
-      const button = gpx.queryByTestId("lock") as HTMLButtonElement;
+      const button = screen.queryByTestId("lock") as HTMLButtonElement;
       act(() => {
         button.click();
       });
@@ -299,7 +299,7 @@ describe("DetailViewGpx", () => {
       expect(enable).toBeCalled();
 
       // And disable afterwards
-      const button2 = gpx.queryByTestId("lock") as HTMLButtonElement;
+      const button2 = screen.queryByTestId("lock") as HTMLButtonElement;
 
       act(() => {
         button2.click();
@@ -372,7 +372,7 @@ describe("DetailViewGpx", () => {
       // need to await before the maps are added
       await waitFor(() => expect(spyMap).toBeCalled());
 
-      const button = gpx.queryByTestId(
+      const button = screen.queryByTestId(
         "current-location-button"
       ) as HTMLButtonElement;
       expect(button).toBeTruthy();

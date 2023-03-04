@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../../../hooks/use-fetch";
@@ -58,7 +58,7 @@ describe("MenuTrash", () => {
         <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
       );
 
-      let hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      let hamburger = screen.queryByTestId("hamburger") as HTMLDivElement;
       let hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
       expect(hamburgerDiv.className).toBe("hamburger");
 
@@ -66,7 +66,7 @@ describe("MenuTrash", () => {
         hamburger.click();
       });
 
-      hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      hamburger = screen.queryByTestId("hamburger") as HTMLDivElement;
       hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
       expect(hamburgerDiv.className).toBe("hamburger open");
 
@@ -78,7 +78,7 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      const menuTrashItemSelect = component.queryByTestId(
+      const menuTrashItemSelect = screen.queryByTestId(
         "menu-trash-item-select"
       ) as HTMLDivElement;
       expect(menuTrashItemSelect).toBeTruthy();
@@ -104,7 +104,7 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      const menuTrashItemSelect = component.queryByTestId(
+      const menuTrashItemSelect = screen.queryByTestId(
         "menu-trash-item-select"
       ) as HTMLDivElement;
       expect(menuTrashItemSelect).toBeTruthy();
@@ -130,13 +130,13 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      const menuContext = component.queryByTestId(
+      const menuContext = screen.queryByTestId(
         "menu-context"
       ) as HTMLInputElement;
       const menuContextParent = menuContext.parentElement as HTMLInputElement;
       expect(menuContextParent.classList).not.toContain("disabled");
 
-      component.queryByTestId("select-all")?.click();
+      screen.queryByTestId("select-all")?.click();
 
       expect(globalHistory.location.search).toBe("?select=test1.jpg");
 
@@ -177,13 +177,13 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      const menuContext = component.queryByTestId(
+      const menuContext = screen.queryByTestId(
         "menu-context"
       ) as HTMLInputElement;
       const menuContextParent = menuContext.parentElement as HTMLInputElement;
       expect(menuContextParent.classList).not.toContain("disabled");
 
-      component.queryByTestId("undo-selection")?.click();
+      screen.queryByTestId("undo-selection")?.click();
 
       expect(globalHistory.location.search).toBe("?select=");
 
@@ -218,7 +218,7 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      const item = component.queryByTestId("delete");
+      const item = screen.queryByTestId("delete");
 
       act(() => {
         item?.click();
@@ -259,7 +259,7 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      const item = component.queryByTestId("delete");
+      const item = screen.queryByTestId("delete");
 
       act(() => {
         item?.click();
@@ -311,7 +311,7 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      const item = component.queryByTestId("restore-from-trash");
+      const item = screen.queryByTestId("restore-from-trash");
 
       // // need to await here
       await act(async () => {

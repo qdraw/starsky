@@ -51,10 +51,12 @@ describe("DetailViewSidebar", () => {
         dispatch={jest.fn()}
       ></DetailViewSidebar>
     );
-    const serverError = wrapper.queryByTestId(
+    const serverError = screen.queryByTestId(
       "detailview-exifstatus-status-server-error"
     );
     expect(serverError).not.toBeNull();
+
+    wrapper.unmount();
   });
 
   describe("useContext-test", () => {

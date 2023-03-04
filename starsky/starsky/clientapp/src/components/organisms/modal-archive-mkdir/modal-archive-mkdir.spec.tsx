@@ -1,4 +1,10 @@
-import { act, createEvent, fireEvent, render } from "@testing-library/react";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  screen
+} from "@testing-library/react";
 import React from "react";
 import { IArchive, newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
@@ -52,14 +58,14 @@ describe("ModalArchiveMkdir", () => {
         ></ModalArchiveMkdir>
       );
 
-      const button = modal.queryByTestId(
+      const button = screen.queryByTestId(
         "modal-archive-mkdir-btn-default"
       ) as HTMLButtonElement;
 
       const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
-      const directoryName = modal.queryByTestId(
+      const directoryName = screen.queryByTestId(
         "form-control"
       ) as HTMLInputElement;
 

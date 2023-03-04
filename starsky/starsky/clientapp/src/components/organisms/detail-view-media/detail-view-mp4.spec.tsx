@@ -1,4 +1,4 @@
-import { act, fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import ReactDOM from "react-dom";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -28,7 +28,7 @@ describe("DetailViewMp4", () => {
         .spyOn(HTMLMediaElement.prototype, "play")
         .mockImplementationOnce(() => Promise.resolve());
 
-      const figure = component.queryByTestId("video") as HTMLElement;
+      const figure = screen.queryByTestId("video") as HTMLElement;
       figure.click();
 
       expect(playSpy).toBeCalled();
@@ -47,7 +47,7 @@ describe("DetailViewMp4", () => {
           return Promise.reject();
         });
 
-      const figure = component.queryByTestId("video") as HTMLElement;
+      const figure = screen.queryByTestId("video") as HTMLElement;
       await figure.click();
 
       expect(playSpy).toBeCalled();
@@ -65,12 +65,12 @@ describe("DetailViewMp4", () => {
           return Promise.resolve();
         });
 
-      expect(component.queryByTestId("video-time")?.textContent).toBe("");
+      expect(screen.queryByTestId("video-time")?.textContent).toBe("");
 
-      const figure = component.queryByTestId("video") as HTMLElement;
+      const figure = screen.queryByTestId("video") as HTMLElement;
       figure.click();
 
-      expect(component.queryByTestId("video-time")?.textContent).toBe(
+      expect(screen.queryByTestId("video-time")?.textContent).toBe(
         "0:00 / 0:00"
       );
 
@@ -121,7 +121,7 @@ describe("DetailViewMp4", () => {
         } as any)
       );
 
-      expect(component.queryByTestId("video-time")?.textContent).toBe(
+      expect(screen.queryByTestId("video-time")?.textContent).toBe(
         "0:00 / 0:00"
       );
 

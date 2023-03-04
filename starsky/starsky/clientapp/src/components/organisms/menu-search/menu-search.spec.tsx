@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
@@ -21,7 +21,7 @@ describe("MenuSearch", () => {
         />
       );
 
-      let hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      let hamburger = screen.queryByTestId("hamburger") as HTMLDivElement;
       let hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
       expect(hamburgerDiv.className).toBe("hamburger");
 
@@ -29,7 +29,7 @@ describe("MenuSearch", () => {
         hamburger.click();
       });
 
-      hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      hamburger = screen.queryByTestId("hamburger") as HTMLDivElement;
       hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
       expect(hamburgerDiv.className).toBe("hamburger open");
 
@@ -47,7 +47,7 @@ describe("MenuSearch", () => {
 
       expect(globalHistory.location.search).toBe("?select=1");
 
-      let selected1 = component.queryByTestId("selected-1") as HTMLDivElement;
+      let selected1 = screen.queryByTestId("selected-1") as HTMLDivElement;
 
       act(() => {
         selected1.click();
