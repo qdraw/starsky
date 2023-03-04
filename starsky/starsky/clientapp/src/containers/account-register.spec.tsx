@@ -1,5 +1,10 @@
-import { act, fireEvent, render, RenderResult } from "@testing-library/react";
-import React from "react";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  screen
+} from "@testing-library/react";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import * as FetchGet from "../shared/fetch-get";
 import * as FetchPost from "../shared/fetch-post";
@@ -22,8 +27,10 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(
         () => Promise.resolve({ statusCode: 876 }) as any
       );
-    const compontent = render(<AccountRegister />);
-    expect(compontent.queryByTestId("toc")).toBeTruthy();
+    const component = render(<AccountRegister />);
+    expect(screen.getByTestId("toc")).toBeTruthy();
+
+    component.unmount();
   });
 
   it("link to privacy exist", () => {
@@ -32,8 +39,10 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(
         () => Promise.resolve({ statusCode: 123 }) as any
       );
-    const compontent = render(<AccountRegister />);
-    expect(compontent.queryByTestId("privacy")).toBeTruthy();
+    const component = render(<AccountRegister />);
+    expect(component.getByTestId("privacy")).toBeTruthy();
+
+    component.unmount();
   });
 
   it("not allowed get 403 from api", async () => {
@@ -54,13 +63,13 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    const email = container.getByTestId("email") as HTMLInputElement;
+    const email = screen.getByTestId("email") as HTMLInputElement;
     expect(email.disabled).toBeTruthy();
 
-    const password = container.getByTestId("password") as HTMLInputElement;
+    const password = screen.getByTestId("password") as HTMLInputElement;
     expect(password.disabled).toBeTruthy();
 
-    const confirmPassword = container.getByTestId(
+    const confirmPassword = screen.getByTestId(
       "confirm-password"
     ) as HTMLInputElement;
     expect(confirmPassword.disabled).toBeTruthy();
@@ -88,13 +97,13 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    const email = container.getByTestId("email") as HTMLInputElement;
+    const email = screen.getByTestId("email") as HTMLInputElement;
     expect(email.disabled).toBeFalsy();
 
-    const password = container.getByTestId("password") as HTMLInputElement;
+    const password = screen.getByTestId("password") as HTMLInputElement;
     expect(password.disabled).toBeFalsy();
 
-    const confirmPassword = container.getByTestId(
+    const confirmPassword = screen.getByTestId(
       "confirm-password"
     ) as HTMLInputElement;
     expect(confirmPassword.disabled).toBeFalsy();
@@ -122,18 +131,18 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    const email = container.getByTestId("email") as HTMLInputElement;
+    const email = screen.getByTestId("email") as HTMLInputElement;
     expect(email.disabled).toBeFalsy();
 
-    const password = container.getByTestId("password") as HTMLInputElement;
+    const password = screen.getByTestId("password") as HTMLInputElement;
     expect(password.disabled).toBeFalsy();
 
-    const confirmPassword = container.getByTestId(
+    const confirmPassword = screen.getByTestId(
       "confirm-password"
     ) as HTMLInputElement;
     expect(confirmPassword.disabled).toBeFalsy();
 
-    const signInInstead = container.getByTestId("sign-in-instead");
+    const signInInstead = screen.getByTestId("sign-in-instead");
 
     expect(signInInstead).toBeTruthy();
 
@@ -163,7 +172,7 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    const button = container.queryByTestId(
+    const button = screen.queryByTestId(
       "account-register-submit"
     ) as HTMLButtonElement;
 
@@ -171,9 +180,7 @@ describe("AccountRegister", () => {
       button.click();
     });
 
-    const error = container.queryByTestId(
-      "account-register-error"
-    ) as HTMLElement;
+    const error = screen.queryByTestId("account-register-error") as HTMLElement;
     expect(error).toBeTruthy();
   });
 
@@ -185,27 +192,21 @@ describe("AccountRegister", () => {
     submit: boolean = true
   ) {
     // email
-    act(() => {
-      const emailElement = container.queryByTestId("email") as HTMLInputElement;
-      fireEvent.change(emailElement, { target: { value: email } });
-    });
+    const emailElement = screen.queryByTestId("email") as HTMLInputElement;
+    fireEvent.change(emailElement, { target: { value: email } });
 
     // password
-    act(() => {
-      const passwordElement = container.queryByTestId(
-        "password"
-      ) as HTMLInputElement;
-      fireEvent.change(passwordElement, { target: { value: password } });
-    });
+    const passwordElement = screen.queryByTestId(
+      "password"
+    ) as HTMLInputElement;
+    fireEvent.change(passwordElement, { target: { value: password } });
 
     // confirm-password
-    act(() => {
-      const confirmPasswordElement = container.queryByTestId(
-        "confirm-password"
-      ) as HTMLInputElement;
-      fireEvent.change(confirmPasswordElement, {
-        target: { value: confirmPassword }
-      });
+    const confirmPasswordElement = screen.queryByTestId(
+      "confirm-password"
+    ) as HTMLInputElement;
+    fireEvent.change(confirmPasswordElement, {
+      target: { value: confirmPassword }
     });
 
     if (!submit) {
@@ -213,7 +214,7 @@ describe("AccountRegister", () => {
     }
 
     // submit
-    const loginContent = container.queryByTestId(
+    const loginContent = screen.queryByTestId(
       "account-register-form"
     ) as HTMLFormElement;
     act(() => {
@@ -241,9 +242,7 @@ describe("AccountRegister", () => {
 
     submitEmailPassword(container, "dont@mail.me", "123", "123");
 
-    const error = container.queryByTestId(
-      "account-register-error"
-    ) as HTMLElement;
+    const error = screen.queryByTestId("account-register-error") as HTMLElement;
     expect(error).toBeTruthy();
   });
 
@@ -267,9 +266,7 @@ describe("AccountRegister", () => {
 
     submitEmailPassword(container, "dont@mail.me", "123456789", "123");
 
-    const error = container.queryByTestId(
-      "account-register-error"
-    ) as HTMLElement;
+    const error = screen.queryByTestId("account-register-error") as HTMLElement;
     expect(error).toBeTruthy();
   });
 
@@ -352,7 +349,7 @@ describe("AccountRegister", () => {
     );
 
     // submit & await
-    const loginContent = container.queryByTestId(
+    const loginContent = screen.queryByTestId(
       "account-register-form"
     ) as HTMLFormElement;
 
@@ -364,9 +361,7 @@ describe("AccountRegister", () => {
     expect(fetchPostSpy).toBeCalled();
     expect(fetchPostSpy).toBeCalledTimes(1);
 
-    const error = container.queryByTestId(
-      "account-register-error"
-    ) as HTMLElement;
+    const error = screen.queryByTestId("account-register-error") as HTMLElement;
 
     console.log(container.container.innerHTML);
 

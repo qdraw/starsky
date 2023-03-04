@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import PreferencesUsername from "./preferences-username";
@@ -16,9 +15,9 @@ describe("PreferencesUsername", () => {
       });
 
       const component = render(<PreferencesUsername />);
-      expect(
-        component.queryByTestId("preferences-username-text")?.textContent
-      ).toBe("Unknown username");
+      expect(screen.getByTestId("preferences-username-text")?.textContent).toBe(
+        "Unknown username"
+      );
       component.unmount();
     });
 
@@ -35,7 +34,7 @@ describe("PreferencesUsername", () => {
 
       const component = render(<PreferencesUsername />);
       expect(
-        component.queryByTestId("preferences-username-text")?.textContent
+        screen.queryByTestId("preferences-username-text")?.textContent
       ).toBe("Unknown username");
       component.unmount();
     });
@@ -55,8 +54,10 @@ describe("PreferencesUsername", () => {
 
       const component = render(<PreferencesUsername />);
       expect(
-        component.queryByTestId("preferences-username-text")?.textContent
+        screen.queryByTestId("preferences-username-text")?.textContent
       ).toBe("test");
+
+      component.unmount();
     });
   });
 });

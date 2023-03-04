@@ -40,29 +40,23 @@ describe("PreferencesPassword", () => {
       confirmPassword: string,
       submit: boolean = true
     ) {
-      act(() => {
-        const passwordElement = screen.queryByTestId(
-          "preferences-password-input"
-        ) as HTMLInputElement;
-        fireEvent.change(passwordElement, { target: { value: passwordInput } });
+      const passwordElement = screen.queryByTestId(
+        "preferences-password-input"
+      ) as HTMLInputElement;
+      fireEvent.change(passwordElement, { target: { value: passwordInput } });
+
+      const passwordChangedElement = screen.queryByTestId(
+        "preferences-password-changed-input"
+      ) as HTMLInputElement;
+      fireEvent.change(passwordChangedElement, {
+        target: { value: changedPassword }
       });
 
-      act(() => {
-        const passwordChangedElement = screen.queryByTestId(
-          "preferences-password-changed-input"
-        ) as HTMLInputElement;
-        fireEvent.change(passwordChangedElement, {
-          target: { value: changedPassword }
-        });
-      });
-
-      act(() => {
-        const confirmPasswordElement = screen.queryByTestId(
-          "preferences-password-changed-confirm-input"
-        ) as HTMLInputElement;
-        fireEvent.change(confirmPasswordElement, {
-          target: { value: confirmPassword }
-        });
+      const confirmPasswordElement = screen.queryByTestId(
+        "preferences-password-changed-confirm-input"
+      ) as HTMLInputElement;
+      fireEvent.change(confirmPasswordElement, {
+        target: { value: confirmPassword }
       });
 
       if (!submit) {

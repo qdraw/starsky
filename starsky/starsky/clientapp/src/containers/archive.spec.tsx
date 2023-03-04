@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import { newIArchive } from "../interfaces/IArchive";
 import Archive from "./archive";
 
@@ -30,9 +29,11 @@ describe("Archive", () => {
       />
     );
 
-    const warningBox = container.queryByTestId(
+    const warningBox = screen.queryByTestId(
       "list-view-no-photos-in-folder"
     ) as HTMLDivElement;
     expect(warningBox).toBeTruthy();
+
+    container.unmount();
   });
 });

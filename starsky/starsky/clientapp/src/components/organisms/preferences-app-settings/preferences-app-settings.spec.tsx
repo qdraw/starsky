@@ -146,9 +146,7 @@ describe("PreferencesAppSettings", () => {
         textContent: "12345"
       });
 
-      await act(async () => {
-        await fireEvent(storageFolder, blurEventYear);
-      });
+      await fireEvent(storageFolder, blurEventYear);
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(

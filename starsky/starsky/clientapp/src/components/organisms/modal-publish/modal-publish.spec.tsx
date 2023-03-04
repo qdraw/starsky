@@ -107,11 +107,9 @@ describe("ModalPublish", () => {
     expect(tags).not.toBe(undefined);
 
     // update component + now press a key
-    act(() => {
-      tags.textContent = "a";
-      const inputEvent = createEvent.input(tags, { key: "a" });
-      fireEvent(tags, inputEvent);
-    });
+    tags.textContent = "a";
+    const inputEvent = createEvent.input(tags, { key: "a" });
+    fireEvent(tags, inputEvent);
 
     expect(useFetchSpy).toBeCalled();
     expect(screen.getByTestId("publish")).toBeTruthy();
@@ -199,11 +197,9 @@ describe("ModalPublish", () => {
     expect(tags).not.toBe(undefined);
 
     // update component + now press a key
-    act(() => {
-      tags.textContent = "a";
-      const inputEvent = createEvent.input(tags, { key: "a" });
-      fireEvent(tags, inputEvent);
-    });
+    tags.textContent = "a";
+    const inputEvent = createEvent.input(tags, { key: "a" });
+    fireEvent(tags, inputEvent);
 
     expect(useFetchSpy).toBeCalled();
     expect(screen.getByTestId("publish")).toBeTruthy();
@@ -280,11 +276,9 @@ describe("ModalPublish", () => {
     expect(tags).not.toBe(undefined);
 
     // update component + now press a key
-    act(() => {
-      tags.textContent = "a";
-      const inputEvent = createEvent.input(tags, { key: "a" });
-      fireEvent(tags, inputEvent);
-    });
+    tags.textContent = "a";
+    const inputEvent = createEvent.input(tags, { key: "a" });
+    fireEvent(tags, inputEvent);
 
     expect(useFetchSpy).toBeCalled();
     expect(screen.getByTestId("publish")).toBeTruthy();
@@ -303,7 +297,7 @@ describe("ModalPublish", () => {
     });
 
     // and be at the main window
-    expect(screen.queryByTestId("publish")).not.toBeNull();
+    expect(screen.getByTestId("publish")).not.toBeNull();
 
     // and clean afterwards
     act(() => {
