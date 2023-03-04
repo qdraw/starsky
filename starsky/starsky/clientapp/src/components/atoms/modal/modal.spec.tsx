@@ -1,5 +1,4 @@
-import { render, RenderResult } from "@testing-library/react";
-import React from "react";
+import { render, RenderResult, screen } from "@testing-library/react";
 import Modal from "./modal";
 
 describe("Modal", () => {
@@ -30,7 +29,7 @@ describe("Modal", () => {
     it("modal-exit-button", () => {
       const { handleExit, element } = renderModal();
 
-      element.queryAllByTestId("modal-exit-button")[0].click();
+      screen.queryAllByTestId("modal-exit-button")[0].click();
       expect(handleExit).toBeCalled();
       element.unmount();
     });
@@ -38,7 +37,7 @@ describe("Modal", () => {
     it("modal-bg", () => {
       const { handleExit, element } = renderModal();
 
-      element.queryAllByTestId("modal-bg")[0].click();
+      screen.queryAllByTestId("modal-bg")[0].click();
       expect(handleExit).toBeCalled();
       element.unmount();
     });

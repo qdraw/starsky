@@ -1,5 +1,4 @@
-import { act, fireEvent, render } from "@testing-library/react";
-import React from "react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import SwitchButton from "./switch-button";
 
 describe("SwitchButton", () => {
@@ -21,11 +20,13 @@ describe("SwitchButton", () => {
       />
     );
 
-    const switchButton = wrapper.queryByTestId(
+    const switchButton = screen.queryByTestId(
       "switch-button-left"
     ) as HTMLInputElement;
 
     expect(switchButton.disabled).toBeTruthy();
+
+    wrapper.unmount();
   });
 
   it("test if element triggers onToggle when changed (default)", () => {
@@ -39,7 +40,7 @@ describe("SwitchButton", () => {
       />
     );
 
-    const switchButtonLeft = wrapper.queryByTestId(
+    const switchButtonLeft = screen.queryByTestId(
       "switch-button-left"
     ) as HTMLInputElement;
 
@@ -48,6 +49,8 @@ describe("SwitchButton", () => {
     });
 
     expect(toggle).toBeCalledTimes(1);
+
+    wrapper.unmount();
   });
 
   it("test if element triggers onToggle when changed (negative)", () => {

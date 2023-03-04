@@ -23,9 +23,11 @@ describe("More Menu", () => {
 
   it("get childeren", () => {
     const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
-    const menuOptions = element.queryAllByTestId("menu-options")[0];
+    const menuOptions = screen.queryAllByTestId("menu-options")[0];
 
     expect(menuOptions.innerHTML).toBe("test");
+
+    element.unmount();
   });
 
   it("toggle", async () => {
@@ -41,16 +43,18 @@ describe("More Menu", () => {
   it("toggle no childeren", () => {
     const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
 
-    const menuContext = element.queryAllByTestId("menu-context")[0];
+    const menuContext = screen.queryAllByTestId("menu-context")[0];
     menuContext.click();
 
     expect(menuContext.className).toBe("menu-context menu-context--hide");
+
+    element.unmount();
   });
 
   it("turn off using event", (done) => {
     const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
 
-    const menuContext = element.queryAllByTestId("menu-context")[0];
+    const menuContext = screen.queryAllByTestId("menu-context")[0];
 
     window.addEventListener(MoreMenuEventCloseConst, () => {
       expect(menuContext.className).toBe("menu-context menu-context--hide");
@@ -60,5 +64,7 @@ describe("More Menu", () => {
     act(() => {
       window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst));
     });
+
+    element.unmount();
   });
 });
