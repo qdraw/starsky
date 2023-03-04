@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import * as useLocation from "../../../hooks/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
@@ -68,7 +68,7 @@ describe("MenuOptionMoveToTrash", () => {
         />
       );
 
-      const trashButton = component.queryByTestId("trash") as HTMLButtonElement;
+      const trashButton = screen.queryByTestId("trash") as HTMLButtonElement;
       expect(trashButton).toBeTruthy();
 
       await act(async () => {
@@ -120,7 +120,7 @@ describe("MenuOptionMoveToTrash", () => {
         />
       );
 
-      const trashButton = component.queryByTestId("trash") as HTMLButtonElement;
+      const trashButton = screen.queryByTestId("trash") as HTMLButtonElement;
       expect(trashButton).toBeTruthy();
 
       act(() => {
@@ -168,7 +168,7 @@ describe("MenuOptionMoveToTrash", () => {
         />
       );
 
-      const trashButton = component.queryByTestId("trash") as HTMLButtonElement;
+      const trashButton = screen.queryByTestId("trash") as HTMLButtonElement;
       expect(trashButton).toBeTruthy();
 
       act(() => {

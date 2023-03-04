@@ -186,7 +186,7 @@ describe("ColorClassSelect", () => {
       .spyOn(Notification, "default")
       .mockImplementationOnce(() => <></>);
 
-    const colorClass = wrapper.queryByTestId(
+    const colorClass = screen.queryByTestId(
       "color-class-select-2"
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
@@ -198,6 +198,7 @@ describe("ColorClassSelect", () => {
 
     expect(fetchPostSpy).toBeCalled();
     expect(notificationSpy).toBeCalled();
+    wrapper.unmount();
   });
 
   it("when error is it should able to close the warning box", async () => {
@@ -223,7 +224,7 @@ describe("ColorClassSelect", () => {
       .mockImplementationOnce(() => <></>);
 
     // need to await this click
-    let colorClass = component.queryByTestId(
+    let colorClass = screen.queryByTestId(
       "color-class-select-2"
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();

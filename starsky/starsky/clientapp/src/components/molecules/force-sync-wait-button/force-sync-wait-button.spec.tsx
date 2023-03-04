@@ -1,5 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
-import React from "react";
+import { render, screen, waitFor } from "@testing-library/react";
 import {
   IConnectionDefault,
   newIConnectionDefault
@@ -42,9 +41,7 @@ describe("ForceSyncWaitButton", () => {
       />
     );
 
-    const forceSync = component.queryByTestId(
-      "force-sync"
-    ) as HTMLButtonElement;
+    const forceSync = screen.queryByTestId("force-sync") as HTMLButtonElement;
     expect(forceSync).toBeTruthy();
     forceSync.click();
 
@@ -52,6 +49,8 @@ describe("ForceSyncWaitButton", () => {
 
     const urlSync = new UrlQuery().UrlSync("/");
     expect(fetchPostSpy).toBeCalledWith(urlSync, "");
+
+    component.unmount();
   });
 
   const mockIConnectionData: Promise<IConnectionDefault> = Promise.resolve({

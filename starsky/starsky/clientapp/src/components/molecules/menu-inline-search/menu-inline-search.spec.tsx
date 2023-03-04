@@ -1,4 +1,10 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import {
   IConnectionDefault,
@@ -67,7 +73,7 @@ describe("Menu.SearchBar", () => {
 
       const menuBar = render(<MenuInlineSearch />);
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 
@@ -114,7 +120,7 @@ describe("Menu.SearchBar", () => {
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 
@@ -164,7 +170,7 @@ describe("Menu.SearchBar", () => {
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 
@@ -197,7 +203,7 @@ describe("Menu.SearchBar", () => {
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 
@@ -232,7 +238,7 @@ describe("Menu.SearchBar", () => {
         .spyOn(ArrowKeyDown, "default")
         .mockImplementationOnce(() => {});
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 
