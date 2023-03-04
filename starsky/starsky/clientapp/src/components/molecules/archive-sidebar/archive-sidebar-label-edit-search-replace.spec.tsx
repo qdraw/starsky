@@ -89,7 +89,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("isReadOnly: false (so contentEditable is true)", () => {
       const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-      const formControls = component.queryAllByTestId("form-control");
+      const formControls = screen.queryAllByTestId("form-control");
 
       // if there is no contentEditable it should fail
       expect(formControls.length).toBeGreaterThanOrEqual(3);
@@ -120,22 +120,19 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-      const formControls = component
+      const formControls = screen
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
       expect(tags).not.toBe(undefined);
 
       // update component + now press a key
-      act(() => {
-        //
-        tags.textContent = "a";
-        const inputEvent = createEvent.input(tags, { key: "a" });
-        fireEvent(tags, inputEvent);
-      });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
 
       // need to await here
-      const add = component.queryByTestId("replace-button") as HTMLElement;
+      const add = screen.queryByTestId("replace-button") as HTMLElement;
       await act(async () => {
         await add.click();
       });
@@ -166,21 +163,19 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-      const formControls = component
+      const formControls = screen
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
       expect(tags).not.toBe(undefined);
 
       // update component + now press a key
-      act(() => {
-        tags.textContent = "a";
-        const inputEvent = createEvent.input(tags, { key: "a" });
-        fireEvent(tags, inputEvent);
-      });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
 
       // need to await here
-      const add = component.queryByTestId("replace-button") as HTMLElement;
+      const add = screen.queryByTestId("replace-button") as HTMLElement;
       await act(async () => {
         await add.click();
       });
@@ -191,7 +186,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .mockImplementationOnce(() => mockIConnectionDefaultResolve);
 
       // force update to show message
-      let notification = component.queryByTestId(
+      let notification = screen.queryByTestId(
         "notification-content"
       ) as HTMLElement;
 
@@ -204,7 +199,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
 
       // force update to show message
-      notification = component.queryByTestId(
+      notification = screen.queryByTestId(
         "notification-content"
       ) as HTMLElement;
       expect(notification).toBeFalsy();
@@ -218,20 +213,18 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("[replace] Should change value when onChange was called", () => {
       const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-      const formControls = component
+      const formControls = screen
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
       expect(tags).not.toBe(undefined);
 
       // update component + now press a key
-      act(() => {
-        tags.textContent = "a";
-        const inputEvent = createEvent.input(tags, { key: "a" });
-        fireEvent(tags, inputEvent);
-      });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
 
-      const add = component.queryByTestId("replace-button") as HTMLElement;
+      const add = screen.queryByTestId("replace-button") as HTMLElement;
 
       const className = add.className;
       expect(className).toBe("btn btn--default");
@@ -261,20 +254,18 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-      const formControls = component
+      const formControls = screen
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
       expect(tags).not.toBe(undefined);
 
       // update component + now press a key
-      act(() => {
-        tags.textContent = "a";
-        const inputEvent = createEvent.input(tags, { key: "a" });
-        fireEvent(tags, inputEvent);
-      });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
 
-      const add = component.queryByTestId("replace-button") as HTMLElement;
+      const add = screen.queryByTestId("replace-button") as HTMLElement;
 
       expect(add).toBeTruthy();
 
@@ -327,20 +318,18 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-      const formControls = component
+      const formControls = screen
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
       expect(tags).not.toBe(undefined);
 
       // update component + now press a key
-      act(() => {
-        tags.textContent = "a";
-        const inputEvent = createEvent.input(tags, { key: "a" });
-        fireEvent(tags, inputEvent);
-      });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
 
-      const add = component.queryByTestId("replace-button") as HTMLElement;
+      const add = screen.queryByTestId("replace-button") as HTMLElement;
       expect(add).toBeTruthy();
 
       // need to await to contain dispatchedValues
@@ -348,7 +337,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         await add.click();
       });
 
-      const notification = component.queryByTestId(
+      const notification = screen.queryByTestId(
         "notification-content"
       ) as HTMLElement;
       expect(notification).toBeTruthy();
@@ -391,20 +380,18 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-      const formControls = component
+      const formControls = screen
         .queryAllByTestId("form-control")
         .find((p) => p.getAttribute("data-name") === "tags");
       const tags = formControls as HTMLElement[][0];
       expect(tags).not.toBe(undefined);
 
       // update component + now press a key
-      act(() => {
-        tags.textContent = "a";
-        const inputEvent = createEvent.input(tags, { key: "a" });
-        fireEvent(tags, inputEvent);
-      });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
 
-      const add = component.queryByTestId("replace-button") as HTMLElement;
+      const add = screen.queryByTestId("replace-button") as HTMLElement;
       expect(add).toBeTruthy();
 
       // need to await to contain dispatchedValues
@@ -436,6 +423,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           status: IExifStatus.Ok
         }
       ]);
+
+      component.unmount();
     });
   });
 });
