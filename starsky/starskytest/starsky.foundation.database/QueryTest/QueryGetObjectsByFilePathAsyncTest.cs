@@ -154,10 +154,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public async Task GetObjectsByFilePathAsync_MultipleItems()
 		{
-			foreach ( var item in await _query.GetAllRecursiveAsync() )
-			{
-				await _query.RemoveItemAsync(item);
-			}
+			await _query.RemoveItemAsync(await _query.GetAllRecursiveAsync());
 			
 			await _query.AddRangeAsync(new List<FileIndexItem>
 			{
