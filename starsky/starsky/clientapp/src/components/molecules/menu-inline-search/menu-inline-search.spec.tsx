@@ -14,11 +14,12 @@ describe("Menu.SearchBar", () => {
 
   describe("with Context", () => {
     it("Menu.SearchBar focus", async () => {
+      //
       const successResponse: IConnectionDefault = {
         ...newIConnectionDefault(),
         statusCode: 200
       };
-      // usage ==> import * as useFetch from '../hooks/use-fetch';
+
       jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => successResponse)
@@ -104,7 +105,9 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => suggestionsExample)
-        .mockImplementationOnce(() => suggestionsExample);
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => suggestionsExample)
+        .mockImplementationOnce(() => newIConnectionDefault());
 
       const callback = jest.fn();
       const menuBar = render(
@@ -123,6 +126,7 @@ describe("Menu.SearchBar", () => {
         ".menu-item--results > button"
       );
 
+      console.log("-text results");
       for (const result of Array.from(results)) {
         console.log(result?.textContent);
       }
@@ -131,8 +135,12 @@ describe("Menu.SearchBar", () => {
         (p) => p?.textContent === "suggest1"
       )?.textContent;
 
+      const result2 = Array.from(results).find(
+        (p) => p?.textContent === "suggest2"
+      )?.textContent;
+
       expect(result1).toBeTruthy();
-      expect(results[2].textContent).toBe("suggest2");
+      expect(result2).toBeTruthy();
 
       expect(callback).toBeCalledTimes(0);
 

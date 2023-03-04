@@ -9,10 +9,12 @@ namespace starsky.Controllers;
 public class AppSettingsFeaturesController : Controller
 {
 	private readonly IMoveToTrashService _moveToTrashService;
+	private readonly AppSettings _appSettings;
 
-	public AppSettingsFeaturesController(IMoveToTrashService moveToTrashService)
+	public AppSettingsFeaturesController(IMoveToTrashService moveToTrashService, AppSettings appSettings)
 	{
 		_moveToTrashService = moveToTrashService;
+		_appSettings = appSettings;
 	}
 	
 	/// <summary>
@@ -31,7 +33,8 @@ public class AppSettingsFeaturesController : Controller
 	{
 		var shortAppSettings = new FeaturesViewModel
 		{
-			SystemTrashEnabled = _moveToTrashService.IsEnabled()
+			SystemTrashEnabled = _moveToTrashService.IsEnabled(),
+			UseLocalDesktopUi = _appSettings.UseLocalDesktopUi == true
 		};
 		
 		return Json(shortAppSettings);

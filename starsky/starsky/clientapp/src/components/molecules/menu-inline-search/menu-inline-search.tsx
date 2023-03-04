@@ -2,6 +2,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import ArrowKeyDown from "./arrow-key-down";
@@ -16,31 +17,41 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
-    const defaultMenu = [
-      { name: "Home", url: new UrlQuery().UrlHomePage() },
+    const [defaultMenu, setDefaultMenu] = useState([
       {
-        name: language.text("Foto's van deze week", "Photos of this week"),
+        name: language.key(localization.MessageHome),
+        url: new UrlQuery().UrlHomePage(),
+        key: "home"
+      },
+      {
+        name: language.key(localization.MessagePhotosOfThisWeek),
         url: new UrlQuery().UrlSearchPage(
           "-Datetime%3E7%20-ImageFormat-%22tiff%22"
-        )
+        ),
+        key: "photos-of-this-week"
       },
       {
-        name: language.text("Prullenmand", "Trash"),
-        url: new UrlQuery().UrlTrashPage()
+        name: language.key(localization.MessageTrash),
+        url: new UrlQuery().UrlTrashPage(),
+        key: "trash"
       },
       {
-        name: language.text("Importeren", "Import"),
-        url: new UrlQuery().UrlImportPage()
+        name: language.key(localization.MessageImport),
+        url: new UrlQuery().UrlImportPage(),
+        key: "import"
       },
       {
-        name: language.text("Voorkeuren", "Preferences"),
-        url: new UrlQuery().UrlPreferencesPage()
+        name: language.key(localization.MessagePreferences),
+        url: new UrlQuery().UrlPreferencesPage(),
+        key: "preferences"
       },
       {
-        name: language.text("Uitloggen", "Logout"),
-        url: new UrlQuery().UrlLoginPage()
+        name: language.key(localization.MessageLogout),
+        url: new UrlQuery().UrlLoginPage(),
+        key: "logout"
       }
-    ];
+    ]);
+
     const history = useLocation();
 
     // the results
@@ -98,10 +109,26 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
       props.callback(defQuery);
     }
 
-    const responseObject2 = useFetch(
+    const featuresResult = useFetch(
       new UrlQuery().UrlApiFeaturesAppSettings(),
       "get"
     );
+    useEffect(() => {
+      if (
+        featuresResult?.data?.systemTrashEnabled ||
+        featuresResult?.data?.useLocalDesktopUi
+      ) {
+        let newMenu = [...defaultMenu];
+        if (featuresResult?.data?.systemTrashEnabled) {
+          newMenu = newMenu.filter((item) => item.key !== "trash");
+        }
+        if (featuresResult?.data?.useLocalDesktopUi) {
+          newMenu = newMenu.filter((item) => item.key !== "logout");
+        }
+        setDefaultMenu([...newMenu]);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [featuresResult, featuresResult?.data?.systemTrashEnabled]);
 
     /**
      * is form active

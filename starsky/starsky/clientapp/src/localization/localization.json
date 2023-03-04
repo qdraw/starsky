@@ -7,6 +7,10 @@
     "en": "Cancel",
     "nl": "Annuleren"
   },
+  "MessageTrash": {
+    "en": "Trash",
+    "nl": "Prullenmand"
+  },
   "MessageMoveToTrash": {
     "en": "Move to trash",
     "nl": "Verplaatsen naar prullenmand"
@@ -58,5 +62,25 @@
   "MessageDeletedRestoreInstruction": {
     "en": "'Restore from Trash' to edit the item",
     "nl": "'Zet terug uit prullenmand' om het item te bewerken"
+  },
+  "MessageHome": {
+    "en": "Home",
+    "nl": "Home"
+  },
+  "MessagePhotosOfThisWeek": {
+    "en": "Photos of this week",
+    "nl": "Foto's van deze week"
+  },
+  "MessageImport": {
+    "en": "Import",
+    "nl": "Importeren"
+  },
+  "MessagePreferences": {
+    "en": "Preferences",
+    "nl": "Voorkeuren"
+  },
+  "MessageLogout": {
+    "en": "Logout",
+    "nl": "Uitloggen"
   }
 }
