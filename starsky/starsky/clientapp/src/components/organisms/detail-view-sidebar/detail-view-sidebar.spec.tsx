@@ -499,7 +499,7 @@ describe("DetailViewSidebar", () => {
     it("Press v to paste", () => {
       let vPasteIsCalled = false;
       function keyboardCallback(regex: RegExp, callback: Function) {
-        if (regex.source === "^([v])$") {
+        if (regex.source === "^v$") {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
             cancelable: true,
