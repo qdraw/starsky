@@ -1,6 +1,5 @@
-import { act, render, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import L from "leaflet";
-import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { Coordinates } from "../../../shared/coordinates-position.types";
 import * as FetchXml from "../../../shared/fetch-xml";
@@ -165,7 +164,7 @@ describe("DetailViewGpx", () => {
       await waitFor(() => expect(spyMap).toBeCalled());
       expect(polylineSpy).toBeCalled();
 
-      const zoom_in = gpx.queryByTestId("zoom_in");
+      const zoom_in = screen.queryByTestId("zoom_in");
       act(() => {
         zoom_in?.click();
       });
@@ -225,7 +224,7 @@ describe("DetailViewGpx", () => {
       await waitFor(() => expect(spyMap).toBeCalled());
       expect(polylineSpy).toBeCalled();
 
-      const zoom_out = gpx.queryByTestId("zoom_out");
+      const zoom_out = screen.queryByTestId("zoom_out");
 
       // add await
       await act(() => {
