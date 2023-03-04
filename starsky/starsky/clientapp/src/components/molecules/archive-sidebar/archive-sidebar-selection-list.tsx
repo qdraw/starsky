@@ -87,7 +87,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
             ""
           )}
           {select
-            ? select.map((item, index) => (
+            ? select.map((item, index) => ( // item is filename
                 <li key={index}>
                   <span
                     onClick={() => toggleSelection(item)}
