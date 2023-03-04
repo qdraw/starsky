@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import {
   IFileIndexItem,
   newIFileIndexItem
@@ -15,19 +14,23 @@ describe("FlatListItem", () => {
     const data = { fileName: "test" } as IFileIndexItem;
     const component = render(<ListImageChildItem {...data} />);
 
-    const name = component.queryAllByTestId("list-image-name")[0];
+    const name = screen.queryAllByTestId("list-image-name")[0];
 
     expect(name).not.toBeNull();
     expect(name.innerHTML).toBe("test");
+
+    component.unmount();
   });
 
   it("check if tags exist", () => {
     const data = { tags: "test" } as IFileIndexItem;
     const component = render(<ListImageChildItem {...data} />);
 
-    expect(component.queryAllByTestId("list-image-tags")).toBeTruthy();
-    expect(component.queryAllByTestId("list-image-tags")[0].innerHTML).toBe(
+    expect(screen.queryAllByTestId("list-image-tags")).toBeTruthy();
+    expect(screen.queryAllByTestId("list-image-tags")[0].innerHTML).toBe(
       "test"
     );
+
+    component.unmount();
   });
 });
