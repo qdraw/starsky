@@ -2,6 +2,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
+import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
@@ -114,15 +115,13 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
       "get"
     );
     useEffect(() => {
-      if (
-        featuresResult?.data?.systemTrashEnabled ||
-        featuresResult?.data?.useLocalDesktopUi
-      ) {
+      const dataFeatures = featuresResult?.data as IEnvFeatures | undefined;
+      if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktopUi) {
         let newMenu = [...defaultMenu];
-        if (featuresResult?.data?.systemTrashEnabled) {
+        if (dataFeatures?.systemTrashEnabled) {
           newMenu = newMenu.filter((item) => item.key !== "trash");
         }
-        if (featuresResult?.data?.useLocalDesktopUi) {
+        if (dataFeatures?.useLocalDesktopUi) {
           newMenu = newMenu.filter((item) => item.key !== "logout");
         }
         setDefaultMenu([...newMenu]);
