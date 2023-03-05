@@ -10,6 +10,7 @@ import {
   IConnectionDefault,
   newIConnectionDefault
 } from "../../../interfaces/IConnectionDefault";
+import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import * as ArrowKeyDown from "./arrow-key-down";
 import MenuInlineSearch from "./menu-inline-search";
 
@@ -149,6 +150,81 @@ describe("Menu.SearchBar", () => {
       expect(result2).toBeTruthy();
 
       expect(callback).toBeCalledTimes(0);
+
+      menuBar.unmount();
+    });
+
+    const dataFeaturesExample = {
+      statusCode: 200,
+      data: {
+        systemTrashEnabled: true,
+        useLocalDesktopUi: false
+      } as IEnvFeatures
+    } as IConnectionDefault;
+
+    it("default menu should hide trash when system trash is enabled", () => {
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => dataFeaturesExample)
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
+
+      const callback = jest.fn();
+      const menuBar = render(
+        <MenuInlineSearch defaultText={"tes"} callback={callback} />
+      );
+
+      expect(screen.getByTestId("default-menu-item-import")).toBeTruthy();
+      expect(screen.queryByTestId("default-menu-item-trash")).toBeFalsy();
+      expect(screen.getByTestId("default-menu-item-logout")).toBeTruthy();
+
+      menuBar.unmount();
+    });
+
+    it("default menu should hide logout when uselocal desktop ui is enabled", () => {
+      dataFeaturesExample.data.useLocalDesktopUi = true;
+      dataFeaturesExample.data.systemTrashEnabled = false;
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => dataFeaturesExample)
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
+
+      const callback = jest.fn();
+      const menuBar = render(
+        <MenuInlineSearch defaultText={"tes"} callback={callback} />
+      );
+
+      expect(screen.getByTestId("default-menu-item-trash")).toBeTruthy();
+      expect(screen.queryByTestId("default-menu-item-logout")).toBeFalsy();
+
+      menuBar.unmount();
+    });
+
+    it("default menu should show logout and trash in default mode", () => {
+      dataFeaturesExample.data.useLocalDesktopUi = false;
+      dataFeaturesExample.data.systemTrashEnabled = false;
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => dataFeaturesExample)
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
+
+      const callback = jest.fn();
+      const menuBar = render(
+        <MenuInlineSearch defaultText={"tes"} callback={callback} />
+      );
+
+      expect(screen.getByTestId("default-menu-item-trash")).toBeTruthy();
+      expect(screen.getByTestId("default-menu-item-logout")).toBeTruthy();
 
       menuBar.unmount();
     });
