@@ -56,11 +56,12 @@ namespace starsky.foundation.readmeta.Services
 			// Read first the sidecar file
 			var xmpFileIndexItem = _readXmp.XmpGetSidecarFile(fileIndexItemWithPath.Clone());
 
+			// if the sidecar file is not complete, read the original file
 			if ( xmpFileIndexItem.IsoSpeed == 0 
 			     || string.IsNullOrEmpty(xmpFileIndexItem.Make) 
 			     || xmpFileIndexItem.DateTime.Year == 0 || xmpFileIndexItem.ImageHeight == 0)
 			{
-				// so the sidecar file is not used
+				// so the sidecar file is not used to store the most important tags
 				var fileExifItemFile = _readExif.ReadExifFromFile(subPath,fileIndexItemWithPath);
 		        
 				// overwrite content with incomplete sidecar file (this file can contain tags)

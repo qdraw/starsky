@@ -16,7 +16,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(new List<GenerationResultModel>());
+		await service.AddOrUpdateStatusAsync(new List<GenerationResultModel>());
 
 		var getResult = await query.Get();
 		Assert.AreEqual(0, getResult.Count);
@@ -68,7 +68,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get();
 		Assert.AreEqual(6, getResult.Count);
@@ -79,7 +79,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[0].FileHash); // see the index
 		Assert.AreEqual(1, getResult.Count);
@@ -93,7 +93,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 								// see the index
 		var getResult = await query.Get(ExampleData[1].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -108,7 +108,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[2].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -122,7 +122,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[3].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -136,7 +136,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[4].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -150,7 +150,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[5].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -192,7 +192,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData2);
+		await service.AddOrUpdateStatusAsync(ExampleData2);
 
 		var getResult = await query.Get(ExampleData2[0].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -207,9 +207,9 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData2);
+		await service.AddOrUpdateStatusAsync(ExampleData2);
 
-		await service.UpdateStatusAsync(new List<GenerationResultModel>{new GenerationResultModel
+		await service.AddOrUpdateStatusAsync(new List<GenerationResultModel>{new GenerationResultModel
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.Large,

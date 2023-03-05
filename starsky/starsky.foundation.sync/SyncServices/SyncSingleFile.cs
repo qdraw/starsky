@@ -359,6 +359,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="xmpSubPath">sidecar item</param>
 		/// <returns>completed task</returns>
+		[Obsolete("use different approach")]
 		public async Task UpdateSidecarFile(string xmpSubPath)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionSidecar(xmpSubPath) )

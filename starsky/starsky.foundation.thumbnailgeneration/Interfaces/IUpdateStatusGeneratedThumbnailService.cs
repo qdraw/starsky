@@ -12,7 +12,7 @@ public interface IUpdateStatusGeneratedThumbnailService
 	/// </summary>
 	/// <param name="generationResults">items</param>
 	/// <returns>updated data transfer list</returns>
-	Task<List<ThumbnailResultDataTransferModel>> UpdateStatusAsync(
+	Task<List<ThumbnailResultDataTransferModel>> AddOrUpdateStatusAsync(
 		List<GenerationResultModel> generationResults);
 
 	/// <summary>

@@ -5,6 +5,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Enums;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Models;
 
@@ -25,12 +26,13 @@ public class UpdateStatusGeneratedThumbnailService : IUpdateStatusGeneratedThumb
 	/// </summary>
 	/// <param name="generationResults">items</param>
 	/// <returns>updated data transfer list</returns>
-	public async Task<List<ThumbnailResultDataTransferModel>> UpdateStatusAsync(
+	public async Task<List<ThumbnailResultDataTransferModel>> AddOrUpdateStatusAsync(
 		List<GenerationResultModel> generationResults)
 	{
 		// in the next step only the fileHash is included
 		var dtoObjects = generationResults
 			.Where(p => !p.IsNotFound)
+			.Where(p => ExtensionRolesHelper.IsExtensionThumbnailSupported(p.SubPath))
 			.DistinctBy(p => p.FileHash)
 			.Select(p => p.FileHash)
 			.Select(fileHash => new ThumbnailResultDataTransferModel(fileHash)).ToList();

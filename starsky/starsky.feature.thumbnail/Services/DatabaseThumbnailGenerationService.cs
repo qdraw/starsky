@@ -96,7 +96,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 			var generationResultModels = (await _thumbnailService.CreateThumbAsync(fileIndexItem
 				.FilePath!, fileIndexItem.FileHash!)).ToList();
 			
-			await _updateStatusGeneratedThumbnailService.UpdateStatusAsync(
+			await _updateStatusGeneratedThumbnailService.AddOrUpdateStatusAsync(
 				generationResultModels);
 			var removedItems = await _updateStatusGeneratedThumbnailService
 				.RemoveNotfoundStatusAsync(generationResultModels);

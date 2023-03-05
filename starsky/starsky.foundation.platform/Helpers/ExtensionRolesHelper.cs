@@ -119,6 +119,7 @@ namespace starsky.foundation.platform.Helpers
 				extensionList.AddRange(ExtensionPng);
 				extensionList.AddRange(ExtensionGpx);
 				extensionList.AddRange(ExtensionMp4);
+				extensionList.AddRange(ExtensionSidecar);
 				return extensionList;
 			}
 		}
@@ -197,9 +198,6 @@ namespace starsky.foundation.platform.Helpers
 			return IsExtensionForce(filename, ExtensionThumbSupportedList);
 		}
 		
-
-		
-
 		/// <summary>
 		/// List of extension that are forced to use site car xmp files	
 		/// </summary>
