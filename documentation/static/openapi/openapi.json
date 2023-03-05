@@ -1964,6 +1964,35 @@
               "examples": {},
               "content": {},
               "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "UseLocalDesktopUi",
+              "in": 0,
+              "required": false,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "boolean",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
             }
           ],
           "responses": {
@@ -12024,6 +12053,22 @@
                 "referenceV2": "#/definitions/CameraMakeModel"
               }
             },
+            "properties": {},
+            "additionalPropertiesAllowed": true,
+            "enum": [],
+            "nullable": true,
+            "deprecated": false,
+            "extensions": {},
+            "unresolvedReference": false
+          },
+          "useLocalDesktopUi": {
+            "type": "boolean",
+            "readOnly": false,
+            "writeOnly": false,
+            "allOf": [],
+            "oneOf": [],
+            "anyOf": [],
+            "required": [],
             "properties": {},
             "additionalPropertiesAllowed": true,
             "enum": [],
