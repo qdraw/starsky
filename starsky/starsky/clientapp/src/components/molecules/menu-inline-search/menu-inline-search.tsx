@@ -215,11 +215,12 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
               </form>
             </li>
             {suggest && suggest.length === 0
-              ? defaultMenu.map((value, index) => {
+              ? defaultMenu.map((value) => {
                   return (
                     <li
                       className="menu-item menu-item--default"
                       key={value.name}
+                      data-test={`default-menu-item-${value.key}`}
                     >
                       <a href={value.url}>{value.name}</a>{" "}
                     </li>
