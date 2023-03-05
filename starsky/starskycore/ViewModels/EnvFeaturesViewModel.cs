@@ -1,6 +1,6 @@
 namespace starskycore.ViewModels;
 
-public class FeaturesViewModel
+public class EnvFeaturesViewModel
 {
 	
 	/// <summary>
