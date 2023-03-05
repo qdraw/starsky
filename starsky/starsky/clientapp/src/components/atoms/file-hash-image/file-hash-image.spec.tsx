@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, PageType } from "../../../interfaces/IDetailView";
@@ -46,21 +45,18 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    let component = render(<>test</>);
-    await act(async () => {
-      component = await render(
-        <FileHashImage
-          isError={false}
-          fileHash="hash"
-          orientation={Orientation.Horizontal}
-        />
-      );
-    });
-
-    await expect(detectRotationSpy).toBeCalled();
+    const component = await render(
+      <FileHashImage
+        isError={false}
+        fileHash="hash"
+        orientation={Orientation.Horizontal}
+      />
+    );
+    expect(detectRotationSpy).toBeCalled();
 
     expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
 
+    // and clean up
     component.unmount();
   });
 
@@ -93,18 +89,15 @@ describe("FileHashImage", () => {
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    // need to await here
-    let component = render(<></>);
-    await act(async () => {
-      component = await render(
-        <FileHashImage
-          isError={false}
-          fileHash="hash"
-          orientation={Orientation.Horizontal}
-        />
-      );
-    });
+    const component = render(
+      <FileHashImage
+        isError={false}
+        fileHash="hash"
+        orientation={Orientation.Horizontal}
+      />
+    );
 
+    // need to await here
     await expect(detectRotationSpy).toBeCalled();
 
     expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
@@ -128,18 +121,15 @@ describe("FileHashImage", () => {
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    // need to await here
-    let component = render(<></>);
-    await act(async () => {
-      component = await render(
-        <FileHashImage
-          isError={false}
-          fileHash="hash"
-          orientation={Orientation.Horizontal}
-        />
-      );
-    });
+    let component = render(
+      <FileHashImage
+        isError={false}
+        fileHash="hash"
+        orientation={Orientation.Horizontal}
+      />
+    );
 
+    // need to await here
     await expect(detectRotationSpy).toBeCalled();
 
     expect(spyGet).toBeCalledTimes(0);
@@ -180,8 +170,8 @@ describe("FileHashImage", () => {
       />
     );
 
-    const button = component.getAllByRole("button")[0] as HTMLButtonElement;
-    const image = component.getAllByRole("img")[0] as HTMLImageElement;
+    const button = screen.getAllByRole("button")[0] as HTMLButtonElement;
+    const image = screen.getAllByRole("img")[0] as HTMLImageElement;
 
     act(() => {
       button.click();
@@ -191,6 +181,8 @@ describe("FileHashImage", () => {
       "http://localhost" +
         new UrlQuery().UrlThumbnailZoom("hash", "fallbackPath", 1)
     );
+
+    component.unmount();
   });
 
   it("onWheelCallback should return callback", () => {
@@ -226,13 +218,15 @@ describe("FileHashImage", () => {
       />
     );
 
-    const button = component.getAllByRole("button")[0];
+    const button = screen.getAllByRole("button")[0];
 
     act(() => {
       button.click();
     });
 
     expect(onWheelCallbackSpy).toBeCalled();
+
+    component.unmount();
   });
 
   it("with onResetCallback it should set UrlThumbnailImage", () => {
@@ -267,13 +261,15 @@ describe("FileHashImage", () => {
     );
 
     // there is one problem with this test, is assumes the default value
-    component.queryByRole("button")?.click();
+    screen.queryByRole("button")?.click();
 
-    const img = component.queryByRole("img") as HTMLImageElement;
+    const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
         new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
+
+    component.unmount();
   });
 
   it("with onResetCallback it should set UrlThumbnailImage and pass callback", () => {
@@ -311,14 +307,16 @@ describe("FileHashImage", () => {
     );
 
     // there is one problem with this test, is assumes the default value
-    component.queryByRole("button")?.click();
+    screen.queryByRole("button")?.click();
 
-    const img = component.queryByRole("img") as HTMLImageElement;
+    const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
         new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
 
     expect(onResetCallbackSpy).toBeCalled();
+
+    component.unmount();
   });
 });

@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import {
   IFileIndexItem,
@@ -36,7 +36,7 @@ describe("ItemListView", () => {
         />
       );
 
-      const element = component.queryAllByTestId(
+      const element = screen.queryAllByTestId(
         "list-image-view-select-container"
       )[0];
 
@@ -167,7 +167,7 @@ describe("ItemListView", () => {
         />
       );
 
-      const item = component.queryByTestId(
+      const item = screen.queryByTestId(
         "list-image-view-select-container"
       ) as HTMLButtonElement;
 

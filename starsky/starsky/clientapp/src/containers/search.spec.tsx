@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import { newIArchive } from "../interfaces/IArchive";
 import {
   newIFileIndexItem,
@@ -26,10 +25,10 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      const text = component.queryByTestId(
-        "search-content-header"
-      )?.textContent;
+      const text = screen.queryByTestId("search-content-header")?.textContent;
       expect(text).toBe("No result");
+
+      component.unmount();
     });
 
     it("Page 3 of 1 results", () => {
@@ -42,10 +41,9 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      const text = component.queryByTestId(
-        "search-content-header"
-      )?.textContent;
+      const text = screen.queryByTestId("search-content-header")?.textContent;
       expect(text).toBe("Page 2 of 1 results");
+      component.unmount();
     });
 
     it("Page 1 of 1 results", () => {
@@ -58,10 +56,9 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      const text = component.queryByTestId(
-        "search-content-header"
-      )?.textContent;
+      const text = screen.queryByTestId("search-content-header")?.textContent;
       expect(text).toBe("1 results");
+      component.unmount();
     });
 
     it("SearchPagination exist", () => {
@@ -80,9 +77,10 @@ describe("Search", () => {
       );
       console.log(component.container.innerHTML);
 
-      const searchPagination = component.queryAllByTestId("search-pagination");
+      const searchPagination = screen.queryAllByTestId("search-pagination");
 
       expect(searchPagination.length).toEqual(2);
+      component.unmount();
     });
   });
 });

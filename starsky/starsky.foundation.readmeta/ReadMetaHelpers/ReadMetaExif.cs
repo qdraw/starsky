@@ -398,7 +398,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// </summary>
 	    /// <param name="exifItem">item</param>
 	    /// <returns></returns>
-	    private static string GetXmpDataSubject(Directory exifItem) // 
+	    private static string GetXmpDataSubject(Directory exifItem)
 	    {
 		    if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
 			    return string.Empty;
@@ -590,7 +590,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        {
 		        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
 		        itemDateTimeQuickTime =  TimeZoneInfo.ConvertTime(itemDateTimeQuickTime, 
-			        TimeZoneInfo.Utc, _appSettings?.CameraTimeZoneInfo); 
+			        TimeZoneInfo.Utc, _appSettings.CameraTimeZoneInfo); 
 	        }
 
 	        return itemDateTimeQuickTime;
@@ -799,7 +799,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return GetXmpGeoData(allExifItems, "exif:GPSLongitude");
         }
 
-        private static int GetImageWidthHeightMaxCount(string dirName, List<MetadataExtractor.Directory> allExifItems)
+        private static int GetImageWidthHeightMaxCount(string dirName, ICollection<Directory> allExifItems)
         {
             var maxCount =  6;
             if(dirName == "Exif SubIFD") maxCount = 30; // on header place 17&18

@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import * as MenuDefault from "../menu-default/menu-default";
 import ApplicationException from "./application-exception";
 
@@ -28,9 +27,7 @@ describe("ApplicationException", () => {
 
     const component = render(<ApplicationException>t</ApplicationException>);
 
-    expect(
-      component.queryByTestId("application-exception-header")
-    ).toBeTruthy();
+    expect(screen.getByTestId("application-exception-header")).toBeTruthy();
 
     component.unmount();
   });
@@ -52,7 +49,7 @@ describe("ApplicationException", () => {
 
     expect(window.location.reload).not.toHaveBeenCalled();
 
-    const reload = component.queryByTestId("reload") as HTMLButtonElement;
+    const reload = screen.queryByTestId("reload") as HTMLButtonElement;
 
     reload.click();
 

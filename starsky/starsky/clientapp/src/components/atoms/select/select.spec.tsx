@@ -2,9 +2,9 @@ import {
   createEvent,
   fireEvent,
   render,
+  screen,
   waitFor
 } from "@testing-library/react";
-import React from "react";
 import Select from "./select";
 
 describe("SwitchButton", () => {
@@ -28,6 +28,8 @@ describe("SwitchButton", () => {
 
     await waitFor(() => {
       expect(outputSpy).toBeCalled();
+    });
+    await waitFor(() => {
       expect(outputSpy).toBeCalledWith("Test");
     });
   });
@@ -49,16 +51,20 @@ describe("SwitchButton", () => {
   it("find option", () => {
     const component = render(<Select selectOptions={["Test"]} />);
 
-    const selectElement = component.queryByTestId("select") as HTMLElement;
+    const selectElement = screen.queryByTestId("select") as HTMLElement;
 
     expect(selectElement.querySelector("option")?.innerHTML).toBe("Test");
+
+    component.unmount();
   });
 
   it("null option", () => {
     const component = render(<Select selectOptions={[]} />);
 
-    const selectElement = component.queryByTestId("select") as HTMLElement;
+    const selectElement = screen.queryByTestId("select") as HTMLElement;
 
     expect(selectElement).toBeTruthy();
+
+    component.unmount();
   });
 });

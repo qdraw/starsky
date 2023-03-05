@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { fireEvent, render } from "@testing-library/react";
-import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ListImageNormalSelectContainer from "./list-image-view-select-container";
@@ -44,7 +43,7 @@ describe("ListImageTest", () => {
         })
       );
 
-      expect(component.queryByTestId("preloader")).toBeTruthy();
+      expect(screen.getByTestId("preloader")).toBeTruthy();
     });
 
     it("when click on Link, with command key it should ignore preloader", () => {

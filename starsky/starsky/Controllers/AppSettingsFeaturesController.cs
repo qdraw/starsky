@@ -9,16 +9,18 @@ namespace starsky.Controllers;
 public class AppSettingsFeaturesController : Controller
 {
 	private readonly IMoveToTrashService _moveToTrashService;
+	private readonly AppSettings _appSettings;
 
-	public AppSettingsFeaturesController(IMoveToTrashService moveToTrashService)
+	public AppSettingsFeaturesController(IMoveToTrashService moveToTrashService, AppSettings appSettings)
 	{
 		_moveToTrashService = moveToTrashService;
+		_appSettings = appSettings;
 	}
 	
 	/// <summary>
 	/// Show features that used in the frontend app / menu
 	/// </summary>
-	/// <returns>features that are used</returns>
+	/// <returns>EnvFeatures that are used</returns>
 	/// <response code="200">returns the runtime settings of Starsky</response>
 	[HttpGet("/api/env/features")]
 	[Produces("application/json")]
@@ -29,9 +31,10 @@ public class AppSettingsFeaturesController : Controller
 	[ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]
 	public IActionResult FeaturesView()
 	{
-		var shortAppSettings = new FeaturesViewModel
+		var shortAppSettings = new EnvFeaturesViewModel
 		{
-			SystemTrashEnabled = _moveToTrashService.IsEnabled()
+			SystemTrashEnabled = _moveToTrashService.IsEnabled(),
+			UseLocalDesktopUi = _appSettings.UseLocalDesktopUi == true
 		};
 		
 		return Json(shortAppSettings);

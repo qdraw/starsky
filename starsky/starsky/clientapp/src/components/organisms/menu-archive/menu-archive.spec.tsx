@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { act, render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
@@ -49,9 +49,9 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      expect(component.queryByTestId("hamburger")).toBeTruthy();
-      expect(component.queryByTestId("menu-item-select")).toBeTruthy();
-      expect(component.queryByTestId("menu-context")).toBeTruthy();
+      expect(screen.getByTestId("hamburger")).toBeTruthy();
+      expect(screen.getByTestId("menu-item-select")).toBeTruthy();
+      expect(screen.getByTestId("menu-context")).toBeTruthy();
 
       // and clean
       component.unmount();
@@ -60,7 +60,7 @@ describe("MenuArchive", () => {
     it("[menu archive] check if on click the hamburger opens", () => {
       const component = render(<MenuArchive />);
 
-      const hamburger = component.queryByTestId("hamburger");
+      const hamburger = component.getByTestId("hamburger");
       expect(hamburger?.querySelector(".open")).toBeFalsy();
 
       act(() => {
@@ -98,7 +98,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive>t</MenuArchive>);
 
-      expect(component.queryByTestId("selected-0")).toBeTruthy();
+      expect(screen.getByTestId("selected-0")).toBeTruthy();
 
       component.unmount();
     });
@@ -129,7 +129,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive>t</MenuArchive>);
 
-      expect(component.queryByTestId("selected-2")).toBeTruthy();
+      expect(screen.getByTestId("selected-2")).toBeTruthy();
 
       component.unmount();
     });
@@ -168,7 +168,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive>t</MenuArchive>);
 
-      const mkdir = component.queryByTestId("mkdir");
+      const mkdir = screen.getByTestId("mkdir");
 
       // need async
       await mkdir?.click();
@@ -210,7 +210,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive>t</MenuArchive>);
 
-      const rename = component.queryByTestId("rename");
+      const rename = screen.getByTestId("rename");
       expect(rename).not.toBeNull();
 
       // need async
@@ -266,14 +266,14 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive>t</MenuArchive>);
 
-      const rename = component.queryByTestId("rename");
+      const rename = screen.getByTestId("rename");
       expect(rename).not.toBeNull();
 
       act(() => {
         rename?.click();
       });
 
-      const fakeButton = component.queryByTestId("test-btn-fake");
+      const fakeButton = screen.getByTestId("test-btn-fake");
       fakeButton?.click();
 
       expect(dispatch).toBeCalled();
@@ -321,7 +321,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const displayOptions = component.queryByTestId("display-options");
+      const displayOptions = screen.getByTestId("display-options");
       expect(displayOptions).not.toBeNull();
 
       act(() => {
@@ -377,7 +377,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const displayOptions = component.queryByTestId("display-options");
+      const displayOptions = screen.queryByTestId("display-options");
       expect(displayOptions).not.toBeNull();
 
       act(() => {
@@ -425,7 +425,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const syncManual = component.queryByTestId("synchronize-manually");
+      const syncManual = screen.getByTestId("synchronize-manually");
       expect(syncManual).not.toBeNull();
 
       // need async
@@ -479,7 +479,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const syncManual = component.queryByTestId("synchronize-manually");
+      const syncManual = screen.getByTestId("synchronize-manually");
       expect(syncManual).not.toBeNull();
 
       act(() => {
@@ -534,7 +534,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const undoSelection = component.queryByTestId("undo-selection");
+      const undoSelection = screen.queryByTestId("undo-selection");
       expect(undoSelection).not.toBeNull();
 
       act(() => {
@@ -595,7 +595,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const undoSelection = component.queryByTestId("undo-selection");
+      const undoSelection = screen.queryByTestId("undo-selection");
       expect(undoSelection).not.toBeNull();
 
       act(() => {
@@ -705,7 +705,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const trash = component.queryByTestId("trash");
+      const trash = screen.queryByTestId("trash");
       expect(trash).not.toBeNull();
 
       trash?.click();
@@ -762,7 +762,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const exportButton = component.queryByTestId("export");
+      const exportButton = screen.queryByTestId("export");
       expect(exportButton).not.toBeNull();
 
       act(() => {
@@ -815,7 +815,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const publish = component.queryByTestId("publish");
+      const publish = screen.queryByTestId("publish");
       expect(publish).not.toBeNull();
 
       act(() => {
@@ -864,7 +864,7 @@ describe("MenuArchive", () => {
 
       const component = render(<MenuArchive />);
 
-      const mkdir = component.queryByTestId("mkdir");
+      const mkdir = screen.queryByTestId("mkdir");
       expect(mkdir).not.toBeNull();
 
       mkdir?.click();

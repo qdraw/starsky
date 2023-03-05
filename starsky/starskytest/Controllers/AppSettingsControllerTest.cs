@@ -132,6 +132,15 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task UpdateAppSettings_UseLocalDesktopUi()
+		{
+			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage());
+			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject {UseLocalDesktopUi = true}) as JsonResult;
+			var result = actionResult?.Value as AppSettings;
+			Assert.IsTrue(result?.UseLocalDesktopUi);
+		}
+		
+		[TestMethod]
 		public async Task UpdateAppSettings_UseSystemTrash()
 		{
 			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage());

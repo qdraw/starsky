@@ -186,7 +186,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
     }, [fileIndexItem.filePath]);
 
     useKeyboardEvent(
-      /^([v])$/,
+      /^v$/,
       (event: KeyboardEvent) => {
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();

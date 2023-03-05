@@ -772,8 +772,25 @@ namespace starsky.foundation.platform.Models
 			new CameraMakeModel("Sony","A58")
 		};
 
+		/// <summary>
+		/// Private storage for EnablePackageTelemetry
+		/// </summary>
 		private bool? EnablePackageTelemetryPrivate { get; set; }
 
+		
+		
+		/// <summary>
+		/// Disable logout buttons in UI
+		/// And hides server specific features that are strange on a local desktop
+		/// </summary>
+		[PackageTelemetry]
+		public bool? UseLocalDesktopUi { get; set; } = false;
+		
+		
+		/// <summary>
+		/// Helps us improve the software
+		/// Please keep this enabled
+		/// </summary>
 		public bool? EnablePackageTelemetry
 		{
 			get

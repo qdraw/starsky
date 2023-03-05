@@ -1,5 +1,4 @@
-import { render } from "@testing-library/react";
-import React from "react";
+import { render, screen } from "@testing-library/react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as Modal from "../../atoms/modal/modal";
 import * as ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
@@ -50,7 +49,7 @@ describe("ModalDropAreaFilesAdded", () => {
         />
       );
 
-      const dataTestId = component.queryAllByTestId("data-test-0")[0];
+      const dataTestId = screen.queryAllByTestId("data-test-0")[0];
 
       expect(dataTestId).toBeTruthy();
       expect(dataTestId.innerHTML).toBe("test.jpg");
@@ -59,11 +58,9 @@ describe("ModalDropAreaFilesAdded", () => {
     });
 
     it("test if handleExit is called", () => {
-      jest
-        .spyOn(ItemTextListView, "default")
-        .mockImplementationOnce((props) => {
-          return <></>;
-        });
+      jest.spyOn(ItemTextListView, "default").mockImplementationOnce(() => {
+        return <></>;
+      });
 
       // simulate if a user press on close
       // use as ==> import * as Modal from './modal';

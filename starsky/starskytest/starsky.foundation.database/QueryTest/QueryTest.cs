@@ -112,7 +112,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			// remove if item exist
 			var homeItem = _query.SingleItem("/");
-			if ( homeItem != null )
+			if ( homeItem?.FileIndexItem != null )
 			{
 				await _query.RemoveItemAsync(homeItem.FileIndexItem);
 		        

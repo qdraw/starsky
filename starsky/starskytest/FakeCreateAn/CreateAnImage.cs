@@ -258,9 +258,18 @@ namespace starskytest.FakeCreateAn
 		/// </summary>
 		public CreateAnImage()
 		{
-			if (!File.Exists(FullFilePath))
+			if ( File.Exists(FullFilePath) ) return;
+			
+			try
 			{
 				File.WriteAllBytes(FullFilePath, Convert.FromBase64String(Base64JpgString));
+			}
+			catch ( IOException exceptionMessage )
+			{
+				// to avoid: The process cannot access the file
+				// 'D:\a\..\0000000000aaaaa__exifreadingtest00.jpg'
+				// because it is being used by another process.
+				Console.WriteLine(exceptionMessage);
 			}
 		}
 	}

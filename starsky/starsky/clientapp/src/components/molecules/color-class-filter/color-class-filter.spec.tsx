@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { act, render } from "@testing-library/react";
-import React from "react";
+import { act, render, screen } from "@testing-library/react";
 import { URLPath } from "../../../shared/url-path";
 import ColorClassFilter from "./color-class-filter";
 
@@ -26,11 +25,13 @@ describe("ColorClassFilter", () => {
       />
     );
 
-    const colorClass = component.queryByTestId(
+    const colorClass = screen.queryByTestId(
       "color-class-filter-2"
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
     colorClass.click();
+
+    component.unmount();
   });
 
   it("itemsCount = 0 should return nothing", () => {
@@ -45,6 +46,8 @@ describe("ColorClassFilter", () => {
 
     expect(component).toBeTruthy();
     expect(component.container.innerHTML).toBeFalsy();
+
+    component.unmount();
   });
 
   it("outside current scope display reset", () => {
@@ -57,7 +60,9 @@ describe("ColorClassFilter", () => {
       />
     );
 
-    expect(component.queryByTestId("color-class-filter-reset")).toBeTruthy();
+    expect(screen.getByTestId("color-class-filter-reset")).toBeTruthy();
+
+    component.unmount();
   });
 
   it("onClick value and preloader exist", () => {
@@ -70,7 +75,7 @@ describe("ColorClassFilter", () => {
       />
     );
 
-    const colorClass = component.queryByTestId(
+    const colorClass = screen.queryByTestId(
       "color-class-filter-2"
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
@@ -79,7 +84,7 @@ describe("ColorClassFilter", () => {
       colorClass.click();
     });
 
-    const preloader = component.queryByTestId("preloader") as HTMLElement;
+    const preloader = screen.queryByTestId("preloader") as HTMLElement;
     expect(preloader).toBeTruthy();
 
     component.unmount();
@@ -97,7 +102,7 @@ describe("ColorClassFilter", () => {
       />
     );
 
-    const colorClass = component.queryByTestId(
+    const colorClass = screen.queryByTestId(
       "color-class-filter-1"
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();

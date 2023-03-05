@@ -302,10 +302,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task SingleFile_FileAlreadyExist_With_Changed_FileHash_ShouldTriggerDelegate()
 		{
-			
+			_iStorageFake.FileCopy("/test.jpg", "/test_23456.jpg");
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 			{
-				new FileIndexItem("/test.jpg")
+				new FileIndexItem("/test_23456.jpg")
 				{
 					FileHash = "THIS_IS_THE_OLD_HASH",
 					Size = 99999999 // % % % that's not the right size % % %
@@ -320,7 +320,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, null, new FakeIWebLogger());
-			await sync.SingleFile("/test.jpg",TestTask);
+			await sync.SingleFile("/test_23456.jpg",TestTask);
 			
 			Assert.IsTrue(isCalled);
 		}

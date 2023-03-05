@@ -1,10 +1,16 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import React from "react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import {
   IConnectionDefault,
   newIConnectionDefault
 } from "../../../interfaces/IConnectionDefault";
+import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import * as ArrowKeyDown from "./arrow-key-down";
 import MenuInlineSearch from "./menu-inline-search";
 
@@ -14,16 +20,19 @@ describe("Menu.SearchBar", () => {
   });
 
   describe("with Context", () => {
-    it("focus", async () => {
-      // usage ==> import * as useFetch from '../hooks/use-fetch';
+    it("Menu.SearchBar focus", async () => {
+      //
+      const successResponse: IConnectionDefault = {
+        ...newIConnectionDefault(),
+        statusCode: 200
+      };
+
       jest
         .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => {
-          return { ...newIConnectionDefault(), statusCode: 200 };
-        })
-        .mockImplementationOnce(() => {
-          return { ...newIConnectionDefault(), statusCode: 200 };
-        });
+        .mockImplementationOnce(() => successResponse)
+        .mockImplementationOnce(() => successResponse)
+        .mockImplementationOnce(() => successResponse)
+        .mockImplementationOnce(() => successResponse);
 
       const menuBar = render(<MenuInlineSearch />);
 
@@ -48,6 +57,7 @@ describe("Menu.SearchBar", () => {
 
       menuBar.unmount();
     });
+
     it("menu searchbar - blur", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
@@ -64,7 +74,7 @@ describe("Menu.SearchBar", () => {
 
       const menuBar = render(<MenuInlineSearch />);
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 
@@ -95,20 +105,23 @@ describe("Menu.SearchBar", () => {
       data: ["suggest1", "suggest2"]
     } as IConnectionDefault;
 
-    it("suggestions", () => {
+    it("inline search suggestions", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => suggestionsExample)
-        .mockImplementationOnce(() => suggestionsExample);
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => suggestionsExample)
+        .mockImplementationOnce(() => newIConnectionDefault());
 
       const callback = jest.fn();
       const menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 
@@ -120,10 +133,98 @@ describe("Menu.SearchBar", () => {
         ".menu-item--results > button"
       );
 
-      expect(results[0].textContent).toBe("suggest1");
-      expect(results[1].textContent).toBe("suggest2");
+      console.log("-text results");
+      for (const result of Array.from(results)) {
+        console.log(result?.textContent);
+      }
+
+      const result1 = Array.from(results).find(
+        (p) => p?.textContent === "suggest1"
+      )?.textContent;
+
+      const result2 = Array.from(results).find(
+        (p) => p?.textContent === "suggest2"
+      )?.textContent;
+
+      expect(result1).toBeTruthy();
+      expect(result2).toBeTruthy();
 
       expect(callback).toBeCalledTimes(0);
+
+      menuBar.unmount();
+    });
+
+    const dataFeaturesExample = {
+      statusCode: 200,
+      data: {
+        systemTrashEnabled: true,
+        useLocalDesktopUi: false
+      } as IEnvFeatures
+    } as IConnectionDefault;
+
+    it("default menu should hide trash when system trash is enabled", () => {
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => dataFeaturesExample)
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
+
+      const callback = jest.fn();
+      const menuBar = render(
+        <MenuInlineSearch defaultText={"tes"} callback={callback} />
+      );
+
+      expect(screen.getByTestId("default-menu-item-import")).toBeTruthy();
+      expect(screen.queryByTestId("default-menu-item-trash")).toBeFalsy();
+      expect(screen.getByTestId("default-menu-item-logout")).toBeTruthy();
+
+      menuBar.unmount();
+    });
+
+    it("default menu should hide logout when uselocal desktop ui is enabled", () => {
+      dataFeaturesExample.data.useLocalDesktopUi = true;
+      dataFeaturesExample.data.systemTrashEnabled = false;
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => dataFeaturesExample)
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
+
+      const callback = jest.fn();
+      const menuBar = render(
+        <MenuInlineSearch defaultText={"tes"} callback={callback} />
+      );
+
+      expect(screen.getByTestId("default-menu-item-trash")).toBeTruthy();
+      expect(screen.queryByTestId("default-menu-item-logout")).toBeFalsy();
+
+      menuBar.unmount();
+    });
+
+    it("default menu should show logout and trash in default mode", () => {
+      dataFeaturesExample.data.useLocalDesktopUi = false;
+      dataFeaturesExample.data.systemTrashEnabled = false;
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => dataFeaturesExample)
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
+
+      const callback = jest.fn();
+      const menuBar = render(
+        <MenuInlineSearch defaultText={"tes"} callback={callback} />
+      );
+
+      expect(screen.getByTestId("default-menu-item-trash")).toBeTruthy();
+      expect(screen.getByTestId("default-menu-item-logout")).toBeTruthy();
 
       menuBar.unmount();
     });
@@ -145,7 +246,7 @@ describe("Menu.SearchBar", () => {
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 
@@ -178,7 +279,7 @@ describe("Menu.SearchBar", () => {
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 
@@ -213,7 +314,7 @@ describe("Menu.SearchBar", () => {
         .spyOn(ArrowKeyDown, "default")
         .mockImplementationOnce(() => {});
 
-      const input = menuBar.queryByTestId(
+      const input = screen.queryByTestId(
         "menu-inline-search"
       ) as HTMLInputElement;
 

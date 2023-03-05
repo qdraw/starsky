@@ -79,7 +79,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
       >
         {colorContent.map((item, index) => (
           <button
-            key={index}
+            key={item}
             data-test={"color-class-select-" + index}
             onClick={() => {
               new ColorClassUpdateSingle(

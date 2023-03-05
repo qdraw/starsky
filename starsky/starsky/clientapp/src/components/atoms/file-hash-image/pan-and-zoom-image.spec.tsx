@@ -1,5 +1,4 @@
-import { createEvent, fireEvent, render } from "@testing-library/react";
-import React from "react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import { OnMoveMouseTouchAction } from "./on-move-mouse-touch-action";
@@ -32,13 +31,13 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      const zoomIn = component.queryAllByTestId("zoom_in")[0];
+      const zoomIn = screen.queryAllByTestId("zoom_in")[0];
 
       act(() => {
         zoomIn.click();
       });
 
-      const panZoomImage = component.queryAllByTestId("pan-zoom-image")[0];
+      const panZoomImage = screen.queryAllByTestId("pan-zoom-image")[0];
 
       const pasteEvent = createEvent.mouseDown(panZoomImage, {
         clientX: 300,
@@ -135,7 +134,7 @@ describe("PanAndZoomImage", () => {
       act(() => {
         document.dispatchEvent(ev2);
       });
-      const panZoomImage = component.queryAllByTestId("pan-zoom-image")[0];
+      const panZoomImage = screen.queryAllByTestId("pan-zoom-image")[0];
 
       expect(panZoomImage.innerHTML).toContain(
         "transform: translate(0px, 0px) scale(1)"
@@ -157,7 +156,7 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      const panZoomImage = component.queryAllByTestId("pan-zoom-image")[0];
+      const panZoomImage = screen.queryAllByTestId("pan-zoom-image")[0];
 
       const pasteEvent = createEvent.wheel(panZoomImage, {
         deltaY: -300
@@ -183,7 +182,7 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      const panZoomImage = component.queryAllByTestId("pan-zoom-image")[0];
+      const panZoomImage = screen.queryAllByTestId("pan-zoom-image")[0];
 
       const pasteEvent = createEvent.wheel(panZoomImage, {
         deltaY: 300
@@ -212,7 +211,7 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      const zoom_in = component.queryAllByTestId("zoom_in")[0];
+      const zoom_in = screen.queryAllByTestId("zoom_in")[0];
       zoom_in.click();
 
       expect(zoomSpy).toBeCalled();
@@ -238,7 +237,7 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      const zoom_out = component.queryAllByTestId("zoom_out")[0];
+      const zoom_out = screen.queryAllByTestId("zoom_out")[0];
       zoom_out.click();
 
       expect(zoomSpy).toBeCalled();
@@ -285,13 +284,13 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      const zoom_in = component.queryAllByTestId("zoom_in")[0];
+      const zoom_in = screen.queryAllByTestId("zoom_in")[0];
 
       act(() => {
         zoom_in.click();
       });
 
-      const zoom_reset = component.queryAllByTestId("zoom_reset")[0];
+      const zoom_reset = screen.queryAllByTestId("zoom_reset")[0];
 
       act(() => {
         zoom_reset.click();

@@ -1,4 +1,10 @@
-import { act, createEvent, fireEvent, render } from "@testing-library/react";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  screen
+} from "@testing-library/react";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -59,23 +65,21 @@ describe("ModalDetailviewRenameFile", () => {
         ></ModalDetailviewRenameFile>
       );
 
-      const button = modal.queryByTestId(
+      const button = screen.queryByTestId(
         "modal-detailview-rename-file-btn-default"
       ) as HTMLButtonElement;
 
       const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
-      const directoryName = modal.queryByTestId(
+      const directoryName = screen.queryByTestId(
         "form-control"
       ) as HTMLInputElement;
 
       // update component + now press a key
-      act(() => {
-        directoryName.textContent = "file-with-different-extension.tiff";
-        const inputEvent = createEvent.input(directoryName, { key: "a" });
-        fireEvent(directoryName, inputEvent);
-      });
+      directoryName.textContent = "file-with-different-extension.tiff";
+      const inputEvent = createEvent.input(directoryName, { key: "a" });
+      fireEvent(directoryName, inputEvent);
 
       // await is needed => there is no button
       await act(async () => {
@@ -83,7 +87,7 @@ describe("ModalDetailviewRenameFile", () => {
       });
 
       expect(
-        modal.queryByTestId("modal-detailview-rename-file-warning-box")
+        screen.getByTestId("modal-detailview-rename-file-warning-box")
       ).toBeTruthy();
 
       const submitButtonAfter = button.disabled;
@@ -130,23 +134,21 @@ describe("ModalDetailviewRenameFile", () => {
         ></ModalDetailviewRenameFile>
       );
 
-      const button = modal.queryByTestId(
+      const button = screen.queryByTestId(
         "modal-detailview-rename-file-btn-default"
       ) as HTMLButtonElement;
 
       const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
-      const directoryName = modal.queryByTestId(
+      const directoryName = screen.queryByTestId(
         "form-control"
       ) as HTMLInputElement;
 
       // update component + now press a key
-      act(() => {
-        directoryName.textContent = "file-without-extension";
-        const inputEvent = createEvent.input(directoryName, { key: "a" });
-        fireEvent(directoryName, inputEvent);
-      });
+      directoryName.textContent = "file-without-extension";
+      const inputEvent = createEvent.input(directoryName, { key: "a" });
+      fireEvent(directoryName, inputEvent);
 
       // await is needed => there is no button
       await act(async () => {
@@ -154,7 +156,7 @@ describe("ModalDetailviewRenameFile", () => {
       });
 
       expect(
-        modal.queryByTestId("modal-detailview-rename-file-warning-box")
+        screen.getByTestId("modal-detailview-rename-file-warning-box")
       ).toBeTruthy();
 
       const submitButtonAfter = button.disabled;
@@ -200,20 +202,18 @@ describe("ModalDetailviewRenameFile", () => {
         ></ModalDetailviewRenameFile>
       );
 
-      const button = modal.queryByTestId(
+      const button = screen.queryByTestId(
         "modal-detailview-rename-file-btn-default"
       ) as HTMLButtonElement;
 
-      const directoryName = modal.queryByTestId(
+      const directoryName = screen.queryByTestId(
         "form-control"
       ) as HTMLInputElement;
 
       // update component + now press a key
-      act(() => {
-        directoryName.textContent = "name.jpg";
-        const inputEvent = createEvent.input(directoryName, { key: "a" });
-        fireEvent(directoryName, inputEvent);
-      });
+      directoryName.textContent = "name.jpg";
+      const inputEvent = createEvent.input(directoryName, { key: "a" });
+      fireEvent(directoryName, inputEvent);
 
       // await is needed => there is no button
       await act(async () => {

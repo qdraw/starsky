@@ -22,7 +22,7 @@ describe("ItemTextListView", () => {
     );
 
     expect(
-      screen.queryByTestId("list-text-view-no-photos-in-folder")
+      screen.getByTestId("list-text-view-no-photos-in-folder")
     ).toBeTruthy();
   });
 

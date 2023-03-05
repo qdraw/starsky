@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { act, render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import { PageType } from "../../../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
@@ -64,11 +64,13 @@ describe("ArchiveSidebar", () => {
         />
       );
 
-      const element = component.queryByTestId(
+      const element = screen.queryByTestId(
         "sidebar-selection-none"
       ) as HTMLDivElement;
 
       expect(element).toBeTruthy();
+
+      component.unmount();
     });
 
     it("show warning if is read only", () => {
@@ -82,11 +84,13 @@ describe("ArchiveSidebar", () => {
         />
       );
 
-      const element = component.queryByTestId(
+      const element = screen.queryByTestId(
         "sidebar-read-only"
       ) as HTMLDivElement;
 
       expect(element).toBeTruthy();
+
+      component.unmount();
     });
 
     it("scroll event and set body style with scroll", () => {

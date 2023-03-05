@@ -1,5 +1,4 @@
-import { createEvent, fireEvent, render } from "@testing-library/react";
-import React from "react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
 import useIntersection from "../../../hooks/use-intersection-observer";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
 import { UrlQuery } from "../../../shared/url-query";
@@ -22,7 +21,7 @@ describe("ListImageTest", () => {
       </ListImage>
     );
 
-    const img = element.queryAllByTestId(
+    const img = screen.queryAllByTestId(
       "list-image-img"
     )[0] as HTMLImageElement;
 
@@ -37,6 +36,8 @@ describe("ListImageTest", () => {
     expect(img.src).toContain(
       new UrlQuery().UrlThumbnailImage("test.jpg", false)
     );
+
+    element.unmount();
   });
 
   it("img-box--error null", () => {
@@ -44,12 +45,14 @@ describe("ListImageTest", () => {
       <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 
-    const img = element.queryAllByTestId(
+    const img = screen.queryAllByTestId(
       "list-image-img-error"
     )[0] as HTMLImageElement;
 
     expect(img).not.toBeNull();
     expect(img.className).toContain("img-box--error");
+
+    element.unmount();
   });
 
   it("img-box--error null 2", () => {
@@ -57,11 +60,13 @@ describe("ListImageTest", () => {
       <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 
-    const img = element.queryAllByTestId(
+    const img = screen.queryAllByTestId(
       "list-image-img-error"
     )[0] as HTMLImageElement;
 
     expect(img).not.toBeNull();
     expect(img.className).toContain("img-box--error");
+
+    element.unmount();
   });
 });
