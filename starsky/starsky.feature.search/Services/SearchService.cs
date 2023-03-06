@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Data;
@@ -39,14 +40,15 @@ namespace starsky.feature.search.Services
             _logger = logger;
         }
 
-	    /// <summary>
-	    /// Search in database
-	    /// </summary>
-	    /// <param name="query">where to search in</param>
-	    /// <param name="pageNumber">current page (0 = page 1)</param>
-	    /// <param name="enableCache">enable searchcache (in trash this is disabled) </param>
-	    /// <returns></returns>
-        public SearchViewModel Search(string query = "", int pageNumber = 0, bool enableCache = true)
+        /// <summary>
+        /// Search in database
+        /// </summary>
+        /// <param name="query">where to search in</param>
+        /// <param name="pageNumber">current page (0 = page 1)</param>
+        /// <param name="enableCache">enable searchcache (in trash this is disabled) </param>
+        /// <returns></returns>
+        public async Task<SearchViewModel> Search(string query = "",
+	        int pageNumber = 0, bool enableCache = true)
 	    {
 		    if ( !string.IsNullOrEmpty(query) && query.Length >= 500 )
 		    {
@@ -58,7 +60,7 @@ namespace starsky.feature.search.Services
 		    if ( !enableCache ||
 		         _cache == null || _appSettings?.AddMemoryCache == false )
 		    {
-			    return SkipSearchItems(SearchDirect(query),pageNumber);
+			    return SkipSearchItems(await SearchDirect(query),pageNumber);
 		    }
 
             // Return values from IMemoryCache
@@ -72,7 +74,7 @@ namespace starsky.feature.search.Services
             }
             
             // Try to catch a new object
-            objectSearchModel = SearchDirect(query);
+            objectSearchModel = await SearchDirect(query);
             _cache.Set(querySearchCacheName, objectSearchModel, new TimeSpan(0,10,0));
             return SkipSearchItems(objectSearchModel, pageNumber);
         }
@@ -130,7 +132,7 @@ namespace starsky.feature.search.Services
         /// </summary>
         /// <param name="query">where to search on</param>
         /// <returns></returns>
-        private SearchViewModel SearchDirect(string query = "")
+        private async Task<SearchViewModel> SearchDirect(string query = "")
         {
             var stopWatch = Stopwatch.StartNew();
 
@@ -150,7 +152,7 @@ namespace starsky.feature.search.Services
             model.SearchQuery = QueryShortcuts(model.SearchQuery);
             model = MatchSearch(model);
 
-            model = WideSearch(_context.FileIndex.AsNoTracking(),model);
+            model = await WideSearch(_context.FileIndex.AsNoTracking(),model);
 	        
             model = SearchViewModel.NarrowSearch(model);
 
@@ -179,7 +181,7 @@ namespace starsky.feature.search.Services
 	    /// <param name="sourceList">IQueryable database</param>
 	    /// <param name="model">temp output model</param>
 	    /// <returns>search model with content</returns>
-	    private SearchViewModel WideSearch(IQueryable<FileIndexItem> sourceList,
+	    private async Task<SearchViewModel> WideSearch(IQueryable<FileIndexItem> sourceList,
 		    SearchViewModel model)
 	    {
 		    var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
@@ -300,7 +302,7 @@ namespace starsky.feature.search.Services
 			    predicate =  item.AndAlso(item2);
 		    }
 
-		    model.FileIndexItems = sourceList.Where(predicate).ToList();
+		    model.FileIndexItems = await sourceList.Where(predicate).ToListAsync();
 		    
 		    return model;
 	    }

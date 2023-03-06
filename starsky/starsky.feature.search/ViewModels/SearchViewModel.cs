@@ -483,10 +483,11 @@ namespace starsky.feature.search.ViewModels
 	    
 		/// <summary>
 	    /// Filter for WideSearch
-	    /// Always after wideSearch 
+	    /// Always after wideSearch
+	    /// Hides by default xmp sidecar files
 	    /// </summary>
-	    /// <param name="model"></param>
-	    /// <returns></returns>
+	    /// <param name="model">model to make finer</param>
+	    /// <returns>complete result</returns>
 	    public static SearchViewModel NarrowSearch(SearchViewModel model)
 	    {
 		    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
@@ -506,6 +507,12 @@ namespace starsky.feature.search.ViewModels
 				    continue;
 			    }
 			    PropertySearch(model, property, model.SearchFor[i],model.SearchForOptions[i]);
+		    }
+		    
+		    // hide xmp files in default view
+		    if ( model.SearchIn.Any(p => !string.Equals(p, nameof(SearchInTypes.imageformat), StringComparison.InvariantCultureIgnoreCase)) )
+		    {
+			    model.FileIndexItems = model.FileIndexItems.Where(p => p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp).ToList();
 		    }
 
 		    return model;
