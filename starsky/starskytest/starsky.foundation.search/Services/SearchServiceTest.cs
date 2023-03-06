@@ -76,15 +76,12 @@ namespace starskytest.starsky.foundation.search.Services
 					DateTime = DateTime.Now,
 					IsDirectory = false
 				});
-			}
-			
-			if (string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("lelystadcentrum_xmp")))
-			{
+				
 				await _query.AddItemAsync(new FileIndexItem
 				{
 					FileName = "lelystadcentrum.xmp",
 					ParentDirectory = "/stations",
-					FileHash = "lelystadcentrum_xmp",
+					FileHash = "lelystadcentrum",
 					Tags = "station, train, lelystad, de trein, delete",
 					DateTime = DateTime.Now,
 					ImageFormat = ExtensionRolesHelper.ImageFormat.xmp,
@@ -646,6 +643,16 @@ namespace starskytest.starsky.foundation.search.Services
 			var result = await _search.Search("-Description=lelystadcentrum2 -ImageFormat=tiff",0,false);
 			Assert.AreEqual(1,result.FileIndexItems.Count);
 		}
+		
+		[TestMethod]
+		public async Task SearchService_DescriptionImageFormat222222()
+		{
+			await InsertSearchData();
+			var result = await _search.Search("-FileHash=lelystadcentrum -ImageFormat=jpg || -ImageFormat=xmp",0,false);
+			Assert.AreEqual(2,result.FileIndexItems.Count);
+		}
+		
+		
 	    
 		[TestMethod]
 		public async Task SearchService_DescriptionOne()

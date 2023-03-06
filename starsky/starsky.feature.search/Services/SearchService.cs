@@ -280,6 +280,18 @@ namespace starsky.feature.search.Services
 		    
 		    _logger?.LogInformation($"search --> {model.SearchQuery}");
 
+		    var predicate = PredicateExecution(predicates, model);
+		    var queryable = sourceList.Where(predicate);
+		    
+		    model.FileIndexItems = await sourceList.Where(predicate).ToListAsync();
+		    
+		    return model;
+	    }
+
+	    private static Expression<Func<FileIndexItem, bool>> PredicateExecution(
+		    IReadOnlyList<Expression<Func<FileIndexItem, bool>>> predicates,
+		    SearchViewModel model)
+	    {
 		    var predicate = PredicateBuilder.False<FileIndexItem>();
 		    for ( var i = 0; i < predicates.Count; i++ )
 		    {
@@ -302,9 +314,7 @@ namespace starsky.feature.search.Services
 			    predicate =  item.AndAlso(item2);
 		    }
 
-		    model.FileIndexItems = await sourceList.Where(predicate).ToListAsync();
-		    
-		    return model;
+		    return predicate;
 	    }
 
 	    /// <summary>
@@ -383,7 +393,7 @@ namespace starsky.feature.search.Services
 	            if ( string.IsNullOrEmpty(itemQuery) ) continue;
 
 	            // put ||&& in operator field => next regex > removed
-	            model.SetAndOrOperator(SearchViewModel.AndOrRegex(itemQuery));
+	            var itemQueryWithOperator = itemQuery;
 	            
 	            Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<|-)", 
 		            RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
@@ -397,7 +407,6 @@ namespace starsky.feature.search.Services
 
 	            // Option last of itemNameSearch
                 var searchForOption = itemNameSearch[itemNameSearch.Length - 1].ToString();
-                model.SetAddSearchForOptions(searchForOption);                    
                 
                 // Remove parenthesis
                 itemQuery = itemQuery.Replace("\"", string.Empty);
@@ -405,13 +414,19 @@ namespace starsky.feature.search.Services
 
 	            // Remove || / && at the end of the string
 	            // (\|\||\&\&)$
-	            string pattern = "(\\|\\||\\&\\&)$";
+	            const string pattern = "(\\|\\||\\&\\&)$";
 				itemQuery = Regex.Replace(itemQuery, pattern, string.Empty, 
 					RegexOptions.None, TimeSpan.FromMilliseconds(100));
 	            
-                model.SetAddSearchFor(itemQuery.Trim());
+				model.SetAddSearchForOptions(searchForOption);
+				var andOrChar = SearchViewModel.AndOrRegex(itemQueryWithOperator);
+				if ( andOrChar == '&' && model.SearchIn.Any(p => string.Equals(p, itemName, StringComparison.InvariantCultureIgnoreCase)) )
+				{
+					andOrChar = '|';
+				}
+				model.SetAndOrOperator(andOrChar);
+				model.SetAddSearchFor(itemQuery.Trim());
                 model.SetAddSearchInStringType(itemName);
-           
             }
         }
 

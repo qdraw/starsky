@@ -360,8 +360,7 @@ namespace starsky.feature.search.ViewModels
 		    
 		    // set default
 		    if ( string.IsNullOrEmpty(lastStringValue) ) lastStringValue = string.Empty;
-
-
+		    
 		    if ( lastStringValue == "||" ) return '|';
 		    return '&';
 	    }
@@ -510,7 +509,7 @@ namespace starsky.feature.search.ViewModels
 		    }
 		    
 		    // hide xmp files in default view
-		    if ( model.SearchIn.Any(p => !string.Equals(p, nameof(SearchInTypes.imageformat), StringComparison.InvariantCultureIgnoreCase)) )
+		    if ( model.SearchIn.All(p => !string.Equals(p, nameof(SearchInTypes.imageformat), StringComparison.InvariantCultureIgnoreCase)))
 		    {
 			    model.FileIndexItems = model.FileIndexItems.Where(p => p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp).ToList();
 		    }
