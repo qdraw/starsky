@@ -499,6 +499,35 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
+		public async Task QueryDisplayFileFolders_XmpHide_Test()
+		{
+			var image1 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "1.xmp",
+				ParentDirectory = "/test_xmp", 
+				FileHash = "123458465522",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.xmp,
+			});
+			
+			var image1Jpg = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "1.jpg",
+				ParentDirectory = "/test_xmp", 
+				FileHash = "123458465522",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+			});
+			
+			var result = _query.QueryDisplayFileFolders("/test_xmp");
+
+			Assert.AreEqual(1,result.Count);
+			
+			Assert.AreEqual(image1Jpg.FilePath, result[0].FilePath);
+
+			await _query.RemoveItemAsync(image1);
+			await _query.RemoveItemAsync(image1Jpg);
+		}
+		
+		[TestMethod]
 		public void QueryFolder_DisplayFileFoldersNoResultTest()
 		{
 			var getDisplay = _query.DisplayFileFolders("/12345678987654").ToList();

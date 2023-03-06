@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.SyncServices;
 using starskytest.FakeMocks;
@@ -136,6 +137,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					SidecarExtensions = "xmp"
 				},
 				new FileIndexItem("/sidecar_test__2/test.xmp")
+				{
+					ImageFormat = ExtensionRolesHelper.ImageFormat.xmp
+				}
 			};
 			var query = new FakeIQuery(queryContent);
 			var remove = new SyncRemove(_appSettings, query, null, null);

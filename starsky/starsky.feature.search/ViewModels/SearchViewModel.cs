@@ -23,7 +23,7 @@ namespace starsky.feature.search.ViewModels
         public SearchViewModel()
         {
 	        // init default values
-            _searchIn ??= new List<string>();
+            SearchIn ??= new List<string>();
             FileIndexItems ??= new List<FileIndexItem>();
             Breadcrumb ??= new List<string>();
 
@@ -106,16 +106,12 @@ namespace starsky.feature.search.ViewModels
 	        software = 15
         }
 
-        
-        /// <summary>
-        /// Private Field: Contains an list of Database fields to search in.
-        /// </summary>
-        private List<string> _searchIn;
-	    
+
 	    /// <summary>
 	    /// Contains an list of Database fields to search in.
 	    /// </summary>
-        public List<string> SearchIn => _searchIn;
+        public List<string> SearchIn { get; private set; }
+
 
 	    /// <summary>
 	    /// In which database field the search query is needed
@@ -124,7 +120,7 @@ namespace starsky.feature.search.ViewModels
         public void SetAddSearchInStringType(string value)
 	    {
 		    // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-		    _searchIn ??= new List<string>();
+		    SearchIn ??= new List<string>();
 		    
             // use ctor to have an empty list
             var fileIndexPropList = FileIndexItem.FileIndexPropList();
@@ -132,7 +128,7 @@ namespace starsky.feature.search.ViewModels
                 (x => x.Equals(value, StringComparison.OrdinalIgnoreCase));
             if (fileIndexPropListIndex != -1 )
             {
-                _searchIn.Add(fileIndexPropList[fileIndexPropListIndex]);
+                SearchIn.Add(fileIndexPropList[fileIndexPropListIndex]);
             } 
         }
         

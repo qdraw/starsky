@@ -23,10 +23,11 @@ This document is auto generated
 | __/api/allowed-types/thumb__                      | GET   | Check if IsExtensionThumbnailSupported                                          |
 | __/api/env__                                      | GET   | Show the runtime settings (dont allow AllowAnonymous)                           |
 | __/api/env__                                      | POST  | Show the runtime settings (dont allow AllowAnonymous)                           |
+| __/api/env/features__                             | GET   | Show features that used in the frontend app / menu                              |
 | __/api/cache/list__                               | GET   | Get Database Cache (only the cache)                                             |
 | __/api/remove-cache__                             | GET   | Delete Database Cache (only the cache)                                          |
 | __/api/remove-cache__                             | POST  | Delete Database Cache (only the cache)                                          |
-| __/api/delete__                                   | DELETE| Remove files from the disk, but the file must contain the !delete! tag          |
+| __/api/delete__                                   | DELETE| Remove files from the disk, but the file must contain the !delete! (TrashKeyw...|
 | _Parameters: f (subPaths, separated by dot comma), collections (true is to update files with the same name before                         _ |
 | _ the extenstion)                                                                                                                         _ |
 | __/api/disk/mkdir__                               | POST  | Make a directory (-p)                                                           |
@@ -89,7 +90,7 @@ This document is auto generated
 | __/redirect/sub-path-relative__                   | GET   | Redirect or view path to relative paths using the structure-config (see /api/...|
 | __/api/search__                                   | GET   | Gets the list of search results (cached)                                        |
 | __/api/search/relative-objects__                  | GET   | Get relative paths in a search queryDoes not cover multiple pages (so it ends...|
-| __/api/search/trash__                             | GET   | List of files with the tag: !delete!Caching is disabled on this api call        |
+| __/api/search/trash__                             | GET   | List of files with the tag: !delete! (TrashKeyword.TrashKeywordString)Caching...|
 | __/api/search/remove-cache__                      | POST  | Clear search cache to show the correct results                                  |
 | __/api/suggest__                                  | GET   | Gets the list of search results (cached)                                        |
 | __/api/suggest/all__                              | GET   | Show all items in the search suggest cache                                      |
@@ -103,5 +104,7 @@ This document is auto generated
 | _ (give preference to extraLarge over large image)                                                                                        _ |
 | __/api/thumbnail/zoom/{f}@{z}__                   | GET   | Get zoomed in image by fileHash.At the moment this is the source image          |
 | __/api/thumbnail-generation__                     | POST  | Create thumbnails for a folder in the background                                |
+| __/api/trash/detect-to-use-system-trash__         | GET   | Is the system trash supported                                                   |
+| __/api/trash/move-to-trash__                      | POST  | (beta) Move a file to the trash                                                 |
 | __/api/upload__                                   | POST  | Upload to specific folder (does not check if already has been imported)Use th...|
 | __/api/upload-sidecar__                           | POST  | Upload sidecar file to specific folder (does not check if already has been im...|

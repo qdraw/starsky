@@ -27,36 +27,42 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		new GenerationResultModel
 		{
 			FileHash = "large_1",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.Large,
 			Success = true
 		},
 		new GenerationResultModel
 		{
 			FileHash = "large_2",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.Large,
 			Success = false
 		},
 		new GenerationResultModel
 		{
 			FileHash = "small_1",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.Small,
 			Success = true
 		},
 		new GenerationResultModel
 		{
 			FileHash = "small_2",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.Small,
 			Success = false
 		},
 		new GenerationResultModel
 		{
 			FileHash = "extra_large_1",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.ExtraLarge,
 			Success = true
 		},
 		new GenerationResultModel
 		{
 			FileHash = "extra_large_2",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.ExtraLarge,
 			Success = false
 		}
@@ -165,25 +171,29 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.Large,
-			Success = true
+			Success = true,
+			SubPath = "test.jpg"
 		},
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.ExtraLarge,
-			Success = true
+			Success = true,
+			SubPath = "test.jpg",
 		},
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.Small,
-			Success = true
+			Success = true,
+			SubPath = "test.jpg"
 		},
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.TinyMeta,
-			Success = false
+			Success = false,
+			SubPath = "test.jpg"
 		}
 	};
 	
@@ -213,7 +223,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.Large,
-			Success = false
+			Success = false,
+			SubPath = "test.jpg"
 		}});
 
 		

@@ -187,7 +187,7 @@ namespace starsky.feature.search.Services
 		    // .AsNoTracking() => never change data to update
 		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
-				Enum.TryParse<SearchViewModel.SearchInTypes>(model.SearchIn[i].ToLowerInvariant(), true, out var searchInType);				    
+				Enum.TryParse<SearchViewModel.SearchInTypes>(model.SearchIn[i].ToLowerInvariant(), true, out var searchInType);
 
 			    if ( model.SearchForOptions[i] == SearchViewModel.SearchForOptionType.Not )
 			    {
