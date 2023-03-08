@@ -281,7 +281,6 @@ namespace starsky.feature.search.Services
 		    _logger?.LogInformation($"search --> {model.SearchQuery}");
 
 		    var predicate = PredicateExecution(predicates, model);
-		    var queryable = sourceList.Where(predicate);
 		    
 		    model.FileIndexItems = await sourceList.Where(predicate).ToListAsync();
 		    
