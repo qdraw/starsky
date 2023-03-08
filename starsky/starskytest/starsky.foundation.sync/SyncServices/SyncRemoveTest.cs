@@ -123,6 +123,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task SingleFile_RemoveSidecarFile()
 		{
+			var appSettings = new AppSettings
+			{
+				MaxDegreesOfParallelism = 1,
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			};
 			var queryContent = new List<FileIndexItem>
 			{
 				new FileIndexItem("/sidecar_test__1") {IsDirectory = true},
@@ -142,7 +147,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				}
 			};
 			var query = new FakeIQuery(queryContent);
-			var remove = new SyncRemove(_appSettings, query, null, null);
+			var remove = new SyncRemove(appSettings, query, null, null);
 
 			var result= await remove.RemoveAsync(new List<string>{
 				"/sidecar_test__1/test.xmp",

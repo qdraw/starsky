@@ -418,12 +418,10 @@ namespace starsky.feature.search.Services
 				itemQuery = Regex.Replace(itemQuery, pattern, string.Empty, 
 					RegexOptions.None, TimeSpan.FromMilliseconds(100));
 	            
-				model.SetAddSearchForOptions(searchForOption);
+				// is | or &
 				var andOrChar = SearchViewModel.AndOrRegex(itemQueryWithOperator);
-				if ( andOrChar == '&' && model.SearchIn.Any(p => string.Equals(p, itemName, StringComparison.InvariantCultureIgnoreCase)) )
-				{
-					andOrChar = '|';
-				}
+
+				model.SetAddSearchForOptions(searchForOption);
 				model.SetAndOrOperator(andOrChar);
 				model.SetAddSearchFor(itemQuery.Trim());
                 model.SetAddSearchInStringType(itemName);
