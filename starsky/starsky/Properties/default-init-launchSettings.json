@@ -26,7 +26,8 @@
           "app__EnablePackageTelemetryDebug": "true", 
           "app__DemoUnsafeDeleteStorageFolder": "false",
           "app__useSystemTrash": "true",
-          "app__accountRolesByEmailRegisterOverwrite__demo@qdraw.nl": "Administrator"
+          "app__accountRolesByEmailRegisterOverwrite__demo@qdraw.nl": "Administrator",
+          "app__ThumbnailGenerationIntervalInMinutes": "15"
         }
     }
   }
