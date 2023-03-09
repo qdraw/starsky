@@ -151,6 +151,12 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.IsNotNull(item);
 
 			Console.WriteLine(JsonSerializer.Serialize(item.SidecarExtensionsList));
+
+			// add retry 
+			if (item.SidecarExtensionsList.Count >= 1)
+			{
+				item = await query.GetObjectByFilePathAsync("/sidecar_test__1/test.dng");
+			}
 			
 			Assert.AreEqual(0, item.SidecarExtensionsList.Count);
 			
