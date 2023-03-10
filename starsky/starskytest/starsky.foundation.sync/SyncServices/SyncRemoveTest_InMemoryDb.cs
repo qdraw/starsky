@@ -51,9 +51,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FileIndexItem("/Folder_With_ChildItems/test.jpg"),
 				new FileIndexItem("/Folder_With_ChildItems/test2.jpg"),
 			});
-			
-			var result= await new SyncRemove(_appSettings, _query, 
-				new FakeMemoryCache(), new FakeIWebLogger()).RemoveAsync("/Folder_With_ChildItems");
+
+			var syncRemove = new SyncRemove(_appSettings, _query,
+				new FakeMemoryCache(), new FakeIWebLogger(), null);
+			var result= await syncRemove.RemoveAsync("/Folder_With_ChildItems");
 			
 			Assert.AreEqual(3, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);

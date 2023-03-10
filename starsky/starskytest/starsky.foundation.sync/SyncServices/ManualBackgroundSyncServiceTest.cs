@@ -78,7 +78,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var query = buildServiceProvider.GetService<IQuery>();
 				
 			var cacheDbName = new Query(null,null, 
-				null, null).CachingDbName(nameof(FileIndexItem) + "manual_sync", "/");
+				null, null).CachingDbName(
+				nameof(FileIndexItem) + "manual_sync", "/");
 			memoryCache!.Remove(cacheDbName);
 			
 			var cachedContent = new List<FileIndexItem>
@@ -91,10 +92,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var item = new FakeSelectorStorage(
 					new FakeIStorage(new List<string> { "/" }, 
 						new List<string>{"/test2__1234.jpg","/test3__1234.jpg"}, 
-						new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes, FakeCreateAn.CreateAnImageNoExif.Bytes}));
+						new List<byte[]>
+						{
+							FakeCreateAn.CreateAnImageNoExif.Bytes, 
+							FakeCreateAn.CreateAnImageNoExif.Bytes
+						}));
 			
 			await new ManualBackgroundSyncService(
-					new Synchronize(appSettings, query, item, new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), memoryCache),
+					new Synchronize(appSettings, query, item, new FakeIWebLogger(), 
+						new FakeISyncAddThumbnailTable(), null, memoryCache),
 					query,
 					new FakeIWebSocketConnectionsService(),
 					memoryCache, 
@@ -108,11 +114,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				Console.WriteLine("Manual sync " + itemContent.FilePath);
 			}
 			
-			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test2__1234.jpg"));
-			Assert.AreEqual(1,content.Count(p => p.FilePath == "/test3__1234.jpg"));
-			Assert.AreEqual(2,content.Count(p => p.FilePath is "/test2__1234.jpg" or "/test3__1234.jpg"));
+			Assert.AreEqual(1,
+				content.Count(p => p.FilePath == "/test2__1234.jpg"));
+			Assert.AreEqual(1,
+				content.Count(p => p.FilePath == "/test3__1234.jpg"));
+			Assert.AreEqual(2,
+				content.Count(p => p.FilePath is "/test2__1234.jpg" or "/test3__1234.jpg"));
 			// should not contain the cached item
-			Assert.AreEqual(0,content.Count(p => p.FilePath is "/999_not_found_1.jpg"));
+			Assert.AreEqual(0,
+				content.Count(p => p.FilePath is "/999_not_found_1.jpg"));
 
 		}
 		
@@ -164,7 +174,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public void FilterBefore_OkShouldPass()
 		{
-			var result=  ManualBackgroundSyncService.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+			var result=  ManualBackgroundSyncService.FilterBefore(
+				new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 				{
 					Status = FileIndexItem.ExifStatus.Ok
 				}});
@@ -176,7 +187,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public void FilterBefore_NotFoundShouldPass()
 		{
-			var result=  ManualBackgroundSyncService.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+			var result=  ManualBackgroundSyncService.FilterBefore(
+				new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 				{
 					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
 				}});
@@ -189,7 +201,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public void FilterBefore_ShouldIgnoreHome()
 		{
-			var result=  ManualBackgroundSyncService.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/")
+			var result=  ManualBackgroundSyncService.FilterBefore(
+				new List<FileIndexItem>{new FileIndexItem("/")
 				{
 					Status = FileIndexItem.ExifStatus.Ok
 				}});

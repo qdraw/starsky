@@ -55,7 +55,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task FileNotOnDrive()
 		{
-			var remove = new SyncRemove(_appSettings, _query, null, null);
+			var remove = new SyncRemove(_appSettings, _query, null, null, null);
 			var result= await remove.RemoveAsync("/not_found");
 			
 			Assert.AreEqual(1, result.Count);
@@ -65,7 +65,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task FileNotOnDrive_Object()
 		{
-			var remove = new SyncRemove(_appSettings, _query, null, null);
+			var remove = new SyncRemove(_appSettings, _query, null, null, null);
 			await _query.AddItemAsync(new FileIndexItem("/FileNotOnDrive_Object.jpg"));
 			var item = await 
 				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object.jpg");
@@ -87,7 +87,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task FileNotOnDrive_Object_Ignore_wrongStatus()
 		{
-			var remove = new SyncRemove(_appSettings, _query, null, null);
+			var remove = new SyncRemove(_appSettings, _query, null, null, null);
 			await _query.AddItemAsync(new FileIndexItem("/FileNotOnDrive_Object_Ignore_wrongStatus.jpg"));
 			var item = await 
 				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object_Ignore_wrongStatus.jpg");
@@ -108,7 +108,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task SingleItem_Folder_Remove()
 		{
-			var remove = new SyncRemove(_appSettings, _query, null, null);
+			var remove = new SyncRemove(_appSettings, _query, null, null,null);
 			var result= await remove.RemoveAsync("/folder_no_content");
 			
 			Assert.AreEqual(1, result.Count);
@@ -147,7 +147,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				}
 			};
 			var query = new FakeIQuery(queryContent);
-			var remove = new SyncRemove(appSettings, query, null, null);
+			var remove = new SyncRemove(appSettings, query, null, null, null);
 
 			var result= await remove.RemoveAsync(new List<string>{
 				"/sidecar_test__1/test.xmp",

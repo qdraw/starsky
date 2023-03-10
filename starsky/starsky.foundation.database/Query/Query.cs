@@ -400,7 +400,7 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        if ( context == null! )
 		        {
-			        throw new AggregateException("context is null");
+			        throw new AggregateException("Query Context is null");
 		        }
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();

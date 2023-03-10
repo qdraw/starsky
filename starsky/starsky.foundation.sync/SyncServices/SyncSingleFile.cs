@@ -103,7 +103,8 @@ namespace starsky.foundation.sync.SyncServices
 
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
-				_logger.LogDebug($"[SingleFile/db] status {statusItem.Status} for {subPath} {Synchronize.DateTimeDebug()}");
+				_logger.LogDebug($"[SingleFile/db] status " +
+				                 $"{statusItem.Status} for {subPath} {Synchronize.DateTimeDebug()}");
 				return statusItem;
 			}
 
@@ -328,7 +329,7 @@ namespace starsky.foundation.sync.SyncServices
 		private async Task<Tuple<bool,string>> CompareFileHashIsTheSame(FileIndexItem dbItem)
 		{
 			var (localHash,_) = await new 
-				FileHash(_subPathStorage).GetHashCodeAsync(dbItem.FilePath);
+				FileHash(_subPathStorage).GetHashCodeAsync(dbItem.FilePath!);
 			var isTheSame = dbItem.FileHash == localHash;
 			dbItem.FileHash = localHash;
 			return new Tuple<bool, string>(isTheSame, localHash);

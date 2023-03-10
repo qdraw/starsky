@@ -70,7 +70,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				});
 			
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.Folder("/Folder_FilesOnDiskButNotInTheDb");
 
 			var test1 = result.FirstOrDefault(p =>
@@ -106,7 +106,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var storage = new FakeIStorage();
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.Folder("/Folder_InDbButNotOnDisk");
 
 			var test0 = result.FirstOrDefault(p =>
@@ -136,7 +136,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var storage = new FakeIStorage();
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(),null);
 			var result = await syncFolder.Folder("/Folder_InDbButNotOnDisk2");
 
 			
@@ -182,7 +182,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				"/Folder_InDbButNotOnDisk4/test_dir"
 			});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(),null);
 			var result = (await syncFolder.Folder("/Folder_InDbButNotOnDisk4"))
 				.Where(p => p.FilePath != "/").ToList();
 			

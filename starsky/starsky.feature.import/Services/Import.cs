@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.import.Helpers;
 using starsky.feature.import.Interfaces;
 using starsky.feature.import.Models;
@@ -58,6 +59,7 @@ namespace starsky.feature.import.Services
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 
 		private readonly IMemoryCache? _memoryCache;
+		private readonly IServiceScopeFactory? _serviceScopeFactory;
 		private readonly IWebLogger _logger;
 		private readonly UpdateImportTransformations _updateImportTransformations;
 		private readonly IThumbnailQuery _thumbnailQuery;
@@ -77,7 +79,8 @@ namespace starsky.feature.import.Services
 			IMetaExifThumbnailService metaExifThumbnailService,
 			IWebLogger logger,
 			IThumbnailQuery thumbnailQuery,
-			IMemoryCache? memoryCache = null)
+			IMemoryCache? memoryCache = null,
+			IServiceScopeFactory? serviceScopeFactory = null)
 		{
 			_importQuery = importQuery;
 			
@@ -92,6 +95,7 @@ namespace starsky.feature.import.Services
             _console = console;
             _metaExifThumbnailService = metaExifThumbnailService;
             _memoryCache = memoryCache;
+            _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
             _updateImportTransformations = new UpdateImportTransformations(logger, _exifTool, selectorStorage, appSettings, thumbnailQuery);
             _thumbnailQuery = thumbnailQuery;
@@ -560,9 +564,10 @@ namespace starsky.feature.import.Services
 
 		    if ( importSettings.IndexMode )
 		    {
-			    updateItemAsync = new QueryFactory(
+			    var queryFactory = new QueryFactory(
 				    new SetupDatabaseTypes(_appSettings), _query,
-				    _memoryCache, _appSettings, _logger).Query()!.UpdateItemAsync;
+				    _memoryCache, _appSettings, _serviceScopeFactory, _logger);
+			    updateItemAsync = queryFactory.Query()!.UpdateItemAsync;
 			    queryThumbnailUpdateDelegate = (thumbnailItems) => new ThumbnailQueryFactory(
 				    new SetupDatabaseTypes(_appSettings),
 				    _thumbnailQuery, _logger).ThumbnailQuery()!.AddThumbnailRangeAsync(thumbnailItems);
@@ -667,8 +672,10 @@ namespace starsky.feature.import.Services
 			}
 
 			// Add to Normal File Index database
-			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
-				_memoryCache, _appSettings,_logger).Query();
+			var queryFactory = new QueryFactory(
+				new SetupDatabaseTypes(_appSettings), _query,
+				_memoryCache, _appSettings, _serviceScopeFactory, _logger);
+			var query = queryFactory.Query();
 			await query!.AddItemAsync(importIndexItem.FileIndexItem!);
 			
 			// Add to check db, to avoid duplicate input
