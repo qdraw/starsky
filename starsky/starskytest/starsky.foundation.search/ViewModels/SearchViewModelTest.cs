@@ -133,7 +133,7 @@ namespace starskytest.starsky.foundation.search.ViewModels
 		}
 
 		[TestMethod]
-		public void NarrowSearch1()
+		public void NarrowSearch_NoFileIndexItems()
 		{
 			var result = SearchViewModel.NarrowSearch(new SearchViewModel());
 			Assert.AreEqual(0, result.SearchCount);

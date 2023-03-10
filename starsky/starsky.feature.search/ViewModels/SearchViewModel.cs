@@ -522,6 +522,107 @@ namespace starsky.feature.search.ViewModels
 			return model;
 		}
 
+		private static SearchViewModel PropertySearchStringType(
+			SearchViewModel model,
+			PropertyInfo property, string searchForQuery,
+			SearchForOptionType searchType)
+		{
+			switch (searchType)
+			{
+				case SearchForOptionType.Not:
+					model.FileIndexItems = model.FileIndexItems.Where(
+						p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+						     && ! // not
+							     p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
+								     .ToString()!.ToLowerInvariant().Contains(searchForQuery)  
+					).ToList();
+					break;
+				default:
+					model.FileIndexItems = model.FileIndexItems
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+						            && p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
+							            .ToString()!.ToLowerInvariant().Contains(searchForQuery)  
+						).ToList();
+					break;
+			}
+
+			return model;
+		}
+
+		private static SearchViewModel PropertySearchBoolType(
+			SearchViewModel model,
+			PropertyInfo property, bool boolIsValue)
+		{
+			model.FileIndexItems = model.FileIndexItems
+				.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+				            && (bool?) p.GetType().GetProperty(property.Name)?.GetValue(p, null)  == boolIsValue
+				).ToList();
+			return model;
+		}
+		
+		private static SearchViewModel PropertySearchImageFormatType(
+			SearchViewModel model,
+			PropertyInfo property, ExtensionRolesHelper.ImageFormat castImageFormat,
+			SearchForOptionType searchType)
+		{
+			switch (searchType)
+			{
+				case SearchForOptionType.Not:
+					model.FileIndexItems = model.FileIndexItems
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+						            && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
+							            .GetValue(p, null)!  
+						            != // not
+						            castImageFormat
+						).ToList();
+					break;
+				default:
+					model.FileIndexItems = model.FileIndexItems
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+						            && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
+							            .GetValue(p, null)!  == castImageFormat
+						).ToList();
+					break;
+			}
+			return model;
+		}
+
+		private static SearchViewModel PropertySearchDateTimeType(
+			SearchViewModel model,
+			PropertyInfo property,
+			string searchForQuery,
+			SearchForOptionType searchType)
+		{
+			var parsedDateTime = ParseDateTime(searchForQuery);
+						
+			switch (searchType)
+			{
+				case SearchForOptionType.LessThen:
+					model.FileIndexItems = model.FileIndexItems
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)! 
+						            <= parsedDateTime
+						).ToList();
+					break;
+				case SearchForOptionType.GreaterThen:
+					model.FileIndexItems = model.FileIndexItems
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
+						            >= parsedDateTime
+						).ToList();
+					break;
+				default:
+					model.FileIndexItems = model.FileIndexItems
+						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
+						            == parsedDateTime
+						).ToList();
+					break;
+			}
+			    
+			return model;
+		}
+
 		/// <summary>
 		/// Search in properties by 
 		/// </summary>
@@ -536,95 +637,24 @@ namespace starsky.feature.search.ViewModels
 
 			if ( property.PropertyType == typeof(string) )
 			{
-				switch (searchType)
-				{
-					case SearchForOptionType.Not:
-						model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-							     && ! // not
-								     p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
-									     .ToString()!.ToLowerInvariant().Contains(searchForQuery)  
-						).ToList();
-						break;
-					default:
-						model.FileIndexItems = model.FileIndexItems
-							.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-							&& p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
-								.ToString()!.ToLowerInvariant().Contains(searchForQuery)  
-						).ToList();
-						break;
-				}
-			
-				return model;
+				return PropertySearchStringType(model, property, searchForQuery, searchType);
 			}
 
 			if ( property.PropertyType == typeof(bool) && bool.TryParse(searchForQuery, out var boolIsValue))
 			{
-				model.FileIndexItems = model.FileIndexItems
-					.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-					&& (bool?) p.GetType().GetProperty(property.Name)?.GetValue(p, null)  == boolIsValue
-				).ToList();
-				return model;
+				return PropertySearchBoolType(model, property, boolIsValue);
 			}
 		    
 			if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) && Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
 				    searchForQuery.ToLowerInvariant(), out var castImageFormat) )
 			{
-				switch (searchType)
-				{
-					case SearchForOptionType.Not:
-						model.FileIndexItems = model.FileIndexItems
-							.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-							&& (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
-								.GetValue(p, null)!  
-							!= // not
-							castImageFormat
-						).ToList();
-						break;
-					default:
-						model.FileIndexItems = model.FileIndexItems
-							.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-							&& (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
-								.GetValue(p, null)!  == castImageFormat
-						).ToList();
-						break;
-				}
-				return model;
+				return PropertySearchImageFormatType(model, property, castImageFormat, searchType);				
 			}
 		    
 			if ( property.PropertyType == typeof(DateTime) )
 			{
-			    
-				var parsedDateTime = ParseDateTime(searchForQuery);
-						
-				switch (searchType)
-				{
-					case SearchForOptionType.LessThen:
-						model.FileIndexItems = model.FileIndexItems
-							.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-							&& (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)! 
-							<= parsedDateTime
-						).ToList();
-						break;
-					case SearchForOptionType.GreaterThen:
-						model.FileIndexItems = model.FileIndexItems
-							.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-							&& (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
-							>= parsedDateTime
-						).ToList();
-						break;
-					default:
-						model.FileIndexItems = model.FileIndexItems
-							.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-							&& (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
-							== parsedDateTime
-						).ToList();
-						break;
-				}
-			    
-				return model;
+			    return PropertySearchDateTimeType(model, property, searchForQuery, searchType);
 			}
-
 
 			return model;
 		}
