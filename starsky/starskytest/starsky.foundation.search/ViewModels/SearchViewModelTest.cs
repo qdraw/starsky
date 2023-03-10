@@ -131,5 +131,12 @@ namespace starskytest.starsky.foundation.search.ViewModels
 			
 			Assert.IsTrue(result);
 		}
+
+		[TestMethod]
+		public void NarrowSearch1()
+		{
+			var result = SearchViewModel.NarrowSearch(new SearchViewModel());
+			Assert.AreEqual(0, result.SearchCount);
+		}
 	}
 }
