@@ -83,7 +83,7 @@ namespace starskytest.starsky.foundation.search.ViewModels
 
 			model.SetAddSearchForOptions(";");
 			
-			Assert.AreNotEqual(SearchViewModel.SearchForOptionType.Equal, model.SearchForOptions.LastOrDefault());
+			Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal, model.SearchForOptions.LastOrDefault());
 		}
 	}
 }
