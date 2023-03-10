@@ -280,7 +280,7 @@ namespace starsky.feature.search.ViewModels
 		/// <summary>
 		/// Private field: Search Operator, and or OR
 		/// </summary>
-		private List<bool>? _searchOperatorOptions;
+		internal List<bool>? SearchOperatorOptionsInternal;
 
 		/// <summary>
 		/// Add to list in model (&amp;&amp;|| operators) true=&amp;&amp; false=||
@@ -289,7 +289,7 @@ namespace starsky.feature.search.ViewModels
 		/// <param name="relativeLocation"></param>
 		public void SetAndOrOperator(char andOrChar, int relativeLocation = 0)
 		{
-			_searchOperatorOptions ??= new List<bool>();
+			SearchOperatorOptionsInternal ??= new List<bool>();
 
 			bool andOrBool = andOrChar == '&';
 
@@ -298,23 +298,23 @@ namespace starsky.feature.search.ViewModels
 				andOrBool = false;
 			}
 
-			if (_searchOperatorOptions.Count == 0 && andOrChar == '|')
+			if (SearchOperatorOptionsInternal.Count == 0 && andOrChar == '|')
 			{
-				_searchOperatorOptions.Add(false);
+				SearchOperatorOptionsInternal.Add(false);
 			}
 			
 			// Store item on a different location in the List<T>
 			if ( relativeLocation == 0 )
 			{
-				_searchOperatorOptions.Add(andOrBool);
+				SearchOperatorOptionsInternal.Add(andOrBool);
 			}
-			else if ( _searchOperatorOptions.Count+relativeLocation <= -1 )
+			else if ( SearchOperatorOptionsInternal.Count+relativeLocation <= -1 )
 			{
-				_searchOperatorOptions.Insert(0, andOrBool);
+				SearchOperatorOptionsInternal.Insert(0, andOrBool);
 			}
 			else
 			{
-				_searchOperatorOptions.Insert(_searchOperatorOptions.Count+relativeLocation,andOrBool);
+				SearchOperatorOptionsInternal.Insert(SearchOperatorOptionsInternal.Count+relativeLocation,andOrBool);
 			}
 			
 		}
@@ -326,7 +326,7 @@ namespace starsky.feature.search.ViewModels
 		{  
 			get
 			{
-				return _searchOperatorOptions ?? new List<bool>();
+				return SearchOperatorOptionsInternal ?? new List<bool>();
 			}
 		}
 
@@ -339,11 +339,11 @@ namespace starsky.feature.search.ViewModels
 		/// <returns>false = (skip( continue to next item))</returns>
 		public bool SearchOperatorContinue(int indexer, int max)
 		{
-			if ( _searchOperatorOptions == null ) return true;
+			if ( SearchOperatorOptionsInternal == null ) return true;
 			if ( indexer <= -1 || indexer > max) return true;
 			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries >= fail!!
-			if (indexer >= _searchOperatorOptions.Count  ) return true; // used when general words without update 
-			var returnResult = _searchOperatorOptions[indexer];
+			if (indexer >= SearchOperatorOptionsInternal.Count  ) return true; // used when general words without update 
+			var returnResult = SearchOperatorOptionsInternal[indexer];
 			return returnResult;
 		}
 	    

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.search.ViewModels;
@@ -49,7 +50,7 @@ namespace starskytest.starsky.foundation.search.ViewModels
 
 			model.GetType().GetProperty(nameof(model.SearchForInternal))?.SetValue(model, null,null);
 
-			model.SetAddSearchInStringType(null!);
+			model.SetAddSearchFor("");
 			
 			Assert.AreNotEqual(null, model.SearchFor);
 		}
@@ -84,6 +85,51 @@ namespace starskytest.starsky.foundation.search.ViewModels
 			model.SetAddSearchForOptions(";");
 			
 			Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal, model.SearchForOptions.LastOrDefault());
+		}
+		
+		[TestMethod]
+		public void SetAndOrOperator_amp_False()
+		{
+			var model = new SearchViewModel();
+			model.SetAndOrOperator('&');
+
+			Assert.AreNotEqual(false, model.SearchOperatorOptions.LastOrDefault());
+		}
+
+		[TestMethod]
+		public void SearchOperatorContinue_IgnoreNegativeValue()
+		{
+			var model = new SearchViewModel
+			{
+				SearchOperatorOptionsInternal = new List<bool>()
+			};
+			var result = model.SearchOperatorContinue(-1,1);
+			
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
+		public void SearchOperatorContinue_IgnoreOutOfRange()
+		{
+			var model = new SearchViewModel
+			{
+				SearchOperatorOptionsInternal = new List<bool>()
+			};
+			var result = model.SearchOperatorContinue(10,1);
+			
+			Assert.IsTrue(result);
+		}
+				
+		[TestMethod]
+		public void SearchOperatorContinue_IgnoreOutOfRange2()
+		{
+			var model = new SearchViewModel
+			{
+				SearchOperatorOptionsInternal = new List<bool>()
+			};
+			var result = model.SearchOperatorContinue(0,1);
+			
+			Assert.IsTrue(result);
 		}
 	}
 }
