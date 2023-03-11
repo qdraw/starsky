@@ -46,16 +46,18 @@ function SET_DOTNET_VERSION_TO_VAR {
 function INSTALL_DOTNET_VIA_WEBSITE_PKG {
      if [[ "$(uname -m)" == "x86_64" ]]; then
          DOTNET_MAC_OS_PKG_X64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_X64)
-         RESULT=$(curl -s $DOTNET_MAC_OS_PKG_X64_VERSION -X GET | grep 'window.open("')
+         RESULT=$(curl -s $DOTNET_MAC_OS_PKG_X64_VERSION -X GET | grep 'window.location = "')
      else 
          DOTNET_MAC_OS_PKG_ARM64_VERSION=$(sed "s/\SDK_VERSION/$DOTNET_VERSION/g" <<< $DOTNET_MAC_OS_PKG_ARM64)
-         RESULT=$(curl -s $DOTNET_MAC_OS_PKG_ARM64_VERSION -X GET | grep 'window.open("')          
+         RESULT=$(curl -s $DOTNET_MAC_OS_PKG_ARM64_VERSION -X GET | grep 'window.location = "')          
      fi
 
      RESULT1=$(sed "s/\window.open(\"//g" <<< $RESULT)
      RESULT2=$(sed "s/\", \"_self\");//g" <<< $RESULT1)
-     RESULT3=`echo $RESULT2 | sed 's/ *$//g'`
-     URL=${RESULT3%$'\r'}
+     RESULT3=$(sed "s/\window.location = \"//g" <<< $RESULT2)
+     RESULT4=$(sed 's/";//g' <<< $RESULT3)
+     RESULT5=`echo $RESULT4 | sed 's/ *$//g'`
+     URL=${RESULT4%$'\r'}
       
      if [[ "$URL" == https* && "$URL" == *.pkg* ]]; then 
         echo "next download from: "$URL
