@@ -23,7 +23,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		
         public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem)
         {
-	        if(databaseItem == null) databaseItem = new FileIndexItem();
+	        databaseItem ??= new FileIndexItem();
 
 	        // Parse an xmp file for this location
 	        var xmpSubPath =

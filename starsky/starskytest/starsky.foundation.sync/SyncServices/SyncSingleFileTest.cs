@@ -656,9 +656,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			// It should update the Sidecar field when a sidecar file is add to the directory
 			var storage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
+				new List<string>{"/test.dng", "/test.xmp"}, 
+				new List<byte[]>{
 					CreateAnImageNoExif.Bytes,
-					Array.Empty<byte>()});
+					CreateAnXmp.Bytes
+				});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.jpg");
 
@@ -667,10 +669,17 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				FileHash = fileHash, // < right file hash
 				Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
 			};
-			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
+			var item2 = new FileIndexItem("/test.xmp")
+			{
+				FileHash = "some-thing", // < right file hash
+				Size = 0, // < right byte size
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item, item2});
 			
 			var sync = new SyncSingleFile(new AppSettings {Verbose = true}, fakeQuery,
-				_iStorageFake, null, new FakeIWebLogger());
+				storage, null, new FakeIWebLogger());
+			
+			//  Sync item here
 			await sync.SingleFile("/test.xmp",item);
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
@@ -956,31 +965,31 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, item.Status);
 		}
 
-		[TestMethod]
-		public async Task UpdateSidecarFileTest_False()
-		{
-			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
-				new FakeIStorage(new List<string>{"/"}, 
-					new List<string>{"/test.jpg"}, 
-					new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
-			var result =
-				await sync.UpdateSidecarFile("test.jpg",
-					new List<FileIndexItem>());
-			Assert.IsFalse(result);
-		}
-		
-		
-		[TestMethod]
-		public async Task UpdateSidecarFileTest_True()
-		{
-			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
-				new FakeIStorage(new List<string>{"/"}, 
-					new List<string>{"/test.jpg"}, 
-					new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
-			var result =
-				await sync.UpdateSidecarFile("test.xmp",
-					new List<FileIndexItem>());
-			Assert.IsTrue(result);
-		}
+		// [TestMethod]
+		// public async Task UpdateSidecarFileTest_False()
+		// {
+		// 	var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+		// 		new FakeIStorage(new List<string>{"/"}, 
+		// 			new List<string>{"/test.jpg"}, 
+		// 			new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
+		// 	var result =
+		// 		await sync.UpdateSidecarFile("test.jpg",
+		// 			new List<FileIndexItem>());
+		// 	Assert.IsFalse(result);
+		// }
+		//
+		//
+		// [TestMethod]
+		// public async Task UpdateSidecarFileTest_True()
+		// {
+		// 	var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+		// 		new FakeIStorage(new List<string>{"/"}, 
+		// 			new List<string>{"/test.jpg"}, 
+		// 			new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
+		// 	var result =
+		// 		await sync.UpdateSidecarFile("test.xmp",
+		// 			new List<FileIndexItem>());
+		// 	Assert.IsTrue(result);
+		// }
 	}
 }

@@ -78,12 +78,12 @@ namespace starsky.foundation.sync.SyncServices
 						
 			SyncSingleFile.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
 
-			// Update XMP files, does an extra query to the database. in the future this needs to be refactored
-			foreach ( var xmpOrSidecarFiles in dbItems.Where(p => ExtensionRolesHelper.IsExtensionSidecar(p.FilePath)) )
-			{
-				// Query!
-				await _syncSingleFile.UpdateSidecarFile(xmpOrSidecarFiles.FilePath);
-			}
+			// // Update XMP files, does an extra query to the database. in the future this needs to be refactored
+			// foreach ( var xmpOrSidecarFiles in dbItems.Where(p => ExtensionRolesHelper.IsExtensionSidecar(p.FilePath)) )
+			// {
+			// 	// Query!
+			// 	await _syncSingleFile.UpdateSidecarFile(xmpOrSidecarFiles.FilePath);
+			// }
 			
 			var statusItems =  _syncSingleFile.CheckForStatusNotOk(dbItems.Select(p => p.FilePath)).ToList();
 			foreach ( var statusItem in statusItems )
@@ -111,7 +111,7 @@ namespace starsky.foundation.sync.SyncServices
 			// Multi thread check for file hash
 			var isSameUpdatedItemList = await dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)
 				.ForEachAsync(
-					async dbItem => await _syncSingleFile.SizeFileHashIsTheSame(dbItem),
+					async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage).SizeFileHashIsTheSame(dbItem),
 					_appSettings.MaxDegreesOfParallelism);
 			
 			if ( isSameUpdatedItemList != null )

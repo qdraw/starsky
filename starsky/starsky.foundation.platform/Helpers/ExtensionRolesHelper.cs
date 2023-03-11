@@ -209,6 +209,8 @@ namespace starsky.foundation.platform.Helpers
 			get
 			{
 				var extensionList = new List<string>();
+				// add the sidecar files itself
+				extensionList.AddRange(ExtensionSidecar);
 				// Bitmap does not support internal xmp
 				extensionList.AddRange(ExtensionBmp);
 				// Gif does not support internal xmp
