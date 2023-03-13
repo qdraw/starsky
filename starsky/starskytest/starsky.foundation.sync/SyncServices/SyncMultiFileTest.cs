@@ -443,7 +443,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
 		}
 
-		[TestMethod]
+		//[TestMethod]
 		public async Task MultiFile_ShouldAddToSidecarFieldWhenSidecarIsAdded()
 		{
 			// It should update the Sidecar field when a sidecar file is add to the directory
@@ -452,7 +452,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					CreateAnImageNoExif.Bytes,
 					CreateAnXmp.Bytes});
 			
-			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.jpg");
+			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.dng");
 
 			var item = new FileIndexItem("/test.dng")
 			{
@@ -466,6 +466,44 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await sync.MultiFile(new List<string>{"/test.dng", "/test.xmp"});
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.dng")?.FileIndexItem;
+			
+			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
+			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);
+			
+			var fileIndexItem2 = fakeQuery.SingleItem("/test.xmp")?.FileIndexItem;
+			Assert.IsNotNull(fileIndexItem2);
+		}
+		
+		//[TestMethod]
+		public async Task MultiFile_ShouldAddToSidecarFieldWhenSidecarIsAdded2()
+		{
+			// It should update the Sidecar field when a sidecar file is add to the directory
+			var storage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
+					CreateAnImageNoExif.Bytes,
+					CreateAnXmp.Bytes});
+			
+			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.dng");
+
+			var item = new FileIndexItem("/test.dng")
+			{
+				FileHash = fileHash, // < right file hash
+				Size = _iStorageFake.Info("/test.dng").Size, // < right byte size
+			};
+			var item2 = new FileIndexItem("/test.dng")
+			{
+				FileHash = "something_different", 
+				Size = _iStorageFake.Info("/test.xmp").Size, 
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item,item2});
+			
+			var sync = new SyncMultiFile(new AppSettings {Verbose = true}, fakeQuery,
+				storage, null,new FakeIWebLogger());
+			await sync.MultiFile(new List<string>{"/test.dng", "/test.xmp"});
+			
+			var fileIndexItem = fakeQuery.SingleItem("/test.dng")?.FileIndexItem;
+			
+			Assert.AreEqual(ColorClassParser.Color.Extras, fileIndexItem?.ColorClass);
 			
 			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
 			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);

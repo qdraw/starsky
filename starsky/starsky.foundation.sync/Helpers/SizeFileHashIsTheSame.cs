@@ -61,7 +61,7 @@ public class SizeFileHashIsTheSameHelper
 	private Tuple<bool,DateTime> CompareLastEditIsTheSame(FileIndexItem dbItem)
 	{
 		var lastWriteTime = _subPathStorage.Info(dbItem.FilePath!).LastWriteTime;
-		if ( lastWriteTime.Year == 1 )
+		if (lastWriteTime.Year == 1 )
 		{
 			return new Tuple<bool, DateTime>(false, lastWriteTime);
 		}

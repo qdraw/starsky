@@ -117,7 +117,6 @@ namespace starsky.foundation.sync.SyncServices
 				}
 			}
 
-		
 			// Multi thread check for file hash
 			var isSameUpdatedItemList = await dbItems
 				.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)
@@ -132,7 +131,7 @@ namespace starsky.foundation.sync.SyncServices
 					var updateItemIndex = dbItems.FindIndex(
 						p => p.FilePath == isSameUpdatedItem.FilePath);
 					
-					if ( isLastEditedSame == false && isFileHashSame == true )
+					if ( !isLastEditedSame && isFileHashSame == true )
 					{
 						dbItems[updateItemIndex] = await _newUpdateItemWrapper.HandleLastEditedIsSame(isSameUpdatedItem, true);
 						continue;

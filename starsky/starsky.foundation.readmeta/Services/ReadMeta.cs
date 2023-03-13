@@ -36,7 +36,7 @@ namespace starsky.foundation.readmeta.Services
 			_cache = memoryCache;
 			_iStorage = iStorage;
 			_readExif = new ReadMetaExif(_iStorage, appSettings,logger);
-			_readXmp = new ReadMetaXmp(_iStorage, memoryCache);
+			_readXmp = new ReadMetaXmp(_iStorage, logger);
 			_readMetaGpx = new ReadMetaGpx(logger);
 		}
 
