@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
@@ -17,9 +16,7 @@ namespace starsky.foundation.sync.SyncServices
 {
 	public sealed class SyncSingleFile
 	{
-		private readonly IStorage _subPathStorage;
 		private readonly IQuery _query;
-		private readonly NewUpdateItemWrapper _newUpdateItem;
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
 		private readonly SyncMultiFile _syncMultiFile;
@@ -29,10 +26,8 @@ namespace starsky.foundation.sync.SyncServices
 			IMemoryCache memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
-			_subPathStorage = subPathStorage;
 			_query = query;
-			_newUpdateItem = new NewUpdateItemWrapper(query, _subPathStorage, appSettings, memoryCache, logger);
-			_checkForStatusNotOkHelper = new CheckForStatusNotOkHelper(_subPathStorage);
+			_checkForStatusNotOkHelper = new CheckForStatusNotOkHelper(subPathStorage);
 			_logger = logger;
 			_syncMultiFile = new SyncMultiFile(appSettings, query, subPathStorage, memoryCache, logger);
 		}
@@ -55,36 +50,6 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			return await _syncMultiFile.MultiFile(dbItems.ToList(), updateDelegate);
-
-			
-			// // Route without database check
-			// if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
-			// {
-			// 	_logger.LogInformation($"[SingleFile/no-db] {subPath} - {DateTime.UtcNow.ToShortTimeString()}" );
-			// }
-			//
-			// // Sidecar files are updated but ignored by the process
-			// await UpdateSidecarFile(subPath);
-			//
-			// var statusItem = CheckForStatusNotOk(subPath);
-			// if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
-			// {
-			// 	_logger.LogInformation($"[SingleFile/no-db] status {statusItem.Status} for {subPath}");
-			// 	return new List<FileIndexItem>{statusItem};
-			// }
-			//
-			// var sizeHelper = new SizeFileHashIsTheSameHelper(_subPathStorage);
-			// var (lastEditedIsSame, fileHashSame, updatedDbItem) = await sizeHelper.SizeFileHashIsTheSame(dbItem);
-			// if ( !lastEditedIsSame )
-			// {
-			// 	return await HandleLastEditedIsSame(updateDelegate, dbItems, updatedDbItem, fileHashSame, subPath);
-			// }
-			//
-			// // to avoid reSync
-			// updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			// AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
-			//
-			// return updatedDbItem;
 		}
 
 		/// <summary>
@@ -128,19 +93,6 @@ namespace starsky.foundation.sync.SyncServices
 
 			return await _syncMultiFile.MultiFile(scanItems, updateDelegate);
 		}
-
-		
-
-
-
-
-
-
-
-
-
-
-
 
 		/// <summary>
 		/// Sidecar files don't have an own item, but there referenced by file items

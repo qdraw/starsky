@@ -47,6 +47,31 @@ public class NewUpdateItemWrapper
 		DeleteStatusHelper.AddDeleteStatus(dbItem);
 		return dbItem;
 	}
+	
+	
+	/// <summary>
+	/// Create an new item in the database
+	/// </summary>
+	/// <param name="statusItems">contains the status</param>
+	/// <param name="addParentItem"></param>
+	/// <returns>database item</returns>
+	internal async Task<List<FileIndexItem>> NewItem(List<FileIndexItem> statusItems, bool addParentItem)
+	{
+		// Add a new Item
+		var dbItems = await _newItem.NewFileItem(statusItems);
+
+		// When not OK do not Add (fileHash issues)
+		var okDbItems =
+			dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+		await _query.AddRangeAsync(okDbItems);
+
+		if ( addParentItem )
+		{
+			await new AddParentList(_subPathStorage, _query)
+				.AddParentItems(okDbItems);
+		}
+		return dbItems;
+	}
 
 	internal async Task<FileIndexItem> HandleLastEditedIsSame(FileIndexItem updatedDbItem, bool? fileHashSame)
 	{
@@ -72,8 +97,6 @@ public class NewUpdateItemWrapper
 			new List<string> {nameof(FileIndexItem.LastEdited)};
 		return updatedDbItem;
 	}
-
-
 	
 	/// <summary>
 	/// Update item to database
@@ -98,30 +121,6 @@ public class NewUpdateItemWrapper
 		}
 		DeleteStatusHelper.AddDeleteStatus(dbItem);
 		return updateItem;
-	}
-
-	/// <summary>
-	/// Create an new item in the database
-	/// </summary>
-	/// <param name="statusItems">contains the status</param>
-	/// <param name="addParentItem"></param>
-	/// <returns>database item</returns>
-	internal async Task<List<FileIndexItem>> NewItem(List<FileIndexItem> statusItems, bool addParentItem)
-	{
-		// Add a new Item
-		var dbItems = await _newItem.NewFileItem(statusItems);
-
-		// When not OK do not Add (fileHash issues)
-		var okDbItems =
-			dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
-		await _query.AddRangeAsync(okDbItems);
-
-		if ( addParentItem )
-		{
-			await new AddParentList(_subPathStorage, _query)
-				.AddParentItems(okDbItems);
-		}
-		return dbItems;
 	}
 
 }
