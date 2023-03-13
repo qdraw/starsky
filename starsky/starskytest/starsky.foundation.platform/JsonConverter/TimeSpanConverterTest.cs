@@ -47,6 +47,7 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 			JsonSerializerOptions options = new JsonSerializerOptions();
 			options.Converters.Add(new JsonTimeSpanConverter());
 
+			// instead of JsonConvert.SerializeObject
 			string json = JsonSerializer.Serialize(new TimeSpan(1, 2, 3), options);
 
 			Assert.AreEqual(@"""01:02:03""", json);
