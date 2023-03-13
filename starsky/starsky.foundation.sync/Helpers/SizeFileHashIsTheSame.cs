@@ -27,11 +27,15 @@ public class SizeFileHashIsTheSameHelper
 		dbItem.LastEdited = lastEdit;
 		dbItem.Size = _subPathStorage.Info(dbItem.FilePath!).Size;
 
-		if (isLastEditTheSame) return new Tuple<bool, bool?, FileIndexItem>(true, null, dbItem);
+		if ( isLastEditTheSame )
+		{
+			return new Tuple<bool, bool?, FileIndexItem>(true, null, dbItem);
+		}
 			
 		// when byte hash is different update
 		var (fileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
 
+		dbItem.Status = FileIndexItem.ExifStatus.Ok;
 		return new Tuple<bool, bool?, FileIndexItem>(false, fileHashTheSame, dbItem);
 	}
 	

@@ -1,4 +1,4 @@
-using System;
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,7 +9,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
@@ -20,10 +19,11 @@ namespace starsky.foundation.sync.SyncServices
 	{
 		private readonly IStorage _subPathStorage;
 		private readonly IQuery _query;
-		private readonly NewItem _newItem;
+		private readonly NewUpdateItemWrapper _newUpdateItem;
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
 		private readonly SyncMultiFile _syncMultiFile;
+		private readonly CheckForStatusNotOkHelper _checkForStatusNotOkHelper;
 
 		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, 
 			IMemoryCache memoryCache, IWebLogger logger)
@@ -31,7 +31,8 @@ namespace starsky.foundation.sync.SyncServices
 			_appSettings = appSettings;
 			_subPathStorage = subPathStorage;
 			_query = query;
-			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings, memoryCache, logger));
+			_newUpdateItem = new NewUpdateItemWrapper(query, _subPathStorage, appSettings, memoryCache, logger);
+			_checkForStatusNotOkHelper = new CheckForStatusNotOkHelper(_subPathStorage);
 			_logger = logger;
 			_syncMultiFile = new SyncMultiFile(appSettings, query, subPathStorage, memoryCache, logger);
 		}
@@ -40,47 +41,50 @@ namespace starsky.foundation.sync.SyncServices
 		/// For Checking single items without querying the database
 		/// </summary>
 		/// <param name="subPath">path</param>
-		/// <param name="dbItem">current item, can be null</param>
+		/// <param name="dbItems">current item, can be null</param>
 		/// <param name="updateDelegate">push updates realtime to the user and avoid waiting</param>
 		/// <returns>updated item with status</returns>
-		internal async Task<FileIndexItem> SingleFile(string subPath,
-			FileIndexItem dbItem,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+		internal async Task<List<FileIndexItem>> SingleFile(string subPath,
+			List<FileIndexItem>? dbItems,
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			// when item does not exist in db
-			if ( dbItem == null )
+			if ( dbItems?.FirstOrDefault(p => p.FilePath == subPath) == null )
 			{
 				return await SingleFile(subPath);
 			}
 
-			// Route without database check
-			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
-			{
-				_logger.LogInformation($"[SingleFile/no-db] {subPath} - {DateTime.UtcNow.ToShortTimeString()}" );
-			}
-			
-			// Sidecar files are updated but ignored by the process
-			await UpdateSidecarFile(subPath);
+			return await _syncMultiFile.MultiFile(dbItems.ToList(), updateDelegate);
 
-			var statusItem = CheckForStatusNotOk(subPath);
-			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
-			{
-				_logger.LogInformation($"[SingleFile/no-db] status {statusItem.Status} for {subPath}");
-				return statusItem;
-			}
 			
-			var sizeHelper = new SizeFileHashIsTheSameHelper(_subPathStorage);
-			var (lastEditedIsSame, fileHashSame, updatedDbItem) = await sizeHelper.SizeFileHashIsTheSame(dbItem);
-			if ( !lastEditedIsSame )
-			{
-				return await HandleLastEditedIsSame(updateDelegate, dbItem, updatedDbItem, fileHashSame, subPath);
-			}
-
-			// to avoid reSync
-			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
-			
-			return updatedDbItem;
+			// // Route without database check
+			// if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
+			// {
+			// 	_logger.LogInformation($"[SingleFile/no-db] {subPath} - {DateTime.UtcNow.ToShortTimeString()}" );
+			// }
+			//
+			// // Sidecar files are updated but ignored by the process
+			// await UpdateSidecarFile(subPath);
+			//
+			// var statusItem = CheckForStatusNotOk(subPath);
+			// if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
+			// {
+			// 	_logger.LogInformation($"[SingleFile/no-db] status {statusItem.Status} for {subPath}");
+			// 	return new List<FileIndexItem>{statusItem};
+			// }
+			//
+			// var sizeHelper = new SizeFileHashIsTheSameHelper(_subPathStorage);
+			// var (lastEditedIsSame, fileHashSame, updatedDbItem) = await sizeHelper.SizeFileHashIsTheSame(dbItem);
+			// if ( !lastEditedIsSame )
+			// {
+			// 	return await HandleLastEditedIsSame(updateDelegate, dbItems, updatedDbItem, fileHashSame, subPath);
+			// }
+			//
+			// // to avoid reSync
+			// updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+			// AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			//
+			// return updatedDbItem;
 		}
 
 		/// <summary>
@@ -89,226 +93,54 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="subPath">path</param>
 		/// <param name="updateDelegate">realtime updates, can be null to ignore</param>
 		/// <returns>updated item with status</returns>
-		internal async Task<FileIndexItem> SingleFile(string subPath,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+		internal async Task<List<FileIndexItem>> SingleFile(string subPath,
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			// route with database check
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
 				_logger.LogInformation($"[SingleFile/db] info {subPath} " + Synchronize.DateTimeDebug());
 			}
-
-			// Sidecar files are updated but ignored by the process
-			// await UpdateSidecarFile(subPath);
 			
 			// ignore all the 'wrong' files
-			var statusItem = CheckForStatusNotOk(subPath);
+			var statusItems = _checkForStatusNotOkHelper.CheckForStatusNotOk(subPath);
 
-			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
+			if ( statusItems.FirstOrDefault()?.Status != FileIndexItem.ExifStatus.Ok )
 			{
 				_logger.LogDebug($"[SingleFile/db] status " +
-				                 $"{statusItem.Status} for {subPath} {Synchronize.DateTimeDebug()}");
-				return statusItem;
+				                 $"{statusItems.FirstOrDefault()?.Status} for {subPath} {Synchronize.DateTimeDebug()}");
+				return statusItems;
 			}
 
+			var scanItems = new List<FileIndexItem>();
 			var dbItems =  await _query.GetObjectsByFilePathAsync(subPath,true);
+			foreach ( var item in statusItems )
+			{
+				var dbItem = dbItems.FirstOrDefault(p => item.FilePath == p.FilePath);
+				if ( dbItem != null  )
+				{
+					scanItems.Add(dbItem);
+					continue;
+				}
+				item.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
+				scanItems.Add(item);
+			}
 
-			await _syncMultiFile.MultiFile(dbItems, updateDelegate);
-			
-			// // // // when item does not exist in Database
-			// if ( dbItem == null )
-			// {
-			// 	return await NewItem(statusItem, subPath);
-			// }
-			//
-			// // Cached values are not checked for performance reasons 
-			// if ( dbItem.Status == FileIndexItem.ExifStatus.OkAndSame )
-			// {
-			// 	_logger.LogDebug($"[SingleFile/db] OkAndSame {subPath} ~ {Synchronize.DateTimeDebug()}");
-			// 	return dbItem;
-			// }
-			//
-			// var sizeHelper = new SizeFileHashIsTheSameHelper(_subPathStorage);
-			// var (lastEditedIsSame, fileHashSame, updatedDbItem) = await sizeHelper.SizeFileHashIsTheSame(dbItem);
-			// if ( !lastEditedIsSame )
-			// {
-			// 	return await HandleLastEditedIsSame(updateDelegate, dbItem, updatedDbItem, fileHashSame, subPath);
-			// }
-			//
-			// // to avoid reSync
-			// updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			// AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
-			// _logger.LogInformation($"[SingleFile/db] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
-			// return updatedDbItem;
-			return new FileIndexItem();
+			return await _syncMultiFile.MultiFile(scanItems, updateDelegate);
 		}
 
 		
-		private async Task<FileIndexItem> HandleLastEditedIsSame(ISynchronize.SocketUpdateDelegate updateDelegate, 
-			FileIndexItem dbItem, FileIndexItem updatedDbItem, bool? fileHashSame, string subPath)
-		{
-			if ( updateDelegate != null )
-			{
-				new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
-			}
-
-			if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true)
-			{
-				return dbItem;
-			}
-
-			// only update last edited time in database
-			if ( fileHashSame == true )
-			{
-				return await UpdateItemLastEdited(updatedDbItem);
-			}
-			
-			return await UpdateItem(dbItem, updatedDbItem.Size, subPath,
-				true);
-		}
 
 
 
-		internal static FileIndexItem AddDeleteStatus(FileIndexItem dbItem, 
-			FileIndexItem.ExifStatus exifStatus = FileIndexItem.ExifStatus.Deleted)
-		{
-			if ( dbItem?.Tags == null ) return null;
-			if ( dbItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
-			{
-				dbItem.Status = exifStatus;
-			}
-			return dbItem;
-		}
 
-		internal static List<FileIndexItem> AddDeleteStatus(IEnumerable<FileIndexItem> dbItems,
-			FileIndexItem.ExifStatus exifStatus =
-				FileIndexItem.ExifStatus.Deleted)
-		{
-			return dbItems.Select(item => AddDeleteStatus(item, exifStatus)).ToList();
-		}
 
-		internal IEnumerable<FileIndexItem> CheckForStatusNotOk(IEnumerable<string> subPaths)
-		{
-			return subPaths.Select(CheckForStatusNotOk);
-		}
 
-		/// <summary>
-		/// When the file is not supported or does not exist return status
-		/// </summary>
-		/// <param name="subPath">relative path</param>
-		/// <returns>item with status</returns>
-		internal FileIndexItem CheckForStatusNotOk(string subPath)
-		{
-			var statusItem = new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.Ok};
 
-			// File extension is not supported
-			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(subPath) )
-			{
-				statusItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-				return statusItem;
-			}
 
-			if ( !_subPathStorage.ExistFile(subPath) )
-			{
-				statusItem.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
-				return statusItem;
-			}
-			
-			// File check if jpg #not corrupt
-			var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath,160));
-			
-			// ReSharper disable once InvertIf
-			if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(imageFormat.ToString()) )
-			{
-				statusItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-				return statusItem;
-			}
-			return statusItem;
-		}
 
-		/// <summary>
-		/// Create an new item in the database
-		/// </summary>
-		/// <param name="statusItem">contains the status</param>
-		/// <param name="subPath">relative path</param>
-		/// <returns>database item</returns>
-		internal async Task<FileIndexItem> NewItem(FileIndexItem statusItem, string subPath)
-		{
-			// Add a new Item
-			var dbItem = await _newItem.NewFileItem(statusItem);
 
-			// When not OK do not Add (fileHash issues)
-			if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
-				
-			await _query.AddItemAsync(dbItem);
-			await _query.AddParentItemsAsync(subPath);
-			AddDeleteStatus(dbItem);
-			return dbItem;
-		}
 
-		/// <summary>
-		/// Create an new item in the database
-		/// </summary>
-		/// <param name="statusItems">contains the status</param>
-		/// <param name="addParentItem"></param>
-		/// <returns>database item</returns>
-		internal async Task<List<FileIndexItem>> NewItem(List<FileIndexItem> statusItems, bool addParentItem)
-		{
-			// Add a new Item
-			var dbItems = await _newItem.NewFileItem(statusItems);
-
-			// When not OK do not Add (fileHash issues)
-			var okDbItems =
-				dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
-			await _query.AddRangeAsync(okDbItems);
-
-			if ( addParentItem )
-			{
-				await new AddParentList(_subPathStorage, _query)
-					.AddParentItems(okDbItems);
-			}
-			return dbItems;
-		}
-
-		/// <summary>
-		/// Update item to database
-		/// </summary>
-		/// <param name="dbItem">item to update</param>
-		/// <param name="size">byte size</param>
-		/// <param name="subPath">relative path</param>
-		/// <param name="addParentItems">auto add parent items</param>
-		/// <returns>same item</returns>
-		internal async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath, bool addParentItems)
-		{
-			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
-			{
-				_logger.LogDebug($"[SyncSingleFile] Trigger Update Item {subPath}");
-			}
-			
-			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
-			await _query.UpdateItemAsync(updateItem);
-			if ( addParentItems )
-			{
-				await _query.AddParentItemsAsync(subPath);
-			}
-			AddDeleteStatus(dbItem);
-			return updateItem;
-		}
-
-		/// <summary>
-		/// Only update the last edited time
-		/// </summary>
-		/// <param name="updatedDbItem">item incl updated last edited time</param>
-		/// <returns>object with ok status</returns>
-		internal async Task<FileIndexItem> UpdateItemLastEdited(FileIndexItem updatedDbItem)
-		{
-			await _query.UpdateItemAsync(updatedDbItem);
-			updatedDbItem.Status = FileIndexItem.ExifStatus.Ok;
-			AddDeleteStatus(updatedDbItem);
-			updatedDbItem.LastChanged =
-				new List<string> {nameof(FileIndexItem.LastEdited)};
-			return updatedDbItem;
-		}
 
 		/// <summary>
 		/// Sidecar files don't have an own item, but there referenced by file items

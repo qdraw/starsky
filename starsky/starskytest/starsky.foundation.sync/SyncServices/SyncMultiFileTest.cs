@@ -450,28 +450,28 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
 					CreateAnImageNoExif.Bytes,
-					Array.Empty<byte>()});
+					CreateAnXmp.Bytes});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.jpg");
 
-			var item = new FileIndexItem("/test.jpg")
+			var item = new FileIndexItem("/test.dng")
 			{
 				FileHash = fileHash, // < right file hash
-				Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
+				Size = _iStorageFake.Info("/test.dng").Size, // < right byte size
 			};
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncMultiFile(new AppSettings {Verbose = true}, fakeQuery,
-				_iStorageFake, null,new FakeIWebLogger());
-			await sync.MultiFile(new List<string>{"/test.xmp"});
+				storage, null,new FakeIWebLogger());
+			await sync.MultiFile(new List<string>{"/test.dng", "/test.xmp"});
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem("/test.dng")?.FileIndexItem;
 			
 			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
 			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);
 			
 			var fileIndexItem2 = fakeQuery.SingleItem("/test.xmp")?.FileIndexItem;
-			Assert.IsNull(fileIndexItem2);
+			Assert.IsNotNull(fileIndexItem2);
 		}
 		
 		[TestMethod]

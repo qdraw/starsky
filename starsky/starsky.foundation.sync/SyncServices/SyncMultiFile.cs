@@ -15,23 +15,23 @@ using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
 {
-	
 	public sealed class SyncMultiFile
 	{
 		private readonly IQuery _query;
 		private readonly IWebLogger _logger;
-		private readonly SyncSingleFile _syncSingleFile;
 		private readonly IStorage _subPathStorage;
 		private readonly AppSettings _appSettings;
+		private readonly NewUpdateItemWrapper _newUpdateItemWrapper;
+		private readonly CheckForStatusNotOkHelper _checkForStatusNotOkHelper;
 
 		public SyncMultiFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IMemoryCache cache, IWebLogger logger)
 		{
 			_query = query;
-			_syncSingleFile =
-				new SyncSingleFile(appSettings, query, subPathStorage, cache, logger);
 			_subPathStorage = subPathStorage;
 			_logger = logger;
 			_appSettings = appSettings;
+			_newUpdateItemWrapper = new NewUpdateItemWrapper(query, subPathStorage, appSettings, cache, logger);
+			_checkForStatusNotOkHelper = new CheckForStatusNotOkHelper(_subPathStorage);
 		}
 
 		/// <summary>
@@ -76,16 +76,10 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			if ( dbItems == null ) return new List<FileIndexItem>();
 						
-			SyncSingleFile.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
-
-			// // Update XMP files, does an extra query to the database. in the future this needs to be refactored
-			// foreach ( var xmpOrSidecarFiles in dbItems.Where(p => ExtensionRolesHelper.IsExtensionSidecar(p.FilePath)) )
-			// {
-			// 	// Query!
-			// 	await _syncSingleFile.UpdateSidecarFile(xmpOrSidecarFiles.FilePath);
-			// }
+			DeleteStatusHelper.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
 			
-			var statusItems =  _syncSingleFile.CheckForStatusNotOk(dbItems.Select(p => p.FilePath)).ToList();
+			var statusItems =  _checkForStatusNotOkHelper
+				.CheckForStatusNotOk(dbItems.Select(p => p.FilePath)).ToList();
 			foreach ( var statusItem in statusItems )
 			{
 				var dbItemSearchedIndex = dbItems.FindIndex(p =>
@@ -107,25 +101,53 @@ namespace starsky.foundation.sync.SyncServices
 					dbItems[dbItemSearchedIndex].Status = FileIndexItem.ExifStatus.OkAndSame;
 				}
 			}
+
+			foreach ( var statusItem in statusItems )
+			{
+				foreach ( var item in dbItems.Where(p =>
+					         p.FileCollectionName == statusItem.FileCollectionName
+					         && p.ParentDirectory == statusItem.ParentDirectory
+					         && ExtensionRolesHelper.IsExtensionSidecar(p.FileName) && 
+					         p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.OkAndSame))
+				{
+					var dbMatchItemSearchedIndex = dbItems.FindIndex(p =>
+						p.ParentDirectory == item.ParentDirectory && p.FileCollectionName == item.FileCollectionName);
+						
+					dbItems[dbMatchItemSearchedIndex].AddSidecarExtension("xmp");
+				}
+			}
+
 		
 			// Multi thread check for file hash
-			var isSameUpdatedItemList = await dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)
+			var isSameUpdatedItemList = await dbItems
+				.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)
 				.ForEachAsync(
 					async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage).SizeFileHashIsTheSame(dbItem),
 					_appSettings.MaxDegreesOfParallelism);
 			
 			if ( isSameUpdatedItemList != null )
 			{
-				foreach ( var (_,_,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> !p.Item1) )
+				foreach ( var (isLastEditedSame,isFileHashSame,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> !p.Item1) )
 				{
-					await _syncSingleFile.UpdateItem(isSameUpdatedItem,
+					var updateItemIndex = dbItems.FindIndex(
+						p => p.FilePath == isSameUpdatedItem.FilePath);
+					
+					if ( isLastEditedSame == false && isFileHashSame == true )
+					{
+						dbItems[updateItemIndex] = await _newUpdateItemWrapper.HandleLastEditedIsSame(isSameUpdatedItem, true);
+						continue;
+					}
+					
+					dbItems[updateItemIndex] = await _newUpdateItemWrapper.UpdateItem(isSameUpdatedItem,
 						isSameUpdatedItem.Size,
 						isSameUpdatedItem.FilePath, false);
 				}
 			}
 
+
+			
 			// add new items
-			var newItemsList = await _syncSingleFile.NewItem(
+			var newItemsList = await _newUpdateItemWrapper.NewItem(
 				dbItems.Where(p =>
 					p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex
 				).ToList(), false);
@@ -136,7 +158,7 @@ namespace starsky.foundation.sync.SyncServices
 					p => p.FilePath == newItem.FilePath);
 				if ( newItemIndex < 0 ) continue;
 				newItem.Status = FileIndexItem.ExifStatus.Ok;
-				SyncSingleFile.AddDeleteStatus(newItem);
+				DeleteStatusHelper.AddDeleteStatus(newItem);
 				dbItems[newItemIndex] = newItem;
 			}
 
@@ -161,9 +183,5 @@ namespace starsky.foundation.sync.SyncServices
 			}
 			return updatedDbItems;
 		}
-
-
-
 	}
-
 }
