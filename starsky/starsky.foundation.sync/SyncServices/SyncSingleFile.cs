@@ -11,7 +11,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Services;
 using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
 
@@ -24,14 +23,17 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly NewItem _newItem;
 		private readonly IWebLogger _logger;
 		private readonly AppSettings _appSettings;
+		private readonly SyncMultiFile _syncMultiFile;
 
-		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IMemoryCache memoryCache, IWebLogger logger)
+		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, 
+			IMemoryCache memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_subPathStorage = subPathStorage;
 			_query = query;
 			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings, memoryCache, logger));
 			_logger = logger;
+			_syncMultiFile = new SyncMultiFile(appSettings, query, subPathStorage, memoryCache, logger);
 		}
 
 		/// <summary>
@@ -67,7 +69,8 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 			
-			var (lastEditedIsSame, fileHashSame, updatedDbItem) = await new SizeFileHashIsTheSameHelper(_subPathStorage).SizeFileHashIsTheSame(dbItem);
+			var sizeHelper = new SizeFileHashIsTheSameHelper(_subPathStorage);
+			var (lastEditedIsSame, fileHashSame, updatedDbItem) = await sizeHelper.SizeFileHashIsTheSame(dbItem);
 			if ( !lastEditedIsSame )
 			{
 				return await HandleLastEditedIsSame(updateDelegate, dbItem, updatedDbItem, fileHashSame, subPath);
@@ -96,7 +99,7 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			// Sidecar files are updated but ignored by the process
-			await UpdateSidecarFile(subPath);
+			// await UpdateSidecarFile(subPath);
 			
 			// ignore all the 'wrong' files
 			var statusItem = CheckForStatusNotOk(subPath);
@@ -108,32 +111,36 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 
-			var dbItem =  await _query.GetObjectByFilePathAsync(subPath);
-						
-			// // // when item does not exist in Database
-			if ( dbItem == null )
-			{
-				return await NewItem(statusItem, subPath);
-			}
+			var dbItems =  await _query.GetObjectsByFilePathAsync(subPath,true);
+
+			await _syncMultiFile.MultiFile(dbItems, updateDelegate);
 			
-			// Cached values are not checked for performance reasons 
-			if ( dbItem.Status == FileIndexItem.ExifStatus.OkAndSame )
-			{
-				_logger.LogDebug($"[SingleFile/db] OkAndSame {subPath} ~ {Synchronize.DateTimeDebug()}");
-				return dbItem;
-			}
-
-			var (lastEditedIsSame, fileHashSame, updatedDbItem) = await new SizeFileHashIsTheSameHelper(_subPathStorage).SizeFileHashIsTheSame(dbItem);
-			if ( !lastEditedIsSame )
-			{
-				return await HandleLastEditedIsSame(updateDelegate, dbItem, updatedDbItem, fileHashSame, subPath);
-			}
-
-			// to avoid reSync
-			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
-			AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
-			_logger.LogInformation($"[SingleFile/db] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
-			return updatedDbItem;
+			// // // // when item does not exist in Database
+			// if ( dbItem == null )
+			// {
+			// 	return await NewItem(statusItem, subPath);
+			// }
+			//
+			// // Cached values are not checked for performance reasons 
+			// if ( dbItem.Status == FileIndexItem.ExifStatus.OkAndSame )
+			// {
+			// 	_logger.LogDebug($"[SingleFile/db] OkAndSame {subPath} ~ {Synchronize.DateTimeDebug()}");
+			// 	return dbItem;
+			// }
+			//
+			// var sizeHelper = new SizeFileHashIsTheSameHelper(_subPathStorage);
+			// var (lastEditedIsSame, fileHashSame, updatedDbItem) = await sizeHelper.SizeFileHashIsTheSame(dbItem);
+			// if ( !lastEditedIsSame )
+			// {
+			// 	return await HandleLastEditedIsSame(updateDelegate, dbItem, updatedDbItem, fileHashSame, subPath);
+			// }
+			//
+			// // to avoid reSync
+			// updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+			// AddDeleteStatus(updatedDbItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			// _logger.LogInformation($"[SingleFile/db] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
+			// return updatedDbItem;
+			return new FileIndexItem();
 		}
 
 		
