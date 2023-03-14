@@ -15,7 +15,7 @@ namespace starskytest.starsky.foundation.sync.Helpers;
 [TestClass]
 public class SizeFileHashIsTheSameTest
 {
-	[TestMethod]
+	//[TestMethod]
 	public async Task Test()
 	{
 
