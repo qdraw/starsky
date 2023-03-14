@@ -477,7 +477,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public async Task MultiFile_ShouldAddToSidecarFieldWhenSidecarIsAdded2()
+		public async Task MultiFile_ShouldAddToSidecarFieldWhenSidecarIsAdded_Equal()
 		{
 			var lastEdited = DateTime.Now;
 
@@ -495,7 +495,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				Size = _iStorageFake.Info("/test.dng").Size, // < right byte size
 				LastEdited = lastEdited
 			};
-			var item2 = new FileIndexItem("/test.dng")
+			var item2 = new FileIndexItem("/test.xmp")
 			{
 				FileHash = "something_different", 
 				Size = _iStorageFake.Info("/test.xmp").Size, 
@@ -510,7 +510,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.dng")?.FileIndexItem;
 			
-			Assert.AreEqual(ColorClassParser.Color.Extras, fileIndexItem?.ColorClass);
+			Assert.AreEqual(ColorClassParser.Color.DoNotChange, fileIndexItem?.ColorClass);
 			
 			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
 			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);

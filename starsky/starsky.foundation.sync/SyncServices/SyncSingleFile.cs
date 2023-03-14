@@ -91,6 +91,11 @@ namespace starsky.foundation.sync.SyncServices
 				scanItems.Add(item);
 			}
 
+			foreach ( var item in dbItems.Where(item => scanItems.All(p => p.FilePath != item.FilePath)) )
+			{
+				scanItems.Add(item);
+			}
+
 			return await _syncMultiFile.MultiFile(scanItems, updateDelegate);
 		}
 

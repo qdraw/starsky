@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -193,9 +194,9 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, if imageSharp can write to this</returns>
-		public static bool IsExtensionThumbnailSupported(string filename)
+		public static bool IsExtensionThumbnailSupported(string? filename)
 		{
-			return IsExtensionForce(filename, ExtensionThumbSupportedList);
+			return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionThumbSupportedList);
 		}
 		
 		/// <summary>
@@ -228,9 +229,9 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, </returns>
-		public static bool IsExtensionForceXmp(string filename)
+		public static bool IsExtensionForceXmp(string? filename)
 		{
-			return IsExtensionForce(filename, ExtensionForceXmpUseList);
+			return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionForceXmpUseList);
 		}
 
 		/// <summary>
@@ -240,7 +241,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>true, </returns>
 		public static bool IsExtensionForceGpx(string filename)
 		{
-			return IsExtensionForce(filename, ExtensionGpx);
+			return IsExtensionForce(filename.ToLowerInvariant(), ExtensionGpx);
 		}
 		
 		/// <summary>
@@ -248,9 +249,9 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, </returns>
-		public static bool IsExtensionSidecar(string filename)
+		public static bool IsExtensionSidecar(string? filename)
 		{
-			return IsExtensionForce(filename, ExtensionSidecar);
+			return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionSidecar);
 		}
 		
 		/// <summary>
@@ -259,14 +260,14 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <param name="checkThisList">the list of strings to match</param>
 		/// <returns>true, </returns>
-		private static bool IsExtensionForce(string filename, List<string> checkThisList)
+		private static bool IsExtensionForce(string? filename, ICollection<string> checkThisList)
 		{
 			if ( string.IsNullOrEmpty(filename) ) return false;
 
 			// without escaped values:
 			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
 			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$", 
-				RegexOptions.None, TimeSpan.FromMilliseconds(100)).Matches(filename);
+				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100)).Matches(filename);
 			if ( matchCollection.Count == 0 ) return false;
 			foreach ( var matchValue in matchCollection.Select(p => p.Value) )
 			{

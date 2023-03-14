@@ -59,12 +59,13 @@ public class CheckForStatusNotOkHelper
 
 		var xmpFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
 		if ( string.IsNullOrEmpty(xmpFilePath) ||
-		     !_subPathStorage.ExistFile(xmpFilePath) )
+		     !_subPathStorage.ExistFile(xmpFilePath) || 
+		     statusItem.FilePath == xmpFilePath )
 		{
 			return new List<FileIndexItem> { statusItem };
 		}
 		
-		var xmpStatusItem = new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.Ok};
+		var xmpStatusItem = new FileIndexItem(xmpFilePath){Status = FileIndexItem.ExifStatus.Ok};
 		return new List<FileIndexItem>{statusItem,xmpStatusItem};
 	}
 }

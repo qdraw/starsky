@@ -53,15 +53,17 @@ namespace starsky.foundation.sync.SyncServices
 				await SyncWithoutThumbnail(subPath, updateDelegate,
 					childDirectoriesAfter));
 		}
-		
+
 		/// <summary>
 		/// Sync list by subPaths
 		/// </summary>
 		/// <param name="subPaths"></param>
+		/// <param name="updateDelegate"></param>
 		/// <returns></returns>
-		public async Task<List<FileIndexItem>> Sync(List<string> subPaths)
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, 
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
-			var results = await _syncMultiFile.MultiFile(subPaths);
+			var results = await _syncMultiFile.MultiFile(subPaths,updateDelegate);
 			return await _syncAddThumbnail.SyncThumbnailTableAsync(results);
 		}
 

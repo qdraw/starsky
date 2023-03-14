@@ -75,8 +75,10 @@ public class NewUpdateItemWrapper
 
 	internal async Task<FileIndexItem> HandleLastEditedIsSame(FileIndexItem updatedDbItem, bool? fileHashSame)
 	{
+		// ReSharper disable once InvertIf
 		if ( _appSettings.SyncAlwaysUpdateLastEditedTime != true && fileHashSame == true)
 		{
+			updatedDbItem.Status = FileIndexItem.ExifStatus.Ok;
 			return updatedDbItem;
 		}
 
@@ -114,6 +116,11 @@ public class NewUpdateItemWrapper
 		}
 			
 		var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
+		if ( updateItem.Status == FileIndexItem.ExifStatus.OkAndSame)
+		{
+			return updateItem;
+		}
+		
 		await _query.UpdateItemAsync(updateItem);
 		if ( addParentItems )
 		{

@@ -24,37 +24,41 @@ public class SizeFileHashIsTheSameHelper
 	/// <param name="dbItems">item that contain size and fileHash</param>
 	/// <param name="subPath">which item</param>
 	/// <returns>Last Edited is the bool, FileHash Same bool , database item</returns>
-	internal async Task<Tuple<bool,bool?,FileIndexItem>> SizeFileHashIsTheSame(List<FileIndexItem> dbItems, string subPath)
+	internal async Task<Tuple<bool?,bool?,FileIndexItem>> SizeFileHashIsTheSame(List<FileIndexItem> dbItems, string subPath)
 	{
 		var dbItem = dbItems.FirstOrDefault(p => p.FilePath == subPath);
 		if ( dbItem == null )
 		{
-			return new Tuple<bool, bool?, FileIndexItem>(false, false, null);
+			return new Tuple<bool?, bool?, FileIndexItem>(false, false, null);
 		}
 		
 		// when last edited is the same
-		var (isLastEditTheSame, lastEdit) = CompareLastEditIsTheSame(dbItem);
+		var (isRequestFileLastEditTheSame, lastEdit,_) = CompareLastEditIsTheSame(dbItem);
 		dbItem.LastEdited = lastEdit;
 		dbItem.Size = _subPathStorage.Info(dbItem.FilePath!).Size;
-
-		// compare xmp sidecar
-		var isXmpLastEditTheSame = true;
-		var xmpDbItem = dbItems.FirstOrDefault(p =>
-			ExtensionRolesHelper.IsExtensionSidecar(p.FilePath) );
-		if ( xmpDbItem != null )
+		
+		// compare raw files
+		var otherRawItems = dbItems.Where(p =>
+			ExtensionRolesHelper.IsExtensionForceXmp(p.FilePath) && !ExtensionRolesHelper.IsExtensionSidecar(p.FilePath))
+			.Where(p => p.FilePath == subPath)
+			.Select(CompareLastEditIsTheSame)
+			.Where(p => p.Item1).ToList();
+	
+		if ( isRequestFileLastEditTheSame && !otherRawItems.Any())
 		{
-			(isXmpLastEditTheSame, _) = CompareLastEditIsTheSame(xmpDbItem);
+			return new Tuple<bool?, bool?, FileIndexItem>(true, null, dbItem);
 		}
 		
-		if ( isLastEditTheSame && isXmpLastEditTheSame)
-		{
-			return new Tuple<bool, bool?, FileIndexItem>(true, null, dbItem);
-		}
-			
 		// when byte hash is different update
-		var (fileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
-
-		return new Tuple<bool, bool?, FileIndexItem>(false, fileHashTheSame && isXmpLastEditTheSame, dbItem);
+		var (requestFileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
+		
+		//
+		if ( isRequestFileLastEditTheSame && requestFileHashTheSame && otherRawItems.Any())
+		{
+			return new Tuple<bool?, bool?, FileIndexItem>(null, null, dbItem);
+		}
+		
+		return new Tuple<bool?, bool?, FileIndexItem>(false, requestFileHashTheSame, dbItem);
 	}
 	
 	/// <summary>
@@ -75,18 +79,18 @@ public class SizeFileHashIsTheSameHelper
 	/// True when result is the same
 	/// </summary>
 	/// <param name="dbItem"></param>
-	/// <returns></returns>
-	private Tuple<bool,DateTime> CompareLastEditIsTheSame(FileIndexItem dbItem)
+	/// <returns>lastWriteTime is the same, lastWriteTime, filePath</returns>
+	private Tuple<bool,DateTime,string> CompareLastEditIsTheSame(FileIndexItem dbItem)
 	{
 		var lastWriteTime = _subPathStorage.Info(dbItem.FilePath!).LastWriteTime;
 		if (lastWriteTime.Year == 1 )
 		{
-			return new Tuple<bool, DateTime>(false, lastWriteTime);
+			return new Tuple<bool, DateTime,string>(false, lastWriteTime, dbItem.FilePath);
 		}
-			
-		var isTheSame = dbItem.LastEdited == lastWriteTime;
+
+		var isTheSame = DateTime.Compare(dbItem.LastEdited, lastWriteTime) == 0;
 
 		dbItem.LastEdited = lastWriteTime;
-		return new Tuple<bool, DateTime>(isTheSame, lastWriteTime);
+		return new Tuple<bool, DateTime,string>(isTheSame, lastWriteTime, dbItem.FilePath);
 	}
 }

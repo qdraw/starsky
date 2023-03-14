@@ -568,19 +568,115 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				{
 					SyncAlwaysUpdateLastEditedTime = false // <-- ignore due this setting
 				}, fakeQuery,
-				_iStorageFake, null, new FakeIWebLogger());
+				_iStorageFake, null!, new FakeIWebLogger());
 			
 			var result = (await sync.SingleFile(filePath,
 				new List<FileIndexItem>{item})).FirstOrDefault();
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
-			Assert.AreEqual(0, result.LastChanged.Count);
-			Assert.AreEqual(0, result.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result?.Status);
+			Assert.AreEqual(0, result?.LastChanged.Count);
+			Assert.AreEqual(0, result?.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
 
 			var fileIndexItem = fakeQuery.SingleItem(filePath)?.FileIndexItem;
 
 			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
 			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
+		}
+		
+		[TestMethod]
+		public async Task SingleItem_SidecarFileTest()
+		{
+			const string filePathRaw = "/SingleItem_SidecarFileTest.dng";
+			const string filePathXmp = "/SingleItem_SidecarFileTest.xmp";
+			var lastEdited = DateTime.Now;
+
+			// It should update the Sidecar field when a sidecar file is add to the directory
+			var storage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{filePathRaw, filePathXmp}, new List<byte[]>{
+					CreateAnImageNoExif.Bytes,
+					CreateAnXmp.Bytes}, new List<DateTime>{lastEdited, lastEdited});
+			
+			var (fileHashRaw, _) = await new FileHash(storage).GetHashCodeAsync(filePathRaw);
+
+			var item = new FileIndexItem(filePathRaw)
+			{
+				FileHash = fileHashRaw, // < right file hash
+				Size = _iStorageFake.Info(filePathRaw).Size, // < right byte size
+				LastEdited = lastEdited,
+				Tags = "before",
+				ColorClass = ColorClassParser.Color.None
+			};
+			
+			var item2 = new FileIndexItem(filePathXmp)
+			{
+				FileHash = "xmpHasChanged", 
+				Size = _iStorageFake.Info(filePathXmp).Size, 
+				LastEdited = new DateTime(2000,01, 01),
+			};
+			
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item,item2});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				storage, null!, new FakeIWebLogger());
+			
+			await sync.SingleFile(filePathXmp);
+			
+			var fileIndexItem = fakeQuery.SingleItem(filePathRaw)?.FileIndexItem;
+			
+			Assert.AreEqual(ColorClassParser.Color.Extras, fileIndexItem?.ColorClass);
+			
+			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
+			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);
+			
+			var fileIndexItem2 = fakeQuery.SingleItem(filePathXmp)?.FileIndexItem;
+			Assert.IsNotNull(fileIndexItem2);
+		}
+		
+		[TestMethod]
+		public async Task SingleItem_ShouldAddToSidecarFieldWhenSidecarIsAdded3()
+		{
+			const string filePathRaw = "/singleItem_ShouldAddToSidecarFieldWhenSidecarIsAdded3.dng";
+			const string filePathXmp = "/singleItem_ShouldAddToSidecarFieldWhenSidecarIsAdded3.xmp";
+			var lastEdited = DateTime.Now;
+
+			// It should update the Sidecar field when a sidecar file is add to the directory
+			var storage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{filePathRaw, filePathXmp}, new List<byte[]>{
+					CreateAnImageNoExif.Bytes,
+					CreateAnXmp.Bytes}, new List<DateTime>{lastEdited, lastEdited});
+			
+			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync(filePathRaw);
+
+			var item = new FileIndexItem(filePathRaw)
+			{
+				FileHash = fileHash, // < right file hash
+				Size = _iStorageFake.Info(filePathRaw).Size, // < right byte size
+				LastEdited = lastEdited,
+				ColorClass = ColorClassParser.Color.None
+			};
+			var item2 = new FileIndexItem(filePathXmp)
+			{
+				FileHash = "something_different", 
+				Size = _iStorageFake.Info(filePathXmp).Size, 
+				LastEdited = DateTime.MinValue // <-- different last edited
+			};
+			
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item,item2});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				storage, null!, new FakeIWebLogger());
+			
+			await sync.SingleFile( filePathXmp);
+			
+			var fileIndexItem = fakeQuery.SingleItem(filePathRaw)?.FileIndexItem;
+			
+			Assert.AreEqual(ColorClassParser.Color.Extras, fileIndexItem?.ColorClass);
+			
+			Assert.AreEqual(1,fileIndexItem?.SidecarExtensionsList.Count);
+			Assert.AreEqual("xmp",fileIndexItem?.SidecarExtensionsList.ToList()[0]);
+			
+			var fileIndexItem2 = fakeQuery.SingleItem(filePathXmp)?.FileIndexItem;
+			Assert.IsNotNull(fileIndexItem2);
 		}
 		
 		[TestMethod]
