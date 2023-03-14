@@ -470,13 +470,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task SingleFile_DbItem_FileAlreadyExist_With_Different_LastEditedTime()
 		{
-			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+			const string filePath = "/FileAlreadyExist_With_Different_LastEditedTime.jpg";
+			_iStorageFake.FileCopy("/test.jpg", filePath);
+			( _iStorageFake as FakeIStorage )?.SetDateTime(filePath,
+				_lastEditedDateTime);
 
-			var item = new FileIndexItem("/test.jpg")
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync(filePath);
+
+			var item = new FileIndexItem(filePath)
 			{
 				FileHash = fileHash,
 				Size =
-					_iStorageFake.Info("/test.jpg").Size, // < right byte size
+					_iStorageFake.Info(filePath).Size, // < right byte size
 				Tags =
 					"the tags should not be updated", // <= the tags in /test.jpg is nothing,
 				LastEdited = new DateTime(1999, 01, 02)
@@ -489,13 +494,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, null!, new FakeIWebLogger());
 			
-			var result = (await sync.SingleFile("/test.jpg",
+			var result = (await sync.SingleFile(filePath,
 				new List<FileIndexItem>{item})).FirstOrDefault();
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result?.Status);
 			Assert.AreEqual(1, result?.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem(filePath)?.FileIndexItem;
 
 			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
 			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
@@ -540,13 +545,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task SingleFile_DbItem_FileAlreadyExist_With_Different_LastEditedTime_AppSettingsIgnore()
 		{
-			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+			const string filePath = "/fileAlreadyExist_With_Different_LastEditedTime.jpg";
+			_iStorageFake.FileCopy("/test.jpg", filePath);
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync(filePath);
 
-			var item = new FileIndexItem("/test.jpg")
+			var item = new FileIndexItem(filePath)
 			{
 				FileHash = fileHash,
 				Size =
-					_iStorageFake.Info("/test.jpg").Size, // < right byte size
+					_iStorageFake.Info(filePath).Size, // < right byte size
 				Tags =
 					"the tags should not be updated", // <= the tags in /test.jpg is nothing,
 				LastEdited = new DateTime(1999, 01, 02),
@@ -563,14 +570,14 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				}, fakeQuery,
 				_iStorageFake, null, new FakeIWebLogger());
 			
-			var result = (await sync.SingleFile("/test.jpg",
+			var result = (await sync.SingleFile(filePath,
 				new List<FileIndexItem>{item})).FirstOrDefault();
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
 			Assert.AreEqual(0, result.LastChanged.Count);
 			Assert.AreEqual(0, result.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
 
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
+			var fileIndexItem = fakeQuery.SingleItem(filePath)?.FileIndexItem;
 
 			Assert.AreNotEqual(string.Empty, fileIndexItem?.Tags);
 			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);

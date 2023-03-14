@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 
@@ -14,20 +17,36 @@ public class SizeFileHashIsTheSameHelper
 	{
 		_subPathStorage = subPathStorage;
 	}
-	
+
 	/// <summary>
 	/// When the same stop checking and return value
 	/// </summary>
-	/// <param name="dbItem">item that contain size and fileHash</param>
+	/// <param name="dbItems">item that contain size and fileHash</param>
+	/// <param name="subPath">which item</param>
 	/// <returns>Last Edited is the bool, FileHash Same bool , database item</returns>
-	internal async Task<Tuple<bool,bool?,FileIndexItem>> SizeFileHashIsTheSame(FileIndexItem dbItem)
+	internal async Task<Tuple<bool,bool?,FileIndexItem>> SizeFileHashIsTheSame(List<FileIndexItem> dbItems, string subPath)
 	{
+		var dbItem = dbItems.FirstOrDefault(p => p.FilePath == subPath);
+		if ( dbItem == null )
+		{
+			return new Tuple<bool, bool?, FileIndexItem>(false, false, null);
+		}
+		
 		// when last edited is the same
 		var (isLastEditTheSame, lastEdit) = CompareLastEditIsTheSame(dbItem);
 		dbItem.LastEdited = lastEdit;
 		dbItem.Size = _subPathStorage.Info(dbItem.FilePath!).Size;
 
-		if ( isLastEditTheSame )
+		// compare xmp sidecar
+		var isXmpLastEditTheSame = true;
+		var xmpDbItem = dbItems.FirstOrDefault(p =>
+			ExtensionRolesHelper.IsExtensionSidecar(p.FilePath) );
+		if ( xmpDbItem != null )
+		{
+			(isXmpLastEditTheSame, _) = CompareLastEditIsTheSame(xmpDbItem);
+		}
+		
+		if ( isLastEditTheSame && isXmpLastEditTheSame)
 		{
 			return new Tuple<bool, bool?, FileIndexItem>(true, null, dbItem);
 		}
@@ -35,8 +54,7 @@ public class SizeFileHashIsTheSameHelper
 		// when byte hash is different update
 		var (fileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
 
-		dbItem.Status = FileIndexItem.ExifStatus.Ok;
-		return new Tuple<bool, bool?, FileIndexItem>(false, fileHashTheSame, dbItem);
+		return new Tuple<bool, bool?, FileIndexItem>(false, fileHashTheSame && isXmpLastEditTheSame, dbItem);
 	}
 	
 	/// <summary>

@@ -102,48 +102,17 @@ namespace starsky.foundation.sync.SyncServices
 				}
 			}
 
-			foreach ( var statusItem in statusItems )
-			{
-				foreach ( var item in dbItems.Where(p =>
-					         p.FileCollectionName == statusItem.FileCollectionName
-					         && p.ParentDirectory == statusItem.ParentDirectory
-					         && ExtensionRolesHelper.IsExtensionSidecar(p.FileName) && 
-					         p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.OkAndSame))
-				{
-					var dbMatchItemSearchedIndex = dbItems.FindIndex(p =>
-						p.ParentDirectory == item.ParentDirectory && p.FileCollectionName == item.FileCollectionName);
-						
-					dbItems[dbMatchItemSearchedIndex].AddSidecarExtension("xmp");
-				}
-			}
+			AddSidecarExtensionData(dbItems, statusItems);
 
 			// Multi thread check for file hash
 			var isSameUpdatedItemList = await dbItems
 				.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)
 				.ForEachAsync(
-					async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage).SizeFileHashIsTheSame(dbItem),
+					async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage).SizeFileHashIsTheSame(dbItems
+						.Where(p => p.FileCollectionName == dbItem.FileCollectionName).ToList(), dbItem.FilePath),
 					_appSettings.MaxDegreesOfParallelism);
-			
-			if ( isSameUpdatedItemList != null )
-			{
-				foreach ( var (isLastEditedSame,isFileHashSame,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> !p.Item1) )
-				{
-					var updateItemIndex = dbItems.FindIndex(
-						p => p.FilePath == isSameUpdatedItem.FilePath);
-					
-					if ( !isLastEditedSame && isFileHashSame == true )
-					{
-						dbItems[updateItemIndex] = await _newUpdateItemWrapper.HandleLastEditedIsSame(isSameUpdatedItem, true);
-						continue;
-					}
-					
-					dbItems[updateItemIndex] = await _newUpdateItemWrapper.UpdateItem(isSameUpdatedItem,
-						isSameUpdatedItem.Size,
-						isSameUpdatedItem.FilePath, false);
-				}
-			}
 
-
+			await IsSameUpdatedItemList(isSameUpdatedItemList, dbItems);
 			
 			// add new items
 			var newItemsList = await _newUpdateItemWrapper.NewItem(
@@ -169,6 +138,46 @@ namespace starsky.foundation.sync.SyncServices
 		
 			if ( updateDelegate == null ) return dbItems;
 			return await PushToSocket(dbItems, updateDelegate);
+		}
+
+		private async Task IsSameUpdatedItemList(IEnumerable<Tuple<bool, bool?, FileIndexItem>> isSameUpdatedItemList, List<FileIndexItem> dbItems)
+		{
+			if ( isSameUpdatedItemList != null )
+			{
+				foreach ( var (isLastEditedSame,isFileHashSame,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> !p.Item1) )
+				{
+					var updateItemIndex = dbItems.FindIndex(
+						p => p.FilePath == isSameUpdatedItem.FilePath);
+					
+					if ( !isLastEditedSame && isFileHashSame == true )
+					{
+						dbItems[updateItemIndex] = await _newUpdateItemWrapper.HandleLastEditedIsSame(isSameUpdatedItem, true);
+						continue;
+					}
+					
+					dbItems[updateItemIndex] = await _newUpdateItemWrapper.UpdateItem(isSameUpdatedItem,
+						isSameUpdatedItem.Size,
+						isSameUpdatedItem.FilePath, false);
+				}
+			}
+		}
+
+		private static void AddSidecarExtensionData(List<FileIndexItem> dbItems, List<FileIndexItem> statusItems)
+		{
+			foreach ( var statusItem in statusItems )
+			{
+				foreach ( var item in dbItems.Where(p =>
+					         p.FileCollectionName == statusItem.FileCollectionName
+					         && p.ParentDirectory == statusItem.ParentDirectory
+					         && ExtensionRolesHelper.IsExtensionSidecar(p.FileName) && 
+					         p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.OkAndSame))
+				{
+					var dbMatchItemSearchedIndex = dbItems.FindIndex(p =>
+						p.ParentDirectory == item.ParentDirectory && p.FileCollectionName == item.FileCollectionName);
+						
+					dbItems[dbMatchItemSearchedIndex].AddSidecarExtension("xmp");
+				}
+			}
 		}
 	
 		private static async Task<List<FileIndexItem>> PushToSocket(List<FileIndexItem> updatedDbItems,

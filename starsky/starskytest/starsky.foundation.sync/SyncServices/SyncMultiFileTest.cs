@@ -443,14 +443,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual("the tags should not be updated", fileIndexItem?.Tags);
 		}
 
-		//[TestMethod]
+		[TestMethod]
 		public async Task MultiFile_ShouldAddToSidecarFieldWhenSidecarIsAdded()
 		{
+			var lastEdited = DateTime.Now;
 			// It should update the Sidecar field when a sidecar file is add to the directory
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
-					CreateAnImageNoExif.Bytes,
-					CreateAnXmp.Bytes});
+					CreateAnImage.Bytes,
+					CreateAnXmp.Bytes}, new List<DateTime>{lastEdited,lastEdited});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.dng");
 
@@ -458,6 +459,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			{
 				FileHash = fileHash, // < right file hash
 				Size = _iStorageFake.Info("/test.dng").Size, // < right byte size
+				LastEdited = lastEdited
 			};
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
@@ -474,9 +476,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.IsNotNull(fileIndexItem2);
 		}
 		
-		//[TestMethod]
+		[TestMethod]
 		public async Task MultiFile_ShouldAddToSidecarFieldWhenSidecarIsAdded2()
 		{
+			var lastEdited = DateTime.Now;
+
 			// It should update the Sidecar field when a sidecar file is add to the directory
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
@@ -489,12 +493,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			{
 				FileHash = fileHash, // < right file hash
 				Size = _iStorageFake.Info("/test.dng").Size, // < right byte size
+				LastEdited = lastEdited
 			};
 			var item2 = new FileIndexItem("/test.dng")
 			{
 				FileHash = "something_different", 
 				Size = _iStorageFake.Info("/test.xmp").Size, 
+				LastEdited = lastEdited
 			};
+			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item,item2});
 			
 			var sync = new SyncMultiFile(new AppSettings {Verbose = true}, fakeQuery,
