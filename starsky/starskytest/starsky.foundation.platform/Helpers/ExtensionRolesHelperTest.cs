@@ -175,6 +175,13 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var result = ExtensionRolesHelper.IsExtensionForceXmp("/test.arw");
 			Assert.AreEqual(true,result);
 		}
+			
+		[TestMethod]
+		public void ExtensionRolesHelperTest_IsExtensionForceXmp_Null()
+		{
+			var result = ExtensionRolesHelper.IsExtensionForceXmp(null);
+			Assert.AreEqual(false,result);
+		}	
 		
 		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionForceXmp_Negative()
@@ -203,6 +210,20 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var result = ExtensionRolesHelper.ReplaceExtensionWithXmp("/test.so");
 			Assert.AreEqual(string.Empty,result);
 		}
+		
+		[TestMethod]
+		public void ExtensionRolesHelperTest_ReplaceExtensionWithXmp_null()
+		{
+			var result = ExtensionRolesHelper.ReplaceExtensionWithXmp(null);
+			Assert.AreEqual(string.Empty,result);
+		}
+		
+		[TestMethod]
+		public void ExtensionRolesHelperTest_IsExtensionSidecar_Null()
+		{
+			var result = ExtensionRolesHelper.IsExtensionSidecar(null);
+			Assert.AreEqual(false,result);
+		}	
 		
 		[TestMethod]
 		public void Files_GetImageFormat_h264_Test()

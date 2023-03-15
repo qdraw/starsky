@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncServices;
@@ -107,5 +108,63 @@ public class NewUpdateItemWrapperTest
 			
 		Assert.IsTrue(itemItSelf);
 		Assert.IsFalse(parentItem); // FALSE
+	}
+
+	[TestMethod]
+	public async Task UpdateItem_IgnoreWhenOkAndSameStatus()
+	{
+		var item = new FileIndexItem("/test.jpg")
+		{
+			Status = FileIndexItem.ExifStatus.OkAndSame, 
+			ColorClass = ColorClassParser.Color.None,
+			Orientation = FileIndexItem.Rotation.Horizontal,
+			ImageHeight = 2,
+			ImageWidth = 3,
+			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+		};
+		
+		var fakeQuery = new FakeIQuery(new List<FileIndexItem>{item});
+		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { CreateAnImageNoExif.Bytes });
+		
+		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
+
+		item.Tags = "updated";
+		var result = await updateItem.UpdateItem(item, 1, "/test.jpg",true);
+		
+		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result?.Status);
+	}
+	
+	[TestMethod]
+	public async Task UpdateItem_AddParentItemAndUpdate()
+	{
+		var item = new FileIndexItem("/test.jpg")
+		{
+			Status = FileIndexItem.ExifStatus.OkAndSame, 
+			ColorClass = ColorClassParser.Color.Extras, // different
+			Orientation = FileIndexItem.Rotation.Horizontal,
+			ImageHeight = 2,
+			ImageWidth = 3,
+			ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+		};
+		
+		var fakeQuery = new FakeIQuery(new List<FileIndexItem>{item});
+		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
+			new List<string> { "/test.jpg" },
+			new List<byte[]> { CreateAnImageNoExif.Bytes });
+		
+		var dbParentResultBefore = await fakeQuery.GetObjectByFilePathAsync("/");
+		Assert.IsNull(dbParentResultBefore);
+		
+		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
+
+		item.Tags = "updated";
+		var result = await updateItem.UpdateItem(item, 1, "/test.jpg",true);
+		
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result?.Status);
+
+		var dbParentResult = await fakeQuery.GetObjectByFilePathAsync("/");
+		Assert.IsNotNull(dbParentResult);
 	}
 }

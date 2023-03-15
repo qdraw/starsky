@@ -140,14 +140,14 @@ public class SqlXmlRepositoryTest
 
 		
 	[TestMethod]
-	public void SqlXmlRepositoryTest_StoreElement()
+	public void SqlXmlRepositoryTest_StoreElement_HappyFlow()
 	{
-		_repository.StoreElement(new XElement("x1", "x1"), "hi");
+		_repository.StoreElement(new XElement("x1", "x1"), "hi2");
 
 		var item = _dbContext.DataProtectionKeys.FirstOrDefault(
-			p => p.FriendlyName == "hi");
+			p => p.FriendlyName == "hi2");
 		
-		Assert.AreEqual("hi", item!.FriendlyName);
+		Assert.AreEqual("hi2", item!.FriendlyName);
 	}
 	
 	private class StoreElementException : ApplicationDbContext
@@ -170,13 +170,22 @@ public class SqlXmlRepositoryTest
 			new SqlXmlRepository(
 				new StoreElementException(options), null!, logger);
 		
-		repo.StoreElement(new XElement("x1", "x1"), "hi");
+		repo.StoreElement(new XElement("x3", "x3"), "hi3");
 
+		var count = 0;
+		try
+		{
+			count = repo.GetAllElements().Count(p => p.Name == "hi3");
+		}
+		catch ( DbUpdateException )
+		{
+		}
+		Assert.AreEqual(0, count);
+		
 		var error = logger.TrackedExceptions.FirstOrDefault(p =>
 			p.Item2.Contains("AggregateException"));
 		
 		Assert.IsNotNull(error);
-
 	}
 	
 	private class StoreElementException2RetryLimitExceededException : ApplicationDbContext
@@ -199,10 +208,20 @@ public class SqlXmlRepositoryTest
 			new SqlXmlRepository(
 				new StoreElementException2RetryLimitExceededException(options), null!, logger);
 		
-		repo.StoreElement(new XElement("x1", "x1"), "hi");
+		repo.StoreElement(new XElement("x1", "x1"), "hi3");
 
 		var error = logger.TrackedExceptions.FirstOrDefault(p =>
 			p.Item2.Contains("AggregateException"));
+		
+		var count = 0;
+		try
+		{
+			count = repo.GetAllElements().Count(p => p.Name == "hi3");
+		}
+		catch ( RetryLimitExceededException )
+		{
+		}
+		Assert.AreEqual(0, count);
 		
 		Assert.IsNotNull(error);
 	}

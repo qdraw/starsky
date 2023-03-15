@@ -552,11 +552,11 @@ namespace starsky.feature.import.Services
 		    if ( xmpExistForThisFileType)
 		    {
 			    var xmpSourceFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.SourceFullFilePath);
-			    var destinationXmpFullPath =  ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
+			    var destinationXmpFullPath =  ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem?.FilePath);
 			    _filesystemStorage.FileCopy(xmpSourceFullFilePath, destinationXmpFullPath);
 		    }
 		    
-		    await CreateSideCarFile(importIndexItem, xmpExistForThisFileType);
+		    await CreateSideCarFile(importIndexItem!, xmpExistForThisFileType);
 
 		    // Run Exiftool to Update for example colorClass
 		    UpdateImportTransformations.QueryUpdateDelegate? updateItemAsync = null;

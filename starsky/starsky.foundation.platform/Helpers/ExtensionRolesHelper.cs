@@ -283,8 +283,13 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="filename"></param>
 		/// <returns></returns>
-		public static string ReplaceExtensionWithXmp(string filename)
+		public static string ReplaceExtensionWithXmp(string? filename)
 		{
+			if ( string.IsNullOrEmpty(filename) )
+			{
+				return string.Empty;
+			}
+			
 			// without escaped values:
 			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
 			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$", 
