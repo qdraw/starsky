@@ -159,6 +159,16 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 		}
+		
+		[TestMethod]
+		public void Files_GetImageFormat_gpx_Xml_Test_21()
+		{
+			// there is 21 offset
+			byte[] bmBytes = Encoding.ASCII.GetBytes("<?xml version=\"1.0\"?><gpx version=\"1.0\" creator=\"Trails 1.05");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+		}
+		
 				
 		[TestMethod]
 		public void Files_GetImageFormat_gpx_Test_39()

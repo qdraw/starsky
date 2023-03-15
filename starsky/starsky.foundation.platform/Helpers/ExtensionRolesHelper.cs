@@ -383,9 +383,6 @@ namespace starsky.foundation.platform.Helpers
 			var bmp = Encoding.ASCII.GetBytes("BM"); // BMP
 			var gif = Encoding.ASCII.GetBytes("GIF"); // GIF
 			var png = new byte[] {137, 80, 78, 71}; // PNG
-
-			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
-			var gpx = new byte[] {60, 103, 112}; // <gpx
 			
 			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]
                                                   // 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
@@ -407,18 +404,9 @@ namespace starsky.foundation.platform.Helpers
 
 			if ( GetImageFormatJpeg(bytes) != null ) return ImageFormat.jpg;
 			
-			if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
-				return ImageFormat.xmp;
+			if ( GetImageFormatXmp(bytes) != null ) return ImageFormat.xmp;
 
-			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) )
-			{
-				return ImageFormat.gpx;
-			}
+			if ( GetImageFormatGpx(bytes) != null ) return ImageFormat.gpx;
 			
 			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
 				return ImageFormat.mp4;
@@ -456,6 +444,37 @@ namespace starsky.foundation.platform.Helpers
 			return null;
 		}
 
+		private static ImageFormat? GetImageFormatGpx(byte[] bytes)
+		{
+			var gpx = new byte[] {60, 103, 112}; // <gpx
+			
+			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) )
+			{
+				return ImageFormat.gpx;
+			}
+			return null;
+		}
+		
+		private static ImageFormat? GetImageFormatXmp(byte[] bytes)
+		{
+			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
+			var xmp2 = Encoding.ASCII.GetBytes("<?xpacket"); // xmp
+			
+			if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
+				return ImageFormat.xmp;
+
+			if ( xmp2.SequenceEqual(bytes.Take(xmp2.Length)) )
+				return ImageFormat.xmp;
+			
+			return null;
+		}
+		
 		private static ImageFormat? GetImageFormatJpeg(byte[] bytes)
 		{
 			var jpeg = new byte[] {255, 216, 255, 224}; // jpeg
