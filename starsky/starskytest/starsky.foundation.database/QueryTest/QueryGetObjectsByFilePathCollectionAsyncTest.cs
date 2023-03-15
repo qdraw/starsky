@@ -120,16 +120,16 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			await _query.AddRangeAsync(new List<FileIndexItem>
 			{
-				new FileIndexItem("/single_duplicate.jpg"),
-				new FileIndexItem("/single_duplicate.jpg")
+				new FileIndexItem("/single_duplicate_2.jpg"),
+				new FileIndexItem("/single_duplicate_2.jpg")
 			});
 			
 			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-				new List<string> {"/single_duplicate.jpg"});
+				new List<string> {"/single_duplicate_2.jpg"});
 
 			Assert.AreEqual(2, result.Count);
-			Assert.AreEqual("/single_duplicate.jpg",result[0].FilePath);
-			Assert.AreEqual("/single_duplicate.jpg",result[1].FilePath);
+			Assert.AreEqual("/single_duplicate_2.jpg",result[0].FilePath);
+			Assert.AreEqual("/single_duplicate_2.jpg",result[1].FilePath);
 
 			await _query.RemoveItemAsync(result[0]);
 			await _query.RemoveItemAsync(result[1]);

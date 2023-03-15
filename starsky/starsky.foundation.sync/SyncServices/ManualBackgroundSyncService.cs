@@ -25,26 +25,24 @@ namespace starsky.foundation.sync.SyncServices
 	{
 		private readonly ISynchronize _synchronize;
 		private readonly IQuery _query;
-		private readonly IWebSocketConnectionsService _connectionsService;
+		private readonly ISocketSyncUpdateService _socketUpdateService;
 		private readonly IMemoryCache _cache;
 		private readonly IWebLogger _logger;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IServiceScopeFactory _scopeFactory;
-		private readonly INotificationQuery _notificationQuery;
 
 		public ManualBackgroundSyncService(ISynchronize synchronize, IQuery query,
-			IWebSocketConnectionsService connectionsService, INotificationQuery notificationQuery,
+			ISocketSyncUpdateService socketUpdateService,
 			IMemoryCache cache , IWebLogger logger, IUpdateBackgroundTaskQueue bgTaskQueue, 
 			IServiceScopeFactory scopeFactory)
 		{
 			_synchronize = synchronize;
-			_connectionsService = connectionsService;
+			_socketUpdateService = socketUpdateService;
 			_query = query;
 			_cache = cache;
 			_logger = logger;
 			_bgTaskQueue = bgTaskQueue;
 			_scopeFactory = scopeFactory;
-			_notificationQuery = notificationQuery;
 		}
 
 		internal const string ManualSyncCacheName = "ManualSync_";
@@ -81,23 +79,6 @@ namespace starsky.foundation.sync.SyncServices
 			return FileIndexItem.ExifStatus.Ok;
 		}
 
-		internal async Task PushToSockets(List<FileIndexItem> updatedList)
-		{
-			var webSocketResponse =
-				new ApiNotificationResponseModel<List<FileIndexItem>>(FilterBefore(updatedList), ApiNotificationType.ManualBackgroundSync);
-			await _notificationQuery.AddNotification(webSocketResponse);
-			
-			try
-			{
-				await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
-			}
-			catch ( WebSocketException exception )
-			{
-				// The WebSocket is in an invalid state: 'Aborted' when the client disconnects
-				_logger.LogError("[ManualBackgroundSyncService] catch-ed WebSocketException: " + exception.Message, exception);
-			}
-		}
-
 		internal void CreateSyncLock(string subPath)
 		{
 			_cache.Set(ManualSyncCacheName + subPath, true, 
@@ -131,7 +112,7 @@ namespace starsky.foundation.sync.SyncServices
 			_logger.LogInformation($"[ManualBackgroundSyncService] start {subPath} " +
 			                       $"{DateTime.Now.ToShortTimeString()}");
 			
-			var updatedList = await _synchronize.Sync(subPath, PushToSockets);
+			var updatedList = await _synchronize.Sync(subPath, _socketUpdateService.PushToSockets);
 			
 			_query.CacheUpdateItem(updatedList.Where(p => p.ParentDirectory == subPath).ToList());
 			
@@ -143,10 +124,6 @@ namespace starsky.foundation.sync.SyncServices
 			                       $" ~ OkAndSame: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)}");
 			operationHolder.SetData(_scopeFactory, updatedList);
 		}
-		
-		internal static List<FileIndexItem> FilterBefore(IEnumerable<FileIndexItem> syncData)
-		{
-			return syncData.Where(p => p.FilePath != "/" ).ToList();
-		}
+
 	}
 }

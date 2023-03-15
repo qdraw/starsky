@@ -33,7 +33,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(),
-					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+					new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(), new FakeIWebLogger()),
 					new FakeMemoryCache(new Dictionary<string, object>()),
 					new FakeIWebLogger(), 
 					new FakeIUpdateBackgroundTaskQueue(), 
@@ -49,7 +49,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(), 
-					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+					new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(), new FakeIWebLogger()),
 					new FakeMemoryCache(new Dictionary<string, object>()), 
 					new FakeIWebLogger(), new FakeIUpdateBackgroundTaskQueue(),GetScope())
 				.ManualSync("/",string.Empty);
@@ -102,7 +102,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new Synchronize(appSettings, query, item, new FakeIWebLogger(), 
 						new FakeISyncAddThumbnailTable(), null, memoryCache),
 					query,
-					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+					new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(), new FakeIWebLogger()),
 					memoryCache, 
 					new FakeIWebLogger(), 
 					new FakeIUpdateBackgroundTaskQueue(),GetScope())
@@ -132,7 +132,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}),
-					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+					new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(), new FakeIWebLogger()),
 					new FakeMemoryCache(new Dictionary<string, object>()),
 					new FakeIWebLogger(), new FakeIUpdateBackgroundTaskQueue(), GetScope())
 				.ManualSync("/test", string.Empty);
@@ -145,69 +145,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}),
-					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+					new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(), new FakeIWebLogger()),
 					new FakeMemoryCache(new Dictionary<string, object>
 					{
 						{ManualBackgroundSyncService.ManualSyncCacheName + "/test", string.Empty}
 					}), new FakeIWebLogger(), new FakeIUpdateBackgroundTaskQueue(),GetScope())
 				.ManualSync("/test", string.Empty);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result);
-		}
-
-		[TestMethod]
-		public async Task PushToSockets_ContainsValue()
-		{
-			var socket = new FakeIWebSocketConnectionsService();
-			await new ManualBackgroundSyncService(
-					new FakeISynchronize(new List<FileIndexItem>()),
-					new FakeIQuery(),
-					socket, new FakeINotificationQuery(),
-					new FakeMemoryCache(
-						new Dictionary<string, object>()), 
-					new FakeIWebLogger(), new FakeIUpdateBackgroundTaskQueue(),GetScope())
-				.PushToSockets(new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
-
-			Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
-		}
-		
-		
-		[TestMethod]
-		public void FilterBefore_OkShouldPass()
-		{
-			var result=  ManualBackgroundSyncService.FilterBefore(
-				new List<FileIndexItem>{new FileIndexItem("/test.jpg")
-				{
-					Status = FileIndexItem.ExifStatus.Ok
-				}});
-
-			Assert.AreEqual(1,result.Count);
-			Assert.AreEqual("/test.jpg",result[0].FilePath);
-		}
-		
-		[TestMethod]
-		public void FilterBefore_NotFoundShouldPass()
-		{
-			var result=  ManualBackgroundSyncService.FilterBefore(
-				new List<FileIndexItem>{new FileIndexItem("/test.jpg")
-				{
-					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-				}});
-
-			Assert.AreEqual(1,result.Count);
-			Assert.AreEqual("/test.jpg",result[0].FilePath);
-		}
-		
-		
-		[TestMethod]
-		public void FilterBefore_ShouldIgnoreHome()
-		{
-			var result=  ManualBackgroundSyncService.FilterBefore(
-				new List<FileIndexItem>{new FileIndexItem("/")
-				{
-					Status = FileIndexItem.ExifStatus.Ok
-				}});
-
-			Assert.AreEqual(0,result.Count);
 		}
 
 		[TestMethod]
@@ -222,7 +166,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var service = new ManualBackgroundSyncService(
 				new FakeISynchronize(new List<FileIndexItem>()),
 				null,
-				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
+				new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(), new FakeIWebLogger()),
 				memoryCache,
 				new FakeIWebLogger(),
 				new FakeIUpdateBackgroundTaskQueue(),
