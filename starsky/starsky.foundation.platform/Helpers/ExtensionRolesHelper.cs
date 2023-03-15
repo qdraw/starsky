@@ -382,7 +382,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>imageFormat enum</returns>
 		public static ImageFormat GetImageFormat(byte[] bytes)
 		{
-			// see http://www.mikekunz.com/image_file_header.html  
+			// see http://web.archive.org/web/20150524232918/http://www.mikekunz.com/image_file_header.html
 			// on posix: 'od -t x1 -N 10 file.mp4'  
 			var bmp = Encoding.ASCII.GetBytes("BM"); // BMP
 			var gif = Encoding.ASCII.GetBytes("GIF"); // GIF
