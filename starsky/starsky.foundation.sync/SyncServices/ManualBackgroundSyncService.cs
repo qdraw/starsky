@@ -82,7 +82,14 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(FilterBefore(updatedList), ApiNotificationType.ManualBackgroundSync);
-			await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
+			try
+			{
+				await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
+			}
+			catch ( System.Net.WebSockets.WebSocketException exception )
+			{
+				_logger.LogError("ManualBackgroundSyncService [ManualSync] catch-ed exception: " + exception.Message, exception);
+			}
 		}
 
 		internal void CreateSyncLock(string subPath)
