@@ -427,14 +427,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void MapFileTypesToExtension_Null()
 		{
-			var result = ExtensionRolesHelper.MapFileTypesToExtension(null);
+			var result = ExtensionRolesHelper.MapFileTypesToExtension(null!);
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
 		}
 
 		[TestMethod]
 		public void IsExtensionExifToolSupported_Null()
 		{
-			var result = ExtensionRolesHelper.IsExtensionExifToolSupported(null);
+			var result = ExtensionRolesHelper.IsExtensionExifToolSupported(null!);
 			Assert.IsFalse(result);
 		}
         

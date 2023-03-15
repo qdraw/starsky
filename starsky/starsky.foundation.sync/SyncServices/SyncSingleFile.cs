@@ -23,7 +23,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly CheckForStatusNotOkHelper _checkForStatusNotOkHelper;
 
 		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, 
-			IMemoryCache memoryCache, IWebLogger logger)
+			IMemoryCache? memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_query = query;

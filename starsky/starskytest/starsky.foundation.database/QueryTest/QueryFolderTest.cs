@@ -66,9 +66,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext, 
-				new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
-	        
+
+			// remove all items
+			foreach ( var allSingleItem in await dbContext.FileIndex.ToListAsync() )
+			{
+				dbContext.FileIndex.Remove(allSingleItem);
+			}
+			await dbContext.SaveChangesAsync();
+			// and remove all folders
+			
 			// item sub folder
 			var item = new FileIndexItem("/test_1234567832/test_0191921.jpg");
 			dbContext.FileIndex.Add(item);
@@ -76,10 +82,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var item1 = new FileIndexItem("/test_1234567832/test_0191922.jpg");
 			dbContext.FileIndex.Add(item1);
 			
-			dbContext.SaveChanges();
+			await dbContext.SaveChangesAsync();
 	        
 			// Important to dispose!
-			dbContext.Dispose();
+			await dbContext.DisposeAsync();
+			
+			var query = new Query(dbContext, 
+				new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
 			
 			var getItem = query.GetNextPrevInFolder("/test_1234567832/test_0191921.jpg");
 			Assert.IsNotNull(getItem);
@@ -87,7 +96,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			await query.RemoveItemAsync(item);
 			await query.RemoveItemAsync(item1);
-
 		}
 	}
 }
