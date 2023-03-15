@@ -8,7 +8,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
-using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -871,62 +870,31 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(ColorClassParser.Color.Winner, fileIndexItem.ColorClass);
 		}
 		
+		[TestMethod]
+		public async Task UpdateSidecarFileTest_True()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+				new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.jpg"}, 
+					new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
+			var result =
+				await sync.UpdateSidecarFile("test.xmp",
+					new List<FileIndexItem>());
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public async Task UpdateSidecarFileTest_False()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
+				new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.jpg"}, 
+					new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
+			var result =
+				await sync.UpdateSidecarFile("test.jpg",
+					new List<FileIndexItem>());
+			Assert.IsFalse(result);
+		}
 
-
-		// [TestMethod]
-		// public async Task SizeFileHashIsTheSame_true()
-		// {
-		// 	var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
-		// 		_iStorageFake, null, new FakeIWebLogger());
-		// 	
-		// 	var theSame = await sync.SizeFileHashIsTheSame(new FileIndexItem("/test.jpg")
-		// 	{
-		// 		LastEdited = _lastEditedDateTime
-		// 	});
-		//
-		// 	Assert.IsTrue(theSame.Item1);
-		// }
-		// [TestMethod]
-		//
-		// public async Task SizeFileHashIsTheSame_NotFoundFalse()
-		// {
-		// 	var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
-		// 		_iStorageFake, null, new FakeIWebLogger());
-		// 	
-		// 	var theSame = await sync.SizeFileHashIsTheSame(new FileIndexItem("/not-found.jpg")
-		// 	{
-		// 		LastEdited = _lastEditedDateTime
-		// 	});
-		//
-		// 	Assert.IsFalse(theSame.Item1);
-		// }
-
-
-		// [TestMethod]
-		// public async Task UpdateSidecarFileTest_False()
-		// {
-		// 	var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
-		// 		new FakeIStorage(new List<string>{"/"}, 
-		// 			new List<string>{"/test.jpg"}, 
-		// 			new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
-		// 	var result =
-		// 		await sync.UpdateSidecarFile("test.jpg",
-		// 			new List<FileIndexItem>());
-		// 	Assert.IsFalse(result);
-		// }
-		//
-		//
-		// [TestMethod]
-		// public async Task UpdateSidecarFileTest_True()
-		// {
-		// 	var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>()),
-		// 		new FakeIStorage(new List<string>{"/"}, 
-		// 			new List<string>{"/test.jpg"}, 
-		// 			new List<byte[]> { CreateAnImageNoExif.Bytes }),null, new FakeIWebLogger());
-		// 	var result =
-		// 		await sync.UpdateSidecarFile("test.xmp",
-		// 			new List<FileIndexItem>());
-		// 	Assert.IsTrue(result);
-		// }
 	}
 }

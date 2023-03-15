@@ -23,7 +23,7 @@ public class SizeFileHashIsTheSameHelper
 	/// </summary>
 	/// <param name="dbItems">item that contain size and fileHash</param>
 	/// <param name="subPath">which item</param>
-	/// <returns>Last Edited is the bool, FileHash Same bool , database item</returns>
+	/// <returns>Last Edited is the bool (null is should check further in process), FileHash Same bool (null is not checked) , database item</returns>
 	internal async Task<Tuple<bool?,bool?,FileIndexItem>> SizeFileHashIsTheSame(List<FileIndexItem> dbItems, string subPath)
 	{
 		var dbItem = dbItems.FirstOrDefault(p => p.FilePath == subPath);
@@ -52,7 +52,7 @@ public class SizeFileHashIsTheSameHelper
 		// when byte hash is different update
 		var (requestFileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
 		
-		//
+		// when there are xmp files in the list and the fileHash of the current raw is the same
 		if ( isRequestFileLastEditTheSame && requestFileHashTheSame && otherRawItems.Any())
 		{
 			return new Tuple<bool?, bool?, FileIndexItem>(null, null, dbItem);
