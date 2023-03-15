@@ -46,6 +46,14 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Remove folder data in `/api/move-to-trash` (PR #1085)
 - [x] (Added) _Front-end_ Add MoreMenu remove current folder (PR #1085)
 - [x] (Changed) _Front-end_ MoreMenu refactor (PR #1085)
+- [x] (Changed) _Front-end_ Removal of Directories (PR #1085)
+- [x] (Changed) _Front-end_ Hide parts of menu in UseLocalDesktopUi mode (PR #1087)
+- [x] (Fixed) _Front-end_ Fixed 300 eslint issues (PR #1087)
+- [x] (Changed) _Back-end_ when deleting in systemtrash mode xmp files are now deleted (PR #1088)
+- [x] (Changed) _Back-end_ test when deleting in server mode: xmp files are gone fixed (PR #1088)
+- [x] (Changed) _Back-end_ xmp database changes test (PR #1088)
+- [x] (Changed) _Back-end_ resync test with changed xmp's (PR #1088)
+- [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.407 (Runtime: 6.0.15)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.15/6.0.15.md) (PR #1096)
 
 ## version 0.5.5 - 2023-02-17 {#v0.5.5}
 
