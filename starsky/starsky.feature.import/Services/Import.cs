@@ -523,10 +523,10 @@ namespace starsky.feature.import.Services
 		/// <param name="importIndexItem">config file</param>
 		/// <param name="importSettings">optional settings</param>
 		/// <returns>status</returns>
-		internal async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, 
+		internal async Task<ImportIndexItem> Importer(ImportIndexItem? importIndexItem, 
 			ImportSettingsModel importSettings)
 		{
-			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
+			if ( importIndexItem is not { Status: ImportStatus.Ok } ) return importIndexItem!;
 
 			// True when exist and file type is raw
 			var xmpExistForThisFileType = ExistXmpSidecarForThisFileType(importIndexItem);
