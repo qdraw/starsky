@@ -175,14 +175,15 @@ namespace starsky.foundation.readmeta.Services
 		/// When you update tags, other tags will be null 
 		/// </summary>
 		/// <param name="fullFilePath">can also be a subPath</param>
-		public void RemoveReadMetaCache(string fullFilePath)
+		public bool? RemoveReadMetaCache(string fullFilePath)
 		{
-			if (_cache == null || _appSettings?.AddMemoryCache == false) return;
+			if (_cache == null || _appSettings?.AddMemoryCache == false) return null;
 			var queryCacheName = CachePrefix + fullFilePath;
 
-			if (!_cache.TryGetValue(queryCacheName, out var _)) return; 
+			if (!_cache.TryGetValue(queryCacheName, out _)) return false; 
 			// continue = go to the next item in the list
 			_cache.Remove(queryCacheName);
+			return true;
 		}
 	}
 }

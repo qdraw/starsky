@@ -66,6 +66,110 @@ namespace starskytest.Services
 			Assert.AreEqual(ColorClassParser.Color.Trash,data.ColorClass);
 
 		}
+		
+		[TestMethod]
+		public void UpdateReadMetaCache_Null()
+		{
+			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings(), null, new FakeIWebLogger());
+		    
+			readMeta.UpdateReadMetaCache(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg")
+				{
+					Tags = "t2"
+				}
+			});
+		    
+			Assert.AreEqual(string.Empty,readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
+		}
+		
+		[TestMethod]
+		public void UpdateReadMetaCache_AppSettingsDisabled()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
+			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings
+			{
+				AddMemoryCache = false
+			}, memoryCache, new FakeIWebLogger());
+		    
+			readMeta.UpdateReadMetaCache(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg")
+				{
+					Tags = "t2"
+				}
+			});
+		    
+			Assert.AreEqual(string.Empty,readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
+		}
+		
+				
+		[TestMethod]
+		public void RemoveReadMetaCache_Null()
+		{
+			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings(), null, new FakeIWebLogger());
+		    
+			var result = readMeta.RemoveReadMetaCache("/test.jpg");
+		    
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public void RemoveReadMetaCache_AppSettingsDisabled()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
+			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings
+			{
+				AddMemoryCache = false
+			}, memoryCache, new FakeIWebLogger());
+		    
+			var result = readMeta.RemoveReadMetaCache("/test.jpg");
+		    
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public void RemoveReadMetaCache_NotFound()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
+			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings
+			{
+				AddMemoryCache = true
+			}, memoryCache, new FakeIWebLogger());
+		    
+			var result = readMeta.RemoveReadMetaCache("/test.jpg");
+		    
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public void RemoveReadMetaCache_Exists()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
+			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings
+			{
+				AddMemoryCache = true
+			}, memoryCache, new FakeIWebLogger());
+			
+			// set cache
+			readMeta.ReadExifAndXmpFromFile("/test.jpg");
+
+			var result = readMeta.RemoveReadMetaCache("/test.jpg");
+		    
+			Assert.IsTrue(result);
+		}
 
 		[TestMethod]
 		public void ReadMetaTest_CheckIfCacheListIsUpdated()

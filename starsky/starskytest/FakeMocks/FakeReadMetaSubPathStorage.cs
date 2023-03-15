@@ -24,9 +24,10 @@ namespace starskytest.FakeMocks
 			return _readMeta.ReadExifAndXmpFromFileAddFilePathHash(subPathList,fileHashes);
 		}
 
-		public void RemoveReadMetaCache(string fullFilePath)
+		public bool? RemoveReadMetaCache(string fullFilePath)
 		{
 			_readMeta.RemoveReadMetaCache(fullFilePath);
+			return true;
 		}
 
 		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)

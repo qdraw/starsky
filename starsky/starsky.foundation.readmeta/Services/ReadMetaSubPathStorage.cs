@@ -32,9 +32,9 @@ namespace starsky.foundation.readmeta.Services
 			return _readMeta.ReadExifAndXmpFromFileAddFilePathHash(subPathList,fileHashes);
 		}
 
-		public void RemoveReadMetaCache(string fullFilePath)
+		public bool? RemoveReadMetaCache(string fullFilePath)
 		{
-			_readMeta.RemoveReadMetaCache(fullFilePath);
+			return _readMeta.RemoveReadMetaCache(fullFilePath);
 		}
 
 		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
