@@ -263,7 +263,7 @@ namespace starsky.foundation.database.Query
         /// <returns>this item</returns>
         public async Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent)
         {
-	        async Task LocalQuery(DbContext context, FileIndexItem fileIndexItem)
+	        async Task LocalQuery(ApplicationDbContext context, FileIndexItem fileIndexItem)
 	        {
 		        context.Attach(fileIndexItem).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
@@ -286,12 +286,12 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException e )
 	        {
-		        await RetrySaveChangesAsync(updateStatusContent, e,"UpdateItemAsync ObjectDisposedException");
+		        await RetryQuerySaveChangesAsync(updateStatusContent, e,"UpdateItemAsync ObjectDisposedException");
 	        }
 	        catch ( InvalidOperationException e)
 	        {
 		        // System.InvalidOperationException: Can't replace active reader.
-		        await RetrySaveChangesAsync(updateStatusContent, e, "UpdateItemAsync InvalidOperationException",2000);
+		        await RetryQuerySaveChangesAsync(updateStatusContent, e, $"UpdateItemAsync InvalidOperationException {updateStatusContent.FilePath}" ,2000);
 	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {
@@ -387,7 +387,7 @@ namespace starsky.foundation.database.Query
         /// <param name="e">Exception</param>
         /// <param name="source">Where from is this called, this helps to debug the code better</param>
         /// <param name="delay">retry delay in milliseconds, 1000 = 1 second</param>
-        internal async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
+        internal async Task RetryQuerySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
         {
 	        _logger.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source}");
 	        _logger.LogInformation("[RetrySaveChangesAsync] next retry ~>");

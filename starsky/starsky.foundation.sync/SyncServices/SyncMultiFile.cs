@@ -127,6 +127,10 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				var dbItemSearchedIndex = dbItems.FindIndex(p =>
 					p.FilePath == statusItem.FilePath);
+				if ( dbItemSearchedIndex < 0 )
+				{
+					continue;
+				}
 				var dbItemSearched = dbItems[dbItemSearchedIndex];
 				
 				if ( dbItemSearched == null || (dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex 
