@@ -87,7 +87,6 @@ namespace starskytest.Services
 			Assert.AreEqual("t2",readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
 		}
 	    
-	    
 		[TestMethod]
 		public void ReadMetaTest_CheckIfCacheIsUpdated_SingleItem()
 		{
@@ -105,6 +104,34 @@ namespace starskytest.Services
 			);
 		    
 			Assert.AreEqual("t2",readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
+		}
+		
+		[TestMethod]
+		public void CorruptXmpFile_SoIgnore()
+		{
+			var storage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { "/test.dng", "/test.xmp" }, new List<byte[]>
+				{
+					CreateAnImage.Bytes,
+					Array.Empty<byte>()
+				});
+			var readMeta = new ReadMeta(storage, new AppSettings(), null!, new FakeIWebLogger());
+	    
+			Assert.AreEqual("test, sion",readMeta.ReadExifAndXmpFromFile("/test.dng").Tags);
+		}
+		
+		[TestMethod]
+		public void ShouldPickXmpFile()
+		{
+			var storage = new FakeIStorage(new List<string> { "/" },
+				new List<string> { "/test.dng", "/test.xmp" }, new List<byte[]>
+				{
+					CreateAnImage.Bytes,
+					CreateAnXmp.Bytes
+				});
+			var readMeta = new ReadMeta(storage, new AppSettings(), null!, new FakeIWebLogger());
+	    
+			Assert.AreEqual(string.Empty,readMeta.ReadExifAndXmpFromFile("/test.dng").Tags);
 		}
 	}
 }

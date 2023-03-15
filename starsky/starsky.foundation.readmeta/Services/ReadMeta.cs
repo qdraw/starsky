@@ -60,12 +60,14 @@ namespace starsky.foundation.readmeta.Services
 			// when reading a .xmp file direct ignore the readExifFromFile
 			if ( ExtensionRolesHelper.IsExtensionSidecar(subPath) )
 				return xmpFileIndexItem;
-			
+
 			if ( xmpFileIndexItem.IsoSpeed != 0
 			     && !string.IsNullOrEmpty(xmpFileIndexItem.Make)
-			     && xmpFileIndexItem.DateTime.Year != 0 &&
-			     xmpFileIndexItem.ImageHeight != 0 )
+			     && xmpFileIndexItem.DateTime.Year != 0
+			     && !string.IsNullOrEmpty(xmpFileIndexItem.ShutterSpeed) )
+			{
 				return xmpFileIndexItem;
+			}
 			
 			// so the sidecar file is not used to store the most important tags
 			var fileExifItemFile = _readExif.ReadExifFromFile(subPath,fileIndexItemWithPath);
