@@ -139,10 +139,10 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					continue;
 				}
-				
+
 				dbItems[dbItemSearchedIndex].Status = statusItem.Status;
 				
-				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok } )
+				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok } ) // 0 check
 				{
 					// there is still a check if the file is not changed see: SizeFileHashIsTheSame
 					dbItems[dbItemSearchedIndex].Status = FileIndexItem.ExifStatus.OkAndSame;

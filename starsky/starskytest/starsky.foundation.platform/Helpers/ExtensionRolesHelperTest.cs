@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -169,6 +170,22 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 		}
 		
+		[TestMethod]
+		public void Files_GetImageFormat_gpx_Xml_Test_xxx()
+		{
+			const string text = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<gpx xmlns";
+			byte[] bmBytes = Encoding.ASCII.GetBytes(text);
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+		}
+
+		[TestMethod]
+		public void GetImageFormat_Jpeg_Example()
+		{
+			// 20201005_155330_DSC05634_meta_thumb
+			var jpeg4 = new byte[] {255, 216, 255, 237};
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg, ExtensionRolesHelper.GetImageFormat(jpeg4));
+		}
 				
 		[TestMethod]
 		public void Files_GetImageFormat_gpx_Test_39()

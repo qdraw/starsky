@@ -454,7 +454,8 @@ namespace starsky.foundation.platform.Helpers
 			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
 			     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
 			     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) )
+			     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
 			{
 				return ImageFormat.gpx;
 			}
@@ -477,9 +478,12 @@ namespace starsky.foundation.platform.Helpers
 		
 		private static ImageFormat? GetImageFormatJpeg(byte[] bytes)
 		{
+			// https://en.wikipedia.org/wiki/List_of_file_signatures
 			var jpeg = new byte[] {255, 216, 255, 224}; // jpeg
 			var jpeg2 = new byte[] {255, 216, 255, 225}; // jpeg canon
 			var jpeg3 = new byte[] {255, 216, 255, 219}; // other jpeg
+			var jpeg4 = new byte[] {255, 216, 255, 237}; // other ?
+
 			if ( jpeg.SequenceEqual(bytes.Take(jpeg.Length)) )
 				return ImageFormat.jpg;
 
@@ -487,6 +491,9 @@ namespace starsky.foundation.platform.Helpers
 				return ImageFormat.jpg;
 			
 			if ( jpeg3.SequenceEqual(bytes.Take(jpeg3.Length)) )
+				return ImageFormat.jpg;
+			
+			if ( jpeg4.SequenceEqual(bytes.Take(jpeg4.Length)) )
 				return ImageFormat.jpg;
 			
 			return null;

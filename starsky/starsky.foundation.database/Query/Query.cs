@@ -286,12 +286,12 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException e )
 	        {
-		        await RetryQuerySaveChangesAsync(updateStatusContent, e,"UpdateItemAsync ObjectDisposedException");
+		        await RetryQueryUpdateSaveChangesAsync(updateStatusContent, e,"UpdateItemAsync ObjectDisposedException");
 	        }
 	        catch ( InvalidOperationException e)
 	        {
 		        // System.InvalidOperationException: Can't replace active reader.
-		        await RetryQuerySaveChangesAsync(updateStatusContent, e, $"UpdateItemAsync InvalidOperationException {updateStatusContent.FilePath}" ,2000);
+		        await RetryQueryUpdateSaveChangesAsync(updateStatusContent, e, $"UpdateItemAsync InvalidOperationException {updateStatusContent.FilePath}" ,2000);
 	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {
@@ -387,8 +387,14 @@ namespace starsky.foundation.database.Query
         /// <param name="e">Exception</param>
         /// <param name="source">Where from is this called, this helps to debug the code better</param>
         /// <param name="delay">retry delay in milliseconds, 1000 = 1 second</param>
-        internal async Task RetryQuerySaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
+        internal async Task<bool?> RetryQueryUpdateSaveChangesAsync(FileIndexItem updateStatusContent, Exception e, string source, int delay = 50)
         {
+	        if ( updateStatusContent.Id == 0 )
+	        {
+		        _logger.LogError(e,$"[RetrySaveChangesAsync] skipped due 0 id: {source}");
+		        return null;
+	        }
+	        
 	        _logger.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source}");
 	        _logger.LogInformation("[RetrySaveChangesAsync] next retry ~>");
 	        
@@ -432,6 +438,7 @@ namespace starsky.foundation.database.Query
 				        "[RetrySaveChangesAsync] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
+	        return true;
         }
         
         /// <summary>

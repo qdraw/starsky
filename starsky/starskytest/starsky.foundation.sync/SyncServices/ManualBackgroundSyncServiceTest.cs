@@ -33,7 +33,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(),
-					new FakeIWebSocketConnectionsService(),
+					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
 					new FakeMemoryCache(new Dictionary<string, object>()),
 					new FakeIWebLogger(), 
 					new FakeIUpdateBackgroundTaskQueue(), 
@@ -48,8 +48,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var result = await new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
-					new FakeIQuery(),
-					new FakeIWebSocketConnectionsService(),
+					new FakeIQuery(), 
+					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
 					new FakeMemoryCache(new Dictionary<string, object>()), 
 					new FakeIWebLogger(), new FakeIUpdateBackgroundTaskQueue(),GetScope())
 				.ManualSync("/",string.Empty);
@@ -102,7 +102,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new Synchronize(appSettings, query, item, new FakeIWebLogger(), 
 						new FakeISyncAddThumbnailTable(), null, memoryCache),
 					query,
-					new FakeIWebSocketConnectionsService(),
+					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
 					memoryCache, 
 					new FakeIWebLogger(), 
 					new FakeIUpdateBackgroundTaskQueue(),GetScope())
@@ -132,7 +132,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}),
-					new FakeIWebSocketConnectionsService(),
+					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
 					new FakeMemoryCache(new Dictionary<string, object>()),
 					new FakeIWebLogger(), new FakeIUpdateBackgroundTaskQueue(), GetScope())
 				.ManualSync("/test", string.Empty);
@@ -145,7 +145,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}),
-					new FakeIWebSocketConnectionsService(),
+					new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
 					new FakeMemoryCache(new Dictionary<string, object>
 					{
 						{ManualBackgroundSyncService.ManualSyncCacheName + "/test", string.Empty}
@@ -161,7 +161,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(),
-					socket,
+					socket, new FakeINotificationQuery(),
 					new FakeMemoryCache(
 						new Dictionary<string, object>()), 
 					new FakeIWebLogger(), new FakeIUpdateBackgroundTaskQueue(),GetScope())
@@ -222,7 +222,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var service = new ManualBackgroundSyncService(
 				new FakeISynchronize(new List<FileIndexItem>()),
 				null,
-				new FakeIWebSocketConnectionsService(),
+				new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(),
 				memoryCache,
 				new FakeIWebLogger(),
 				new FakeIUpdateBackgroundTaskQueue(),

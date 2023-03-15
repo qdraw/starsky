@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -29,9 +30,10 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IWebLogger _logger;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly INotificationQuery _notificationQuery;
 
 		public ManualBackgroundSyncService(ISynchronize synchronize, IQuery query,
-			IWebSocketConnectionsService connectionsService, 
+			IWebSocketConnectionsService connectionsService, INotificationQuery notificationQuery,
 			IMemoryCache cache , IWebLogger logger, IUpdateBackgroundTaskQueue bgTaskQueue, 
 			IServiceScopeFactory scopeFactory)
 		{
@@ -42,6 +44,7 @@ namespace starsky.foundation.sync.SyncServices
 			_logger = logger;
 			_bgTaskQueue = bgTaskQueue;
 			_scopeFactory = scopeFactory;
+			_notificationQuery = notificationQuery;
 		}
 
 		internal const string ManualSyncCacheName = "ManualSync_";
@@ -82,13 +85,16 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(FilterBefore(updatedList), ApiNotificationType.ManualBackgroundSync);
+			await _notificationQuery.AddNotification(webSocketResponse);
+			
 			try
 			{
 				await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
 			}
-			catch ( System.Net.WebSockets.WebSocketException exception )
+			catch ( WebSocketException exception )
 			{
-				_logger.LogError("ManualBackgroundSyncService [ManualSync] catch-ed exception: " + exception.Message, exception);
+				// The WebSocket is in an invalid state: 'Aborted' when the client disconnects
+				_logger.LogError("[ManualBackgroundSyncService] catch-ed WebSocketException: " + exception.Message, exception);
 			}
 		}
 
