@@ -29,7 +29,7 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(_data);
 		}
 
-		public async Task<List<FileIndexItem>> Sync(List<string> subPaths)
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			var results = new List<FileIndexItem>();
 			foreach ( var subPath in subPaths )

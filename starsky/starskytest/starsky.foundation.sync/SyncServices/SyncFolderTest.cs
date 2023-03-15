@@ -85,7 +85,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var storage = new FakeIStorage();
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.Folder("/not_found");
 			
 			Assert.AreEqual("/not_found",result[0].FilePath);
@@ -97,7 +97,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var storage = GetStorage();
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.Folder("/folder_no_content");
 
 			Assert.AreEqual("/folder_no_content",result[0].FilePath);
@@ -119,7 +119,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>{CreateAnImage.Bytes});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
 			// with filter
 			var result = await syncFolder.Folder("/test", // FILTER applied
@@ -148,7 +148,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>{CreateAnImage.Bytes});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
 			// Filter applied
 			var result = await syncFolder.Folder("/test", null, 
@@ -176,7 +176,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>{CreateAnImage.Bytes});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
 			var result = await syncFolder.Folder("/test");
 
@@ -200,7 +200,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				subPath);
 			
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.Folder("/change");
 
 			Assert.AreEqual(subPath,result[0].FilePath);
@@ -235,7 +235,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(2, queryResultBefore.Count);
 
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
 			var result = (await syncFolder.Folder(
 				"/Folder_Duplicate")).Where(p => p.FilePath != "/").ToList();
@@ -274,7 +274,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1, queryResultBefore.Count);
 
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
 			var result = (await syncFolder.Folder(
 				"/same_test")).Where(p => p.FilePath != "/").ToList();
@@ -322,7 +322,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1, queryResultBefore.Count);
 
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
 			var result = (await syncFolder.Folder(
 				"/same_test")).Where(p => p.FilePath != "/").ToList();
@@ -337,7 +337,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1, queryResult.Count); 
 			Assert.AreEqual(1, queryResult.Count(p => p.FileName == "test.jpg")); 
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, queryResult.FirstOrDefault(p => p.FileName == "test.jpg")?.Status); 
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
+				queryResult.FirstOrDefault(p => p.FileName == "test.jpg")?.Status); 
 
 			await _query.RemoveItemAsync(queryResult[0]);
 		}
@@ -352,7 +353,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var query = new FakeIQuery();
 
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = (await syncFolder.Folder(folderPath)).Where(p => p.FilePath != "/").ToList();
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
@@ -374,7 +375,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await query.AddItemAsync(new FileIndexItem("/") { IsDirectory = true });
 			
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.AddParentFolder(folderPath, null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
@@ -399,7 +400,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var query = new FakeIQuery();
 			
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = (await syncFolder.AddParentFolder(folderPath,null))
 				.Where(p => p.FilePath != "/").ToList();
 
@@ -423,7 +424,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var query = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/")});
 			
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.AddParentFolder(folderPath, null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
@@ -443,7 +444,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var query = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/")});
 			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(GetStorage()),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(),null);
 			var result = await syncFolder.AddParentFolder("/test", 
 				new List<FileIndexItem>{new FileIndexItem("/test")});
 			Assert.AreEqual(0,result.Where(p => p.Status != FileIndexItem.ExifStatus.OkAndSame).Count());
@@ -517,7 +518,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var storage =
 				new FakeIStorage(new List<string> {"/", "/DuplicateFolder"});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
 			await syncFolder.Folder("/");
 
@@ -542,7 +543,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var storage =
 				new FakeIStorage(new List<string> {"/", "/DuplicateFolder"});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
 			await syncFolder.Folder("/DuplicateFolder");
 
@@ -586,7 +587,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			};
 			
 			var syncFolder = new SyncFolder(appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.Folder("/test_ignore");
 			
 			Assert.AreEqual("/test_ignore/ignore/test1.jpg",result[0].FilePath);
@@ -608,7 +609,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var storage = new FakeIStorage();
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
+				new ConsoleWrapper(), new FakeIWebLogger(), 
+				new FakeMemoryCache(new Dictionary<string, object>()), null);
 
 			var rootItem = await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk3");
 			var result = await syncFolder.RemoveChildItems(_query, rootItem);
@@ -623,9 +625,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task CompareFolderListAndFixMissingFoldersTest_Ok()
 		{
-			var storage = new FakeIStorage(new List<string>{"/", "/2018", "/2018/02", "/2018/02/2018_02_01"});
+			var storage = new FakeIStorage(new List<string>{"/",
+				"/2018", "/2018/02", "/2018/02/2018_02_01"});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
+				new ConsoleWrapper(), new FakeIWebLogger(), 
+				new FakeMemoryCache(new Dictionary<string, object>()), null);
 			
 			await syncFolder.CompareFolderListAndFixMissingFolders(
 				new List<string>{"/", "/2018", "/2018/02", "/2018/02/2018_02_01"},
@@ -641,7 +645,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var storage = new FakeIStorage(new List<string>{"/", "/.git","/test"});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
+				new ConsoleWrapper(), new FakeIWebLogger(), 
+				new FakeMemoryCache(new Dictionary<string, object>()), null);
 			
 			await syncFolder.CompareFolderListAndFixMissingFolders(
 				new List<string>{"/", "/.git"},
@@ -655,7 +660,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var storage = new FakeIStorage(new List<string>{"/", "/2018", "/2018/02", "/2018/02/2018_02_01"});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
+				new ConsoleWrapper(), new FakeIWebLogger(), 
+				new FakeMemoryCache(new Dictionary<string, object>()),null);
 			
 			await syncFolder.CompareFolderListAndFixMissingFolders(
 				new List<string>{"/", "/2018", "/2018/02", "/2018/02/2018_02_01"},
@@ -676,7 +682,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
+				new ConsoleWrapper(), new FakeIWebLogger(),
+				new FakeMemoryCache(new Dictionary<string, object>()),null);
 			
 			await syncFolder.CompareFolderListAndFixMissingFolders(
 				new List<string>{"/", "/2018", "/2018/02", "/2018/02/2018_02_01"},

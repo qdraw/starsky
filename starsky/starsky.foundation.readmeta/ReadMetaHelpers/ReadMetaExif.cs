@@ -51,7 +51,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        ColorClass = ColorClassParser.Color.None,
 		        ImageFormat = ExtensionRolesHelper.ImageFormat.unknown,
 		        Status = FileIndexItem.ExifStatus.OperationNotSupported,
-		        Tags = nameof(ImageProcessingException).ToLowerInvariant(),
+		        Tags = string.Empty,
 		        Orientation = FileIndexItem.Rotation.Horizontal
 	        };
 	        
@@ -544,14 +544,16 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        //     https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
 		        //     2018:01:01 11:29:36
 		        var tagDateTimeDigitized = exifSubIfd.GetDescription(ExifDirectoryBase.TagDateTimeDigitized);
-		        DateTime.TryParseExact(tagDateTimeDigitized, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeDigitized);
+		        DateTime.TryParseExact(tagDateTimeDigitized, 
+			        pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeDigitized);
 		        if ( itemDateTimeDigitized.Year >= 2 )
 		        {
 			        return itemDateTimeDigitized;
 		        }
 	        
 		        var tagDateTimeOriginal = exifSubIfd.GetDescription(ExifDirectoryBase.TagDateTimeOriginal);
-		        DateTime.TryParseExact(tagDateTimeOriginal, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeOriginal);
+		        DateTime.TryParseExact(tagDateTimeOriginal, 
+			        pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeOriginal);
 		        if ( itemDateTimeOriginal.Year >= 2 )
 		        {
 			        return itemDateTimeOriginal;

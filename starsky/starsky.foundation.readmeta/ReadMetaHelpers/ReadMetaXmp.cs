@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
-using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -15,15 +15,17 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	public sealed class ReadMetaXmp
 	{
 		private readonly IStorage _iStorage;
+		private readonly IWebLogger _logger;
 
-		public ReadMetaXmp(IStorage iStorage, IMemoryCache memoryCache = null)
+		public ReadMetaXmp(IStorage iStorage, IWebLogger logger)
 		{
 			_iStorage = iStorage;
+			_logger = logger;
 		}
 		
         public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem)
         {
-	        if(databaseItem == null) databaseItem = new FileIndexItem();
+	        databaseItem ??= new FileIndexItem();
 
 	        // Parse an xmp file for this location
 	        var xmpSubPath =
@@ -42,7 +44,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return databaseItem;
         }
         
-        public static FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem databaseItem = null)
+        public FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem databaseItem = null)
         {
             // Does not require appSettings
             
@@ -58,8 +60,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
 	        catch ( XmpException e )
 	        {
-		        Console.WriteLine($"XmpException {databaseItem.FilePath} >>\n{e}\n <<XmpException");
-		        databaseItem.Tags = "XmpException";
+		        _logger.LogInformation($"XmpException {databaseItem.FilePath} >>\n{e}\n <<XmpException");
+		        databaseItem.Tags = string.Empty;
+		        databaseItem.Status =
+			        FileIndexItem.ExifStatus.OperationNotSupported;
 		        databaseItem.ColorClass = ColorClassParser.Color.None;
 	        }
 	        

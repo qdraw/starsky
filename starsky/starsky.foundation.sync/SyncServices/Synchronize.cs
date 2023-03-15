@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -31,14 +32,15 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncMultiFile _syncMultiFile;
 
 		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, 
-			ISyncAddThumbnailTable syncAddThumbnail, IMemoryCache memoryCache = null)
+			ISyncAddThumbnailTable syncAddThumbnail, IServiceScopeFactory serviceScopeFactory = null,  
+			IMemoryCache memoryCache = null)
 		{
 			_syncAddThumbnail = syncAddThumbnail;
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, null, logger);
-			_syncRemove = new SyncRemove(appSettings, query, memoryCache, logger);
-			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger,memoryCache);
+			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, memoryCache, logger);
+			_syncRemove = new SyncRemove(appSettings,  query, memoryCache, logger, serviceScopeFactory);
+			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger,memoryCache, serviceScopeFactory);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 			_syncMultiFile = new SyncMultiFile(appSettings, query, _subPathStorage, memoryCache, logger);
 		}
@@ -51,15 +53,17 @@ namespace starsky.foundation.sync.SyncServices
 				await SyncWithoutThumbnail(subPath, updateDelegate,
 					childDirectoriesAfter));
 		}
-		
+
 		/// <summary>
 		/// Sync list by subPaths
 		/// </summary>
 		/// <param name="subPaths"></param>
+		/// <param name="updateDelegate"></param>
 		/// <returns></returns>
-		public async Task<List<FileIndexItem>> Sync(List<string> subPaths)
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, 
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
-			var results = await _syncMultiFile.MultiFile(subPaths);
+			var results = await _syncMultiFile.MultiFile(subPaths,updateDelegate);
 			return await _syncAddThumbnail.SyncThumbnailTableAsync(results);
 		}
 
@@ -84,8 +88,7 @@ namespace starsky.foundation.sync.SyncServices
 						updateDelegate, childDirectoriesAfter);
 					return syncFolder;
 				case FolderOrFileModel.FolderOrFileTypeList.File:
-					var syncFile = await _syncSingleFile.SingleFile(subPath, updateDelegate);
-					return new List<FileIndexItem>{syncFile};
+					return await _syncSingleFile.SingleFile(subPath, updateDelegate);
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
 					return await _syncRemove.RemoveAsync(subPath, updateDelegate);
 				default:

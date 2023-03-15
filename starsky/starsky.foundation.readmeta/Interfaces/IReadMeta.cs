@@ -12,7 +12,7 @@ namespace starsky.foundation.readmeta.Interfaces
 		/// <returns></returns>
 	    FileIndexItem ReadExifAndXmpFromFile(string subPath);
         List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList, List<string> fileHashes = null);
-        void RemoveReadMetaCache(string fullFilePath);
+        bool? RemoveReadMetaCache(string fullFilePath);
         void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel);
     }
 }

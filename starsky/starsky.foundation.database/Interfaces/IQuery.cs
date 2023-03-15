@@ -105,6 +105,15 @@ namespace starsky.foundation.database.Interfaces
         Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputFilePath"></param>
+        /// <param name="collections"></param>
+        /// <returns></returns>
+        Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath,
+	        bool collections);
+        
+        /// <summary>
         /// Cached result that contain values
         /// </summary>
         /// <param name="inputFilePaths">List of filePaths</param>

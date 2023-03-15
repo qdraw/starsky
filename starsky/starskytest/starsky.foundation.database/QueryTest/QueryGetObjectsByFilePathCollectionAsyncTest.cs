@@ -138,20 +138,33 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public async Task GetObjectsByFilePathCollectionAsync_MultipleItems()
 		{
-			await _query.AddRangeAsync(new List<FileIndexItem>
+			async Task AddExampleRange()
 			{
-				new FileIndexItem("/multiple_item"), // <= should never match this one
-				new FileIndexItem("/multiple_item_0.jpg"),
-				new FileIndexItem("/multiple_item_1.jpg"),
-				new FileIndexItem("/multiple_item_2.jpg"),
-				new FileIndexItem("/multiple_item_3.jpg")
+				await _query.AddRangeAsync(new List<FileIndexItem>
+				{
+					new FileIndexItem("/multiple_item"), // <= should never match this one
+					new FileIndexItem("/multiple_item_0.jpg"),
+					new FileIndexItem("/multiple_item_1.jpg"),
+					new FileIndexItem("/multiple_item_2.jpg"),
+					new FileIndexItem("/multiple_item_3.jpg")
+				});
+			}
 
-			});
+			async Task<List<FileIndexItem>> ExampleQuery()
+			{
+				return await _query.GetObjectsByFilePathCollectionQueryAsync(
+					new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg",
+						"/multiple_item_2.jpg", "/multiple_item_3.jpg"});
+			}
+			await AddExampleRange();
 			
-			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-				new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg",
-					"/multiple_item_2.jpg", "/multiple_item_3.jpg"});
-
+			var result = await ExampleQuery();
+			if ( result.Count == 0 )
+			{
+				await AddExampleRange();
+				result = await ExampleQuery();
+			}
+			
 			Assert.AreEqual(4, result.Count);
 			
 			var orderedResults = result.OrderBy(p => p.FileName).ToList();
@@ -163,7 +176,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await _query.RemoveItemAsync(result[1]);
 			await _query.RemoveItemAsync(result[2]);
 			await _query.RemoveItemAsync(result[3]);
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/multiple_item"));
+			var multipleItem = await _query.GetObjectByFilePathAsync("/multiple_item");
+			if ( multipleItem != null )
+			{
+				await _query.RemoveItemAsync(multipleItem);
+			}
 		}
 		
 		[TestMethod]

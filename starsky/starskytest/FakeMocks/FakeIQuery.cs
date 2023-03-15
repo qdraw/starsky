@@ -159,6 +159,11 @@ namespace starskytest.FakeMocks
 			}
 		}
 
+		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath, bool collections)
+		{
+			return await GetObjectsByFilePathAsync(new List<string>{inputFilePath}, collections);
+		}
+
 		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList)
 		{
 			var result = new List<FileIndexItem>();

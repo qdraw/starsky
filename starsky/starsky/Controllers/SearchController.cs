@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Models;
@@ -28,9 +29,9 @@ namespace starsky.Controllers
 		[HttpGet("/api/search")]
 		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
 		[Produces("application/json")]
-		public IActionResult Index(string t, int p = 0)
+		public async Task<IActionResult> Index(string t, int p = 0)
 		{
-			var model = _search.Search(t, p);
+			var model = await _search.Search(t, p);
 			return Json(model);
 		}
         
@@ -46,10 +47,10 @@ namespace starsky.Controllers
 		[HttpGet("/api/search/relative-objects")]
 		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
 		[Produces("application/json")]
-		public IActionResult SearchRelative(string f, string t, int p = 0)
+		public async Task<IActionResult> SearchRelative(string f, string t, int p = 0)
 		{
 			// Json api && View()            
-			var searchViewModel = _search.Search(t, p);
+			var searchViewModel =  await _search.Search(t, p);
 
 			var photoIndexOfQuery = GetIndexFilePathFromSearch(searchViewModel,f);
 			if ( photoIndexOfQuery == -1 ) return NotFound("image not found in search result");
@@ -101,9 +102,9 @@ namespace starsky.Controllers
 		[HttpGet("/api/search/trash")]
 		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
 		[Produces("application/json")]
-		public IActionResult Trash(int p = 0)
+		public async Task<IActionResult> Trash(int p = 0)
 		{
-			var model = _search.Search(TrashKeyword.TrashKeywordString, p, false);
+			var model = await _search.Search(TrashKeyword.TrashKeywordString, p, false);
 			return Json(model);
 		}
 

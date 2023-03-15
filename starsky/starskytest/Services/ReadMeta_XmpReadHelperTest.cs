@@ -53,7 +53,7 @@ namespace starskytest.Services
 		public void XmpReadHelperTest_GetData_usingStringExample()
 		{
 			var iStorage = new FakeIStorage();
-			var data = ReadMetaXmp.GetDataFromString(Input);
+			var data = new ReadMetaXmp(new FakeIStorage(),new FakeIWebLogger()).GetDataFromString(Input);
             
 			Assert.AreEqual(52.3451333333,data.Latitude,0.001);
 			Assert.AreEqual(5.930,data.Longitude,0.001);
@@ -94,7 +94,7 @@ namespace starskytest.Services
 				FileName = "test.arw"
 			};
 		    
-			var data = new ReadMetaXmp(fakeIStorage).XmpGetSidecarFile(fileIndexItem);
+			var data = new ReadMetaXmp(fakeIStorage, new FakeIWebLogger()).XmpGetSidecarFile(fileIndexItem);
 
 		    
 			Assert.AreEqual(52.3451333333,data.Latitude,0.001);
@@ -143,7 +143,7 @@ namespace starskytest.Services
 				DateTime = new DateTime(1990,01,01,01,00,00)
 			};
 		    
-			var data = new ReadMetaXmp(fakeIStorage).XmpGetSidecarFile(fileIndexItem);
+			var data = new ReadMetaXmp(fakeIStorage, new FakeIWebLogger()).XmpGetSidecarFile(fileIndexItem);
 
 		    
 			Assert.AreEqual(52.3451333333,data.Latitude,0.001);
@@ -174,7 +174,7 @@ namespace starskytest.Services
 		{
 			var xmpStart = "<?xpacket begin=\' \' id=\'W5M0MpCehiHzreSzNTczkc9d\'?>\n<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Image::ExifTool 10.40\'>\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n</rdf:RDF>\n</x:xmpmeta>\n<?xpacket end=\'w\'?>";
 		    
-			var data =  ReadMetaXmp.GetDataFromString(xmpStart);
+			var data =  new ReadMetaXmp(new FakeIStorage(),new FakeIWebLogger()).GetDataFromString(xmpStart);
 		    
 			Assert.AreEqual(string.Empty,data.Tags);
 
@@ -185,9 +185,17 @@ namespace starskytest.Services
 		{
 			var xmpStart =
 				"<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Qdraw\'>\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n</rdf:RDF>\n</x:xmpmeta>";
-			var data = ReadMetaXmp.GetDataFromString(xmpStart);
+			var data = new ReadMetaXmp(new FakeIStorage(),new FakeIWebLogger()).GetDataFromString(xmpStart);
 			Assert.AreEqual(string.Empty,data.Tags);
-
+		}
+		
+		[TestMethod]
+		public void XmpBasicRead_InvalidXml()
+		{
+			const string xmpStart = "<?xml version=\"1.0\"?>\n<!DOCTYPE WISHES\n<!ELEMENT WISHES (to, from)>\n" +
+			                        "\n<Wishes >\nHave a good day!!\n</WISHES >";
+			var data = new ReadMetaXmp(new FakeIStorage(),new FakeIWebLogger()).GetDataFromString(xmpStart);
+			Assert.AreEqual(string.Empty,data.Tags);
 		}
 
 
@@ -208,7 +216,8 @@ namespace starskytest.Services
 			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
 				new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
 			
-			var data = new ReadMetaXmp(fakeIStorage).XmpGetSidecarFile(new FileIndexItem("/test.arw"));
+			var readMetaXmp = new ReadMetaXmp(fakeIStorage, new FakeIWebLogger());
+			var data = readMetaXmp.XmpGetSidecarFile(new FileIndexItem("/test.arw"));
 
 			Assert.AreEqual("NLD", data.LocationCountryCode);
 		}

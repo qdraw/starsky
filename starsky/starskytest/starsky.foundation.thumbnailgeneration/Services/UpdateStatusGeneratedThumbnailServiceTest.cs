@@ -16,7 +16,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(new List<GenerationResultModel>());
+		await service.AddOrUpdateStatusAsync(new List<GenerationResultModel>());
 
 		var getResult = await query.Get();
 		Assert.AreEqual(0, getResult.Count);
@@ -27,36 +27,42 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		new GenerationResultModel
 		{
 			FileHash = "large_1",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.Large,
 			Success = true
 		},
 		new GenerationResultModel
 		{
 			FileHash = "large_2",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.Large,
 			Success = false
 		},
 		new GenerationResultModel
 		{
 			FileHash = "small_1",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.Small,
 			Success = true
 		},
 		new GenerationResultModel
 		{
 			FileHash = "small_2",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.Small,
 			Success = false
 		},
 		new GenerationResultModel
 		{
 			FileHash = "extra_large_1",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.ExtraLarge,
 			Success = true
 		},
 		new GenerationResultModel
 		{
 			FileHash = "extra_large_2",
+			SubPath = "test.jpg",
 			Size = ThumbnailSize.ExtraLarge,
 			Success = false
 		}
@@ -68,7 +74,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get();
 		Assert.AreEqual(6, getResult.Count);
@@ -79,7 +85,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[0].FileHash); // see the index
 		Assert.AreEqual(1, getResult.Count);
@@ -93,7 +99,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 								// see the index
 		var getResult = await query.Get(ExampleData[1].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -108,7 +114,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[2].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -122,7 +128,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[3].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -136,7 +142,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[4].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -150,7 +156,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData);
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[5].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -165,25 +171,29 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.Large,
-			Success = true
+			Success = true,
+			SubPath = "test.jpg"
 		},
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.ExtraLarge,
-			Success = true
+			Success = true,
+			SubPath = "test.jpg",
 		},
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.Small,
-			Success = true
+			Success = true,
+			SubPath = "test.jpg"
 		},
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.TinyMeta,
-			Success = false
+			Success = false,
+			SubPath = "test.jpg"
 		}
 	};
 	
@@ -192,7 +202,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData2);
+		await service.AddOrUpdateStatusAsync(ExampleData2);
 
 		var getResult = await query.Get(ExampleData2[0].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -207,13 +217,14 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.UpdateStatusAsync(ExampleData2);
+		await service.AddOrUpdateStatusAsync(ExampleData2);
 
-		await service.UpdateStatusAsync(new List<GenerationResultModel>{new GenerationResultModel
+		await service.AddOrUpdateStatusAsync(new List<GenerationResultModel>{new GenerationResultModel
 		{
 			FileHash = "image_01",
 			Size = ThumbnailSize.Large,
-			Success = false
+			Success = false,
+			SubPath = "test.jpg"
 		}});
 
 		

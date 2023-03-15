@@ -86,6 +86,11 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
+		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath, bool collections)
+		{
+			throw _exception;
+		}
+
 		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths, bool collections)
 		{
 			throw _exception;

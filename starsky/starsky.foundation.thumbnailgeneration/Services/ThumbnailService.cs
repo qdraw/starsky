@@ -36,7 +36,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		public async Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
 		{
 			var generationResults = await _thumbnail.CreateThumbnailAsync(subPath);
-			await _updateStatusGeneratedThumbnailService.UpdateStatusAsync(generationResults);
+			await _updateStatusGeneratedThumbnailService.AddOrUpdateStatusAsync(generationResults);
 			return generationResults;
 		}
 

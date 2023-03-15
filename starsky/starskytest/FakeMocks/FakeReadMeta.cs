@@ -30,9 +30,10 @@ namespace starskytest.FakeMocks
 			};
 		}
 
-		public void RemoveReadMetaCache(string fullFilePath)
+		public bool? RemoveReadMetaCache(string fullFilePath)
 		{
 			// dont do anything
+			return true;
 		}
 
 		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)

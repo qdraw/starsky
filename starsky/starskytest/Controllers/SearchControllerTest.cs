@@ -41,10 +41,10 @@ namespace starskytest.Controllers
 
         
 		[TestMethod]
-		public void SearchControllerTest_ZeroItems_Index()
+		public async Task SearchControllerTest_ZeroItems_Index()
 		{
 			var controller = new SearchController(_search);
-			var jsonResult = controller.Index("98765456789987") as JsonResult;
+			var jsonResult = await controller.Index("98765456789987") as JsonResult;
 			var searchViewResult = jsonResult!.Value as SearchViewModel;
 	        
 			Assert.AreEqual(0,searchViewResult?.FileIndexItems?.Count);
@@ -62,7 +62,7 @@ namespace starskytest.Controllers
 				Tags = "test"
 			});
 			var controller = new SearchController(_search);
-			var jsonResult = controller.Index("test") as JsonResult;
+			var jsonResult = await controller.Index("test") as JsonResult;
 			var searchViewResult = jsonResult!.Value as SearchViewModel;
 		    
 			// some values
@@ -76,10 +76,10 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void SearchControllerTest_TrashZeroItems()
+		public async Task SearchControllerTest_TrashZeroItems()
 		{
 			var controller = new SearchController(_search);
-			var jsonResult = controller.Trash() as JsonResult;
+			var jsonResult = await controller.Trash() as JsonResult;
 			var searchViewResult = jsonResult!.Value as SearchViewModel;
 			Assert.AreEqual(0,searchViewResult!.FileIndexItems?.Count);
 		}
@@ -101,7 +101,7 @@ namespace starskytest.Controllers
 				Tags = "test"
 			});
 			var controller = new SearchController(_search);
-			var jsonResult = controller.SearchRelative("/test1.jpg","test") as JsonResult;
+			var jsonResult = await controller.SearchRelative("/test1.jpg","test") as JsonResult;
 			var relativeObjects = jsonResult!.Value as RelativeObjects;
 		    
 			// some values
@@ -130,7 +130,7 @@ namespace starskytest.Controllers
 				FileHash = "FileHash2"
 			});
 			var controller = new SearchController(_search);
-			var jsonResult = controller.SearchRelative("/test.jpg","test") as JsonResult;
+			var jsonResult = await controller.SearchRelative("/test.jpg","test") as JsonResult;
 			var relativeObjects = jsonResult!.Value as RelativeObjects;
 		    
 			// some values
@@ -142,10 +142,10 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void SearchRelative_NotFound()
+		public async Task SearchRelative_NotFound()
 		{
 			var controller = new SearchController(_search);
-			var notFoundObjectResult = controller.SearchRelative("/not-found.jpg","test") as NotFoundObjectResult;
+			var notFoundObjectResult = await controller.SearchRelative("/not-found.jpg","test") as NotFoundObjectResult;
 
 			Assert.AreEqual(404, notFoundObjectResult!.StatusCode);
 		}
@@ -168,7 +168,7 @@ namespace starskytest.Controllers
 				FileHash = "FileHash2"
 			});
 			var controller = new SearchController(_search);
-			var jsonResult = controller.SearchRelative("/test1.jpg","test") as JsonResult;
+			var jsonResult = await controller.SearchRelative("/test1.jpg","test") as JsonResult;
 			var relativeObjects = jsonResult!.Value as RelativeObjects;
 		    
 			Assert.IsNull(relativeObjects?.NextFilePath);

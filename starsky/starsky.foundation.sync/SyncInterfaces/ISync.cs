@@ -15,6 +15,7 @@ namespace starsky.foundation.sync.SyncInterfaces
 		Task<List<FileIndexItem>> Sync(string subPath,
 			SocketUpdateDelegate updateDelegate = null,
 			DateTime? childDirectoriesAfter = null);
-		Task<List<FileIndexItem>> Sync(List<string> subPaths);
+		Task<List<FileIndexItem>> Sync(List<string> subPaths, 
+			SocketUpdateDelegate updateDelegate = null);
 	}
 }

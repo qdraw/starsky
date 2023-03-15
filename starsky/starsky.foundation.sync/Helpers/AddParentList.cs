@@ -30,7 +30,7 @@ public sealed class AddParentList
 		foreach ( var subPath in ok
 			         .Where(p => _subPathStorage.ExistFolder(p)))
 		{
-			var path = subPath + "/test.jpg";
+			var path = PathHelper.RemoveLatestSlash(subPath) + "/test.jpg";
 			if ( subPath == "/" ) path = "/";
 			addedParentItems.AddRange(await _query.AddParentItemsAsync(path));
 		}

@@ -36,7 +36,7 @@ namespace starsky.foundation.readmeta.Services
 			_cache = memoryCache;
 			_iStorage = iStorage;
 			_readExif = new ReadMetaExif(_iStorage, appSettings,logger);
-			_readXmp = new ReadMetaXmp(_iStorage, memoryCache);
+			_readXmp = new ReadMetaXmp(_iStorage, logger);
 			_readMetaGpx = new ReadMetaGpx(logger);
 		}
 
@@ -56,19 +56,25 @@ namespace starsky.foundation.readmeta.Services
 			// Read first the sidecar file
 			var xmpFileIndexItem = _readXmp.XmpGetSidecarFile(fileIndexItemWithPath.Clone());
 
-			if ( xmpFileIndexItem.IsoSpeed == 0 
-			     || string.IsNullOrEmpty(xmpFileIndexItem.Make) 
-			     || xmpFileIndexItem.DateTime.Year == 0 || xmpFileIndexItem.ImageHeight == 0)
+			// if the sidecar file is not complete, read the original file
+			// when reading a .xmp file direct ignore the readExifFromFile
+			if ( ExtensionRolesHelper.IsExtensionSidecar(subPath) )
+				return xmpFileIndexItem;
+
+			if ( xmpFileIndexItem.IsoSpeed != 0
+			     && !string.IsNullOrEmpty(xmpFileIndexItem.Make)
+			     && xmpFileIndexItem.DateTime.Year != 0
+			     && !string.IsNullOrEmpty(xmpFileIndexItem.ShutterSpeed) )
 			{
-				// so the sidecar file is not used
-				var fileExifItemFile = _readExif.ReadExifFromFile(subPath,fileIndexItemWithPath);
-		        
-				// overwrite content with incomplete sidecar file (this file can contain tags)
-				FileIndexCompareHelper.Compare(fileExifItemFile, xmpFileIndexItem);
-				return fileExifItemFile;
+				return xmpFileIndexItem;
 			}
-	        
-			return xmpFileIndexItem;
+			
+			// so the sidecar file is not used to store the most important tags
+			var fileExifItemFile = _readExif.ReadExifFromFile(subPath,fileIndexItemWithPath);
+		        
+			// overwrite content with incomplete sidecar file (this file can contain tags)
+			FileIndexCompareHelper.Compare(fileExifItemFile, xmpFileIndexItem);
+			return fileExifItemFile;
 		}
 
 		// used by the html generator
@@ -169,14 +175,15 @@ namespace starsky.foundation.readmeta.Services
 		/// When you update tags, other tags will be null 
 		/// </summary>
 		/// <param name="fullFilePath">can also be a subPath</param>
-		public void RemoveReadMetaCache(string fullFilePath)
+		public bool? RemoveReadMetaCache(string fullFilePath)
 		{
-			if (_cache == null || _appSettings?.AddMemoryCache == false) return;
+			if (_cache == null || _appSettings?.AddMemoryCache == false) return null;
 			var queryCacheName = CachePrefix + fullFilePath;
 
-			if (!_cache.TryGetValue(queryCacheName, out var _)) return; 
+			if (!_cache.TryGetValue(queryCacheName, out _)) return false; 
 			// continue = go to the next item in the list
 			_cache.Remove(queryCacheName);
+			return true;
 		}
 	}
 }

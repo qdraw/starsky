@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -81,9 +82,15 @@ namespace starsky.foundation.sync.Helpers
 		public async Task<FileIndexItem> PrepareUpdateFileItem(FileIndexItem dbItem, long size)
 		{
 			var metaDataItem = _readMeta.ReadExifAndXmpFromFile(dbItem.FilePath);
-			FileIndexCompareHelper.Compare(dbItem, metaDataItem);
+			var compare = FileIndexCompareHelper.Compare(dbItem, metaDataItem);
 			dbItem.Size = size;
 			await SetFileHashStatus(dbItem.FilePath, dbItem.FileHash, dbItem);
+			dbItem.LastChanged.AddRange(compare);
+			if ( !compare.Any() )
+			{
+				dbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+			}
+		
 			return dbItem;
 		}
 
