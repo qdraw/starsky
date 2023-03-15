@@ -70,10 +70,10 @@ namespace starsky.foundation.sync.SyncServices
 			// ignore all the 'wrong' files
 			var statusItems = _checkForStatusNotOkHelper.CheckForStatusNotOk(subPath);
 
-			if ( statusItems.FirstOrDefault()?.Status != FileIndexItem.ExifStatus.Ok )
+			if ( statusItems.FirstOrDefault()!.Status != FileIndexItem.ExifStatus.Ok )
 			{
 				_logger.LogDebug($"[SingleFile/db] status " +
-				                 $"{statusItems.FirstOrDefault()?.Status} for {subPath} {Synchronize.DateTimeDebug()}");
+				                 $"{statusItems.FirstOrDefault()!.Status} for {subPath} {Synchronize.DateTimeDebug()}");
 				return statusItems;
 			}
 
