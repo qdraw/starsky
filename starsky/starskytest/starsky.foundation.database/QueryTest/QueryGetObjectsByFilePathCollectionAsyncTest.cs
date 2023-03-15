@@ -176,7 +176,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await _query.RemoveItemAsync(result[1]);
 			await _query.RemoveItemAsync(result[2]);
 			await _query.RemoveItemAsync(result[3]);
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/multiple_item"));
+			var multipleItem = await _query.GetObjectByFilePathAsync("/multiple_item");
+			if ( multipleItem != null )
+			{
+				await _query.RemoveItemAsync(multipleItem);
+			}
 		}
 		
 		[TestMethod]
