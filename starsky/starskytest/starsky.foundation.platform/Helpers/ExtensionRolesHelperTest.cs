@@ -153,6 +153,27 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
+		public void Files_GetImageFormat_Tiff_olympusRaw()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {73, 73, 82});
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff,fileType);
+		}
+				
+		[TestMethod]
+		public void Files_GetImageFormat_Tiff_fujiFilmRaw()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {70, 85, 74});
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff,fileType);
+		}
+				
+		[TestMethod]
+		public void Files_GetImageFormat_Tiff_panasonicRaw()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {73, 73, 85, 0});
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff,fileType);
+		}
+		
+		[TestMethod]
 		public void Files_GetImageFormat_Tiff_4D_4D_00_2A_big_endian()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(StringToByteArray("4D 4D 00 2A".Replace(" ","")));
@@ -222,6 +243,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_xmp_Test()
 		{
 			byte[] bmBytes = Encoding.ASCII.GetBytes("<x:xmpmeta");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
+		}
+		
+		[TestMethod]
+		public void Files_GetImageFormat_xmp2_Test()
+		{
+			byte[] bmBytes = Encoding.ASCII.GetBytes("<?xpacket");
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
 		}
@@ -422,6 +451,20 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			var result = ExtensionRolesHelper.MapFileTypesToExtension("non.ext");
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+		}
+		
+		[TestMethod]
+		public void MapFileTypesToExtension_fileWithNonExistingExtension2()
+		{
+			var result = ExtensionRolesHelper.MapFileTypesToExtension("non.xxx");
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+		}
+		
+		[TestMethod]
+		public void MapFileTypesToExtension_example()
+		{
+			var result = ExtensionRolesHelper.MapFileTypesToExtension("non.jpeg");
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg, result);
 		}
         
 		[TestMethod]

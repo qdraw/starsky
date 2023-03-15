@@ -91,17 +91,25 @@ namespace starsky.foundation.platform.Helpers
 			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100)
 				).Matches(filename);
-			if ( matchCollection.Count == 0 ) return ImageFormat.unknown;
+			if ( matchCollection.Count == 0 )
+			{
+				return ImageFormat.unknown;
+			}
 			
-			// ReSharper disable once LoopCanBeConvertedToQuery
+			var imageFormat = ImageFormat.unknown;
 			foreach ( var matchValue in matchCollection.Select(p => p.Value) )
 			{
 				if ( matchValue.Length < 2 ) continue;
 				var ext = matchValue.Remove(0, 1).ToLowerInvariant();
 
-				return MapFileTypesToExtensionDictionary.FirstOrDefault(p => p.Value.Contains(ext)).Key;
+				var extImageFormat = MapFileTypesToExtensionDictionary
+					.FirstOrDefault(p => p.Value.Contains(ext)).Key;
+				if ( extImageFormat != ImageFormat.unknown )
+				{
+					imageFormat = extImageFormat;
+				}
 			}
-			return ImageFormat.unknown;
+			return imageFormat;
 		}
 
 		/// <summary>
