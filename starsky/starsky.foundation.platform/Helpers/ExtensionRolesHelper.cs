@@ -479,7 +479,7 @@ namespace starsky.foundation.platform.Helpers
 			return null;
 		}
 		
-		private static ImageFormat? GetImageFormatZip(byte[] bytes)
+		private static ImageFormat? GetImageFormatZip(IEnumerable<byte> bytes)
 		{
 			var zip = new byte[] {80, 75, 3, 4}; 
 			
@@ -487,8 +487,8 @@ namespace starsky.foundation.platform.Helpers
 				return ImageFormat.zip;
 			
 			return null;
-			
 		}
+		
 		private static ImageFormat? GetImageFormatXmp(byte[] bytes)
 		{
 			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
