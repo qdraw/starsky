@@ -334,9 +334,13 @@ namespace starsky.foundation.platform.Helpers
             
 			// documents
 			gpx = 40,
-			
+			pdf = 41,
+
 			// video
-			mp4 = 50
+			mp4 = 50,
+			
+			// archives
+			zip = 60
 		}
 
 				
@@ -383,13 +387,7 @@ namespace starsky.foundation.platform.Helpers
 			var bmp = Encoding.ASCII.GetBytes("BM"); // BMP
 			var gif = Encoding.ASCII.GetBytes("GIF"); // GIF
 			var png = new byte[] {137, 80, 78, 71}; // PNG
-			
-			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]
-                                                  // 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
-
-			// Zip:
-			// 50 4B 03 04
-			// 50 4B 05 06
+			var pdf = new byte[] {37, 80, 68, 70, 45}; // pdf
 
 			if ( bmp.SequenceEqual(bytes.Take(bmp.Length)) )
 				return ImageFormat.bmp;
@@ -407,9 +405,13 @@ namespace starsky.foundation.platform.Helpers
 			if ( GetImageFormatXmp(bytes) != null ) return ImageFormat.xmp;
 
 			if ( GetImageFormatGpx(bytes) != null ) return ImageFormat.gpx;
+
+			if ( GetImageFormatMpeg4(bytes) != null ) return ImageFormat.mp4;
 			
-			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
-				return ImageFormat.mp4;
+			if ( pdf.SequenceEqual(bytes.Take(pdf.Length)) )
+				return ImageFormat.pdf;
+			
+			if ( GetImageFormatZip(bytes) != null ) return ImageFormat.zip;
 			
 			return ImageFormat.unknown;
 		}
@@ -444,6 +446,21 @@ namespace starsky.foundation.platform.Helpers
 			return null;
 		}
 
+		private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
+		{
+			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]
+			// 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+			
+			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
+				return ImageFormat.mp4;
+			
+			var fTypIsoM = new byte[] {102, 116, 121, 112, 105, 115, 111, 109}; 
+			if ( fTypIsoM.SequenceEqual(bytes.Take(fTypIsoM.Length)) )
+				return ImageFormat.xmp;
+			
+			return null;
+		}
+
 		private static ImageFormat? GetImageFormatGpx(byte[] bytes)
 		{
 			var gpx = new byte[] {60, 103, 112}; // <gpx
@@ -462,6 +479,16 @@ namespace starsky.foundation.platform.Helpers
 			return null;
 		}
 		
+		private static ImageFormat? GetImageFormatZip(byte[] bytes)
+		{
+			var zip = new byte[] {80, 75, 3, 4}; 
+			
+			if ( zip.SequenceEqual(bytes.Take(zip.Length)) )
+				return ImageFormat.zip;
+			
+			return null;
+			
+		}
 		private static ImageFormat? GetImageFormatXmp(byte[] bytes)
 		{
 			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
@@ -483,6 +510,7 @@ namespace starsky.foundation.platform.Helpers
 			var jpeg2 = new byte[] {255, 216, 255, 225}; // jpeg canon
 			var jpeg3 = new byte[] {255, 216, 255, 219}; // other jpeg
 			var jpeg4 = new byte[] {255, 216, 255, 237}; // other ?
+			var jpeg5 = new byte[] {255, 216, 255, 238}; // Hex: FF D8 FF EE 
 
 			if ( jpeg.SequenceEqual(bytes.Take(jpeg.Length)) )
 				return ImageFormat.jpg;
@@ -494,6 +522,9 @@ namespace starsky.foundation.platform.Helpers
 				return ImageFormat.jpg;
 			
 			if ( jpeg4.SequenceEqual(bytes.Take(jpeg4.Length)) )
+				return ImageFormat.jpg;
+			
+			if ( jpeg5.SequenceEqual(bytes.Take(jpeg5.Length)) )
 				return ImageFormat.jpg;
 			
 			return null;
