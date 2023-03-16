@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import React from "react";
 import * as DropArea from "../components/atoms/drop-area/drop-area";
-import * as ModalDropAreaFilesAdded from "../components/atoms/modal-drop-area-files-added/modal-drop-area-files-added";
+import * as ModalDropAreaFilesAdded from "../components/molecules/modal-drop-area-files-added/modal-drop-area-files-added";
 import * as MenuDefault from "../components/organisms/menu-default/menu-default";
 import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import ImportPage from "./import-page";
