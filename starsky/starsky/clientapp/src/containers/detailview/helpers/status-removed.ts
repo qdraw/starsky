@@ -13,7 +13,8 @@ export function statusRemoved(
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   if (
-    state.fileIndexItem?.status === IExifStatus.NotFoundSourceMissing &&
+    (state.fileIndexItem?.status === IExifStatus.NotFoundSourceMissing ||
+      state.fileIndexItem?.status === IExifStatus.Deleted) &&
     relativeObjects.nextFilePath
   ) {
     new PrevNext(
@@ -25,7 +26,8 @@ export function statusRemoved(
       setIsLoading
     ).next();
   } else if (
-    state.fileIndexItem?.status === IExifStatus.NotFoundSourceMissing
+    state.fileIndexItem?.status === IExifStatus.NotFoundSourceMissing ||
+    state.fileIndexItem?.status === IExifStatus.Deleted
   ) {
     moveFolderUp(new KeyboardEvent("delete"), history, isSearchQuery, state);
   }
