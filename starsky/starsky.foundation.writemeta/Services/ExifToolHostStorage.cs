@@ -1,10 +1,10 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
@@ -29,11 +29,11 @@ namespace starsky.foundation.writemeta.Services
 		{
 			return await _exifTool.WriteTagsAsync(subPath,command);
 		}
-		
-		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, 
-			string? beforeFileHash, string command)
+
+		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, string? beforeFileHash,
+			string command, CancellationToken cancellationToken = default)
 		{
-			return await _exifTool.WriteTagsAndRenameThumbnailAsync(subPath,beforeFileHash,command);
+			return await _exifTool.WriteTagsAndRenameThumbnailAsync(subPath,beforeFileHash,command, cancellationToken);
 		}
 		
 		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace starsky.foundation.writemeta.Interfaces
@@ -10,7 +11,8 @@ namespace starsky.foundation.writemeta.Interfaces
 
 	    Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(
 		    string subPath,
-		    string? beforeFileHash, string command);
+		    string? beforeFileHash, string command,
+		    CancellationToken cancellationToken = default);
 
 	    Task<bool> WriteTagsThumbnailAsync(string fileHash, string command);
     }
