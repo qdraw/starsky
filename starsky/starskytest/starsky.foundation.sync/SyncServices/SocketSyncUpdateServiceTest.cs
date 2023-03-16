@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -20,6 +22,18 @@ public class SocketSyncUpdateServiceTest
 		await service.PushToSockets(new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
     
 		Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
+	}
+	
+	[TestMethod]
+	public async Task PushToSockets_CatchException()
+	{
+		var socket = new FakeIWebSocketConnectionsService(new WebSocketException("test"));
+                
+		var service = new SocketSyncUpdateService(socket, new FakeINotificationQuery(), new FakeIWebLogger());
+
+		await service.PushToSockets(new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
+    
+		Assert.IsFalse(socket.FakeSendToAllAsync.Any());
 	}
 
 	[TestMethod]

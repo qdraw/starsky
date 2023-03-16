@@ -67,7 +67,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			// Dispose here
 			await dbContextDisposed.DisposeAsync();
 			
-			await _notificationQuery.AddNotification(
+			await new NotificationQuery(dbContextDisposed, _logger, serviceScopeFactory).AddNotification(
 				new ApiNotificationResponseModel<string>("test_disposed_notification"){Type = ApiNotificationType.Welcome});
 			
 			var context = new InjectServiceScope(serviceScopeFactory).Context();
@@ -83,7 +83,8 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			}
 			await context.SaveChangesAsync();
 			
-			Assert.IsNotNull(testNotification);
+			Assert.IsNotNull(testNotification?.Content);
+			Assert.IsNotNull(testNotification.DateTimeEpoch);
 		}
 
 		[TestMethod]
