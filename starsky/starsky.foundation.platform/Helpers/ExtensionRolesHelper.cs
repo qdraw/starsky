@@ -91,17 +91,25 @@ namespace starsky.foundation.platform.Helpers
 			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100)
 				).Matches(filename);
-			if ( matchCollection.Count == 0 ) return ImageFormat.unknown;
+			if ( matchCollection.Count == 0 )
+			{
+				return ImageFormat.unknown;
+			}
 			
-			// ReSharper disable once LoopCanBeConvertedToQuery
+			var imageFormat = ImageFormat.unknown;
 			foreach ( var matchValue in matchCollection.Select(p => p.Value) )
 			{
 				if ( matchValue.Length < 2 ) continue;
 				var ext = matchValue.Remove(0, 1).ToLowerInvariant();
 
-				return MapFileTypesToExtensionDictionary.FirstOrDefault(p => p.Value.Contains(ext)).Key;
+				var extImageFormat = MapFileTypesToExtensionDictionary
+					.FirstOrDefault(p => p.Value.Contains(ext)).Key;
+				if ( extImageFormat != ImageFormat.unknown )
+				{
+					imageFormat = extImageFormat;
+				}
 			}
-			return ImageFormat.unknown;
+			return imageFormat;
 		}
 
 		/// <summary>
@@ -148,7 +156,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, if ExifTool can write to this</returns>
-		public static bool IsExtensionExifToolSupported(string filename)
+		public static bool IsExtensionExifToolSupported(string? filename)
 		{
 			if ( string.IsNullOrEmpty(filename) ) return false;
 			var extension = Path.GetExtension(filename);
@@ -239,9 +247,9 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, </returns>
-		public static bool IsExtensionForceGpx(string filename)
+		public static bool IsExtensionForceGpx(string? filename)
 		{
-			return IsExtensionForce(filename.ToLowerInvariant(), ExtensionGpx);
+			return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionGpx);
 		}
 		
 		/// <summary>
@@ -334,9 +342,13 @@ namespace starsky.foundation.platform.Helpers
             
 			// documents
 			gpx = 40,
-			
+			pdf = 41,
+
 			// video
-			mp4 = 50
+			mp4 = 50,
+			
+			// archives
+			zip = 60
 		}
 
 				
@@ -378,21 +390,12 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>imageFormat enum</returns>
 		public static ImageFormat GetImageFormat(byte[] bytes)
 		{
-			// see http://www.mikekunz.com/image_file_header.html  
+			// see http://web.archive.org/web/20150524232918/http://www.mikekunz.com/image_file_header.html
 			// on posix: 'od -t x1 -N 10 file.mp4'  
 			var bmp = Encoding.ASCII.GetBytes("BM"); // BMP
 			var gif = Encoding.ASCII.GetBytes("GIF"); // GIF
 			var png = new byte[] {137, 80, 78, 71}; // PNG
-
-			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
-			var gpx = new byte[] {60, 103, 112}; // <gpx
-			
-			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]
-                                                  // 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
-
-			// Zip:
-			// 50 4B 03 04
-			// 50 4B 05 06
+			var pdf = new byte[] {37, 80, 68, 70, 45}; // pdf
 
 			if ( bmp.SequenceEqual(bytes.Take(bmp.Length)) )
 				return ImageFormat.bmp;
@@ -407,21 +410,16 @@ namespace starsky.foundation.platform.Helpers
 
 			if ( GetImageFormatJpeg(bytes) != null ) return ImageFormat.jpg;
 			
-			if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
-				return ImageFormat.xmp;
+			if ( GetImageFormatXmp(bytes) != null ) return ImageFormat.xmp;
 
-			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
-			     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) )
-			{
-				return ImageFormat.gpx;
-			}
+			if ( GetImageFormatGpx(bytes) != null ) return ImageFormat.gpx;
+
+			if ( GetImageFormatMpeg4(bytes) != null ) return ImageFormat.mp4;
 			
-			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
-				return ImageFormat.mp4;
+			if ( pdf.SequenceEqual(bytes.Take(pdf.Length)) )
+				return ImageFormat.pdf;
+			
+			if ( GetImageFormatZip(bytes) != null ) return ImageFormat.zip;
 			
 			return ImageFormat.unknown;
 		}
@@ -456,11 +454,72 @@ namespace starsky.foundation.platform.Helpers
 			return null;
 		}
 
+		private static ImageFormat? GetImageFormatMpeg4(byte[] bytes)
+		{
+			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]
+			// 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+			
+			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
+				return ImageFormat.mp4;
+			
+			var fTypIsoM = new byte[] {102, 116, 121, 112, 105, 115, 111, 109}; 
+			if ( fTypIsoM.SequenceEqual(bytes.Take(fTypIsoM.Length)) )
+				return ImageFormat.xmp;
+			
+			return null;
+		}
+
+		private static ImageFormat? GetImageFormatGpx(byte[] bytes)
+		{
+			var gpx = new byte[] {60, 103, 112}; // <gpx
+			
+			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
+			     gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
+			{
+				return ImageFormat.gpx;
+			}
+			return null;
+		}
+		
+		private static ImageFormat? GetImageFormatZip(IEnumerable<byte> bytes)
+		{
+			var zip = new byte[] {80, 75, 3, 4}; 
+			
+			if ( zip.SequenceEqual(bytes.Take(zip.Length)) )
+				return ImageFormat.zip;
+			
+			return null;
+		}
+		
+		private static ImageFormat? GetImageFormatXmp(byte[] bytes)
+		{
+			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
+			var xmp2 = Encoding.ASCII.GetBytes("<?xpacket"); // xmp
+			
+			if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
+				return ImageFormat.xmp;
+
+			if ( xmp2.SequenceEqual(bytes.Take(xmp2.Length)) )
+				return ImageFormat.xmp;
+			
+			return null;
+		}
+		
 		private static ImageFormat? GetImageFormatJpeg(byte[] bytes)
 		{
+			// https://en.wikipedia.org/wiki/List_of_file_signatures
 			var jpeg = new byte[] {255, 216, 255, 224}; // jpeg
 			var jpeg2 = new byte[] {255, 216, 255, 225}; // jpeg canon
 			var jpeg3 = new byte[] {255, 216, 255, 219}; // other jpeg
+			var jpeg4 = new byte[] {255, 216, 255, 237}; // other ?
+			var jpeg5 = new byte[] {255, 216, 255, 238}; // Hex: FF D8 FF EE 
+
 			if ( jpeg.SequenceEqual(bytes.Take(jpeg.Length)) )
 				return ImageFormat.jpg;
 
@@ -468,6 +527,12 @@ namespace starsky.foundation.platform.Helpers
 				return ImageFormat.jpg;
 			
 			if ( jpeg3.SequenceEqual(bytes.Take(jpeg3.Length)) )
+				return ImageFormat.jpg;
+			
+			if ( jpeg4.SequenceEqual(bytes.Take(jpeg4.Length)) )
+				return ImageFormat.jpg;
+			
+			if ( jpeg5.SequenceEqual(bytes.Take(jpeg5.Length)) )
 				return ImageFormat.jpg;
 			
 			return null;

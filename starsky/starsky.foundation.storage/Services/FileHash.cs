@@ -98,7 +98,7 @@ namespace starsky.foundation.storage.Services
 				if ( string.IsNullOrEmpty(code) ) {
 					return new KeyValuePair<string, bool>(
 						Base32.Encode(
-						GenerateRandomBytes(27)
+							GenerateRandomBytes(27)
 						) + GeneratedPostFix, false);
 				}
 				return new KeyValuePair<string, bool>(code, true);
@@ -178,8 +178,8 @@ namespace starsky.foundation.storage.Services
 				{
 					int length;
 					while ( ( length = await stream
-						.ReadAsync(block, 0, block.Length, cancellationToken)
-						.ConfigureAwait(false) ) > 0 )
+						       .ReadAsync(block, cancellationToken)
+						       .ConfigureAwait(false) ) > 0 )
 					{
 						md5.TransformBlock(block, 0, length, null, 0);
 					}

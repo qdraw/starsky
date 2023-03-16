@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -10,14 +11,13 @@ using starsky.foundation.writemeta.Interfaces;
 
 namespace starskytest.Models
 {
-	public sealed class FakeExifTool : IExifTool, IExifToolHostStorage
+	public sealed class FakeExifTool : IExifToolHostStorage
 	{
-		private AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 
-		public FakeExifTool(IStorage iStorage, AppSettings appSettings)
+		// ReSharper disable once UnusedParameter.Local
+		public FakeExifTool(IStorage iStorage, AppSettings _)
 		{
-			_appSettings = appSettings;
 			_iStorage = iStorage;
 		}
 	    
@@ -39,9 +39,9 @@ namespace starskytest.Models
 			}
 			return true;
 		}
-		
-		public async Task<KeyValuePair<bool,string>> WriteTagsAndRenameThumbnailAsync(string subPath, 
-			string? beforeFileHash, string command)
+
+		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, string? beforeFileHash,
+			string command, CancellationToken cancellationToken = default)
 		{
 			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
 

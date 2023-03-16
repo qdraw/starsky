@@ -387,6 +387,44 @@ namespace starsky.feature.search.ViewModels
 		{
 			var returnQueryBuilder = new StringBuilder();
 
+			(defaultQuery, returnQueryBuilder) = ParseQuotedValues(defaultQuery, returnQueryBuilder);
+
+			// fallback situation
+			// search on for example: '%'
+			if ( !SearchFor.Any() ) 
+			{
+				SetAddSearchFor(defaultQuery);
+				SetAddSearchInStringType("tags");
+				SetAddSearchForOptions("=");
+				return string.Empty;
+			}
+
+			// Regex: for ||&& without escape chars 
+			//	// &&|\|\|
+			Regex andOrRegex = new Regex("&&|\\|\\|",
+				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+		    
+			var andOrRegexMatches = andOrRegex.Matches(defaultQuery);
+
+			foreach ( Match andOrValue in andOrRegexMatches )
+			{
+				SetAndOrOperator(AndOrRegex(andOrValue.Value));
+			}
+
+			// add for default situations
+			if ( SearchFor.Count != SearchOperatorOptions.Count )
+			{
+				for ( var i = SearchOperatorOptions.Count; i < SearchFor.Count; i++ )
+				{
+					SetAndOrOperator(AndOrRegex("&&"));
+				}
+			}
+		    
+			return returnQueryBuilder.ToString();
+		}
+
+		private (string defaultQuery, StringBuilder returnQueryBuilder) ParseQuotedValues(string defaultQuery, StringBuilder returnQueryBuilder)
+		{
 			// Get Quoted values
 			// (["'])(\\?.)*?\1
 		    
@@ -447,41 +485,8 @@ namespace starsky.feature.search.ViewModels
 				SetAddSearchForOptions("=");
 			}
 
-			// fallback situation
-			// search on for example: '%'
-			if ( !SearchFor.Any() ) 
-			{
-				SetAddSearchFor(defaultQuery);
-				SetAddSearchInStringType("tags");
-				SetAddSearchForOptions("=");
-				return string.Empty;
-			}
-
-			// Regex: for ||&& without escape chars 
-			//	// &&|\|\|
-			Regex andOrRegex = new Regex("&&|\\|\\|",
-				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
-		    
-			var andOrRegexMatches = andOrRegex.Matches(defaultQuery);
-
-			foreach ( Match andOrValue in andOrRegexMatches )
-			{
-				SetAndOrOperator(AndOrRegex(andOrValue.Value));
-			}
-
-			// add for default situations
-			if ( SearchFor.Count != SearchOperatorOptions.Count )
-			{
-				for ( int i = SearchOperatorOptions.Count; i < SearchFor.Count; i++ )
-				{
-					SetAndOrOperator(AndOrRegex("&&"));
-				}
-			}
-		    
-	    
-			return returnQueryBuilder.ToString();
+			return ( defaultQuery, returnQueryBuilder );
 		}
-	    
 	    
 		/// <summary>
 		/// Filter for WideSearch

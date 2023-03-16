@@ -1360,7 +1360,20 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
 			var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger());
-			await query.RetrySaveChangesAsync(new FileIndexItem(), new Exception(),"test",0);
+			await query.RetryQueryUpdateSaveChangesAsync(new FileIndexItem(){Id = 1}, new Exception(),"test",0);
+		}
+		
+		[TestMethod]
+		public async Task RetrySaveChangesAsync_id0_so_skip()
+		{
+			var serviceScope = CreateNewScope();
+			var scope = serviceScope.CreateScope();
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			
+			var query = new Query(dbContext, new AppSettings(), null!, new FakeIWebLogger());
+			var result = await query.RetryQueryUpdateSaveChangesAsync(new FileIndexItem(){Id = 0}, new Exception(),"test",0);
+			
+			Assert.IsNull(result);
 		}
 	}
 }

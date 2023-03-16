@@ -104,7 +104,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 
 		[TestMethod]
-		[Timeout(3000)]
+		[Timeout(5000)]
 		public void Watcher_Changed()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();

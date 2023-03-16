@@ -42,10 +42,11 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="subPath">the location</param>
 		/// <param name="beforeFileHash">thumbnail fileHash</param>
 		/// <param name="command">exifTool command line args</param>
+		/// <param name="cancellationToken">to cancel</param>
 		/// <returns>true=success, newFileHash</returns>
 		[SuppressMessage("ReSharper", "InvertIf")]
 		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, 
-			string? beforeFileHash, string command)
+			string? beforeFileHash, string command, CancellationToken cancellationToken = default)
 		{
 			var inputStream = _iStorage.ReadStream(subPath);
 			beforeFileHash ??= ( await new FileHash(_iStorage).GetHashCodeAsync(subPath) ).Key;
@@ -54,7 +55,7 @@ namespace starsky.foundation.writemeta.Helpers
 			var stream = await runner.RunProcessAsync(command);
 
 			var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
-				!beforeFileHash.Contains(FileHash.GeneratedPostFix));
+				!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
 			
 			// Set stream to begin for use afterwards
 			stream.Seek(0, SeekOrigin.Begin);
@@ -77,8 +78,8 @@ namespace starsky.foundation.writemeta.Helpers
 			string beforeFileHash, Stream stream, bool isSuccess, CancellationToken cancellationToken = default)
 		{
 			if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess ) return string.Empty;
-			byte[] buffer = new byte[FileHash.MaxReadSize];
-			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize, cancellationToken);
+			var buffer = new byte[FileHash.MaxReadSize];
+			await stream.ReadAsync(buffer.AsMemory(0, FileHash.MaxReadSize), cancellationToken);
 			
 			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer), cancellationToken);
 			if ( string.IsNullOrEmpty(newHashCode)) return string.Empty;

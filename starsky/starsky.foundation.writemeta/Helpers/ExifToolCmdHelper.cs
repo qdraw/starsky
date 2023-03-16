@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -195,9 +196,11 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="comparedNames">changed</param>
 		/// <param name="includeSoftware">overwrite Starsky name</param>
 		/// <param name="renameThumbnail">update name</param>
+		/// <param name="cancellationToken">to cancel</param>
 		/// <returns>Tuple (command, hash)</returns>
 		public async Task<ValueTuple<string,List<string>>> UpdateAsync(FileIndexItem updateModel, 
-			List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware, bool renameThumbnail)
+			List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware, 
+			bool renameThumbnail, CancellationToken cancellationToken = default)
 		{
 			// Creation and update .xmp file with all available content
 			await CreateXmpFileIsNotExist(updateModel, inputSubPaths);
@@ -220,7 +223,7 @@ namespace starsky.foundation.writemeta.Helpers
 				var beforeFileHash = await BeforeFileHash(updateModel, path);
 				var newFileHash =
 					( await _exifTool.WriteTagsAndRenameThumbnailAsync(path,
-						beforeFileHash, command) ).Value;
+						beforeFileHash, command, cancellationToken) ).Value;
 				fileHashes.Add(newFileHash);
 				await _thumbnailQuery.RenameAsync(beforeFileHash, newFileHash);
 			}

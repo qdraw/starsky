@@ -149,7 +149,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			var fakeQuery = new NotificationQuery(new AppDbContextConcurrencyException(options)
 			{
 				MinCount = 1
-			},new FakeIWebLogger());
+			},new FakeIWebLogger(),null!);
 			await fakeQuery.AddNotification("");
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -166,7 +166,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			var fakeQuery = new NotificationQuery(new AppDbContextConcurrencyException(options)
 			{
 				MinCount = 2
-			},new FakeIWebLogger());
+			},new FakeIWebLogger(),null!);
 			await fakeQuery.AddNotification("");
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -183,7 +183,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			var fakeQuery = new NotificationQuery(new AppDbContextConcurrencyException(options)
 			{
 				MinCount = 3
-			},new FakeIWebLogger());
+			},new FakeIWebLogger(),null!);
 			await fakeQuery.AddNotification("");
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);

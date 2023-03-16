@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Extensions;
@@ -25,7 +24,8 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly NewUpdateItemWrapper _newUpdateItemWrapper;
 		private readonly CheckForStatusNotOkHelper _checkForStatusNotOkHelper;
 
-		public SyncMultiFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IMemoryCache cache, IWebLogger logger)
+		public SyncMultiFile(AppSettings appSettings, IQuery query, 
+			IStorage subPathStorage, IMemoryCache cache, IWebLogger logger)
 		{
 			_query = query;
 			_subPathStorage = subPathStorage;
@@ -50,7 +50,8 @@ namespace starsky.foundation.sync.SyncServices
 			var resultDatabaseItems = new List<FileIndexItem>();
 			foreach ( var path in subPathInFiles )
 			{
-				var item = databaseItems.FirstOrDefault(p => string.Equals(p.FilePath, path, StringComparison.InvariantCultureIgnoreCase));
+				var item = databaseItems.FirstOrDefault(p => 
+					string.Equals(p.FilePath, path, StringComparison.InvariantCultureIgnoreCase));
 				if (item == null ) // when the file should be added to the index
 				{
 					// Status is used by MultiFile
@@ -86,10 +87,12 @@ namespace starsky.foundation.sync.SyncServices
 			AddSidecarExtensionData(dbItems, statusItems);
 			
 			// Multi thread check for file hash
-			var list = dbItems.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame);
+			var list = dbItems
+				.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame);
 			var isSameUpdatedItemList = await list
 				.ForEachAsync(
-					async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage).SizeFileHashIsTheSame(dbItems
+					async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage)
+						.SizeFileHashIsTheSame(dbItems
 						.Where(p => p.FileCollectionName == dbItem.FileCollectionName).ToList(), dbItem.FilePath),
 					_appSettings.MaxDegreesOfParallelism);
 
@@ -113,7 +116,9 @@ namespace starsky.foundation.sync.SyncServices
 
 			if ( addParentFolder )
 			{
-				_logger.LogInformation("Add Parent Folder For: " + string.Join(",", dbItems.Select(p => p.FilePath)));
+				_logger.LogInformation("Add Parent Folder For: " + 
+				                       string.Join(",", dbItems.Select(p => p.FilePath)));
+				
 				dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
 			}
 		
@@ -127,6 +132,10 @@ namespace starsky.foundation.sync.SyncServices
 			{
 				var dbItemSearchedIndex = dbItems.FindIndex(p =>
 					p.FilePath == statusItem.FilePath);
+				if ( dbItemSearchedIndex < 0 )
+				{
+					continue;
+				}
 				var dbItemSearched = dbItems[dbItemSearchedIndex];
 				
 				if ( dbItemSearched == null || (dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex 
@@ -135,10 +144,10 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					continue;
 				}
-				
+
 				dbItems[dbItemSearchedIndex].Status = statusItem.Status;
 				
-				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok } )
+				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok } ) // 0 check
 				{
 					// there is still a check if the file is not changed see: SizeFileHashIsTheSame
 					dbItems[dbItemSearchedIndex].Status = FileIndexItem.ExifStatus.OkAndSame;
@@ -146,11 +155,13 @@ namespace starsky.foundation.sync.SyncServices
 			}
 		}
 
-		private async Task<List<FileIndexItem>> IsSameUpdatedItemList(IReadOnlyCollection<Tuple<bool?, bool?, FileIndexItem>> isSameUpdatedItemList, List<FileIndexItem> dbItems)
+		private async Task<List<FileIndexItem>> IsSameUpdatedItemList(IReadOnlyCollection<Tuple<bool?, bool?, FileIndexItem>> 
+			isSameUpdatedItemList, List<FileIndexItem> dbItems)
 		{
 			if ( isSameUpdatedItemList == null ) return dbItems;
 			
-			foreach ( var (isLastEditedSame,isFileHashSame,isSameUpdatedItem) in isSameUpdatedItemList.Where(p=> p.Item1 != true) )
+			foreach ( var (isLastEditedSame,isFileHashSame,isSameUpdatedItem) in 
+			         isSameUpdatedItemList.Where(p=> p.Item1 != true) )
 			{
 				var updateItemIndex = dbItems.FindIndex(
 					p => p.FilePath == isSameUpdatedItem.FilePath);

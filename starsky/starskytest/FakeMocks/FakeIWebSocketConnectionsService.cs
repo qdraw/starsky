@@ -12,6 +12,13 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIWebSocketConnectionsService : IWebSocketConnectionsService
 	{
+		private readonly Exception _exception;
+
+		public FakeIWebSocketConnectionsService(Exception exception = null)
+		{
+			_exception = exception;
+		}
+
 		public void AddConnection(WebSocketConnection connection)
 		{
 			throw new NotImplementedException();
@@ -26,12 +33,22 @@ namespace starskytest.FakeMocks
 		
 		public Task SendToAllAsync(string message, CancellationToken cancellationToken)
 		{
+			if ( _exception != null )
+			{
+				throw _exception;
+			}
+			
 			FakeSendToAllAsync.Add(message);
 			return Task.CompletedTask;
 		}
 
 		public Task SendToAllAsync<T>(ApiNotificationResponseModel<T> message, CancellationToken cancellationToken)
 		{
+			if ( _exception != null )
+			{
+				throw _exception;
+			}
+			
 			var stringMessage = JsonSerializer.Serialize(message,
 				DefaultJsonSerializer.CamelCase);
 			FakeSendToAllAsync.Add(stringMessage);

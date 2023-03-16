@@ -27,8 +27,10 @@ public class AppSettingsFeaturesController : Controller
 	[ProducesResponseType(typeof(AppSettings), 200)]
 	[ProducesResponseType(typeof(AppSettings), 401)]
 	[AllowAnonymous]
+#if !DEBUG
 	// 86400 is 1 week
 	[ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]
+#endif
 	public IActionResult FeaturesView()
 	{
 		var shortAppSettings = new EnvFeaturesViewModel

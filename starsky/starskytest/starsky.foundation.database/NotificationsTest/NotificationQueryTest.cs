@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Notifications;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
@@ -27,10 +28,12 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			var serviceScopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
 			_logger = new FakeIWebLogger();
-			_notificationQuery = new NotificationQuery(_dbContext, new FakeIWebLogger());
+			_notificationQuery = new NotificationQuery(_dbContext, new FakeIWebLogger(), serviceScopeFactory);
 		}
-		private IServiceScopeFactory CreateNewScope()
+		
+		private static IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(NotificationQueryTest)));
@@ -52,6 +55,36 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			
 			_dbContext.Notifications.Remove(testNotification);
 			await _dbContext.SaveChangesAsync();
+		}
+
+		[TestMethod]
+		public async Task Disposed()
+		{
+			var serviceScopeFactory = CreateNewScope();
+			var scope = serviceScopeFactory.CreateScope();
+			var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			
+			// Dispose here
+			await dbContextDisposed.DisposeAsync();
+			
+			await new NotificationQuery(dbContextDisposed, _logger, serviceScopeFactory).AddNotification(
+				new ApiNotificationResponseModel<string>("test_disposed_notification"){Type = ApiNotificationType.Welcome});
+			
+			var context = new InjectServiceScope(serviceScopeFactory).Context();
+			
+			var testNotification =
+				await context.Notifications.FirstOrDefaultAsync(p =>
+					p.Content.Contains("test_disposed_notification"));
+
+			// and remove it afterwards
+			foreach ( var notificationsItem in await context.Notifications.ToListAsync() )
+			{
+				context.Notifications.Remove(notificationsItem);
+			}
+			await context.SaveChangesAsync();
+			
+			Assert.IsNotNull(testNotification?.Content);
+			Assert.IsNotNull(testNotification.DateTimeEpoch);
 		}
 
 		[TestMethod]

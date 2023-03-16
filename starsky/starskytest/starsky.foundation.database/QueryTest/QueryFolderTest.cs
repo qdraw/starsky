@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,7 +14,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public sealed class QueryFolderTest
 	{
-		private readonly Query _query;
 		private IMemoryCache _memoryCache;
 
 		private IServiceScopeFactory CreateNewScope()
@@ -28,21 +26,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			_memoryCache = serviceProvider.GetService<IMemoryCache>();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
-
-		/// <summary>
-		/// with cache enabled
-		/// </summary>
-		public QueryFolderTest()
-		{
-			_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(),_memoryCache) ;
-		}
 		
 		[TestMethod]
 		public void CacheGetParentFolder_FallbackWhenNoCache()
 		{
 			var queryNoCache = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), new AppSettings(), 
+					.GetService<ApplicationDbContext>(), new AppSettings(), 
 				CreateNewScope(), new FakeIWebLogger(),_memoryCache) ;
 
 			var result = queryNoCache.CacheGetParentFolder("/");
@@ -53,8 +42,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public void CacheGetParentFolder_FallbackWhenNoCache_appSettings()
 		{
 			var queryNoCache = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), 
-				new AppSettings{ AddMemoryCache = false}, null, new FakeIWebLogger(),_memoryCache) ;
+					.GetService<ApplicationDbContext>(), 
+				new AppSettings{ AddMemoryCache = false}, null!, new FakeIWebLogger(),_memoryCache) ;
 
 			var result = queryNoCache.CacheGetParentFolder("/");
 			Assert.IsFalse(result.Item1);
@@ -66,9 +55,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext, 
-				new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
-	        
+
+			// remove all items
+			foreach ( var allSingleItem in await dbContext.FileIndex.ToListAsync() )
+			{
+				dbContext.FileIndex.Remove(allSingleItem);
+			}
+			await dbContext.SaveChangesAsync();
+			// and remove all folders
+			
 			// item sub folder
 			var item = new FileIndexItem("/test_1234567832/test_0191921.jpg");
 			dbContext.FileIndex.Add(item);
@@ -76,10 +71,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var item1 = new FileIndexItem("/test_1234567832/test_0191922.jpg");
 			dbContext.FileIndex.Add(item1);
 			
-			dbContext.SaveChanges();
+			await dbContext.SaveChangesAsync();
 	        
 			// Important to dispose!
-			dbContext.Dispose();
+			await dbContext.DisposeAsync();
+			
+			var query = new Query(dbContext, 
+				new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
 			
 			var getItem = query.GetNextPrevInFolder("/test_1234567832/test_0191921.jpg");
 			Assert.IsNotNull(getItem);
@@ -87,7 +85,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			await query.RemoveItemAsync(item);
 			await query.RemoveItemAsync(item1);
-
 		}
 	}
 }
