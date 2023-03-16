@@ -156,7 +156,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, if ExifTool can write to this</returns>
-		public static bool IsExtensionExifToolSupported(string filename)
+		public static bool IsExtensionExifToolSupported(string? filename)
 		{
 			if ( string.IsNullOrEmpty(filename) ) return false;
 			var extension = Path.GetExtension(filename);
@@ -247,9 +247,9 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, </returns>
-		public static bool IsExtensionForceGpx(string filename)
+		public static bool IsExtensionForceGpx(string? filename)
 		{
-			return IsExtensionForce(filename.ToLowerInvariant(), ExtensionGpx);
+			return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionGpx);
 		}
 		
 		/// <summary>

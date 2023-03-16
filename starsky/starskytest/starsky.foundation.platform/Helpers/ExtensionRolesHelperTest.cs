@@ -391,6 +391,20 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}	
 		
 		[TestMethod]
+		public void ExtensionRolesHelperTest_IsExtensionForceGpx_Null()
+		{
+			var result = ExtensionRolesHelper.IsExtensionForceGpx(null);
+			Assert.AreEqual(false,result);
+		}	
+				
+		[TestMethod]
+		public void ExtensionRolesHelperTest_IsExtensionExifToolSupported_Null()
+		{
+			var result = ExtensionRolesHelper.IsExtensionExifToolSupported(null);
+			Assert.AreEqual(false,result);
+		}	
+		
+		[TestMethod]
 		public void Files_GetImageFormat_h264_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(
