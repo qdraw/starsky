@@ -13,7 +13,7 @@ export const toggleTabIndex = (type: "on" | "off", container: Element) => {
   });
 };
 
-function modalFreezeOpen(
+export function modalFreezeOpen(
   freeze: () => void,
   exitButton: React.RefObject<HTMLButtonElement>,
   modalContainer: Element | null,
@@ -25,7 +25,7 @@ function modalFreezeOpen(
   freeze();
 }
 
-function modalUnFreezeNotOpen(
+export function modalUnFreezeNotOpen(
   unfreeze: () => void,
   modalContainer: Element | null,
   rootContainer: Element | null,
