@@ -1,5 +1,18 @@
 import capturePosition from "../../../hooks/use-capture-position";
 
+export const toggleTabIndex = (type: "on" | "off", container: Element) => {
+  const focusableElements = container.querySelectorAll(
+    "button, a, input, textarea, select"
+  );
+  focusableElements.forEach((element: Element) => {
+    if (type === "on") {
+      element.removeAttribute("tabindex");
+    } else {
+      element.setAttribute("tabindex", "-1");
+    }
+  });
+};
+
 export default function modalFreezeHelper(
   initialRender: React.MutableRefObject<boolean>,
   root: string,
@@ -10,19 +23,6 @@ export default function modalFreezeHelper(
 ) {
   const rootContainer = document.querySelector(`#${root}`);
   const modalContainer = document.querySelector(`#${id}`);
-
-  const toggleTabIndex = (type: "on" | "off", container: Element) => {
-    const focusableElements = container.querySelectorAll(
-      "button, a, input, textarea, select"
-    );
-    focusableElements.forEach((element: Element) => {
-      if (type === "on") {
-        element.removeAttribute("tabindex");
-      } else {
-        element.setAttribute("tabindex", "-1");
-      }
-    });
-  };
 
   const { freeze, unfreeze } = capturePosition();
 
