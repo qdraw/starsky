@@ -1,27 +1,58 @@
 import * as capturePosition from "../../../hooks/use-capture-position";
-import modalFreezeHelper, { toggleTabIndex } from "./modal-freeze-helper";
+import modalFreezeHelper, {
+  modalFreezeOpen,
+  modalUnFreezeNotOpen
+} from "./modal-freeze-helper";
+import * as toggleTabIndex from "./toggle-tab-index";
 
-describe("toggleTabIndex", () => {
-  it("test set tabIndex", () => {
-    const div = document.createElement("div");
-    const aHref = document.createElement("a");
-    div.appendChild(aHref);
+describe("modalFreezeOpen", () => {
+  it("modalFreezeOpen", () => {
+    const freeze = jest.fn();
+    modalFreezeOpen(freeze, { current: null } as any, null, null);
+    expect(freeze).toBeCalled();
+  });
+});
 
-    toggleTabIndex("off", div);
-    expect(aHref.tabIndex).toBe(-1);
+describe("modalUnFreezeNotOpen", () => {
+  it("modalUnFreezeNotOpen null so not called", () => {
+    const unFreeze = jest.fn();
+    const toggleTabSpy = jest
+      .spyOn(toggleTabIndex, "toggleTabIndex")
+      .mockImplementation(() => {});
+
+    modalUnFreezeNotOpen(unFreeze, null, null, undefined, {
+      current: false
+    });
+    expect(unFreeze).toBeCalled();
+    expect(toggleTabSpy).not.toBeCalled();
   });
 
-  it("test remove tabIndex", () => {
-    const div = document.createElement("div");
-    const aHref = document.createElement("a");
-    div.appendChild(aHref);
+  it("modalUnFreezeNotOpen modalContainer off", () => {
+    const unFreeze = jest.fn();
+    const toggleTabSpy = jest
+      .spyOn(toggleTabIndex, "toggleTabIndex")
+      .mockImplementation(() => {});
 
-    toggleTabIndex("off", div);
-    expect(aHref.tabIndex).toBe(-1);
+    modalUnFreezeNotOpen(unFreeze, { current: true } as any, null, undefined, {
+      current: false
+    });
+    expect(unFreeze).toBeCalled();
+    expect(toggleTabSpy).toBeCalled();
+    expect(toggleTabSpy).toBeCalledWith("off", { current: true });
+  });
 
-    toggleTabIndex("on", div);
+  it("modalUnFreezeNotOpen modalContainer", () => {
+    const unFreeze = jest.fn();
+    const toggleTabSpy = jest
+      .spyOn(toggleTabIndex, "toggleTabIndex")
+      .mockImplementation(() => {});
 
-    expect(aHref.tabIndex).toBe(0);
+    modalUnFreezeNotOpen(unFreeze, null, { current: true } as any, undefined, {
+      current: false
+    });
+    expect(unFreeze).toBeCalled();
+    expect(toggleTabSpy).toBeCalled();
+    expect(toggleTabSpy).toBeCalledWith("on", { current: true });
   });
 });
 
