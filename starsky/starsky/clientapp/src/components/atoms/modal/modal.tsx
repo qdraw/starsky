@@ -18,6 +18,15 @@ type ModalPropTypes = {
 
 export const ModalOpenClassName = "modal-bg--open";
 
+function ifModalOpenHandleExit(
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  handleExit: Function
+) {
+  const target = event.target as HTMLElement;
+  if (target.className.indexOf(ModalOpenClassName) === -1) return;
+  handleExit();
+}
+
 export default function Modal({
   children,
   id = "modal-root",
@@ -57,11 +66,7 @@ export default function Modal({
     return ReactDOM.createPortal(
       <>
         <div
-          onClick={(event) => {
-            const target = event.target as HTMLElement;
-            if (target.className.indexOf(ModalOpenClassName) === -1) return;
-            handleExit();
-          }}
+          onClick={(event) => ifModalOpenHandleExit(event, handleExit)}
           data-test="modal-bg"
           className={`modal-bg ${
             isOpen ? ` ${ModalOpenClassName} ` + className : ""
@@ -77,9 +82,7 @@ export default function Modal({
                 }`}
                 ref={exitButton}
                 data-test="modal-exit-button"
-                onClick={() => {
-                  handleExit();
-                }}
+                onClick={handleExit}
               >
                 {MessageCloseDialog}
               </button>
