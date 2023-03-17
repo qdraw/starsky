@@ -1,9 +1,9 @@
 import "core-js/features/dom-collections/for-each";
 import React from "react";
 import ReactDOM from "react-dom";
-import capturePosition from "../../../hooks/use-capture-position";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
+import modalFreezeHelper from "./modal-freeze-helper";
 
 type ModalPropTypes = {
   children: React.ReactNode;
@@ -55,48 +55,14 @@ export default function Modal({
 
   const initialRender = React.useRef(false);
   React.useEffect(() => {
-    const rootContainer = document.querySelector(`#${root}`);
-    const modalContainer = document.querySelector(`#${id}`);
-
-    const toggleTabIndex = (type: "on" | "off", container: Element) => {
-      const focusableElements = container.querySelectorAll(
-        "button, a, input, textarea, select"
-      );
-      focusableElements.forEach((element: Element) => {
-        if (type === "on") {
-          element.removeAttribute("tabindex");
-        } else {
-          element.setAttribute("tabindex", "-1");
-        }
-      });
-    };
-
-    const { freeze, unfreeze } = capturePosition();
-
-    if (isOpen) {
-      if (exitButton.current) exitButton.current.focus();
-      if (modalContainer) toggleTabIndex("on", modalContainer);
-      if (rootContainer) toggleTabIndex("off", rootContainer);
-      freeze();
-    } else {
-      if (modalContainer) toggleTabIndex("off", modalContainer);
-      if (rootContainer) toggleTabIndex("on", rootContainer);
-      unfreeze();
-      if (focusAfterExit) focusAfterExit.focus();
-
-      if (!initialRender.current) {
-        initialRender.current = true;
-        setTimeout(() => {
-          if (modalContainer) toggleTabIndex("off", modalContainer);
-        }, 0);
-      }
-    }
-
-    return () => {
-      if (isOpen) {
-        unfreeze();
-      }
-    };
+    return modalFreezeHelper(
+      initialRender,
+      root,
+      id,
+      isOpen,
+      exitButton,
+      focusAfterExit
+    );
   }, [isOpen, focusAfterExit, id, root]);
 
   if (modal.current) {
