@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices;
@@ -22,6 +23,7 @@ public class SyncAddAddThumbnailTable : ISyncAddThumbnailTable
 	{
 		var addObjects = fileIndexItems
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok && 
+			            p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
 			            !string.IsNullOrEmpty(p.FileHash) && p.IsDirectory == false)
 			.DistinctBy(p => p.FileHash)
 			.Select(p => p.FileHash)

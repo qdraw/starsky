@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.sync.SyncServices;
 using starskytest.FakeMocks;
 
@@ -116,4 +117,35 @@ public class SyncThumbnailTableAsyncTest
 			new List<FileIndexItem>())).Count);
 	}
 	
+	[TestMethod]
+	public async Task SyncThumbnailTableAsyncTest_IgnoreXmpFile()
+	{
+		var query = new FakeIThumbnailQuery();
+		var sync = new SyncAddAddThumbnailTable(query);
+		
+		Assert.AreEqual(1, (await sync.SyncThumbnailTableAsync(
+			new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.xmp
+			}})).Count);
+		
+		Assert.AreEqual(0, ( await query.UnprocessedGeneratedThumbnails() ).Count);
+	}
+	
+	[TestMethod]
+	public async Task SyncThumbnailTableAsyncTest_KeepJpeg()
+	{
+		var query = new FakeIThumbnailQuery();
+		var sync = new SyncAddAddThumbnailTable(query);
+		
+		Assert.AreEqual(1, (await sync.SyncThumbnailTableAsync(
+			new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+			}})).Count);
+		
+		Assert.AreEqual(0, ( await query.UnprocessedGeneratedThumbnails() ).Count);
+	}
 }
