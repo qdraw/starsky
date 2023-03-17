@@ -75,6 +75,63 @@ const initialState: State = {
   dateCache: Date.now()
 };
 
+function updateArchiveReducer(
+  state: IArchiveProps,
+  select: string[],
+  tags: string | undefined,
+  description: string | undefined,
+  title: string | undefined,
+  append: boolean | undefined,
+  colorclass: number | undefined,
+  fileHash: string | undefined
+) {
+  state.fileIndexItems.forEach((item, index) => {
+    if (select.indexOf(item.fileName) !== -1) {
+      if (append) {
+        // bug: duplicate tags are added, in the api those are filtered
+        if (tags) state.fileIndexItems[index].tags += ", " + tags;
+        if (description) state.fileIndexItems[index].description += description;
+        if (title) state.fileIndexItems[index].title += title;
+      } else {
+        if (tags !== undefined) state.fileIndexItems[index].tags = tags;
+        if (description) state.fileIndexItems[index].description = description;
+        if (title) state.fileIndexItems[index].title = title;
+      }
+      if (fileHash) state.fileIndexItems[index].fileHash = fileHash;
+      // colorclass = 0 ==> colorless/no-color
+      if (colorclass !== undefined && colorclass !== -1) {
+        state.fileIndexItems[index].colorClass = colorclass;
+        UpdateColorClassUsageActiveList(state, colorclass);
+      }
+      state.fileIndexItems[index].lastEdited = new Date().toISOString();
+    }
+  });
+
+  // Need to update otherwise other events are not triggered
+  return updateCache({ ...state, lastUpdated: new Date() });
+}
+
+function setArchiveReducer(actionPayload: IArchiveProps) {
+  // ignore the cache
+  if (!actionPayload.fileIndexItems) return actionPayload;
+  let items = new ArrayHelper().UniqueResults(
+    actionPayload.fileIndexItems,
+    "filePath"
+  );
+
+  if (
+    actionPayload.pageType === PageType.Archive &&
+    actionPayload.sort &&
+    actionPayload.sort !== SortType.fileName
+  ) {
+    items = sorter(items, actionPayload.sort);
+  }
+  return {
+    ...actionPayload,
+    fileIndexItems: items
+  };
+}
+
 export function archiveReducer(state: State, action: ArchiveAction): State {
   switch (action.type) {
     case "remove-folder":
@@ -118,52 +175,18 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
     case "update":
       const { select, tags, description, title, append, colorclass, fileHash } =
         action;
-
-      state.fileIndexItems.forEach((item, index) => {
-        if (select.indexOf(item.fileName) !== -1) {
-          if (append) {
-            // bug: duplicate tags are added, in the api those are filtered
-            if (tags) state.fileIndexItems[index].tags += ", " + tags;
-            if (description)
-              state.fileIndexItems[index].description += description;
-            if (title) state.fileIndexItems[index].title += title;
-          } else {
-            if (tags !== undefined) state.fileIndexItems[index].tags = tags;
-            if (description)
-              state.fileIndexItems[index].description = description;
-            if (title) state.fileIndexItems[index].title = title;
-          }
-          if (fileHash) state.fileIndexItems[index].fileHash = fileHash;
-          // colorclass = 0 ==> colorless/no-color
-          if (colorclass !== undefined && colorclass !== -1) {
-            state.fileIndexItems[index].colorClass = colorclass;
-            UpdateColorClassUsageActiveList(state, colorclass);
-          }
-          state.fileIndexItems[index].lastEdited = new Date().toISOString();
-        }
-      });
-
-      // Need to update otherwise other events are not triggered
-      return updateCache({ ...state, lastUpdated: new Date() });
-    case "set":
-      // ignore the cache
-      if (!action.payload.fileIndexItems) return action.payload;
-      let items = new ArrayHelper().UniqueResults(
-        action.payload.fileIndexItems,
-        "filePath"
+      return updateArchiveReducer(
+        state,
+        select,
+        tags,
+        description,
+        title,
+        append,
+        colorclass,
+        fileHash
       );
-
-      if (
-        action.payload.pageType === PageType.Archive &&
-        action.payload.sort &&
-        action.payload.sort !== SortType.fileName
-      ) {
-        items = sorter(items, action.payload.sort);
-      }
-      return {
-        ...action.payload,
-        fileIndexItems: items
-      };
+    case "set":
+      return setArchiveReducer(action.payload);
     case "force-reset":
       // also update the cache
       const forceResetUpdated = {
