@@ -11,6 +11,23 @@ describe("modalFreezeOpen", () => {
     modalFreezeOpen(freeze, { current: null } as any, null, null);
     expect(freeze).toBeCalled();
   });
+
+  it("modalFreezeOpen focus", () => {
+    const focus = jest.fn();
+    modalFreezeOpen(jest.fn(), { current: { focus } } as any, null, null);
+    expect(focus).toBeCalled();
+  });
+
+  it("modalFreezeOpen rootContainer", () => {
+    const freeze = jest.fn();
+    modalFreezeOpen(
+      freeze,
+      { current: null } as any,
+      null,
+      document.createElement("div") as HTMLElement
+    );
+    expect(freeze).toBeCalled();
+  });
 });
 
 describe("modalUnFreezeNotOpen", () => {
