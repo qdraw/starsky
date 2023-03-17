@@ -1,4 +1,4 @@
-export default function modalInserPortalDiv(
+export default function modalInsertPortalDiv(
   modal: React.MutableRefObject<HTMLDivElement | null>,
   hasUpdated: boolean,
   forceUpdate: React.Dispatch<React.SetStateAction<boolean>>,
