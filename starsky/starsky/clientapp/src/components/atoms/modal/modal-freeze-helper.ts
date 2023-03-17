@@ -13,6 +13,38 @@ export const toggleTabIndex = (type: "on" | "off", container: Element) => {
   });
 };
 
+function modalFreezeOpen(
+  freeze: () => void,
+  exitButton: React.RefObject<HTMLButtonElement>,
+  modalContainer: Element | null,
+  rootContainer: Element | null
+) {
+  if (exitButton.current) exitButton.current.focus();
+  if (modalContainer) toggleTabIndex("on", modalContainer);
+  if (rootContainer) toggleTabIndex("off", rootContainer);
+  freeze();
+}
+
+function modalUnFreezeNotOpen(
+  unfreeze: () => void,
+  modalContainer: Element | null,
+  rootContainer: Element | null,
+  focusAfterExit: HTMLElement | undefined,
+  initialRender: React.MutableRefObject<boolean>
+) {
+  if (modalContainer) toggleTabIndex("off", modalContainer);
+  if (rootContainer) toggleTabIndex("on", rootContainer);
+  unfreeze();
+  if (focusAfterExit) focusAfterExit.focus();
+
+  if (!initialRender.current) {
+    initialRender.current = true;
+    setTimeout(() => {
+      if (modalContainer) toggleTabIndex("off", modalContainer);
+    }, 0);
+  }
+}
+
 export default function modalFreezeHelper(
   initialRender: React.MutableRefObject<boolean>,
   root: string,
@@ -27,22 +59,15 @@ export default function modalFreezeHelper(
   const { freeze, unfreeze } = capturePosition();
 
   if (isOpen) {
-    if (exitButton.current) exitButton.current.focus();
-    if (modalContainer) toggleTabIndex("on", modalContainer);
-    if (rootContainer) toggleTabIndex("off", rootContainer);
-    freeze();
+    modalFreezeOpen(freeze, exitButton, modalContainer, rootContainer);
   } else {
-    if (modalContainer) toggleTabIndex("off", modalContainer);
-    if (rootContainer) toggleTabIndex("on", rootContainer);
-    unfreeze();
-    if (focusAfterExit) focusAfterExit.focus();
-
-    if (!initialRender.current) {
-      initialRender.current = true;
-      setTimeout(() => {
-        if (modalContainer) toggleTabIndex("off", modalContainer);
-      }, 0);
-    }
+    modalUnFreezeNotOpen(
+      unfreeze,
+      modalContainer,
+      rootContainer,
+      focusAfterExit,
+      initialRender
+    );
   }
 
   return () => {
