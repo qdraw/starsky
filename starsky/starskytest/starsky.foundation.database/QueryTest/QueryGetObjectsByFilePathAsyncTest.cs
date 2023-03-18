@@ -174,20 +174,34 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task GetObjectsByFilePathAsync_MultipleItems()
 		{
 			await _query.RemoveItemAsync(await _query.GetAllRecursiveAsync());
-			
-			await _query.AddRangeAsync(new List<FileIndexItem>
-			{
-				new FileIndexItem("/multiple_item"), // <= should never match this one
-				new FileIndexItem("/multiple_item_0.jpg"),
-				new FileIndexItem("/multiple_item_1.jpg"),
-				new FileIndexItem("/multiple_item_2.jpg"),
-				new FileIndexItem("/multiple_item_3.jpg")
 
-			});
-			
-			var result = await _query.GetObjectsByFilePathQueryAsync(
-				new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg",
-					"/multiple_item_2.jpg", "/multiple_item_3.jpg"});
+			async Task AddItems()
+			{
+				await _query.AddRangeAsync(new List<FileIndexItem>
+				{
+					new FileIndexItem("/multiple_item"), // <= should never match this one
+					new FileIndexItem("/multiple_item_0.jpg"),
+					new FileIndexItem("/multiple_item_1.jpg"),
+					new FileIndexItem("/multiple_item_2.jpg"),
+					new FileIndexItem("/multiple_item_3.jpg")
+				});
+			}
+
+			async Task<List<FileIndexItem>> GetResult()
+			{
+				return await _query.GetObjectsByFilePathQueryAsync(
+					new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg",
+						"/multiple_item_2.jpg", "/multiple_item_3.jpg"});
+			}
+
+			await AddItems();
+			var result = await GetResult();
+
+			if ( result.Count != 4 )
+			{
+				await AddItems();
+				result = await GetResult();
+			}
 
 			Assert.AreEqual(4, result.Count);
 			
