@@ -75,6 +75,152 @@ const initialState: State = {
   dateCache: Date.now()
 };
 
+interface IUpdateArchiveReducer {
+  select: string[];
+  tags: string | undefined;
+  description: string | undefined;
+  title: string | undefined;
+  append: boolean | undefined;
+  colorclass: number | undefined;
+  fileHash: string | undefined;
+}
+
+function updateArchiveReducerTagsDescriptionTitleAppend(
+  index: number,
+  state: IArchiveProps,
+  update: IUpdateArchiveReducer
+) {
+  // bug: duplicate tags are added, in the api those are filtered
+  if (update.tags) state.fileIndexItems[index].tags += ", " + update.tags;
+  if (update.description)
+    state.fileIndexItems[index].description += update.description;
+  if (update.title) state.fileIndexItems[index].title += update.title;
+}
+
+function updateArchiveReducerTagsDescriptionTitleSet(
+  index: number,
+  state: IArchiveProps,
+  update: IUpdateArchiveReducer
+) {
+  if (update.tags !== undefined) state.fileIndexItems[index].tags = update.tags;
+  if (update.description)
+    state.fileIndexItems[index].description = update.description;
+  if (update.title) state.fileIndexItems[index].title = update.title;
+}
+
+function updateArchiveReducer(
+  state: IArchiveProps,
+  update: IUpdateArchiveReducer
+) {
+  state.fileIndexItems.forEach((item, index) => {
+    if (update.select.indexOf(item.fileName) !== -1) {
+      if (update.append) {
+        updateArchiveReducerTagsDescriptionTitleAppend(index, state, update);
+      } else {
+        updateArchiveReducerTagsDescriptionTitleSet(index, state, update);
+      }
+      if (update.fileHash)
+        state.fileIndexItems[index].fileHash = update.fileHash;
+      // colorclass = 0 ==> colorless/no-color
+      if (update.colorclass !== undefined && update.colorclass !== -1) {
+        state.fileIndexItems[index].colorClass = update.colorclass;
+        UpdateColorClassUsageActiveList(state, update.colorclass);
+      }
+      state.fileIndexItems[index].lastEdited = new Date().toISOString();
+    }
+  });
+
+  // Need to update otherwise other events are not triggered
+  return updateCache({ ...state, lastUpdated: new Date() });
+}
+
+function setArchiveReducer(actionPayload: IArchiveProps) {
+  // ignore the cache
+  if (!actionPayload.fileIndexItems) return actionPayload;
+  let items = new ArrayHelper().UniqueResults(
+    actionPayload.fileIndexItems,
+    "filePath"
+  );
+
+  if (
+    actionPayload.pageType === PageType.Archive &&
+    actionPayload.sort &&
+    actionPayload.sort !== SortType.fileName
+  ) {
+    items = sorter(items, actionPayload.sort);
+  }
+  return {
+    ...actionPayload,
+    fileIndexItems: items
+  };
+}
+
+function addArchiveReducer(
+  state: IArchiveProps,
+  initActionAdd: IFileIndexItem[]
+) {
+  if (!initActionAdd) return state;
+  const filterOkCondition = (value: IFileIndexItem) => {
+    return (
+      value.status === IExifStatus.Ok ||
+      value.status === IExifStatus.OkAndSame ||
+      value.status === IExifStatus.Default ||
+      value.status === IExifStatus.OperationNotSupported // pushed when trying to create a map that already exist
+    );
+  };
+
+  const actionAdd = filterColorClassBeforeAdding(state, initActionAdd);
+
+  // when adding items outside current colorclass filter
+  if (actionAdd.length === 0) {
+    new FileListCache().CacheCleanEverything();
+    return state;
+  }
+
+  let concatenatedFileIndexItems = [
+    ...Array.from(actionAdd).filter(filterOkCondition),
+    ...state.fileIndexItems
+  ];
+
+  const toSortOnParm = state.collections ? "fileCollectionName" : "filePath";
+
+  // only the order within fileCollectionName, not the actual order of the list
+  concatenatedFileIndexItems = CollectionsSortOnImageFormat(
+    concatenatedFileIndexItems,
+    state.collections
+  );
+
+  concatenatedFileIndexItems = new ArrayHelper().UniqueResults(
+    concatenatedFileIndexItems,
+    toSortOnParm
+  );
+
+  let fileIndexItems = sorter(concatenatedFileIndexItems, state.sort);
+
+  // remove deleted items
+  for (const deleteItem of Array.from(actionAdd).filter(
+    (value) =>
+      value.status === IExifStatus.Deleted ||
+      value.status === IExifStatus.NotFoundNotInIndex ||
+      value.status === IExifStatus.NotFoundSourceMissing
+  )) {
+    const index = fileIndexItems.findIndex(
+      (x) => x.filePath === deleteItem.filePath
+    );
+    if (index !== -1) {
+      fileIndexItems.splice(index, 1);
+    }
+  }
+
+  state = { ...state, fileIndexItems, lastUpdated: new Date() };
+  // when you remove the last item of the directory
+  if (state.fileIndexItems.length === 0) {
+    state.colorClassUsage = [];
+  }
+  UpdateColorClassUsageActiveListLoop(state);
+  return updateCache(state);
+}
+
 export function archiveReducer(state: State, action: ArchiveAction): State {
   switch (action.type) {
     case "remove-folder":
@@ -118,52 +264,18 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
     case "update":
       const { select, tags, description, title, append, colorclass, fileHash } =
         action;
-
-      state.fileIndexItems.forEach((item, index) => {
-        if (select.indexOf(item.fileName) !== -1) {
-          if (append) {
-            // bug: duplicate tags are added, in the api those are filtered
-            if (tags) state.fileIndexItems[index].tags += ", " + tags;
-            if (description)
-              state.fileIndexItems[index].description += description;
-            if (title) state.fileIndexItems[index].title += title;
-          } else {
-            if (tags !== undefined) state.fileIndexItems[index].tags = tags;
-            if (description)
-              state.fileIndexItems[index].description = description;
-            if (title) state.fileIndexItems[index].title = title;
-          }
-          if (fileHash) state.fileIndexItems[index].fileHash = fileHash;
-          // colorclass = 0 ==> colorless/no-color
-          if (colorclass !== undefined && colorclass !== -1) {
-            state.fileIndexItems[index].colorClass = colorclass;
-            UpdateColorClassUsageActiveList(state, colorclass);
-          }
-          state.fileIndexItems[index].lastEdited = new Date().toISOString();
-        }
-      });
-
-      // Need to update otherwise other events are not triggered
-      return updateCache({ ...state, lastUpdated: new Date() });
-    case "set":
-      // ignore the cache
-      if (!action.payload.fileIndexItems) return action.payload;
-      let items = new ArrayHelper().UniqueResults(
-        action.payload.fileIndexItems,
-        "filePath"
-      );
-
-      if (
-        action.payload.pageType === PageType.Archive &&
-        action.payload.sort &&
-        action.payload.sort !== SortType.fileName
-      ) {
-        items = sorter(items, action.payload.sort);
-      }
-      return {
-        ...action.payload,
-        fileIndexItems: items
+      const update = {
+        select,
+        tags,
+        description,
+        title,
+        append,
+        colorclass,
+        fileHash
       };
+      return updateArchiveReducer(state, update);
+    case "set":
+      return setArchiveReducer(action.payload);
     case "force-reset":
       // also update the cache
       const forceResetUpdated = {
@@ -179,68 +291,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
     case "rename-folder":
       return updateCache({ ...state, subPath: action.path });
     case "add":
-      if (!action.add) return state;
-      const filterOkCondition = (value: IFileIndexItem) => {
-        return (
-          value.status === IExifStatus.Ok ||
-          value.status === IExifStatus.OkAndSame ||
-          value.status === IExifStatus.Default ||
-          value.status === IExifStatus.OperationNotSupported // pushed when trying to create a map that already exist
-        );
-      };
-
-      const actionAdd = filterColorClassBeforeAdding(state, action.add);
-
-      // when adding items outside current colorclass filter
-      if (actionAdd.length === 0) {
-        new FileListCache().CacheCleanEverything();
-        return state;
-      }
-
-      let concatenatedFileIndexItems = [
-        ...Array.from(actionAdd).filter(filterOkCondition),
-        ...state.fileIndexItems
-      ];
-
-      const toSortOnParm = state.collections
-        ? "fileCollectionName"
-        : "filePath";
-
-      // only the order within fileCollectionName, not the actual order of the list
-      concatenatedFileIndexItems = CollectionsSortOnImageFormat(
-        concatenatedFileIndexItems,
-        state.collections
-      );
-
-      concatenatedFileIndexItems = new ArrayHelper().UniqueResults(
-        concatenatedFileIndexItems,
-        toSortOnParm
-      );
-
-      let fileIndexItems = sorter(concatenatedFileIndexItems, state.sort);
-
-      // remove deleted items
-      for (const deleteItem of Array.from(actionAdd).filter(
-        (value) =>
-          value.status === IExifStatus.Deleted ||
-          value.status === IExifStatus.NotFoundNotInIndex ||
-          value.status === IExifStatus.NotFoundSourceMissing
-      )) {
-        const index = fileIndexItems.findIndex(
-          (x) => x.filePath === deleteItem.filePath
-        );
-        if (index !== -1) {
-          fileIndexItems.splice(index, 1);
-        }
-      }
-
-      state = { ...state, fileIndexItems, lastUpdated: new Date() };
-      // when you remove the last item of the directory
-      if (state.fileIndexItems.length === 0) {
-        state.colorClassUsage = [];
-      }
-      UpdateColorClassUsageActiveListLoop(state);
-      return updateCache(state);
+      return addArchiveReducer(state, action.add);
   }
 }
 /**
@@ -266,7 +317,7 @@ function filterColorClassBeforeAdding(
 }
 
 /**
- * Loop of ColorClass Usage is the list of Colorclasses a user can select.
+ * Loop of ColorClass Usage is the list of multiple colorclass items a user can select.
  * @see: UpdateColorClassUsageActiveList
  * @param state - current state
  */
@@ -283,7 +334,7 @@ function UpdateColorClassUsageActiveListLoop(state: IArchiveProps) {
  * only the order within fileCollectionName, not the actual order of the list
  * @param concatenatedFileIndexItems - the list
  * @param collections - only if collections is on
- * @returns new orderd list
+ * @returns new ordered list
  */
 function CollectionsSortOnImageFormat(
   concatenatedFileIndexItems: IFileIndexItem[],
@@ -312,8 +363,8 @@ function CollectionsSortOnImageFormat(
 }
 
 /**
- * ColorClass Usage is the list of Colorclasses a user can select.
- * This need to be updated based on the colorclasses that are in the list
+ * ColorClass Usage is the list of multiple colorclass items a user can select.
+ * This need to be updated based on the multiple colorclass items that are in the list
  * @param state - current state
  * @param colorclass - colorclass that has be added
  */
@@ -323,7 +374,7 @@ function UpdateColorClassUsageActiveList(
 ): void {
   if (state.colorClassUsage === undefined) state.colorClassUsage = [];
 
-  // add to list of colorclasses that can be selected
+  // add to list of multiple colorclass items that can be selected
   if (state.colorClassUsage.indexOf(colorclass) === -1) {
     state.colorClassUsage.push(colorclass);
   }
@@ -332,8 +383,8 @@ function UpdateColorClassUsageActiveList(
   // when the user selects by colorclass
   if (state.colorClassActiveList.length >= 1) return;
 
-  // checks the list of colorclasses that can be selected and removes the ones without
-  // only usefull when there are no colorclasses selected
+  // checks the list of multiple colorclass items that can be selected and removes the ones without
+  // only useful when there are no colorclass items selected
 
   state.colorClassUsage.forEach((usage) => {
     const existLambda = (element: IFileIndexItem) =>

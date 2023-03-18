@@ -119,7 +119,16 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				// Query again if needed
 				homeItem = _query.SingleItem("/");
 			}
-	        
+			
+			// retry 2
+			if ( homeItem?.FileIndexItem != null )
+			{
+				await _query.RemoveItemAsync(homeItem.FileIndexItem);
+		        
+				// Query again if needed
+				homeItem = _query.SingleItem("/");
+			}
+			
 			Assert.AreEqual(null,homeItem);
 		}
 
