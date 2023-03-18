@@ -56,13 +56,6 @@ function AppMenu() {
           accelerator: "CmdOrCtrl+N"
         },
         {
-          label: IsDutch() ? "Prullenmand" : "Trash",
-          click: () => {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            createMainWindow("/trash");
-          }
-        },
-        {
           label: IsDutch() ? "Bewerk bestand in editor" : "Edit file in Editor",
           click: () => {
             const focusWindow = BrowserWindow.getFocusedWindow();
