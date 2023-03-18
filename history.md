@@ -35,7 +35,12 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.5.6 _(Unreleased)_ - 2023-02-?? {#v0.5.6}
+## version 0.5.7 _(Unreleased)_ - 2023-02-?? {#v0.5.7}
+- nothing yet
+
+## version 0.5.6 - 2023-03-19 {#v0.5.6}
+
+_Known issues #1106, #1107 and #1108_
 
 - [x] (Added)  _Back-end_ Internal service for system trash (windows and mac os) (PR #1071)
 - [x] (Changed) _Back-end_ Unit test to multi threaded (PR #1071)
