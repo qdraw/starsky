@@ -75,33 +75,56 @@ const initialState: State = {
   dateCache: Date.now()
 };
 
+interface IUpdateArchiveReducer {
+  select: string[];
+  tags: string | undefined;
+  description: string | undefined;
+  title: string | undefined;
+  append: boolean | undefined;
+  colorclass: number | undefined;
+  fileHash: string | undefined;
+}
+
+function updateArchiveReducerTagsDescriptionTitleAppend(
+  index: number,
+  state: IArchiveProps,
+  update: IUpdateArchiveReducer
+) {
+  // bug: duplicate tags are added, in the api those are filtered
+  if (update.tags) state.fileIndexItems[index].tags += ", " + update.tags;
+  if (update.description)
+    state.fileIndexItems[index].description += update.description;
+  if (update.title) state.fileIndexItems[index].title += update.title;
+}
+
+function updateArchiveReducerTagsDescriptionTitleSet(
+  index: number,
+  state: IArchiveProps,
+  update: IUpdateArchiveReducer
+) {
+  if (update.tags !== undefined) state.fileIndexItems[index].tags = update.tags;
+  if (update.description)
+    state.fileIndexItems[index].description = update.description;
+  if (update.title) state.fileIndexItems[index].title = update.title;
+}
+
 function updateArchiveReducer(
   state: IArchiveProps,
-  select: string[],
-  tags: string | undefined,
-  description: string | undefined,
-  title: string | undefined,
-  append: boolean | undefined,
-  colorclass: number | undefined,
-  fileHash: string | undefined
+  update: IUpdateArchiveReducer
 ) {
   state.fileIndexItems.forEach((item, index) => {
-    if (select.indexOf(item.fileName) !== -1) {
-      if (append) {
-        // bug: duplicate tags are added, in the api those are filtered
-        if (tags) state.fileIndexItems[index].tags += ", " + tags;
-        if (description) state.fileIndexItems[index].description += description;
-        if (title) state.fileIndexItems[index].title += title;
+    if (update.select.indexOf(item.fileName) !== -1) {
+      if (update.append) {
+        updateArchiveReducerTagsDescriptionTitleAppend(index, state, update);
       } else {
-        if (tags !== undefined) state.fileIndexItems[index].tags = tags;
-        if (description) state.fileIndexItems[index].description = description;
-        if (title) state.fileIndexItems[index].title = title;
+        updateArchiveReducerTagsDescriptionTitleSet(index, state, update);
       }
-      if (fileHash) state.fileIndexItems[index].fileHash = fileHash;
+      if (update.fileHash)
+        state.fileIndexItems[index].fileHash = update.fileHash;
       // colorclass = 0 ==> colorless/no-color
-      if (colorclass !== undefined && colorclass !== -1) {
-        state.fileIndexItems[index].colorClass = colorclass;
-        UpdateColorClassUsageActiveList(state, colorclass);
+      if (update.colorclass !== undefined && update.colorclass !== -1) {
+        state.fileIndexItems[index].colorClass = update.colorclass;
+        UpdateColorClassUsageActiveList(state, update.colorclass);
       }
       state.fileIndexItems[index].lastEdited = new Date().toISOString();
     }
@@ -241,8 +264,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
     case "update":
       const { select, tags, description, title, append, colorclass, fileHash } =
         action;
-      return updateArchiveReducer(
-        state,
+      const update = {
         select,
         tags,
         description,
@@ -250,7 +272,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         append,
         colorclass,
         fileHash
-      );
+      };
+      return updateArchiveReducer(state, update);
     case "set":
       return setArchiveReducer(action.payload);
     case "force-reset":
