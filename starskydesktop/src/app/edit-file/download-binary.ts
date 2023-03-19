@@ -13,7 +13,10 @@ export async function downloadBinary(
   session: Electron.Session
 ): Promise<string> {
   // get the last of the array
-  const lastSubPath = fileIndexItem.collectionPaths[fileIndexItem.collectionPaths.length - 1];
+  const collectionPathsWithoutXmp = fileIndexItem.collectionPaths.filter(
+    (x) => !x.endsWith("xmp")
+  );
+  const lastSubPath = collectionPathsWithoutXmp[collectionPathsWithoutXmp.length - 1];
   const fileName = new FileExtensions().GetFileName(lastSubPath);
 
   const fileOnDisk = path.join(
@@ -25,9 +28,11 @@ export async function downloadBinary(
 
   try {
     await downloadNetRequest(
-      `${(await GetBaseUrlFromSettings()).location}${new UrlQuery().DownloadPhoto(
-        lastSubPath
-      )}`,
+      `${
+        (
+          await GetBaseUrlFromSettings()
+        ).location
+      }${new UrlQuery().DownloadPhoto(lastSubPath)}`,
       session,
       `${fileOnDisk}.tmp`
     );
@@ -39,9 +44,11 @@ export async function downloadBinary(
     }
     try {
       await downloadNetRequest(
-        `${(await GetBaseUrlFromSettings()).location}${new UrlQuery().DownloadPhoto(
-          lastSubPath
-        )}`,
+        `${
+          (
+            await GetBaseUrlFromSettings()
+          ).location
+        }${new UrlQuery().DownloadPhoto(lastSubPath)}`,
         session,
         `${fileOnDisk}.tmp`
       );
