@@ -16,8 +16,7 @@ export async function downloadBinary(
   const collectionPathsWithoutXmp = fileIndexItem.collectionPaths.filter(
     (x) => !x.endsWith("xmp")
   );
-  const lastSubPath =
-    collectionPathsWithoutXmp[collectionPathsWithoutXmp.length - 1];
+  const lastSubPath = collectionPathsWithoutXmp[collectionPathsWithoutXmp.length - 1];
   const fileName = new FileExtensions().GetFileName(lastSubPath);
 
   const fileOnDisk = path.join(
