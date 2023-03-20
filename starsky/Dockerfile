@@ -1,4 +1,4 @@
-# Dockerfile
+# Dockerfile server version
 
 # ARM build test: 
 # cd /root_of_repo

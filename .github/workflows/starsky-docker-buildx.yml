@@ -53,11 +53,21 @@ jobs:
             ghcr.io/${{ github.repository }}
 
       - name: Build and push master
-        id: docker_build
+        id: docker_build_push
         uses: docker/build-push-action@v4
+        if: github.event_name != 'pull_request'
         with:
           context: ./starsky
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Build and don't push
+        id: docker_build_pull_request
+        uses: docker/build-push-action@v4
+        if: github.event_name == 'pull_request'
+        with:
+          context: ./starsky
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: false

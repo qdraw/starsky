@@ -38,6 +38,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.5.7 _(Unreleased)_ - 2023-02-?? {#v0.5.7}
 - nothing yet
 
+## version 0.5.7-beta.0 - 2023-03-19 {#v0.5.7-beta.0}
+- [x] (Added)  _Devops_ Add stable release to github container registry
+
 ## version 0.5.6 - 2023-03-19 {#v0.5.6}
 
 _Known issues #1106, #1107 and #1108_
