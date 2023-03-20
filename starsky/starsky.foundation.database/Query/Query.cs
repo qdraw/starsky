@@ -76,7 +76,6 @@ namespace starsky.foundation.database.Query
 		{
 			return $"_{nameof(GetObjectByFilePathAsyncCacheName)}~{subPath}";
 		}
-		
 
 		/// <summary>
 		/// Returns a database object file or folder
@@ -134,29 +133,6 @@ namespace starsky.foundation.database.Query
 			return ( await GetObjectsByFilePathQueryAsync(paths) )
 				.FirstOrDefault();
 		}
-	    
-		/// <summary>
-		/// Get subPath based on hash (cached hashList view to clear use ResetItemByHash)
-		/// </summary>
-		/// <param name="fileHash">base32 hash</param>
-		/// <returns>subPath (relative to database)</returns>
-	    public string? GetSubPathByHash(string fileHash)
-	    {
-		    // The CLI programs uses no cache
-		    if( !IsCacheEnabled() || _cache == null ) return QueryGetItemByHash(fileHash);
-            
-		    // Return values from IMemoryCache
-		    var queryHashListCacheName = CachingDbName("hashList", fileHash);
-
-		    // if result is not null return cached value
-		    if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath) 
-		         && !string.IsNullOrEmpty((string)cachedSubPath)) return ( string ) cachedSubPath;
-
-		    cachedSubPath = QueryGetItemByHash(fileHash);
-		    
-		    _cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48,0,0));
-		    return (string?) cachedSubPath;
-		}
 
 		public async Task<string?> GetSubPathByHashAsync(string fileHash)
 		{
@@ -191,29 +167,6 @@ namespace starsky.foundation.database.Query
 				_cache.Remove(queryCacheName);
 			}
 	    }
-
-	    // Return a File Item By it Hash value
-        // New added, directory hash now also hashes
-        private string? QueryGetItemByHash(string fileHash)
-        {   
-	        string? LocalQueryGetItemByHash(ApplicationDbContext context)
-	        {
-		        return context.FileIndex.TagWith("QueryGetItemByHash").FirstOrDefault(
-			        p => p.FileHash == fileHash 
-			             && p.IsDirectory != true
-		        )?.FilePath;
-	        }
-	        
-	        try
-	        {
-		        return LocalQueryGetItemByHash(_context);
-	        }
-	        catch ( ObjectDisposedException )
-	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        return LocalQueryGetItemByHash(context);
-	        }
-        }
         
         private async Task<string?> QueryGetItemByHashAsync(string fileHash)
         {
@@ -235,7 +188,6 @@ namespace starsky.foundation.database.Query
 		        return await LocalQueryGetItemByHashAsync(context);
 	        }
         }
-        
 
         /// <summary>
         /// Get the name of Key in the cache db

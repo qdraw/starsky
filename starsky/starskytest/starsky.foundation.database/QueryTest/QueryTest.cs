@@ -322,7 +322,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await InsertSearchData();
 			// GetSubPathByHash
 			// See above for objects
-			Assert.AreEqual("/basic/hi.jpg", _query.GetSubPathByHash("09876543456789"));
+			Assert.AreEqual("/basic/hi.jpg", await _query.GetSubPathByHashAsync("09876543456789"));
 		}
 
 		[TestMethod]

@@ -33,7 +33,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public void InvokeTest()
+		public async Task InvokeTest()
 		{
 			var dbContext = CreateNewScope().CreateScope()
 				.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -41,7 +41,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new AppSettings(), CreateNewScope(), new FakeIWebLogger(), new FakeMemoryCache());
 			query.Invoke(dbContext);
 			
-			Assert.IsNull(query.GetSubPathByHash("4444"));
+			Assert.IsNull(await query.GetSubPathByHashAsync("4444"));
 		}
 	}
 }
