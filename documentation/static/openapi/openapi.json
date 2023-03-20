@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Starsky",
-    "version": "0.5.6.0",
+    "version": "0.5.7.0",
     "extensions": {}
   },
   "servers": [
@@ -9917,6 +9917,36 @@
               "in": 2,
               "description": "one single fileHash (NOT path)",
               "required": true,
+              "deprecated": false,
+              "allowEmptyValue": false,
+              "explode": false,
+              "allowReserved": false,
+              "schema": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "allOf": [],
+                "oneOf": [],
+                "anyOf": [],
+                "required": [],
+                "properties": {},
+                "additionalPropertiesAllowed": true,
+                "enum": [],
+                "nullable": false,
+                "deprecated": false,
+                "extensions": {},
+                "unresolvedReference": false
+              },
+              "examples": {},
+              "content": {},
+              "extensions": {}
+            },
+            {
+              "unresolvedReference": false,
+              "name": "filePath",
+              "in": 0,
+              "description": "fallback FilePath",
+              "required": false,
               "deprecated": false,
               "allowEmptyValue": false,
               "explode": false,
