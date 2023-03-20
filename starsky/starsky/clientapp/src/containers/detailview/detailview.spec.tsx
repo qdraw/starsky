@@ -108,6 +108,7 @@ describe("DetailView", () => {
         "http://localhost" +
           new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
             contextProvider.state.fileIndexItem.fileHash,
+            contextProvider.state.fileIndexItem.filePath,
             true
           )
       );

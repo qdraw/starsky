@@ -111,7 +111,7 @@ namespace starskytest.Controllers
 		{
 			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
 	        
-			if (string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)))
+			if (string.IsNullOrEmpty(await _query.GetSubPathByHashAsync(fileHashCode)))
 			{
 				var isDelete = string.Empty;
 				if (delete) isDelete = TrashKeyword.TrashKeywordString;

@@ -346,7 +346,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void ExportControllerTest__ThumbFalse__FilePathToFileName()
+		public async Task ExportControllerTest__ThumbFalse__FilePathToFileName()
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
@@ -357,7 +357,7 @@ namespace starskytest.Controllers
 			{
 				Path.Combine("test","file.jpg")
 			};
-			var fileNames = export.FilePathToFileName(filePaths, false);
+			var fileNames = await export.FilePathToFileNameAsync(filePaths, false);
 			Assert.AreEqual("file.jpg",fileNames.FirstOrDefault());
 		}
 
@@ -380,7 +380,7 @@ namespace starskytest.Controllers
 				FileHash = "thumb"
 			});
 			
-			var fileNames = export.FilePathToFileName(filePaths, true);
+			var fileNames = await export.FilePathToFileNameAsync(filePaths, true);
 			Assert.AreEqual("file.jpg",fileNames.FirstOrDefault());
 			
 			// This is a strange one: 

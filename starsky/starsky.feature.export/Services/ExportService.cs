@@ -125,7 +125,7 @@ namespace starsky.feature.export.Services
 			string zipOutputFileName)
 		{
 			var filePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
-			var fileNames = FilePathToFileName(filePaths, thumbnail);
+			var fileNames = await FilePathToFileNameAsync(filePaths, thumbnail);
 
 			new Zipper().CreateZip(_appSettings.TempFolder,filePaths,fileNames,zipOutputFileName);
 				
@@ -196,7 +196,7 @@ namespace starsky.feature.export.Services
 		/// <param name="filePaths">the full file paths </param>
 		/// <param name="thumbnail">copy the thumbnail (true) or the source image (false)</param>
 		/// <returns></returns>
-		internal List<string> FilePathToFileName(IEnumerable<string> filePaths, bool thumbnail)
+		internal async Task<List<string>> FilePathToFileNameAsync(IEnumerable<string> filePaths, bool thumbnail)
 		{
 			var fileNames = new List<string>();
 			foreach ( var filePath in filePaths )
@@ -207,8 +207,8 @@ namespace starsky.feature.export.Services
 					// the file with the original name
 					
 					var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
-					var subPath = _query.GetSubPathByHash(thumbFilename);
-					var filename = subPath.Split('/').LastOrDefault(); // first a string
+					var subPath = await _query.GetSubPathByHashAsync(thumbFilename);
+					var filename = subPath?.Split('/').LastOrDefault(); // first a string
 					fileNames.Add(filename);
 					continue;
 				}

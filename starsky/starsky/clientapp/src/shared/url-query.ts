@@ -279,6 +279,7 @@ export class UrlQuery {
 
   public UrlThumbnailImageLargeOrExtraLarge = (
     fileHash: string,
+    filePath?: string,
     extraLarge = true
   ): string => {
     if (!extraLarge) {
@@ -286,14 +287,18 @@ export class UrlQuery {
         this.prefix +
         "/api/thumbnail/" +
         fileHash +
-        ".jpg?issingleitem=true&extraLarge=false"
+        ".jpg?issingleitem=true&extraLarge=false" +
+        "&filePath=" +
+        filePath
       );
     }
     return (
       this.prefix +
       "/api/thumbnail/" +
       fileHash +
-      "@2000.jpg?issingleitem=true&extraLarge=true"
+      "@2000.jpg?issingleitem=true&extraLarge=true" +
+      "&filePath=" +
+      filePath
     );
   };
 

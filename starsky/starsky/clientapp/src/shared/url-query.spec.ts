@@ -200,6 +200,7 @@ describe("url-query", () => {
     it("should contain hash_test (large false)", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
         "hash_test",
+        "filePath",
         false
       );
       expect(test).toContain("hash_test");
@@ -208,6 +209,7 @@ describe("url-query", () => {
     it("should contain hash_test (large true)", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
         "hash_test",
+        "filePath",
         true
       );
       expect(test).toContain("hash_test");

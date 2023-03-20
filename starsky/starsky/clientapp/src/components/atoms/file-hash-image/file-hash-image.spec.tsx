@@ -213,6 +213,7 @@ describe("FileHashImage", () => {
       <FileHashImage
         isError={false}
         fileHash="hash"
+        id="/test.jpg"
         orientation={Orientation.Horizontal}
         onWheelCallback={onWheelCallbackSpy}
       />
@@ -256,6 +257,7 @@ describe("FileHashImage", () => {
       <FileHashImage
         isError={false}
         fileHash="hash"
+        id="/test.jpg"
         orientation={Orientation.Horizontal}
       />
     );
@@ -266,7 +268,11 @@ describe("FileHashImage", () => {
     const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
+          "hash",
+          "/test.jpg",
+          true
+        )
     );
 
     component.unmount();
@@ -301,6 +307,7 @@ describe("FileHashImage", () => {
       <FileHashImage
         isError={false}
         fileHash="hash"
+        id="/test.jpg"
         orientation={Orientation.Horizontal}
         onResetCallback={onResetCallbackSpy}
       />
@@ -312,7 +319,11 @@ describe("FileHashImage", () => {
     const img = screen.queryByRole("img") as HTMLImageElement;
     expect(img.src).toBe(
       "http://localhost" +
-        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
+          "hash",
+          "/test.jpg",
+          true
+        )
     );
 
     expect(onResetCallbackSpy).toBeCalled();
