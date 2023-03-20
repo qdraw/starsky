@@ -39,7 +39,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
         // result from API is: "Thumbnail is not ready yet"
         setTranslateRotation(props.orientation);
       } else if (result.statusCode === 200) {
-        // thumbnail is alreay rotated (but need to be called due change of image)
+        // thumbnail is already rotated (but need to be called due change of image)
         setTranslateRotation(Orientation.Horizontal);
       }
     })();
@@ -48,6 +48,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   const [imageUrl, setImageUrl] = React.useState(
     new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
       props.fileHash,
+      props.id,
       window.innerWidth > 1000
     )
   );
@@ -56,10 +57,11 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     setImageUrl(
       new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
         props.fileHash,
+        props.id,
         window.innerWidth > 1000
       )
     );
-  }, [props.fileHash]);
+  }, [props.fileHash, props.id]);
 
   function onWheelCallback(z: number) {
     setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, props.id, 1));
@@ -78,6 +80,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
         setImageUrl(
           new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
             props.fileHash,
+            props.id,
             window.innerWidth > 1000
           )
         );

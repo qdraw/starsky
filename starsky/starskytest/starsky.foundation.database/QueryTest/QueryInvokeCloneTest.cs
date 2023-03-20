@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,18 +22,18 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public void CloneInvokeTest()
+		public async Task CloneInvokeTest()
 		{
 			var dbContext = CreateNewScope().CreateScope()
 				.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			var query = new Query(null,  
 				new AppSettings(), CreateNewScope(), new FakeIWebLogger(),new FakeMemoryCache()).Clone(dbContext);
 			
-			Assert.IsNull(query.GetSubPathByHash("4444"));
+			Assert.IsNull(await query.GetSubPathByHashAsync("4444"));
 		}
 
 		[TestMethod]
-		public void InvokeTest()
+		public async Task InvokeTest()
 		{
 			var dbContext = CreateNewScope().CreateScope()
 				.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -40,7 +41,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new AppSettings(), CreateNewScope(), new FakeIWebLogger(), new FakeMemoryCache());
 			query.Invoke(dbContext);
 			
-			Assert.IsNull(query.GetSubPathByHash("4444"));
+			Assert.IsNull(await query.GetSubPathByHashAsync("4444"));
 		}
 	}
 }

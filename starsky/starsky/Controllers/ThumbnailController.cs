@@ -101,7 +101,7 @@ namespace starsky.Controllers
 			400)] // string (f) input not allowed to avoid path injection attacks
 		[ProducesResponseType(404)] // not found
 
-		public IActionResult ListSizesByHash(string f)
+		public async Task<IActionResult> ListSizesByHash(string f)
 		{
 			// For serving jpeg files
 			f = FilenamesHelper.GetFileNameWithoutExtension(f);
@@ -125,7 +125,7 @@ namespace starsky.Controllers
 			if (data.Small && data.Large && data.ExtraLarge )
 				return Json(data);
 			
-			var sourcePath = _query.GetSubPathByHash(f);
+			var sourcePath = await _query.GetSubPathByHashAsync(f);
 			var isThumbnailSupported =
 				ExtensionRolesHelper.IsExtensionThumbnailSupported(sourcePath);
 			switch ( isThumbnailSupported  )
@@ -164,25 +164,26 @@ namespace starsky.Controllers
 			Response.Headers.Add("x-filename", new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
 			return File(stream, "image/jpeg");
 		}
-		
+
 
 		/// <summary>
-        /// Get thumbnail with fallback to original source image.
-        /// Return source image when IsExtensionThumbnailSupported is true
-        /// </summary>
-        /// <param name="f">one single fileHash (NOT path)</param>
-        /// <param name="isSingleItem">true = load original</param>
-        /// <param name="json">text as output</param>
-        /// <param name="extraLarge">give preference to extraLarge over large image</param> 
-        /// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
-        /// <response code="200">returns content of the file or when json is true, "OK"</response>
+		/// Get thumbnail with fallback to original source image.
+		/// Return source image when IsExtensionThumbnailSupported is true
+		/// </summary>
+		/// <param name="f">one single fileHash (NOT path)</param>
+		/// <param name="filePath">fallback FilePath</param>
+		/// <param name="isSingleItem">true = load original</param>
+		/// <param name="json">text as output</param>
+		/// <param name="extraLarge">give preference to extraLarge over large image</param> 
+		/// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
+		/// <response code="200">returns content of the file or when json is true, "OK"</response>
 		/// <response code="202">thumbnail can be generated, Thumbnail is not ready yet</response>
 		/// <response code="204">thumbnail is corrupt</response>
 		/// <response code="210">Conflict, you did try get for example a thumbnail of a raw file</response>
 		/// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
-        /// <response code="404">item not found on disk</response>
-        /// <response code="401">User unauthorized</response>
-        [HttpGet("/api/thumbnail/{f}")]
+		/// <response code="404">item not found on disk</response>
+		/// <response code="401">User unauthorized</response>
+		[HttpGet("/api/thumbnail/{f}")]
         [ProducesResponseType(200)] // file
         [ProducesResponseType(202)] // thumbnail can be generated "Thumbnail is not ready yet"
         [ProducesResponseType(204)] // thumbnail is corrupt
@@ -191,8 +192,9 @@ namespace starsky.Controllers
         [ProducesResponseType(404)] // not found
         [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
         [ResponseCache(Duration = 29030400)] // 4 weeks
-        public IActionResult Thumbnail(
+        public async Task<IActionResult> Thumbnail(
             string f, 
+            string filePath = null,
             bool isSingleItem = false, 
             bool json = false,
             bool extraLarge = true)
@@ -237,27 +239,27 @@ namespace starsky.Controllers
             }
 
             // Cached view of item
-            var sourcePath = _query.GetSubPathByHash(f);
+            // Need to check again for recently moved files
+            var sourcePath = await _query.GetSubPathByHashAsync(f);
             if ( sourcePath == null )
             {
-	            SetExpiresResponseHeadersToZero();
-	            return NotFound("not in index");
+	            // remove from cache
+	            _query.ResetItemByHash(f);
+	            
+	            if (string.IsNullOrEmpty(filePath) || await _query.GetObjectByFilePathAsync(filePath) == null )
+	            {
+		            SetExpiresResponseHeadersToZero();
+		            return NotFound("not in index");
+	            }
+	            
+	            sourcePath = filePath;
             }
-            
-	        // Need to check again for recently moved files
-	        if (!_iStorage.ExistFile(sourcePath))
-	        {
-		        // remove from cache
-		        _query.ResetItemByHash(f);
-		        // query database again
-		        sourcePath = _query.GetSubPathByHash(f);
-		        SetExpiresResponseHeadersToZero();
-		        if (sourcePath == null) return NotFound("not in index");
-	        }
 
-	        if ( !_iStorage.ExistFile(sourcePath) )
-		        return NotFound("There is no thumbnail image " + f + " and no source image " +
-		                        sourcePath);
+            if ( !_iStorage.ExistFile(sourcePath) )
+            {
+	            return NotFound("There is no thumbnail image " + f + " and no source image " +
+	                            sourcePath);
+            }
 	        
 	        if (!isSingleItem)
 	        {

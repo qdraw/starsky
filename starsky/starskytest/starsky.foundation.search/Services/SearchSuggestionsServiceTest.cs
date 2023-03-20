@@ -41,7 +41,7 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task TestInitialize()
 		{
 
-			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane2--suggestions")))
+			if (string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("schipholairplane2--suggestions")))
 			{
 				for ( int i = 0; i < 9; i++ )
 				{
@@ -55,7 +55,7 @@ namespace starskytest.starsky.foundation.search.Services
 				}
 			}
 
-			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane1")))
+			if (string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("schipholairplane1")))
 			{
 				for ( int i = 0; i < 9; i++ )
 				{

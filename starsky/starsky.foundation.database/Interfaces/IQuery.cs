@@ -141,7 +141,6 @@ namespace starsky.foundation.database.Interfaces
         /// <param name="directoryName">the path of the directory (there is no parent generation)</param>
         bool RemoveCacheParentItem(string directoryName);
 
-        string? GetSubPathByHash(string fileHash);
         Task<string?> GetSubPathByHashAsync(string fileHash);
 
         Task<List<FileIndexItem>> GetObjectsByFileHashAsync(

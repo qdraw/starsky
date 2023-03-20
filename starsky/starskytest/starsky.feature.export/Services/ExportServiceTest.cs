@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.export.Services;
 using starsky.foundation.database.Models;
@@ -133,5 +134,40 @@ public class ExportServiceTest
 		
 		Assert.AreEqual(0, fileIndexResultsList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok));
 		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing));
+	}
+
+	[TestMethod]
+	public void ExportService_NotFoundNotInIndex()
+	{
+		var exportService = new ExportService(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+		var (_, fileIndexResultsList) = exportService.Preflight(new List<string> { "/test" }.ToArray());
+		Assert.AreEqual(1, fileIndexResultsList.Count);
+		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, fileIndexResultsList[0].Status);
+	}
+	
+	[TestMethod]
+	public void ExportService_Thumbnail_True()
+	{
+		var exportService = new ExportService(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+		var (zipHash, _) = exportService.Preflight(new List<string> { "/test" }.ToArray(), false, true);
+
+		Assert.IsTrue( zipHash.StartsWith("TN"));
+	}
+	
+	[TestMethod]
+	public void ExportService_Thumbnail_False()
+	{
+		var exportService = new ExportService(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+		var (zipHash, _) = exportService.Preflight(new List<string> { "/test" }.ToArray(), false);
+
+		Assert.IsTrue( zipHash.StartsWith("SR"));
+	}
+
+	[TestMethod]
+	public async Task FilePathToFileNameAsync_NotfoundIsNull()
+	{
+		var exportService = new ExportService(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+		var fileName = await exportService.FilePathToFileNameAsync(new List<string>{"/test/not_found.jpg"}.ToArray(), true);
+		Assert.AreEqual(null, fileName[0]);
 	}
 }
