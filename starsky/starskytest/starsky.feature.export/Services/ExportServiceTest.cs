@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.export.Services;
 using starsky.foundation.database.Models;
@@ -160,5 +161,13 @@ public class ExportServiceTest
 		var (zipHash, _) = exportService.Preflight(new List<string> { "/test" }.ToArray(), false);
 
 		Assert.IsTrue( zipHash.StartsWith("SR"));
+	}
+
+	[TestMethod]
+	public async Task FilePathToFileNameAsync_NotfoundIsNull()
+	{
+		var exportService = new ExportService(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+		var fileName = await exportService.FilePathToFileNameAsync(new List<string>{"/test/not_found.jpg"}.ToArray(), true);
+		Assert.AreEqual(null, fileName[0]);
 	}
 }
