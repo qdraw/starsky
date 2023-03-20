@@ -150,7 +150,7 @@ namespace starsky.feature.metaupdate.Services
 					  $"Null for: path:{fileIndexItem.FilePath} {DateTime.UtcNow.ToShortTimeString()}"
 					: $"[UpdateWriteDiskDatabase] ExifTool result: {exifResult} path:{fileIndexItem.FilePath}");
 			}
-			else
+			else if ( fileIndexItem.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp )
 			{
 				await new FileIndexItemJsonParser(_iStorage).WriteAsync(fileIndexItem);
 			}
