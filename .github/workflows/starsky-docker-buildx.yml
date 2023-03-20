@@ -45,7 +45,7 @@ jobs:
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Extract metadata Github Actions (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
         with:
