@@ -239,9 +239,13 @@ namespace starsky.Controllers
             }
 
             // Cached view of item
+            // Need to check again for recently moved files
             var sourcePath = await _query.GetSubPathByHashAsync(f);
             if ( sourcePath == null )
             {
+	            // remove from cache
+	            _query.ResetItemByHash(f);
+	            
 	            if (string.IsNullOrEmpty(filePath) || await _query.GetObjectByFilePathAsync(filePath) == null )
 	            {
 		            SetExpiresResponseHeadersToZero();
@@ -250,24 +254,12 @@ namespace starsky.Controllers
 	            
 	            sourcePath = filePath;
             }
-            
-	        // Need to check again for recently moved files
-	        if (!_iStorage.ExistFile(sourcePath))
-	        {
-		        // remove from cache
-		        _query.ResetItemByHash(f);
-		        // query database again
-		        sourcePath =  await _query.GetSubPathByHashAsync(f);
-		        SetExpiresResponseHeadersToZero();
-		        if ( sourcePath == null )
-		        {
-			        return NotFound("not in index");
-		        }
-	        }
 
-	        if ( !_iStorage.ExistFile(sourcePath) )
-		        return NotFound("There is no thumbnail image " + f + " and no source image " +
-		                        sourcePath);
+            if ( !_iStorage.ExistFile(sourcePath) )
+            {
+	            return NotFound("There is no thumbnail image " + f + " and no source image " +
+	                            sourcePath);
+            }
 	        
 	        if (!isSingleItem)
 	        {

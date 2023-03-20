@@ -159,15 +159,62 @@ namespace starskytest.Controllers
 			
 			// Thumbnail exist
 			Assert.AreNotEqual(null,actionResult);
-			var thumbnailAnswer = actionResult.ContentType;
+			var thumbnailAnswer = actionResult?.ContentType;
 			
 			controller.Response.Headers.TryGetValue("x-filename", out var value ); 
 			Assert.AreEqual(createAnImage.FileHash + ".jpg", value.ToString());
 
 			Assert.AreEqual("image/jpeg",thumbnailAnswer);
-			actionResult.FileStream.Dispose(); // for windows
+			await actionResult!.FileStream.DisposeAsync(); // for windows
+		}
+
+		[TestMethod]
+		public async Task Thumbnail_HashNotFound_ButFilePathValid()
+		{
+			await InsertSearchData();
+			var storage = ArrangeStorage();
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult = await controller.Thumbnail("any", "/test.jpg",true) as FileStreamResult;
+			
+			controller.Response.Headers.TryGetValue("x-filename", out var value ); 
+			Assert.AreEqual(  "test.jpg", value.ToString());
+			var thumbnailAnswer = actionResult?.ContentType;
+			Assert.AreEqual("image/jpeg",thumbnailAnswer);
+			
+			await actionResult!.FileStream.DisposeAsync(); // for windows
 		}
 		
+		[TestMethod]
+		public async Task Thumbnail_HashNotFound_ButFilePath_Not_Valid()
+		{
+			await InsertSearchData();
+			var storage = ArrangeStorage();
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult = await controller.Thumbnail("any", "/not_found.jpg",true) as NotFoundObjectResult;
+
+			Assert.AreEqual(404,actionResult?.StatusCode);
+		}
+		
+		[TestMethod]
+		public async Task Thumbnail_In_db_but_not_on_disk()
+		{
+			await InsertSearchData();
+			var storage = ArrangeStorage();
+			var controller = new ThumbnailController(new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/not_on_disk.jpg")
+				{
+					FileHash = "not_on_disk_hash"
+				}
+			}),new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult = await controller.Thumbnail("not_on_disk_hash", "/not_on_disk.jpg",true) as NotFoundObjectResult;
+
+			Assert.AreEqual(404,actionResult?.StatusCode);
+		}
+
 		[TestMethod]
 		public async Task Thumbnail_IgnoreRawFile()
 		{
