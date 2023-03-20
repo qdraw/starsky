@@ -11,12 +11,18 @@ Also known as PWD, it’s an online playground where you can test all the latest
 without having to install anything locally. Once in PWD, you can create an instance, 
 and you’ll feel as if you’re in the shell of a [Linux VM](https://www.linux.com/learn/why-when-and-how-use-virtual-machine).
 
-# Different locations for Docker images
+# Locations for Docker images
 
-- `qdraw/starsky` is the image name, you can find it on [Docker Hub](https://hub.docker.com/r/qdraw/starsky)
-- `ghcr.io/qdraw/starsky:master` is the latest image from the master branch, you can find it on GitHub Container Registry
+- `qdraw/starsky:latest` is the image name, you can find it on [Docker Hub](https://hub.docker.com/r/qdraw/starsky)
+- `ghcr.io/qdraw/starsky:latest` is the latest same version on [GitHub Container Registry](https://github.com/qdraw/starsky/pkgs/container/starsky/versions?filters%5Bversion_type%5D=tagged)
 
-On Docker Hub you can find tags by version number, for example `qdraw/starsky:0.5.4`
+## By version
+On Docker Hub you can find tags by version number, for example `qdraw/starsky:v0.5.6`
+or on [GitHub Container Registry](https://github.com/qdraw/starsky/pkgs/container/starsky/versions?filters%5Bversion_type%5D=tagged)
+This is on GitHub Container Registry: `ghcr.io/qdraw/starsky:v0.5.7-beta.0`
+
+## Unstable test version:
+- `ghcr.io/qdraw/starsky:master` is the latest unstable image from the master branch, you can find it on GitHub Container Registry
 
 ## Run Docker image with MySQL
 
