@@ -19,6 +19,19 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			await new FileIndexItemJsonParser(fakeStorage).WriteAsync(new FileIndexItem("/test.jpg"));
 			Assert.IsTrue(fakeStorage.ExistFile("/.starsky.test.jpg.json"));
 		}
+		
+		[TestMethod]
+		public async Task Json_Write_ImageFormat_Read()
+		{
+			var fakeStorage = new FakeIStorage();
+			await new FileIndexItemJsonParser(fakeStorage).WriteAsync(new FileIndexItem("/test.jpg"));
+			var jsonSubPath = JsonSidecarLocation.JsonLocation("/", "test.jpg");
+
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(
+				fakeStorage.ReadStream(jsonSubPath, 40));
+			
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.meta_json, imageFormat);
+		}
 
 		private FileIndexItem ExampleItem { get; set; } = new FileIndexItem("/test.jpg")
 		{
@@ -89,18 +102,28 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 		[TestMethod]
 		public void ReadTest_FromCopiedText()
 		{
-			var input =
-				"{\n  \"FilePath\": \"/test.jpg\",\n  \"FileName\": \"test.jpg\",\n  \"FileHash\": " +
-				"\"Test\",\n  \"FileCollectionName\": \"test\",\n  \"ParentDirectory\": \"/\",\n  " +
-				"\"IsDirectory\": false,\n  \"Tags\": \"test\",\n  \"Status\": \"ExifWriteNotSupported\"," +
-				"\n  \"Description\": \"Description\",\n  \"Title\": \"Title\",\n  \"DateTime\": " +
-				"\"2020-01-01T00:00:00\",\n  \"AddToDatabase\": \"2020-01-01T00:00:00\",\n  \"LastEdited\": " +
-				"\"2020-01-01T00:00:00\",\n  \"Latitude\": 50,\n  \"Longitude\": 5,\n  \"LocationAltitude\": 1,\n " +
-				" \"LocationCity\": \"LocationCity\",\n  \"LocationState\": \"LocationState\",\n " +
-				" \"LocationCountry\": \"LocationCountry\",\n  \"ColorClass\": 2,\n  \"Orientation\": \"Rotate180\",\n " +
-				" \"ImageWidth\": 100,\n  \"ImageHeight\": 140,\n  \"ImageFormat\": \"jpg\",\n  \"CollectionPaths\": [],\n" +
-				"  \"Aperture\": 1,\n  \"ShutterSpeed\": \"10\",\n  \"IsoSpeed\": 1200,\n  \"Software\": \"starsky\",\n " +
-				" \"MakeModel\": \"test|test|\",\n  \"Make\": \"test\",\n  \"Model\": \"test\",\n  \"FocalLength\": 200\n}";
+			const string input = "{\n  \"FilePath\": \"/test.jpg\",\n " +
+			                     " \"FileName\": \"test.jpg\",\n  \"FileHash\": " +
+			                     "\"Test\",\n  \"FileCollectionName\": \"test\",\n  " +
+			                     "\"ParentDirectory\": \"/\",\n  " +
+			                     "\"IsDirectory\": false,\n  \"Tags\": \"test\",\n  " +
+			                     "\"Status\": \"ExifWriteNotSupported\"," +
+			                     "\n  \"Description\": \"Description\",\n  " +
+			                     "\"Title\": \"Title\",\n  \"DateTime\": " +
+			                     "\"2020-01-01T00:00:00\",\n  " +
+			                     "\"AddToDatabase\": \"2020-01-01T00:00:00\",\n  \"LastEdited\": " +
+			                     "\"2020-01-01T00:00:00\",\n  \"Latitude\": 50,\n  " +
+			                     "\"Longitude\": 5,\n  \"LocationAltitude\": 1,\n " +
+			                     " \"LocationCity\": \"LocationCity\",\n  " +
+			                     "\"LocationState\": \"LocationState\",\n " +
+			                     " \"LocationCountry\": \"LocationCountry\",\n  " +
+			                     "\"ColorClass\": 2,\n  \"Orientation\": \"Rotate180\",\n " +
+			                     " \"ImageWidth\": 100,\n  \"ImageHeight\": 140,\n  " +
+			                     "\"ImageFormat\": \"jpg\",\n  \"CollectionPaths\": [],\n" +
+			                     "  \"Aperture\": 1,\n  \"ShutterSpeed\": \"10\",\n  " +
+			                     "\"IsoSpeed\": 1200,\n  \"Software\": \"starsky\",\n " +
+			                     " \"MakeModel\": \"test|test|\",\n  \"Make\": \"test\",\n  " +
+			                     "\"Model\": \"test\",\n  \"FocalLength\": 200\n}";
 
 			var fakeStorage = new FakeIStorage();
 			var jsonSubPath = "/.starsky." + "test.jpg" + ".json";
@@ -139,5 +162,4 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			Assert.AreEqual(ExampleItem.FocalLength, result.FocalLength);
 		}
 	}
-
 }

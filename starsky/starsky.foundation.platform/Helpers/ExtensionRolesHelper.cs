@@ -339,6 +339,11 @@ namespace starsky.foundation.platform.Helpers
 
 			// Sidecar files
 			xmp = 30,
+			
+			/// <summary>
+			/// Extension: .meta.json
+			/// </summary>
+			meta_json = 31, 
             
 			// documents
 			gpx = 40,
@@ -421,7 +426,17 @@ namespace starsky.foundation.platform.Helpers
 			
 			if ( GetImageFormatZip(bytes) != null ) return ImageFormat.zip;
 			
+			if ( GetImageFormatMetaJson(bytes) != null ) return ImageFormat.meta_json;
+
 			return ImageFormat.unknown;
+		}
+
+		private static ImageFormat? GetImageFormatMetaJson(IEnumerable<byte> bytes)
+		{
+			var metaJson = new byte[] {123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116}; 
+			if ( metaJson.SequenceEqual(bytes.Take(metaJson.Length)) )
+				return ImageFormat.meta_json;
+			return null;
 		}
 
 		private static ImageFormat? GetImageFormatTiff(byte[] bytes)

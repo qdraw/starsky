@@ -24,6 +24,7 @@ public class SyncAddAddThumbnailTable : ISyncAddThumbnailTable
 		var addObjects = fileIndexItems
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok && 
 			            p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
+			            p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json &&
 			            !string.IsNullOrEmpty(p.FileHash) && p.IsDirectory == false)
 			.DistinctBy(p => p.FileHash)
 			.Select(p => p.FileHash)

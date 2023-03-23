@@ -1,5 +1,3 @@
-using System;
-using System.Dynamic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
@@ -21,15 +19,21 @@ namespace starsky.foundation.writemeta.JsonService
 		}
 		
 		/// <summary>
-		/// Write FileIndexItem to IStorage
+		/// Write FileIndexItem to IStorage .meta.json file
 		/// </summary>
 		/// <param name="fileIndexItem">data object</param>
 		/// <returns>Completed Task</returns>
 		public async Task WriteAsync(FileIndexItem fileIndexItem)
 		{
-			var jsonOutput = JsonSerializer.Serialize(new MetadataContainer{ Item = fileIndexItem }, DefaultJsonSerializer.CamelCase);
+			var jsonOutput = JsonSerializer.Serialize(new MetadataContainer
+			{
+				Item = fileIndexItem
+			}, DefaultJsonSerializer.CamelCase);
 			
-			var jsonSubPath = JsonSidecarLocation.JsonLocation(fileIndexItem.ParentDirectory, fileIndexItem.FileName);
+			var jsonSubPath = JsonSidecarLocation.JsonLocation(
+				fileIndexItem.ParentDirectory, 
+				fileIndexItem.FileName);
+			
 			await _iStorage.WriteStreamAsync(
 				PlainTextFileHelper.StringToStream(jsonOutput), jsonSubPath);
 		}
