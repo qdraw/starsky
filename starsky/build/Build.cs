@@ -9,10 +9,14 @@ using Nuke.Common.ProjectModel;
 // ReSharper disable once CheckNamespace
 namespace build
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S3887:Use an immutable collection or reduce the " +
-		"accessibility of the non-private readonly field", Justification = "Not production code.")]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S2386:Use an immutable collection or reduce " +
-		"the accessibility of the non-private readonly field", Justification = "Not production code.")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
+		"S3887:Use an immutable collection or reduce the " +
+		"accessibility of the non-private readonly field", 
+		Justification = "Not production code.")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
+		"S2386:Use an immutable collection or reduce " +
+		"the accessibility of the non-private readonly field", 
+		Justification = "Not production code.")]
 	[ShutdownDotNetAfterServerBuild]
 	public sealed class Build : NukeBuild
 	{
@@ -83,7 +87,9 @@ namespace build
 		
 		List<string> GetRuntimesWithoutGeneric()
 		{
-			return Runtime.Split(",", StringSplitOptions.TrimEntries).Where(p => p != GenericRuntimeName).ToList();
+			return Runtime.Split(",", 
+				StringSplitOptions.TrimEntries).Where(p => p != GenericRuntimeName)
+				.ToList();
 		}
 
 		[Solution(SuppressBuildProjectCheck = true)] 
@@ -197,7 +203,8 @@ namespace build
 				DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration, IsPublishDisabled());
 			});
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
+			"S1144:UnusedMember.Local", Justification = "Not production code.")]
 		// ReSharper disable once UnusedMember.Local
 		Target DownloadDependencies => _ => _
 			.Executes(() =>
@@ -240,7 +247,8 @@ namespace build
 			});
 		
 		// ReSharper disable once UnusedMember.Local
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
+			"S1144:UnusedMember.Local", Justification = "Not production code.")]
 		Target BuildNetCore => _ => _
 			.Executes(() =>
 			{
@@ -251,7 +259,8 @@ namespace build
 			});
 		
 		// ReSharper disable once UnusedMember.Local
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1144:UnusedMember.Local", Justification = "Not production code.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
+			"S1144:UnusedMember.Local", Justification = "Not production code.")]
 		Target TestNetCore => _ => _
 			.Executes(() =>
 			{

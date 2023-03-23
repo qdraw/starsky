@@ -22,8 +22,8 @@ namespace helpers
 		static List<string> GetFiles(string globSearch)
 		{
 			Matcher matcher = new();
-			matcher.AddIncludePatterns(new[] { globSearch });
-			PatternMatchingResult result = matcher.Execute(
+			matcher.AddIncludePatterns( new List<string>{globSearch});
+			var result = matcher.Execute(
 				new DirectoryInfoWrapper(
 					new DirectoryInfo(WorkingDirectory.GetSolutionParentFolder())));
 			return result.Files.Select(p => p.Path).ToList();
@@ -67,7 +67,8 @@ namespace helpers
 					Directory.Delete(testResultsFolder,true);
 				}
 				
-				var runSettingsFile = Path.Combine(WorkingDirectory.GetSolutionParentFolder(), "build.vstest.runsettings");
+				var runSettingsFile = Path.Combine(
+					WorkingDirectory.GetSolutionParentFolder(), "build.vstest.runsettings");
 				Console.WriteLine("runSettingsFile " + runSettingsFile);
 				
 				// search for: dotnet test
@@ -96,7 +97,8 @@ namespace helpers
 
 				foreach(var item in coverageEnum)
 				{
-					CopyFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(), item), coverageFilePath, FileExistsPolicy.Overwrite);
+					CopyFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(), item), 
+						coverageFilePath, FileExistsPolicy.Overwrite);
 				}
 
 				if (!FileExists(coverageFilePath)) {
@@ -109,6 +111,5 @@ namespace helpers
 		{
 			return File.Exists(path);
 		}
-
 	}	
 }
