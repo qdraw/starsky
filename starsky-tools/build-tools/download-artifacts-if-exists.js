@@ -67,7 +67,9 @@ const branchWithoutRef = buildSourceBranch?.replace("refs/heads/", "");
 // set: System.AccessToken
 // $(System.AccessToken)
 let personalAccessToken =
-	process.env.WEAREYOU_DEVOPS_PAT || process.env.SYSTEM_ACCESSTOKEN;
+	process.env.STARSKY_DEVOPS_PAT ||
+	process.env.WEAREYOU_DEVOPS_PAT ||
+	process.env.SYSTEM_ACCESSTOKEN;
 if (!personalAccessToken) {
 	console.log("SYSTEM_ACCESSTOKEN or WEAREYOU_DEVOPS_PAT is not defined");
 	exit(1);
