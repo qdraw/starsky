@@ -216,6 +216,7 @@ namespace starsky.foundation.storage.Storage
 				if ( maxRead < 1 ) return fileStream;
 				
 				byte[] buffer = new byte[maxRead];
+				// ReSharper disable once MustUseReturnValue
 				fileStream.Read(buffer, 0, maxRead);
 				fileStream.Close();
 				return new MemoryStream(buffer);
@@ -446,7 +447,7 @@ namespace starsky.foundation.storage.Storage
             }
         }
 
-		public DateTime SetLastWriteTime(string path, DateTime? dateTime)
+		public DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
 		{
 			if ( dateTime?.Year == null || dateTime.Value.Year <= 2000 )
 			{

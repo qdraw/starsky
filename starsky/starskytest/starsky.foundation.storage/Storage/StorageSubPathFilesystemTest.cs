@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,13 +10,16 @@ using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.storage.Storage
 {
+	/// <summary>
+	/// StorageSubPathFilesystemTest or StorageFilesystemTest
+	/// </summary>
 	[TestClass]
-	public sealed class StorageFilesystemTest
+	public sealed class StorageSubPathFilesystemTest
 	{
 		private  readonly StorageSubPathFilesystem _storage;
 		private  readonly CreateAnImage _newImage;
 
-		public StorageFilesystemTest()
+		public StorageSubPathFilesystemTest()
 		{
 			_newImage = new CreateAnImage();
 			var appSettings = new AppSettings {StorageFolder = _newImage.BasePath};
@@ -97,6 +101,54 @@ namespace starskytest.starsky.foundation.storage.Storage
 		}
 
 		[TestMethod]
+		public void FileMove()
+		{
+			const string from = "/test_file_move.tmp";
+			const string to = "/test_file_move_2.tmp";
+
+			_storage.WriteStream(PlainTextFileHelper.StringToStream("test"),
+				from);
+			_storage.FileMove(from,to);
+
+			Assert.IsFalse(_storage.ExistFile(from));
+			Assert.IsTrue(_storage.ExistFile(to));
+			
+			_storage.FileDelete(from);
+			_storage.FileDelete(to);
+		}
+				
+		[TestMethod]
+		public void FolderMove()
+		{
+			const string from = "/test_folder_move_from";
+			const string to = "/test_folder_move_to";
+
+			_storage.CreateDirectory(from);
+			if ( _storage.ExistFolder(to) )
+			{
+				_storage.FolderDelete(to);
+			}
+
+			_storage.FolderMove(from,to);
+
+			if ( _storage.ExistFolder(from) )
+			{
+				_storage.FolderDelete(from);
+			}
+			
+			Assert.IsFalse(_storage.ExistFolder(from));
+			Assert.IsTrue(_storage.ExistFolder(to));
+			
+			_storage.FolderDelete(to);
+		}
+		
+		[TestMethod]
+		public void ExistFileNotFound()
+		{
+			Assert.IsFalse(_storage.ExistFile("not_found"));
+		}
+
+		[TestMethod]
 		public void FolderDelete()
 		{
 			var folderDeleteName = "temp_folder_delete";
@@ -107,7 +159,6 @@ namespace starskytest.starsky.foundation.storage.Storage
 			Assert.IsFalse(Directory.Exists(Path.Combine(_newImage.BasePath, folderDeleteName)));
 		}
 		
-				
 		[TestMethod]
 		public void ReadStream_MaxLength()
 		{
@@ -119,6 +170,49 @@ namespace starskytest.starsky.foundation.storage.Storage
 			
 			stream.Dispose();
 		}
+		
+		[TestMethod]
+		public void ReadStream_NotFound()
+		{
+			var createAnImage = new CreateAnImage();
+			Assert.IsNotNull(createAnImage);
+			
+			var stream = _storage.ReadStream("not-found", 100);
+			Assert.AreEqual(0,stream.Length);
+			
+			stream.Dispose();
+		}
 
+		[TestMethod]
+		public void SetLastWriteTime_Dir()
+		{
+			const string rootDir = "/test01012_sub";
+
+			_storage.CreateDirectory(rootDir);
+			
+			var shouldBe = DateTime.Now.AddDays(-1);
+			_storage.SetLastWriteTime(rootDir, shouldBe);
+			
+			var lastWriteTime2 = _storage.Info(rootDir).LastWriteTime;
+			_storage.FolderDelete(rootDir);
+
+			Assert.AreEqual(shouldBe, lastWriteTime2);
+		}
+		
+		[TestMethod]
+		public void SetLastWriteTime_File()
+		{
+			const string tmpFile = "/test01012_sub.tmp";
+
+			_storage.WriteStream(new MemoryStream(new byte[1]), tmpFile);
+			
+			var shouldBe = DateTime.Now.AddDays(-1);
+			_storage.SetLastWriteTime(tmpFile, shouldBe);
+			
+			var lastWriteTime2 = _storage.Info(tmpFile).LastWriteTime;
+			_storage.FileDelete(tmpFile);
+
+			Assert.AreEqual(shouldBe, lastWriteTime2);
+		}
 	}
 }
