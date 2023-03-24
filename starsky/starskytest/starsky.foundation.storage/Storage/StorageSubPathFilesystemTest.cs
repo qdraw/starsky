@@ -82,6 +82,15 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			_storage.FolderDelete("/test_GetAllFilesInDirectoryRecursive");
 		}
+		
+		[TestMethod]
+		public void GetAllFilesInDirectoryRecursive_NotFound()
+		{
+			var filesInFolder = _storage.GetAllFilesInDirectoryRecursive(
+				"/not_found").ToList();
+			Assert.AreEqual(0, filesInFolder.Count);
+		}
+		
 
 		[TestMethod]
 		public void FileCopy()

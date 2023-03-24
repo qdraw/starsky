@@ -150,5 +150,15 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_WriteStreamAsync.jpg"));
 		}
+		
+		[TestMethod]
+		public void SetLastWriteTime_File()
+		{
+			// Currently on results the time
+			var shouldBe = DateTime.Now.AddDays(-1);
+			var result = _thumbnailStorage.SetLastWriteTime("anything", shouldBe);
+
+			Assert.AreEqual(shouldBe, result);
+		}
 	}
 }
