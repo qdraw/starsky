@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace starsky.foundation.platform.Models;
+namespace starsky.foundation.database.Models;
 
 public class MetadataContainer
 {
@@ -14,5 +14,5 @@ public class MetadataContainer
 	[JsonPropertyName("$schema")]
 	public string Schema { get; set; } = "https://json-schema.org/draft/2020-12/schema";
 
-	public object Item { get; set; }
+	public FileIndexItem? Item { get; set; }
 }

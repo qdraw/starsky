@@ -327,18 +327,6 @@ namespace starskytest.FakeMocks
 		{
 			return Task.FromResult(WriteStream(stream, path));
 		}
-		
-		public bool SetDateTime(string path, DateTime dateTime)
-		{
-			if ( _lastEditDict == null ) return false;
-			if ( _lastEditDict.Any(p => p.Key == path) )
-			{
-				_lastEditDict[path] = dateTime;
-				return true;
-			}
-			_lastEditDict.Add(path, dateTime);
-			return true;
-		}
 
 		public virtual StorageInfo Info(string path)
 		{
@@ -379,6 +367,24 @@ namespace starskytest.FakeMocks
 				LastWriteTime = lastEdit
 			};
 
+		}
+
+		public DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
+		{
+			SetDateTime(path, dateTime ?? DateTime.Now);
+			return dateTime ?? DateTime.Now;
+		}
+		
+		private bool SetDateTime(string path, DateTime dateTime)
+		{
+			if ( _lastEditDict == null ) return false;
+			if ( _lastEditDict.Any(p => p.Key == path) )
+			{
+				_lastEditDict[path] = dateTime;
+				return true;
+			}
+			_lastEditDict.Add(path, dateTime);
+			return true;
 		}
 	}
 }

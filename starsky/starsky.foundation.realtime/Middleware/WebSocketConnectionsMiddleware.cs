@@ -60,7 +60,7 @@ namespace starsky.foundation.realtime.Middleware
 								Type =  ApiNotificationType.Welcome,
 							};
 							await webSocketConnection.SendAsync(JsonSerializer.Serialize(welcomeMessage,
-								DefaultJsonSerializer.CamelCase), CancellationToken.None);
+								DefaultJsonSerializer.CamelCaseNoEnters), CancellationToken.None);
 						}
 						catch ( WebSocketException )
 						{

@@ -49,9 +49,13 @@ namespace starsky.foundation.writemeta.JsonService
 			// when sidecar file does not exist
 			if ( !_iStorage.ExistFile(jsonSubPath) ) return fileIndexItem;
 			
-			var returnFileIndexItem = new DeserializeJson(_iStorage).Read<FileIndexItem>(jsonSubPath);
-			returnFileIndexItem.Status = FileIndexItem.ExifStatus.ExifWriteNotSupported;
-			return returnFileIndexItem;
+			var returnContainer = new DeserializeJson(_iStorage).Read<MetadataContainer>(jsonSubPath);
+			
+			// in case of invalid json
+			returnContainer.Item ??= fileIndexItem;
+			
+			returnContainer.Item.Status = FileIndexItem.ExifStatus.ExifWriteNotSupported;
+			return returnContainer.Item;
 		}
 	}
 

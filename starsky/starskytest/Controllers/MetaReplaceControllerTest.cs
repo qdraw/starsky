@@ -249,7 +249,7 @@ namespace starskytest.Controllers
 
 			var actual = JsonSerializer.Serialize(
 				fakeIMetaUpdateService.ChangedFileIndexItemNameContent[0],
-				DefaultJsonSerializer.CamelCase);
+				DefaultJsonSerializer.CamelCaseNoEnters);
 
 			var expected = "{\"" + createAnImage.DbPath + "\":[\"tags\"]}";
 			Assert.AreEqual(expected, actual);

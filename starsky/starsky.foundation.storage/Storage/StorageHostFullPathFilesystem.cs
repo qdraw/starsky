@@ -41,7 +41,7 @@ namespace starsky.foundation.storage.Storage
 			}
 
 			var lastWrite = type == FolderOrFileModel.FolderOrFileTypeList.File ? 
-				File.GetLastWriteTime(path).ToUniversalTime() : Directory.GetLastWriteTime(path).ToUniversalTime();
+				File.GetLastWriteTime(path) : Directory.GetLastWriteTime(path);
 			
 			var size = type == FolderOrFileModel.FolderOrFileTypeList.File ? 
 				new FileInfo(path).Length : -1;
@@ -445,6 +445,25 @@ namespace starsky.foundation.storage.Storage
 	            RecurseFind(s, list);
             }
         }
+
+		public DateTime SetLastWriteTime(string path, DateTime? dateTime)
+		{
+			if ( dateTime?.Year == null || dateTime.Value.Year <= 2000 )
+			{
+				dateTime =  DateTime.Now;
+			}
+			var type = IsFolderOrFile(path);
+
+			if ( type == FolderOrFileModel.FolderOrFileTypeList.File )
+			{
+				File.SetLastWriteTime(path, dateTime.Value);
+			}
+			else
+			{
+				Directory.SetLastWriteTime(path, dateTime.Value);
+			}
+			return dateTime.Value;
+		}
 	}
 
 }
