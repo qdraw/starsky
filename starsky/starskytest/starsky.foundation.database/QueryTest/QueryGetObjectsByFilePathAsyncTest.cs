@@ -106,7 +106,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 		
 		[TestMethod]
-		public async Task GetObjectsByFilePathAsync_SingleItem()
+		public async Task GetObjectsByFilePathAsync_SingleItem_1()
 		{
 			await _query.AddRangeAsync(new List<FileIndexItem>
 			{
