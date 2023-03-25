@@ -152,25 +152,33 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 				await _query.AddRangeAsync(new List<FileIndexItem>
 				{
-					new FileIndexItem("/multiple_item"), // <= should never match this one
-					new FileIndexItem("/multiple_item_0.jpg"),
-					new FileIndexItem("/multiple_item_1.jpg"),
-					new FileIndexItem("/multiple_item_2.jpg"),
-					new FileIndexItem("/multiple_item_3.jpg")
+					new FileIndexItem("/test__multiple_item"), // <= should never match this one
+					new FileIndexItem("/test__multiple_item_0.jpg"),
+					new FileIndexItem("/test__multiple_item_1.jpg"),
+					new FileIndexItem("/test__multiple_item_2.jpg"),
+					new FileIndexItem("/test__multiple_item_3.jpg")
 				});
 			}
-
 			async Task<List<FileIndexItem>> ExampleQuery()
 			{
 				return await _query.GetObjectsByFilePathCollectionQueryAsync(
-					new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg",
-						"/multiple_item_2.jpg", "/multiple_item_3.jpg"});
+					new List<string> {"/test__multiple_item_0.jpg", "/test__multiple_item_1.jpg",
+						"/test__multiple_item_2.jpg", "/test__multiple_item_3.jpg"});
 			}
+			
+			
+			var beforeResult = await ExampleQuery();
+			foreach ( var item in beforeResult )
+			{
+				await _query.RemoveItemAsync(item);
+			}
+
 			await AddExampleRange();
 			
 			var result = await ExampleQuery();
 			if ( result.Count == 0 )
 			{
+				await Task.Delay(100);
 				await AddExampleRange();
 				result = await ExampleQuery();
 			}
@@ -178,15 +186,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(4, result.Count);
 			
 			var orderedResults = result.OrderBy(p => p.FileName).ToList();
-			Assert.AreEqual("/multiple_item_0.jpg", orderedResults[0].FilePath);
-			Assert.AreEqual("/multiple_item_1.jpg", orderedResults[1].FilePath);
-			Assert.AreEqual("/multiple_item_2.jpg", orderedResults[2].FilePath);
+			Assert.AreEqual("/test__multiple_item_0.jpg", orderedResults[0].FilePath);
+			Assert.AreEqual("/test__multiple_item_1.jpg", orderedResults[1].FilePath);
+			Assert.AreEqual("/test__multiple_item_2.jpg", orderedResults[2].FilePath);
 
 			await _query.RemoveItemAsync(result[0]);
 			await _query.RemoveItemAsync(result[1]);
 			await _query.RemoveItemAsync(result[2]);
 			await _query.RemoveItemAsync(result[3]);
-			var multipleItem = await _query.GetObjectByFilePathAsync("/multiple_item");
+			var multipleItem = await _query.GetObjectByFilePathAsync("/test__multiple_item");
 			if ( multipleItem != null )
 			{
 				await _query.RemoveItemAsync(multipleItem);
