@@ -433,9 +433,12 @@ namespace starsky.foundation.platform.Helpers
 
 		private static ImageFormat? GetImageFormatMetaJson(IEnumerable<byte> bytes)
 		{
-			var metaJson = new byte[] {123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116}; 
+			var metaJson = new byte[] {123,10,32,32,34,36,105,100,34,
+				58,32,34,104,116,116,112,115,58,47,47}; 
+			
 			if ( metaJson.SequenceEqual(bytes.Take(metaJson.Length)) )
 				return ImageFormat.meta_json;
+			
 			return null;
 		}
 

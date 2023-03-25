@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -27,6 +29,9 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			await new FileIndexItemJsonParser(fakeStorage).WriteAsync(new FileIndexItem("/test.jpg"));
 			var jsonSubPath = JsonSidecarLocation.JsonLocation("/", "test.jpg");
 
+			var stream = fakeStorage.ReadStream(jsonSubPath, 15) as MemoryStream;
+			Console.WriteLine(string.Join(",", stream!.ToArray().Take(20) ));
+			
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(
 				fakeStorage.ReadStream(jsonSubPath, 40));
 			
