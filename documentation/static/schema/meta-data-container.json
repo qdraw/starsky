@@ -1,5 +1,5 @@
 {
-    "$id": "https://docs.qdraw.nl/openapi/schema.json",
+    "$id": "https://docs.qdraw.nl/schema/meta-data-container.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "properties": {

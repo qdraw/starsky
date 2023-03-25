@@ -160,5 +160,17 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			Assert.AreEqual(shouldBe, result);
 		}
+		
+		[TestMethod]
+		public void SetLastWriteTime_File_Null()
+		{
+			// Currently on results the time
+			var shouldBe = DateTime.Now;
+			var result = _thumbnailStorage.SetLastWriteTime("anything");
+
+			Assert.AreEqual(shouldBe.Year, result.Year);
+			Assert.AreEqual(shouldBe.Month, result.Month);
+			Assert.AreEqual(shouldBe.Day, result.Day);
+		}
 	}
 }
