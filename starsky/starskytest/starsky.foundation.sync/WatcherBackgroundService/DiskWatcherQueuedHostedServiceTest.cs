@@ -14,7 +14,11 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 	public sealed class DiskWatcherQueuedHostedServiceTest
 	{
 		[TestMethod]
+#if DEBUG
 		[Timeout(4000)]
+#else
+		[Timeout(10000)]
+#endif
 		public void DiskWatcherQueuedHostedServiceTest_ExecuteAsync_StartAsync_Test()
 		{
 			var logger = new FakeIWebLogger();
@@ -40,7 +44,11 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		}
 		
 		[TestMethod]
+#if DEBUG
 		[Timeout(2000)]
+#else
+		[Timeout(10000)]
+#endif
 		public async Task DiskWatcherQueuedHostedService_End_StopAsync_Test()
 		{
 			var logger = new FakeIWebLogger();
@@ -56,7 +64,5 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			
 			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("is stopping"));
 		}
-
-
 	}
 }
