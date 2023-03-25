@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.demo.Services;
+using starsky.feature.demo.Helpers;
 using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
@@ -10,7 +10,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.webtelemetry.Helpers;
 
@@ -44,15 +43,21 @@ namespace starskydemoseedcli
 			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 			var sync = serviceProvider.GetRequiredService<ISynchronize>();
 			var httpClientHelper = serviceProvider.GetRequiredService<IHttpClientHelper>();
-			
+			var console = serviceProvider.GetRequiredService<IConsole>();
+
 			// Migrations before seeding data
 			await RunMigrations.Run(serviceProvider.GetRequiredService<ApplicationDbContext>(), webLogger,appSettings);
 
-			// Help and other Command Line Tools args are NOT included in the tools 
-			await CleanDemoDataService.SeedCli(appSettings, httpClientHelper,
-				selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem), 
-				selectorStorage.Get(SelectorStorage.StorageServices.SubPath), 
-				webLogger, sync );
+			// Help and Command Line Tools args are included in the tools 
+			var cleanDemoDataServiceCli = new CleanDemoDataServiceCli(
+				appSettings,
+				httpClientHelper,
+				selectorStorage,
+				webLogger,
+				console,
+				sync);
+			
+			await cleanDemoDataServiceCli.SeedCli(args);
 
 			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}
