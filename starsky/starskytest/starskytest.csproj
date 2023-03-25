@@ -66,6 +66,7 @@
         <ProjectReference Include="..\starskythumbnailmetacli\starskythumbnailmetacli.csproj" />
         <ProjectReference Include="..\starskywebftpcli\starskywebftpcli.csproj" />
         <ProjectReference Include="..\starskywebhtmlcli\starskywebhtmlcli.csproj" />
+        <ProjectReference Include="..\starskydemoseedcli\starskydemoseedcli.csproj" />
         <ProjectReference Include="..\starsky\starsky.csproj" />
     </ItemGroup>
     <ItemGroup>
