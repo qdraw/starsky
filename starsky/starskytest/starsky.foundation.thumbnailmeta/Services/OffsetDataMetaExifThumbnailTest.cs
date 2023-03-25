@@ -25,7 +25,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(null, exifThumbnailDirectory);
 			Assert.AreEqual(0, width);
 			Assert.AreEqual(0, height);
-			Assert.AreEqual(rotation, FileIndexItem.Rotation.DoNotChange);
+			Assert.AreEqual(FileIndexItem.Rotation.DoNotChange,rotation);
 		}
 		
 		[TestMethod]
@@ -48,7 +48,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(thumbnailDirectory,exifThumbnailDirectory);
 			Assert.AreEqual(0, width);
 			Assert.AreEqual(0, height);
-			Assert.AreEqual(rotation, FileIndexItem.Rotation.DoNotChange);
+			Assert.AreEqual(FileIndexItem.Rotation.DoNotChange,rotation);
 		}
 		
 		[TestMethod]
@@ -68,7 +68,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(thumbnailDirectory,exifThumbnailDirectory);
 			Assert.AreEqual(150, width);
 			Assert.AreEqual(100, height);
-			Assert.AreEqual(rotation, FileIndexItem.Rotation.Horizontal);
+			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
 		}
 
 		[TestMethod]

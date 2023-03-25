@@ -56,7 +56,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_png_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {137, 80, 78, 71});
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.png);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.png,fileType);
 		}
         
 		[TestMethod]
@@ -71,7 +71,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_jpeg2_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {255, 216, 255, 225});
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.jpg);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,fileType);
 		}
 		
 				
@@ -208,7 +208,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_corrupt_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new CreateAnImageCorrupt().Bytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.unknown);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown,fileType);
 		}
         
 		[TestMethod]
@@ -223,14 +223,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_tiff2_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {77, 77, 42});
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.tiff);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff,fileType);
 		}
         
 		[TestMethod]
 		public void Files_GetImageFormat_tiff3_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {77, 77, 0});
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.tiff);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff,fileType);
 		}
 
 		[TestMethod]
@@ -238,7 +238,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			byte[] bmBytes = Encoding.ASCII.GetBytes("BM");
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.bmp);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp,fileType);
 		}
         
 		[TestMethod]
@@ -246,7 +246,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			byte[] bmBytes = Encoding.ASCII.GetBytes("GIF");
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.gif);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gif,fileType);
 		}
         
 		[TestMethod]
@@ -254,7 +254,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			byte[] bmBytes = Encoding.ASCII.GetBytes("<x:xmpmeta");
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, fileType);
 		}
 		
 		[TestMethod]
@@ -262,7 +262,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			byte[] bmBytes = Encoding.ASCII.GetBytes("<?xpacket");
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp,fileType);
 		}
 		
 		[TestMethod]

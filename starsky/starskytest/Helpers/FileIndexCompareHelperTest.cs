@@ -108,7 +108,7 @@ namespace starskytest.Helpers
 			var source = new FileIndexItem {Orientation = FileIndexItem.Rotation.Horizontal};
 			var update = new FileIndexItem {Orientation = FileIndexItem.Rotation.Rotate90Cw};
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual(source.Orientation,FileIndexItem.Rotation.Rotate90Cw); 
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, source.Orientation); 
 		}
 
 		[TestMethod]

@@ -46,7 +46,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var result = await userManager.ValidateAsync("not-found", "test", "test");
 			
 			Assert.AreEqual(false, result.Success);
-			Assert.AreEqual(result.Error, ValidateResultError.CredentialTypeNotFound);
+			Assert.AreEqual(ValidateResultError.CredentialTypeNotFound,result.Error);
 		}
 
 		[TestMethod]
@@ -149,7 +149,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var result = await userManager.ValidateAsync("email", "test", "test");
 			
 			Assert.AreEqual(false, result.Success);
-			Assert.AreEqual(result.Error, ValidateResultError.CredentialNotFound);
+			Assert.AreEqual(ValidateResultError.CredentialNotFound,result.Error);
 		}
 		
 		[TestMethod]
@@ -169,16 +169,16 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			_dbContext.Credentials.Add(new Credential
 			{
 				Identifier = "test_0005",
-				CredentialTypeId = credentialTypesCode.Id,
+				CredentialTypeId = credentialTypesCode!.Id,
 				Secret = "t5cJrj735BKTx6bNw2snWzkKb5lsXDSreT9Fpz5YLJw=", // "pass123456789"
 				Extra = "0kp9rQX22yeGPl3FSyZFlg=="
 			});
 			await _dbContext.SaveChangesAsync();
 
-			var result = await userManager.ValidateAsync(credentialTypesCode.Code, "test_0005", "pass123456789");
+			var result = await userManager.ValidateAsync(credentialTypesCode.Code!, "test_0005", "pass123456789");
 			
 			Assert.AreEqual(false, result.Success);
-			Assert.AreEqual(result.Error, ValidateResultError.UserNotFound);
+			Assert.AreEqual(ValidateResultError.UserNotFound,result.Error);
 		}
 		
 		[TestMethod]
@@ -198,7 +198,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var result = await userManager.ValidateAsync("email", "lockout@google.com", "--does not matter--");
 			
 			Assert.AreEqual(false, result.Success);
-			Assert.AreEqual(result.Error, ValidateResultError.Lockout);
+			Assert.AreEqual(ValidateResultError.Lockout,result.Error);
 		}
 		
 		[TestMethod]
@@ -217,10 +217,9 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var result = await userManager.ValidateAsync("email", "try3@google.com", "--does not matter--");
 			
 			Assert.AreEqual(false, result.Success);
-			Assert.AreEqual(result.Error, ValidateResultError.Lockout);
+			Assert.AreEqual(ValidateResultError.Lockout,result.Error);
 		}
 		
-				
 		[TestMethod]
 		public async Task ValidateAsync_ResetCountAfterSuccessLogin()
 		{
@@ -241,6 +240,8 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			userObject = _dbContext.Users.FirstOrDefault(p =>
 				p.Name == "reset@google.com");
 			
+			Assert.IsNotNull(userObject);
+			Assert.IsNotNull(userObject.AccessFailedCount);
 			Assert.AreEqual(0,userObject.AccessFailedCount);
 			Assert.AreEqual(DateTime.MinValue,userObject.LockoutEnd);
 			Assert.AreEqual(false,userObject.LockoutEnabled);
@@ -304,6 +305,8 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			await userManager.SignUpAsync("user03", "email", "login3@mail.us", "pass");
 
 			var result = userManager.GetRole("email", "login3@mail.us");
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.Code);
 			Assert.AreEqual(AccountRoles.AppAccountRoles.User.ToString(), result.Code);
 			
 			await userManager.RemoveUser("email", "login3@mail.us");
@@ -342,13 +345,16 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).Where(p => p.Credentials != null).ToList() )
 			{
-				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier);
+				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier!);
 			}
 			
 			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
 			await userManager.SignUpAsync("user02", "email", "login@mail2.us", "pass");
 
 			var result = userManager.GetRole("email", "login@mail2.us");
+			
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.Code);
 			Assert.AreEqual(AccountRoles.AppAccountRoles.User.ToString(), result.Code);
 		}
 
@@ -363,7 +369,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			var result = await userManager.SignUpAsync("user01", "email", string.Empty, "pass");
 			
-			Assert.AreEqual(result.Error, SignUpResultError.NullString);
+			Assert.AreEqual(SignUpResultError.NullString, result.Error);
 		}
 		
 		[TestMethod]
@@ -377,7 +383,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			var result = await userManager.SignUpAsync("user01", "email", "dont@mail.me", string.Empty);
 			
-			Assert.AreEqual(result.Error, SignUpResultError.NullString);
+			Assert.AreEqual(SignUpResultError.NullString, result.Error);
 		}
 		
 		[TestMethod]
@@ -391,7 +397,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			var result = await userManager.SignUpAsync("user01", "wrong-type1", "dont@mail.me", "122344");
 			
-			Assert.AreEqual(result.Error, SignUpResultError.CredentialTypeNotFound);
+			Assert.AreEqual(SignUpResultError.CredentialTypeNotFound,result.Error);
 		}
 
 		[TestMethod]
@@ -413,7 +419,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			var result = userManager.ChangeSecret("wrongtype", "dont@mail.us", "pass123456789");
 			
-			Assert.AreEqual(result.Error, ChangeSecretResultError.CredentialTypeNotFound);
+			Assert.AreEqual(ChangeSecretResultError.CredentialTypeNotFound,result.Error);
 		}
 				
 		[TestMethod]
@@ -443,7 +449,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext, new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.SignUpAsync("user02", "email", "dont@mail.us", "pass");
 			
-			var result = await userManager.ValidateAsync("email", "dont@mail.us", null);
+			var result = await userManager.ValidateAsync("email", "dont@mail.us", null!);
 			Assert.AreEqual(false, result.Success);
 		}
 		
@@ -524,6 +530,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			await userManager.SignUpAsync("AddToRole", "email", "AddToRole@mail.us", "pass123456789");
 			
 			var user = userManager.GetUser("email", "AddToRole@mail.us");
+			Assert.IsNotNull(user);
 			
 			// Default role is User
 			userManager.RemoveFromRole(user, AccountRoles.AppAccountRoles.User.ToString());
@@ -533,6 +540,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			var result = userManager.GetRole("email", "AddToRole@mail.us");
 			
+			Assert.IsNotNull(result);
 			Assert.AreEqual(AccountRoles.AppAccountRoles.Administrator.ToString(), result.Code);
 		}
 		
@@ -562,12 +570,14 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			await userManager.SignUpAsync("RemoveFromRole", "email", "RemoveFromRole@mail.us", "pass123456789");
 			
 			var user = userManager.GetUser("email", "RemoveFromRole@mail.us");
-			
+			Assert.IsNotNull(user);
+
 			// Default role is User
 			userManager.RemoveFromRole(user, AccountRoles.AppAccountRoles.User.ToString());
 
 			var result = userManager.GetRole("email", "RemoveFromRole@mail.us");
 			
+			Assert.IsNotNull(result);
 			Assert.IsNull(result.Code);
 		}
 		
@@ -590,6 +600,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			var user = userManager.GetUser("email", "GetUser@mail.us");
 
+			Assert.IsNotNull(user);
 			Assert.AreEqual("GetUser",user.Name);
 		}
 		

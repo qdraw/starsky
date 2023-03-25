@@ -2,66 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.metaupdate.Services;
-using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Services;
-using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using starskytest.Models;
 
 namespace starskytest.starsky.feature.metaupdate.Services
 {
 	[TestClass]
 	public sealed class MetaPreflightTest
 	{
-		private readonly IMemoryCache _memoryCache;
-		private readonly IQuery _query;
-		private readonly AppSettings _appSettings;
-		private readonly FakeExifTool _exifTool;
-		private readonly ReadMeta _readMeta;
-		private readonly IStorage _iStorageFake;
-		private readonly Query _queryWithoutCache;
-		private string _exampleHash;
-
-		public MetaPreflightTest()
-		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
-            
-			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase(nameof(MetaUpdateService));
-			var options = builder.Options;
-			var dbContext = new ApplicationDbContext(options);
-			_query = new Query(dbContext, new AppSettings(),
-				null, new FakeIWebLogger(),_memoryCache);
-			_queryWithoutCache = new Query(dbContext,
-				new AppSettings(), null, new FakeIWebLogger());
-
-			_appSettings = new AppSettings();
-
-			_iStorageFake = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.jpg"},
-				new List<byte[]>{CreateAnImageNoExif.Bytes});
-			
-			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
-
-			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
-			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache, new FakeIWebLogger());
-		}
 		
-				
 		[TestMethod]
 		public async Task Preflight_Collections_Enabled()
 		{
@@ -161,8 +114,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
 		{
 			MetaPreflight.
-				CompareAllLabelsAndRotation(null, null,
-					null, false, 0);
+				CompareAllLabelsAndRotation(null!, null!,
+					null!, false, 0);
 			// ==>> MissingFieldException
 		}
 		
@@ -370,7 +323,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var rotationCompare = MetaPreflight.RotationCompare(0, 
 				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
 				compareList);
-			Assert.AreEqual(rotationCompare.Orientation, FileIndexItem.Rotation.Horizontal);
+			Assert.AreEqual(FileIndexItem.Rotation.Horizontal, rotationCompare.Orientation);
 			Assert.IsTrue(!compareList.Any());
 		}
 		
@@ -381,9 +334,9 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var rotationCompare = MetaPreflight.RotationCompare(1, 
 				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
 				compareList);
-			Assert.AreEqual(rotationCompare.Orientation, FileIndexItem.Rotation.Rotate90Cw);
-			Assert.AreEqual(compareList.FirstOrDefault(),
-				nameof(FileIndexItem.Orientation).ToLowerInvariant());
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw, rotationCompare.Orientation);
+			Assert.AreEqual(nameof(FileIndexItem.Orientation).ToLowerInvariant(),
+				compareList.FirstOrDefault());
 		}
 		
 		[TestMethod]
