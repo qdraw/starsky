@@ -24,9 +24,9 @@ namespace starsky.feature.geolookup.Services
 			_httpClientHelper = httpClientHelper;
 		}
 
-		private const string BaseUrl =
+		internal const string BaseUrl =
 			"download.geonames.org/export/dump/";
-		private const string MirrorUrl = "qdraw.nl/special/mirror/geonames/";
+		internal const string MirrorUrl = "qdraw.nl/special/mirror/geonames/";
 		
 		public async Task DownloadAsync()
 		{
