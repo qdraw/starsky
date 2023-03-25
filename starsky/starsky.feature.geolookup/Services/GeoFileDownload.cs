@@ -71,7 +71,7 @@ namespace starsky.feature.geolookup.Services
 		{
 			if ( !_hostStorage.ExistFolder(_appSettings.DependenciesFolder) )
 			{
-				_hostStorage.CreateDirectory(PathHelper.RemoveLatestSlash(_appSettings.DependenciesFolder));
+				_hostStorage.CreateDirectory(PathHelper.RemoveLatestBackslash(_appSettings.DependenciesFolder));
 			}
 		}
 
