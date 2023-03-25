@@ -16,7 +16,7 @@ namespace starsky.feature.geolookup.Services
 		private readonly IHttpClientHelper _httpClientHelper;
 
 		public const string CountryName = "cities1000";
-		private const long MinimumSizeInBytes = 7000000; // 7 MB
+		internal long MinimumSizeInBytes { get; set; } = 7000000; // 7 MB
 		
 		public GeoFileDownload(AppSettings appSettings, IHttpClientHelper httpClientHelper)
 		{
@@ -63,7 +63,7 @@ namespace starsky.feature.geolookup.Services
 			}
 		}
 
-		private void CreateDependenciesFolder()
+		internal void CreateDependenciesFolder()
 		{
 			if ( !new StorageHostFullPathFilesystem().ExistFolder(_appSettings.DependenciesFolder) )
 			{
@@ -74,7 +74,7 @@ namespace starsky.feature.geolookup.Services
 		/// <summary>
 		/// Check if the .zip file exist and if its larger then MinimumSizeInBytes
 		/// </summary>
-		private void RemoveFailedDownload()
+		internal void RemoveFailedDownload()
 		{
 			if ( !new StorageHostFullPathFilesystem().ExistFile(Path.Combine(_appSettings.DependenciesFolder,
 				CountryName + ".zip")) ) return;
