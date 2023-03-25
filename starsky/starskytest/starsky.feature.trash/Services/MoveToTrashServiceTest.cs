@@ -344,6 +344,7 @@ public class MoveToTrashServiceTest
 				new FileIndexItem("")
 			}, new Dictionary<string, List<string>>());
 
-		Assert.AreEqual(fileIndexResultsList.FirstOrDefault()?.Status, FileIndexItem.ExifStatus.Default);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Default,
+			fileIndexResultsList.FirstOrDefault()?.Status);
 	}
 }

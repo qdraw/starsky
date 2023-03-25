@@ -381,9 +381,9 @@ namespace starskytest.starsky.foundation.platform.Models
 			};
 			var display = appSettings.CloneToDisplay();
 			
-			Assert.AreEqual(display.DatabaseConnection,AppSettings.CloneToDisplaySecurityWarning);
-			Assert.AreEqual(display.WebFtp,AppSettings.CloneToDisplaySecurityWarning);
-			Assert.AreEqual(display.ApplicationInsightsConnectionString,AppSettings.CloneToDisplaySecurityWarning);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.DatabaseConnection);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.WebFtp);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.ApplicationInsightsConnectionString);
 		}
 		
 		[TestMethod]

@@ -275,7 +275,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			var result = await userManager.ValidateAsync("email", "test1@google.com", "----");
 			Assert.AreEqual(false, result.Success);
-			Assert.AreEqual(result.Error, ValidateResultError.SecretNotValid);
+			Assert.AreEqual(ValidateResultError.SecretNotValid, result.Error);
 			
 			await userManager.RemoveUser("email", "test1@google.com");
 		}

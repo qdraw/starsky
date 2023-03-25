@@ -346,7 +346,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var rotationCompare = MetaPreflight.RotationCompare(-1, 
 				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
 				compareList);
-			Assert.AreEqual(rotationCompare.Orientation, FileIndexItem.Rotation.Rotate270Cw);
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw,
+				rotationCompare.Orientation);
 			Assert.AreEqual(compareList.FirstOrDefault(),
 				nameof(FileIndexItem.Orientation).ToLowerInvariant());
 		}
