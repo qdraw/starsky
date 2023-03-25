@@ -86,7 +86,9 @@ namespace starsky.foundation.storage.Storage
 
 		public bool FolderDelete(string path)
 		{
-			foreach (string directory in Directory.GetDirectories(path))
+			if	( !Directory.Exists(path) ) return false;
+			
+			foreach (var directory in Directory.GetDirectories(path))
 			{
 				FolderDelete(directory);
 			}

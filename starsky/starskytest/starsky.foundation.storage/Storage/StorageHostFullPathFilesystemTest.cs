@@ -106,6 +106,15 @@ namespace starskytest.starsky.foundation.storage.Storage
 			Assert.AreEqual(false,realStorage.ExistFolder(rootDir));
 			Assert.AreEqual(false,realStorage.ExistFolder(childDir));
 		}
+		
+		[TestMethod]
+		public void FolderDelete_NotFound()
+		{
+			var realStorage = new StorageHostFullPathFilesystem();
+			var result = realStorage.FolderDelete("not-found-directory-24785895348934598543");
+
+			Assert.AreEqual(false,result);
+		}
 
 		[TestMethod]
 		[SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
