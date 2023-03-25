@@ -24,6 +24,8 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 	    public GeoFileDownloadTests()
 	    {
+		    // make sure you don't use the same folder for the tests
+		    // this gives problems on windows
 		    _dependenciesFolder1 = Path.Combine(new CreateAnImage().BasePath, "GeoFileDownloadTests-deps_01");
 		    _dependenciesFolder2 = Path.Combine(new CreateAnImage().BasePath, "GeoFileDownloadTests-deps_02");
 		    _dependenciesFolder3 = Path.Combine(new CreateAnImage().BasePath, "GeoFileDownloadTests-deps_03");
@@ -32,7 +34,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		    _dependenciesFolder6 = Path.Combine(new CreateAnImage().BasePath, "GeoFileDownloadTests-deps_06");
 	    }
 
-        [TestCleanup]
+        [ClassCleanup]
         public void ClassCleanup()
 		{
 			new StorageHostFullPathFilesystem().FolderDelete(_dependenciesFolder1);
