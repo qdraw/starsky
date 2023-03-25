@@ -435,7 +435,7 @@ namespace starsky.foundation.platform.Helpers
 		{
 			var metaJson = new byte[] {
 				123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 
-				116, 116, 112, 115, 58, 47
+				116, 116, 112, 115, 58, 47, 47
 			};
 			var metaJsonWindows = new byte[]
 			{
@@ -447,7 +447,7 @@ namespace starsky.foundation.platform.Helpers
 			if ( metaJson.SequenceEqual(bytes.Take(metaJson.Length)) )
 				return ImageFormat.meta_json;
 			
-			if ( metaJson.SequenceEqual(bytes.Take(metaJsonWindows.Length)) )
+			if ( metaJsonWindows.SequenceEqual(bytes.Take(metaJsonWindows.Length)) )
 				return ImageFormat.meta_json;
 			
 			return null;

@@ -205,6 +205,31 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
+		public void Files_GetImageFormat_MetaJson_1 ()
+		{
+			var metaJson = new byte[] {
+				123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 
+				116, 116, 112, 115, 58, 47, 47
+			};
+			
+			var fileType = ExtensionRolesHelper.GetImageFormat(metaJson);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.meta_json,fileType);
+		}
+
+		[TestMethod]
+		public void Files_GetImageFormat_MetaJson_Windows ()
+		{
+			var metaJsonWindows = new byte[] {
+				// 13 is CR
+				123, 13, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104,
+				116, 116, 112, 115, 58, 47
+			};
+			
+			var fileType = ExtensionRolesHelper.GetImageFormat(metaJsonWindows);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.meta_json,fileType);
+		}
+		
+		[TestMethod]
 		public void Files_GetImageFormat_corrupt_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new CreateAnImageCorrupt().Bytes);

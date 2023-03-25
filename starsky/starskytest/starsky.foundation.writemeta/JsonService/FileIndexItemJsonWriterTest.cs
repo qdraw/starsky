@@ -30,7 +30,7 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			var jsonSubPath = JsonSidecarLocation.JsonLocation("/", "test.jpg");
 
 			var stream = fakeStorage.ReadStream(jsonSubPath, 15) as MemoryStream;
-			Console.WriteLine(string.Join(",", stream!.ToArray().Take(20) ));
+			Console.WriteLine(string.Join(", ", stream!.ToArray().Take(20) ));
 			
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(
 				fakeStorage.ReadStream(jsonSubPath, 40));
