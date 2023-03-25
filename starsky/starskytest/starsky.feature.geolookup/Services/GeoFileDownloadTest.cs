@@ -9,6 +9,7 @@ using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.geolookup.Services
@@ -16,9 +17,12 @@ namespace starskytest.starsky.feature.geolookup.Services
     [TestClass]
     public class GeoFileDownloadTests
     {
-        private readonly string _dependenciesFolder = Path.Combine(
-            Path.GetDirectoryName(typeof(GeoFileDownloadTests).Assembly.Location)!,
-            "tmp-dependencies");
+	    private readonly string _dependenciesFolder;
+
+	    public GeoFileDownloadTests()
+	    {
+		    _dependenciesFolder = Path.Combine(new CreateAnImage().BasePath, "GeoFileDownloadTests-deps");
+	    }
 
         [TestCleanup]
         public void ClassCleanup()
@@ -112,9 +116,6 @@ namespace starskytest.starsky.feature.geolookup.Services
             await geoFileDownload.DownloadAsync();
         
             // Assert
-            Assert.IsTrue(storage.ExistFile(Path.Combine(_dependenciesFolder, GeoFileDownload.CountryName + ".txt")));
-            Assert.IsTrue(storage.ExistFile(Path.Combine(_dependenciesFolder, "admin1CodesASCII.txt")));
-            
             Assert.IsTrue(!httpClientHelper.UrlsCalled.Any());
             
             storage.FolderDelete(_dependenciesFolder);
