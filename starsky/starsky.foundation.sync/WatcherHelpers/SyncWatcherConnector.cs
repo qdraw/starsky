@@ -198,7 +198,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			var webSocketResponse =
 				new ApiNotificationResponseModel<List<FileIndexItem>>(filtered, ApiNotificationType.SyncWatcherConnector);
 			await _connectionsService!.SendToAllAsync(JsonSerializer.Serialize(webSocketResponse,
-				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+				DefaultJsonSerializer.CamelCaseNoEnters), CancellationToken.None);
 			await _notificationQuery!.AddNotification(webSocketResponse);
 		}
 

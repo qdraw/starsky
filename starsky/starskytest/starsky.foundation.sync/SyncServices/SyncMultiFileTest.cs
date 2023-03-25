@@ -272,7 +272,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			const string currentFilePath = "/test_date.jpg";
 			_iStorageFake.FileCopy("/test.jpg", currentFilePath);
-			(_iStorageFake as FakeIStorage)!.SetDateTime(currentFilePath,DateTime.UtcNow);
+			(_iStorageFake as FakeIStorage)!.SetLastWriteTime(currentFilePath,DateTime.UtcNow);
 			
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync(currentFilePath);
 				

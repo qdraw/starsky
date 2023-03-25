@@ -119,7 +119,8 @@ namespace starsky.foundation.database.Query
 		        var queryItems = context.FileIndex
 			        .TagWith("QueryDisplayFileFolders")
 			        .Where(p => p.ParentDirectory == subPath && p.FileName != "/" && 
-			                    p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp)
+			                    p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp && 
+			                    p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json)
 			        .OrderBy(p => p.FileName).AsEnumerable()	
 			        // remove duplicates from list
 			        .GroupBy(t => t.FileName).Select(g => g.First());

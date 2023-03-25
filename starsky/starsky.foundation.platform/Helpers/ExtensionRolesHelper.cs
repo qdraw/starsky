@@ -90,7 +90,7 @@ namespace starsky.foundation.platform.Helpers
 			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
 			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100)
-				).Matches(filename);
+			).Matches(filename);
 			if ( matchCollection.Count == 0 )
 			{
 				return ImageFormat.unknown;
@@ -339,6 +339,11 @@ namespace starsky.foundation.platform.Helpers
 
 			// Sidecar files
 			xmp = 30,
+			
+			/// <summary>
+			/// Extension: .meta.json
+			/// </summary>
+			meta_json = 31, 
             
 			// documents
 			gpx = 40,
@@ -421,7 +426,39 @@ namespace starsky.foundation.platform.Helpers
 			
 			if ( GetImageFormatZip(bytes) != null ) return ImageFormat.zip;
 			
+			if ( GetImageFormatMetaJson(bytes) != null ) return ImageFormat.meta_json;
+
 			return ImageFormat.unknown;
+		}
+
+		private static ImageFormat? GetImageFormatMetaJson(byte[] bytes)
+		{
+			var metaJsonUnix = new byte[] {
+				123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 116, 
+				112, 115, 58, 47, 47, 100, 111, 99, 115, 46, 113, 100, 114, 97, 
+				119, 46, 110, 108, 47, 115, 99, 104, 101, 109, 97, 47, 109, 101, 
+				116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110, 116, 97, 105, 110, 
+				101, 114, 46, 106, 115, 111, 110, 34, 44
+			};
+			// or : { \n "$id": "https://docs.qdraw.nl/schema/meta-data-container.json",
+			
+			var metaJsonWindows = new byte[]
+			{
+				// 13 is CR
+				123, 13, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 
+				116, 112, 115, 58, 47, 47, 100, 111, 99, 115, 46, 113, 100, 114, 
+				97, 119, 46, 110, 108, 47, 115, 99, 104, 101, 109, 97, 47, 109, 101, 
+				116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110, 116, 97, 105, 110, 
+				101, 114, 46, 106, 115, 111, 110, 34
+			};
+			
+			if ( metaJsonUnix.SequenceEqual(bytes.Take(metaJsonUnix.Length)) )
+				return ImageFormat.meta_json;
+			
+			if ( metaJsonWindows.SequenceEqual(bytes.Take(metaJsonWindows.Length)) )
+				return ImageFormat.meta_json;
+			
+			return null;
 		}
 
 		private static ImageFormat? GetImageFormatTiff(byte[] bytes)
@@ -543,10 +580,12 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="hex">hex value as string</param>
 		/// <returns>byte value</returns>
-		public static byte[] StringToByteArray(string hex)
+		public static byte[] HexStringToByteArray(string hex)
 		{
 			return Enumerable.Range(0, hex.Length / 2)
-				.Select(x => Convert.ToByte(hex.Substring(x * 2, 2), 16)).ToArray();
+				.Select(x => Convert.ToByte(
+					hex.Substring(x * 2, 2), 16)
+				).ToArray();
 		}
 	}
 }

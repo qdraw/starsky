@@ -57,7 +57,7 @@ namespace starsky.foundation.realtime.Services
 		public Task SendToAllAsync<T>(ApiNotificationResponseModel<T> message, CancellationToken cancellationToken)
 		{
 			var stringMessage = JsonSerializer.Serialize(message,
-				DefaultJsonSerializer.CamelCase);
+				DefaultJsonSerializer.CamelCaseNoEnters);
 			return SendToAllAsync(stringMessage, cancellationToken);
 		}
 	}

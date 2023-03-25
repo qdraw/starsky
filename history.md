@@ -38,6 +38,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.5.7 _(Unreleased)_ - 2023-03-?? {#v0.5.7}
 
 - [x] (Fixed) _Back-end_ Add fallback for detailView image Issue #1106 (PR #1113)
+- [x] (Fixed) _Back-end_ Don't write meta.json files for xmp files Issue #1108 (PR #1115)
+- [x] (Fixed) _Back-end_ Change spec of meta.json files and make json schema (PR #1115)
+- [x] (Fixed) _Back-end_ Code smells, improving readability (PR #1115)
 
 ## version 0.5.7-beta.0 - 2023-03-20 {#v0.5.7-beta.0}
 

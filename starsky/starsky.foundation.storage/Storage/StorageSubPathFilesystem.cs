@@ -35,6 +35,13 @@ namespace starsky.foundation.storage.Storage
 			return new StorageHostFullPathFilesystem(_logger).Info(subPath);
 		}
 
+		public DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
+		{
+			var subPath = _appSettings.DatabasePathToFilePath(path, false);
+			
+			return new StorageHostFullPathFilesystem(_logger).SetLastWriteTime(subPath, dateTime);
+		}
+
 		/// <summary>
 		/// Does file exist (true == exist)
 		/// </summary>

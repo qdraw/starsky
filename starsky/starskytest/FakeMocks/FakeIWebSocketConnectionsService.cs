@@ -50,7 +50,7 @@ namespace starskytest.FakeMocks
 			}
 			
 			var stringMessage = JsonSerializer.Serialize(message,
-				DefaultJsonSerializer.CamelCase);
+				DefaultJsonSerializer.CamelCaseNoEnters);
 			FakeSendToAllAsync.Add(stringMessage);
 			return Task.CompletedTask;
 		}

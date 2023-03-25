@@ -17,7 +17,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var metaInfo = new MetaInfo(new FakeIQuery(), new AppSettings(),
 				new FakeSelectorStorage(),null, new FakeIWebLogger());
 			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
-			Assert.AreEqual(test.FirstOrDefault()?.Status, FileIndexItem.ExifStatus.NotFoundNotInIndex);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, test.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
@@ -26,7 +26,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}), new AppSettings(),
 				new FakeSelectorStorage(),null, new FakeIWebLogger());
 			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
-			Assert.AreEqual(test.FirstOrDefault()?.Status, FileIndexItem.ExifStatus.NotFoundSourceMissing);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, test.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
@@ -36,7 +36,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string> {"/test"})),null, new FakeIWebLogger());
 			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
-			Assert.AreEqual(test.FirstOrDefault()?.Status, FileIndexItem.ExifStatus.ExifWriteNotSupported);
+			Assert.AreEqual(FileIndexItem.ExifStatus.ExifWriteNotSupported,test.FirstOrDefault()?.Status);
 		}
 	}
 }

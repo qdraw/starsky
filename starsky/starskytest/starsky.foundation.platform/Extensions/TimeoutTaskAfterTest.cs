@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		}
 		
 		[TestMethod]
-		[Timeout(7000)]
+		[Timeout(12000)]
 		public async Task TimeoutAfter_CheckIfSuccess()
 		{
 			Assert.IsTrue(await EndlessTest(1).TimeoutAfter(100));

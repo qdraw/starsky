@@ -128,5 +128,70 @@ namespace starskytest.starsky.foundation.storage.Storage
 			Assert.AreEqual(0,directories.Item2.Length);
 		}
 
+		[TestMethod]
+		public void SetLastWriteTime_Dir()
+		{
+			var rootDir = Path.Combine(new CreateAnImage().BasePath, "test01012");
+
+			var realStorage = new StorageHostFullPathFilesystem();
+			realStorage.CreateDirectory(rootDir);
+			
+			var shouldBe = DateTime.Now.AddDays(-1);
+			realStorage.SetLastWriteTime(rootDir, shouldBe);
+			
+			var lastWriteTime2 = realStorage.Info(rootDir).LastWriteTime;
+			realStorage.FolderDelete(rootDir);
+
+			Assert.AreEqual(shouldBe, lastWriteTime2);
+		}
+		
+		[TestMethod]
+		public void SetLastWriteTime_File()
+		{
+			var tmpFile = Path.Combine(new CreateAnImage().BasePath, "test01012.tmp");
+
+			var realStorage = new StorageHostFullPathFilesystem();
+			realStorage.WriteStream(new MemoryStream(new byte[1]), tmpFile);
+			
+			var shouldBe = DateTime.Now.AddDays(-1);
+			realStorage.SetLastWriteTime(tmpFile, shouldBe);
+			
+			var lastWriteTime2 = realStorage.Info(tmpFile).LastWriteTime;
+			realStorage.FileDelete(tmpFile);
+
+			Assert.AreEqual(shouldBe, lastWriteTime2);
+		}
+		
+		[TestMethod]
+		public void SetLastWriteTime_File_Now()
+		{
+			var tmpFile = Path.Combine(new CreateAnImage().BasePath, "test01013.tmp");
+
+			var realStorage = new StorageHostFullPathFilesystem();
+			realStorage.WriteStream(new MemoryStream(new byte[1]), tmpFile);
+
+			var result = realStorage.SetLastWriteTime(tmpFile);
+			
+			var lastWriteTime2 = realStorage.Info(tmpFile).LastWriteTime;
+			realStorage.FileDelete(tmpFile);
+
+			Assert.AreEqual(result, lastWriteTime2);
+		}
+		
+		[TestMethod]
+		public void SetLastWriteTime_File_LongTimeAgo()
+		{
+			var tmpFile = Path.Combine(new CreateAnImage().BasePath, "test01014.tmp");
+
+			var realStorage = new StorageHostFullPathFilesystem();
+			realStorage.WriteStream(new MemoryStream(new byte[1]), tmpFile);
+
+			var result = realStorage.SetLastWriteTime(tmpFile, new DateTime(1999,01,01));
+			
+			var lastWriteTime2 = realStorage.Info(tmpFile).LastWriteTime;
+			realStorage.FileDelete(tmpFile);
+
+			Assert.AreEqual(result, lastWriteTime2);
+		}
 	}
 }

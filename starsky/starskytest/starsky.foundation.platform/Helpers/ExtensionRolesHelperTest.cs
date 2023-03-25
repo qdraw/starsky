@@ -56,7 +56,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_png_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {137, 80, 78, 71});
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.png);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.png,fileType);
 		}
         
 		[TestMethod]
@@ -71,21 +71,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_jpeg2_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {255, 216, 255, 225});
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.jpg);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,fileType);
 		}
 		
-				
-		private static byte[] StringToByteArray(string hex) {
-			return Enumerable.Range(0, hex.Length)
-				.Where(x => x % 2 == 0)
-				.Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-				.ToArray();
-		}
 		
 		[TestMethod]
 		public void Files_GetImageFormat_jpeg_FF_D8_FF_DB_Test()
 		{
-			var fileType = ExtensionRolesHelper.GetImageFormat(StringToByteArray("FFD8FFDB"));
+			var fileType = ExtensionRolesHelper.GetImageFormat(ExtensionRolesHelper.HexStringToByteArray("FFD8FFDB"));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,fileType);
 		}
 
@@ -93,7 +86,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_jpeg_FF_D8_FF_E0_00_10_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("FF D8 FF E0 00 10 4A 46 49 46 00 01".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("FF D8 FF E0 00 10 4A 46 49 46 00 01".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,fileType);
 		}
 		
@@ -101,7 +94,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_jpeg_FF_D8_FF_EE_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("FF D8 FF EE ".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("FF D8 FF EE ".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,fileType);
 		}
 		
@@ -111,7 +104,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			// FF D8 FF E1 ?? ?? 45 78
 			// 69 66 00 00
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("FF D8 FF E1".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("FF D8 FF E1".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,fileType);
 		}
 		
@@ -120,7 +113,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// FF D8 FF E0 
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("FF D8 FF E0 ".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("FF D8 FF E0 ".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,fileType);
 		}
 		
@@ -129,7 +122,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// 89 50 4E 47 0D 0A 1A 0A
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("89 50 4E 47 0D 0A 1A 0A".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("89 50 4E 47 0D 0A 1A 0A".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.png,fileType);
 		}
 		
@@ -137,7 +130,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_pdf()
 		{
 			// 25 50 44 46 2D 
-			var fileType = ExtensionRolesHelper.GetImageFormat(StringToByteArray("25 50 44 46 2D".Replace(" ","")));
+			var fileType = ExtensionRolesHelper.GetImageFormat(ExtensionRolesHelper.HexStringToByteArray("25 50 44 46 2D".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.pdf,fileType);
 		}
 		
@@ -146,7 +139,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// 66 74 79 70 69 73 6F 6D 
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("66 74 79 70 69 73 6F 6D".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("66 74 79 70 69 73 6F 6D".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4,fileType);
 		}
 		
@@ -155,7 +148,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// 49_49_2A_00_little_endian
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("49 49 2A 00".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("49 49 2A 00".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff,fileType);
 		}
 		
@@ -184,7 +177,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_Tiff_4D_4D_00_2A_big_endian()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("4D 4D 00 2A".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("4D 4D 00 2A".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff,fileType);
 		}
 		
@@ -192,7 +185,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_zip_50_4B_03_04()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("50 4B 03 04".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("50 4B 03 04".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.zip,fileType);
 		}
 				
@@ -200,15 +193,47 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_bmp_42_4D ()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(
-				StringToByteArray("42 4D".Replace(" ","")));
+				ExtensionRolesHelper.HexStringToByteArray("42 4D".Replace(" ","")));
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp,fileType);
+		}
+		
+		[TestMethod]
+		public void Files_GetImageFormat_MetaJson_1 ()
+		{
+			var metaJson = new byte[] {
+				123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 116, 
+				112, 115, 58, 47, 47, 100, 111, 99, 115, 46, 113, 100, 114, 97, 
+				119, 46, 110, 108, 47, 115, 99, 104, 101, 109, 97, 47, 109, 101, 
+				116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110, 116, 97, 105, 110, 
+				101, 114, 46, 106, 115, 111, 110, 34, 44
+			};
+			
+			var fileType = ExtensionRolesHelper.GetImageFormat(metaJson);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.meta_json,fileType);
+		}
+
+		[TestMethod]
+		public void Files_GetImageFormat_MetaJson_Windows ()
+		{
+			var metaJsonWindows = new byte[] {
+				// 13 is CR
+				123, 13, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 116, 
+				116, 112, 115, 58, 47, 47, 100, 111, 99, 115, 46, 113, 100, 114, 
+				97, 119, 46, 110, 108, 47, 115, 99, 104, 101, 109, 97, 47, 109, 101, 
+				116, 97, 45, 100, 97, 116, 97, 45, 99, 111, 110, 116, 97, 105, 110, 
+				101, 114, 46, 106, 115, 111, 110, 34
+			};
+			// B0D0A202022246964223A202268747470733A2F2F646F63732E71647261772E6E6C2F736368656D612F6D6574612D646174612D636F6E7461696E65722E6A736F6E22
+			
+			var fileType = ExtensionRolesHelper.GetImageFormat(metaJsonWindows);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.meta_json,fileType);
 		}
 		
 		[TestMethod]
 		public void Files_GetImageFormat_corrupt_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new CreateAnImageCorrupt().Bytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.unknown);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown,fileType);
 		}
         
 		[TestMethod]
@@ -223,14 +248,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void Files_GetImageFormat_tiff2_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {77, 77, 42});
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.tiff);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff,fileType);
 		}
         
 		[TestMethod]
 		public void Files_GetImageFormat_tiff3_Test()
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {77, 77, 0});
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.tiff);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.tiff,fileType);
 		}
 
 		[TestMethod]
@@ -238,7 +263,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			byte[] bmBytes = Encoding.ASCII.GetBytes("BM");
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.bmp);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp,fileType);
 		}
         
 		[TestMethod]
@@ -246,7 +271,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			byte[] bmBytes = Encoding.ASCII.GetBytes("GIF");
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.gif);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gif,fileType);
 		}
         
 		[TestMethod]
@@ -254,7 +279,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			byte[] bmBytes = Encoding.ASCII.GetBytes("<x:xmpmeta");
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp, fileType);
 		}
 		
 		[TestMethod]
@@ -262,7 +287,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			byte[] bmBytes = Encoding.ASCII.GetBytes("<?xpacket");
 			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.xmp,fileType);
 		}
 		
 		[TestMethod]
@@ -462,7 +487,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void StringToByteArrayTest()
 		{
-			Assert.AreEqual(119, ExtensionRolesHelper.StringToByteArray("77")[0]);
+			Assert.AreEqual(119, ExtensionRolesHelper.HexStringToByteArray("77")[0]);
 		}
 
 		[TestMethod]
