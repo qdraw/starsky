@@ -90,7 +90,7 @@ namespace starsky.foundation.platform.Helpers
 			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
 			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$",
 				RegexOptions.None, TimeSpan.FromMilliseconds(100)
-				).Matches(filename);
+			).Matches(filename);
 			if ( matchCollection.Count == 0 )
 			{
 				return ImageFormat.unknown;
@@ -431,12 +431,23 @@ namespace starsky.foundation.platform.Helpers
 			return ImageFormat.unknown;
 		}
 
-		private static ImageFormat? GetImageFormatMetaJson(IEnumerable<byte> bytes)
+		private static ImageFormat? GetImageFormatMetaJson(byte[] bytes)
 		{
-			var metaJson = new byte[] {123,10,32,32,34,36,105,100,34,
-				58,32,34,104,116,116,112,115,58,47,47}; 
+			var metaJson = new byte[] {
+				123, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104, 
+				116, 116, 112, 115, 58, 47
+			};
+			var metaJsonWindows = new byte[]
+			{
+				// 13 is CR
+				123, 13, 10, 32, 32, 34, 36, 105, 100, 34, 58, 32, 34, 104,
+				116, 116, 112, 115, 58, 47
+			};
 			
 			if ( metaJson.SequenceEqual(bytes.Take(metaJson.Length)) )
+				return ImageFormat.meta_json;
+			
+			if ( metaJson.SequenceEqual(bytes.Take(metaJsonWindows.Length)) )
 				return ImageFormat.meta_json;
 			
 			return null;
