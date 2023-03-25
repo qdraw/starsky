@@ -8,7 +8,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
-using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.geolookup.Services
 {
@@ -35,14 +34,20 @@ namespace starskytest.starsky.feature.geolookup.Services
 	    }
 
         [ClassCleanup]
-        public void ClassCleanup()
+        public static void ClassCleanup()
 		{
-			new StorageHostFullPathFilesystem().FolderDelete(_dependenciesFolder1);
-			new StorageHostFullPathFilesystem().FolderDelete(_dependenciesFolder2);
-			new StorageHostFullPathFilesystem().FolderDelete(_dependenciesFolder3);
-			new StorageHostFullPathFilesystem().FolderDelete(_dependenciesFolder4);
-			new StorageHostFullPathFilesystem().FolderDelete(_dependenciesFolder5);
-			new StorageHostFullPathFilesystem().FolderDelete(_dependenciesFolder6);
+			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+				"GeoFileDownloadTests-deps_01"));
+			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+				"GeoFileDownloadTests-deps_02"));
+			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+				"GeoFileDownloadTests-deps_03"));
+			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+				"GeoFileDownloadTests-deps_04"));
+			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+				"GeoFileDownloadTests-deps_05"));
+			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+				"GeoFileDownloadTests-deps_06"));
 		}
         
         [TestMethod]
@@ -56,10 +61,12 @@ namespace starskytest.starsky.feature.geolookup.Services
             var httpClientHelper = new FakeIHttpClientHelper(storage, new Dictionary<string, KeyValuePair<bool, string>>
             {
 	            {
-		            $"https://{GeoFileDownload.BaseUrl}{GeoFileDownload.CountryName}.zip", new KeyValuePair<bool, string>(true, "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==")
+		            $"https://{GeoFileDownload.BaseUrl}{GeoFileDownload.CountryName}.zip", 
+		            new KeyValuePair<bool, string>(true, "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==")
 	            },
 	            {
-		            $"https://{GeoFileDownload.BaseUrl}admin1CodesASCII.txt", new KeyValuePair<bool, string>(true, "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==")
+		            $"https://{GeoFileDownload.BaseUrl}admin1CodesASCII.txt", 
+		            new KeyValuePair<bool, string>(true, "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==")
 	            }
             });
             
@@ -89,10 +96,12 @@ namespace starskytest.starsky.feature.geolookup.Services
 	        var httpClientHelper = new FakeIHttpClientHelper(storage, new Dictionary<string, KeyValuePair<bool, string>>
 	        {
 		        {
-			        $"https://{GeoFileDownload.MirrorUrl}{GeoFileDownload.CountryName}.zip", new KeyValuePair<bool, string>(true, "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==")
+			        $"https://{GeoFileDownload.MirrorUrl}{GeoFileDownload.CountryName}.zip", 
+			        new KeyValuePair<bool, string>(true, "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==")
 		        },
 		        {
-			        $"https://{GeoFileDownload.MirrorUrl}admin1CodesASCII.txt", new KeyValuePair<bool, string>(true, "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==")
+			        $"https://{GeoFileDownload.MirrorUrl}admin1CodesASCII.txt", 
+			        new KeyValuePair<bool, string>(true, "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==")
 		        }
 	        });
             
@@ -124,8 +133,10 @@ namespace starskytest.starsky.feature.geolookup.Services
             var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper);
         
             storage.CreateDirectory(_dependenciesFolder3);
-            await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"),Path.Combine(_dependenciesFolder3, GeoFileDownload.CountryName + ".txt"));
-            await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"), Path.Combine(_dependenciesFolder3, "admin1CodesASCII.txt"));
+            await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"),
+	            Path.Combine(_dependenciesFolder3, GeoFileDownload.CountryName + ".txt"));
+            await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"), 
+	            Path.Combine(_dependenciesFolder3, "admin1CodesASCII.txt"));
         
             // Act
             await geoFileDownload.DownloadAsync();
@@ -140,7 +151,8 @@ namespace starskytest.starsky.feature.geolookup.Services
         public void CreateDependenciesFolder_ShouldBeCreated()
         {
 	        var storage = new StorageHostFullPathFilesystem();
-	        var httpClientHelper = new FakeIHttpClientHelper(storage, new Dictionary<string, KeyValuePair<bool, string>>());
+	        var httpClientHelper = new FakeIHttpClientHelper(storage, 
+		        new Dictionary<string, KeyValuePair<bool, string>>());
 	        var appSettings = new AppSettings { DependenciesFolder = _dependenciesFolder4 };
 	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper);
 	        geoFileDownload.CreateDependenciesFolder();
@@ -154,13 +166,15 @@ namespace starskytest.starsky.feature.geolookup.Services
         public async Task RemoveFailedDownload_FileToSmall_SoRemove()
         {
 	        var storage = new StorageHostFullPathFilesystem();
-	        var httpClientHelper = new FakeIHttpClientHelper(storage, new Dictionary<string, KeyValuePair<bool, string>>());
+	        var httpClientHelper = new FakeIHttpClientHelper(storage, 
+		        new Dictionary<string, KeyValuePair<bool, string>>());
 	        var appSettings = new AppSettings { DependenciesFolder = _dependenciesFolder5 };
 	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper);
 	        
 	        geoFileDownload.CreateDependenciesFolder();
 
-	        await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"),Path.Combine(_dependenciesFolder5, GeoFileDownload.CountryName + ".zip"));
+	        await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"),
+		        Path.Combine(_dependenciesFolder5, GeoFileDownload.CountryName + ".zip"));
 	        Assert.IsTrue(storage.ExistFile(Path.Combine(_dependenciesFolder5, GeoFileDownload.CountryName + ".zip")));
 
 	        geoFileDownload.RemoveFailedDownload();
@@ -173,14 +187,16 @@ namespace starskytest.starsky.feature.geolookup.Services
         public async Task RemoveFailedDownload_FileRightSize_SoKeep()
         {
 	        var storage = new StorageHostFullPathFilesystem();
-	        var httpClientHelper = new FakeIHttpClientHelper(storage, new Dictionary<string, KeyValuePair<bool, string>>());
+	        var httpClientHelper = new FakeIHttpClientHelper(storage, 
+		        new Dictionary<string, KeyValuePair<bool, string>>());
 	        var appSettings = new AppSettings { DependenciesFolder = _dependenciesFolder6 };
 	        var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper);
 	        
 	        geoFileDownload.CreateDependenciesFolder();
 	        geoFileDownload.MinimumSizeInBytes = -1;
 	        
-	        await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"),Path.Combine(_dependenciesFolder6, GeoFileDownload.CountryName + ".zip"));
+	        await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"),
+		        Path.Combine(_dependenciesFolder6, GeoFileDownload.CountryName + ".zip"));
 	        Assert.IsTrue(storage.ExistFile(Path.Combine(_dependenciesFolder6, GeoFileDownload.CountryName + ".zip")));
 
 	        geoFileDownload.RemoveFailedDownload();
