@@ -32,24 +32,19 @@ namespace starskytest.starsky.feature.geolookup.Services
 		    _dependenciesFolder4 = Path.Combine(new CreateAnImage().BasePath, "GeoFileDownloadTests-deps_04");
 		    _dependenciesFolder5 = Path.Combine(new CreateAnImage().BasePath, "GeoFileDownloadTests-deps_05");
 		    _dependenciesFolder6 = Path.Combine(new CreateAnImage().BasePath, "GeoFileDownloadTests-deps_06");
+		    new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+			    "GeoFileDownloadTests-deps_01"));
+		    new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+			    "GeoFileDownloadTests-deps_02"));
+		    new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+			    "GeoFileDownloadTests-deps_03"));
+		    new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+			    "GeoFileDownloadTests-deps_04"));
+		    new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+			    "GeoFileDownloadTests-deps_05"));
+		    new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
+			    "GeoFileDownloadTests-deps_06"));
 	    }
-
-        [ClassCleanup]
-        public static void ClassCleanup()
-		{
-			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
-				"GeoFileDownloadTests-deps_01"));
-			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
-				"GeoFileDownloadTests-deps_02"));
-			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
-				"GeoFileDownloadTests-deps_03"));
-			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
-				"GeoFileDownloadTests-deps_04"));
-			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
-				"GeoFileDownloadTests-deps_05"));
-			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(new CreateAnImage().BasePath, 
-				"GeoFileDownloadTests-deps_06"));
-		}
         
         [TestMethod]
         public async Task DownloadAsync_ShouldDownloadFileIfNotExists()
