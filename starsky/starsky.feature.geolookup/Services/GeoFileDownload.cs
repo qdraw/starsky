@@ -11,7 +11,7 @@ using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.geolookup.Services
 {
-	[Service(typeof(IGeoFileDownload), InjectionLifetime = InjectionLifetime.Singleton)]
+	[Service(typeof(IGeoFileDownload), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class GeoFileDownload : IGeoFileDownload
 	{
 		private readonly AppSettings _appSettings;
@@ -80,8 +80,12 @@ namespace starsky.feature.geolookup.Services
 		/// </summary>
 		internal void RemoveFailedDownload()
 		{
-			if ( !_hostStorage.ExistFile(Path.Combine(_appSettings.DependenciesFolder,
-				CountryName + ".zip")) ) return;
+			if ( !_hostStorage.ExistFile(Path.Combine(
+				    _appSettings.DependenciesFolder,
+				    CountryName + ".zip")) )
+			{
+				return;
+			}
 	        
 			// When trying to download a file
 			var zipLength = _hostStorage

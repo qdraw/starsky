@@ -20,7 +20,7 @@ using starsky.foundation.readmeta.Helpers;
 
 namespace starsky.feature.geolookup.Services
 {
-	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Singleton)]
+	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Scoped)]
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public sealed class GeoReverseLookup : IGeoReverseLookup
     {
@@ -103,8 +103,6 @@ namespace starsky.feature.geolookup.Services
                     ).ToList();
         }
 
-
-
 	    /// <summary>
 	    /// Reverse Geo Syncing for a folder
 	    /// </summary>
@@ -144,8 +142,6 @@ namespace starsky.feature.geolookup.Services
             
             return metaFilesInDirectory;
         }
-
-
 
 	    public async Task<GeoLocationModel> GetLocation(double latitude, double longitude)
 	    {
