@@ -36,8 +36,10 @@ namespace starskytest.FakeMocks
 			}
 		
 			var fileByteArray = Base64Helper.TryParse(result.Value.Value);
-		
-			await _storage.WriteStreamAsync(new MemoryStream(fileByteArray), fullLocalPath );
+			var stream = new MemoryStream(fileByteArray);
+			await _storage.WriteStreamAsync(stream, fullLocalPath );
+			await stream.DisposeAsync();
+			
 			return result.Value.Key;
 		}
 
