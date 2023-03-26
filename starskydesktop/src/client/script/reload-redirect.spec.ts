@@ -5,6 +5,12 @@ declare global {
   // eslint-disable-next-line vars-on-top, no-var
   var api: IPreloadApi;
 }
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
 
 describe("reload redirect", () => {
   it("should call deps", () => {

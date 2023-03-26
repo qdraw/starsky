@@ -3,6 +3,13 @@ import * as settingsDefaultImageApplicationSelect from "./settings-default-image
 import * as settingsRemoteLocalToggle from "./settings-remote-local-toggle";
 import * as settingsRemoteLocationField from "./settings-remote-location-field";
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("settings", () => {
   it("should call deps", () => {
     const checkSpy = jest

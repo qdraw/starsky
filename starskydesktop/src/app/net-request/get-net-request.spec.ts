@@ -16,6 +16,13 @@ jest.mock("electron", () => {
   };
 });
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("get net request", () => {
   describe("get net request", () => {
     it("should give status code and json content", async () => {

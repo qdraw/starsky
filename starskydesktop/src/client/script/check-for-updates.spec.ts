@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { checkForUpdates } from "./check-for-updates";
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("reload redirect", () => {
   function mockFetch(status: number) {
     const mockFetchPromise = Promise.resolve({

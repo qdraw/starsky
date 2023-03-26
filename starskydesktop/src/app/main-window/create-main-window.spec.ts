@@ -42,6 +42,13 @@ jest.mock("electron", () => {
   };
 });
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("create main window", () => {
   it("create a new window (main)", async () => {
     jest
