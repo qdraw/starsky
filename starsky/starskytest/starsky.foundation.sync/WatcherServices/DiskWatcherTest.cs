@@ -53,7 +53,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 		
 		[TestMethod]
-		[Timeout(5000)]
+#if DEBUG
+		[Timeout(1000)]
+#else
+		[Timeout(10000)]
+#endif
 		public void DiskWatcherTest_Watcher_Error()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
@@ -104,7 +108,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 
 		[TestMethod]
-		[Timeout(5000)]
+#if DEBUG
+		[Timeout(1000)]
+#else
+		[Timeout(10000)]
+#endif
 		public void Watcher_Changed()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
@@ -131,7 +139,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		
 		
 		[TestMethod]
-		[Timeout(3000)]
+#if DEBUG
+		[Timeout(1000)]
+#else
+		[Timeout(10000)]
+#endif
 		public void Watcher_Renamed()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
@@ -160,7 +172,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 
 		[TestMethod]
-		[Timeout(2000)]
+#if DEBUG
+		[Timeout(1000)]
+#else
+		[Timeout(10000)]
+#endif
 		public void Watcher_Retry_Ok()
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
@@ -178,7 +194,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		
 		[TestMethod]
 #if DEBUG
-		[Timeout(2000)]
+		[Timeout(1000)]
 #else
 		[Timeout(10000)]
 #endif

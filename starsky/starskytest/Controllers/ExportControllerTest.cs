@@ -25,7 +25,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.Interfaces;
@@ -451,7 +450,6 @@ namespace starskytest.Controllers
 		{
 			// Arrange
 			const string f = "TNA995920129";
-			const bool json = false;
 			var fakeStorage = new FakeIStorage(new List<string>(), 
 				new List<string> { f }, new List<byte[]>
 				{
