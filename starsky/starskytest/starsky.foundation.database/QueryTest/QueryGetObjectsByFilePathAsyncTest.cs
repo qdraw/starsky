@@ -198,6 +198,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			if ( result.Count != 4 )
 			{
+				await Task.Delay(100);
 				await AddItems();
 				result = await GetResult();
 			}

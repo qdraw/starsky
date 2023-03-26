@@ -7,50 +7,53 @@ using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 
-namespace starskytest.FakeMocks;
-
-public class FakeIHttpClientHelper : IHttpClientHelper
+namespace starskytest.FakeMocks
 {
-	private readonly Dictionary<string, KeyValuePair<bool, string>> _inputDictionary;
-	private readonly IStorage _storage;
-
-	public FakeIHttpClientHelper(IStorage storage, Dictionary<string, KeyValuePair<bool, string>> inputDictionary)
+	public class FakeIHttpClientHelper : IHttpClientHelper
 	{
-		_storage = storage;
-		_inputDictionary = inputDictionary;
-	}
+		private readonly Dictionary<string, KeyValuePair<bool, string>> _inputDictionary;
+		private readonly IStorage _storage;
 
-	public List<string> UrlsCalled { get; set; } = new List<string>();
-	
-	public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath,
-		int retryAfterInSeconds = 15)
-	{
-		UrlsCalled.Add(sourceHttpUrl);
-		
-		var result =
-			_inputDictionary.FirstOrDefault(p => p.Key == sourceHttpUrl);
-
-		if ( result.Value.Value == null )
+		public FakeIHttpClientHelper(IStorage storage, Dictionary<string, KeyValuePair<bool, string>> inputDictionary)
 		{
-			return false;
+			_storage = storage;
+			_inputDictionary = inputDictionary;
 		}
-		
-		var fileByteArray = Base64Helper.TryParse(result.Value.Value);
-		
-		await _storage.WriteStreamAsync(new MemoryStream(fileByteArray), fullLocalPath );
-		return result.Value.Key;
-	}
 
-	public Task<KeyValuePair<bool, string>> ReadString(string sourceHttpUrl)
-	{
-		UrlsCalled.Add(sourceHttpUrl);
-		return Task.FromResult(_inputDictionary.FirstOrDefault(p => p.Key == sourceHttpUrl).Value);
-	}
+		public List<string> UrlsCalled { get; set; } = new List<string>();
+	
+		public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath,
+			int retryAfterInSeconds = 15)
+		{
+			UrlsCalled.Add(sourceHttpUrl);
+		
+			var result =
+				_inputDictionary.FirstOrDefault(p => p.Key == sourceHttpUrl);
 
-	public Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl, HttpContent httpContent,
-		bool verbose = true)
-	{
-		UrlsCalled.Add(sourceHttpUrl);
-		return Task.FromResult(_inputDictionary.FirstOrDefault(p => p.Key == sourceHttpUrl).Value);
+			if ( result.Value.Value == null )
+			{
+				return false;
+			}
+		
+			var fileByteArray = Base64Helper.TryParse(result.Value.Value);
+			var stream = new MemoryStream(fileByteArray);
+			await _storage.WriteStreamAsync(stream, fullLocalPath);
+			await stream.DisposeAsync();
+			
+			return result.Value.Key;
+		}
+
+		public Task<KeyValuePair<bool, string>> ReadString(string sourceHttpUrl)
+		{
+			UrlsCalled.Add(sourceHttpUrl);
+			return Task.FromResult(_inputDictionary.FirstOrDefault(p => p.Key == sourceHttpUrl).Value);
+		}
+
+		public Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl, HttpContent httpContent,
+			bool verbose = true)
+		{
+			UrlsCalled.Add(sourceHttpUrl);
+			return Task.FromResult(_inputDictionary.FirstOrDefault(p => p.Key == sourceHttpUrl).Value);
+		}
 	}
 }

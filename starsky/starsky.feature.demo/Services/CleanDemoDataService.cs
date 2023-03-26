@@ -27,7 +27,6 @@ using starsky.foundation.sync.SyncInterfaces;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.demo.Services
 {
-
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class CleanDemoDataService : BackgroundService
 	{
@@ -77,14 +76,6 @@ namespace starsky.feature.demo.Services
 			return true;
 		}
 
-		public static async Task SeedCli(AppSettings appSettings,
-			IHttpClientHelper httpClientHelper, IStorage hostStorage,
-			IStorage subStorage, IWebLogger webLogger, ISynchronize sync)
-		{
-			await DownloadAsync(appSettings, httpClientHelper, hostStorage, subStorage, webLogger);
-			await sync.Sync("/");
-		}
-
 		internal static void CleanData(IStorage subStorage, IWebLogger logger)
 		{
 			if ( subStorage.ExistFolder("/.stfolder") )
@@ -130,7 +121,6 @@ namespace starsky.feature.demo.Services
 		}
 		
 		private const string DemoFolderName = "demo";
-
 		
 		internal static PublishManifestDemo? Deserialize(string result, IWebLogger webLogger, IStorage hostStorage, string settingsJsonFullPath)
 		{

@@ -3,25 +3,29 @@ using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.geolookup.Services
 {
-	[Service(typeof(IGeoFileDownload), InjectionLifetime = InjectionLifetime.Singleton)]
+	[Service(typeof(IGeoFileDownload), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class GeoFileDownload : IGeoFileDownload
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IHttpClientHelper _httpClientHelper;
+		private readonly IStorage _hostStorage;
 
 		public const string CountryName = "cities1000";
 		internal long MinimumSizeInBytes { get; set; } = 7000000; // 7 MB
 		
-		public GeoFileDownload(AppSettings appSettings, IHttpClientHelper httpClientHelper)
+		public GeoFileDownload(AppSettings appSettings, IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage)
 		{
 			_appSettings = appSettings;
 			_httpClientHelper = httpClientHelper;
+			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		}
 
 		internal const string BaseUrl =
@@ -33,7 +37,7 @@ namespace starsky.feature.geolookup.Services
 			RemoveFailedDownload();
 			CreateDependenciesFolder();
 			
-			if(!new StorageHostFullPathFilesystem().ExistFile(
+			if(!_hostStorage.ExistFile(
 				Path.Combine(_appSettings.DependenciesFolder,CountryName + ".txt")) )
 			{
 				var outputZip = Path.Combine(_appSettings.DependenciesFolder,
@@ -46,7 +50,7 @@ namespace starsky.feature.geolookup.Services
 				new Zipper().ExtractZip(outputZip, _appSettings.DependenciesFolder);
 			}
 
-			if(!new StorageHostFullPathFilesystem().ExistFile(
+			if(!_hostStorage.ExistFile(
 				Path.Combine(_appSettings.DependenciesFolder,"admin1CodesASCII.txt")))
 			{
 				// code for the second administrative division,
@@ -65,9 +69,9 @@ namespace starsky.feature.geolookup.Services
 
 		internal void CreateDependenciesFolder()
 		{
-			if ( !new StorageHostFullPathFilesystem().ExistFolder(_appSettings.DependenciesFolder) )
+			if ( !_hostStorage.ExistFolder(_appSettings.DependenciesFolder) )
 			{
-				new StorageHostFullPathFilesystem().CreateDirectory(_appSettings.DependenciesFolder);
+				_hostStorage.CreateDirectory(PathHelper.RemoveLatestBackslash(_appSettings.DependenciesFolder));
 			}
 		}
 
@@ -76,15 +80,19 @@ namespace starsky.feature.geolookup.Services
 		/// </summary>
 		internal void RemoveFailedDownload()
 		{
-			if ( !new StorageHostFullPathFilesystem().ExistFile(Path.Combine(_appSettings.DependenciesFolder,
-				CountryName + ".zip")) ) return;
+			if ( !_hostStorage.ExistFile(Path.Combine(
+				    _appSettings.DependenciesFolder,
+				    CountryName + ".zip")) )
+			{
+				return;
+			}
 	        
 			// When trying to download a file
-			var zipLength = new StorageHostFullPathFilesystem()
+			var zipLength = _hostStorage
 				.ReadStream(Path.Combine(_appSettings.DependenciesFolder, CountryName + ".zip"))
 				.Length;
 			if ( zipLength > MinimumSizeInBytes ) return;
-			new StorageHostFullPathFilesystem().FileDelete(Path.Combine(_appSettings.DependenciesFolder,
+			_hostStorage.FileDelete(Path.Combine(_appSettings.DependenciesFolder,
 				CountryName + ".zip"));
 		}
 	}

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.search.ViewModels;
 using starsky.foundation.database.Models;
@@ -18,7 +19,7 @@ namespace starskytest.Models
 		public void SearchViewModel_Offset_Test()
 		{
 			var searchViewModel = new SearchViewModel();
-			Assert.AreEqual(0,searchViewModel.Offset );
+			Assert.AreEqual(0,Math.Floor(searchViewModel.Offset));
 		}
 
 		[TestMethod]

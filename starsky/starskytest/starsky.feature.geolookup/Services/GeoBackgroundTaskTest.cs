@@ -134,7 +134,6 @@ namespace starskytest.starsky.feature.geolookup.Services
 			Assert.AreEqual(1, results.Count);
 		}
 		
-		
 		[TestMethod]
 		public async Task GeoBackgroundTask_IsNotCalled()
 		{
