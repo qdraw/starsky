@@ -113,7 +113,7 @@
   "optionalDependencies": {
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
-    "electron-builder": "^23.6.0",
+    "electron-builder": "^24.1.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "rimraf": "^4.3.0",
