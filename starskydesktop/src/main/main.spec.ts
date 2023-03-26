@@ -218,13 +218,12 @@ describe("main", () => {
     onState.ready();
 
     // not sure if the expect is working here
-    
+
     expect(restoreWarmupMainWindowAndCloseSplashSpy).toHaveBeenCalled();
     expect(restoreWarmupMainWindowAndCloseSplashSpy).toHaveBeenCalledTimes(1);
   });
 
   it("when activate and there windows it not should create one", () => {
-
     jest
       .spyOn(BrowserWindow, "getAllWindows")
       .mockImplementation(() => ["t"] as any);
