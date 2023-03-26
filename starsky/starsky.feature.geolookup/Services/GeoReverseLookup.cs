@@ -62,6 +62,7 @@ namespace starsky.feature.geolookup.Services
         {
 	        _appSettings = appSettings;
 	        _logger = logger;
+	        // Get the IGeoFileDownload from the service scope due different injection lifetime (singleton vs scoped)
 	        _geoFileDownload = geoFileDownload;
 	        _reverseGeoCode = null;
 	        _admin1CodesAscii = null;
