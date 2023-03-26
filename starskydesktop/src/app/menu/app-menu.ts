@@ -18,30 +18,30 @@ function AppMenu() {
           submenu: [
             {
               label: IsDutch() ? "Over Starsky" : "About Starsky",
-              role: "about"
+              role: "about",
             },
             { type: "separator" },
             { role: "services" },
             { type: "separator" },
             {
               label: IsDutch() ? "Verberg Starsky" : "Hide Starsky",
-              role: "hide"
+              role: "hide",
             },
             {
               label: IsDutch() ? "Verberg andere" : "Hide Others",
-              role: "hideothers"
+              role: "hideothers",
             },
             {
               label: IsDutch() ? "Toon alles" : "Show All",
-              role: "unhide"
+              role: "unhide",
             },
             { type: "separator" },
             {
               label: IsDutch() ? "Starsky afsluiten" : "Quit Starsky",
-              role: "quit"
-            }
-          ] as any
-        }
+              role: "quit",
+            },
+          ] as any,
+        },
       ]
       : []),
     {
@@ -53,7 +53,7 @@ function AppMenu() {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             createMainWindow("?f=/");
           },
-          accelerator: "CmdOrCtrl+N"
+          accelerator: "CmdOrCtrl+N",
         },
         {
           label: IsDutch() ? "Bewerk bestand in editor" : "Edit file in Editor",
@@ -62,19 +62,19 @@ function AppMenu() {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             if (focusWindow) EditFile(focusWindow);
           },
-          accelerator: "CmdOrCtrl+E"
+          accelerator: "CmdOrCtrl+E",
         },
 
         isMac
           ? {
             label: IsDutch() ? "Venster sluiten" : "Close Window",
-            role: "close"
+            role: "close",
           }
           : {
             label: IsDutch() ? "App sluiten" : "Close App",
-            role: "quit"
-          }
-      ]
+            role: "quit",
+          },
+      ],
     },
     {
       label: IsDutch() ? "Bewerken" : "Edit",
@@ -82,35 +82,35 @@ function AppMenu() {
         {
           label: IsDutch() ? "Ongedaan maken" : "Undo",
           accelerator: "CmdOrCtrl+Z",
-          selector: "undo:"
+          selector: "undo:",
         },
         {
           label: IsDutch() ? "Opnieuw uitvoeren" : "Redo",
           accelerator: "Shift+CmdOrCtrl+Z",
-          selector: "redo:"
+          selector: "redo:",
         },
         { type: "separator" },
         {
           label: IsDutch() ? "Knippen" : "Cut",
           accelerator: "CmdOrCtrl+X",
-          selector: "cut:"
+          selector: "cut:",
         },
         {
           label: IsDutch() ? "Kopiëren" : "Copy",
           accelerator: "CmdOrCtrl+C",
-          selector: "copy:"
+          selector: "copy:",
         },
         {
           label: IsDutch() ? "Plakken" : "Paste",
           accelerator: "CmdOrCtrl+V",
-          selector: "paste:"
+          selector: "paste:",
         },
         {
           label: IsDutch() ? "Alles selecteren" : "Select All",
           accelerator: "CmdOrCtrl+A",
-          selector: "selectAll:"
-        }
-      ]
+          selector: "selectAll:",
+        },
+      ],
     },
     {
       label: IsDutch() ? "Instellingen" : "Settings",
@@ -121,9 +121,9 @@ function AppMenu() {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             createSettingsWindow();
           },
-          accelerator: "CmdOrCtrl+,"
-        }
-      ]
+          accelerator: "CmdOrCtrl+,",
+        },
+      ],
     },
     {
       label: IsDutch() ? "Ontwikkelaar" : "Develop",
@@ -135,7 +135,7 @@ function AppMenu() {
               window.webContents.reload();
             });
           },
-          accelerator: "CmdOrCtrl+R"
+          accelerator: "CmdOrCtrl+R",
         },
         {
           label: "Dev Tools",
@@ -145,7 +145,7 @@ function AppMenu() {
               window.webContents.openDevTools();
             });
           },
-          accelerator: "CmdOrCtrl+Alt+I"
+          accelerator: "CmdOrCtrl+Alt+I",
         },
         {
           label: "Open in browser",
@@ -154,38 +154,38 @@ function AppMenu() {
             await shell.openExternal(
               BrowserWindow.getFocusedWindow().webContents.getURL()
             );
-          }
-        }
-      ]
+          },
+        },
+      ],
     },
     {
       label: IsDutch() ? "Beeld" : "View",
       submenu: [
         {
           label: IsDutch() ? "Werkelijke grootte" : "Actual Size",
-          role: "resetzoom"
+          role: "resetzoom",
         },
         {
           label: IsDutch() ? "Inzoomen" : "Zoom In",
-          role: "zoomin"
+          role: "zoomin",
         },
         {
           label: IsDutch() ? "Uitzoomen" : "Zoom Out",
-          role: "zoomout"
+          role: "zoomout",
         },
         { type: "separator" },
         {
           label: IsDutch() ? "Schermvullende weergave" : "Toggle Full Screen",
-          role: "togglefullscreen"
-        }
-      ]
+          role: "togglefullscreen",
+        },
+      ],
     },
     {
       label: IsDutch() ? "Venster" : "Window",
       submenu: [
         {
           label: IsDutch() ? "Minimaliseren" : "Minimize",
-          role: "minimize"
+          role: "minimize",
         },
         { role: "zoom" },
         ...(isMac
@@ -193,10 +193,10 @@ function AppMenu() {
             { type: "separator" },
             { role: "front" },
             { type: "separator" },
-            { role: "window" }
+            { role: "window" },
           ]
-          : [{ role: "close" }])
-      ]
+          : [{ role: "close" }]),
+      ],
     },
     {
       role: "help",
@@ -205,8 +205,8 @@ function AppMenu() {
           label: "Documentation website",
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           click: async () => {
-            await shell.openExternal("https://qdraw.github.io/starsky/");
-          }
+            await shell.openExternal("https://docs.qdraw.nl/download");
+          },
         },
         {
           label: "Release overview",
@@ -216,10 +216,10 @@ function AppMenu() {
             await shell.openExternal(
               "https://github.com/qdraw/starsky/releases/latest"
             );
-          }
-        }
-      ]
-    }
+          },
+        },
+      ],
+    },
   ]);
   Menu.setApplicationMenu(menu);
 }

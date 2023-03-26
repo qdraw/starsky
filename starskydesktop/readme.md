@@ -14,14 +14,14 @@
     * [starskyTest](../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * __[starskydesktop](../starskydesktop/readme.md) Desktop Application__
-    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
+    * [Download Desktop App](https://docs.qdraw.nl/download) _Windows and Mac OS version_
  * [Changelog](../history.md) _Release notes and history_
 
 ## Usage instructions
 
-There are binaries available
+There are binaries available on the following page:
 
-[Download App](https://qdraw.github.io/starsky/assets/download/download.html?classes=btn,btn-default)
+[Download App](https://docs.qdraw.nl/download)
 
 ### Windows 10 and newer
 - Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-win-x64-desktop.exe`
