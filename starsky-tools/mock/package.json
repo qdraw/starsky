@@ -5,12 +5,13 @@
   "main": "mock.js",
   "scripts": {
     "start": "node mock",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "npx --yes npm-check-updates"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "ws": "^8.12.1"
+    "ws": "^8.13.0"
   }
 }

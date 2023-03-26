@@ -7,7 +7,7 @@ import {
   PageType
 } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
-import { IFileIndexItem } from "../interfaces/IFileIndexItem";
+import { IFileIndexItem, ImageFormat } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
@@ -155,7 +155,7 @@ function setArchiveReducer(actionPayload: IArchiveProps) {
   };
 }
 
-function addArchiveReducer(
+export function addArchiveReducer(
   state: IArchiveProps,
   initActionAdd: IFileIndexItem[]
 ) {
@@ -209,6 +209,22 @@ function addArchiveReducer(
     );
     if (index !== -1) {
       fileIndexItems.splice(index, 1);
+    }
+  }
+
+  // when collections are enabled, remove the sidecar files
+  if (state.collections === true) {
+    for (const sidecarItem of Array.from(actionAdd).filter(
+      (value) =>
+        value.imageFormat === ImageFormat.meta_json ||
+        value.imageFormat === ImageFormat.xmp
+    )) {
+      const index = fileIndexItems.findIndex(
+        (x) => x.filePath === sidecarItem.filePath
+      );
+      if (index !== -1) {
+        fileIndexItems.splice(index, 1);
+      }
     }
   }
 
