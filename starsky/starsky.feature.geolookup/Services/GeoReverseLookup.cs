@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using NGeoNames;
 using NGeoNames.Entities;
 using starsky.feature.geolookup.Interfaces;
@@ -20,7 +21,7 @@ using starsky.foundation.readmeta.Helpers;
 
 namespace starsky.feature.geolookup.Services
 {
-	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Scoped)]
+	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Singleton)]
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
 	public sealed class GeoReverseLookup : IGeoReverseLookup
     {
@@ -35,10 +36,29 @@ namespace starsky.feature.geolookup.Services
         /// Getting GeoData
         /// </summary>
         /// <param name="appSettings">to know where to store the deps files</param>
+        /// <param name="serviceScopeFactory">used to get IGeoFileDownload - Abstraction to download Geo Data</param>
+        /// <param name="memoryCache">for keeping status</param>
+        /// <param name="logger">debug logger</param>
+        public GeoReverseLookup(AppSettings appSettings,
+	        IServiceScopeFactory serviceScopeFactory, IWebLogger logger,
+	        IMemoryCache? memoryCache = null)
+        {
+	        _appSettings = appSettings;
+	        _logger = logger;
+	        _geoFileDownload = serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<IGeoFileDownload>();
+	        _reverseGeoCode = null;
+	        _admin1CodesAscii = null;
+	        _cache = memoryCache;
+        }
+
+        /// <summary>
+        /// Internal API - Getting GeoData
+        /// </summary>
+        /// <param name="appSettings">to know where to store the deps files</param>
         /// <param name="geoFileDownload">Abstraction to download Geo Data</param>
         /// <param name="memoryCache">for keeping status</param>
         /// <param name="logger">debug logger</param>
-        public GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload, IWebLogger logger, IMemoryCache? memoryCache = null)
+        internal GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload, IWebLogger logger, IMemoryCache? memoryCache = null)
         {
 	        _appSettings = appSettings;
 	        _logger = logger;

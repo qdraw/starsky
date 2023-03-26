@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Interfaces;
+using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -177,9 +181,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var result = new GeoReverseLookup(_appSettings, 
 				new FakeIGeoFileDownload(),new FakeIWebLogger()).RemoveNoUpdateItems(list,false);
 			Assert.AreEqual(0, result.Count);
-
 		}
-
 
 		[TestMethod]
 		public void GetAdmin1Name_Null()
@@ -227,6 +229,45 @@ namespace starskytest.starsky.feature.geolookup.Services
 				new FakeIWebLogger()).GetLocation(51.69917,5.304170);
 			
 			Assert.IsTrue(result.IsSuccess);
+		}
+		
+		[TestMethod]
+		public async Task GetLocation_NearestPlace_HitGeoDownload()
+		{
+			var fakeIGeoFileDownload = new FakeIGeoFileDownload();
+			var result = await new GeoReverseLookup(_appSettings, fakeIGeoFileDownload,
+				new FakeIWebLogger()).GetLocation(51.69917,5.304170);
+			
+			Assert.AreEqual(1, fakeIGeoFileDownload?.Count);
+		}
+		
+		[TestMethod]
+		public async Task GetLocation_NearestPlace_WithServiceScope()
+		{
+			var services = new ServiceCollection();
+			services.AddSingleton<IGeoFileDownload, FakeIGeoFileDownload>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+			var result = await new GeoReverseLookup(_appSettings, scopeFactory,
+				new FakeIWebLogger(), new FakeMemoryCache()).GetLocation(51.69917,5.304170);
+			
+			Assert.IsTrue(result.IsSuccess);
+		}
+		
+		[TestMethod]
+		public async Task GetLocation_NearestPlace_WithServiceScope_HitGeoDownload()
+		{
+			var services = new ServiceCollection();
+			services.AddSingleton<IGeoFileDownload, FakeIGeoFileDownload>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+			var result = await new GeoReverseLookup(_appSettings, scopeFactory,
+				new FakeIWebLogger(), new FakeMemoryCache()).GetLocation(51.69917,5.304170);
+			
+			var fakeIGeoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>() as FakeIGeoFileDownload;
+			Assert.AreEqual(1, fakeIGeoFileDownload?.Count);
 		}
 		
 		[TestMethod]
