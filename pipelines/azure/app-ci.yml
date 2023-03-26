@@ -90,7 +90,7 @@ stages:
     displayName: 'Build Electron'
     pool:
       vmImage: 'ubuntu-22.04'
-    container: electronuserland/builder:wine
+    container: electronuserland/builder:18-wine
     steps:
     - task: DownloadPipelineArtifact@2
       inputs:
