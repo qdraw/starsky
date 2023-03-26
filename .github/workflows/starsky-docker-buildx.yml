@@ -1,3 +1,9 @@
+name: Docker buildx multi-arch CI unstable master
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ master ]
@@ -12,8 +18,6 @@ on:
     - 'starsky/Dockerfile'
     
   workflow_dispatch:
-  
-name: Docker buildx multi-arch CI unstable master
 
 jobs:
   deploy:

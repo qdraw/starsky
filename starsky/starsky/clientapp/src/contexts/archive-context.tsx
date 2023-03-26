@@ -197,21 +197,23 @@ export function addArchiveReducer(
 
   let fileIndexItems = sorter(concatenatedFileIndexItems, state.sort);
 
-  // remove deleted items
-  for (const deleteItem of Array.from(actionAdd).filter(
-    (value) =>
-      value.status === IExifStatus.Deleted ||
-      value.status === IExifStatus.NotFoundNotInIndex ||
-      value.status === IExifStatus.NotFoundSourceMissing
-  )) {
-    const index = fileIndexItems.findIndex(
-      (x) => x.filePath === deleteItem.filePath
-    );
-    if (index !== -1) {
-      fileIndexItems.splice(index, 1);
-    }
-  }
+  fileIndexItems = filterDeletedItems(actionAdd, fileIndexItems);
+  fileIndexItems = filterSidecarItems(actionAdd, fileIndexItems, state);
 
+  state = { ...state, fileIndexItems, lastUpdated: new Date() };
+  // when you remove the last item of the directory
+  if (state.fileIndexItems.length === 0) {
+    state.colorClassUsage = [];
+  }
+  UpdateColorClassUsageActiveListLoop(state);
+  return updateCache(state);
+}
+
+function filterSidecarItems(
+  actionAdd: IFileIndexItem[],
+  fileIndexItems: IFileIndexItem[],
+  state: IArchiveProps
+) {
   // when collections are enabled, remove the sidecar files
   if (state.collections !== false) {
     for (const sidecarItem of Array.from(actionAdd).filter(
@@ -227,14 +229,28 @@ export function addArchiveReducer(
       }
     }
   }
+  return fileIndexItems;
+}
 
-  state = { ...state, fileIndexItems, lastUpdated: new Date() };
-  // when you remove the last item of the directory
-  if (state.fileIndexItems.length === 0) {
-    state.colorClassUsage = [];
+function filterDeletedItems(
+  actionAdd: IFileIndexItem[],
+  fileIndexItems: IFileIndexItem[]
+) {
+  // remove deleted items
+  for (const deleteItem of Array.from(actionAdd).filter(
+    (value) =>
+      value.status === IExifStatus.Deleted ||
+      value.status === IExifStatus.NotFoundNotInIndex ||
+      value.status === IExifStatus.NotFoundSourceMissing
+  )) {
+    const index = fileIndexItems.findIndex(
+      (x) => x.filePath === deleteItem.filePath
+    );
+    if (index !== -1) {
+      fileIndexItems.splice(index, 1);
+    }
   }
-  UpdateColorClassUsageActiveListLoop(state);
-  return updateCache(state);
+  return fileIndexItems;
 }
 
 export function archiveReducer(state: State, action: ArchiveAction): State {
