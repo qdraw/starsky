@@ -41,6 +41,11 @@ namespace starskytest.starsky.foundation.platform.Extensions
 #endif
 		public async Task TimeoutAfter_CheckIfSuccess()
 		{
+#if DEBUG
+			Console.WriteLine("DEBUG");
+#else
+			Console.WriteLine("RELEASE");
+#endif
 			Assert.IsTrue(await EndlessTest(1).TimeoutAfter(4000));
 		}
 	}
