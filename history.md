@@ -40,7 +40,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Add fallback for detailView image Issue #1106 (PR #1113)
 - [x] (Fixed) _Back-end_ Don't write meta.json files for xmp files Issue #1108 (PR #1115)
 - [x] (Fixed) _Back-end_ Change spec of meta.json files and make json schema (PR #1115)
-- [x] (Fixed) _Back-end_ Code smells, improving readability (PR #1115, #1116)
+- [x] (Fixed) _Back-end_ Code smells, improving readability (PR #1115, #1116, #1121)
 - [x] (Changed) _Back-end_ Add help info screen and test for demo CLI (PR #1117)
 - [x] (Changed) _Desktop_ Upgrade Electron packages (PR #1118, #1119)
 - [x] (Fixed) _Front-end_ Should skip xmp socket updates in collection:true archive list Issue #1107 (PR #1120)
