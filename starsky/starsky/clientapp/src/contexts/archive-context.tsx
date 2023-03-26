@@ -209,7 +209,7 @@ export function addArchiveReducer(
   return updateCache(state);
 }
 
-function filterSidecarItems(
+export function filterSidecarItems(
   actionAdd: IFileIndexItem[],
   fileIndexItems: IFileIndexItem[],
   state: IArchiveProps
