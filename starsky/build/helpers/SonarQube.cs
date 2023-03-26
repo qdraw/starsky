@@ -158,6 +158,7 @@ namespace helpers
 				.Append($"/d:sonar.coverageReportPaths={sonarQubeCoverageFile} ")
 				.Append($"/d:sonar.exclusions=\"**/build/*,**/build/helpers/*," +
 				        "**/documentation/*,"+
+				        "**/Interfaces/IQuery.cs," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
 				        $"**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
@@ -165,6 +166,7 @@ namespace helpers
 				        $"**/_bigimages-helper.js\" ")
 				.Append($"/d:sonar.coverage.exclusions=\"**/build/*,**/build/helpers/*," +
 				        "**/documentation/*,"+
+				        "**/Interfaces/IQuery.cs," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
 				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*," +

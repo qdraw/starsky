@@ -13,7 +13,11 @@ namespace starskycore.Helpers
         public static string GetMimeTypeByFileName(string fileName)
         {
             //get file extension
-            string extension = Path.GetExtension(fileName).ToLowerInvariant();
+            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+            if ( string.IsNullOrEmpty(extension) )
+            {
+	            return "application/octet-stream";
+            }
             var fileExtWithoutDot = extension.Remove(0, 1);
             return GetMimeType(fileExtWithoutDot);
         }
@@ -30,7 +34,7 @@ namespace starskycore.Helpers
             {
                 return MimeTypesDictionary[fileExtWithoutDot.ToLowerInvariant()];
             }
-            return "unknown/unknown";
+            return "application/octet-stream";
         }
 
 	    /// <summary>

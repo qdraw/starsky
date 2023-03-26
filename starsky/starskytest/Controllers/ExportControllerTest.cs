@@ -25,7 +25,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.Interfaces;
@@ -400,6 +399,74 @@ namespace starskytest.Controllers
 
 			var actionResult = controller.Status("____fail", true) as NotFoundObjectResult;
 			Assert.AreEqual(404, actionResult?.StatusCode);
+		}
+		
+		[TestMethod]
+		public void Status_Returns_NotReady_When_StatusIsFalse()
+		{
+			// Arrange
+			const string f = "TNA995920120";
+			var fakeStorage = new FakeIStorage();
+			var fakeExportService =
+				new FakeIExport(new Dictionary<string, bool> { { f, false } });
+			var httpContext = new DefaultHttpContext();
+			var exportController = new ExportController(_bgTaskQueue, new FakeSelectorStorage(fakeStorage), fakeExportService)
+			{
+				ControllerContext = {HttpContext = httpContext}
+			};
+
+			// Act
+			var result = exportController.Status(f);
+
+			// Assert
+			Assert.IsInstanceOfType(result, typeof(JsonResult));
+			var jsonResult = (JsonResult)result;
+			Assert.AreEqual("Not Ready", jsonResult.Value);
+			Assert.AreEqual(206, httpContext.Response.StatusCode);
+		}
+
+		[TestMethod]
+		public void Status_Returns_JsonResult_When_JsonIsTrue()
+		{
+			// Arrange
+			const string f = "TNA995920129";
+			const bool json = true;
+			var fakeStorage = new FakeIStorage();
+			var fakeExportService =
+				new FakeIExport(new Dictionary<string, bool> { { f, true } });
+			var exportController = new ExportController(_bgTaskQueue, new FakeSelectorStorage(fakeStorage), fakeExportService);
+
+			// Act
+			var result = exportController.Status(f, json);
+
+			// Assert
+			Assert.IsInstanceOfType(result, typeof(JsonResult));
+			var jsonResult = (JsonResult)result;
+			Assert.AreEqual("OK", jsonResult.Value);
+		}
+
+		[TestMethod]
+		public void Status_Returns_FileResult_When_JsonIsFalse()
+		{
+			// Arrange
+			const string f = "TNA995920129";
+			var fakeStorage = new FakeIStorage(new List<string>(), 
+				new List<string> { f }, new List<byte[]>
+				{
+					CreateAnImageNoExif.Bytes
+				});
+			
+			var fakeExportService =
+				new FakeIExport(new Dictionary<string, bool> { { f, true } });
+			var exportController = new ExportController(_bgTaskQueue, new FakeSelectorStorage(fakeStorage), fakeExportService);
+
+			// Act
+			var result = exportController.Status(f);
+
+			// Assert
+			Assert.IsInstanceOfType(result, typeof(FileResult));
+			var fileResult = (FileResult)result;
+			Assert.AreEqual("application/octet-stream", fileResult.ContentType);
 		}
 	}
 }

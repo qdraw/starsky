@@ -123,7 +123,7 @@ namespace starsky.foundation.readmeta.Helpers
 	            geoListItem.Longitude = float.Parse(parts[2].Substring(0, 3), fi) * 3600 + 
 	                                    float.Parse(parts[2].Substring(3), fi) * 60;
             }
-            else  // point==8
+            else  // point==8 / 6
             {
 	            geoListItem.Latitude = float.Parse(parts[1].Substring(0, 2), fi) * 3600 + 
 	                                   float.Parse(parts[1].Substring(2, 2), fi) * 60 + 

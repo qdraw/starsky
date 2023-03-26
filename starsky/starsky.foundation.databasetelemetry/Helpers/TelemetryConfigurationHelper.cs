@@ -10,16 +10,16 @@ namespace starsky.foundation.databasetelemetry.Helpers
 {
 	public static class TelemetryConfigurationHelper
 	{
+		internal static TelemetryClient? Clean(Exception exception,IWebLogger? logger)
+		{
+			logger?.LogInformation("run GC.Collect next -->");
+			GC.Collect();
+			logger?.LogInformation($"catch-ed exception; {exception.Message} ", exception);
+			return null;
+		}
+		
 		public static TelemetryClient? InitTelemetryClient(string appInsightsConnectionString, string roleName, IWebLogger? logger, TelemetryClient? telemetryClient)
 		{
-			TelemetryClient? Clean(Exception exception)
-			{
-				logger?.LogInformation($"catch-ed exception; {exception.Message} ", exception);
-				logger?.LogInformation("run GC.Collect next -->");
-				GC.Collect();
-				return null;
-			}
-
 			try
 			{
 				// Should skip to avoid memory issues
@@ -42,11 +42,11 @@ namespace starsky.foundation.databasetelemetry.Helpers
 			}
 			catch ( OutOfMemoryException exception )
 			{
-				return Clean(exception);
+				return Clean(exception, logger);
 			}
 			catch (System.Threading.Tasks.TaskSchedulerException exception)
 			{
-				return Clean(exception);
+				return Clean(exception, logger);
 			}
 		}
 
