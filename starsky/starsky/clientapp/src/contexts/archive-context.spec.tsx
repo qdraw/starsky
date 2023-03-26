@@ -400,9 +400,9 @@ describe("ArchiveContext", () => {
     expect(result.fileIndexItems[0]).toBe(add[0]);
   });
 
-  it("add - ignore meta_json file when collections is true", () => {
+  it("add - ignore meta_json file when collections is undefined", () => {
     const state = {
-      collections: true,
+      collections: undefined,
       fileIndexItems: [] as IFileIndexItem[],
       colorClassUsage: [1, 2]
     } as IArchiveProps;
