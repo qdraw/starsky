@@ -10,9 +10,48 @@ import {
 } from "../interfaces/IFileIndexItem";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
-import { ArchiveAction, archiveReducer } from "./archive-context";
+import {
+  ArchiveAction,
+  archiveReducer,
+  filterSidecarItems
+} from "./archive-context";
 
 describe("ArchiveContext", () => {
+  it("filterSidecarItems removes sidecar files when collections are enabled", () => {
+    const actionAdd: IFileIndexItem[] = [
+      {
+        filePath: "/path/to/image.xmp",
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem,
+      {
+        filePath: "/path/to/image2.jpg",
+        imageFormat: ImageFormat.jpg
+      } as IFileIndexItem
+    ];
+    const fileIndexItems: IFileIndexItem[] = [
+      {
+        filePath: "/path/to/image.xmp",
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem,
+      {
+        filePath: "/path/to/image2.jpg",
+        imageFormat: ImageFormat.jpg
+      } as IFileIndexItem
+    ];
+    const state: IArchiveProps = {
+      collections: true
+    } as IArchiveProps;
+
+    const result = filterSidecarItems(actionAdd, fileIndexItems, state);
+
+    expect(result).toEqual([
+      {
+        filePath: "/path/to/image2.jpg",
+        imageFormat: ImageFormat.jpg
+      }
+    ]);
+  });
+
   it("remove-folder - folder should be gone", () => {
     const state = {
       fileIndexItems: [
