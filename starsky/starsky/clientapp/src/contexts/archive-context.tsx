@@ -7,7 +7,7 @@ import {
   PageType
 } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
-import { IFileIndexItem } from "../interfaces/IFileIndexItem";
+import { IFileIndexItem, ImageFormat } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
@@ -155,7 +155,7 @@ function setArchiveReducer(actionPayload: IArchiveProps) {
   };
 }
 
-function addArchiveReducer(
+export function addArchiveReducer(
   state: IArchiveProps,
   initActionAdd: IFileIndexItem[]
 ) {
@@ -197,6 +197,45 @@ function addArchiveReducer(
 
   let fileIndexItems = sorter(concatenatedFileIndexItems, state.sort);
 
+  fileIndexItems = filterDeletedItems(actionAdd, fileIndexItems);
+  fileIndexItems = filterSidecarItems(actionAdd, fileIndexItems, state);
+
+  state = { ...state, fileIndexItems, lastUpdated: new Date() };
+  // when you remove the last item of the directory
+  if (state.fileIndexItems.length === 0) {
+    state.colorClassUsage = [];
+  }
+  UpdateColorClassUsageActiveListLoop(state);
+  return updateCache(state);
+}
+
+export function filterSidecarItems(
+  actionAdd: IFileIndexItem[],
+  fileIndexItems: IFileIndexItem[],
+  state: IArchiveProps
+) {
+  // when collections are enabled, remove the sidecar files
+  if (state.collections !== false) {
+    for (const sidecarItem of Array.from(actionAdd).filter(
+      (value) =>
+        value.imageFormat === ImageFormat.meta_json ||
+        value.imageFormat === ImageFormat.xmp
+    )) {
+      const index = fileIndexItems.findIndex(
+        (x) => x.filePath === sidecarItem.filePath
+      );
+      if (index !== -1) {
+        fileIndexItems.splice(index, 1);
+      }
+    }
+  }
+  return fileIndexItems;
+}
+
+function filterDeletedItems(
+  actionAdd: IFileIndexItem[],
+  fileIndexItems: IFileIndexItem[]
+) {
   // remove deleted items
   for (const deleteItem of Array.from(actionAdd).filter(
     (value) =>
@@ -211,14 +250,7 @@ function addArchiveReducer(
       fileIndexItems.splice(index, 1);
     }
   }
-
-  state = { ...state, fileIndexItems, lastUpdated: new Date() };
-  // when you remove the last item of the directory
-  if (state.fileIndexItems.length === 0) {
-    state.colorClassUsage = [];
-  }
-  UpdateColorClassUsageActiveListLoop(state);
-  return updateCache(state);
+  return fileIndexItems;
 }
 
 export function archiveReducer(state: State, action: ArchiveAction): State {

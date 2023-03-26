@@ -10,9 +10,48 @@ import {
 } from "../interfaces/IFileIndexItem";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
-import { ArchiveAction, archiveReducer } from "./archive-context";
+import {
+  ArchiveAction,
+  archiveReducer,
+  filterSidecarItems
+} from "./archive-context";
 
 describe("ArchiveContext", () => {
+  it("filterSidecarItems removes sidecar files when collections are enabled", () => {
+    const actionAdd: IFileIndexItem[] = [
+      {
+        filePath: "/path/to/image.xmp",
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem,
+      {
+        filePath: "/path/to/image2.jpg",
+        imageFormat: ImageFormat.jpg
+      } as IFileIndexItem
+    ];
+    const fileIndexItems: IFileIndexItem[] = [
+      {
+        filePath: "/path/to/image.xmp",
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem,
+      {
+        filePath: "/path/to/image2.jpg",
+        imageFormat: ImageFormat.jpg
+      } as IFileIndexItem
+    ];
+    const state: IArchiveProps = {
+      collections: true
+    } as IArchiveProps;
+
+    const result = filterSidecarItems(actionAdd, fileIndexItems, state);
+
+    expect(result).toEqual([
+      {
+        filePath: "/path/to/image2.jpg",
+        imageFormat: ImageFormat.jpg
+      }
+    ]);
+  });
+
   it("remove-folder - folder should be gone", () => {
     const state = {
       fileIndexItems: [
@@ -337,6 +376,108 @@ describe("ArchiveContext", () => {
         status: IExifStatus.Ok,
         tags: "test",
         imageWidth: 150
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as any;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0]).toBe(add[0]);
+  });
+
+  it("add - ignore xmp file when collections is true", () => {
+    const state = {
+      collections: true,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.xmp",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as any;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+  });
+
+  it("add - add xmp file when collections is false", () => {
+    const state = {
+      collections: false,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.xmp",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as any;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0]).toBe(add[0]);
+  });
+
+  it("add - ignore meta_json file when collections is undefined", () => {
+    const state = {
+      collections: undefined,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.meta.json",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.meta_json
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as any;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+  });
+
+  it("add - add meta_json file when collections is false", () => {
+    const state = {
+      collections: false,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.meta.json",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.meta_json
       } as IFileIndexItem
     ];
 

@@ -24,6 +24,13 @@ jest.mock("electron", () => {
   };
 });
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("RestoreWarmupMainWindowAndCloseSplash", () => {
   it("should close splash window", () => {
     const window = [

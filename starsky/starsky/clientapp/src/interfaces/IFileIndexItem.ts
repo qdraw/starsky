@@ -58,6 +58,7 @@ export enum ImageFormat {
   gif = "gif" as any,
   png = "png" as any,
   xmp = "xmp" as any,
+  meta_json = "meta_json" as any,
   gpx = "gpx" as any,
   mp4 = "mp4" as any
 }

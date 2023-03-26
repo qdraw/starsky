@@ -10,6 +10,12 @@ import { locationIsValidId, remoteLocationId } from "./settings.const";
 declare global {
   var api: IPreloadApi;
 }
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
 
 describe("settings Remote Local Toggle", () => {
   afterEach(() => {

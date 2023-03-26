@@ -45,6 +45,13 @@ jest.mock("electron", () => {
   };
 });
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("setupChildProcess", () => {
   beforeEach(() => {});
 

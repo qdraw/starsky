@@ -1,5 +1,9 @@
 name: starskyDesktop Electron PR (Missing .NET dependency)
 
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
 on:
   push:
     branches: [ master ]

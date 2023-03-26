@@ -29,6 +29,8 @@ var apiUpdate__Starsky01dif20180101170001_Deleted = require("./api/update/__star
 var apiUpdate__Starsky01dif20180101170001_Ok = require("./api/update/__starsky_01-dif-2018.01.01.17.00.01_Ok.json");
 
 var apiEnvIndex = require("./api/env/index.json");
+var apiEnvFeatures = require("./api/env/features.json");
+
 var apiPublishIndex = require("./api/publish/index.json");
 var apiPublishCreateIndex = require("./api/publish/create/index.json");
 
@@ -109,27 +111,48 @@ function setRouter(app, isStoryBook = false) {
 
 	app.get(prefix + "/api/index", (req, res) => {
 		if (!req.query.f || req.query.f === "/") {
+			if (req.query.collections === "false") {
+				apiIndexIndex.collections = false;
+			}
 			return res.json(apiIndexIndex);
 		}
 		if (req.query.f === "/__starsky") {
+			if (req.query.collections === "false") {
+				apiIndex__Starsky.collections = false;
+			}
 			return res.json(apiIndex__Starsky);
 		}
 		if (req.query.f === "/0001") {
+			if (req.query.collections === "false") {
+				apiIndex0001.collections = false;
+			}
 			return res.json(apiIndex0001);
 		}
 		if (req.query.f === "/0001/toggleDeleted.jpg") {
+			if (req.query.collections === "false") {
+				apiIndex0001_toggleDeleted.collections = false;
+			}
 			return res.json(apiIndex0001_toggleDeleted);
 		}
 		if (
 			req.query.f === "/__starsky/01-dif" &&
 			req.query.colorClass === "0"
 		) {
+			if (req.query.collections === "false") {
+				apiIndex__Starsky01difColorclass0.collections = false;
+			}
 			return res.json(apiIndex__Starsky01difColorclass0);
 		}
 		if (req.query.f === "/__starsky/01-dif") {
+			if (req.query.collections === "false") {
+				apiIndex__Starsky01dif.collections = false;
+			}
 			return res.json(apiIndex__Starsky01dif);
 		}
 		if (req.query.f.startsWith("/__starsky/01-dif/")) {
+			if (req.query.collections === "false") {
+				apiIndex__Starsky01dif20180101170001.collections = false;
+			}
 			return res.json(apiIndex__Starsky01dif20180101170001);
 		}
 		res.statusCode = 404;
@@ -200,6 +223,10 @@ function setRouter(app, isStoryBook = false) {
 
 	app.get(prefix + "/api/env", (req, res) => {
 		return res.json(apiEnvIndex);
+	});
+
+	app.get(prefix + "/api/env/features", (req, res) => {
+		return res.json(apiEnvFeatures);
 	});
 
 	app.post(prefix + "/api/env", (req, res) => {
