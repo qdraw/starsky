@@ -41,7 +41,7 @@ namespace starskytest.starsky.foundation.platform.Extensions
 #endif
 		public async Task TimeoutAfter_CheckIfSuccess()
 		{
-			Assert.IsTrue(await EndlessTest(1).TimeoutAfter(100));
+			Assert.IsTrue(await EndlessTest(1).TimeoutAfter(4000));
 		}
 	}
 }

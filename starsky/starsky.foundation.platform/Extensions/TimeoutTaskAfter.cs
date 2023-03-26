@@ -36,7 +36,7 @@ namespace starsky.foundation.platform.Extensions
 
 				var completedTask = await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token));
 				if ( completedTask != task )
-					throw new TimeoutException("The operation has timed out.");
+					throw new TimeoutException($"[TimeoutTaskAfter] {nameof(task)} operation has timed out");
 				
 				timeoutCancellationTokenSource.Cancel();
 				return await task;  // Very important in order to propagate exceptions
