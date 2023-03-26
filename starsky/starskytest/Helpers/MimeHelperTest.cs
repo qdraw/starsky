@@ -9,8 +9,14 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void GetMimeTypeByFileNameTest()
 		{
-			Assert.AreEqual("unknown/unknown",MimeHelper.GetMimeTypeByFileName("test.unknown"));
+			Assert.AreEqual("application/octet-stream",MimeHelper.GetMimeTypeByFileName("test.unknown"));
 			Assert.AreEqual("image/jpeg",MimeHelper.GetMimeTypeByFileName("test.jpg"));
+		}
+		
+		[TestMethod]
+		public void GetMimeTypeByExtensionTest_NoExtension()
+		{
+			Assert.AreEqual("application/octet-stream",MimeHelper.GetMimeTypeByFileName(string.Empty));
 		}
 	}
 }
