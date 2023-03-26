@@ -7,6 +7,13 @@ import {
   defaultImageApplicationResult
 } from "./settings.const";
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("reload redirect", () => {
   afterEach(() => {
     document.body.innerHTML = "";

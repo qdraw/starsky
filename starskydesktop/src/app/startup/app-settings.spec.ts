@@ -22,6 +22,15 @@ jest.mock("electron", () => {
   };
 });
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    configure: () => "data",
+    file: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("app settings", () => {
   beforeEach(() => {
     jest.spyOn(logger, "default").mockRestore();

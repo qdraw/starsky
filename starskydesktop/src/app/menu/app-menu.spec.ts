@@ -30,6 +30,13 @@ jest.mock("electron", () => {
   };
 });
 
+jest.mock("electron-settings", () => {
+  return {
+    get: () => "data",
+    __esModule: true,
+  };
+});
+
 describe("menu", () => {
   beforeAll(() => {
     jest.spyOn(logger, "default").mockImplementation(() => {
