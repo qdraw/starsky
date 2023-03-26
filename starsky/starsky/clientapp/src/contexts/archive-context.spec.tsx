@@ -349,6 +349,108 @@ describe("ArchiveContext", () => {
     expect(result.fileIndexItems[0]).toBe(add[0]);
   });
 
+  it("add - ignore xmp file when collections is true", () => {
+    const state = {
+      collections: true,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.xmp",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as any;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+  });
+
+  it("add - add xmp file when collections is false", () => {
+    const state = {
+      collections: false,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.xmp",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.xmp
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as any;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0]).toBe(add[0]);
+  });
+
+  it("add - ignore meta_json file when collections is true", () => {
+    const state = {
+      collections: true,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.meta.json",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.meta_json
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as any;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+  });
+
+  it("add - add meta_json file when collections is false", () => {
+    const state = {
+      collections: false,
+      fileIndexItems: [] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.meta.json",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150,
+        imageFormat: ImageFormat.meta_json
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    const action = { type: "add", add } as any;
+
+    const result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0]).toBe(add[0]);
+  });
+
   it("update - check if item is update (append false)", () => {
     const state = {
       ...newIArchive(),
