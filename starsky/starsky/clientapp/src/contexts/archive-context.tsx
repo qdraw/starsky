@@ -213,7 +213,7 @@ export function addArchiveReducer(
   }
 
   // when collections are enabled, remove the sidecar files
-  if (state.collections === true) {
+  if (state.collections !== false) {
     for (const sidecarItem of Array.from(actionAdd).filter(
       (value) =>
         value.imageFormat === ImageFormat.meta_json ||
