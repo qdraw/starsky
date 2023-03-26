@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using starsky.foundation.worker.Interfaces;
 namespace starsky.Controllers
 {
 	[Authorize]
+	[SuppressMessage("Usage", "S4502: Make sure disabling CSRF protection is safe here")]
 	public sealed class MetaUpdateController : Controller
 	{
 		private readonly IMetaPreflight _metaPreflight;
