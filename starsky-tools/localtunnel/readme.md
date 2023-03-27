@@ -17,6 +17,12 @@ PORT=6501
 STARSKYURL=http://localhost:5000
 ```
 
+## Due Cookie protecion:
+
+Before login visit http://localhost:4000/account/login
+This will set an valid X-XSRF-TOKEN:"CfDJ8Hx..." cookie
+and go back to http://localhost:4000
+
 ## Keep the Front-end watcher running in `starksy/clientapp`
 
 The Create React App can now operate without backend service running
