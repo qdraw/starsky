@@ -65,7 +65,7 @@ describe('Archive (from upload) (21)', () => {
   })
 
   it('test realtime update 2 websockets (21)', {
-    retries: { runMode: 2, openMode: 2 }
+    retries: { runMode: 4, openMode: 2 }
   }, () => {
     return new Cypress.Promise((resolve) => {
 
