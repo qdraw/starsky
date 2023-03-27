@@ -12,6 +12,9 @@ export function statusRemoved(
   setRelativeObjects: React.Dispatch<React.SetStateAction<IRelativeObjects>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) {
+  if (!state.fileIndexItem?.status) {
+    return;
+  }
   if (
     (state.fileIndexItem?.status === IExifStatus.NotFoundSourceMissing ||
       state.fileIndexItem?.status === IExifStatus.Deleted) &&

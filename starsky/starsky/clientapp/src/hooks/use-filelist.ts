@@ -68,7 +68,10 @@ const useFileList = (
       const responseObject = await res.json();
       setPageTypeHelper(responseObject);
       new FileListCache().CacheSet(locationSearch, responseObject);
-    } catch (e) {
+    } catch (e: any) {
+      if (e?.message?.indexOf("aborted") >= 1) {
+        return;
+      }
       console.error(e);
       setPageType(PageType.ApplicationException);
     }
