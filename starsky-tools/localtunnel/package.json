@@ -5,13 +5,14 @@
   "main": "localtunnel.js",
   "scripts": {
     "start": "node localtunnel",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "npx --yes npm-check-updates"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cookie-parser": "^1.4.6",
-    "dotenv": "^10.0.0",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-ws": "^5.0.2",
     "http-proxy": "^1.18.1",
