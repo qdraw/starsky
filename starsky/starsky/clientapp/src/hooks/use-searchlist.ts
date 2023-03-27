@@ -104,7 +104,10 @@ const useSearchList = (
       archiveMedia.data.colorClassUsage = [];
       archiveMedia.data.colorClassActiveList = [];
       setArchive(archiveMedia.data);
-    } catch (e) {
+    } catch (e: any) {
+      if (e?.message?.indexOf("aborted") >= 1) {
+        return;
+      }
       console.error(e);
     }
   };

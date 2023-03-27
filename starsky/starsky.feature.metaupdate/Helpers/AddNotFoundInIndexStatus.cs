@@ -8,7 +8,7 @@ namespace starsky.feature.metaupdate.Helpers
 {
 	public static class AddNotFoundInIndexStatus
 	{
-		internal static void Update(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)
+		internal static void Update(IEnumerable<string> inputFilePaths, List<FileIndexItem> fileIndexResultsList)
 		{
 			foreach (var subPath in inputFilePaths)
 			{

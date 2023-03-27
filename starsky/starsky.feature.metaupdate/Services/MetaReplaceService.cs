@@ -63,7 +63,9 @@ namespace starsky.feature.metaupdate.Services
 			{
 				new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}
 			};
-			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
+
+			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
+			inputFilePaths = AppendXmpPathsWhenCollectionsFalse(collections, inputFilePaths);
 
 			// the result list
 			var fileIndexUpdatedList = new List<FileIndexItem>();
@@ -73,12 +75,13 @@ namespace starsky.feature.metaupdate.Services
 			
 			// Assumes that this give status Ok back by default
 			var queryFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
-				inputFilePaths.ToList(), collections);
+				inputFilePaths, collections);
 			
 			// to collect
 			foreach ( var fileIndexItem in queryFileIndexItemsList )
 			{
-				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted ) // folder deleted
+				// if folder is deleted
+				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath!) == FolderOrFileModel.FolderOrFileTypeList.Deleted ) 
 				{
 					StatusCodesHelper.ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -120,25 +123,43 @@ namespace starsky.feature.metaupdate.Services
 			
 			return await new Duplicate(_query).RemoveDuplicateAsync(fileIndexResultList);
 		}
-		
+
+		private static List<string> AppendXmpPathsWhenCollectionsFalse(bool collections, List<string> inputFilePaths)
+		{
+			var inputFilePathsWithXmpFiles = new List<string>();
+			
+			if ( collections == false )
+			{
+				// append xmp files to list (does not need to exist on disk)
+				// ReSharper disable once LoopCanBeConvertedToQuery
+				foreach ( var inputFilePath in inputFilePaths.Where(ExtensionRolesHelper.IsExtensionForceXmp) )
+				{
+					inputFilePathsWithXmpFiles.Add(
+						ExtensionRolesHelper.ReplaceExtensionWithXmp(
+							inputFilePath));
+				}
+			}
+			inputFilePaths.AddRange(inputFilePathsWithXmpFiles);
+			return inputFilePaths;
+		}
+
 		public static List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 
 			string fieldName, string search, string replace)
 		{
 			foreach ( var fileIndexItem in fileIndexResultsList.Where( 
-				p => p.Status == FileIndexItem.ExifStatus.Ok 
-				     || p.Status == FileIndexItem.ExifStatus.Deleted) )
+				p => p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted) )
 			{
 				var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 				var replacedToObject = new object();
 				
-				PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(
+				var propertiesA = new FileIndexItem().GetType().GetProperties(
 					BindingFlags.Public | BindingFlags.Instance);
-				PropertyInfo property = propertiesA.FirstOrDefault(p => string.Equals(
+				var property = propertiesA.FirstOrDefault(p => string.Equals(
 					p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
 
-				if ( property?.PropertyType == typeof(string) )
+				if ( property?.PropertyType == typeof(string))
 				{
-					var searchIn = ( string ) searchInObject;
+					var searchIn = searchInObject != null ? ( string ) searchInObject : string.Empty;
 					
 					// Replace Ignore Case
 					replacedToObject = Regex.Replace(

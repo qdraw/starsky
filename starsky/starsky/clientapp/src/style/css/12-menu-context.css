@@ -36,6 +36,11 @@
   border-radius: 5px;
 }
 
+/* when in detailview, the menu is placed on the right side of the screen */
+.header--edit .menu-context .menu-options {
+  right: 330px;
+}
+
 @media (prefers-color-scheme: dark) {
   .menu-context .menu-options {
     background-color: #37474f;
