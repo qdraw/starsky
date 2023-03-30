@@ -30,6 +30,7 @@ import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-det
 import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
+import IsSearchQueryMenuSearchItem from "./is-search-query-menu-search-item";
 
 export interface MenuDetailViewProps {
   state: IDetailView;
@@ -401,26 +402,13 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             </Link>
           ) : null}
 
-          {/* to search */}
-          {isSearchQuery ? (
-            <Link
-              data-test="menu-detail-view-close"
-              className="item item--first item--search"
-              onClick={(event) => {
-                // Command (mac) or ctrl click means open new window
-                // event.button = is only trigged in safari
-                if (event.metaKey || event.ctrlKey || event.button === 1)
-                  return;
-                setIsLoading(true);
-              }}
-              state={
-                { filePath: state.fileIndexItem.filePath } as INavigateState
-              }
-              to={new UrlQuery().HashSearchPage(history.location.search)}
-            >
-              {new URLPath().StringToIUrl(history.location.search).t}
-            </Link>
-          ) : null}
+          {/* in search state aka search query */}
+          <IsSearchQueryMenuSearchItem
+            isSearchQuery={isSearchQuery}
+            setIsLoading={setIsLoading}
+            state={state}
+            history={history}
+          />
 
           <button
             className="item item--labels"
