@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +10,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Thumbnails;
 
+[TestClass]
 public class ThumbnailQueryErrorTest
 {
 		private static bool IsCalledDbUpdateConcurrency { get; set; }
@@ -67,7 +70,7 @@ public class ThumbnailQueryErrorTest
 		
 			public void SetStoreGeneratedValue(IProperty property, object? value)
 			{
-				throw new System.NotImplementedException();
+				throw new NotImplementedException();
 			}
 		
 			public EntityEntry ToEntityEntry()
@@ -82,7 +85,7 @@ public class ThumbnailQueryErrorTest
 				throw new NotImplementedException();
 			}
 
-			public object? GetPreStoreGeneratedCurrentValue(IPropertyBase propertyBase)
+			public object GetPreStoreGeneratedCurrentValue(IPropertyBase propertyBase)
 			{
 				throw new NotImplementedException();
 			}
@@ -105,26 +108,24 @@ public class ThumbnailQueryErrorTest
 	
 		private class AppDbContextConcurrencyException : ApplicationDbContext
 		{
+			[SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
 			public AppDbContextConcurrencyException(DbContextOptions options) : base(options)
 			{
+				Thumbnails.Add(new ThumbnailItem("1", true, true, true, true));
+				try
+				{
+					SaveChanges();
+				}
+				catch ( ArgumentException )
+				{
+					// An item with the same key has already been added. Key: 1
+				}
 			}
 
 			public int MinCount { get; set; }
 			public int Count { get; set; }
 
-			public override int SaveChanges()
-			{
-				Count++;
-				if ( Count <= MinCount )
-				{
-					throw new DbUpdateConcurrencyException("t",
-						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
-				}
-				return Count;
-			}	
-			
-			public override Task<int> SaveChangesAsync(
-				CancellationToken cancellationToken = default)
+			public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 			{
 				Count++;
 				if ( Count <= MinCount )
@@ -133,11 +134,16 @@ public class ThumbnailQueryErrorTest
 						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
 				}
 				return Task.FromResult(Count);
-			}
+			}	
+			
+			public override Task AddRangeAsync(params object[] entities)
+			{
+				return Task.CompletedTask;
+			}	
 		}
 			
 	[TestMethod]
-	public async Task AddNotification_ConcurrencyException()
+	public async Task ThumbnailQuery_ConcurrencyException()
 	{
 		IsCalledDbUpdateConcurrency = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -148,13 +154,13 @@ public class ThumbnailQueryErrorTest
 		{
 			MinCount = 1
 		},null!,new FakeIWebLogger());
-		await fakeQuery.RenameAsync("","");
+		await fakeQuery.RenameAsync("1","1");
 			
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
 		
 	[TestMethod]
-	public async Task AddNotification_DoubleConcurrencyException()
+	public async Task ThumbnailQuery_DoubleConcurrencyException()
 	{
 		IsCalledDbUpdateConcurrency = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -165,13 +171,13 @@ public class ThumbnailQueryErrorTest
 		{
 			MinCount = 2
 		},null!,new FakeIWebLogger());
-		await fakeQuery.RenameAsync("","");
+		await fakeQuery.RenameAsync("1","2");
 			
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
 		
 	[TestMethod]
-	public async Task AddNotification_3ConcurrencyException()
+	public async Task ThumbnailQuery_3ConcurrencyException()
 	{
 		IsCalledDbUpdateConcurrency = false;
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -182,7 +188,7 @@ public class ThumbnailQueryErrorTest
 		{
 			MinCount = 3
 		},null!,new FakeIWebLogger());
-		await fakeQuery.RenameAsync("","");
+		await fakeQuery.RenameAsync("1","2");
 			
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
