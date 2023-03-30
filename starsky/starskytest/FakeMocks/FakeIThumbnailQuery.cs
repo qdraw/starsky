@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
 
 namespace starskytest.FakeMocks;
 
@@ -21,7 +22,7 @@ public class FakeIThumbnailQuery : IThumbnailQuery
 		}
 	}
 
-	public FakeIThumbnailQuery( ApplicationDbContext _, IServiceScope _2)
+	public FakeIThumbnailQuery( ApplicationDbContext _, IServiceScope _2, IWebLogger _3)
 	{
 		// should bind to the context
 	}

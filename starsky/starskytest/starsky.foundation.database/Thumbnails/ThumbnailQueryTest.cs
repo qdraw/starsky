@@ -10,6 +10,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Thumbnails;
 using starsky.foundation.platform.Enums;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Thumbnails;
 
@@ -24,7 +25,7 @@ public class ThumbnailQueryTest
 		var serviceScope = CreateNewScope();
 		_context = serviceScope.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		_thumbnailQuery = new ThumbnailQuery(_context, serviceScope);
+		_thumbnailQuery = new ThumbnailQuery(_context, serviceScope, new FakeIWebLogger());
 	}
 
 	private static IServiceScopeFactory CreateNewScope(string? name = null)
@@ -86,7 +87,7 @@ public class ThumbnailQueryTest
 		var scope = serviceScope.CreateScope();
 		var dbContext = scope.ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope, new FakeIWebLogger());
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -131,7 +132,7 @@ public class ThumbnailQueryTest
 
 		var dbContext = new ApplicationDbContext(options);
 		var thumbnailQuery =
-			new ThumbnailQuery(dbContext, null); // <-- no service scope
+			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -436,7 +437,7 @@ public class ThumbnailQueryTest
 		await _context.SaveChangesAsync();
 		
 		// Act
-		var query = new ThumbnailQuery(_context, null!);
+		var query = new ThumbnailQuery(_context, null!, new FakeIWebLogger());
 		await query.RemoveThumbnailsAsync(new List<string>{"3478534758"});
 
 		// Assert
@@ -459,7 +460,7 @@ public class ThumbnailQueryTest
 		await _context.SaveChangesAsync();
 		
 		// Act
-		var query = new ThumbnailQuery(_context, null!);
+		var query = new ThumbnailQuery(_context, null!, new FakeIWebLogger());
 		await query.RemoveThumbnailsAsync(new List<string>{"9086798654","9607374598453"});
 
 		// Assert
@@ -471,7 +472,7 @@ public class ThumbnailQueryTest
 	public async Task RemoveThumbnails_ZeroItems()
 	{
 		// Act
-		var query = new ThumbnailQuery(_context, null!);
+		var query = new ThumbnailQuery(_context, null!, new FakeIWebLogger());
 		await query.RemoveThumbnailsAsync(new List<string>());
 
 		// Assert
@@ -555,7 +556,7 @@ public class ThumbnailQueryTest
 	public async Task RenameAsync_ShouldRename()
 	{
 		// Act
-		var query = new ThumbnailQuery(_context, null!);
+		var query = new ThumbnailQuery(_context, null!, new FakeIWebLogger());
 		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
 		{
 			new ThumbnailResultDataTransferModel("3787453", null, true)
@@ -573,7 +574,7 @@ public class ThumbnailQueryTest
 	public async Task RenameAsync_NotFound()
 	{
 		// Act
-		var query = new ThumbnailQuery(_context, null!);
+		var query = new ThumbnailQuery(_context, null!, new FakeIWebLogger());
 
 		// Assert
 		var getter = await query.RenameAsync("not-found","__new__hash__");
@@ -584,7 +585,7 @@ public class ThumbnailQueryTest
 	public async Task RenameAsync_ShouldOverwrite()
 	{
 		// Act
-		var query = new ThumbnailQuery(_context, null!);
+		var query = new ThumbnailQuery(_context, null!, new FakeIWebLogger());
 		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
 		{
 			new ThumbnailResultDataTransferModel("357484875", null, true)
@@ -606,7 +607,7 @@ public class ThumbnailQueryTest
 		var context = serviceScope.CreateScope().ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
 		
-		var query = new ThumbnailQuery(context, null!);
+		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger());
 		var result = await query.UnprocessedGeneratedThumbnails();
 		Assert.AreEqual(0,result.Count);
 	}
@@ -621,7 +622,7 @@ public class ThumbnailQueryTest
 		context.Thumbnails.Add(new ThumbnailItem("123", null, true, null, null));
 		await context.SaveChangesAsync();
 		
-		var query = new ThumbnailQuery(context, null!);
+		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger());
 		var result = await query.UnprocessedGeneratedThumbnails();
 		Assert.AreEqual(1,result.Count);
 	}
@@ -638,7 +639,7 @@ public class ThumbnailQueryTest
 
 		await context.SaveChangesAsync();
 		
-		var query = new ThumbnailQuery(context, null!);
+		var query = new ThumbnailQuery(context, null!, new FakeIWebLogger());
 		var result = await query.UnprocessedGeneratedThumbnails();
 		Assert.AreEqual(1,result.Count);
 	}
@@ -656,7 +657,7 @@ public class ThumbnailQueryTest
 
 		var dbContext = new ApplicationDbContext(options);
 		var thumbnailQuery =
-			new ThumbnailQuery(dbContext, null); // <-- no service scope
+			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -676,7 +677,7 @@ public class ThumbnailQueryTest
 		var scope = serviceScope.CreateScope();
 		var dbContext = scope.ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope, new FakeIWebLogger());
 
 		dbContext.Thumbnails.Add(new ThumbnailItem() { FileHash = "123wruiweriu", });
 		await dbContext.SaveChangesAsync();
@@ -709,7 +710,7 @@ public class ThumbnailQueryTest
 
 		var dbContext = new ApplicationDbContext(options);
 		var thumbnailQuery =
-			new ThumbnailQuery(dbContext, null); // <-- no service scope
+			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -728,7 +729,7 @@ public class ThumbnailQueryTest
 		var scope = serviceScope.CreateScope();
 		var dbContext = scope.ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope, new FakeIWebLogger());
 
 		dbContext.Thumbnails.Add(new ThumbnailItem() { FileHash = "kfjds87423kfs", Large = true});
 		await dbContext.SaveChangesAsync();
@@ -760,7 +761,7 @@ public class ThumbnailQueryTest
 
 		var dbContext = new ApplicationDbContext(options);
 		var thumbnailQuery =
-			new ThumbnailQuery(dbContext, null); // <-- no service scope
+			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -779,7 +780,7 @@ public class ThumbnailQueryTest
 		var scope = serviceScope.CreateScope();
 		var dbContext = scope.ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope, new FakeIWebLogger());
 
 		dbContext.Thumbnails.Add(new ThumbnailItem() { FileHash = "8439573458435", Large = true});
 		await dbContext.SaveChangesAsync();
@@ -811,7 +812,7 @@ public class ThumbnailQueryTest
 
 		var dbContext = new ApplicationDbContext(options);
 		var thumbnailQuery =
-			new ThumbnailQuery(dbContext, null); // <-- no service scope
+			new ThumbnailQuery(dbContext, null, new FakeIWebLogger()); // <-- no service scope
 
 		// And dispose
 		await dbContext.DisposeAsync();
@@ -831,7 +832,7 @@ public class ThumbnailQueryTest
 		var scope = serviceScope.CreateScope();
 		var dbContext = scope.ServiceProvider
 			.GetRequiredService<ApplicationDbContext>();
-		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope);
+		var thumbnailQuery = new ThumbnailQuery(dbContext, serviceScope, new FakeIWebLogger());
 
 		dbContext.Thumbnails.Add(new ThumbnailItem() { FileHash = "5478349895834", Large = true});
 		await dbContext.SaveChangesAsync();
@@ -848,4 +849,5 @@ public class ThumbnailQueryTest
 		
 		Assert.IsTrue(item2.FirstOrDefault()!.Large);
 	}
+
 }

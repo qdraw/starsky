@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.sync.Helpers;
@@ -30,5 +31,23 @@ public class DeleteStatusHelperTest
 
 		var result = DeleteStatusHelper.AddDeleteStatus(item);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
+	}
+
+	[TestMethod]
+	public void List()
+	{
+		var item = new FileIndexItem() {Tags = TrashKeyword.TrashKeywordString};
+
+		var result = DeleteStatusHelper.AddDeleteStatus(new List<FileIndexItem>{item});
+		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result[0].Status);
+	}
+	
+	[TestMethod]
+	public void List_Same()
+	{
+		var item = new FileIndexItem() {Tags = TrashKeyword.TrashKeywordString};
+
+		var result = DeleteStatusHelper.AddDeleteStatus(new List<FileIndexItem>{item}, FileIndexItem.ExifStatus.DeletedAndSame);
+		Assert.AreEqual(FileIndexItem.ExifStatus.DeletedAndSame,result[0].Status);
 	}
 }

@@ -13,12 +13,14 @@ namespace starsky.foundation.database.Thumbnails
 	public sealed class ThumbnailQueryFactory
 	{
 		private readonly SetupDatabaseTypes? _setupDatabaseTypes;
+		private readonly IServiceScopeFactory? _serviceScopeFactory;
 		private readonly IThumbnailQuery? _thumbnailQuery;
-		private readonly IWebLogger? _logger;
+		private readonly IWebLogger _logger;
 
-		public ThumbnailQueryFactory(SetupDatabaseTypes? setupDatabaseTypes, IThumbnailQuery? thumbnailQuery, IWebLogger? logger)
+		public ThumbnailQueryFactory(SetupDatabaseTypes? setupDatabaseTypes, IServiceScopeFactory? serviceScopeFactory, IThumbnailQuery? thumbnailQuery, IWebLogger logger)
 		{
 			_setupDatabaseTypes = setupDatabaseTypes;
+			_serviceScopeFactory = serviceScopeFactory;
 			_thumbnailQuery = thumbnailQuery;
 			_logger = logger;
 		}
@@ -29,7 +31,7 @@ namespace starsky.foundation.database.Thumbnails
 			var context = _setupDatabaseTypes?.BuilderDbFactory();
 			if ( _thumbnailQuery.GetType() == typeof(ThumbnailQuery) && context != null)
 			{
-				return new ThumbnailQuery(context, null);
+				return new ThumbnailQuery(context, _serviceScopeFactory, _logger);
 			}
 
 			// FakeIQuery should skip creation
@@ -37,10 +39,10 @@ namespace starsky.foundation.database.Thumbnails
 			if ( isAnyContentIncluded != true )
 			{
 				return Activator.CreateInstance(_thumbnailQuery.GetType(),
-					context, null) as IThumbnailQuery;
+					context, _serviceScopeFactory,_logger) as IThumbnailQuery;
 			}
 			
-			_logger?.LogInformation("FakeIThumbnailQuery _content detected");
+			_logger.LogInformation("FakeIThumbnailQuery _content detected");
 			return _thumbnailQuery;
 		}
 	}

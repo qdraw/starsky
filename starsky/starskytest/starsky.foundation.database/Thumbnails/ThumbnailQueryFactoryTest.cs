@@ -18,14 +18,15 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 		[TestMethod]
 		public void QueryFactoryTest_Null()
 		{
-			var query = new ThumbnailQueryFactory(null,null,null).ThumbnailQuery();
+			var query = new ThumbnailQueryFactory(null, null,null,null).ThumbnailQuery();
 			Assert.IsNull(query);
 		}
 		
 		[TestMethod]
 		public void QueryFactoryTest_QueryReturn()
 		{
-			var queryFactory = new ThumbnailQueryFactory(null, new ThumbnailQuery(null!,null),
+			var queryFactory = new ThumbnailQueryFactory(null, null, 
+				new ThumbnailQuery(null!, null, new FakeIWebLogger()),
 				new FakeIWebLogger());
 			var query = queryFactory.ThumbnailQuery();
 			Assert.AreEqual(typeof(ThumbnailQuery),query!.GetType());
@@ -41,7 +42,7 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 			var queryFactory = new ThumbnailQueryFactory(new SetupDatabaseTypes(new AppSettings
 				{
 					DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-				}, services), new ThumbnailQuery(new ApplicationDbContext(options),null),
+				}, services), null, new ThumbnailQuery(new ApplicationDbContext(options),null, new FakeIWebLogger()),
 				new FakeIWebLogger());
 			var query = queryFactory.ThumbnailQuery();
 			Assert.AreEqual(typeof(ThumbnailQuery),query!.GetType());
@@ -55,7 +56,7 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 				new ThumbnailItem("test3",null,null,null,null)
 			});
 			
-			var queryFactory = new ThumbnailQueryFactory(null, fakeIQuery,
+			var queryFactory = new ThumbnailQueryFactory(null, null, fakeIQuery,
 				new FakeIWebLogger());
 			var query = queryFactory.ThumbnailQuery();
 			
@@ -65,22 +66,6 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 			Assert.AreEqual(1, count);
 		}
 		
-		[TestMethod]
-		public async Task QueryFactoryTest_FakeIQueryReturn_noLogger()
-		{
-			var fakeIQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
-			{
-				new ThumbnailItem("test4",null,null,null,null)
-			});
-			
-			var queryFactory = new ThumbnailQueryFactory(null, fakeIQuery, null);
-			var query = queryFactory.ThumbnailQuery();
-			
-			
-			var resultFakeIQuery = query as FakeIThumbnailQuery;
-			var count = (await resultFakeIQuery!.Get("test4")).Count;
-			Assert.AreEqual(1, count);
-		}
 		
 		[TestMethod]
 		public async Task QueryFactoryTest_FakeIQuery_IgnoreNoItemsInList()
@@ -90,7 +75,7 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 				new ThumbnailItem("test5",null,null,null,null)
 			});
 			
-			var queryFactory = new ThumbnailQueryFactory(null, fakeIQuery,
+			var queryFactory = new ThumbnailQueryFactory(null, null, fakeIQuery,
 				new FakeIWebLogger());
 			
 			var query = queryFactory.ThumbnailQuery();

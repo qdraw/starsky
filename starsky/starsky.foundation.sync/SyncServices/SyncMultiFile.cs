@@ -78,14 +78,14 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			if ( dbItems == null ) return new List<FileIndexItem>();
 						
-			DeleteStatusHelper.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
-			
+			dbItems = DeleteStatusHelper.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
+
 			var statusItems =  _checkForStatusNotOkHelper
 				.CheckForStatusNotOk(dbItems.Select(p => p.FilePath)).ToList();
 			UpdateCheckStatus(dbItems, statusItems);
 
 			AddSidecarExtensionData(dbItems, statusItems);
-			
+
 			// Multi thread check for file hash
 			var list = dbItems
 				.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame);
@@ -97,7 +97,7 @@ namespace starsky.foundation.sync.SyncServices
 					_appSettings.MaxDegreesOfParallelism);
 
 			dbItems = await IsSameUpdatedItemList(isSameUpdatedItemList?.ToList(), dbItems);
-			
+
 			// add new items
 			var newItemsList = await _newUpdateItemWrapper.NewItem(
 				dbItems.Where(p =>

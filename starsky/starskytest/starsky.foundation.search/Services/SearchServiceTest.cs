@@ -36,7 +36,7 @@ namespace starskytest.starsky.foundation.search.Services
 			builder.UseInMemoryDatabase("searchService");
 			var options = builder.Options;
 			_dbContext = new ApplicationDbContext(options);
-			_search = new SearchService(_dbContext,null,null, new FakeIWebLogger());
+			_search = new SearchService(_dbContext,new FakeIWebLogger() );
 			_query = new Query(_dbContext,
 				new AppSettings(), null!, new FakeIWebLogger(),_memoryCache);
 		}
@@ -150,7 +150,7 @@ namespace starskytest.starsky.foundation.search.Services
 		[TestMethod]
 		public async Task SearchService_CacheInjection_CacheTest()
 		{
-			var search = new SearchService(_dbContext,_memoryCache);
+			var search = new SearchService(_dbContext,new FakeIWebLogger(),_memoryCache);
 
 			// fill cache with data real data;
 			var result = await search.Search("test");
@@ -171,7 +171,7 @@ namespace starskytest.starsky.foundation.search.Services
 		{
 			_memoryCache.Set("search-test", new SearchViewModel {SearchQuery = "cache"},
 				new TimeSpan(0, 10, 0));
-			var search = new SearchService(_dbContext,_memoryCache);
+			var search = new SearchService(_dbContext, new FakeIWebLogger(), _memoryCache);
 		    
 			// Test if the pre-condition is good
 			var cachedResult = (await search.Search("test")).SearchQuery;
@@ -188,21 +188,21 @@ namespace starskytest.starsky.foundation.search.Services
 		[TestMethod]
 		public void SearchService_RemoveCache_Disabled_Test()
 		{
-			var search = new SearchService(_dbContext); // cache is null!
+			var search = new SearchService(_dbContext,new FakeIWebLogger()); // cache is null!
 			Assert.AreEqual(null,search.RemoveCache("test"));
 		}
 	    
 		[TestMethod]
 		public void SearchService_RemoveCache_Disabled_AppSettings_Test()
 		{
-			var search = new SearchService(_dbContext,_memoryCache, new AppSettings{AddMemoryCache = false}); 
+			var search = new SearchService(_dbContext,new FakeIWebLogger() ,_memoryCache, new AppSettings{AddMemoryCache = false}); 
 			Assert.AreEqual(null,search.RemoveCache("test"));
 		}
 	    
 		[TestMethod]
 		public void SearchService_RemoveCache_NoCachedItem_Test()
 		{
-			var search = new SearchService(_dbContext,_memoryCache);
+			var search = new SearchService(_dbContext,new FakeIWebLogger(),_memoryCache);
 			Assert.AreEqual(false,search.RemoveCache("test"));
 		}
 
@@ -622,7 +622,7 @@ namespace starskytest.starsky.foundation.search.Services
 							new FileIndexItem {Tags = "t"}}
 						}} 
 				});
-			var searchService = new SearchService(_dbContext,fakeCache);
+			var searchService = new SearchService(_dbContext,new FakeIWebLogger(),fakeCache);
 			var result = await searchService.Search("t"); // <= t is only to detect in fakeCache
 			Assert.AreEqual(1,result.FileIndexItems.Count);
 		}

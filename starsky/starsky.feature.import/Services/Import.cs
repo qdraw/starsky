@@ -569,7 +569,7 @@ namespace starsky.feature.import.Services
 				    _memoryCache, _appSettings, _serviceScopeFactory, _logger);
 			    updateItemAsync = queryFactory.Query()!.UpdateItemAsync;
 			    queryThumbnailUpdateDelegate = (thumbnailItems) => new ThumbnailQueryFactory(
-				    new SetupDatabaseTypes(_appSettings),
+				    new SetupDatabaseTypes(_appSettings), _serviceScopeFactory,
 				    _thumbnailQuery, _logger).ThumbnailQuery()!.AddThumbnailRangeAsync(thumbnailItems);
 		    }
 		    

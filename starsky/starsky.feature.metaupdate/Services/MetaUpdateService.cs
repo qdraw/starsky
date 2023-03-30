@@ -162,6 +162,9 @@ namespace starsky.feature.metaupdate.Services
 			// Do a database sync + cache sync
 			await _query.UpdateItemAsync(fileIndexItem);
 			
+			// to avoid diskWatcher catch up (and updates the last edited dateTime)
+			_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath!, fileIndexItem, TimeSpan.FromSeconds(5));
+
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache
 			// only the full path url of the source image

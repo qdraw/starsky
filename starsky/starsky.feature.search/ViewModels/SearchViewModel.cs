@@ -39,7 +39,7 @@ namespace starsky.feature.search.ViewModels
 		/// <summary>
 		/// Items on the page
 		/// </summary>
-		public List<FileIndexItem> FileIndexItems { get; set; }
+		public List<FileIndexItem>? FileIndexItems { get; set; }
         
 		/// <summary>
 		/// Full location specification
@@ -52,7 +52,7 @@ namespace starsky.feature.search.ViewModels
 		/// <summary>
 		/// Where to search for
 		/// </summary>
-		public string SearchQuery { get; set; } = string.Empty;
+		public string? SearchQuery { get; set; } = string.Empty;
 	    
 		/// <summary>
 		/// Current page number (index=0)
