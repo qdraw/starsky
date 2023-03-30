@@ -232,9 +232,9 @@ describe("UseFileList", () => {
 });
 
 describe("UseFileList error", () => {
-  it("aborted", async () => {
+  it("aborted should not call", async () => {
     const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
-      throw new Error("aborted");
+      throw new DOMException("  aborted");
     });
 
     const controller = new AbortController();
@@ -256,10 +256,10 @@ describe("UseFileList error", () => {
       signal: controller.signal
     });
 
-    expect(setDataSpy).toBeCalled();
+    expect(setDataSpy).toBeCalledTimes(0);
   });
 
-  it("use", async () => {
+  it("generic error", async () => {
     const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
       throw new Error("default error");
     });

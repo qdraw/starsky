@@ -80,12 +80,7 @@ describe("UseFetch error", () => {
       signal: controller.signal
     });
 
-    // setData
-    expect(setDataSpy).toBeCalled();
-    expect(setDataSpy).toBeCalledWith({
-      data: null,
-      statusCode: 999
-    });
+    expect(setDataSpy).toBeCalledTimes(0);
   });
 
   it("non aborted", async () => {
