@@ -529,6 +529,18 @@ namespace starskytest.starsky.foundation.search.Services
 			Assert.AreEqual(true, model.SearchIn.Contains("Tags"));
 			Assert.AreEqual(true, model.SearchFor.Contains("dion.jpg"));
 		}
+		
+		[TestMethod]
+		public void SearchService_NullQuery()
+		{
+			var model = new SearchViewModel
+			{
+				SearchQuery = null
+			};
+			_search.MatchSearch(model);
+
+			Assert.AreEqual(false, model.SearchIn.Any());
+		}
 
 		[TestMethod]
 		public void SearchService_MatchSearchOneKeywordsTest()
