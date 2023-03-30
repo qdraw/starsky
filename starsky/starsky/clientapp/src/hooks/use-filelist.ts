@@ -15,16 +15,52 @@ export interface IFileList {
   detailView?: IDetailView;
   pageType: PageType;
   parent: string;
-  fetchContent: (
-    location: string,
-    abortController: AbortController
-  ) => Promise<void>;
   fetchContentCache: (
     location: string,
     abortController: AbortController
   ) => Promise<void>;
 }
 
+export const fetchContentUseFileList = async (
+  locationLocal: string,
+  locationSearch: string,
+  abortController: AbortController,
+  setPageTypeHelper: (responseObject: any) => void,
+  resetPageTypeBeforeLoading: boolean,
+  setPageType: (value: React.SetStateAction<PageType>) => void
+): Promise<void> => {
+  try {
+    // force start with a loading icon
+    if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
+
+    const res: Response = await fetch(locationLocal, {
+      signal: abortController.signal,
+      credentials: "include",
+      method: "get"
+    });
+
+    if (res.status === 404) {
+      setPageType(PageType.NotFound);
+      return;
+    } else if (res.status === 401) {
+      setPageType(PageType.Unauthorized);
+      return;
+    } else if (res.status >= 400 && res.status <= 550) {
+      setPageType(PageType.ApplicationException);
+      return;
+    }
+
+    const responseObject = await res.json();
+    setPageTypeHelper(responseObject);
+    new FileListCache().CacheSet(locationSearch, responseObject);
+  } catch (e: any) {
+    if (e?.message?.indexOf("aborted") >= 1) {
+      return;
+    }
+    console.error(e);
+    setPageType(PageType.ApplicationException);
+  }
+};
 /**
  * Hook to get index API
  * @param locationSearch with query parameter "?f=/"
@@ -39,43 +75,6 @@ const useFileList = (
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState("/");
   const location = new UrlQuery().UrlQueryServerApi(locationSearch);
-
-  const fetchContent = async (
-    locationLocal: string,
-    abortController: AbortController
-  ): Promise<void> => {
-    try {
-      // force start with a loading icon
-      if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
-
-      const res: Response = await fetch(locationLocal, {
-        signal: abortController.signal,
-        credentials: "include",
-        method: "get"
-      });
-
-      if (res.status === 404) {
-        setPageType(PageType.NotFound);
-        return;
-      } else if (res.status === 401) {
-        setPageType(PageType.Unauthorized);
-        return;
-      } else if (res.status >= 400 && res.status <= 550) {
-        setPageType(PageType.ApplicationException);
-        return;
-      }
-
-      const responseObject = await res.json();
-      setPageTypeHelper(responseObject);
-      new FileListCache().CacheSet(locationSearch, responseObject);
-    } catch (e: any) {
-      if (e?.message?.indexOf("aborted") >= 1) {
-        return;
-      }
-      console.error(e);
-      setPageType(PageType.ApplicationException);
-    }
-  };
 
   const setPageTypeHelper = (responseObject: any) => {
     setParent(new URLPath().getParent(locationSearch));
@@ -119,7 +118,14 @@ const useFileList = (
       setPageTypeHelper(content);
     } else {
       console.log(" -- Fetch Content");
-      await fetchContent(locationScoped, abortController);
+      await fetchContentUseFileList(
+        locationScoped,
+        locationSearch,
+        abortController,
+        setPageTypeHelper,
+        resetPageTypeBeforeLoading,
+        setPageType
+      );
     }
   };
 
@@ -140,7 +146,6 @@ const useFileList = (
     detailView,
     pageType,
     parent,
-    fetchContent,
     fetchContentCache
   };
 };
