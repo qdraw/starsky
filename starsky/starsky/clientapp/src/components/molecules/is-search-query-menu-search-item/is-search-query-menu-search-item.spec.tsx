@@ -37,6 +37,58 @@ describe("IsSearchQueryMenuSearchItem", () => {
     expect(id).not.toBeNull();
   });
 
+  it("ctrl click not trigger loading", () => {
+    const history = {
+      location: {
+        search: "test"
+      }
+    } as any;
+    const loadingSpy = jest.fn();
+    render(
+      <IsSearchQueryMenuSearchItem
+        history={history}
+        setIsLoading={loadingSpy}
+        isSearchQuery={true}
+        state={{ fileIndexItem: {} } as any}
+      />
+    );
+
+    const id = screen.queryByTestId("menu-detail-view-close");
+    expect(id).not.toBeNull();
+
+    (id as HTMLElement).dispatchEvent(
+      new MouseEvent("click", { bubbles: true, ctrlKey: true })
+    );
+
+    expect(loadingSpy).not.toBeCalled();
+  });
+
+  it("click trigger loading", () => {
+    const history = {
+      location: {
+        search: "test"
+      }
+    } as any;
+    const loadingSpy = jest.fn();
+    render(
+      <IsSearchQueryMenuSearchItem
+        history={history}
+        setIsLoading={loadingSpy}
+        isSearchQuery={true}
+        state={{ fileIndexItem: {} } as any}
+      />
+    );
+
+    const id = screen.queryByTestId("menu-detail-view-close");
+    expect(id).not.toBeNull();
+
+    (id as HTMLElement).dispatchEvent(
+      new MouseEvent("click", { bubbles: true })
+    );
+
+    expect(loadingSpy).toBeCalled();
+  });
+
   it("should contain test id delete", () => {
     const history = {
       location: {
