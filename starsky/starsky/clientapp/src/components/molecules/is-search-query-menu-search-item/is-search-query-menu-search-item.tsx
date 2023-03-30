@@ -32,11 +32,6 @@ const IsSearchQueryMenuSearchItem: React.FunctionComponent<
           if (event.metaKey || event.ctrlKey || event.button === 1) return;
 
           setIsLoading(true);
-          setTimeout(() => {
-            try {
-              window.location.reload();
-            } catch {}
-          }, 50);
         }}
         state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
         to={new UrlQuery().HashSearchPage(history.location.search)}
