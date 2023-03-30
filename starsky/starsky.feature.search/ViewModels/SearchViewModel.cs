@@ -520,7 +520,7 @@ namespace starsky.feature.search.ViewModels
 			if ( model.SearchIn.All(p => !string.Equals(p, nameof(SearchInTypes.imageformat), 
 				    StringComparison.InvariantCultureIgnoreCase)))
 			{
-				model.FileIndexItems = model.FileIndexItems
+				model.FileIndexItems = model.FileIndexItems!
 					.Where(p => p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp).ToList();
 			}
 
@@ -535,7 +535,7 @@ namespace starsky.feature.search.ViewModels
 			switch (searchType)
 			{
 				case SearchForOptionType.Not:
-					model.FileIndexItems = model.FileIndexItems.Where(
+					model.FileIndexItems = model.FileIndexItems!.Where(
 						p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						     && ! // not
 							     p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
@@ -543,7 +543,7 @@ namespace starsky.feature.search.ViewModels
 					).ToList();
 					break;
 				default:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
 							            .ToString()!.ToLowerInvariant().Contains(searchForQuery)  
@@ -558,7 +558,7 @@ namespace starsky.feature.search.ViewModels
 			SearchViewModel model,
 			PropertyInfo property, bool boolIsValue)
 		{
-			model.FileIndexItems = model.FileIndexItems
+			model.FileIndexItems = model.FileIndexItems!
 				.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 				            && (bool?) p.GetType().GetProperty(property.Name)?.GetValue(p, null)  == boolIsValue
 				).ToList();
@@ -573,7 +573,7 @@ namespace starsky.feature.search.ViewModels
 			switch (searchType)
 			{
 				case SearchForOptionType.Not:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
 							            .GetValue(p, null)!  
@@ -582,7 +582,7 @@ namespace starsky.feature.search.ViewModels
 						).ToList();
 					break;
 				default:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
 							            .GetValue(p, null)!  == castImageFormat
@@ -603,21 +603,21 @@ namespace starsky.feature.search.ViewModels
 			switch (searchType)
 			{
 				case SearchForOptionType.LessThen:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)! 
 						            <= parsedDateTime
 						).ToList();
 					break;
 				case SearchForOptionType.GreaterThen:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 						            >= parsedDateTime
 						).ToList();
 					break;
 				default:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 						            == parsedDateTime
