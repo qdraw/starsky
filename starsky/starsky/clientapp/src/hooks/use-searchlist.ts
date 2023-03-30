@@ -106,8 +106,10 @@ const useSearchList = (
       setArchive(archiveMedia.data);
     } catch (e: any) {
       if (e?.message?.indexOf("aborted") >= 1) {
+        console.log("useSearchList aborted");
         return;
       }
+      console.log("useSearchList");
       console.error(e);
     }
   };
