@@ -26,11 +26,11 @@ import { UrlQuery } from "../../../shared/url-query";
 import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
+import IsSearchQueryMenuSearchItem from "../../molecules/is-search-query-menu-search-item/is-search-query-menu-search-item";
 import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-detailview-rename-file";
 import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
-import IsSearchQueryMenuSearchItem from "./is-search-query-menu-search-item";
 
 export interface MenuDetailViewProps {
   state: IDetailView;

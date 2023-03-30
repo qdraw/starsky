@@ -17,7 +17,7 @@ type IsSearchQueryMenuSearchItemProps = {
 
 const IsSearchQueryMenuSearchItem: React.FunctionComponent<
   IsSearchQueryMenuSearchItemProps
-> = ({ isSearchQuery, setIsLoading, state, history }) => {
+> = ({ isSearchQuery, state, history, setIsLoading }) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   if (isSearchQuery) {
@@ -30,7 +30,13 @@ const IsSearchQueryMenuSearchItem: React.FunctionComponent<
           // Command (mac) or ctrl click means open new window
           // event.button = is only trigged in safari
           if (event.metaKey || event.ctrlKey || event.button === 1) return;
+
           setIsLoading(true);
+          setTimeout(() => {
+            try {
+              window.location.reload();
+            } catch {}
+          }, 50);
         }}
         state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
         to={new UrlQuery().HashSearchPage(history.location.search)}

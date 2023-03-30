@@ -12,7 +12,11 @@ export function statusRemoved(
   setRelativeObjects: React.Dispatch<React.SetStateAction<IRelativeObjects>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) {
-  if (!state.fileIndexItem?.status) {
+  if (
+    !state.fileIndexItem?.status ||
+    history.location.search.includes("!delete!") ||
+    history.location.search.includes("%21delete%21") // trash
+  ) {
     return;
   }
   if (
