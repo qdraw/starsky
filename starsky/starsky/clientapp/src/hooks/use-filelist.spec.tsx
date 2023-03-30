@@ -234,7 +234,7 @@ describe("UseFileList", () => {
 describe("UseFileList error", () => {
   it("aborted should not call", async () => {
     const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
-      throw new DOMException("  aborted");
+      throw new DOMException("aborted");
     });
 
     const controller = new AbortController();

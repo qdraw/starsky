@@ -97,7 +97,7 @@ export const fetchContentUseSearchList = async (
     archiveMedia.data.colorClassActiveList = [];
     setArchive(archiveMedia.data);
   } catch (e: any) {
-    if (e?.message?.indexOf("aborted") >= 1) {
+    if (e?.message?.indexOf("aborted") >= 0) {
       console.log("useSearchList aborted");
       return;
     }

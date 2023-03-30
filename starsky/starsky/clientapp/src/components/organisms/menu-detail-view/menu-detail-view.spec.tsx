@@ -210,6 +210,28 @@ describe("MenuDetailView", () => {
       });
     });
 
+    it("as search Result button exist no ?t", () => {
+      // add search query to url
+      globalHistory.navigate("/");
+
+      const component = render(
+        <MenuDetailView state={state} dispatch={jest.fn()} />
+      );
+
+      const anchor = component.queryByTestId(
+        "menu-detail-view-close"
+      ) as HTMLAnchorElement;
+
+      expect(anchor).toBeTruthy();
+      expect(anchor.className).toContain("item--close");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        globalHistory.navigate("/");
+      });
+    });
+
     it("last Edited change [true]", () => {
       globalHistory.navigate("/?details=true");
 

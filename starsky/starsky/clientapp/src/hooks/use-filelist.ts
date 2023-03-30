@@ -54,7 +54,7 @@ export const fetchContentUseFileList = async (
     setPageTypeHelper(responseObject);
     new FileListCache().CacheSet(locationSearch, responseObject);
   } catch (e: any) {
-    if (e?.message?.indexOf("aborted") >= 1) {
+    if (e?.message?.indexOf("aborted") >= 0) {
       return;
     }
     console.error(e);
