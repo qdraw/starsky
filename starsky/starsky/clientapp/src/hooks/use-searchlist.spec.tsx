@@ -5,7 +5,10 @@ import {
   newIFileIndexItem,
   newIFileIndexItemArray
 } from "../interfaces/IFileIndexItem";
-import useSearchList, { ISearchList } from "./use-searchlist";
+import useSearchList, {
+  fetchContentUseSearchList,
+  ISearchList
+} from "./use-searchlist";
 import { mountReactHook } from "./___tests___/test-hook";
 
 describe("UseSearchList", () => {
@@ -141,5 +144,59 @@ describe("UseSearchList", () => {
       });
       expect(setPageTypeSpy).toBeCalledWith(PageType.ApplicationException);
     });
+  });
+});
+
+describe("UseSearchList error", () => {
+  it("aborted should not call", async () => {
+    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+      throw new DOMException("aborted");
+    });
+
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
+    await fetchContentUseSearchList(
+      "test",
+      controller,
+      jest.fn(),
+      setDataSpy,
+      false
+    );
+
+    // fetchSpy
+    expect(fetchSpy).toBeCalled();
+    expect(fetchSpy).toBeCalledWith("test", {
+      credentials: "include",
+      method: "GET",
+      signal: controller.signal
+    });
+
+    expect(setDataSpy).toBeCalledTimes(0);
+  });
+
+  it("generic error", async () => {
+    console.log("generic error");
+
+    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+      throw new Error("default error");
+    });
+
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
+    await fetchContentUseSearchList(
+      "test",
+      controller,
+      jest.fn(),
+      setDataSpy,
+      false
+    );
+    expect(fetchSpy).toBeCalled();
+    expect(fetchSpy).toBeCalledWith("test", {
+      credentials: "include",
+      method: "GET",
+      signal: controller.signal
+    });
+
+    expect(setDataSpy).toBeCalledTimes(0);
   });
 });
