@@ -61,3 +61,50 @@ describe("UseFetch", () => {
     });
   });
 });
+
+describe("UseFetch error", () => {
+  it("aborted", async () => {
+    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+      throw new Error("aborted");
+    });
+
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
+    await fetchContent("test", "get", true, controller, setDataSpy);
+
+    // fetchSpy
+    expect(fetchSpy).toBeCalled();
+    expect(fetchSpy).toBeCalledWith("test", {
+      credentials: "include",
+      method: "get",
+      signal: controller.signal
+    });
+
+    expect(setDataSpy).toBeCalledTimes(0);
+  });
+
+  it("non aborted", async () => {
+    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+      throw new Error("default error");
+    });
+
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
+    await fetchContent("test", "get", true, controller, setDataSpy);
+
+    // fetchSpy
+    expect(fetchSpy).toBeCalled();
+    expect(fetchSpy).toBeCalledWith("test", {
+      credentials: "include",
+      method: "get",
+      signal: controller.signal
+    });
+
+    // setData
+    expect(setDataSpy).toBeCalled();
+    expect(setDataSpy).toBeCalledWith({
+      data: null,
+      statusCode: 999
+    });
+  });
+});

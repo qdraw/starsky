@@ -6,6 +6,15 @@ var cookieParser = require("cookie-parser");
 var dotenv = require("dotenv");
 dotenv.config();
 
+const helpModal =
+	process.argv.indexOf("--help") >= 0 || process.argv.indexOf("-h") >= 0;
+
+if (helpModal) {
+	console.log("Usage: node localtunnel.js");
+	console.log("Disable sockets: node localtunnel.js --no-websocket");
+	process.exit(0);
+}
+
 // https://github.com/http-party/node-http-proxy/issues/891#issuecomment-419412499
 
 var proxyTargetSettings = {
@@ -45,82 +54,96 @@ if (process.env.STARSKYURL) {
 	process.exit(1);
 }
 
+const noWebSocket =
+	process.argv.indexOf("--no-websocket") >= 0 ||
+	process.argv.indexOf("-nw") >= 0 ||
+	process.argv.indexOf("--no-socket") >= 0;
+
+if (noWebSocket) {
+	console.log("websocket disabled");
+}
+
 // register websocket handler, proxy requests manually to backend
-wsServer.app.ws("/starsky/realtime", (ws, req) => {
-	console.log("--");
-	console.log(req.headers["sec-websocket-key"]);
-	let headers = {};
-	// add custom headers, e.g. copy cookie if required
-	if (req.headers["cookie"]) {
-		headers["cookie"] = req.headers["cookie"];
-	}
-	if (req.headers.authorization) {
-		headers.authorization = req.headers.authorization;
-	}
+if (!noWebSocket) {
+	console.log("websocket enabled");
 
-	const backendMessageQueue = [];
-	let backendConnected = false;
-	let backendClosed = false;
-	let frontendClosed = false;
+	wsServer.app.ws("/starsky/realtime", (ws, req) => {
+		console.log("--");
+		console.log(req.headers["sec-websocket-key"]);
+		let headers = {};
+		// add custom headers, e.g. copy cookie if required
+		if (req.headers["cookie"]) {
+			headers["cookie"] = req.headers["cookie"];
+		}
+		if (req.headers.authorization) {
+			headers.authorization = req.headers.authorization;
+		}
 
-	var socketUrl =
-		netCoreAppRouteUrl.replace("https://", "wss://") + "starsky/realtime";
-	console.log(socketUrl);
+		const backendMessageQueue = [];
+		let backendConnected = false;
+		let backendClosed = false;
+		let frontendClosed = false;
 
-	const backendSocket = new WebSocket(socketUrl, [], {
-		headers: headers,
-	});
-	backendSocket.on("open", function () {
-		console.log("backend connection established");
-		backendConnected = true;
-		// send queued messages
-		backendMessageQueue.forEach((message) => {
-			backendSocket.send(message);
+		var socketUrl =
+			netCoreAppRouteUrl.replace("https://", "wss://") +
+			"starsky/realtime";
+		console.log(socketUrl);
+
+		const backendSocket = new WebSocket(socketUrl, [], {
+			headers: headers,
+		});
+		backendSocket.on("open", function () {
+			console.log("backend connection established");
+			backendConnected = true;
+			// send queued messages
+			backendMessageQueue.forEach((message) => {
+				backendSocket.send(message);
+			});
+		});
+		backendSocket.on("error", (err) => {
+			console.log("error", err);
+			backendClosed = true;
+			if (!frontendClosed) {
+				ws.close();
+			}
+			frontendClosed = true;
+		});
+		backendSocket.on("message", (message) => {
+			// proxy messages from backend to frontend
+			try {
+				ws.send(message);
+			} catch (error) {}
+		});
+		backendSocket.on("close", (statusCode) => {
+			console.log("Backend is closing, reason: " + statusCode);
+			backendClosed = true;
+			if (!frontendClosed) {
+				try {
+					ws.close(statusCode);
+				} catch (error) {
+					console.log(error);
+				}
+			}
+			frontendClosed = true;
+		});
+		ws.on("message", (message) => {
+			// proxy messages from frontend to backend
+			if (backendConnected) {
+				backendSocket.send(message);
+			} else {
+				backendMessageQueue.push(message);
+			}
+		});
+		ws.on("close", () => {
+			console.log("Frontend is closing");
+			frontendClosed = true;
+			if (!backendClosed) {
+				backendSocket.close();
+			}
+			backendClosed = true;
 		});
 	});
-	backendSocket.on("error", (err) => {
-		console.log("error", err);
-		backendClosed = true;
-		if (!frontendClosed) {
-			ws.close();
-		}
-		frontendClosed = true;
-	});
-	backendSocket.on("message", (message) => {
-		// proxy messages from backend to frontend
-		try {
-			ws.send(message);
-		} catch (error) {}
-	});
-	backendSocket.on("close", (statusCode) => {
-		console.log("Backend is closing, reason: " + statusCode);
-		backendClosed = true;
-		if (!frontendClosed) {
-			try {
-				ws.close(statusCode);
-			} catch (error) {
-				console.log(error);
-			}
-		}
-		frontendClosed = true;
-	});
-	ws.on("message", (message) => {
-		// proxy messages from frontend to backend
-		if (backendConnected) {
-			backendSocket.send(message);
-		} else {
-			backendMessageQueue.push(message);
-		}
-	});
-	ws.on("close", () => {
-		console.log("Frontend is closing");
-		frontendClosed = true;
-		if (!backendClosed) {
-			backendSocket.close();
-		}
-		backendClosed = true;
-	});
-});
+}
 
 // proxy http requests to proxy target
 httpServer.all("/**", (req, res) => {

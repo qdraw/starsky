@@ -44,7 +44,10 @@ export const fetchContent = async (
     });
     data = await res.json();
     statusCode = res.status;
-  } catch (event) {
+  } catch (event: any) {
+    if (event?.message?.indexOf("aborted") >= 0) {
+      return;
+    }
     // DOMException: "The operation was aborted"
     console.error("use-fetch", url, event);
   }

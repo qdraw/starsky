@@ -6,7 +6,10 @@ import {
   newIFileIndexItemArray
 } from "../interfaces/IFileIndexItem";
 import { FileListCache } from "../shared/filelist-cache";
-import useFileList, { IFileList } from "./use-filelist";
+import useFileList, {
+  fetchContentUseFileList,
+  IFileList
+} from "./use-filelist";
 import { mountReactHook } from "./___tests___/test-hook";
 
 describe("UseFileList", () => {
@@ -43,7 +46,8 @@ describe("UseFileList", () => {
     }
 
     it("with archive content 200", async () => {
-      const { hook } = mounter();
+      const hook = jest.fn();
+      const hook2 = jest.fn();
 
       const controller = new AbortController();
 
@@ -51,10 +55,15 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await fetchContentUseFileList(
+          "test",
+          "test",
+          controller,
+          hook2,
+          false,
+          hook
+        );
       });
-
-      if (!hook.archive) throw Error("missing archive");
 
       expect(fetchSpy).toBeCalled();
       expect(fetchSpy).toBeCalledWith("test", {
@@ -63,11 +72,13 @@ describe("UseFileList", () => {
         signal: controller.signal
       });
 
-      expect(hook.archive.fileIndexItems).toStrictEqual([]);
+      expect(hook).toBeCalledTimes(0);
+      expect(hook2).toBeCalledTimes(1);
     });
 
     it("with detailview content 200", async () => {
-      const { hook } = mounter();
+      const hook = jest.fn();
+      const hook2 = jest.fn();
 
       const controller = new AbortController();
 
@@ -75,10 +86,15 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await fetchContentUseFileList(
+          "test",
+          "test",
+          controller,
+          hook2,
+          false,
+          hook
+        );
       });
-
-      if (!hook.detailView) throw Error("missing detailView");
 
       expect(fetchSpy).toBeCalled();
       expect(fetchSpy).toBeCalledWith("test", {
@@ -87,11 +103,12 @@ describe("UseFileList", () => {
         signal: controller.signal
       });
 
-      expect(hook.detailView.fileIndexItem).toStrictEqual(newIFileIndexItem());
+      expect(hook).toBeCalledTimes(0);
+      expect(hook2).toBeCalledTimes(1);
     });
 
     it("with archive content 404", async () => {
-      const { hook } = mounter();
+      const hook = jest.fn();
 
       const controller = new AbortController();
 
@@ -99,14 +116,21 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await fetchContentUseFileList(
+          "test",
+          "test",
+          controller,
+          jest.fn(),
+          false,
+          hook
+        );
       });
 
-      expect(hook.pageType).toBe(PageType.NotFound);
+      expect(hook).toBeCalledWith(PageType.NotFound);
     });
 
     it("with archive content 401", async () => {
-      const { hook } = mounter();
+      const hook = jest.fn();
 
       const controller = new AbortController();
 
@@ -114,14 +138,22 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await fetchContentUseFileList(
+          "test",
+          "test",
+          controller,
+          jest.fn(),
+          false,
+          hook
+        );
       });
 
-      expect(hook.pageType).toBe(PageType.Unauthorized);
+      expect(hook).toBeCalledWith(PageType.Unauthorized);
     });
 
     it("with archive content 500", async () => {
-      const { hook } = mounter();
+      const hook = jest.fn();
+      const hook2 = jest.fn();
 
       const controller = new AbortController();
 
@@ -129,10 +161,18 @@ describe("UseFileList", () => {
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await fetchContentUseFileList(
+          "test",
+          "test",
+          controller,
+          hook2,
+          false,
+          hook
+        );
       });
 
-      expect(hook.pageType).toBe(PageType.ApplicationException);
+      expect(hook).toBeCalledTimes(1);
+      expect(hook2).toBeCalledTimes(0);
     });
 
     it("get from cache", async () => {
@@ -176,10 +216,71 @@ describe("UseFileList", () => {
       // console.error == undefined
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await fetchContentUseFileList(
+          "test",
+          "test",
+          controller,
+          jest.fn(),
+          false,
+          jest.fn()
+        );
       });
 
       expect(hook.pageType).toBe(PageType.ApplicationException);
     });
+  });
+});
+
+describe("UseFileList error", () => {
+  it("aborted should not call", async () => {
+    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+      throw new DOMException("aborted");
+    });
+
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
+    await fetchContentUseFileList(
+      "test",
+      "test",
+      controller,
+      jest.fn(),
+      false,
+      setDataSpy
+    );
+
+    // fetchSpy
+    expect(fetchSpy).toBeCalled();
+    expect(fetchSpy).toBeCalledWith("test", {
+      credentials: "include",
+      method: "get",
+      signal: controller.signal
+    });
+
+    expect(setDataSpy).toBeCalledTimes(0);
+  });
+
+  it("generic error", async () => {
+    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+      throw new Error("default error");
+    });
+
+    const controller = new AbortController();
+    const setDataSpy = jest.fn();
+    await fetchContentUseFileList(
+      "test",
+      "test",
+      controller,
+      jest.fn(),
+      false,
+      setDataSpy
+    );
+    expect(fetchSpy).toBeCalled();
+    expect(fetchSpy).toBeCalledWith("test", {
+      credentials: "include",
+      method: "get",
+      signal: controller.signal
+    });
+
+    expect(setDataSpy).toBeCalled();
   });
 });

@@ -7,9 +7,12 @@ import { UrlQuery } from "../shared/url-query";
 export interface ISearchList {
   archive?: IArchive;
   pageType: PageType;
-  fetchContent: (
-    location: string,
-    abortController: AbortController
+  fetchContentUseSearchList: (
+    locationScoped: string | undefined,
+    abortController: AbortController,
+    setArchive: Dispatch<SetStateAction<IArchive>>,
+    setPageType: Dispatch<SetStateAction<PageType>>,
+    resetPageTypeBeforeLoading: boolean
   ) => Promise<void>;
 }
 
@@ -44,6 +47,65 @@ const setErrorPageType = (
   return false;
 };
 
+export const fetchContentUseSearchList = async (
+  locationScoped: string | undefined,
+  abortController: AbortController,
+  setArchive: Dispatch<SetStateAction<IArchive>>,
+  setPageType: Dispatch<SetStateAction<PageType>>,
+  resetPageTypeBeforeLoading: boolean
+): Promise<void> => {
+  try {
+    if (!locationScoped) {
+      setArchive({
+        ...newIArchive(),
+        pageType: PageType.Search,
+        fileIndexItems: [],
+        colorClassUsage: [],
+        searchQuery: ""
+      });
+      setPageType(PageType.Search);
+      return;
+    }
+
+    // force start with a loading icon
+    if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
+
+    const res: Response = await fetch(locationScoped, {
+      signal: abortController.signal,
+      credentials: "include",
+      method: "GET"
+    });
+
+    // 401, 404 and other errors
+    if (setErrorPageType(res, setPageType, setArchive)) {
+      return;
+    }
+
+    const responseObject = await res.json();
+
+    const archiveMedia = new CastToInterface().MediaArchive(responseObject);
+    setPageType(archiveMedia.data.pageType);
+
+    if (
+      archiveMedia.data.pageType !== PageType.Search &&
+      archiveMedia.data.pageType !== PageType.Trash
+    )
+      return;
+
+    // We don't know those values in the search context
+    archiveMedia.data.colorClassUsage = [];
+    archiveMedia.data.colorClassActiveList = [];
+    setArchive(archiveMedia.data);
+  } catch (e: any) {
+    if (e?.message?.indexOf("aborted") >= 0) {
+      console.log("useSearchList aborted");
+      return;
+    }
+    console.log("useSearchList");
+    console.error(e);
+  }
+};
+
 const useSearchList = (
   query: string | undefined,
   pageNumber: number | undefined,
@@ -58,60 +120,15 @@ const useSearchList = (
     ? new UrlQuery().UrlQuerySearchApi(query, pageNumber)
     : undefined;
 
-  const fetchContent = async (
-    locationScoped: string | undefined,
-    abortController: AbortController
-  ): Promise<void> => {
-    try {
-      if (!locationScoped) {
-        setArchive({
-          ...newIArchive(),
-          pageType: PageType.Search,
-          fileIndexItems: [],
-          colorClassUsage: [],
-          searchQuery: ""
-        });
-        setPageType(PageType.Search);
-        return;
-      }
-
-      // force start with a loading icon
-      if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
-
-      const res: Response = await fetch(locationScoped, {
-        signal: abortController.signal,
-        credentials: "include",
-        method: "GET"
-      });
-
-      // 401, 404 and other errors
-      if (setErrorPageType(res, setPageType, setArchive)) {
-        return;
-      }
-
-      const responseObject = await res.json();
-
-      const archiveMedia = new CastToInterface().MediaArchive(responseObject);
-      setPageType(archiveMedia.data.pageType);
-
-      if (
-        archiveMedia.data.pageType !== PageType.Search &&
-        archiveMedia.data.pageType !== PageType.Trash
-      )
-        return;
-
-      // We don't know those values in the search context
-      archiveMedia.data.colorClassUsage = [];
-      archiveMedia.data.colorClassActiveList = [];
-      setArchive(archiveMedia.data);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   useEffect(() => {
     const abortController = new AbortController();
-    fetchContent(location, abortController);
+    fetchContentUseSearchList(
+      location,
+      abortController,
+      setArchive,
+      setPageType,
+      resetPageTypeBeforeLoading
+    );
 
     return () => {
       abortController.abort();
@@ -124,7 +141,7 @@ const useSearchList = (
   return {
     archive,
     pageType,
-    fetchContent
+    fetchContentUseSearchList
   };
 };
 

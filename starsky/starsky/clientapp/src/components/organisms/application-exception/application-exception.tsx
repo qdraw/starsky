@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
 import MenuDefault from "../menu-default/menu-default";
@@ -18,10 +18,13 @@ const ApplicationException: FunctionComponent<any> = () => {
   return (
     <>
       <MenuDefault isEnabled={false} />
-      <div className="content--header" data-test="application-exception-header">
+      <div
+        className="content--header fade-in"
+        data-test="application-exception-header"
+      >
         {MessageApplicationException}
       </div>
-      <div className="content--subheader">
+      <div className="content--subheader fade-in">
         <button
           data-test="reload"
           className="btn btn--default"

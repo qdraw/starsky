@@ -26,6 +26,7 @@ import { UrlQuery } from "../../../shared/url-query";
 import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
+import IsSearchQueryMenuSearchItem from "../../molecules/is-search-query-menu-search-item/is-search-query-menu-search-item";
 import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-detailview-rename-file";
 import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
@@ -401,19 +402,13 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             </Link>
           ) : null}
 
-          {/* to search */}
-          {isSearchQuery ? (
-            <Link
-              data-test="menu-detail-view-close"
-              className="item item--first item--search"
-              state={
-                { filePath: state.fileIndexItem.filePath } as INavigateState
-              }
-              to={new UrlQuery().HashSearchPage(history.location.search)}
-            >
-              {new URLPath().StringToIUrl(history.location.search).t}
-            </Link>
-          ) : null}
+          {/* in search state aka search query */}
+          <IsSearchQueryMenuSearchItem
+            isSearchQuery={isSearchQuery}
+            setIsLoading={setIsLoading}
+            state={state}
+            history={history}
+          />
 
           <button
             className="item item--labels"

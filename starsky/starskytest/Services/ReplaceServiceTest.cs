@@ -9,6 +9,7 @@ using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -36,7 +37,7 @@ namespace starskytest.Services
 				new FakeIWebLogger(),memoryCache);
 			
 			var iStorage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test.jpg","/test2.jpg", "/readonly/test.jpg", "/test.dng", "/test34598.jpg"});
+				new List<string>{"/test.jpg","/test2.jpg", "/readonly/test.jpg", "/test.dng", "/test34598.jpg", "/test5.dng", "/test5.xmp"});
 			_metaReplace = new MetaReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},
 				new FakeSelectorStorage(iStorage), new FakeIWebLogger());
 
@@ -115,6 +116,20 @@ namespace starskytest.Services
 
 			Assert.AreEqual(string.Empty,result[0].Tags);
 		}
+		
+		[TestMethod("Location City is null")]
+		public void SearchAndReplace_LocationCityNull()
+		{
+			var result = MetaReplaceService.SearchAndReplace(
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.Ok,
+					LocationCity = null,
+				}},
+				"LocationCity", "test", string.Empty);
+
+			Assert.AreEqual(string.Empty,result[0].Tags);
+		}
 
 		[TestMethod]
 		public async Task ReplaceServiceTest_replaceStringMultipleItems()
@@ -140,6 +155,36 @@ namespace starskytest.Services
 
 			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.jpg")?.Tags);
 			Assert.AreEqual("test1, test",output.FirstOrDefault(p => p.FilePath == "/test2.jpg")?.Tags);
+
+			await _query.RemoveItemAsync(item0);
+			await _query.RemoveItemAsync(item1);
+		}
+		
+		[TestMethod]
+		public async Task ReplaceServiceTest_replaceStringMultipleItems_RawSidecarFile()
+		{
+			var item0 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "test5.dng",
+				ParentDirectory = "/",
+				Tags = TrashKeyword.TrashKeywordString
+			});
+			
+			var item1 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "test5.xmp",
+				ParentDirectory = "/",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.xmp,
+				Tags = $"test1, {TrashKeyword.TrashKeywordString}, test"
+			}); 
+			
+			var output = await _metaReplace.Replace(item0.FilePath,
+				nameof(FileIndexItem.Tags),TrashKeyword.TrashKeywordString,string.Empty,false);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
+
+			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == item0.FilePath)?.Tags);
+			Assert.AreEqual("test1, test",output.FirstOrDefault(p => p.FilePath == item1.FilePath)?.Tags);
 
 			await _query.RemoveItemAsync(item0);
 			await _query.RemoveItemAsync(item1);
