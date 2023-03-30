@@ -183,7 +183,14 @@ describe("UseFileList", () => {
           return { ...newIArchive(), dateCache: Date.now() };
         });
 
-      hook.fetchContentCache("location", new AbortController());
+      hook.fetchUseFileListContentCache(
+        "location",
+        "location",
+        new AbortController(),
+        jest.fn(),
+        false,
+        jest.fn()
+      );
       expect(cacheGetSpy).toBeCalled();
     });
 
@@ -197,7 +204,14 @@ describe("UseFileList", () => {
 
       setFetchSpy(200, PageType.Archive);
 
-      hook.fetchContentCache("location", new AbortController());
+      hook.fetchUseFileListContentCache(
+        "location",
+        "location",
+        new AbortController(),
+        jest.fn(),
+        false,
+        jest.fn()
+      );
 
       expect(cacheSetSpy).toBeCalled();
       expect(fetchSpy).toBeCalled();
