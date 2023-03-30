@@ -126,19 +126,22 @@ namespace starsky.feature.metaupdate.Services
 
 		private static List<string> AppendXmpPathsWhenCollectionsFalse(bool collections, List<string> inputFilePaths)
 		{
-			var inputFilePathsWithXmpFiles = new List<string>();
-			
-			if ( collections == false )
+			if ( collections )
 			{
-				// append xmp files to list (does not need to exist on disk)
-				// ReSharper disable once LoopCanBeConvertedToQuery
-				foreach ( var inputFilePath in inputFilePaths.Where(ExtensionRolesHelper.IsExtensionForceXmp) )
-				{
-					inputFilePathsWithXmpFiles.Add(
-						ExtensionRolesHelper.ReplaceExtensionWithXmp(
-							inputFilePath));
-				}
+				return inputFilePaths;
 			}
+			
+			var inputFilePathsWithXmpFiles = new List<string>();
+
+			// append xmp files to list (does not need to exist on disk)
+			// ReSharper disable once LoopCanBeConvertedToQuery
+			foreach ( var inputFilePath in inputFilePaths.Where(ExtensionRolesHelper.IsExtensionForceXmp) )
+			{
+				inputFilePathsWithXmpFiles.Add(
+					ExtensionRolesHelper.ReplaceExtensionWithXmp(
+						inputFilePath));
+			}
+			
 			inputFilePaths.AddRange(inputFilePathsWithXmpFiles);
 			return inputFilePaths;
 		}
@@ -147,7 +150,7 @@ namespace starsky.feature.metaupdate.Services
 			string fieldName, string search, string replace)
 		{
 			foreach ( var fileIndexItem in fileIndexResultsList.Where( 
-				p => p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted) )
+				         p => p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted) )
 			{
 				var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 				var replacedToObject = new object();

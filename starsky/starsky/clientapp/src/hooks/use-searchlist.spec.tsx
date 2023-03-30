@@ -44,12 +44,19 @@ describe("UseSearchList", () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
       const controller = new AbortController();
+      const setArchiveSpy = jest.fn();
 
       setFetchSpy(200, PageType.Search);
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await hook.fetchContentUseSearchList(
+          "test",
+          controller,
+          setArchiveSpy,
+          jest.fn(),
+          false
+        );
       });
 
       if (!hook.archive) throw Error("missing archive");
@@ -61,52 +68,78 @@ describe("UseSearchList", () => {
         signal: controller.signal
       });
 
-      expect(hook.archive.fileIndexItems).toStrictEqual([]);
+      expect(setArchiveSpy).toBeCalledWith({
+        colorClassActiveList: [],
+        colorClassUsage: [],
+        fileIndexItem: { description: "", tags: "", title: "" },
+        fileIndexItems: [],
+        pageType: "Search"
+      });
     });
 
     it("with search content 404", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
       const controller = new AbortController();
+      const setPageTypeSpy = jest.fn();
 
       setFetchSpy(404, PageType.Archive);
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await hook.fetchContentUseSearchList(
+          "test",
+          controller,
+          jest.fn(),
+          setPageTypeSpy,
+          false
+        );
       });
 
-      expect(hook.pageType).toBe(PageType.NotFound);
+      expect(setPageTypeSpy).toBeCalledWith(PageType.NotFound);
     });
 
     it("with search content 401", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
       const controller = new AbortController();
+      const setPageTypeSpy = jest.fn();
 
       setFetchSpy(401, PageType.Archive);
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await hook.fetchContentUseSearchList(
+          "test",
+          controller,
+          jest.fn(),
+          setPageTypeSpy,
+          false
+        );
       });
 
-      expect(hook.pageType).toBe(PageType.Unauthorized);
+      expect(setPageTypeSpy).toBeCalledWith(PageType.Unauthorized);
     });
 
     it("with search content 500", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
       const controller = new AbortController();
+      const setPageTypeSpy = jest.fn();
 
       setFetchSpy(500, PageType.Archive);
 
       await act(async () => {
         // perform changes within our component
-        await hook.fetchContent("test", controller);
+        await hook.fetchContentUseSearchList(
+          "test",
+          controller,
+          jest.fn(),
+          setPageTypeSpy,
+          false
+        );
       });
-
-      expect(hook.pageType).toBe(PageType.ApplicationException);
+      expect(setPageTypeSpy).toBeCalledWith(PageType.ApplicationException);
     });
   });
 });
