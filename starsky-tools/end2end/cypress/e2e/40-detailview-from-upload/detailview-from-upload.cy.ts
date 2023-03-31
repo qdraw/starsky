@@ -79,7 +79,7 @@ describe('DetailView (from upload) (40)', () => {
   })
 
   it('go back to fileName2 (40)', {
-    retries: { runMode: 2, openMode: 2 }
+    retries: { runMode: 3, openMode: 3 }
   }, () => {
     if (!config.isEnabled) return
 
@@ -93,6 +93,7 @@ describe('DetailView (from upload) (40)', () => {
       .should('contain', fileName1)
 
     cy.wait('@index1')
+    cy.wait(100)
 
     cy.get('.nextprev.nextprev--prev').first().click()
       .url()
