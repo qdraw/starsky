@@ -608,9 +608,9 @@ namespace starskytest.starsky.foundation.search.Services
 			await InsertSearchData();
 
 			var del = await _search.Search(TrashKeyword.TrashKeywordString);
-			var count = del.FileIndexItems.Count;
+			var count = del.FileIndexItems?.Count;
 			Assert.AreEqual(1,count);
-			Assert.AreEqual("stationdeletedfile", del.FileIndexItems.FirstOrDefault()?.FileHash);
+			Assert.AreEqual("stationdeletedfile", del.FileIndexItems?.FirstOrDefault()?.FileHash);
 		}
 
 		[TestMethod]
@@ -636,7 +636,7 @@ namespace starskytest.starsky.foundation.search.Services
 				});
 			var searchService = new SearchService(_dbContext,new FakeIWebLogger(),fakeCache);
 			var result = await searchService.Search("t"); // <= t is only to detect in fakeCache
-			Assert.AreEqual(1,result.FileIndexItems.Count);
+			Assert.AreEqual(1,result.FileIndexItems?.Count);
 		}
 	    
 
@@ -645,7 +645,7 @@ namespace starskytest.starsky.foundation.search.Services
 		{
 			await InsertSearchData();
 			var result = await _search.Search("-FileHash=stationdeletedfile || -FileHash=lelystadcentrum2",0,false);
-			Assert.AreEqual(2,result.FileIndexItems.Count);
+			Assert.AreEqual(2,result.FileIndexItems?.Count);
 		}
 	    
 		[TestMethod]
@@ -653,7 +653,7 @@ namespace starskytest.starsky.foundation.search.Services
 		{
 			await InsertSearchData();
 			var result = await _search.Search("-Description=lelystadcentrum2 -ImageFormat=tiff",0,false);
-			Assert.AreEqual(1,result.FileIndexItems.Count);
+			Assert.AreEqual(1,result.FileIndexItems?.Count);
 		}
 		
 		[TestMethod]
@@ -662,7 +662,7 @@ namespace starskytest.starsky.foundation.search.Services
 			await InsertSearchData();
 			var result = await _search.Search("-FileHash=lelystadcentrum -ImageFormat=jpg || -ImageFormat=xmp",0,false);
 			// currently does not work
-			Assert.AreEqual(0,result.FileIndexItems.Count);
+			Assert.AreEqual(0,result.FileIndexItems?.Count);
 		}
 		
 		[TestMethod]
@@ -670,7 +670,7 @@ namespace starskytest.starsky.foundation.search.Services
 		{
 			await InsertSearchData();
 			var result = await _search.Search("-Description=lelystadcentrum2",0,false);
-			Assert.AreEqual(1,result.FileIndexItems.Count);
+			Assert.AreEqual(1,result.FileIndexItems?.Count);
 		}
 
 		[TestMethod]
@@ -684,7 +684,7 @@ namespace starskytest.starsky.foundation.search.Services
 			// the and applies to all previous items
 			// lelystadcentrum && lelystadcentrum2 are items
 			// station = duplicate in this example but triggers other results when using || instead of &&
-			Assert.AreEqual(2,result.FileIndexItems.Count);
+			Assert.AreEqual(2,result.FileIndexItems?.Count);
 		}
 
 		[TestMethod]
@@ -692,7 +692,7 @@ namespace starskytest.starsky.foundation.search.Services
 		{
 			await InsertSearchData();
 			var result = await _search.Search("station || lelystad",0,false);
-			Assert.AreEqual(3,result.FileIndexItems.Count);
+			Assert.AreEqual(3,result.FileIndexItems?.Count);
 		}
 
 		[TestMethod]
@@ -740,7 +740,7 @@ namespace starskytest.starsky.foundation.search.Services
 		[TestMethod]
 		public void SearchViewModel_Quoted_DefaultSplit_ParseDefaultOption()
 		{
-			var modelSearchQuery = " \"station test\" key2";
+			const string modelSearchQuery = " \"station test\" key2";
 			var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
 			Assert.AreEqual("-Tags:\"station test\" -Tags:\"key2\" ",result);
 		}
@@ -748,7 +748,7 @@ namespace starskytest.starsky.foundation.search.Services
 		[TestMethod]
 		public void SearchViewModel_SearchOperatorOptions_Quoted_with_ParseDefaultOption()
 		{
-			var modelSearchQuery = " \"station test\" \"station test\"";
+			const string modelSearchQuery = " \"station test\" \"station test\"";
 			var searchViewModel = new SearchViewModel();
 		    
 			searchViewModel.ParseDefaultOption(modelSearchQuery);
@@ -762,7 +762,7 @@ namespace starskytest.starsky.foundation.search.Services
 		[TestMethod]
 		public void SearchViewModel_SearchOperatorOptions_NonQuoted_with_ParseDefaultOption()
 		{
-			var modelSearchQuery = "station test";
+			const string modelSearchQuery = "station test";
 			var searchViewModel = new SearchViewModel();
 		    
 			searchViewModel.ParseDefaultOption(modelSearchQuery);
@@ -776,7 +776,7 @@ namespace starskytest.starsky.foundation.search.Services
 		[TestMethod]
 		public void SearchViewModel_SearchOperatorOptions_NonQuoted_with_OR_Situation_ParseDefaultOption()
 		{
-			var modelSearchQuery = "station || test";
+			const string modelSearchQuery = "station || test";
 			var searchViewModel = new SearchViewModel();
 		    
 			searchViewModel.ParseDefaultOption(modelSearchQuery);
@@ -805,7 +805,7 @@ namespace starskytest.starsky.foundation.search.Services
 		public void SearchViewModel_SearchOperatorOptions_ShortWord()
 		{
 			// of -> wrong detected due searching for not queries
-			var modelSearchQuery = "query of";
+			const string modelSearchQuery = "query of";
 			var searchViewModel = new SearchViewModel();
 			searchViewModel.ParseDefaultOption(modelSearchQuery);
 			Assert.AreEqual("query", searchViewModel.SearchFor?[0]);
@@ -816,7 +816,7 @@ namespace starskytest.starsky.foundation.search.Services
 		public void SearchViewModel_TwoCharWords_ShortWord()
 		{
 			// two chars used have an exception
-			var modelSearchQuery = "ns";
+			const string modelSearchQuery = "ns";
 			var searchViewModel = new SearchViewModel();
 			searchViewModel.ParseDefaultOption(modelSearchQuery);
 
@@ -880,7 +880,7 @@ namespace starskytest.starsky.foundation.search.Services
 			model.SetAddSearchForOptions("=");
 
 			var result = SearchViewModel.NarrowSearch(model);
-			Assert.AreEqual(2,result.FileIndexItems.Count);
+			Assert.AreEqual(2,result.FileIndexItems?.Count);
 
 			// Add extra NOT query			
 			model.SearchIn.Add("tags");
@@ -889,7 +889,7 @@ namespace starskytest.starsky.foundation.search.Services
 
 			var result2 = SearchViewModel.NarrowSearch(model);
 
-			Assert.AreEqual("lelystadcentrum",result.FileIndexItems[0].Tags);
+			Assert.AreEqual("lelystadcentrum",result.FileIndexItems?[0].Tags);
 		}
 		
 		[TestMethod]
