@@ -71,7 +71,9 @@ public class MoveToTrashService : IMoveToTrashService
 			await _metaPreflight.PreflightAsync(inputModel, inputFilePaths,
 				false, collections, 0);
 
-		var moveToTrash =
+		fileIndexResultsList = await AppendChildItemsToTrashList(fileIndexResultsList);
+		
+		var moveToTrashList =
 			fileIndexResultsList.Where(p =>
 				p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted).ToList();
 
@@ -81,7 +83,7 @@ public class MoveToTrashService : IMoveToTrashService
 		{
 			if ( isSystemTrashEnabled )
 			{
-				await SystemTrashInQueue(moveToTrash);
+				await SystemTrashInQueue(moveToTrashList);
 				return;
 			}
 				
@@ -90,7 +92,7 @@ public class MoveToTrashService : IMoveToTrashService
 				
 		}, "trash");
 		
-		return await _connectionService.ConnectionServiceAsync(moveToTrash, isSystemTrashEnabled);
+		return await _connectionService.ConnectionServiceAsync(moveToTrashList, isSystemTrashEnabled);
 	}
 
 	private async Task MetaTrashInQueue(Dictionary<string, List<string>> changedFileIndexItemName, 
@@ -99,15 +101,34 @@ public class MoveToTrashService : IMoveToTrashService
 		await _metaUpdateService.UpdateAsync(changedFileIndexItemName,
 			fileIndexResultsList, inputModel, collections, false, 0);
 	}
+	
+	/// <summary>
+	/// For directories add all sub files
+	/// </summary>
+	/// <param name="moveToTrash"></param>
+	internal async Task<List<FileIndexItem>> AppendChildItemsToTrashList(List<FileIndexItem> moveToTrash)
+	{
+		var childSubPaths = moveToTrash
+			.Where(p => !string.IsNullOrEmpty(p.FilePath) && p.IsDirectory == true)
+			.Select(p => p.FilePath).Cast<string>()
+			.ToList();
 
-	private async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
+		if ( childSubPaths.Any() )
+		{
+			moveToTrash.AddRange(await _query.GetAllObjectsAsync(childSubPaths));
+		}
+
+		return moveToTrash;
+	}
+
+	internal async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
 	{
 		var fullFilePaths = moveToTrash
 			.Where(p => p.FilePath != null)
 			.Select(p => _appSettings.DatabasePathToFilePath(p.FilePath, false))
 			.ToList();
 		_systemTrashService.Trash(fullFilePaths);
-
+		
 		await _query.RemoveItemAsync(moveToTrash);
 	}
 }

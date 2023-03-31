@@ -26,6 +26,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			CancellationToken token = source.Token;
 			source.Cancel(); // <- cancel before start
 
+			// "StartAsync" is protected, so we need to use reflection
 			MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
 				BindingFlags.NonPublic | BindingFlags.Instance);
 			if ( dynMethod == null )
