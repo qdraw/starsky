@@ -31,7 +31,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}, true, true, 0);
+				new[] {"/test.jpg"}.ToList(), true, true, 0);
 
 			Assert.AreEqual(2, result.fileIndexResultsList.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
@@ -56,7 +56,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}, true, false, 0);
+				new[] {"/test.jpg"}.ToList(), true, false, 0);
 
 			Assert.AreEqual(1, result.fileIndexResultsList.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
@@ -78,7 +78,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}, true, true, 0);
+				new[] {"/test.jpg"}.ToList(), true, true, 0);
 
 			Assert.AreEqual(1, result.fileIndexResultsList.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, 
@@ -102,7 +102,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}, true, true, 0);
+				new[] {"/test.jpg"}.ToList(), true, true, 0);
 
 			Assert.AreEqual(1, result.fileIndexResultsList.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
@@ -266,7 +266,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeSelectorStorage(),new FakeIWebLogger());
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("test"), 
-				new[] {"test"}, true, true, 0);
+				new[] {"test"}.ToList(), true, true, 0);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, 
 				result.fileIndexResultsList.FirstOrDefault()?.Status);
@@ -286,7 +286,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/readonly/test.jpg"), 
-				new[] {"/readonly/test.jpg"}, true, true, 0);
+				new[] {"/readonly/test.jpg"}.ToList(), true, true, 0);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, 
 				result.fileIndexResultsList.FirstOrDefault()?.Status);
@@ -307,7 +307,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/deleted.jpg"), 
-				new[] {"/deleted.jpg"}, 
+				new[] {"/deleted.jpg"}.ToList(), 
 				true, true, 0);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, 
@@ -361,7 +361,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/test.jpg"), 
-				new[] {"/test.jpg"}, true, true, 0);
+				new[] {"/test.jpg"}.ToList(), true, true, 0);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, 
 				result.fileIndexResultsList.FirstOrDefault()?.Status);

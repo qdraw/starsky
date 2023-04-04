@@ -531,8 +531,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = (await sync.SingleFile("/test.jpg",
 				new List<FileIndexItem>{item})).FirstOrDefault();
 			
-			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result.Status);
-			Assert.AreEqual(1, result.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result?.Status);
+			Assert.AreEqual(1, result?.LastChanged.Count(p => p == nameof(FileIndexItem.LastEdited)));
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 

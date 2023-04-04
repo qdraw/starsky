@@ -11,7 +11,7 @@ public interface IMoveToTrashService
 	/// <param name="inputFilePaths">list of paths</param>
 	/// <param name="collections">is stack collections enabled</param>
 	/// <returns>list of files</returns>
-	Task<List<FileIndexItem>> MoveToTrashAsync(string[] inputFilePaths,
+	Task<List<FileIndexItem>> MoveToTrashAsync(List<string> inputFilePaths,
 		bool collections);
 	
 	/// <summary>

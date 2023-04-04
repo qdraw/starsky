@@ -57,7 +57,13 @@ namespace starsky.foundation.database.Query
             bool enableCollections = true,
             bool hideDeleted = true)
         {
-            if (colorClassActiveList == null) colorClassActiveList = new List<ColorClassParser.Color>();
+            colorClassActiveList ??= new List<ColorClassParser.Color>();
+
+            // Hide meta files in list
+            fileIndexItems = fileIndexItems.Where(p =>
+	            p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
+	            p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json).ToList();
+	            
             if (colorClassActiveList.Any())
             {
                 fileIndexItems = fileIndexItems.Where(p => colorClassActiveList.Contains(p.ColorClass)).ToList();
@@ -118,9 +124,7 @@ namespace starsky.foundation.database.Query
 	        {
 		        var queryItems = context.FileIndex
 			        .TagWith("QueryDisplayFileFolders")
-			        .Where(p => p.ParentDirectory == subPath && p.FileName != "/" && 
-			                    p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp && 
-			                    p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json)
+			        .Where(p => p.ParentDirectory == subPath && p.FileName != "/")
 			        .OrderBy(p => p.FileName).AsEnumerable()	
 			        // remove duplicates from list
 			        .GroupBy(t => t.FileName).Select(g => g.First());
@@ -149,9 +153,7 @@ namespace starsky.foundation.database.Query
         /// </summary>
         /// <param name="queryItems">list of items</param>
         /// <returns>list without deleted items</returns>
-        [SuppressMessage("Performance", "CA1822:Mark members as static")]
-        // ReSharper disable once MemberCanBeMadeStatic.Global
-        private IEnumerable<FileIndexItem> HideDeletedFileFolderList(List<FileIndexItem> queryItems){
+        private static IEnumerable<FileIndexItem> HideDeletedFileFolderList(List<FileIndexItem> queryItems){
             // temp feature to hide deleted items
             var displayItems = new List<FileIndexItem>();
                 foreach (var item in queryItems)

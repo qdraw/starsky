@@ -79,7 +79,7 @@ namespace starsky.feature.metaupdate.Services
 			if ( changedFileIndexItemName == null )
 			{
 				changedFileIndexItemName = (await _metaPreflight.PreflightAsync(inputModel,
-					fileIndexResultsList.Select(p => p.FilePath).ToArray(), append, collections,
+					fileIndexResultsList.Select(p => p.FilePath).ToList(), append, collections,
 					rotateClock)).changedFileIndexItemName;
 			}
 			

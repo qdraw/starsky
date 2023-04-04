@@ -38,7 +38,7 @@ public class MoveToTrashServiceTest
 			trashService, new FakeIMetaUpdateService(), 
 			new FakeITrashConnectionService());
 
-		await moveToTrashService.MoveToTrashAsync(new List<string>{path}.ToArray(), true);
+		await moveToTrashService.MoveToTrashAsync(new List<string>{path}, true);
 		
 		Assert.AreEqual(1, trashService.InTrash.Count);
 		var expected = appSettings.StorageFolder +
@@ -70,7 +70,7 @@ public class MoveToTrashServiceTest
 			trashService, new FakeIMetaUpdateService(), 
 			new FakeITrashConnectionService());
 
-		await moveToTrashService.MoveToTrashAsync(new List<string>{dirPath}.ToArray(), true);
+		await moveToTrashService.MoveToTrashAsync(new List<string>{dirPath}, true);
 		
 		Assert.AreEqual(1, trashService.InTrash.Count);
 		var expected = appSettings.StorageFolder +
@@ -94,7 +94,7 @@ public class MoveToTrashServiceTest
 			new FakeITrashConnectionService());
 
 		var result = await moveToTrashService.MoveToTrashAsync(
-			new List<string>{path}.ToArray(), true);
+			new List<string>{path}, true);
 		
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.FirstOrDefault()?.Status);
 	}
@@ -115,7 +115,7 @@ public class MoveToTrashServiceTest
 			new FakeITrashConnectionService());
 
 		var result = await moveToTrashService.MoveToTrashAsync(
-			new List<string>{path}.ToArray(), true);
+			new List<string>{path}, true);
 		
 		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result.FirstOrDefault()?.Status);
 	}
@@ -137,7 +137,7 @@ public class MoveToTrashServiceTest
 			new FakeITrashConnectionService());
 
 		var result = await moveToTrashService.MoveToTrashAsync(
-			new List<string>{path}.ToArray(), true);
+			new List<string>{path}, true);
 		
 		Assert.AreEqual(0, trashService.InTrash.Count);
 
@@ -161,7 +161,7 @@ public class MoveToTrashServiceTest
 			new FakeITrashConnectionService());
 
 		var result = await moveToTrashService.MoveToTrashAsync(
-			new List<string>{path}.ToArray(), true);
+			new List<string>{path}, true);
 		
 		Assert.AreEqual(0, trashService.InTrash.Count);
 
@@ -185,7 +185,7 @@ public class MoveToTrashServiceTest
 			new FakeITrashConnectionService());
 
 		var result = await moveToTrashService.MoveToTrashAsync(
-			new List<string>{path}.ToArray(), true);
+			new List<string>{path}, true);
 		
 		Assert.AreEqual(0, trashService.InTrash.Count);
 
@@ -209,7 +209,7 @@ public class MoveToTrashServiceTest
 		var options = builderDb.Options;
 		var dbContext = new ApplicationDbContext(options);
 
-		var serviceCollection = new ServiceCollection().AddScoped(provider => new ApplicationDbContext(options));
+		var serviceCollection = new ServiceCollection().AddScoped(_ => new ApplicationDbContext(options));
 		var serviceScopeFactory = serviceCollection.BuildServiceProvider().GetService<IServiceScopeFactory>();
 		
 		var storage = new FakeIStorage(
@@ -235,7 +235,7 @@ public class MoveToTrashServiceTest
 			new TrashService(), metaUpdate, new FakeITrashConnectionService());
 
 		var result = await moveToTrashService.MoveToTrashAsync(
-			new List<string>{path}.ToArray(), true);
+			new List<string>{path}, true);
 
 		await query.RemoveItemAsync(addedItem);
 		
@@ -262,7 +262,7 @@ public class MoveToTrashServiceTest
 		var options = builderDb.Options;
 		var dbContext = new ApplicationDbContext(options);
 
-		var serviceCollection = new ServiceCollection().AddScoped(provider => new ApplicationDbContext(options));
+		var serviceCollection = new ServiceCollection().AddScoped(_ => new ApplicationDbContext(options));
 		var serviceScopeFactory = serviceCollection.BuildServiceProvider().GetService<IServiceScopeFactory>();
 		
 		var storage = new FakeIStorage(
@@ -293,7 +293,7 @@ public class MoveToTrashServiceTest
 			new TrashService(), metaUpdate, new FakeITrashConnectionService());
 
 		var result = await moveToTrashService.MoveToTrashAsync(
-			new List<string>{path}.ToArray(), true);
+			new List<string>{path}, true);
 
 		await query.RemoveItemAsync(addedItem);
 		
@@ -305,7 +305,6 @@ public class MoveToTrashServiceTest
 
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[0].Tags);
 		Assert.AreEqual(TrashKeyword.TrashKeywordString, result[1].Tags);
-
 	}
 	
 	[TestMethod]
