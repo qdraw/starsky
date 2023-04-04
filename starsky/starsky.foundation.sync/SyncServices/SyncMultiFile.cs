@@ -153,7 +153,7 @@ namespace starsky.foundation.sync.SyncServices
 					dbItems[dbItemSearchedIndex].Status = FileIndexItem.ExifStatus.OkAndSame;
 				}
 
-				if ( dbItemSearched.Tags?.Contains(TrashKeyword.TrashKeywordString) == true )
+				if ( dbItemSearched.Tags!.Contains(TrashKeyword.TrashKeywordString) )
 				{
 					dbItems[dbItemSearchedIndex].Status = FileIndexItem.ExifStatus.DeletedAndSame;
 				}
