@@ -314,6 +314,10 @@ between 1 and 2 items
   background-image: url("../images/baseline-file-jpg-24px.svg");
 }
 
+.list-image-box > .box-content.isDirectory-false > .img-box--xmp {
+  background-image: url("../images/baseline-file-xmp-24px.svg");
+}
+
 .list-image-box > .box-content.isDirectory-false > .img-box--bmp {
   background-image: url("../images/baseline-file-bmp-24px.svg");
 }

@@ -26,6 +26,10 @@
   background-size: 48px;
 }
 
+.detailview .main.main--xmp {
+  background-image: url("../images/baseline-file-xmp-24px.svg");
+}
+
 .pan-zoom-image-container {
   overflow: hidden;
   height: 100%;
