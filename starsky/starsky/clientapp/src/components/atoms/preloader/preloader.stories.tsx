@@ -1,7 +1,14 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import Preloader from "./preloader";
 
-storiesOf("components/atoms/preloader", module).add("default", () => {
+export default {
+  title: "components/atoms/preloader"
+};
+
+export const Default = () => {
   return <Preloader isOverlay={false} />;
-});
+};
+
+Default.story = {
+  name: "default"
+};

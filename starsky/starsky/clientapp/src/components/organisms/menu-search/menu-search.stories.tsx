@@ -1,7 +1,14 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import MenuSearch from "./menu-search";
 
-storiesOf("components/organisms/menu-search", module).add("default", () => {
+export default {
+  title: "components/organisms/menu-search"
+};
+
+export const Default = () => {
   return <MenuSearch state={undefined as any} dispatch={() => {}} />;
-});
+};
+
+Default.story = {
+  name: "default"
+};

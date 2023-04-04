@@ -250,11 +250,17 @@ npmUnInstall("@types/node");
 npmInstall("@types/node", false, false);
 npmInstall("concurrently", false, true);
 npmInstall("@testing-library/user-event", false, false);
+
 // # for storybook
-npmInstall("@storybook/builder-webpack5", false, true);
-npmInstall("@storybook/manager-webpack5", false, true);
-npmInstall("@storybook/preset-create-react-app", false, true);
+npmInstall("@storybook/addon-essentials", false, true);
+npmInstall("@storybook/addon-interactions", false, true);
+npmInstall("@storybook/addon-links", false, true);
+npmInstall("@storybook/blocks", false, true);
 npmInstall("@storybook/node-logger", false, true);
+npmInstall("prop-types", false, true);
+npmInstall("storybook", false, true);
+
+npmInstall("@storybook/preset-create-react-app", false, true);
 
 npmInstall("webpack", false, true);
 

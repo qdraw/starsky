@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import {
   IFileIndexItem,
@@ -18,34 +17,51 @@ const exampleData8Selected = [
   { fileName: "test8.jpg", filePath: "/test8.jpg", lastEdited: "1" }
 ] as IFileIndexItem[];
 
-storiesOf("components/molecules/item-list-view", module)
-  .add("default", () => {
-    globalHistory.navigate("/");
-    return (
-      <ItemListView
-        iconList={true}
-        fileIndexItems={newIFileIndexItemArray()}
-        colorClassUsage={[]}
-      />
-    );
-  })
-  .add("8 items (selection disabled)", () => {
-    globalHistory.navigate("/");
-    return (
-      <ItemListView
-        iconList={true}
-        fileIndexItems={exampleData8Selected}
-        colorClassUsage={[]}
-      />
-    );
-  })
-  .add("8 items (selection enabled)", () => {
-    globalHistory.navigate("/?select=");
-    return (
-      <ItemListView
-        iconList={true}
-        fileIndexItems={exampleData8Selected}
-        colorClassUsage={[]}
-      />
-    );
-  });
+export default {
+  title: "components/molecules/item-list-view"
+};
+
+export const Default = () => {
+  globalHistory.navigate("/");
+  return (
+    <ItemListView
+      iconList={true}
+      fileIndexItems={newIFileIndexItemArray()}
+      colorClassUsage={[]}
+    />
+  );
+};
+
+Default.story = {
+  name: "default"
+};
+
+export const _8ItemsSelectionDisabled = () => {
+  globalHistory.navigate("/");
+  return (
+    <ItemListView
+      iconList={true}
+      fileIndexItems={exampleData8Selected}
+      colorClassUsage={[]}
+    />
+  );
+};
+
+_8ItemsSelectionDisabled.story = {
+  name: "8 items (selection disabled)"
+};
+
+export const _8ItemsSelectionEnabled = () => {
+  globalHistory.navigate("/?select=");
+  return (
+    <ItemListView
+      iconList={true}
+      fileIndexItems={exampleData8Selected}
+      colorClassUsage={[]}
+    />
+  );
+};
+
+_8ItemsSelectionEnabled.story = {
+  name: "8 items (selection enabled)"
+};

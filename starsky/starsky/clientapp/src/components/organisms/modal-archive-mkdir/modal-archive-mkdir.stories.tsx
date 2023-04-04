@@ -1,17 +1,21 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import ModalArchiveMkdir from "./modal-archive-mkdir";
 
-storiesOf("components/organisms/modal-archive-mkdir", module).add(
-  "default",
-  () => {
-    return (
-      <ModalArchiveMkdir
-        state={{} as any}
-        dispatch={() => {}}
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalArchiveMkdir>
-    );
-  }
-);
+export default {
+  title: "components/organisms/modal-archive-mkdir"
+};
+
+export const Default = () => {
+  return (
+    <ModalArchiveMkdir
+      state={{} as any}
+      dispatch={() => {}}
+      isOpen={true}
+      handleExit={() => {}}
+    ></ModalArchiveMkdir>
+  );
+};
+
+Default.story = {
+  name: "default"
+};

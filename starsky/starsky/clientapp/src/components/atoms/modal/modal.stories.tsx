@@ -1,7 +1,10 @@
-import { storiesOf } from "@storybook/react";
 import Modal from "./modal";
 
-storiesOf("components/atoms/modal", module).add("default", () => {
+export default {
+  title: "components/atoms/modal"
+};
+
+export const Default = () => {
   return (
     <Modal
       id="test-modal"
@@ -13,4 +16,8 @@ storiesOf("components/atoms/modal", module).add("default", () => {
       data
     </Modal>
   );
-});
+};
+
+Default.story = {
+  name: "default"
+};

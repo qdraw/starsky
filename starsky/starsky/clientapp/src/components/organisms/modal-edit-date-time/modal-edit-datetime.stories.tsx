@@ -1,8 +1,11 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import ModalDatetime from "./modal-edit-datetime";
 
-storiesOf("components/organisms/modal-datetime", module).add("default", () => {
+export default {
+  title: "components/organisms/modal-datetime"
+};
+
+export const Default = () => {
   return (
     <ModalDatetime
       isOpen={true}
@@ -10,4 +13,8 @@ storiesOf("components/organisms/modal-datetime", module).add("default", () => {
       handleExit={() => {}}
     ></ModalDatetime>
   );
-});
+};
+
+Default.story = {
+  name: "default"
+};
