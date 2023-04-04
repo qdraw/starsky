@@ -1,12 +1,16 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import ModalArchiveSynchronizeManually from "./modal-archive-synchronize-manually";
 
-storiesOf(
-  "components/organisms/modal-archive-synchronize-manually",
-  module
-).add("default", () => {
+export default {
+  title: "components/organisms/modal-archive-synchronize-manually"
+};
+
+export const Default = () => {
   return (
     <ModalArchiveSynchronizeManually isOpen={true} handleExit={() => {}} />
   );
-});
+};
+
+Default.story = {
+  name: "default"
+};

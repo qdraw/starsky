@@ -1,9 +1,12 @@
 import { globalHistory } from "@reach/router";
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import ButtonStyled from "./button-styled";
 
-storiesOf("components/atoms/button-styled", module).add("default", () => {
+export default {
+  title: "components/atoms/button-styled"
+};
+
+export const Default = () => {
   globalHistory.navigate("/?select=test.jpg");
   return (
     <ButtonStyled
@@ -15,4 +18,8 @@ storiesOf("components/atoms/button-styled", module).add("default", () => {
       Loading...
     </ButtonStyled>
   );
-});
+};
+
+Default.story = {
+  name: "default"
+};

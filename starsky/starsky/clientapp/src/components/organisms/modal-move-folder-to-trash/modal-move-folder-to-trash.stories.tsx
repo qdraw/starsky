@@ -1,10 +1,10 @@
-import { storiesOf } from "@storybook/react";
 import ModalMoveFolderToTrash from "./modal-move-folder-to-trash";
 
-storiesOf(
-  "components/organisms/modal-move-folder-to-trash.stories",
-  module
-).add("default", () => {
+export default {
+  title: "components/organisms/modal-move-folder-to-trash.stories"
+};
+
+export const Default = () => {
   return (
     <ModalMoveFolderToTrash
       isOpen={true}
@@ -17,4 +17,8 @@ storiesOf(
       }}
     />
   );
-});
+};
+
+Default.story = {
+  name: "default"
+};

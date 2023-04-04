@@ -1,15 +1,19 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import ModalDisplayOptions from "./modal-display-options";
 
-storiesOf("components/organisms/modal-display-options", module).add(
-  "default",
-  () => {
-    return (
-      <ModalDisplayOptions
-        isOpen={true}
-        handleExit={() => {}}
-      ></ModalDisplayOptions>
-    );
-  }
-);
+export default {
+  title: "components/organisms/modal-display-options"
+};
+
+export const Default = () => {
+  return (
+    <ModalDisplayOptions
+      isOpen={true}
+      handleExit={() => {}}
+    ></ModalDisplayOptions>
+  );
+};
+
+Default.story = {
+  name: "default"
+};

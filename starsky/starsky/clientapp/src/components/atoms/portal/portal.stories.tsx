@@ -1,7 +1,14 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import Portal from "./portal";
 
-storiesOf("components/atoms/portal", module).add("default", () => {
+export default {
+  title: "components/atoms/portal"
+};
+
+export const Default = () => {
   return <Portal>should be outside the DOM</Portal>;
-});
+};
+
+Default.story = {
+  name: "default"
+};

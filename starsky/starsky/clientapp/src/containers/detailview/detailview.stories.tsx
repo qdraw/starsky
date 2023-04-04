@@ -1,11 +1,14 @@
-import { storiesOf } from "@storybook/react";
 import DetailViewContextWrapper from "../../contexts-wrappers/detailview-wrapper";
 import useLocation from "../../hooks/use-location";
 import { IDetailView } from "../../interfaces/IDetailView";
 import { IExifStatus } from "../../interfaces/IExifStatus";
 import { ImageFormat } from "../../interfaces/IFileIndexItem";
 
-storiesOf("containers/detailview", module).add("default", () => {
+export default {
+  title: "containers/detailview"
+};
+
+export const Default = () => {
   const item = {
     subPath: "/test.jpg",
     fileIndexItem: {
@@ -22,4 +25,8 @@ storiesOf("containers/detailview", module).add("default", () => {
   history.location.search += "&details=true&modal=geo";
 
   return <DetailViewContextWrapper {...item} />;
-});
+};
+
+Default.story = {
+  name: "default"
+};

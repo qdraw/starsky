@@ -1,4 +1,3 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import {
   IFileIndexItem,
@@ -6,19 +5,31 @@ import {
 } from "../../../interfaces/IFileIndexItem";
 import ItemTextListView from "./item-text-list-view";
 
-storiesOf("components/molecules/item-text-list-view", module)
-  .add("default", () => {
-    return (
-      <ItemTextListView
-        fileIndexItems={newIFileIndexItemArray()}
-        callback={() => {}}
-      />
-    );
-  })
-  .add("2 items", () => {
-    const exampleData = [
-      { fileName: "test.jpg", filePath: "/test.jpg" },
-      { fileName: "test2.jpg", filePath: "/test2.jpg" }
-    ] as IFileIndexItem[];
-    return <ItemTextListView fileIndexItems={exampleData} />;
-  });
+export default {
+  title: "components/molecules/item-text-list-view"
+};
+
+export const Default = () => {
+  return (
+    <ItemTextListView
+      fileIndexItems={newIFileIndexItemArray()}
+      callback={() => {}}
+    />
+  );
+};
+
+Default.story = {
+  name: "default"
+};
+
+export const _2Items = () => {
+  const exampleData = [
+    { fileName: "test.jpg", filePath: "/test.jpg" },
+    { fileName: "test2.jpg", filePath: "/test2.jpg" }
+  ] as IFileIndexItem[];
+  return <ItemTextListView fileIndexItems={exampleData} />;
+};
+
+_2Items.story = {
+  name: "2 items"
+};

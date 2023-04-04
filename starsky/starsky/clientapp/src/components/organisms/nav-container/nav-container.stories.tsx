@@ -1,9 +1,12 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import NavContainer from "./nav-container";
 
-storiesOf("components/organisms/nav-container", module).add("default", () => {
+export default {
+  title: "components/organisms/nav-container"
+};
+
+export const Default = () => {
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   return (
     <header className="header">
@@ -20,4 +23,8 @@ storiesOf("components/organisms/nav-container", module).add("default", () => {
       </NavContainer>
     </header>
   );
-});
+};
+
+Default.story = {
+  name: "default"
+};

@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import { PageType } from "../../../interfaces/IDetailView";
 import {
@@ -9,24 +8,36 @@ import {
 } from "../../../interfaces/IFileIndexItem";
 import ArchiveSidebarColorClass from "./archive-sidebar-color-class";
 
-storiesOf("components/molecules/archive-sidebar/color-class", module)
-  .add("no items disabled", () => {
-    globalHistory.navigate("/");
-    return (
-      <ArchiveSidebarColorClass
-        pageType={PageType.Archive}
-        isReadOnly={false}
-        fileIndexItems={newIFileIndexItemArray()}
-      />
-    );
-  })
-  .add("enabled", () => {
-    globalHistory.navigate("/?select=test.jpg");
-    return (
-      <ArchiveSidebarColorClass
-        pageType={PageType.Archive}
-        isReadOnly={false}
-        fileIndexItems={[newIFileIndexItem()] as IFileIndexItem[]}
-      />
-    );
-  });
+export default {
+  title: "components/molecules/archive-sidebar/color-class"
+};
+
+export const NoItemsDisabled = () => {
+  globalHistory.navigate("/");
+  return (
+    <ArchiveSidebarColorClass
+      pageType={PageType.Archive}
+      isReadOnly={false}
+      fileIndexItems={newIFileIndexItemArray()}
+    />
+  );
+};
+
+NoItemsDisabled.story = {
+  name: "no items disabled"
+};
+
+export const Enabled = () => {
+  globalHistory.navigate("/?select=test.jpg");
+  return (
+    <ArchiveSidebarColorClass
+      pageType={PageType.Archive}
+      isReadOnly={false}
+      fileIndexItems={[newIFileIndexItem()] as IFileIndexItem[]}
+    />
+  );
+};
+
+Enabled.story = {
+  name: "enabled"
+};

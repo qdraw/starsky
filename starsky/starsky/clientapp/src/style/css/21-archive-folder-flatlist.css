@@ -95,6 +95,9 @@
 .flatlistitem .icon.imageformat-gpx {
   background-image: url("../images/baseline-file-gpx-24px.svg");
 }
+.flatlistitem .icon.imageformat-xmp {
+  background-image: url("../images/baseline-file-xmp-24px.svg");
+}
 
 /* gif has no icon yet */
 .flatlistitem .icon.imageformat-bmp {
