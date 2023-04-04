@@ -21,8 +21,11 @@ const config: StorybookConfig = {
   staticDirs: ["../public"],
   webpackFinal: async (config) => {
     // build-storybook url
-    config.output!.publicPath = "/";
+    //config.output!.publicPath = "/";
     return config;
+  },
+  features: {
+    storyStoreV7: false
   }
 };
 export default config;
