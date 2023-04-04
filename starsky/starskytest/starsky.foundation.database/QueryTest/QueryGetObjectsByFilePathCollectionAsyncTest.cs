@@ -224,11 +224,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 		
 		[TestMethod]
-		public async Task GetObjectsByFilePathAsync_SingleItem_Disposed()
+		public async Task GetObjectsByFilePathAsync_Collection_SingleItem_Disposed()
 		{
 			await _query.AddRangeAsync(new List<FileIndexItem>
 			{
-				new FileIndexItem("/disposed/single_item_disposed_1.jpg"),
+				new FileIndexItem("/disposed2/single_item_disposed_1.jpg"),
 			});
 			
 			// get context
@@ -241,10 +241,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			var result = await new Query(dbContextDisposed,
 					new AppSettings(), serviceScopeFactory, new FakeIWebLogger(),new FakeMemoryCache())
-				.GetObjectsByFilePathCollectionQueryAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
+				.GetObjectsByFilePathCollectionQueryAsync(new List<string> {"/disposed2/single_item_disposed_1.jpg"});
 
-			Assert.AreEqual(2, result.Count);
-			Assert.AreEqual("/disposed/single_item_disposed_1.jpg",result[0].FilePath);
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("/disposed2/single_item_disposed_1.jpg",result[0].FilePath);
 		}
 		
 	}
