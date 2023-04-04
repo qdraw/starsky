@@ -1,31 +1,42 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ModalDropAreaFilesAdded from "./modal-drop-area-files-added";
 
-storiesOf("components/molecules/modal-drop-area-files-added", module)
-  .add("default", () => {
-    return (
-      <ModalDropAreaFilesAdded
-        isOpen={true}
-        uploadFilesList={[]}
-        handleExit={() => {}}
-      />
-    );
-  })
-  .add("2 items", () => {
-    return (
-      <ModalDropAreaFilesAdded
-        isOpen={true}
-        uploadFilesList={[
-          { fileName: "test.jpg", status: IExifStatus.Ok } as IFileIndexItem,
-          {
-            fileName: "file-error.png",
-            status: IExifStatus.FileError
-          } as IFileIndexItem
-        ]}
-        handleExit={() => {}}
-      />
-    );
-  });
+export default {
+  title: "components/molecules/modal-drop-area-files-added"
+};
+
+export const Default = () => {
+  return (
+    <ModalDropAreaFilesAdded
+      isOpen={true}
+      uploadFilesList={[]}
+      handleExit={() => {}}
+    />
+  );
+};
+
+Default.story = {
+  name: "default"
+};
+
+export const _2Items = () => {
+  return (
+    <ModalDropAreaFilesAdded
+      isOpen={true}
+      uploadFilesList={[
+        { fileName: "test.jpg", status: IExifStatus.Ok } as IFileIndexItem,
+        {
+          fileName: "file-error.png",
+          status: IExifStatus.FileError
+        } as IFileIndexItem
+      ]}
+      handleExit={() => {}}
+    />
+  );
+};
+
+_2Items.story = {
+  name: "2 items"
+};

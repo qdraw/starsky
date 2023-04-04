@@ -1,9 +1,13 @@
-import { storiesOf } from "@storybook/react";
 import ApplicationException from "./application-exception";
 
-storiesOf("components/organisms/application-exception", module).add(
-  "default",
-  () => {
-    return <ApplicationException></ApplicationException>;
-  }
-);
+export default {
+  title: "components/organisms/application-exception"
+};
+
+export const Default = () => {
+  return <ApplicationException></ApplicationException>;
+};
+
+Default.story = {
+  name: "default"
+};

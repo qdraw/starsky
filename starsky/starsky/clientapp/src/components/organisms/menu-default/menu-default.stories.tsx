@@ -1,7 +1,14 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import MenuDefault from "./menu-default";
 
-storiesOf("components/organisms/menu-default", module).add("default", () => {
+export default {
+  title: "components/organisms/menu-default"
+};
+
+export const Default = () => {
   return <MenuDefault isEnabled={true}></MenuDefault>;
-});
+};
+
+Default.story = {
+  name: "default"
+};

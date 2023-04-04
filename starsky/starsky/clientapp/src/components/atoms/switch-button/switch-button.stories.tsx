@@ -1,9 +1,16 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import SwitchButton from "./switch-button";
 
-storiesOf("components/atoms/switch-button", module).add("default", () => {
+export default {
+  title: "components/atoms/switch-button"
+};
+
+export const Default = () => {
   return (
     <SwitchButton onToggle={() => {}} leftLabel={"on"} rightLabel={"off"} />
   );
-});
+};
+
+Default.story = {
+  name: "default"
+};

@@ -1,10 +1,14 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import PreferencesPassword from "./preferences-password";
 
-storiesOf("components/organisms/preferences-password", module).add(
-  "default",
-  () => {
-    return <PreferencesPassword />;
-  }
-);
+export default {
+  title: "components/organisms/preferences-password"
+};
+
+export const Default = () => {
+  return <PreferencesPassword />;
+};
+
+Default.story = {
+  name: "default"
+};

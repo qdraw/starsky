@@ -1,8 +1,11 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import DetailViewMp4 from "./detail-view-mp4";
 
-storiesOf("components/organisms/detail-view-mp4", module).add("default", () => {
+export default {
+  title: "components/organisms/detail-view-mp4"
+};
+
+export const Default = () => {
   return (
     <>
       Todo: no results
@@ -10,4 +13,8 @@ storiesOf("components/organisms/detail-view-mp4", module).add("default", () => {
       <DetailViewMp4></DetailViewMp4>
     </>
   );
-});
+};
+
+Default.story = {
+  name: "default"
+};

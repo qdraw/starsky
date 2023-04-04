@@ -1,8 +1,11 @@
-import { storiesOf } from "@storybook/react";
 import React from "react";
 import ModalDownload from "./modal-download";
 
-storiesOf("components/organisms/modal-download", module).add("default", () => {
+export default {
+  title: "components/organisms/modal-download"
+};
+
+export const Default = () => {
   return (
     <ModalDownload
       isOpen={true}
@@ -11,4 +14,8 @@ storiesOf("components/organisms/modal-download", module).add("default", () => {
       handleExit={() => {}}
     ></ModalDownload>
   );
-});
+};
+
+Default.story = {
+  name: "default"
+};
