@@ -124,7 +124,7 @@
     "@storybook/builder-webpack5": "^6.5.13",
     "@storybook/manager-webpack5": "^6.5.13",
     "@storybook/preset-create-react-app": "^4.1.2",
-    "@storybook/react": "^6.5.16",
+    "@storybook/react": "^7.0.2",
     "concurrently": "^7.1.0",
     "webpack": "^5.76.0"
   }
