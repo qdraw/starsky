@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[SuppressMessage("ReSharper", "ArrangeObjectCreationWhenTypeEvident")]
 	public class QueryAddRangeTest
 	{
-		private IServiceScopeFactory CreateNewScope()
+		private static IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryAddRangeTest)));
