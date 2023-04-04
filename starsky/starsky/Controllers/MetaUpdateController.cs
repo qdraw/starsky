@@ -75,7 +75,7 @@ namespace starsky.Controllers
 			var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
 
 			var (fileIndexResultsList, changedFileIndexItemName) =  await _metaPreflight.PreflightAsync(inputModel, 
-				inputFilePaths, append, collections, rotateClock);
+				inputFilePaths.ToList(), append, collections, rotateClock);
 
 			var operationId = HttpContext.GetOperationId();
 			
@@ -87,7 +87,7 @@ namespace starsky.Controllers
 				
 				var metaUpdateService = _scopeFactory.CreateScope()
 					.ServiceProvider.GetRequiredService<IMetaUpdateService>();
-
+				
 				var data = await metaUpdateService.UpdateAsync(
 					changedFileIndexItemName, fileIndexResultsList, null,
 						collections, append, rotateClock);
