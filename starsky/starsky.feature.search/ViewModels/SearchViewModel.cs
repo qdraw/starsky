@@ -39,7 +39,7 @@ namespace starsky.feature.search.ViewModels
 		/// <summary>
 		/// Items on the page
 		/// </summary>
-		public List<FileIndexItem> FileIndexItems { get; set; }
+		public List<FileIndexItem>? FileIndexItems { get; set; }
         
 		/// <summary>
 		/// Full location specification
@@ -52,7 +52,7 @@ namespace starsky.feature.search.ViewModels
 		/// <summary>
 		/// Where to search for
 		/// </summary>
-		public string SearchQuery { get; set; } = string.Empty;
+		public string? SearchQuery { get; set; } = string.Empty;
 	    
 		/// <summary>
 		/// Current page number (index=0)
@@ -214,7 +214,7 @@ namespace starsky.feature.search.ViewModels
 		/// Add first char of a string to _searchForOptions list
 		/// </summary>
 		/// <param name="value">searchFor option (e.g. =, &gt;, &lt; </param>
-		public void SetAddSearchForOptions(string value)
+		public SearchForOptionType SetAddSearchForOptions(string value)
 		{
 			SearchForOptionsInternal ??= new List<SearchForOptionType>();
 
@@ -222,23 +222,24 @@ namespace starsky.feature.search.ViewModels
 			{
 				case '>':
 					SearchForOptionsInternal.Add(SearchForOptionType.GreaterThen);
-					break;
+					return SearchForOptionType.GreaterThen;
 				case '<':
 					SearchForOptionsInternal.Add(SearchForOptionType.LessThen);
-					break;
+					return SearchForOptionType.LessThen;
 				case '-':
 					SearchForOptionsInternal.Add(SearchForOptionType.Not);
-					break;
+					return SearchForOptionType.Not;
 				case '=':
 					SearchForOptionsInternal.Add(SearchForOptionType.Equal);
-					break;
+					return SearchForOptionType.Equal;
 				case ':':
 					SearchForOptionsInternal.Add(SearchForOptionType.Equal);
-					break;
+					return SearchForOptionType.Equal;
 				case ';':
 					SearchForOptionsInternal.Add(SearchForOptionType.Equal);
-					break;
+					return SearchForOptionType.Equal;
 			}
+			return SearchForOptionType.Equal;
 		}
 
 		/// <summary>
@@ -520,7 +521,7 @@ namespace starsky.feature.search.ViewModels
 			if ( model.SearchIn.All(p => !string.Equals(p, nameof(SearchInTypes.imageformat), 
 				    StringComparison.InvariantCultureIgnoreCase)))
 			{
-				model.FileIndexItems = model.FileIndexItems
+				model.FileIndexItems = model.FileIndexItems!
 					.Where(p => p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp).ToList();
 			}
 
@@ -535,7 +536,7 @@ namespace starsky.feature.search.ViewModels
 			switch (searchType)
 			{
 				case SearchForOptionType.Not:
-					model.FileIndexItems = model.FileIndexItems.Where(
+					model.FileIndexItems = model.FileIndexItems!.Where(
 						p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						     && ! // not
 							     p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
@@ -543,7 +544,7 @@ namespace starsky.feature.search.ViewModels
 					).ToList();
 					break;
 				default:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
 							            .ToString()!.ToLowerInvariant().Contains(searchForQuery)  
@@ -558,7 +559,7 @@ namespace starsky.feature.search.ViewModels
 			SearchViewModel model,
 			PropertyInfo property, bool boolIsValue)
 		{
-			model.FileIndexItems = model.FileIndexItems
+			model.FileIndexItems = model.FileIndexItems!
 				.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 				            && (bool?) p.GetType().GetProperty(property.Name)?.GetValue(p, null)  == boolIsValue
 				).ToList();
@@ -573,7 +574,7 @@ namespace starsky.feature.search.ViewModels
 			switch (searchType)
 			{
 				case SearchForOptionType.Not:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
 							            .GetValue(p, null)!  
@@ -582,7 +583,7 @@ namespace starsky.feature.search.ViewModels
 						).ToList();
 					break;
 				default:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)?
 							            .GetValue(p, null)!  == castImageFormat
@@ -603,21 +604,21 @@ namespace starsky.feature.search.ViewModels
 			switch (searchType)
 			{
 				case SearchForOptionType.LessThen:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)! 
 						            <= parsedDateTime
 						).ToList();
 					break;
 				case SearchForOptionType.GreaterThen:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 						            >= parsedDateTime
 						).ToList();
 					break;
 				default:
-					model.FileIndexItems = model.FileIndexItems
+					model.FileIndexItems = model.FileIndexItems!
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						            && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)!
 						            == parsedDateTime

@@ -275,7 +275,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				_insertSearchDatahi4JpgInput
 			}.OrderBy(p => p.FileName).ToList();
             
-			var getAllRecursive123 = _query.GetAllRecursive()
+			var getAllRecursive123 = (await _query.GetAllRecursiveAsync())
 				.Where(p => p.FilePath.Contains("/basic"))
 				.OrderBy(p => p.FileName).ToList();
 
@@ -508,7 +508,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 
 		[TestMethod]
-		public async Task QueryDisplayFileFolders_XmpHide_Test()
+		public async Task QueryDisplayFileFolders_XmpShowInQuery_Test()
 		{
 			var image1 = await _query.AddItemAsync(new FileIndexItem
 			{
@@ -528,12 +528,38 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			var result = _query.QueryDisplayFileFolders("/test_xmp");
 
-			Assert.AreEqual(1,result.Count);
+			Assert.AreEqual(2,result.Count);
 			
 			Assert.AreEqual(image1Jpg.FilePath, result[0].FilePath);
 
 			await _query.RemoveItemAsync(image1);
 			await _query.RemoveItemAsync(image1Jpg);
+		}
+		
+		[TestMethod]
+		public async Task DisplayFileFolders_hide_xmp()
+		{
+			var image1 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "1.xmp",
+				ParentDirectory = "/test_xmp2", 
+				FileHash = "123458465522",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.xmp,
+			});
+			
+			var image1Jpg = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "1.jpg",
+				ParentDirectory = "/test_xmp2", 
+				FileHash = "123458465522",
+				ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+			});
+			
+			var result = _query.DisplayFileFolders(new List<FileIndexItem>{image1,image1Jpg}).ToList();
+
+			Assert.AreEqual(1,result.Count);
+			
+			Assert.AreEqual(image1Jpg.FilePath, result[0].FilePath);
 		}
 		
 		[TestMethod]

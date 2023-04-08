@@ -15,10 +15,11 @@ export function statusRemoved(
   if (
     !state.fileIndexItem?.status ||
     history.location.search.includes("!delete!") ||
-    history.location.search.includes("%21delete%21") // trash
+    history.location.search.includes("%21delete%21") /* trash */
   ) {
     return;
   }
+
   if (
     (state.fileIndexItem?.status === IExifStatus.NotFoundSourceMissing ||
       state.fileIndexItem?.status === IExifStatus.Deleted) &&

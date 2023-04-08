@@ -11,7 +11,7 @@ namespace starskytest.FakeMocks
 
 		public Task<(List<FileIndexItem> fileIndexResultsList, Dictionary<string, 
 			List<string>> changedFileIndexItemName)> PreflightAsync(FileIndexItem inputModel, 
-			string[] inputFilePaths, bool append,
+			List<string> inputFilePaths, bool append,
 			bool collections, int rotateClock)
 		{
 						

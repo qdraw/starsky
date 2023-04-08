@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.metaupdate.Helpers;
 using starsky.feature.metaupdate.Interfaces;
@@ -39,7 +38,7 @@ namespace starsky.feature.metaupdate.Services
 
 		public async Task<(List<FileIndexItem> fileIndexResultsList,
 				Dictionary<string, List<string>> changedFileIndexItemName)>
-			PreflightAsync(FileIndexItem inputModel, string[] inputFilePaths,
+			PreflightAsync(FileIndexItem inputModel, List<string> inputFilePaths,
 				bool append, bool collections, int rotateClock)
 		{
 			// the result list
@@ -51,9 +50,11 @@ namespace starsky.feature.metaupdate.Services
 			
 			// Prefill cache to avoid fast updating issues
 			await new AddParentCacheIfNotExist(_query,_logger).AddParentCacheIfNotExistAsync(inputFilePaths);
+			// add xmp files to the list
+			inputFilePaths = AppendXmpPathsWhenCollectionsFalseHelper.AppendXmpPathsWhenCollectionsFalse(collections, inputFilePaths);
 			
 			var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
-				inputFilePaths.ToList(), collections);
+				inputFilePaths, collections);
 
 			foreach ( var fileIndexItem in resultFileIndexItemsList )
 			{

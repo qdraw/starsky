@@ -28,7 +28,7 @@ public class SyncThumbnailTableAsyncTest
 		dbContext.Thumbnails.Add(new ThumbnailItem(fileHash,true,true,null,null));
 		await dbContext.SaveChangesAsync();
 		
-		var sync = new SyncAddAddThumbnailTable(new ThumbnailQuery(dbContext,null));
+		var sync = new SyncAddAddThumbnailTable(new ThumbnailQuery(dbContext,null, new FakeIWebLogger()));
 		
 		var content = await sync.SyncThumbnailTableAsync(
 			new List<FileIndexItem>
@@ -64,7 +64,7 @@ public class SyncThumbnailTableAsyncTest
 		var dbContext = new ApplicationDbContext(options);
 		
 		
-		var sync = new SyncAddAddThumbnailTable(new ThumbnailQuery(dbContext,null));
+		var sync = new SyncAddAddThumbnailTable(new ThumbnailQuery(dbContext,null, new FakeIWebLogger()));
 		var content = await sync.SyncThumbnailTableAsync(
 			new List<FileIndexItem>
 			{

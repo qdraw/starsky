@@ -65,7 +65,7 @@ namespace starsky.feature.metaupdate.Services
 			};
 
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
-			inputFilePaths = AppendXmpPathsWhenCollectionsFalse(collections, inputFilePaths);
+			inputFilePaths = AppendXmpPathsWhenCollectionsFalseHelper.AppendXmpPathsWhenCollectionsFalse(collections, inputFilePaths);
 
 			// the result list
 			var fileIndexUpdatedList = new List<FileIndexItem>();
@@ -122,28 +122,6 @@ namespace starsky.feature.metaupdate.Services
 			}
 			
 			return await new Duplicate(_query).RemoveDuplicateAsync(fileIndexResultList);
-		}
-
-		private static List<string> AppendXmpPathsWhenCollectionsFalse(bool collections, List<string> inputFilePaths)
-		{
-			if ( collections )
-			{
-				return inputFilePaths;
-			}
-			
-			var inputFilePathsWithXmpFiles = new List<string>();
-
-			// append xmp files to list (does not need to exist on disk)
-			// ReSharper disable once LoopCanBeConvertedToQuery
-			foreach ( var inputFilePath in inputFilePaths.Where(ExtensionRolesHelper.IsExtensionForceXmp) )
-			{
-				inputFilePathsWithXmpFiles.Add(
-					ExtensionRolesHelper.ReplaceExtensionWithXmp(
-						inputFilePath));
-			}
-			
-			inputFilePaths.AddRange(inputFilePathsWithXmpFiles);
-			return inputFilePaths;
 		}
 
 		public static List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 

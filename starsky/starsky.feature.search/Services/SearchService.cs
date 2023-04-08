@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +17,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.feature.search.Interfaces;
 using starsky.feature.search.ViewModels;
+#nullable enable
 
 namespace starsky.feature.search.Services
 {
@@ -26,13 +27,13 @@ namespace starsky.feature.search.Services
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache? _cache;
         private readonly AppSettings? _appSettings;
-        private readonly IWebLogger? _logger;
+        private readonly IWebLogger _logger;
 
         public SearchService(
             ApplicationDbContext context, 
+            IWebLogger logger,
             IMemoryCache? memoryCache = null,
-            AppSettings? appSettings = null,
-            IWebLogger? logger = null)
+            AppSettings? appSettings = null)
         {
             _context = context;
             _cache = memoryCache;
@@ -54,8 +55,12 @@ namespace starsky.feature.search.Services
 		    {
 			    throw new ArgumentException("Search Input Query is longer then 500 chars");
 		    }
-		    
-		    if ( query == TrashKeyword.TrashKeywordString ) enableCache = false;
+
+		    if ( query == TrashKeyword.TrashKeywordString )
+		    {
+			    _logger.LogInformation("Skip cache for trash");
+			    enableCache = false;
+		    }
 
 		    if ( !enableCache ||
 		         _cache == null || _appSettings?.AddMemoryCache == false )
@@ -132,7 +137,7 @@ namespace starsky.feature.search.Services
         /// </summary>
         /// <param name="query">where to search on</param>
         /// <returns></returns>
-        private async Task<SearchViewModel> SearchDirect(string query = "")
+        private async Task<SearchViewModel> SearchDirect(string? query = "")
         {
             var stopWatch = Stopwatch.StartNew();
 
@@ -144,7 +149,10 @@ namespace starsky.feature.search.Services
                 // Null check will safe you from error 500 with Empty request
             };
 
-            if (query == null) return model;
+            if ( query == null || model.FileIndexItems == null )
+            {
+	            return model;
+            }
 
             _orginalSearchQuery = model.SearchQuery;
 
@@ -157,7 +165,7 @@ namespace starsky.feature.search.Services
             model = SearchViewModel.NarrowSearch(model);
 
             // Remove duplicates from list
-            model.FileIndexItems = model.FileIndexItems
+            model.FileIndexItems = model.FileIndexItems!
 	            .Where(p => p.FilePath != null)
 	            .GroupBy(s => s.FilePath)
                 .Select(grp => grp.FirstOrDefault())
@@ -181,6 +189,7 @@ namespace starsky.feature.search.Services
 	    /// <param name="sourceList">IQueryable database</param>
 	    /// <param name="model">temp output model</param>
 	    /// <returns>search model with content</returns>
+	    [SuppressMessage("ReSharper", "AccessToModifiedClosure")]
 	    private async Task<SearchViewModel> WideSearch(IQueryable<FileIndexItem> sourceList,
 		    SearchViewModel model)
 	    {
@@ -226,7 +235,7 @@ namespace starsky.feature.search.Services
 					    break;
 				    case SearchViewModel.SearchInTypes.title:
 					    var title = model.SearchFor[i];
-					    predicates.Add(x => x.Title!.ToLower().Contains(title.ToString()));
+					    predicates.Add(x => x.Title!.ToLower().Contains(title));
 					    break;
 				    case SearchViewModel.SearchInTypes.make:
 					    // is in the database one field => will be filtered in narrowSearch
@@ -278,7 +287,7 @@ namespace starsky.feature.search.Services
 			    // Need to have the type registered in FileIndexPropList
 		    }
 		    
-		    _logger?.LogInformation($"search --> {model.SearchQuery}");
+		    _logger.LogInformation($"search --> {model.SearchQuery}");
 
 		    var predicate = PredicateExecution(predicates, model);
 		    
@@ -286,7 +295,6 @@ namespace starsky.feature.search.Services
 		    
 		    return model;
 	    }
-
 	    private static Expression<Func<FileIndexItem, bool>> PredicateExecution(
 		    IReadOnlyList<Expression<Func<FileIndexItem, bool>>> predicates,
 		    SearchViewModel model)
@@ -362,6 +370,8 @@ namespace starsky.feature.search.Services
 	    /// <param name="itemName">e.g. Tags or Description</param>
 	    private void SearchItemName(SearchViewModel model, string itemName)
         {
+	        if ( model.SearchQuery == null ) return;
+
 	        // ignore double quotes
 	        model.SearchQuery = model.SearchQuery.Replace("\"\"", "\"");
 	        
@@ -369,13 +379,11 @@ namespace starsky.feature.search.Services
 	        model.SearchQuery = Regex.Replace(model.SearchQuery, "[“”‘’]", "\"", 
 		        RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
-            // Without double escapes:
-            // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))
 	        // new: unescaped
-	        // (:|=|;|>|<|-)((["'])(\\?.)*?\3|[\w\!\~\-_\.\/:]+)( \|\|| \&\&)?
+	        // (:|=|;|>|<|-)((["'])(\\?.)*?\3|[\w\!\~\-_\.\/:,;]+)( \|\|| \&\&)?
             Regex inurlRegex = new Regex(
                 "-" + itemName +
-                "(:|=|;|>|<|-)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:]+)( \\|\\|| \\&\\&)?",
+                "(:|=|;|>|<|-)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:,;]+)( \\|\\|| \\&\\&)?",
                 RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 	        
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
@@ -420,10 +428,20 @@ namespace starsky.feature.search.Services
 				// is | or &
 				var andOrChar = SearchViewModel.AndOrRegex(itemQueryWithOperator);
 
-				model.SetAddSearchForOptions(searchForOption);
-				model.SetAndOrOperator(andOrChar);
-				model.SetAddSearchFor(itemQuery.Trim());
-                model.SetAddSearchInStringType(itemName);
+				var splitItemQueryArray = itemQuery.Split(',');
+				foreach ( var itemSingleQuery in splitItemQueryArray )
+				{
+					var searchForOptionEnum = model.SetAddSearchForOptions(searchForOption);
+					var andOrCharOperator =
+						itemQuery.Contains(',') ? '|' : andOrChar;
+					if ( searchForOptionEnum == SearchViewModel.SearchForOptionType.Not )
+					{
+						andOrCharOperator = '&';
+					}
+					model.SetAndOrOperator(andOrCharOperator);
+					model.SetAddSearchFor(itemSingleQuery.Trim());
+					model.SetAddSearchInStringType(itemName);
+				}
             }
         }
 

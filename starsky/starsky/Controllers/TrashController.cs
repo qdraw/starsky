@@ -38,7 +38,7 @@ public class TrashController : Controller
 	/// </summary>
 	/// <param name="f">subPath filepath to file, split by dot comma (;)</param>
 	/// <param name="collections">stack collections</param>
-	/// <returns>update json (IActionResult Update)</returns>
+	/// <returns>update json (IActionResult MoveToTrash)</returns>
 	/// <response code="200">the item including the updated content</response>
 	/// <response code="400">parameter `f` is empty and that results in no input files</response>
 	/// <response code="404">item not found in the database or on disk</response>
@@ -56,7 +56,7 @@ public class TrashController : Controller
 			return BadRequest("No input files");
 		}
 
-		var fileIndexResultsList = await _moveToTrashService.MoveToTrashAsync(inputFilePaths, collections);
+		var fileIndexResultsList = await _moveToTrashService.MoveToTrashAsync(inputFilePaths.ToList(), collections);
 		
 		return Json(fileIndexResultsList);
 	}

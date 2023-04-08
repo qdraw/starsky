@@ -18,7 +18,7 @@ public class FakeIMoveToTrashService : IMoveToTrashService
 
 	public List<FileIndexItem> FileIndexItems { get; set; }
 
-	public Task<List<FileIndexItem>> MoveToTrashAsync(string[] inputFilePaths, bool collections)
+	public Task<List<FileIndexItem>> MoveToTrashAsync(List<string> inputFilePaths, bool collections)
 	{
 		var result = new List<FileIndexItem>();
 		foreach (var inputFilePath in inputFilePaths)

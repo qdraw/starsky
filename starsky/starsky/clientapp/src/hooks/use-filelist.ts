@@ -15,9 +15,13 @@ export interface IFileList {
   detailView?: IDetailView;
   pageType: PageType;
   parent: string;
-  fetchContentCache: (
-    location: string,
-    abortController: AbortController
+  fetchUseFileListContentCache: (
+    locationLocal: string,
+    locationSearch: string,
+    abortController: AbortController,
+    setPageTypeHelper: (responseObject: any) => void,
+    resetPageTypeBeforeLoading: boolean,
+    setPageType: (value: React.SetStateAction<PageType>) => void
   ) => Promise<void>;
 }
 
@@ -61,6 +65,36 @@ export const fetchContentUseFileList = async (
     setPageType(PageType.ApplicationException);
   }
 };
+
+const fetchUseFileListContentCache = async (
+  locationLocal: string,
+  locationSearch: string,
+  abortController: AbortController,
+  setPageTypeHelper: (responseObject: any) => void,
+  resetPageTypeBeforeLoading: boolean,
+  setPageType: (value: React.SetStateAction<PageType>) => void
+): Promise<void> => {
+  const content = new FileListCache().CacheGet(locationSearch);
+  if (content) {
+    console.log(
+      ` -- Fetch Content ${new Date(
+        content.dateCache
+      ).toLocaleTimeString()} ${locationSearch} -- `
+    );
+    setPageTypeHelper(content);
+  } else {
+    console.log(` -- Fetch Content ${locationSearch} -- `);
+    await fetchContentUseFileList(
+      locationLocal,
+      locationSearch,
+      abortController,
+      setPageTypeHelper,
+      resetPageTypeBeforeLoading,
+      setPageType
+    );
+  }
+};
+
 /**
  * Hook to get index API
  * @param locationSearch with query parameter "?f=/"
@@ -105,33 +139,16 @@ const useFileList = (
     }
   };
 
-  const fetchContentCache = async (
-    locationScoped: string,
-    abortController: AbortController
-  ): Promise<void> => {
-    const content = new FileListCache().CacheGet(locationSearch);
-    if (content) {
-      console.log(
-        "-- Gets Cache",
-        new Date(content.dateCache).toLocaleTimeString()
-      );
-      setPageTypeHelper(content);
-    } else {
-      console.log(" -- Fetch Content");
-      await fetchContentUseFileList(
-        locationScoped,
-        locationSearch,
-        abortController,
-        setPageTypeHelper,
-        resetPageTypeBeforeLoading,
-        setPageType
-      );
-    }
-  };
-
   useEffect(() => {
     const abortController = new AbortController();
-    fetchContentCache(location, abortController);
+    fetchUseFileListContentCache(
+      location,
+      locationSearch,
+      abortController,
+      setPageTypeHelper,
+      resetPageTypeBeforeLoading,
+      setPageType
+    );
 
     return () => {
       abortController.abort();
@@ -146,7 +163,7 @@ const useFileList = (
     detailView,
     pageType,
     parent,
-    fetchContentCache
+    fetchUseFileListContentCache
   };
 };
 

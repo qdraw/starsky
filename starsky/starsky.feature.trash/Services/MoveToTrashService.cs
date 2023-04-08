@@ -67,7 +67,7 @@ public class MoveToTrashService : IMoveToTrashService
 	/// <param name="collections">is stack collections enabled</param>
 	/// <returns>list of files</returns>
 	public async Task<List<FileIndexItem>> MoveToTrashAsync(
-		string[] inputFilePaths, bool collections)
+		List<string> inputFilePaths, bool collections)
 	{
 		var inputModel = new FileIndexItem { Tags = TrashKeyword.TrashKeywordString };
 		var (fileIndexResultsList, changedFileIndexItemName) = 

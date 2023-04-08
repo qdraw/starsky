@@ -78,17 +78,17 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			if ( dbItems == null ) return new List<FileIndexItem>();
 						
-			DeleteStatusHelper.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
-			
+			dbItems = DeleteStatusHelper.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
+
 			var statusItems =  _checkForStatusNotOkHelper
 				.CheckForStatusNotOk(dbItems.Select(p => p.FilePath)).ToList();
 			UpdateCheckStatus(dbItems, statusItems);
 
 			AddSidecarExtensionData(dbItems, statusItems);
-			
+
 			// Multi thread check for file hash
 			var list = dbItems
-				.Where(p => p.Status == FileIndexItem.ExifStatus.OkAndSame);
+				.Where(p => p.Status is FileIndexItem.ExifStatus.OkAndSame or FileIndexItem.ExifStatus.DeletedAndSame);
 			var isSameUpdatedItemList = await list
 				.ForEachAsync(
 					async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage)
@@ -97,7 +97,7 @@ namespace starsky.foundation.sync.SyncServices
 					_appSettings.MaxDegreesOfParallelism);
 
 			dbItems = await IsSameUpdatedItemList(isSameUpdatedItemList?.ToList(), dbItems);
-			
+
 			// add new items
 			var newItemsList = await _newUpdateItemWrapper.NewItem(
 				dbItems.Where(p =>
@@ -147,10 +147,15 @@ namespace starsky.foundation.sync.SyncServices
 
 				dbItems[dbItemSearchedIndex].Status = statusItem.Status;
 				
-				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok } ) // 0 check
+				if ( dbItemSearched is { Status: FileIndexItem.ExifStatus.Ok })
 				{
 					// there is still a check if the file is not changed see: SizeFileHashIsTheSame
 					dbItems[dbItemSearchedIndex].Status = FileIndexItem.ExifStatus.OkAndSame;
+				}
+
+				if ( dbItemSearched.Tags!.Contains(TrashKeyword.TrashKeywordString) )
+				{
+					dbItems[dbItemSearchedIndex].Status = FileIndexItem.ExifStatus.DeletedAndSame;
 				}
 			}
 		}

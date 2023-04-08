@@ -347,8 +347,7 @@ namespace starsky.foundation.database.Query
 		        return null;
 	        }
 	        
-	        _logger.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source}");
-	        _logger.LogInformation("[RetrySaveChangesAsync] next retry ~>");
+	        _logger.LogInformation(e,$"[RetrySaveChangesAsync] retry catch-ed exception from {source} {updateStatusContent.FileName}");
 	        
 	        async Task LocalRetrySaveChangesAsyncQuery()
 	        {
@@ -390,6 +389,8 @@ namespace starsky.foundation.database.Query
 				        "[RetrySaveChangesAsync] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
+	        
+	        _logger.LogInformation($"[RetrySaveChangesAsync] done saved from {source} {updateStatusContent.FileName}");
 	        return true;
         }
         

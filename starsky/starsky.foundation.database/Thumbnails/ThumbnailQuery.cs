@@ -11,6 +11,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Thumbnails;
 
@@ -19,11 +20,13 @@ public class ThumbnailQuery : IThumbnailQuery
 {
 	private readonly ApplicationDbContext _context;
 	private readonly IServiceScopeFactory? _scopeFactory;
+	private readonly IWebLogger _logger;
 
-	public ThumbnailQuery(ApplicationDbContext context, IServiceScopeFactory? scopeFactory)
+	public ThumbnailQuery(ApplicationDbContext context, IServiceScopeFactory? scopeFactory, IWebLogger logger)
 	{
 		_context = context;
 		_scopeFactory = scopeFactory;
+		_logger = logger;
 	}
 	
 	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailResultDataTransferModel> thumbnailItems)
@@ -163,6 +166,21 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			if ( _scopeFactory == null ) throw;
 			return await RenameInternalAsync(new InjectServiceScope(_scopeFactory).Context(), beforeFileHash, newFileHash);
+		}
+		catch (DbUpdateConcurrencyException concurrencyException)
+		{
+			_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException", concurrencyException);
+			SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+			try
+			{
+				await _context.SaveChangesAsync();
+			}
+			catch ( DbUpdateConcurrencyException e)
+			{
+				_logger.LogInformation(e, "[ThumbnailQuery] save failed after DbUpdateConcurrencyException");
+				return false;
+			}
+			return true;
 		}
 	}
 	

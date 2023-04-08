@@ -36,7 +36,7 @@ namespace starskytest.Controllers
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
 			_query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(), memoryCache);
-			_search = new SearchService(context, memoryCache);
+			_search = new SearchService(context, new FakeIWebLogger(), memoryCache);
 		}
 
         
@@ -199,7 +199,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void RemoveCache_CacheDisabled()
 		{
-			var controller = new SearchController(new SearchService(null!));
+			var controller = new SearchController(new SearchService(null!,null!));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;
