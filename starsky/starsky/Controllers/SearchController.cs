@@ -25,7 +25,7 @@ namespace starsky.Controllers
 		/// <param name="t">search query</param>
 		/// <param name="p">page number</param>
 		/// <returns>the search results</returns>
-		/// <response code="200">the search results</response>
+		/// <response code="200">the search results (ActionResult Search)</response>
 		[HttpGet("/api/search")]
 		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
 		[Produces("application/json")]

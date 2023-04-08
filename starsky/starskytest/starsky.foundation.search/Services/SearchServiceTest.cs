@@ -42,7 +42,8 @@ namespace starskytest.starsky.foundation.search.Services
 		}
 
 		private const int NumberOfFakeResults = 241;
-	    
+		private const int NumberOfFakeResultsThatFitOnPage = 240;
+
 		public async Task InsertSearchData()
 		{
 			if (string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("schipholairplane")))
@@ -73,6 +74,7 @@ namespace starskytest.starsky.foundation.search.Services
 					ParentDirectory = "/stations",
 					FileHash = "lelystadcentrum",
 					Tags = "station, train, lelystad, de trein, delete",
+					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 					DateTime = DateTime.Now,
 					IsDirectory = false
 				});
@@ -122,6 +124,7 @@ namespace starskytest.starsky.foundation.search.Services
 					FileName = "deletedfile.jpg",
 					ParentDirectory = "/stations",
 					FileHash = "stationdeletedfile",
+					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 					Tags = TrashKeyword.TrashKeywordString,
 					DateTime = new DateTime(2013,1,1,1,1,1),
 					IsDirectory = false
@@ -139,6 +142,7 @@ namespace starskytest.starsky.foundation.search.Services
 						FileName = "cityloop" + i + ".jpg",
 						ParentDirectory = "/cities",
 						FileHash = "cityloop" + i,
+						// ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 						Tags = "cityloop",
 						Id = 5000 + i,
 						DateTime = new DateTime(2018,1,1,1,1,1)
@@ -232,6 +236,41 @@ namespace starskytest.starsky.foundation.search.Services
 		}
 		
 		[TestMethod]
+		public async Task SearchService_ShouldShowXmpORJpegFile()
+		{
+			await InsertSearchData();
+			Assert.AreEqual(4, (await _search.Search("-imageformat:xmp,jpg")).SearchCount);
+		}
+		
+		[TestMethod]
+		public async Task SearchService_ShouldShowXmpORJpegFile_WithFileName()
+		{
+			await InsertSearchData();
+			
+			Assert.AreEqual(2, (await _search.Search("-filename:lelystadcentrum -imageformat:xmp,jpg")).SearchCount);
+		}
+		
+		[TestMethod]
+		public async Task SearchService_ShouldShowXmpORJpegFile_WithFileName2()
+		{
+			await InsertSearchData();
+			
+			var result = await _search.Search("-filePath:/stations/lelystadcentrum -imageformat:\"xmp,jpg\"");
+			
+			Assert.AreEqual(2, result.SearchCount);
+		}
+		
+		[TestMethod]
+		public async Task SearchService_ShouldShowXmpORJpegFile_Not_WithFileName()
+		{
+			await InsertSearchData();
+			
+			var result = await _search.Search("-filePath:/stations/lelystadcentrum -imageformat-\"xmp,jpg\"");
+			
+			Assert.AreEqual(0, result.SearchCount);
+		}
+		
+		[TestMethod]
 		public async Task SearchService_SoftwareSearch()
 		{
 			await InsertSearchData();
@@ -243,7 +282,8 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task SearchService_SearchLastPageCityloopTest()
 		{
 			await InsertSearchData();
-			Assert.AreEqual(2, (await _search.Search("cityloop")).LastPageNumber);
+			var result = await _search.Search("cityloop");
+			Assert.AreEqual(2, result.LastPageNumber);
 		}
 	    
 	    
@@ -308,7 +348,9 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task SearchService_Make_SearchNonExist()
 		{
 			await InsertSearchData();
-			Assert.AreEqual(0, (await _search.Search("-Make:SE")).SearchCount);
+			
+			var result = await _search.Search("-Make:SE");
+			Assert.AreEqual(0, result.SearchCount);
 			// NOT schipholairplane.jpg
 		}
         
@@ -324,7 +366,7 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task SearchService_NotQueryCityloop240()
 		{
 			await InsertSearchData();
-			Assert.AreEqual(NumberOfFakeResults-1, (await _search.Search("-filehash:cityloop -filehash-cityloop240")).SearchCount);
+			Assert.AreEqual(NumberOfFakeResultsThatFitOnPage, (await _search.Search("-filehash:cityloop -filehash-cityloop240")).SearchCount);
 		}
 	    
 		[TestMethod]
@@ -494,7 +536,7 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task SearchService_SearchForImageFormat()
 		{
 			await InsertSearchData();
-			Assert.AreEqual(1, (await _search.Search("-ImageFormat:jpg")).SearchCount);
+			Assert.AreEqual(3, (await _search.Search("-ImageFormat:jpg")).SearchCount);
 		}
 	    
 		[TestMethod]
@@ -661,7 +703,7 @@ namespace starskytest.starsky.foundation.search.Services
 		{
 			await InsertSearchData();
 			var result = await _search.Search("-FileHash=lelystadcentrum -ImageFormat=jpg || -ImageFormat=xmp",0,false);
-			// currently does not work
+			// not working at the moment
 			Assert.AreEqual(0,result.FileIndexItems?.Count);
 		}
 		

@@ -275,7 +275,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				_insertSearchDatahi4JpgInput
 			}.OrderBy(p => p.FileName).ToList();
             
-			var getAllRecursive123 = _query.GetAllRecursive()
+			var getAllRecursive123 = (await _query.GetAllRecursiveAsync())
 				.Where(p => p.FilePath.Contains("/basic"))
 				.OrderBy(p => p.FileName).ToList();
 

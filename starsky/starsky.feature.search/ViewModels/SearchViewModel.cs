@@ -214,7 +214,7 @@ namespace starsky.feature.search.ViewModels
 		/// Add first char of a string to _searchForOptions list
 		/// </summary>
 		/// <param name="value">searchFor option (e.g. =, &gt;, &lt; </param>
-		public void SetAddSearchForOptions(string value)
+		public SearchForOptionType SetAddSearchForOptions(string value)
 		{
 			SearchForOptionsInternal ??= new List<SearchForOptionType>();
 
@@ -222,23 +222,24 @@ namespace starsky.feature.search.ViewModels
 			{
 				case '>':
 					SearchForOptionsInternal.Add(SearchForOptionType.GreaterThen);
-					break;
+					return SearchForOptionType.GreaterThen;
 				case '<':
 					SearchForOptionsInternal.Add(SearchForOptionType.LessThen);
-					break;
+					return SearchForOptionType.LessThen;
 				case '-':
 					SearchForOptionsInternal.Add(SearchForOptionType.Not);
-					break;
+					return SearchForOptionType.Not;
 				case '=':
 					SearchForOptionsInternal.Add(SearchForOptionType.Equal);
-					break;
+					return SearchForOptionType.Equal;
 				case ':':
 					SearchForOptionsInternal.Add(SearchForOptionType.Equal);
-					break;
+					return SearchForOptionType.Equal;
 				case ';':
 					SearchForOptionsInternal.Add(SearchForOptionType.Equal);
-					break;
+					return SearchForOptionType.Equal;
 			}
+			return SearchForOptionType.Equal;
 		}
 
 		/// <summary>
@@ -344,6 +345,10 @@ namespace starsky.feature.search.ViewModels
 			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries >= fail!!
 			if (indexer >= SearchOperatorOptionsInternal.Count  ) return true; // used when general words without update 
 			var returnResult = SearchOperatorOptionsInternal[indexer];
+			// if ( SearchForOptions[indexer] == SearchForOptionType.Not )
+			// {
+			// 	return true;
+			// }
 			return returnResult;
 		}
 	    

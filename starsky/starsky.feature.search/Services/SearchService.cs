@@ -295,7 +295,6 @@ namespace starsky.feature.search.Services
 		    
 		    return model;
 	    }
-
 	    private static Expression<Func<FileIndexItem, bool>> PredicateExecution(
 		    IReadOnlyList<Expression<Func<FileIndexItem, bool>>> predicates,
 		    SearchViewModel model)
@@ -380,13 +379,11 @@ namespace starsky.feature.search.Services
 	        model.SearchQuery = Regex.Replace(model.SearchQuery, "[“”‘’]", "\"", 
 		        RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
-            // Without double escapes:
-            // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))
 	        // new: unescaped
-	        // (:|=|;|>|<|-)((["'])(\\?.)*?\3|[\w\!\~\-_\.\/:]+)( \|\|| \&\&)?
+	        // (:|=|;|>|<|-)((["'])(\\?.)*?\3|[\w\!\~\-_\.\/:,;]+)( \|\|| \&\&)?
             Regex inurlRegex = new Regex(
                 "-" + itemName +
-                "(:|=|;|>|<|-)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:]+)( \\|\\|| \\&\\&)?",
+                "(:|=|;|>|<|-)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:,;]+)( \\|\\|| \\&\\&)?",
                 RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 	        
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
@@ -431,10 +428,20 @@ namespace starsky.feature.search.Services
 				// is | or &
 				var andOrChar = SearchViewModel.AndOrRegex(itemQueryWithOperator);
 
-				model.SetAddSearchForOptions(searchForOption);
-				model.SetAndOrOperator(andOrChar);
-				model.SetAddSearchFor(itemQuery.Trim());
-                model.SetAddSearchInStringType(itemName);
+				var splitItemQueryArray = itemQuery.Split(',');
+				foreach ( var itemSingleQuery in splitItemQueryArray )
+				{
+					var searchForOptionEnum = model.SetAddSearchForOptions(searchForOption);
+					var andOrCharOperator =
+						itemQuery.Contains(',') ? '|' : andOrChar;
+					if ( searchForOptionEnum == SearchViewModel.SearchForOptionType.Not )
+					{
+						andOrCharOperator = '&';
+					}
+					model.SetAndOrOperator(andOrCharOperator);
+					model.SetAddSearchFor(itemSingleQuery.Trim());
+					model.SetAddSearchInStringType(itemName);
+				}
             }
         }
 
