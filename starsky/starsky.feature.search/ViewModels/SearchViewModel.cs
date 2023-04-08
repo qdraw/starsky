@@ -345,10 +345,6 @@ namespace starsky.feature.search.ViewModels
 			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries >= fail!!
 			if (indexer >= SearchOperatorOptionsInternal.Count  ) return true; // used when general words without update 
 			var returnResult = SearchOperatorOptionsInternal[indexer];
-			// if ( SearchForOptions[indexer] == SearchForOptionType.Not )
-			// {
-			// 	return true;
-			// }
 			return returnResult;
 		}
 	    
