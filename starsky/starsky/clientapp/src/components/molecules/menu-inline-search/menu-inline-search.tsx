@@ -26,8 +26,9 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
       },
       {
         name: language.key(localization.MessagePhotosOfThisWeek),
+        // search?t=-Datetime>7 -ImageFormat-"xmp,tiff"
         url: new UrlQuery().UrlSearchPage(
-          "-Datetime%3E7%20-ImageFormat-%22tiff%22"
+          "-Datetime%3E7%20-ImageFormat-%22xmp,tiff%22"
         ),
         key: "photos-of-this-week"
       },
