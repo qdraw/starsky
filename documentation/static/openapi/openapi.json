@@ -8859,7 +8859,7 @@
           ],
           "responses": {
             "200": {
-              "description": "the search results",
+              "description": "the search results (ActionResult Search)",
               "headers": {},
               "content": {
                 "application/json": {
