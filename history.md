@@ -35,7 +35,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.5.7 _(Unreleased)_ - 2023-03-?? {#v0.5.7}
+## version 0.5.7 _(Unreleased)_ - 2023-04-?? {#v0.5.7}
 
 - [x] (Fixed) _Back-end_ Add fallback for detailView image Issue #1106 (PR #1113)
 - [x] (Fixed) _Back-end_ Don't write meta.json files for xmp files Issue #1108 (PR #1115)
@@ -45,6 +45,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Desktop_ Upgrade Electron packages (PR #1118, #1119)
 - [x] (Fixed) _Front-end_ Should skip xmp socket updates in collection:true archive list Issue #1107 (PR #1120)
 - [x] (Changed) _Front-end_ Upgrade packages (PR #1122)
+- [x] (Changed) _Front-end_ skip xmp in default last week query (PR #1134)
+- [x] (Changed) _Back-end_ Multiple or queries seperated by comma (PR #1134)
+- [x] (Changed) _Back-end_ Fix for ThumbnailQuery DbUpdateConcurrencyException (PR #1134)
+- [x] (Changed) _Back-end_ Change default readOnlyFolders (PR #1134)
 
 ## version 0.5.7-beta.0 - 2023-03-20 {#v0.5.7-beta.0}
 
