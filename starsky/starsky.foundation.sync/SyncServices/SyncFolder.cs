@@ -282,7 +282,7 @@ namespace starsky.foundation.sync.SyncServices
 						console.Write("⩮"); 
 						break;
 					case FileIndexItem.ExifStatus.DeletedAndSame:
-						console.Write("҉"); 
+						console.Write("✘"); 
 						break;
 					case FileIndexItem.ExifStatus.Deleted:
 						console.Write("\u058d"); // ֍ 

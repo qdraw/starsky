@@ -34,6 +34,7 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
         dateTime: result[0].dateTime
       });
       dispatch({
+        filePath: fileIndexItem.filePath,
         type: "update",
         dateTime: result[0].dateTime,
         lastEdited: ""

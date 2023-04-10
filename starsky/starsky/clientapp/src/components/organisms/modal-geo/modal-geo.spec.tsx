@@ -220,6 +220,7 @@ describe("ModalGeo", () => {
           longitude: 2.999997
         },
         expect.any(Function),
+        expect.any(Function),
         undefined
       );
       expect(handleExitSpy).toBeCalledTimes(0);
@@ -260,6 +261,7 @@ describe("ModalGeo", () => {
           latitude: 51.00001,
           longitude: 2.999997
         },
+        expect.any(Function),
         expect.any(Function),
         undefined
       );

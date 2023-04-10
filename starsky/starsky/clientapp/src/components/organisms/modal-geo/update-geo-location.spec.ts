@@ -7,7 +7,14 @@ import { updateGeoLocation } from "./update-geo-location";
 describe("updateGeoLocation", () => {
   it("no location null result", async () => {
     const setErrorSpy = jest.fn();
-    const result = await updateGeoLocation("", "/", null, setErrorSpy, true);
+    const result = await updateGeoLocation(
+      "",
+      "/",
+      null,
+      setErrorSpy,
+      jest.fn(),
+      true
+    );
     expect(result).toBe(null);
   });
 
@@ -33,6 +40,7 @@ describe("updateGeoLocation", () => {
       "/",
       { latitude: 1, longitude: 1 } as ILatLong,
       setErrorSpy,
+      jest.fn(),
       true
     );
 
@@ -64,6 +72,7 @@ describe("updateGeoLocation", () => {
       "/",
       { latitude: 1, longitude: 1 } as ILatLong,
       setErrorSpy,
+      jest.fn(),
       true
     );
 
@@ -103,6 +112,7 @@ describe("updateGeoLocation", () => {
       "/",
       { latitude: 1, longitude: 1 } as ILatLong,
       setErrorSpy,
+      jest.fn(),
       true
     );
 

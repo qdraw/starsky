@@ -12,6 +12,7 @@ import MarkerBlueSvg from "../../../style/images/fa-map-marker-blue.svg";
 import MarkerShadowPng from "../../../style/images/marker-shadow.png";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
+import Preloader from "../../atoms/preloader/preloader";
 import { updateGeoLocation } from "./update-geo-location";
 
 export interface IModalMoveFileProps {
@@ -241,6 +242,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const MessageAddLocation = language.text("Voeg locatie toe", "Add location");
   const MessageUpdateLocation = language.text(
@@ -315,6 +317,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
             selectedSubPath,
             location,
             setError,
+            setIsLoading,
             props.collections
           );
           if (model) {
@@ -342,6 +345,8 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
       handleExit={() => props.handleExit(null)}
     >
       <div className="content" data-test="modal-geo">
+        {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : null}
+
         <div className="modal content--subheader">{subHeader()}</div>
         {error ? (
           <div className="modal modal-button-bar-error">

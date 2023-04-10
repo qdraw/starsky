@@ -163,8 +163,10 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
     setIsLoading(true);
     const bodyParams = newBodyParams();
-    if (state.collections !== undefined)
+    if (state.collections !== undefined) {
       bodyParams.set("collections", state.collections.toString());
+    }
+    const subPath = state.subPath;
 
     // Add remove tag
     if (!isMarkedAsDeleted) {
@@ -185,7 +187,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       }
 
       let newStatus = (resultDo.data as IFileIndexItem[])?.find(
-        (x) => x.filePath === state.subPath
+        (x) => x.filePath === subPath
       )?.status;
       if (!newStatus) {
         newStatus = IExifStatus.Deleted;
@@ -194,6 +196,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
       dispatch({
         type: "update",
+        filePath: subPath,
         status: newStatus,
         lastEdited: new Date().toISOString()
       });
@@ -215,6 +218,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       dispatch({ type: "remove", tags: "!delete!" });
       dispatch({
         type: "update",
+        filePath: subPath,
         status: IExifStatus.Ok,
         lastEdited: new Date().toISOString()
       });
@@ -254,7 +258,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     dispatch({
       type: "update",
       orientation,
-      fileHash: media.fileIndexItem.fileHash
+      fileHash: media.fileIndexItem.fileHash,
+      filePath: media.fileIndexItem.filePath
     });
     setIsLoading(false);
     return true;
