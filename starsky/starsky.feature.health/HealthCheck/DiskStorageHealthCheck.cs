@@ -28,10 +28,8 @@ namespace starsky.feature.health.HealthCheck
 		{
 			try
 			{
-				foreach ((string, long) valueTuple in _options.ConfiguredDrives.Values)
+				foreach (var (driveName, num) in _options.ConfiguredDrives.Values)
 				{
-					var driveName = valueTuple.Item1;
-					var num = valueTuple.Item2;
 					var (exists4, actualFreeMegabytes4) = GetSystemDriveInfo(driveName);
 					if (!exists4)
 						return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus, 
@@ -61,10 +59,9 @@ namespace starsky.feature.health.HealthCheck
 				return ( false, 0L );
 			}
 
-			DriveInfo driveInfo = drivesList.FirstOrDefault(
-				drive => drive != null && 
-				         string.Equals(drive.Name, driveName, StringComparison.InvariantCultureIgnoreCase));
-			return driveInfo != null ? (true, driveInfo.AvailableFreeSpace / 1024L / 1024L) : (false, 0L);
+			var driveInfo = drivesList.FirstOrDefault(
+				drive => string.Equals(drive.Name, driveName, StringComparison.InvariantCultureIgnoreCase));
+			return driveInfo?.AvailableFreeSpace != null ? (true, driveInfo.AvailableFreeSpace / 1024L / 1024L) : (false, 0L);
 		}
 	}
 }

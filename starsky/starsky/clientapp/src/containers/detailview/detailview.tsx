@@ -142,7 +142,7 @@ const DetailView: React.FC<IDetailView> = () => {
     setUseGestures(true);
   }, [state.subPath]);
 
-  // When item is removed
+  // // When item is removed
   useEffect(() => {
     statusRemoved(
       state,
@@ -153,7 +153,7 @@ const DetailView: React.FC<IDetailView> = () => {
       setIsLoading
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.fileIndexItem?.status, relativeObjects?.nextFilePath]);
+  }, [state.fileIndexItem?.status]);
 
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = React.useState(true);

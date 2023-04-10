@@ -82,5 +82,21 @@
   "MessageLogout": {
     "en": "Logout",
     "nl": "Uitloggen"
+  },
+  "MessageSaved": {
+    "en": "Saved",
+    "nl": "Opgeslagen"
+  },
+  "MessageCloseDetailScreenDialog": {
+    "en": "Close detail screen",
+    "nl": "Sluit detailscherm"
+  },
+  "MessageCloseDialogBackToFolder": {
+    "en": "Parent folder",
+    "nl": "Terug naar map"
+  },
+  "MessageIncludingColonWord": {
+    "en": "Including: ",
+    "nl": "Inclusief: "
   }
 }

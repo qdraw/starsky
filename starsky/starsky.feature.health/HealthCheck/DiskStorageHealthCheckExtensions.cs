@@ -18,7 +18,7 @@ namespace starsky.feature.health.HealthCheck
 			var options = new DiskStorageOptions();
 			setup?.Invoke(options);
 			return builder.Add(new HealthCheckRegistration(name ?? "diskstorage", sp => 
-				(IHealthCheck) new DiskStorageHealthCheck(options), failureStatus, tags, timeout));
+				new DiskStorageHealthCheck(options), failureStatus, tags, timeout));
 		}
 	}
 }
