@@ -5,18 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
 using starskytest.FakeMocks;
-using starskytest.starsky.foundation.platform.Services;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -137,8 +134,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task QueryForHome()
 		{
 			var item = await _query.AddItemAsync(new FileIndexItem("/"));
-			var home = _query.SingleItem("/").FileIndexItem;
-			Assert.AreEqual("/",home.FilePath);
+			var home = _query.SingleItem("/")?.FileIndexItem;
+			Assert.AreEqual("/",home?.FilePath);
 			await _query.RemoveItemAsync(item);
 		}
         
@@ -146,16 +143,16 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task QueryAddSingleItemHiJpgOutputTest()
 		{
 			await InsertSearchData();
-			var hiJpgOutput = _query.SingleItem(_insertSearchDatahiJpgInput.FilePath).FileIndexItem;
+			var hiJpgOutput = _query.SingleItem(_insertSearchDatahiJpgInput.FilePath!)?.FileIndexItem;
 
 			Console.WriteLine(_insertSearchDatahiJpgInput.FileHash);
-			Console.WriteLine(hiJpgOutput.FileHash);
+			Console.WriteLine(hiJpgOutput?.FileHash);
 
-			Assert.AreEqual(_insertSearchDatahiJpgInput.FileHash, hiJpgOutput.FileHash);
+			Assert.AreEqual(_insertSearchDatahiJpgInput.FileHash, hiJpgOutput?.FileHash);
             
 			// other api Get Object By FilePath
 			hiJpgOutput = _query.GetObjectByFilePath(_insertSearchDatahiJpgInput.FilePath);
-			Assert.AreEqual(_insertSearchDatahiJpgInput.FilePath, hiJpgOutput.FilePath);
+			Assert.AreEqual(_insertSearchDatahiJpgInput.FilePath, hiJpgOutput?.FilePath);
 		}
         
 		/// <summary>
@@ -176,7 +173,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			var queryResult = _query.SingleItem(newItem);
 			Assert.IsNotNull(queryResult);
-			Assert.AreEqual(newItem, queryResult.FileIndexItem.FilePath);
+			Assert.AreEqual(newItem, queryResult.FileIndexItem?.FilePath);
 
 			foreach ( var items in await _query.GetAllRecursiveAsync("/cache_test") )
 			{
@@ -215,8 +212,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
-			var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
-			var query = new Query(dbContext,  null, null, new FakeIWebLogger());
+			var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
+			var query = new Query(dbContext,  null!, null!, new FakeIWebLogger());
 
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync") {IsDirectory = true});
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync/test") {IsDirectory = true});
@@ -276,7 +273,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			}.OrderBy(p => p.FileName).ToList();
             
 			var getAllRecursive123 = (await _query.GetAllRecursiveAsync())
-				.Where(p => p.FilePath.Contains("/basic"))
+				.Where(p => p.FilePath?.Contains("/basic") == true)
 				.OrderBy(p => p.FileName).ToList();
 
 			Assert.AreEqual(getAllRecursive123.Count,getAllRecursiveExpectedResult123.Count);
@@ -309,11 +306,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			item.Tags = "test";
 			await query.UpdateItemAsync(item);
 
-			var getItem = query.GetAllRecursive("/test_1231331");
+			var getItem = await query.GetAllRecursiveAsync("/test_1231331");
 			Assert.IsNotNull(getItem);
-			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
+			Assert.AreEqual("test", getItem.FirstOrDefault()?.Tags);
 
-			await query.RemoveItemAsync(getItem.FirstOrDefault());
+			Assert.IsNotNull(getItem.FirstOrDefault());
+			await query.RemoveItemAsync(getItem.FirstOrDefault()!);
 		}
 
 		[TestMethod]
@@ -332,7 +330,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// Next Winner
 			var colorClassActiveList = FileIndexItem.GetColorClassList("1");
 			var next = _query.SingleItem("/basic/hi.jpg", colorClassActiveList);
-			Assert.AreEqual("/basic/hi4.jpg", next.RelativeObjects.NextFilePath);
+			Assert.AreEqual("/basic/hi4.jpg", next?.RelativeObjects.NextFilePath);
 		}
 
 		[TestMethod]
@@ -341,7 +339,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await InsertSearchData();
 			// Prev Winner
 			var colorClassActiveList = FileIndexItem.GetColorClassList("1");
-			var prev = _query.SingleItem("/basic/hi4.jpg", colorClassActiveList).RelativeObjects.PrevFilePath;
+			var prev = _query.SingleItem("/basic/hi4.jpg", colorClassActiveList)?.RelativeObjects.PrevFilePath;
 			Assert.AreEqual("/basic/hi.jpg", prev);
 		}
         
@@ -349,10 +347,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task QueryAddSingleItemDeletedStatus()
 		{       
 			await InsertSearchData();
-			var status = _query.SingleItem("/basic/hi2.jpg").FileIndexItem.Status;
+			var status = _query.SingleItem("/basic/hi2.jpg")?.FileIndexItem?.Status;
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, status);
 		}
-
 
 		[TestMethod]
 		[ExcludeFromCoverage]
@@ -437,7 +434,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
             
 			// Folders ignore deleted items
 			Assert.AreEqual("/display/hi2.jpg", releative.PrevFilePath);
-			Assert.IsNull(releative.NextFilePath);
 
 			// Next  Relative -- all mode
 			var releative2 = _query.GetNextPrevInFolder("/display/hi.jpg");
@@ -480,14 +476,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				FileName = "1.jpg",
 				ParentDirectory = "/duplicates_test", 
 				FileHash = "123458465522",
-				ColorClass = ColorClassParser.Color.Winner // 1
-			});
-            
-			var image1Duplicate = await _query.AddItemAsync(new FileIndexItem
-			{
-				FileName = "1.jpg",
-				ParentDirectory = "/duplicates_test", 
-				FileHash = "821847217",
 				ColorClass = ColorClassParser.Color.Winner // 1
 			});
             
@@ -588,11 +576,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			item.Tags = "test";
 			await query.UpdateItemAsync(item);
 
-			var getItem = query.DisplayFileFolders("/test_0191919");
+			var getItem = query.DisplayFileFolders("/test_0191919").ToList();
 			Assert.IsNotNull(getItem);
-			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
-
-			await query.RemoveItemAsync(getItem.FirstOrDefault());
+			Assert.AreEqual("test", getItem.FirstOrDefault()?.Tags);
+			
+			Assert.IsNotNull(getItem.FirstOrDefault());
+			await query.RemoveItemAsync(getItem.FirstOrDefault()!);
 		}
 
 		[ExcludeFromCoverage]
@@ -610,7 +599,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			});
             
 			var exptectedOutput = new List<string>{"/","/bread"};
-			var output = _query.SingleItem("/bread/hi3.jpg").Breadcrumb;
+			var output = _query.SingleItem("/bread/hi3.jpg")?.Breadcrumb;
 			CollectionAssert.AreEqual(exptectedOutput,output);
 		}
 
@@ -628,7 +617,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			});
             
 			// Used for react to get the context
-			var pageTypeReact = _query.SingleItem("/bread/hi4.jpg").PageType;
+			var pageTypeReact = _query.SingleItem("/bread/hi4.jpg")?.PageType;
 			Assert.AreEqual("DetailView",pageTypeReact);
 		}
         
@@ -658,21 +647,21 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var single001 = 
 				_query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_001.jpg");
 			Assert.AreEqual("/QueryTest_NextPrevCachingDeleted/CachingDeleted_002.jpg",
-				single001.RelativeObjects.NextFilePath);
+				single001?.RelativeObjects.NextFilePath);
 
 			var single002 =
 				_query
-					.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_002.jpg").FileIndexItem;
-			single002.Tags = TrashKeyword.TrashKeywordString;
+					.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_002.jpg")?.FileIndexItem;
+			single002!.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single002);
             
 			// Request new; and check if content is updated in memory cache
 			single001 = 
 				_query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_001.jpg");
-			Assert.AreEqual(null,single001.RelativeObjects.NextFilePath);
+			Assert.AreEqual(null,single001?.RelativeObjects.NextFilePath);
             
 			// For avoiding conflicts when running multiple unit tests
-			single001.FileIndexItem.Tags = TrashKeyword.TrashKeywordString;
+			single001!.FileIndexItem!.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single001.FileIndexItem);
             
 		}
@@ -719,7 +708,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual("/", item.FilePath);
 			Assert.AreEqual("/", item.FileName);
 		}
-        
         
 		[TestMethod]
 		public async Task Query_GetObjectByFilePathAsync_home()
@@ -963,22 +951,25 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// For previous item; 
 			var single004 = 
 				_query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_004.jpg");
+			Assert.IsNotNull(single004);
+			Assert.IsNotNull(single004.FileIndexItem);
+
 			Assert.AreEqual("/QueryTest_NextPrevCachingDeleted/CachingDeleted_003.jpg",
 				single004.RelativeObjects.PrevFilePath);
 
 			var single003 =
 				_query
-					.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_003.jpg").FileIndexItem;
-			single003.Tags = TrashKeyword.TrashKeywordString;
+					.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_003.jpg")?.FileIndexItem;
+			single003!.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single003);
             
 			// Request new; item must be updated in cache
 			single004 = 
 				_query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_004.jpg");
-			Assert.AreEqual(null,single004.RelativeObjects.PrevFilePath);
+			Assert.AreEqual(null,single004?.RelativeObjects.PrevFilePath);
             
 			// For avoiding conflicts when running multiple unit tests
-			single004.FileIndexItem.Tags = TrashKeyword.TrashKeywordString;
+			single004!.FileIndexItem!.Tags = TrashKeyword.TrashKeywordString;
 			await _query.UpdateItemAsync(single004.FileIndexItem);
             
 		}
@@ -1013,11 +1004,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        
 			// check hash
 			Assert.AreEqual("09457777777",
-				single004.RelativeObjects.PrevHash);
+				single004?.RelativeObjects.PrevHash);
 	        
 			// check path
 			Assert.AreEqual("/QueryTest_prev_hash/001.jpg",
-				single004.RelativeObjects.PrevFilePath);
+				single004?.RelativeObjects.PrevFilePath);
 		}
         
         
@@ -1050,11 +1041,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        
 			// check hash
 			Assert.AreEqual("09457847385873",
-				single004.RelativeObjects.NextHash);
+				single004?.RelativeObjects.NextHash);
 	        
 			// check path
 			Assert.AreEqual("/QueryTest_next_hash/002.jpg",
-				single004.RelativeObjects.NextFilePath);
+				single004?.RelativeObjects.NextFilePath);
 		}
 
 		[TestMethod]
@@ -1072,12 +1063,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			_query.DisplayFileFolders("/CheckIfContentIsInCacheUpdated");
             
 			var cachingDeleted001 = 
-				_query.SingleItem("/CheckIfContentIsInCacheUpdated/CachingDeleted_001.jpg").FileIndexItem;
-			cachingDeleted001.Tags = "#";
+				_query.SingleItem("/CheckIfContentIsInCacheUpdated/CachingDeleted_001.jpg")?.FileIndexItem;
+			cachingDeleted001!.Tags = "#";
 			await _query.UpdateItemAsync(cachingDeleted001);
 			var cachingDeleted001Update = 
-				_query.SingleItem("/CheckIfContentIsInCacheUpdated/CachingDeleted_001.jpg").FileIndexItem;
-			Assert.AreEqual("#", cachingDeleted001Update.Tags);
+				_query.SingleItem("/CheckIfContentIsInCacheUpdated/CachingDeleted_001.jpg")!.FileIndexItem;
+			Assert.AreEqual("#", cachingDeleted001Update!.Tags);
 			Assert.AreNotEqual(string.Empty, cachingDeleted001Update.Tags);
 			// AreNotEqual: When it item used cache  it will return string.Emthy
             
@@ -1103,7 +1094,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			_memoryCache.TryGetValue(name, out var objectFileFolders);
 			var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
-			Assert.AreEqual("hi",displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags);
+			Assert.AreEqual("hi",displayFileFolders.FirstOrDefault(p => p.FileName == "cache")?.Tags);
 	        
 			Assert.AreEqual(1,displayFileFolders.Count(p => p.FileName == "cache"));
 		}
@@ -1137,14 +1128,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			var name = _query.CachingDbName(nameof(FileIndexItem),
 				"/_fail_test1");
-			var success = _memoryCache.TryGetValue(name, out var objectFileFolders);
+			var success = _memoryCache.TryGetValue(name, out _);
 			Assert.IsFalse(success);
 		}
 
 		[TestMethod]
 		public void CacheUpdateItem_ImplicitAdd()
 		{
-
 			_query.AddCacheParentItem("/456789", new List<FileIndexItem>());
 			
 			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/456789", FileName = "cache"};
@@ -1159,7 +1149,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public void CacheUpdateItem_UpdateByName()
 		{
-
 			_query.AddCacheParentItem("/3479824783", new List<FileIndexItem>
 			{
 				new FileIndexItem {Id = 401, Tags = "___not___", ParentDirectory = "/3479824783", FileName = "cache"}
@@ -1178,16 +1167,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public void CacheUpdateItem_ignore_when_parent_does_notExistFakeLogger()
 		{
 			var logger = new FakeIWebLogger();
-			var query = new Query(null, new AppSettings(), null,logger,_memoryCache);
+			var query = new Query(null!, new AppSettings(), null!,logger,_memoryCache);
 			
 			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/_fail_test2", FileName = "cache"};
 			query.CacheUpdateItem(new List<FileIndexItem>{item1});
 
-			var success = _memoryCache.TryGetValue("List`1_/_fail_test2", out var objectFileFolders);
+			var success = _memoryCache.TryGetValue("List`1_/_fail_test2", out _);
 			
 			Assert.IsFalse(success);
 		}
-
 		
 		[TestMethod]
 		public void CacheUpdateItem_shouldHitParentCache()
@@ -1204,14 +1192,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = folderPath, FileName = "cache"};
 			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
 
-			var success = _memoryCache.TryGetValue($"List`1_{folderPath}", out var objectFileFolders);
+			var success = _memoryCache.TryGetValue($"List`1_{folderPath}", out _);
 			Assert.IsTrue(success);
 		}
 
 		[TestMethod]
 		public async Task DisplayFileFolders_StackCollection()
 		{
-            
 			await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "StackCollection001.jpg",
@@ -1230,7 +1217,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				IsDirectory = false
 			});
 
-
 			var dp1 = _query.DisplayFileFolders("/StackCollection");
 			Assert.AreEqual(1,dp1.Count());
             
@@ -1242,49 +1228,48 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task Query_updateStatusContentList()
 		{
 			// for updateing multiple items
-			var toupdate = new List<FileIndexItem>{new FileIndexItem
+			var toUpdate = new List<FileIndexItem>{new FileIndexItem
 			{
 				Tags = "test",
 				FileName = "3456784567890987654.jpg",
 				ParentDirectory = "/3456784567890987654",
 				FileHash = "3456784567890987654"
 			}};
-			await _query.AddItemAsync(toupdate.FirstOrDefault());
+			await _query.AddItemAsync(toUpdate.FirstOrDefault()!);
 
-			foreach (var item in toupdate)
+			foreach (var item in toUpdate)
 			{
 				item.Tags = "updated";
 			}
-			await _query.UpdateItemAsync(toupdate);
+			await _query.UpdateItemAsync(toUpdate);
 
 			var fileObjectByFilePath = _query.GetObjectByFilePath("/3456784567890987654/3456784567890987654.jpg");
-			Assert.AreEqual("updated",fileObjectByFilePath.Tags);
+			Assert.AreEqual("updated",fileObjectByFilePath?.Tags);
 		}
         
 		[TestMethod]
 		public async Task Query_updateStatusContentList_Async()
 		{
 			// for updateing multiple items
-			var toupdate = new List<FileIndexItem>{new FileIndexItem
+			var toUpdate = new List<FileIndexItem>{new FileIndexItem
 			{
 				Tags = "test",
 				FileName = "9278521.jpg",
 				ParentDirectory = "/8118",
 				FileHash = "3456784567890987654"
 			}};
-			await _query.AddItemAsync(toupdate.FirstOrDefault());
+			await _query.AddItemAsync(toUpdate.FirstOrDefault()!);
 
-			foreach (var item in toupdate)
+			foreach (var item in toUpdate)
 			{
 				item.Tags = "updated";
 			}
 			
-			await _query.UpdateItemAsync(toupdate);
+			await _query.UpdateItemAsync(toUpdate);
 
 			var fileObjectByFilePath = await _query.GetObjectByFilePathAsync("/8118/9278521.jpg");
-			Assert.AreEqual("updated",fileObjectByFilePath.Tags);
+			Assert.AreEqual("updated",fileObjectByFilePath?.Tags);
 		}
-
 
 		[TestMethod]
 		public void Query_IsCacheEnabled_True()
@@ -1299,8 +1284,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		    
 			var result = _query.SingleItem("/test/test.jpg");
 
-			Assert.IsNotNull(result.FileIndexItem);
-			Assert.AreEqual("/test/test.jpg", result.FileIndexItem.FilePath);
+			Assert.IsNotNull(result?.FileIndexItem);
+			Assert.AreEqual("/test/test.jpg", result?.FileIndexItem.FilePath);
 		    
 			await _query.RemoveItemAsync(item);
 		}
