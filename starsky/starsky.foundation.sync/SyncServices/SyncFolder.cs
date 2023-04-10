@@ -281,6 +281,12 @@ namespace starsky.foundation.sync.SyncServices
 					case FileIndexItem.ExifStatus.OkAndSame:
 						_console.Write("⩮"); 
 						break;
+					case FileIndexItem.ExifStatus.DeletedAndSame:
+						_console.Write("҉"); 
+						break;
+					case FileIndexItem.ExifStatus.Deleted:
+						_console.Write("\u058d"); // ֍ 
+						break;
 					default:
 						_console.Write("⁑");
 						break;

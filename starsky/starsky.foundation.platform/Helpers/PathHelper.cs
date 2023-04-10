@@ -19,7 +19,7 @@ namespace starsky.foundation.platform.Helpers
 			// unescaped:
 			// [^/]+(?=(?:\.[^.]+)?$)
 			return Regex.Match(filePath, "[^/]+(?=(?:\\.[^.]+)?$)", 
-				RegexOptions.None, TimeSpan.FromMilliseconds(400)).Value;
+				RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value;
 	    }
 
 	    /// <summary>
