@@ -322,10 +322,10 @@ public class PathHelperTests
 	public void TestSplitInputFilePaths_WithEmptyString_ReturnsEmptyArray()
 	{
 		// Arrange
-		string input = "";
+		const string input = "";
         
 		// Act
-		string[] result = PathHelper.SplitInputFilePaths(input);
+		var result = PathHelper.SplitInputFilePaths(input);
         
 		// Assert
 		Assert.IsNotNull(result);
