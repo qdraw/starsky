@@ -77,7 +77,7 @@ namespace starsky.foundation.platform.Helpers
 			var parentRegex =
 				new Regex(".+(?=\\/[^/]+$)",
 					RegexOptions.CultureInvariant, 
-					TimeSpan.FromMilliseconds(100));
+					TimeSpan.FromMilliseconds(500));
 			var result = parentRegex.Match(filePath).Value;
 			return  string.IsNullOrEmpty(result) ? "/" : PathHelper.RemoveLatestSlash(result);
 		}
