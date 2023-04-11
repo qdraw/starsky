@@ -162,11 +162,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			await _query.RemoveItemAsync(result[0]);
 			await _query.RemoveItemAsync(result[1]);
-			
-			foreach ( var item in await _query.GetAllRecursiveAsync() )
-			{
-				await _query.RemoveItemAsync(item);
-			}
+
 		}
 		
 		[TestMethod]

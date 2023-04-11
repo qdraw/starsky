@@ -37,12 +37,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public async Task ShouldGive1Result_BasicQuery()
 		{
-			// make sure the database is empty
-			foreach ( var item in await _query.GetAllRecursiveAsync() )
-			{
-				await _query.RemoveItemAsync(item);
-			}
-			
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => 
 				options.UseInMemoryDatabase(nameof(ShouldGive1Result_BasicQuery)));

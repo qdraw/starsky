@@ -48,11 +48,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			await Add();
 			
-			var result = await (_query as Query).GetObjectsByFilePathCollectionAsync("/single_item1_async.jpg");
+			var result = await _query.GetObjectsByFilePathCollectionAsync("/single_item1_async.jpg");
 			if ( result.Count != 1 )
 			{
 				await Add();
-				result=  await (_query as Query).GetObjectsByFilePathCollectionAsync("/single_item1_async.jpg");
+				result=  await _query.GetObjectsByFilePathCollectionAsync("/single_item1_async.jpg");
 			}
 
 			Assert.AreEqual(1, result.Count);
