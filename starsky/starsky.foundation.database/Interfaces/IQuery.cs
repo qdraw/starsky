@@ -29,7 +29,6 @@ namespace starsky.foundation.database.Interfaces
         /// <returns>list of FileIndex-objects</returns>
         Task<List<FileIndexItem>> GetAllFilesAsync(string subPath);
         
-        List<FileIndexItem> GetAllRecursive(string subPath = "/");
         Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/");
 
         Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList);

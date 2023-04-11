@@ -14,7 +14,7 @@ namespace starskytest.starsky.feature.export.Services;
 public class ExportServiceTest
 {
 	[TestMethod]
-	public void Export_Folder()
+	public async Task Export_Folder()
 	{
 		var exportService = new ExportService(new FakeIQuery(new List<FileIndexItem>
 			{
@@ -30,13 +30,13 @@ public class ExportServiceTest
 			})), new FakeIWebLogger(),
 			new FakeIThumbnailService());
 		
-		var (_,fileIndexResultsList) = exportService.Preflight(new List<string> { "/test" }.ToArray());
+		var (_,fileIndexResultsList) = await exportService.PreflightAsync(new List<string> { "/test" }.ToArray());
 		
 		Assert.AreEqual(1, fileIndexResultsList.Count);
 	}
 	
 	[TestMethod]
-	public void Export_Folder_StackCollection_True()
+	public async Task Export_Folder_StackCollection_True()
 	{
 		var exportService = new ExportService(new FakeIQuery(new List<FileIndexItem>
 			{
@@ -54,7 +54,7 @@ public class ExportServiceTest
 			})), new FakeIWebLogger(),
 			new FakeIThumbnailService());
 		
-		var (_,fileIndexResultsList) = exportService.Preflight(new List<string> { "/test/test.jpg" }.ToArray());
+		var (_,fileIndexResultsList) = await exportService.PreflightAsync(new List<string> { "/test/test.jpg" }.ToArray());
 		
 		Assert.AreEqual(3, fileIndexResultsList.Count);
 		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.FilePath == "/test/test.jpg"));
@@ -63,7 +63,7 @@ public class ExportServiceTest
 	
 		
 	[TestMethod]
-	public void Export_Folder_StackCollection_False()
+	public async Task Export_Folder_StackCollection_False()
 	{
 		var exportService = new ExportService(new FakeIQuery(new List<FileIndexItem>
 			{
@@ -81,7 +81,7 @@ public class ExportServiceTest
 			})), new FakeIWebLogger(),
 			new FakeIThumbnailService());
 		
-		var (_,fileIndexResultsList) = exportService.Preflight(new List<string> { "/test/test.jpg" }.ToArray(), false);
+		var (_,fileIndexResultsList) = await exportService.PreflightAsync(new List<string> { "/test/test.jpg" }.ToArray(), false);
 		
 		Assert.AreEqual(1, fileIndexResultsList.Count);
 		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.FilePath == "/test/test.jpg"));
@@ -89,7 +89,7 @@ public class ExportServiceTest
 	}
 
 	[TestMethod]
-	public void Export_Ignore_Deleted_FolderFile()
+	public async Task Export_Ignore_Deleted_FolderFile()
 	{
 		var exportService = new ExportService(new FakeIQuery(new List<FileIndexItem>
 			{
@@ -106,14 +106,14 @@ public class ExportServiceTest
 			new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"})), new FakeIWebLogger(),
 			new FakeIThumbnailService());
 		
-		var (_,fileIndexResultsList) = exportService.Preflight(new List<string> { "/test" }.ToArray());
+		var (_,fileIndexResultsList) = await exportService.PreflightAsync(new List<string> { "/test" }.ToArray());
 		
 		Assert.AreEqual(0, fileIndexResultsList.Count);
 	}
 	
 	
 	[TestMethod]
-	public void Export_Ignore_Deleted_Folder()
+	public async Task Export_Ignore_Deleted_Folder()
 	{
 		var exportService = new ExportService(new FakeIQuery(new List<FileIndexItem>
 			{
@@ -130,35 +130,35 @@ public class ExportServiceTest
 			new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"})), new FakeIWebLogger(),
 			new FakeIThumbnailService());
 		
-		var (_,fileIndexResultsList) = exportService.Preflight(new List<string> { "/test/test.jpg" }.ToArray());
+		var (_,fileIndexResultsList) = await exportService.PreflightAsync(new List<string> { "/test/test.jpg" }.ToArray());
 		
 		Assert.AreEqual(0, fileIndexResultsList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok));
 		Assert.AreEqual(1, fileIndexResultsList.Count(p => p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing));
 	}
 
 	[TestMethod]
-	public void ExportService_NotFoundNotInIndex()
+	public async Task ExportService_NotFoundNotInIndex()
 	{
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
-		var (_, fileIndexResultsList) = exportService.Preflight(new List<string> { "/test" }.ToArray());
+		var (_, fileIndexResultsList) = await exportService.PreflightAsync(new List<string> { "/test" }.ToArray());
 		Assert.AreEqual(1, fileIndexResultsList.Count);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, fileIndexResultsList[0].Status);
 	}
 	
 	[TestMethod]
-	public void ExportService_Thumbnail_True()
+	public async Task ExportService_Thumbnail_True()
 	{
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
-		var (zipHash, _) = exportService.Preflight(new List<string> { "/test" }.ToArray(), false, true);
+		var (zipHash, _) = await exportService.PreflightAsync(new List<string> { "/test" }.ToArray(), false, true);
 
 		Assert.IsTrue( zipHash.StartsWith("TN"));
 	}
 	
 	[TestMethod]
-	public void ExportService_Thumbnail_False()
+	public async Task ExportService_Thumbnail_False()
 	{
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
-		var (zipHash, _) = exportService.Preflight(new List<string> { "/test" }.ToArray(), false);
+		var (zipHash, _) = await exportService.PreflightAsync(new List<string> { "/test" }.ToArray(), false);
 
 		Assert.IsTrue( zipHash.StartsWith("SR"));
 	}

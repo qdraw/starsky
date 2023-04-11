@@ -21,7 +21,8 @@ public class FakeIExport : IExport
 		throw new NotImplementedException();
 	}
 
-	public Tuple<string, List<FileIndexItem>> Preflight(string[] inputFilePaths, bool collections = true,
+	public Task<Tuple<string, List<FileIndexItem>>> PreflightAsync(
+		string[] inputFilePaths, bool collections = true,
 		bool thumbnail = false)
 	{
 		throw new NotImplementedException();
