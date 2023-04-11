@@ -13,9 +13,15 @@ namespace starsky.foundation.platform.Helpers
 	public static class ExtensionRolesHelper
 	{
 		/// <summary>
-		/// List of Sidecar files
+		/// Xmp sidecar file
 		/// </summary>
-		private static readonly List<string> ExtensionSidecar = new List<string> {"xmp",".meta.json"};
+		private static readonly List<string> ExtensionXmp = new List<string> {"xmp"};
+		
+		/// <summary>
+		/// Meta.json sidecar files
+		/// </summary>
+		private static readonly List<string> ExtensionJsonSidecar = new List<string> {"meta.json"};
+
 		
 		/// <summary>
 		/// List of .jpg,.jpeg extensions
@@ -79,6 +85,9 @@ namespace starsky.foundation.platform.Helpers
 				{
 					ImageFormat.mp4, ExtensionMp4
 				},
+				{
+					ImageFormat.xmp, ExtensionXmp
+				},
 			};
 
 		
@@ -128,7 +137,8 @@ namespace starsky.foundation.platform.Helpers
 				extensionList.AddRange(ExtensionPng);
 				extensionList.AddRange(ExtensionGpx);
 				extensionList.AddRange(ExtensionMp4);
-				extensionList.AddRange(ExtensionSidecar);
+				extensionList.AddRange(ExtensionXmp);
+				extensionList.AddRange(ExtensionJsonSidecar);
 				return extensionList;
 			}
 		}
@@ -219,7 +229,9 @@ namespace starsky.foundation.platform.Helpers
 			{
 				var extensionList = new List<string>();
 				// add the sidecar files itself
-				extensionList.AddRange(ExtensionSidecar);
+				extensionList.AddRange(ExtensionXmp);
+				extensionList.AddRange(ExtensionJsonSidecar);
+
 				// Bitmap does not support internal xmp
 				extensionList.AddRange(ExtensionBmp);
 				// Gif does not support internal xmp
@@ -259,7 +271,8 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>true, </returns>
 		public static bool IsExtensionSidecar(string? filename)
 		{
-			return IsExtensionForce(filename?.ToLowerInvariant(), ExtensionSidecar);
+			var sidecars = ExtensionXmp.Concat(ExtensionJsonSidecar).ToList();
+			return IsExtensionForce(filename?.ToLowerInvariant(), sidecars);
 		}
 		
 		/// <summary>
@@ -273,8 +286,8 @@ namespace starsky.foundation.platform.Helpers
 			if ( string.IsNullOrEmpty(filename) ) return false;
 
 			// without escaped values:
-			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
-			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$", 
+			//		\.([0-9a-z]+)(?=[?#])|(.meta)?(\.)(?:[\w]+)$
+			var matchCollection = new Regex(@"\.([0-9a-z]+)(?=[?#])|(.meta)?(\.)(?:[\w]+)$", 
 				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100)).Matches(filename);
 			if ( matchCollection.Count == 0 ) return false;
 			foreach ( var matchValue in matchCollection.Select(p => p.Value) )

@@ -54,6 +54,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ GetFileName longer timeout for slow devices  (PR #1135)
 - [x] (Fixed) _Front-end_ Add preloader state for update geo location (PR #1135)
 - [x] (Fixed) _Back-end_ Change tests for MySqlDatabaseFixes (PR #1135)
+- [x] (Fixed) _Back-end_ `api/info` gives xmp (Issue #1127) (PR #1136)
 
 ## version 0.5.7-beta.0 - 2023-03-20 {#v0.5.7-beta.0}
 
