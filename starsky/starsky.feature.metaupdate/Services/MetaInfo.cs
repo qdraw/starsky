@@ -48,7 +48,7 @@ namespace starsky.feature.metaupdate.Services
 					continue;
 				}
 				
-				if ( !_iStorage.ExistFile(detailView.FileIndexItem?.FilePath!) )
+				if ( !_iStorage.ExistFile(detailView.FileIndexItem.FilePath!) )
 				{
 					StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem!, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
