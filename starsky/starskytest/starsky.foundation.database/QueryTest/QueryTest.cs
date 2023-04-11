@@ -280,6 +280,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
             
 			CollectionAssert.AreEqual(getAllRecursive123.Select(p => p.FileHash).ToList(), 
 				getAllRecursiveExpectedResult123.Select(p => p.FileHash).ToList());
+
+			await _query.RemoveItemAsync(getAllRecursive123);
 		}
         
 		[TestMethod]
@@ -306,7 +308,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			item.Tags = "test";
 			await query.UpdateItemAsync(item);
 
-			var getItem = query.GetAllRecursive("/test_1231331");
+			var getItem = await query.GetAllRecursiveAsync("/test_1231331");
 			Assert.IsNotNull(getItem);
 			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
 

@@ -254,7 +254,7 @@ namespace starskytest.starsky.feature.rename.Services
 
 			// use cached view
 			var singleItem = _query.SingleItem( _folderExist.FilePath+ "/test2.jpg");
-			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);			
+			Assert.AreEqual("test2.jpg",singleItem?.FileIndexItem?.FileName);			
 
 			Assert.AreEqual(1,renameFs.Count);
 
