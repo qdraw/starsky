@@ -67,49 +67,118 @@ describe("DetailViewContext", () => {
 
   it("append - check if tags is updated", () => {
     state.fileIndexItem.tags = "";
-    const action = { type: "append", tags: "tags" } as any;
+    state.fileIndexItem.filePath = "/test.jpg";
+
+    const action = {
+      type: "append",
+      tags: "tags",
+      filePath: "/test.jpg"
+    } as any;
 
     const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.tags).toBe(",tags");
   });
 
   it("update - check if latitude is updated", () => {
-    const action = { type: "update", latitude: "2" } as any;
+    state.fileIndexItem.filePath = "/test.jpg";
+    const action = {
+      type: "update",
+      latitude: "3",
+      filePath: "/test.jpg"
+    } as any;
 
     const result = detailviewReducer(state, action);
-    expect(result.fileIndexItem.latitude).toBe("2");
+    expect(result.fileIndexItem.latitude).toBe("3");
+  });
+
+  it("update - skip when filePath is different", () => {
+    state.fileIndexItem.latitude = 2;
+    state.fileIndexItem.filePath = "/test.jpg";
+
+    const action = {
+      type: "update",
+      latitude: "3",
+      filePath: "/diff.jpg"
+    } as any;
+
+    const result = detailviewReducer(state, action);
+    expect(result.fileIndexItem.latitude).toBe(2);
+    expect(result.fileIndexItem.filePath).toBe("/test.jpg");
+  });
+
+  it("update - skip when filePath is different 2", () => {
+    state.fileIndexItem.latitude = 2;
+    state.fileIndexItem.filePath = "/test.jpg";
+
+    const action = {
+      type: "update",
+      latitude: "3",
+      filePath: "/diff.jpg"
+    } as any;
+
+    const result = detailviewReducer(state, action);
+    expect(result.fileIndexItem.latitude).toBe(2);
   });
 
   it("update - check if longitude is updated", () => {
-    const action = { type: "update", longitude: "2" } as any;
+    state.fileIndexItem.filePath = "/test.jpg";
+    const action = {
+      type: "update",
+      longitude: "2",
+      filePath: "/test.jpg"
+    } as any;
 
     const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.longitude).toBe("2");
   });
 
   it("update - check if locationCity is updated", () => {
-    const action = { type: "update", locationCity: "2" } as any;
+    state.fileIndexItem.filePath = "/test.jpg";
+
+    const action = {
+      type: "update",
+      locationCity: "2",
+      filePath: "/test.jpg"
+    } as any;
 
     const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.locationCity).toBe("2");
   });
 
   it("update - check if locationCountry is updated", () => {
-    const action = { type: "update", locationCountry: "2" } as any;
+    state.fileIndexItem.filePath = "/test.jpg";
+
+    const action = {
+      type: "update",
+      locationCountry: "2",
+      filePath: "/test.jpg"
+    } as any;
 
     const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.locationCountry).toBe("2");
   });
 
   it("update - check if locationCountryCode is updated", () => {
-    const action = { type: "update", locationCountryCode: "2" } as any;
+    state.fileIndexItem.filePath = "/test.jpg";
+
+    const action = {
+      type: "update",
+      locationCountryCode: "2",
+      filePath: "/test.jpg"
+    } as any;
 
     const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.locationCountryCode).toBe("2");
   });
 
   it("update - check if locationState is updated", () => {
-    const action = { type: "update", locationState: "2" } as any;
+    state.fileIndexItem.filePath = "/test.jpg";
+
+    const action = {
+      type: "update",
+      locationState: "2",
+      filePath: "/test.jpg"
+    } as any;
 
     const result = detailviewReducer(state, action);
     expect(result.fileIndexItem.locationState).toBe("2");
