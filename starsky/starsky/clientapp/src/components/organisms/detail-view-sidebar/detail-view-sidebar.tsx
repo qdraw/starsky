@@ -106,17 +106,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
       });
     }, [dispatch, infoResponseObject]);
 
-    // // use time from state and not the update api
-    // useEffect(() => {
-    //   if (!fileIndexItem.lastEdited) return;
-    //   // there is a bug in the api
-    //   dispatch({
-    //     type: "update",
-    //     lastEdited: fileIndexItem.lastEdited,
-    //     filePath: fileIndexItem.filePath
-    //   });
-    // }, [dispatch, fileIndexItem.lastEdited]);
-
     function updateCollections(infoFileIndexItem: IFileIndexItem[]) {
       const collectionsList: string[] = [];
       infoFileIndexItem.forEach((element) => {

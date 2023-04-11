@@ -102,7 +102,9 @@ export function detailviewReducer(
       } = action;
 
       if (filePath !== state.fileIndexItem.filePath) {
-        console.log("Error: filePath is not the same");
+        console.log(
+          `Error: filePath is not the same ${filePath} != ${state.fileIndexItem.filePath}`
+        );
         return state;
       }
 
