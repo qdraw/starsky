@@ -90,10 +90,6 @@ function updateDetailViewFromEvent(
       continue;
     }
 
-    console.log("DetailView update");
-    console.log(locationPath);
-    console.log(pushMessage.filePath);
-
     dispatch({
       type: "update",
       ...pushMessage,
