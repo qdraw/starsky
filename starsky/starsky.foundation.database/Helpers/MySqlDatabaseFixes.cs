@@ -1,9 +1,11 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using MySqlConnector;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Helpers
@@ -13,11 +15,13 @@ namespace starsky.foundation.database.Helpers
 	{
 		private readonly MySqlConnection? _connection;
 		private readonly AppSettings _appSettings;
+		private readonly IWebLogger _logger;
 
-		public MySqlDatabaseFixes(MySqlConnection? connection, AppSettings appSettings)
+		public MySqlDatabaseFixes(MySqlConnection? connection, AppSettings appSettings, IWebLogger logger)
 		{
 			_connection = connection;
 			_appSettings = appSettings;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -58,11 +62,15 @@ namespace starsky.foundation.database.Helpers
 			return true;
 		}
 
-		internal async Task ExecuteNonQueryAsync(string query)
+		internal async Task<int?> ExecuteNonQueryAsync(string query)
 		{
 			var myCommand = new MySqlCommand(query);
 			myCommand.Connection = _connection;
-			await myCommand.ExecuteNonQueryAsync();
+			if (myCommand.Connection?.State != ConnectionState.Open )
+			{
+				return null;
+			}
+			return await myCommand.ExecuteNonQueryAsync();
 		}
 
 		internal async Task<bool?> IsUtf8()
@@ -88,7 +96,14 @@ namespace starsky.foundation.database.Helpers
 
 			if ( _connection.State != ConnectionState.Open )
 			{
-				await _connection.OpenAsync();
+				try
+				{
+					await _connection.OpenAsync();
+				}
+				catch ( MySqlException exception)
+				{
+					_logger.LogError($"[MySqlDatabaseFixes] OpenAsync MySqlException {exception.Message}", exception);
+				}
 			}
 		}
 
@@ -106,9 +121,9 @@ namespace starsky.foundation.database.Helpers
 				return autoIncrementExist;
 			}
 
-			await AlterTableAutoIncrement(tableName);
+			var result = await AlterTableAutoIncrement(tableName);
 			if ( dispose ) await _connection.DisposeAsync();
-			return true;
+			return result != null;
 		}
 
 		public async Task DisposeAsync()
@@ -137,6 +152,11 @@ namespace starsky.foundation.database.Helpers
 
 		private static async Task<List<string>> ReadCommand(MySqlCommand command)
 		{
+			if (command.Connection?.State != ConnectionState.Open )
+			{
+				return new List<string>();
+			}
+			
 			var tableNames = new List<string>();
 			await using var reader = await command.ExecuteReaderAsync();
 			while (reader.Read())
@@ -147,12 +167,11 @@ namespace starsky.foundation.database.Helpers
 			return tableNames;
 		}
 	
-		internal async Task<bool?> AlterTableAutoIncrement(string tableName, string columnName = "Id")
+		internal async Task<int?> AlterTableAutoIncrement(string tableName, string columnName = "Id")
 		{
 			if ( _connection == null ) return null;
 			var myInsertQuery = "ALTER TABLE `"+ tableName+ "` MODIFY " + columnName + " INTEGER NOT NULL AUTO_INCREMENT;";
-			await ExecuteNonQueryAsync(myInsertQuery);
-			return true;
+			return await ExecuteNonQueryAsync(myInsertQuery);
 		}
 
 	}

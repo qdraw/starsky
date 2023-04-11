@@ -1,10 +1,11 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Helpers
 {
@@ -19,21 +20,20 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(null,new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-			}).FixUtf8Encoding(new List<string>());
+			},new FakeIWebLogger()).FixUtf8Encoding(new List<string>());
 			Assert.IsNull(result);
 		}
 	
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public async Task FixUtf8Encoding_InvalidOperationException()
+		public async Task FixUtf8Encoding_MissingDatabase()
 		{
 			var fakeConnectionString =
 				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
 			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}).FixUtf8Encoding(new List<string>{""});
-			Assert.IsNull(result);
+			},new FakeIWebLogger()).FixUtf8Encoding(new List<string>{""});
+			Assert.IsTrue(result);
 		}
 	
 		[TestMethod]
@@ -42,12 +42,11 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(null,new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-			}).SetTableToUtf8("");
+			},new FakeIWebLogger()).SetTableToUtf8("");
 			Assert.IsNull(result);
 		}
 	
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public async Task SetTableToUtf8_InvalidOperationException()
 		{
 			var fakeConnectionString =
@@ -55,8 +54,8 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}).SetTableToUtf8("");
-			Assert.IsNull(result);
+			},new FakeIWebLogger()).SetTableToUtf8("");
+			Assert.IsTrue(result);
 		}
 	
 		[TestMethod]
@@ -65,12 +64,11 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(null,new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-			}).SetDatabaseSettingToUtf8();
+			},new FakeIWebLogger()).SetDatabaseSettingToUtf8();
 			Assert.IsNull(result);
 		}
 	
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public async Task SetDatabaseSettingToUtf8_InvalidOperationException()
 		{
 			var fakeConnectionString =
@@ -78,20 +76,20 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}).SetDatabaseSettingToUtf8();
-			Assert.IsNull(result);
+			},new FakeIWebLogger()).SetDatabaseSettingToUtf8();
+			Assert.IsTrue(result);
 		}
 	
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public async Task ExecuteNonQueryAsync_InvalidOperationException()
+		public async Task ExecuteNonQueryAsync_WithNoDb()
 		{
 			var fakeConnectionString =
 				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
-			await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
+			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}).ExecuteNonQueryAsync("");
+			},new FakeIWebLogger()).ExecuteNonQueryAsync("");
+			Assert.IsNull(result);
 		}
 	
 		[TestMethod]
@@ -100,44 +98,45 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(null,new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-			}).IsUtf8();
+			},new FakeIWebLogger()).IsUtf8();
 			Assert.IsNull(result);
 		}
 	
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public async Task IsUtf8_InvalidOperationException()
+		public async Task IsUtf8_NoDatabase()
 		{
 			var fakeConnectionString =
 				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
 			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}).IsUtf8();
-			Assert.IsNull(result);
+			},new FakeIWebLogger()).IsUtf8();
+			Assert.IsFalse(result);
 		}
 	
 		[TestMethod]
 		public async Task OpenConnection_Null()
 		{
 			MySqlConnection connection = null;
-			await new MySqlDatabaseFixes(connection,new AppSettings
+			await new MySqlDatabaseFixes(null!,new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-			}).OpenConnection();
+			},new FakeIWebLogger()).OpenConnection();
 			Assert.IsNull(connection);
 		}
 	
 		[TestMethod]
-		[ExpectedException(typeof(MySqlException))]
 		public async Task OpenConnection_MySqlConnector_MySqlException()
 		{
 			var fakeConnectionString =
 				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
+			var logger = new FakeIWebLogger();
 			await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}).OpenConnection();
+			},logger).OpenConnection();
+			
+			Assert.IsTrue(logger.TrackedExceptions.Any(x=>x.Item2.Contains("MySqlException")));
 		}
 	
 		[TestMethod]
@@ -146,7 +145,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(null,new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-			}).FixAutoIncrement("test");
+			},new FakeIWebLogger()).FixAutoIncrement("test");
 			Assert.IsNull(result);
 		}
 	
@@ -156,21 +155,20 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(new MySqlConnection(),new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-			}).FixAutoIncrement("test");
+			},new FakeIWebLogger()).FixAutoIncrement("test");
 			Assert.IsNull(result);
 		}
 	
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public async Task FixAutoIncrement_InvalidOperationException()
+		public async Task FixAutoIncrement_NoDatabase()
 		{
 			var fakeConnectionString =
 				"Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Port=8125;Connect Timeout=1";
 			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}).FixAutoIncrement("test");
-			Assert.IsNull(result);
+			},new FakeIWebLogger()).FixAutoIncrement("test");
+			Assert.IsFalse(result);
 		}
 		
 		[TestMethod]
@@ -179,14 +177,12 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(null,new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			}).FixAutoIncrement("test");
+			},new FakeIWebLogger()).FixAutoIncrement("test");
 			Assert.IsNull(result);
 		}
 	
-		
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public async Task CheckAutoIncrementExist_True()
+		public async Task CheckAutoIncrementExist_DueMissingDatabase()
 		{
 			var appSettings = new AppSettings
 			{
@@ -194,8 +190,8 @@ namespace starskytest.starsky.foundation.database.Helpers
 				DatabaseConnection = "Server=localhost;port=4785;database=TEST;uid=starsky;pwd=TEST;maximumpoolsize=30;"
 			};
 			var mysqlConnection = new MySqlConnection(appSettings.DatabaseConnection);
-			var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings).CheckAutoIncrementExist("test");
-			Assert.IsTrue(result);
+			var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings,new FakeIWebLogger()).CheckAutoIncrementExist("test");
+			Assert.IsFalse(result);
 		}
 	
 		[TestMethod]
@@ -205,12 +201,11 @@ namespace starskytest.starsky.foundation.database.Helpers
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
 			};
-			var result = await new MySqlDatabaseFixes(null,appSettings).CheckAutoIncrementExist("test");
+			var result = await new MySqlDatabaseFixes(null,appSettings,new FakeIWebLogger()).CheckAutoIncrementExist("test");
 			Assert.IsNull(result);
 		}
 			
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public async Task AlterTable_NoConnection()
 		{
 			var appSettings = new AppSettings
@@ -219,7 +214,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 				DatabaseConnection = "Server=localhost;port=4785;database=TEST;uid=starsky;pwd=TEST;maximumpoolsize=30;"
 			};
 			var mysqlConnection = new MySqlConnection(appSettings.DatabaseConnection);
-			var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings).AlterTableAutoIncrement("test");
+			var result = await new MySqlDatabaseFixes(mysqlConnection,appSettings,new FakeIWebLogger()).AlterTableAutoIncrement("test");
 			Assert.IsNull(result);
 		}
 	
@@ -230,7 +225,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
 			};
-			var result = await new MySqlDatabaseFixes(null,appSettings).AlterTableAutoIncrement("test");
+			var result = await new MySqlDatabaseFixes(null,appSettings,new FakeIWebLogger()).AlterTableAutoIncrement("test");
 			Assert.IsNull(result);
 		}
 	}
