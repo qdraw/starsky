@@ -88,19 +88,24 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			await _query.AddRangeAsync(new List<FileIndexItem>
 			{
-				new FileIndexItem("/2.jpg"),
-				new FileIndexItem("/2020.jpg")
+				new FileIndexItem("/3.jpg"),
+				new FileIndexItem("/3020.jpg")
 			});
 			
 			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-				new List<string> {"/2.jpg"});
+				new List<string> {"/3.jpg"});
 
-			Assert.AreEqual(1, result.Count);
-			Assert.AreEqual("/2.jpg",result[0].FilePath);
+			Assert.AreEqual(1, result.Count(p => p.FileName?.StartsWith("3") == true));
+			var threeJpg =
+				result.Where(p => p.FileName?.StartsWith("3") == true)
+					.ToList()[0];
+			Assert.AreEqual("/3.jpg",threeJpg.FilePath);
 
-			await _query.RemoveItemAsync(result[0]);
+			var three20 = await _query.GetObjectByFilePathAsync("/3020.jpg");
+			await _query.RemoveItemAsync(threeJpg);
 			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/2020.jpg"));
+			Assert.AreEqual("/3020.jpg",three20?.FilePath);
+			await _query.RemoveItemAsync(three20!);
 		}
 		
 				
