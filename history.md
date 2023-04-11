@@ -49,6 +49,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Multiple or queries seperated by comma (PR #1134)
 - [x] (Changed) _Back-end_ Fix for ThumbnailQuery DbUpdateConcurrencyException (PR #1134)
 - [x] (Changed) _Back-end_ Change default readOnlyFolders (PR #1134)
+- [x] (Fixed) _Front-end_ Remove skip next item (Issue #1105) (PR #1135)
+- [x] (Removed) _Back-end_ Remove deprecated internal query api GetAllRecursive (PR #1135)
+- [x] (Fixed) _Back-end_ GetFileName longer timeout for slow devices  (PR #1135)
+- [x] (Fixed) _Front-end_ Add preloader state for update geo location (PR #1135)
+- [x] (Fixed) _Back-end_ Change tests for MySqlDatabaseFixes (PR #1135)
 
 ## version 0.5.7-beta.0 - 2023-03-20 {#v0.5.7-beta.0}
 
