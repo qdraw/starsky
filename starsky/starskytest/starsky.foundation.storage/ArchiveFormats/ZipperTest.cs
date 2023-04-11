@@ -90,7 +90,6 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 			}
 
 			using var archive = ZipFile.OpenRead(result);
-			File.Delete(tempFileFullPath);
 			Assert.AreEqual(filePaths.Count, archive.Entries.Count);
 
 			for (var i = 0; i < filePaths.Count; i++)
@@ -100,6 +99,8 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 				Assert.AreEqual(0, entry.Length);
 			}
 			archive.Dispose();
+			
+			File.Delete(tempFileFullPath);
 		}
 	}
 }
