@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
@@ -32,9 +31,7 @@ namespace starsky.foundation.database.Models
     [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
     public sealed class ImportIndexItem
     {
-        private readonly AppSettings _appSettings = new();
-
-        /// <summary>
+	    /// <summary>
         /// In order to create an instance of 'ImportIndexItem'
         /// EF requires that a parameter-less constructor be declared.
         /// </summary>
@@ -44,8 +41,7 @@ namespace starsky.foundation.database.Models
         
         public ImportIndexItem(AppSettings appSettings)
         {
-            _appSettings = appSettings;
-            Structure = _appSettings.Structure;
+	        Structure = appSettings.Structure;
         }
 
         /// <summary>
@@ -227,14 +223,5 @@ namespace starsky.foundation.database.Models
 		    }
 		    return newString.ToString();
 	    }
-
-        public List<string> SearchSubDirInDirectory(string parentItem, string parsedItem)
-        {
-            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
-            var childDirectories = Directory.GetDirectories(
-                _appSettings.DatabasePathToFilePath(parentItem), parsedItem).ToList();
-            childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
-            return childDirectories;
-        }
     }
 }

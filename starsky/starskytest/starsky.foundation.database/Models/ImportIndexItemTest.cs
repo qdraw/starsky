@@ -240,12 +240,6 @@ namespace starskytest.starsky.foundation.database.Models
             
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void ImportIndexItem_CtorRequest_SearchSubDirInDirectory()
-		{
-			new ImportIndexItem().SearchSubDirInDirectory(null, null);
-		}
 
 		[TestMethod]
 		public void ImportIndexItemParse_OverWriteStructureFeature_Test()
