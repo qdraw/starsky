@@ -14,35 +14,6 @@ namespace starsky.foundation.database.Query
 {
 	public partial class Query
 	{
-		
-		/// <summary>
-		/// Includes sub items in file
-		/// Used for Orphan Check
-		/// All files in
-		/// </summary>
-		/// <param name="subPath">local path</param>
-		/// <returns>results</returns>
-		public List<FileIndexItem> GetAllRecursive(string subPath = "/")
-		{
-			subPath = PathHelper.RemoveLatestSlash(subPath);
-            
-			List<FileIndexItem> LocalQuery(ApplicationDbContext context)
-			{
-				return context.FileIndex.Where
-						(p => p.ParentDirectory!.StartsWith(subPath) )
-					.OrderBy(r => r.FileName).ToList();
-			}
-            
-			try
-			{
-				return LocalQuery(_context);
-			}
-			catch ( ObjectDisposedException )
-			{
-				return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
-			}
-		}
-			    
 		/// <summary>
 		/// Includes sub items in file
 		/// Used for Orphan Check

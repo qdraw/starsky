@@ -59,7 +59,8 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
         });
         dispatch({
           type: "update",
-          ...model
+          ...model,
+          filePath: fileIndexItem.filePath
         });
         locationCity = model.locationCity;
         locationCountry = model.locationCountry;

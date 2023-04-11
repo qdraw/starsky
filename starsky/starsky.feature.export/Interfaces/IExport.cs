@@ -10,7 +10,8 @@ namespace starsky.feature.export.Interfaces
 		Task CreateZip(List<FileIndexItem> fileIndexResultsList, bool thumbnail,
 			string zipOutputFileName);
 
-		Tuple<string, List<FileIndexItem>> Preflight(string[] inputFilePaths,
+		Task<Tuple<string, List<FileIndexItem>>> PreflightAsync(
+			string[] inputFilePaths,
 			bool collections = true,
 			bool thumbnail = false);
 

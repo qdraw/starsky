@@ -45,7 +45,7 @@ namespace starsky.Controllers
 		public async Task<IActionResult> CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
-			var (zipOutputName, fileIndexResultsList) = _export.Preflight(inputFilePaths, collections, thumbnail);
+			var (zipOutputName, fileIndexResultsList) = await _export.PreflightAsync(inputFilePaths, collections, thumbnail);
 			
 			// When all items are not found
 			// allow read only

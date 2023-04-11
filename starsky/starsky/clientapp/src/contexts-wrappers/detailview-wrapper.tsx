@@ -89,6 +89,7 @@ function updateDetailViewFromEvent(
       new FileListCache().CacheCleanEverything();
       continue;
     }
+
     dispatch({
       type: "update",
       ...pushMessage,

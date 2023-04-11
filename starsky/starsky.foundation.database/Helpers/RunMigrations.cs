@@ -9,13 +9,14 @@ using starsky.foundation.database.Data;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.database.Helpers
 {
 	public static class RunMigrations
 	{
 
-		internal static async Task<bool> MigrateAsync(AppSettings appSettings, ApplicationDbContext dbContext)
+		internal static async Task<bool> MigrateAsync(AppSettings appSettings, ApplicationDbContext dbContext, IWebLogger logger)
 		{
 			if ( appSettings.DatabaseType == AppSettings.DatabaseTypeList.InMemoryDatabase )
 			{
@@ -28,15 +29,14 @@ namespace starsky.foundation.database.Helpers
 			     AppSettings.DatabaseTypeList.Mysql ) return true;
 				
 			var connection = new MySqlConnection(appSettings.DatabaseConnection);
-			await MysqlFixes(connection, appSettings, dbContext);
+			await MysqlFixes(connection, appSettings, dbContext, logger);
 			return true;
 		}
 
-		internal static async Task<bool> MysqlFixes(MySqlConnection connection, AppSettings appSettings, ApplicationDbContext dbContext)
+		internal static async Task<bool> MysqlFixes(MySqlConnection connection, AppSettings appSettings, ApplicationDbContext dbContext, IWebLogger logger)
 		{
-			
 			var databaseFixes =
-				new MySqlDatabaseFixes(connection, appSettings);
+				new MySqlDatabaseFixes(connection, appSettings, logger);
 			await databaseFixes.OpenConnection();
 					
 			var tableNames = dbContext.Model.GetEntityTypes()
@@ -63,7 +63,7 @@ namespace starsky.foundation.database.Helpers
 		{
 			async Task<bool> Migrate()
 			{
-				return await MigrateAsync(appSettings, dbContext);
+				return await MigrateAsync(appSettings, dbContext, logger);
 			}
 			
 			try

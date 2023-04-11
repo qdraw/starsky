@@ -10,12 +10,14 @@ export async function updateGeoLocation(
   selectedSubPath: string,
   location: ILatLong | null,
   setError: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   collections?: boolean
 ): Promise<IGeoLocationModel | null> {
   if (!location?.latitude || !location?.longitude) {
     return Promise.resolve(null);
   }
 
+  setIsLoading(true);
   const bodyParams = new URLPath().ObjectToSearchParams({
     collections,
     f: parentDirectory + "/" + selectedSubPath,
@@ -51,12 +53,15 @@ export async function updateGeoLocation(
     );
     if (updateResult.statusCode !== 200) {
       setError(true);
+      setIsLoading(false);
       return Promise.resolve(null);
     }
   } catch (error) {
     setError(true);
+    setIsLoading(false);
     return Promise.resolve(null);
   }
 
+  setIsLoading(false);
   return Promise.resolve(model);
 }

@@ -693,5 +693,35 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018/02")));
 			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01")));
 		}
+
+		[TestMethod]
+		public void DisplayInlineConsole_default()
+		{
+			var consoleWrapper = new FakeConsoleWrapper();
+			SyncFolder.DisplayInlineConsole(consoleWrapper, new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
+			Assert.AreEqual("⁑",consoleWrapper.WrittenLines.LastOrDefault());
+		}
+
+		[TestMethod]
+		public void DisplayInlineConsole_DeletedAndSame()
+		{
+			var consoleWrapper = new FakeConsoleWrapper();
+			SyncFolder.DisplayInlineConsole(consoleWrapper, new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.DeletedAndSame
+			}});
+			Assert.AreEqual("✘",consoleWrapper.WrittenLines.LastOrDefault());
+		}
+		
+		[TestMethod]
+		public void DisplayInlineConsole_Deleted()
+		{
+			var consoleWrapper = new FakeConsoleWrapper();
+			SyncFolder.DisplayInlineConsole(consoleWrapper, new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+			{
+				Status = FileIndexItem.ExifStatus.Deleted
+			}});
+			Assert.AreEqual("֍",consoleWrapper.WrittenLines.LastOrDefault());
+		}
 	}
 }

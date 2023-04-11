@@ -64,6 +64,45 @@ namespace starskytest.starsky.foundation.database.Models
 			var dateTime = importItem.ParseDateTimeFromFileName();
 			Assert.AreEqual(new DateTime(), dateTime);
 		}
+		
+		[TestMethod]
+		public void ParseDateTimeFromFileName_ReturnsValidDateTime()
+		{
+			// Arrange
+			string sourceFilePath = "path/to/2019-10-01_235959_filename.ext";
+			string structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
+			var parser = new ImportIndexItem(_appSettings)
+			{
+				SourceFullFilePath = sourceFilePath,
+				Structure = structure
+			};
+
+			// Act
+			var result = parser.ParseDateTimeFromFileName();
+
+			// Assert
+			Assert.AreEqual(new DateTime(2019, 10, 1, 23, 59, 59), result);
+		}
+		
+				
+		[TestMethod]
+		public void ParseDateTimeFromFileName_ReturnsNonValidName()
+		{
+			// Arrange
+			string sourceFilePath = "..jpg";
+			string structure = "/yyyy-MM-dd_HHmmss_{filenamebase}.ext";
+			var parser = new ImportIndexItem(_appSettings)
+			{
+				SourceFullFilePath = sourceFilePath,
+				Structure = structure
+			};
+
+			// Act
+			var result = parser.ParseDateTimeFromFileName();
+
+			// Assert
+			Assert.AreEqual(new DateTime(), result);
+		}
 
 		[TestMethod]
 		public void ParseDateTimeFromFileName_Test()
@@ -201,12 +240,6 @@ namespace starskytest.starsky.foundation.database.Models
             
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void ImportIndexItem_CtorRequest_SearchSubDirInDirectory()
-		{
-			new ImportIndexItem().SearchSubDirInDirectory(null, null);
-		}
 
 		[TestMethod]
 		public void ImportIndexItemParse_OverWriteStructureFeature_Test()

@@ -249,7 +249,7 @@ namespace starsky.foundation.sync.SyncServices
 							query, _memoryCache, _logger)
 						.RemoveAsync(databaseItems, updateDelegate);
 
-					DisplayInlineConsole(databaseItems);
+					DisplayInlineConsole(_console, databaseItems);
 				
 					return databaseItems;
 				}, _appSettings.MaxDegreesOfParallelism);
@@ -264,7 +264,7 @@ namespace starsky.foundation.sync.SyncServices
 			return results;
 		}
 
-		private void DisplayInlineConsole(List<FileIndexItem> databaseItems)
+		internal static void DisplayInlineConsole(IConsole console, List<FileIndexItem> databaseItems)
 		{
 			foreach ( var item in databaseItems )
 			{
@@ -272,17 +272,23 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					case FileIndexItem.ExifStatus
 						.NotFoundSourceMissing:	
-						_console.Write("≠"); 
+						console.Write("≠"); 
 						break;
 
 					case FileIndexItem.ExifStatus.Ok:
-						_console.Write("•"); 
+						console.Write("•"); 
 						break;
 					case FileIndexItem.ExifStatus.OkAndSame:
-						_console.Write("⩮"); 
+						console.Write("⩮"); 
+						break;
+					case FileIndexItem.ExifStatus.DeletedAndSame:
+						console.Write("✘"); 
+						break;
+					case FileIndexItem.ExifStatus.Deleted:
+						console.Write("\u058d"); // ֍ 
 						break;
 					default:
-						_console.Write("⁑");
+						console.Write("⁑");
 						break;
 				}
 			}

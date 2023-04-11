@@ -15,6 +15,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.ViewModels
 		{
 			var model = new WebHtmlViewModel
 			{
+				ItemName = "test",
 				AppSettings = new AppSettings(),
 				CurrentProfile = new AppSettingsPublishProfiles(),
 				Profiles = new List<AppSettingsPublishProfiles>(),
@@ -22,6 +23,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.ViewModels
 				FileIndexItems=	new List<FileIndexItem>()
 			};
 		
+			Assert.IsNotNull(model.ItemName);
 			Assert.IsNotNull(model.AppSettings);
 			Assert.IsNotNull(model.CurrentProfile);
 			Assert.IsNotNull(model.Profiles);

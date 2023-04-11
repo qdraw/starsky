@@ -14,9 +14,9 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>display name as string</returns>
 		public static string GetDisplayName(Enum enumValue)
 		{
-			var name = enumValue.GetType()?
-				.GetMember(enumValue.ToString())?
-				.First()?
+			var name = enumValue?.GetType()
+				.GetMember(enumValue.ToString())
+				.FirstOrDefault()?
 				.GetCustomAttribute<DisplayAttribute>()?
 				.Name;
 			return name;

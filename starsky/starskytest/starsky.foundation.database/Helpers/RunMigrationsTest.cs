@@ -100,5 +100,27 @@ namespace starskytest.starsky.foundation.database.Helpers
 			// should not crash
 		}
 		
+		[TestMethod]
+		public async Task MysqlFixes_ShouldReturnTrue_AfterFixesAreApplied()
+		{
+			// Arrange
+			var appSettings = new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
+				DatabaseConnection = "server=localhost;database=mydatabase;user=root;password=mypassword"
+			};
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			var dbContext = new ApplicationDbContext(options);
+			var connection = new MySqlConnection(appSettings.DatabaseConnection);
+
+			// Act
+			var result = await RunMigrations.MysqlFixes(connection, appSettings, dbContext,new FakeIWebLogger());
+
+			// Assert
+			Assert.IsTrue(result);
+		}
+		
 	}
 }

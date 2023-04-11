@@ -98,15 +98,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
       if (!infoFileIndexItem) return;
       updateCollections(infoFileIndexItem);
 
-      dispatch({ type: "update", ...infoFileIndexItem[0], lastEdited: "" });
+      dispatch({
+        type: "update",
+        ...infoFileIndexItem[0],
+        lastEdited: "",
+        filePath: infoFileIndexItem[0].filePath
+      });
     }, [dispatch, infoResponseObject]);
-
-    // use time from state and not the update api
-    useEffect(() => {
-      if (!fileIndexItem.lastEdited) return;
-      // there is a bug in the api
-      dispatch({ type: "update", lastEdited: fileIndexItem.lastEdited });
-    }, [dispatch, fileIndexItem.lastEdited]);
 
     function updateCollections(infoFileIndexItem: IFileIndexItem[]) {
       const collectionsList: string[] = [];
@@ -274,6 +272,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
               });
               dispatch({
                 type: "update",
+                filePath: fileIndexItem.filePath,
                 lastEdited: new Date().toString(),
                 colorclass: result
               });

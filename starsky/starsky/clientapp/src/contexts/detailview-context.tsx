@@ -5,7 +5,7 @@ import {
   PageType
 } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
-import { newIFileIndexItem, Orientation } from "../interfaces/IFileIndexItem";
+import { Orientation, newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 import { FileListCache } from "../shared/filelist-cache";
 
@@ -37,6 +37,7 @@ export type DetailViewAction =
     }
   | {
       type: "update";
+      filePath: string;
       tags?: string;
       colorclass?: number;
       description?: string;
@@ -82,6 +83,7 @@ export function detailviewReducer(
     case "update":
       /* eslint-disable-next-line no-redeclare */
       let {
+        filePath,
         tags,
         description,
         title,
@@ -98,6 +100,14 @@ export function detailviewReducer(
         locationCountryCode,
         locationState
       } = action;
+
+      if (filePath !== state.fileIndexItem.filePath) {
+        console.log(
+          `Error: filePath is not the same ${filePath} != ${state.fileIndexItem.filePath}`
+        );
+        return state;
+      }
+
       if (tags !== undefined) state.fileIndexItem.tags = tags;
       if (description !== undefined)
         state.fileIndexItem.description = description;

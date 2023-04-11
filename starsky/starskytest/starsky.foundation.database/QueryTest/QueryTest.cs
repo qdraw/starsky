@@ -175,10 +175,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.IsNotNull(queryResult);
 			Assert.AreEqual(newItem, queryResult.FileIndexItem?.FilePath);
 
-			foreach ( var items in await _query.GetAllRecursiveAsync("/cache_test") )
-			{
-				await _query.RemoveItemAsync(items);
-			}
+			await _query.RemoveItemAsync(queryResult.FileIndexItem!);
 		}
 
         
@@ -280,6 +277,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
             
 			CollectionAssert.AreEqual(getAllRecursive123.Select(p => p.FileHash).ToList(), 
 				getAllRecursiveExpectedResult123.Select(p => p.FileHash).ToList());
+
+			await _query.RemoveItemAsync(getAllRecursive123);
 		}
         
 		[TestMethod]

@@ -57,9 +57,10 @@ namespace starsky.feature.export.Services
 		/// <param name="collections">is stack collections enabled</param>
 		/// <param name="thumbnail">should export thumbnail or not</param>
 		/// <returns>zipHash, fileIndexResultsList</returns>
-		public Tuple<string, List<FileIndexItem>> Preflight(string[] inputFilePaths, 
-			bool collections = true, 
-			bool thumbnail = false )
+		public async Task<Tuple<string, List<FileIndexItem>>> PreflightAsync(
+			string[] inputFilePaths,
+			bool collections = true,
+			bool thumbnail = false)
 		{
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
@@ -87,8 +88,11 @@ namespace starsky.feature.export.Services
 				if ( detailView.FileIndexItem.IsDirectory == true )
 				{
 					// Collection is only relevant for when selecting one file
+					var allFilesInFolder =
+						await _query.GetAllRecursiveAsync(detailView
+							.FileIndexItem.FilePath);
 					foreach ( var item in 
-						_query.GetAllRecursive(detailView.FileIndexItem.FilePath).
+					         allFilesInFolder.
 							Where(item => item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
 					{
 						item.Status = FileIndexItem.ExifStatus.Ok;

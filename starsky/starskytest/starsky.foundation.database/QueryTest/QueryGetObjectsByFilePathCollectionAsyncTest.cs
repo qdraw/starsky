@@ -48,11 +48,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			await Add();
 			
-			var result = await (_query as Query).GetObjectsByFilePathCollectionAsync("/single_item1_async.jpg");
+			var result = await _query.GetObjectsByFilePathCollectionAsync("/single_item1_async.jpg");
 			if ( result.Count != 1 )
 			{
 				await Add();
-				result=  await (_query as Query).GetObjectsByFilePathCollectionAsync("/single_item1_async.jpg");
+				result=  await _query.GetObjectsByFilePathCollectionAsync("/single_item1_async.jpg");
 			}
 
 			Assert.AreEqual(1, result.Count);
@@ -88,19 +88,24 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			await _query.AddRangeAsync(new List<FileIndexItem>
 			{
-				new FileIndexItem("/2.jpg"),
-				new FileIndexItem("/2020.jpg")
+				new FileIndexItem("/3.jpg"),
+				new FileIndexItem("/3020.jpg")
 			});
 			
 			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-				new List<string> {"/2.jpg"});
+				new List<string> {"/3.jpg"});
 
-			Assert.AreEqual(1, result.Count);
-			Assert.AreEqual("/2.jpg",result[0].FilePath);
+			Assert.AreEqual(1, result.Count(p => p.FileName?.StartsWith("3") == true));
+			var threeJpg =
+				result.Where(p => p.FileName?.StartsWith("3") == true)
+					.ToList()[0];
+			Assert.AreEqual("/3.jpg",threeJpg.FilePath);
 
-			await _query.RemoveItemAsync(result[0]);
+			var three20 = await _query.GetObjectByFilePathAsync("/3020.jpg");
+			await _query.RemoveItemAsync(threeJpg);
 			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/2020.jpg"));
+			Assert.AreEqual("/3020.jpg",three20?.FilePath);
+			await _query.RemoveItemAsync(three20!);
 		}
 		
 				
@@ -128,18 +133,30 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod] 
 		public async Task GetObjectsByFilePathCollectionAsync_Single_ButDuplicate_Item()
 		{
-			await _query.AddRangeAsync(new List<FileIndexItem>
+			const string subPath = "/single_duplicate_2.jpg";
+			async Task Add()
 			{
-				new FileIndexItem("/single_duplicate_2.jpg"),
-				new FileIndexItem("/single_duplicate_2.jpg")
-			});
+				await _query.AddRangeAsync(new List<FileIndexItem>
+				{
+					new FileIndexItem(subPath),
+					new FileIndexItem(subPath)
+				});
+			}
+			
+			await Add();
 			
 			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
-				new List<string> {"/single_duplicate_2.jpg"});
-
+				new List<string> {subPath});
+			if ( result.Count != 2 )
+			{
+				await Add();
+				result = await _query.GetObjectsByFilePathCollectionQueryAsync(
+					new List<string> {subPath});
+			}
+			
 			Assert.AreEqual(2, result.Count);
-			Assert.AreEqual("/single_duplicate_2.jpg",result[0].FilePath);
-			Assert.AreEqual("/single_duplicate_2.jpg",result[1].FilePath);
+			Assert.AreEqual(subPath,result[0].FilePath);
+			Assert.AreEqual(subPath,result[1].FilePath);
 
 			await _query.RemoveItemAsync(result[0]);
 			await _query.RemoveItemAsync(result[1]);

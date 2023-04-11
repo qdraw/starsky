@@ -45,24 +45,20 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   // Not close anymore because its looks like closing a window
-  const MessageCloseDialogBackToFolder = language.text(
-    "Terug naar map",
-    "Parent folder"
+  const MessageCloseDialogBackToFolder = language.key(
+    localization.MessageCloseDialogBackToFolder
   );
-  const MessageCloseDetailScreenDialog = language.text(
-    "Sluit detailscherm",
-    "Close detail screen"
+  const MessageCloseDetailScreenDialog = language.key(
+    localization.MessageCloseDetailScreenDialog
   );
-  const MessageSaved = language.text("Opgeslagen", "Saved");
-
+  const MessageSaved = language.key(localization.MessageSaved);
   const MessageMoveToTrash = language.key(localization.MessageMoveToTrash);
-
-  const MessageIncludingWord = language.text("Inclusief: ", "Including: ");
-
+  const MessageIncludingColonWord = language.key(
+    localization.MessageIncludingColonWord
+  );
   const MessageRestoreFromTrash = language.key(
     localization.MessageRestoreFromTrash
   );
-
   const MessageMove = language.key(localization.MessageMove);
 
   const MessageRenameFileName = language.text(
@@ -167,13 +163,13 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
     setIsLoading(true);
     const bodyParams = newBodyParams();
-    if (state.collections !== undefined)
+    if (state.collections !== undefined) {
       bodyParams.set("collections", state.collections.toString());
+    }
+    const subPath = state.subPath;
 
     // Add remove tag
     if (!isMarkedAsDeleted) {
-      bodyParams.set("Tags", "!delete!");
-      bodyParams.set("append", "true");
       const resultDo = await FetchPost(
         new UrlQuery().UrlMoveToTrashApi(),
         bodyParams.toString()
@@ -191,14 +187,14 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       }
 
       let newStatus = (resultDo.data as IFileIndexItem[])?.find(
-        (x) => x.filePath === state.subPath
+        (x) => x.filePath === subPath
       )?.status;
       if (!newStatus) {
         newStatus = IExifStatus.Deleted;
       }
-
       dispatch({
         type: "update",
+        filePath: subPath,
         status: newStatus,
         lastEdited: new Date().toISOString()
       });
@@ -220,6 +216,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       dispatch({ type: "remove", tags: "!delete!" });
       dispatch({
         type: "update",
+        filePath: subPath,
         status: IExifStatus.Ok,
         lastEdited: new Date().toISOString()
       });
@@ -259,7 +256,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     dispatch({
       type: "update",
       orientation,
-      fileHash: media.fileIndexItem.fileHash
+      fileHash: media.fileIndexItem.fileHash,
+      filePath: media.fileIndexItem.filePath
     });
     setIsLoading(false);
     return true;
@@ -474,7 +472,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               state.fileIndexItem.collectionPaths &&
               state.fileIndexItem.collectionPaths?.length >= 2 ? (
                 <em data-test="trash-including">
-                  {MessageIncludingWord}
+                  {MessageIncludingColonWord}
                   {new Comma().CommaSpaceLastDot(
                     state.fileIndexItem.collectionPaths
                   )}
