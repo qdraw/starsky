@@ -38,5 +38,31 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.ExifWriteNotSupported,test.FirstOrDefault()?.Status);
 		}
+				
+		[TestMethod]
+		public void ExtensionNotSupported_XmpFile()
+		{
+			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test.xmp")}), new AppSettings(),
+				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
+					new List<string> {"/test.xmp"}, new List<byte[]>
+					{
+						FakeCreateAn.CreateAnXmp.Bytes
+					})),null, new FakeIWebLogger());
+			var test = metaInfo.GetInfo(new List<string>{"/test.xmp"}, false);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test.FirstOrDefault()?.Status);
+		}
+		
+		[TestMethod]
+		public void ExtensionNotSupported_JpegFile()
+		{
+			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test.jpg")}), new AppSettings(),
+				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
+					new List<string> {"/test.jpg"}, new List<byte[]>
+					{
+						FakeCreateAn.CreateAnImage.Bytes
+					})),null, new FakeIWebLogger());
+			var test = metaInfo.GetInfo(new List<string>{"/test.jpg"}, false);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test.FirstOrDefault()?.Status);
+		}
 	}
 }

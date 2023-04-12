@@ -48,9 +48,9 @@ namespace starsky.feature.metaupdate.Services
 					continue;
 				}
 				
-				if ( !_iStorage.ExistFile(detailView.FileIndexItem.FilePath) )
+				if ( !_iStorage.ExistFile(detailView.FileIndexItem.FilePath!) )
 				{
-					StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+					StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem!, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexResultsList);
 					continue; 
@@ -58,7 +58,8 @@ namespace starsky.feature.metaupdate.Services
 				
 				// Check if extension is supported for ExtensionExifToolSupportedList
 				// Not all files are able to write with exifTool
-				if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+				if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem!.FileName) 
+				   && !ExtensionRolesHelper.IsExtensionSidecar(detailView.FileIndexItem!.FileName))
 				{
 					StatusCodesHelper.ReturnExifStatusError(
 						new FileIndexItemJsonParser(_iStorage).Read(detailView.FileIndexItem), 

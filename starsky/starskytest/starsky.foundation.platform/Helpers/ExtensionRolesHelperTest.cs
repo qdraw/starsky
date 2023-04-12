@@ -416,6 +416,20 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}	
 		
 		[TestMethod]
+		public void ExtensionRolesHelperTest_IsExtensionSidecar_Xmp()
+		{
+			var result = ExtensionRolesHelper.IsExtensionSidecar("test.xmp");
+			Assert.AreEqual(true,result);
+		}	
+		
+		[TestMethod]
+		public void ExtensionRolesHelperTest_IsExtensionSidecar_MetaJson()
+		{
+			var result = ExtensionRolesHelper.IsExtensionSidecar("test.meta.json");
+			Assert.AreEqual(true,result);
+		}	
+		
+		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionForceGpx_Null()
 		{
 			var result = ExtensionRolesHelper.IsExtensionForceGpx(null);
