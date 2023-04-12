@@ -100,8 +100,8 @@ This document is auto generated
 | __/api/thumbnail/small/{f}__                      | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on whats there))|
 | __/api/thumbnail/list-sizes/{f}__                 | GET   | Get overview of what exists by name                                             |
 | __/api/thumbnail/{f}__                            | GET   | Get thumbnail with fallback to original source image.Return source image when...|
-| _Parameters: f (one single fileHash (NOT path)), isSingleItem (true = load original), json (text as output), extraLarge                   _ |
-| _ (give preference to extraLarge over large image)                                                                                        _ |
+| _Parameters: f (one single fileHash (NOT path)), filePath (fallback FilePath), isSingleItem (true = load original),                       _ |
+| _ json (text as output), extraLarge (give preference to extraLarge over large image)                                                      _ |
 | __/api/thumbnail/zoom/{f}@{z}__                   | GET   | Get zoomed in image by fileHash.At the moment this is the source image          |
 | __/api/thumbnail-generation__                     | POST  | Create thumbnails for a folder in the background                                |
 | __/api/trash/detect-to-use-system-trash__         | GET   | Is the system trash supported                                                   |

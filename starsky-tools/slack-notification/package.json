@@ -1,0 +1,12 @@
+{
+  "name": "slack-notifications",
+  "version": "0.5.7",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "update": "echo 'keep this without any npm dependencies'",
+    "update:install": "echo 'keep this without any npm dependencies'"
+  },
+  "author": "",
+  "license": "ISC"
+}

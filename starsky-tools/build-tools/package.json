@@ -4,6 +4,8 @@
   "description": "",
   "main": "",
   "scripts": {
+    "update": "echo 'keep this without any npm dependencies'",
+    "update:install": "echo 'keep this without any npm dependencies'",
     "clientapp-create-react-app-update": "node clientapp-create-react-app-update",
     "documentation-create-docusaurus-update": "node documentation-create-docusaurus-update",
     "app-version-update": "node app-version-update.js",
