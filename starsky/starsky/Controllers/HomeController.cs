@@ -185,7 +185,7 @@ namespace starsky.Controllers
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
-		private static string AppendPathBasePrefix(string requestPathBase, string url)
+		internal static string AppendPathBasePrefix(string requestPathBase, string url)
 		{
 			return requestPathBase.ToLowerInvariant() == "/starsky" ? $"/starsky{url}" : url;
 		}

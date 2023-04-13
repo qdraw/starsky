@@ -243,54 +243,54 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			Assert.IsTrue(result);
 		}
 		
-		// [TestMethod]
-		// public async Task GenerateWebHtml_RealFsTest()
-		// {
-		// 	var appSettings = new AppSettings
-		// 	{
-		// 		PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
-		// 		{
-		// 			{"default", new List<AppSettingsPublishProfiles>
-		// 			{
-		// 				new AppSettingsPublishProfiles
-		// 				{
-		// 					ContentType = TemplateContentType.Html,
-		// 					Path = "index.html",
-		// 					Template = "Index.cshtml"
-		// 				}
-		// 			}}
-		// 		},
-		// 		Verbose = true
-		// 	};
-		//
-		// 	// REAL FS
-		// 	var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
-		// 	var selectorStorage = new FakeSelectorStorage(storage);
-		// 	
-		// 	var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
-		// 			new ConsoleWrapper()), selectorStorage, appSettings,
-		// 		new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-		// 		new ConsoleWrapper(), new FakeIWebLogger());
-		//
-		// 	// Write to actual Disk
-		//
-		// 	var profiles = new PublishPreflight(appSettings, 
-		// 		new ConsoleWrapper()).GetPublishProfileName("default");
-		//
-		// 	var output = await service.GenerateWebHtml(profiles, 
-		// 		profiles.FirstOrDefault(), "testItem", new string[1],
-		// 		new List<FileIndexItem>{new FileIndexItem("test")}, 
-		// 		AppDomain.CurrentDomain.BaseDirectory
-		// 	);
-		//
-		// 	var outputFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "index.html");
-		// 	
-		// 	Assert.IsTrue( storage.ExistFile(outputFile));
-		// 	Assert.IsTrue(output.ContainsKey("index.html"));
-		//
-		// 	// this realFS
-		// 	storage.FileDelete(outputFile);
-		// }
+		[TestMethod]
+		public async Task GenerateWebHtml_RealFsTest()
+		{
+			var appSettings = new AppSettings
+			{
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{"default", new List<AppSettingsPublishProfiles>
+					{
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.Html,
+							Path = "index.html",
+							Template = "Index.cshtml"
+						}
+					}}
+				},
+				Verbose = true
+			};
+		
+			// REAL FS
+			var storage = new StorageHostFullPathFilesystem(new FakeIWebLogger());
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
+					new ConsoleWrapper()), selectorStorage, appSettings,
+				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService());
+		
+			// Write to actual Disk
+		
+			var profiles = new PublishPreflight(appSettings, 
+				new ConsoleWrapper()).GetPublishProfileName("default");
+		
+			var output = await service.GenerateWebHtml(profiles, 
+				profiles.FirstOrDefault(), "testItem", new string[1],
+				new List<FileIndexItem>{new FileIndexItem("test")}, 
+				AppDomain.CurrentDomain.BaseDirectory
+			);
+		
+			var outputFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "index.html");
+			
+			Assert.IsTrue( storage.ExistFile(outputFile));
+			Assert.IsTrue(output.ContainsKey("index.html"));
+		
+			// this realFS
+			storage.FileDelete(outputFile);
+		}
 
 		[TestMethod]
 		public async Task GenerateJpeg_Thumbnail_Test()
