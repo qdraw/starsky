@@ -84,6 +84,8 @@ public class MoveToTrashService : IMoveToTrashService
 		
 		await _queue.QueueBackgroundWorkItemAsync(async _ =>
 		{
+			await _connectionService.ConnectionServiceAsync(moveToTrashList, isSystemTrashEnabled);
+			
 			if ( isSystemTrashEnabled )
 			{
 				await SystemTrashInQueue(moveToTrashList);
@@ -95,7 +97,7 @@ public class MoveToTrashService : IMoveToTrashService
 				
 		}, "trash");
 		
-		return await _connectionService.ConnectionServiceAsync(moveToTrashList, isSystemTrashEnabled);
+		return TrashConnectionService.StatusUpdate(moveToTrashList, isSystemTrashEnabled);
 	}
 
 	private async Task MetaTrashInQueue(Dictionary<string, List<string>> changedFileIndexItemName, 
