@@ -21,8 +21,9 @@ public class TrashConnectionService : ITrashConnectionService
 		_webSocketConnectionsService = webSocketConnectionsService;
 		_notificationQuery = notificationQuery;
 	}
-	
-	public async Task<List<FileIndexItem>> ConnectionServiceAsync( List<FileIndexItem> moveToTrash, 
+
+	public static List<FileIndexItem> StatusUpdate(
+		List<FileIndexItem> moveToTrash,
 		bool isSystemTrash)
 	{
 		var status = isSystemTrash
@@ -33,6 +34,13 @@ public class TrashConnectionService : ITrashConnectionService
 		{
 			item.Status = status;
 		}
+		return moveToTrash;
+	}
+
+	public async Task<List<FileIndexItem>> ConnectionServiceAsync( List<FileIndexItem> moveToTrash, 
+		bool isSystemTrash)
+	{
+		moveToTrash = StatusUpdate(moveToTrash, isSystemTrash);
 		
 		var webSocketResponse = new ApiNotificationResponseModel<List<FileIndexItem>>(
 			moveToTrash,ApiNotificationType.MoveToTrash);
