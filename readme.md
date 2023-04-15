@@ -121,7 +121,7 @@ There is a version log and backlog available on the [history and changelog page]
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=starsky)
 
 ### Licence
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/qdraw/starsky/blob/master/LICENSE)
+![MIT License](https://img.shields.io/static/v1?label=Licence&message=MIT&color=green)
 
 ## Authors
 - [@qdraw](https://www.github.com/qdraw)
