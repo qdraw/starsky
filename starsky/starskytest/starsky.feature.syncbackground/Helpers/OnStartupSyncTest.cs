@@ -43,7 +43,7 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			var settingsService = scope.CreateScope().ServiceProvider.GetRequiredService<ISettingsService>();
 			var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 
-			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService,logger);
+			var startupSync = new OnStartupSync(scope, new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize, settingsService,logger);
 			await startupSync.StartUpSync();
 
 			var setting = await settingsService.GetSetting<DateTime>(SettingsType
@@ -65,7 +65,7 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 
 			appSettings.SyncOnStartup = false;
-			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService,logger);
+			var startupSync = new OnStartupSync(scope, new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize, settingsService,logger);
 			
 			// Assert
 			await startupSync.StartUpSync();
@@ -90,7 +90,7 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			var socketService = scope.CreateScope().ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
 			var logger = scope.CreateScope().ServiceProvider.GetRequiredService<IWebLogger>();
 
-			var startupSync = new OnStartupSync(scope, appSettings, synchronize, settingsService,logger);
+			var startupSync = new OnStartupSync(scope, new FakeDiskWatcherUpdateBackgroundTaskQueue(), appSettings, synchronize, settingsService,logger);
 			await startupSync.PushToSockets(new List<FileIndexItem>());
 			var result =
 				( socketService as

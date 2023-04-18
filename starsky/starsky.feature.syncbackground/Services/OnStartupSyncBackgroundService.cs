@@ -10,6 +10,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.sync.WatcherBackgroundService;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.syncbackground.Services
@@ -34,10 +35,12 @@ namespace starsky.feature.syncbackground.Services
 		{
 			using var scope = _serviceScopeFactory.CreateScope();
 			var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
+			var diskWatcherBackgroundTaskQueue = scope.ServiceProvider.GetRequiredService<IDiskWatcherBackgroundTaskQueue>();
+
 			var synchronize = scope.ServiceProvider.GetRequiredService<ISynchronize>();
 			var settingsService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
 			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
-			await new OnStartupSync(_serviceScopeFactory, appSettings, synchronize, settingsService, logger).StartUpSync();
+			await new OnStartupSync(_serviceScopeFactory, diskWatcherBackgroundTaskQueue, appSettings, synchronize, settingsService, logger).StartUpSync();
 		}
 
 	}

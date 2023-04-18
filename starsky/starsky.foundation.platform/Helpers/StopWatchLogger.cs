@@ -20,10 +20,13 @@ namespace starsky.foundation.platform.Helpers
 			return stopWatch;
 		}
 
-		public void StopUpdateReplaceStopWatch(string name, string f, bool collections, Stopwatch stopwatch)
+		public void StopUpdateReplaceStopWatch(string name, string f, bool collections, Stopwatch stopwatch, bool stop = true)
 		{
 			// for debug
-			stopwatch.Stop();
+			if ( stop )
+			{
+				stopwatch.Stop();
+			}
 			_logger.LogInformation($"[{name}] f: {f} Stopwatch response collections: " +
 			                       $"{collections} {DateTime.UtcNow} duration: {stopwatch.Elapsed.TotalMilliseconds} ms or:" +
 			                       $" {stopwatch.Elapsed.TotalSeconds} sec");

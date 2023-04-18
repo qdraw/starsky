@@ -58,6 +58,7 @@ namespace starsky.foundation.database.Query
 				}
 				resultFileIndexItemsList.AddRange(item);
 			}
+			// Query only if not in cache
 			var fileIndexItemsList = await GetObjectsByFilePathQuery(toQueryPaths.ToArray(), collections);
 			resultFileIndexItemsList.AddRange(fileIndexItemsList);
 			return resultFileIndexItemsList;
@@ -71,6 +72,11 @@ namespace starsky.foundation.database.Query
 		/// <returns></returns>
 		private async Task<List<FileIndexItem>> GetObjectsByFilePathQuery(string[] inputFilePaths, bool collections)
 		{
+			if ( !inputFilePaths.Any() )
+			{
+				return new List<FileIndexItem>();
+			}
+			
 			if ( collections )
 			{
 				return await GetObjectsByFilePathCollectionQueryAsync(inputFilePaths.ToList());

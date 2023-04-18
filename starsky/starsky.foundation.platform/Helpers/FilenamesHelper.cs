@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
@@ -24,18 +25,14 @@ namespace starsky.foundation.platform.Helpers
 
 		/// <summary>
 		/// Get the filename (with extension) from a filepath
-		/// https://stackoverflow.com/a/40635378
+		/// @see: https://stackoverflow.com/a/40635378
 		/// </summary>
 		/// <param name="filePath">unix style subPath</param>
 		/// <returns>filename with extension and without its parent path</returns>
 		public static string GetFileName(string filePath)
 		{
-			// unescaped regex:
-			// [^\/]+(?=\.[\w]+\.$)|[^\/]+$
-			var extensionRegex =
-				new Regex("[^\\/]+(?=\\.[\\w]+\\.$)|[^\\/]+$", // set slower due timeouts
-					RegexOptions.Compiled, TimeSpan.FromMilliseconds(300));
-			return extensionRegex.Match(filePath).Value;
+			return Path.GetFileName(filePath.Replace("/",
+				Path.DirectorySeparatorChar.ToString()));
 		}
 
 		/// <summary>
