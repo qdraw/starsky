@@ -45,7 +45,7 @@ namespace starsky.foundation.platform.Helpers
 				Path.DirectorySeparatorChar.ToString());
 			return Path.GetFileName(systemPath)
 				.Replace(Path.DirectorySeparatorChar.ToString(), "/")
-				.Replace(magicString, "\\\\");
+				.Replace(magicString, "\\");
 		}
 
 		/// <summary>

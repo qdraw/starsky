@@ -71,6 +71,17 @@ public class FilenamesHelperTest
 	}
 	
 	[TestMethod]
+	public void GetFileName_IgnoreEscapedValues_RuntimeOverwrite()
+	{
+		// Arrange
+		const string filePath1 = "/path/to/file\\d.txt";
+
+		// Act
+		var fileName1 = FilenamesHelper.GetFileName(filePath1, _ => true);
+		Assert.AreEqual("file\\d.txt", fileName1);
+	}
+	
+	[TestMethod]
 	public void GetFileName_IgnoreEscapedValues()
 	{
 		// Arrange
