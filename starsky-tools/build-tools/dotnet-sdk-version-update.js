@@ -899,7 +899,7 @@ async function updateSingleNugetPackageVersion(filePath) {
 								toUpdatePackageReference.replace(
 									versionXMLRegex,
 									`Version="${newVersion}" `
-								);
+								).replace("\" >","\">");
 
 							fileContent = fileContent.replace(
 								toUpdatePackageReference,
