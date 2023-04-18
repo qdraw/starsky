@@ -2,6 +2,8 @@ name: Clean untagged ghcr images
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron:  '45 03 * * *'
     
 jobs:
   run:
