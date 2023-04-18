@@ -1,0 +1,19 @@
+name: Clean untagged ghcr images
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  run:
+
+    runs-on: ubuntu-latest
+    steps:    
+    
+    - name: Delete all containers from repository without tags
+      uses: Chizkiyahu/delete-untagged-ghcr-action@v2
+      with:
+        token: ${{ secrets.WORKFLOW_GITHUB }}
+        repository_owner: ${{ github.repository_owner }}
+        repository: ${{ github.repository }}
+        untagged_only: true
+        owner_type: user # or org
