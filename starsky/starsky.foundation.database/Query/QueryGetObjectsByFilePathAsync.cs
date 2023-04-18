@@ -11,6 +11,9 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
+	/// <summary>
+	/// QueryGetObjectsByFilePathAsync.cs
+	/// </summary>
 	public partial class Query : IQuery
 	{
 		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string inputFilePath, bool collections)
@@ -70,7 +73,7 @@ namespace starsky.foundation.database.Query
 		/// <param name="inputFilePaths">list of paths</param>
 		/// <param name="collections">[when true] hide raws or everything with the same name (without extension)</param>
 		/// <returns></returns>
-		private async Task<List<FileIndexItem>> GetObjectsByFilePathQuery(string[] inputFilePaths, bool collections)
+		internal async Task<List<FileIndexItem>> GetObjectsByFilePathQuery(string[] inputFilePaths, bool collections)
 		{
 			if ( !inputFilePaths.Any() )
 			{

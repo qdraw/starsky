@@ -34,7 +34,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public QueryGetObjectsByFilePathAsyncTest()
 		{
 			_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), new AppSettings(), null, new FakeIWebLogger(), new FakeMemoryCache()) ;
+				.GetService<ApplicationDbContext>(), new AppSettings(), 
+				null!, new FakeIWebLogger(), new FakeMemoryCache()) ;
 		}
 
 		
@@ -114,7 +115,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem("/single_item2a.jpg")
 			});
 			
-			var result = await (_query as Query).GetObjectsByFilePathQueryAsync(
+			var result = await _query.GetObjectsByFilePathQueryAsync(
 				new List<string> {"/single_item1a.jpg"});
 
 			Assert.AreEqual(1, result.Count);
@@ -122,7 +123,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			await _query.RemoveItemAsync(result[0]);
 			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2a.jpg"));
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2a.jpg") 
+			                             ?? throw new InvalidOperationException("Should have a result"));
 		}
 		
 		[TestMethod]
@@ -141,7 +143,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			await _query.RemoveItemAsync(result[0]);
 			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2a.jpg"));
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2a.jpg") 
+			                             ?? throw new InvalidOperationException("[GetObjectsByFilePathAsync_singleItem_SingleItem]	" +
+				                             "Should have a result "));
 		}
 
 		[TestMethod] 
@@ -266,10 +270,21 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task GetObjectsByFilePathQueryAsyncTest_NullReferenceException()
 		{
 			var logger = new FakeIWebLogger();
-			var fakeQuery = new Query(null, 
-				null, null,logger,null);
+			var fakeQuery = new Query(null!, 
+				null!, null!,logger);
 			await fakeQuery.GetObjectsByFilePathQueryAsync(new List<string>{"test"});
 		}
-		
+
+		[TestMethod]
+		public async Task GetObjectsByFilePathQuery_NoContentInList()
+		{
+			var logger = new FakeIWebLogger();
+			var fakeQuery = new Query(null!, 
+				null!, null!,logger);
+			
+			var result = await fakeQuery.GetObjectsByFilePathQuery(new List<string>().ToArray(), true);
+			Assert.AreEqual(0,result.Count);
+		}
+
 	}
 }
