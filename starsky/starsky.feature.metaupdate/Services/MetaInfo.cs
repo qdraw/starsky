@@ -84,7 +84,9 @@ namespace starsky.feature.metaupdate.Services
 					collectionItem.CollectionPaths = collectionSubPathList;
 					collectionItem.ImageFormat =
 						ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath);
-					collectionItem.Size = _iStorage.Info(collectionSubPath).Size;
+					var storageInfo = _iStorage.Info(collectionSubPath);
+					collectionItem.Size = storageInfo.Size;
+					collectionItem.LastEdited = storageInfo.LastWriteTime;
 					fileIndexResultsList.Add(collectionItem);
 				}
 			}

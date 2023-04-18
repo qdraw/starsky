@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -40,7 +42,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 				
 		[TestMethod]
-		public void ExtensionNotSupported_XmpFile()
+		public void GetInfo_XmpFile()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test.xmp")}), new AppSettings(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
@@ -53,7 +55,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 		
 		[TestMethod]
-		public void ExtensionNotSupported_JpegFile()
+		public void GetInfo_JpegFile_OkStatus()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test.jpg")}), new AppSettings(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
@@ -62,7 +64,23 @@ namespace starskytest.starsky.feature.metaupdate.Services
 						FakeCreateAn.CreateAnImage.Bytes
 					})),null, new FakeIWebLogger());
 			var test = metaInfo.GetInfo(new List<string>{"/test.jpg"}, false);
+			
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,test.FirstOrDefault()?.ImageFormat);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test.FirstOrDefault()?.Status);
+		}
+		
+		[TestMethod]
+		public void GetInfo_JpegFile_LastWriteDate()
+		{
+			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test.jpg")}), new AppSettings(),
+				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
+					new List<string> {"/test.jpg"}, new List<byte[]>
+					{
+						FakeCreateAn.CreateAnImage.Bytes
+					}, new List<DateTime>{new DateTime(2000,01,01)})),null, new FakeIWebLogger());
+			var test = metaInfo.GetInfo(new List<string>{"/test.jpg"}, false);
+
+			Assert.AreEqual(new DateTime(2000,01,01),test.FirstOrDefault()?.LastEdited);
 		}
 	}
 }
