@@ -51,7 +51,25 @@ public class FilenamesHelperTest
 		Assert.AreEqual("file.csv", fileName3);
 	}
 
-
+	[TestMethod]
+	public void GetFileName_ShouldReturnCorrectFileName_RuntimeOverwrite()
+	{
+		// Arrange
+		const string filePath1 = "/path/to/file.txt";
+		const string filePath2 = "/another/path/to/another/file.pdf";
+		const string filePath3 = "file.csv";
+        
+		// Act
+		var fileName1 = FilenamesHelper.GetFileName(filePath1, _ => true);
+		var fileName2 = FilenamesHelper.GetFileName(filePath2, _ => true);
+		var fileName3 = FilenamesHelper.GetFileName(filePath3, _ => true);
+        
+		// Assert
+		Assert.AreEqual("file.txt", fileName1);
+		Assert.AreEqual("file.pdf", fileName2);
+		Assert.AreEqual("file.csv", fileName3);
+	}
+	
 	[TestMethod]
 	public void GetFileName_IgnoreEscapedValues()
 	{
@@ -172,7 +190,7 @@ public class FilenamesHelperTest
 	public void GetFileExtensionWithoutDot_Should_Not_Return_Extension_With_Invalid_Characters()
 	{
 		// Arrange
-		var filename = "testfile.some_extension#.txt";
+		const string filename = "testfile.some_extension#.txt";
 
 		// Act
 		var extension = FilenamesHelper.GetFileExtensionWithoutDot(filename);
@@ -185,10 +203,10 @@ public class FilenamesHelperTest
 	public void GetParentPath_ReturnsCorrectPath_WhenFilePathIsValid()
 	{
 		// Arrange
-		string filePath = "/folder1/folder2/file.txt";
+		const string filePath = "/folder1/folder2/file.txt";
 
 		// Act
-		string result = FilenamesHelper.GetParentPath(filePath);
+		var result = FilenamesHelper.GetParentPath(filePath);
 
 		// Assert
 		Assert.AreEqual("/folder1/folder2", result);
@@ -198,10 +216,10 @@ public class FilenamesHelperTest
 	public void GetParentPath_ReturnsSlash_WhenFilePathIsRoot()
 	{
 		// Arrange
-		string filePath = "/";
+		const string filePath = "/";
 
 		// Act
-		string result = FilenamesHelper.GetParentPath(filePath);
+		var result = FilenamesHelper.GetParentPath(filePath);
 
 		// Assert
 		Assert.AreEqual("/", result);

@@ -24,20 +24,23 @@ namespace starsky.foundation.platform.Helpers
 			return extensionRegex.IsMatch(filename);
 		}
 
+		public delegate bool IsOsPlatformDelegate(OSPlatform osPlatform);
+
 		/// <summary>
 		/// Get the filename (with extension) from a filepath
-		/// @see: https://stackoverflow.com/a/40635378
 		/// </summary>
 		/// <param name="filePath">unix style subPath</param>
+		/// <param name="runtimeInformationIsOsPlatform">use to test string replacer under unix</param>
 		/// <returns>filename with extension and without its parent path</returns>
-		public static string GetFileName(string filePath)
+		public static string GetFileName(string filePath, IsOsPlatformDelegate runtimeInformationIsOsPlatform = null)
 		{
-			if( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+			runtimeInformationIsOsPlatform ??= RuntimeInformation.IsOSPlatform;
+			if( !runtimeInformationIsOsPlatform(OSPlatform.Windows) )
 			{
 				return Path.GetFileName(filePath);
 			}
 
-			var magicString = "!@&#$#";
+			const string magicString = "!@&#$#";
 			var systemPath = filePath.Replace("\\", magicString).Replace("/",
 				Path.DirectorySeparatorChar.ToString());
 			return Path.GetFileName(systemPath)
