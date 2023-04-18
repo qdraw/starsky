@@ -11,6 +11,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.settings.Enums;
 using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.sync.WatcherBackgroundService;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.syncbackground.Services
@@ -26,6 +27,7 @@ namespace starskytest.starsky.feature.syncbackground.Services
 			services.AddSingleton<ISynchronize, FakeISynchronize>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<ISettingsService, FakeISettingsService>();
+			services.AddSingleton<IDiskWatcherBackgroundTaskQueue, FakeDiskWatcherUpdateBackgroundTaskQueue>();
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}

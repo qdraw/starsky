@@ -192,7 +192,7 @@ namespace starsky.foundation.sync.WatcherServices
 		/// <param name="e">arguments</param>
 		internal void OnRenamed(object source, RenamedEventArgs e)
 		{
-			_webLogger.LogInformation($"DiskWatcher {e.OldFullPath} OnRenamed to: {e.FullPath}" +
+			_webLogger.LogInformation($"[DiskWatcher] {e.OldFullPath} OnRenamed to: {e.FullPath}" +
 			                          DateTimeDebug());
 
 			var fileAttributes = GetFileAttributes(e.FullPath);

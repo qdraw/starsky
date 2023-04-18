@@ -1,0 +1,13 @@
+		private MetaUpdateService GetMetaUpdateService()
+		{
+			var serviceProvider = _scopeFactory.CreateScope().ServiceProvider;
+			var query = serviceProvider.GetRequiredService<IQuery>();
+			var exifTool = serviceProvider.GetRequiredService<IExifTool>();
+			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
+			var metaPreflight = serviceProvider.GetRequiredService<IMetaPreflight>();
+			var readMetaSubPathStorage = serviceProvider.GetRequiredService<IReadMetaSubPathStorage>();
+			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
+			var thumbnailService = serviceProvider.GetRequiredService<IThumbnailService>();
+			var thumbnailQuery = serviceProvider.GetRequiredService<IThumbnailQuery>();
+			return new MetaUpdateService(query, exifTool, selectorStorage, metaPreflight, webLogger, readMetaSubPathStorage, thumbnailService, thumbnailQuery);
+		}

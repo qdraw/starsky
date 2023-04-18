@@ -14,6 +14,7 @@ using starsky.foundation.settings.Enums;
 using starsky.foundation.settings.Formats;
 using starsky.foundation.settings.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.sync.WatcherBackgroundService;
 
 namespace starsky.feature.syncbackground.Helpers;
 
@@ -23,20 +24,23 @@ public class OnStartupSync
 	private readonly ISettingsService _settingsService;
 	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _serviceScopeFactory;
+	private readonly IDiskWatcherBackgroundTaskQueue _backgroundTaskQueue;
 	private readonly AppSettings _appSettings;
 
 	/// <summary>
 	/// 
 	/// </summary>
 	/// <param name="serviceScopeFactory">req: IRealtimeConnectionsService</param>
+	/// <param name="backgroundTaskQueue"></param>
 	/// <param name="appSettings"></param>
 	/// <param name="synchronize"></param>
 	/// <param name="settingsService"></param>
 	/// <param name="logger"></param>
-	public OnStartupSync(IServiceScopeFactory serviceScopeFactory, AppSettings appSettings,
+	public OnStartupSync(IServiceScopeFactory serviceScopeFactory, IDiskWatcherBackgroundTaskQueue backgroundTaskQueue,  AppSettings appSettings,
 		ISynchronize synchronize, ISettingsService settingsService, IWebLogger logger)
 	{
 		_serviceScopeFactory = serviceScopeFactory;
+		_backgroundTaskQueue = backgroundTaskQueue;
 		_appSettings = appSettings;
 		_synchronize = synchronize;
 		_settingsService = settingsService;
@@ -45,11 +49,18 @@ public class OnStartupSync
 
 	public async Task StartUpSync()
 	{
+		await _backgroundTaskQueue.QueueBackgroundWorkItemAsync(async token =>
+		{
+			await StartUpSyncTask();
+		}, nameof(StartUpSync));
+	}
+
+	public async Task StartUpSyncTask()
+	{
 		if ( _appSettings.SyncOnStartup != true  )
 		{
 			return;
 		}
-		
 		var lastUpdatedValue = await _settingsService.GetSetting<DateTime>(
 			SettingsType.LastSyncBackgroundDateTime);
 				

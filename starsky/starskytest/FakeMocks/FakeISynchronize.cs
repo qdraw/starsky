@@ -23,7 +23,7 @@ namespace starskytest.FakeMocks
 			ISynchronize.SocketUpdateDelegate updateDelegate = null,
 			DateTime? childDirectoriesAfter = null)
 		{
-			Console.WriteLine($"sync => {subPath}");
+			Console.WriteLine($"[FakeISync] sync => {subPath}");
 			Inputs.Add(new Tuple<string, bool>(subPath, true));
 			Receive?.Invoke(this, subPath);
 			return Task.FromResult(_data);

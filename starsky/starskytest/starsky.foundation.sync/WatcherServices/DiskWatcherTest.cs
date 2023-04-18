@@ -165,10 +165,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 				_createAnImage.BasePath,_createAnImage.FileName,"test"));
 			
 			watcher.Dispose();
+			var lastItem = logger!.TrackedInformation.LastOrDefault(
+				p => !p.Item2.Contains("SyncWatcherConnector"));
 			
-			Assert.IsTrue(logger!.TrackedInformation.LastOrDefault().Item2.Contains(_createAnImage.FileName));
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("OnRenamed to"));
-			
+			Assert.IsTrue(lastItem.Item2.Contains(_createAnImage.FileName));
+			Assert.IsTrue(lastItem.Item2.Contains("OnRenamed to"));
 		}
 
 		[TestMethod]

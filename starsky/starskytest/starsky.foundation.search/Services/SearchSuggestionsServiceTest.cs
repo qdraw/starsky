@@ -138,7 +138,8 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task SearchSuggestionsService_MySqlError()
 		{
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseMySql("Server=test;database=test;uid=test;pwd=test;", new MariaDbServerVersion("10.2"));
+			// this database does NOT exists! and should also not exists
+			builder.UseMySql("Server=127.0.0.1;port=7544;database=test;uid=test;pwd=test;", new MariaDbServerVersion("10.2"));
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
 			var fakeLogger = new FakeIWebLogger();

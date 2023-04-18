@@ -34,8 +34,8 @@ namespace starsky.foundation.storage.Services
 			string extensionWithoutDot = "")
 		{
 			CheckStructureFormat();
-			var fileNameStructure =
-				PathHelper.PrefixDbSlash(FilenamesHelper.GetFileName(_structure));
+			var fileName = FilenamesHelper.GetFileName(_structure);
+			var fileNameStructure = PathHelper.PrefixDbSlash(fileName);
 			var parsedStructuredList = ParseStructure(fileNameStructure, dateTime, fileNameBase, extensionWithoutDot);
 			return PathHelper.RemovePrefixDbSlash(ApplyStructureRangeToStorage(parsedStructuredList));
 		}

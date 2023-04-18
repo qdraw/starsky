@@ -310,9 +310,9 @@ namespace starsky.feature.rename.Services
 					
 					// Rename other sidecar files
 					// From file to Deleted
-					var parentFolder = FilenamesHelper.GetParentPath(toFileSubPaths[i]);
+					var parentFolder = PathHelper.AddSlash(FilenamesHelper.GetParentPath(toFileSubPaths[i]));
 					var baseName = FilenamesHelper.GetFileNameWithoutExtension(toFileSubPaths[i]);
-					toCollectionFileSubPaths.Add($"{parentFolder}/{baseName}.{extensionWithoutDot}");
+					toCollectionFileSubPaths.Add($"{parentFolder}{baseName}.{extensionWithoutDot}");
 				}
 			}
 

@@ -343,7 +343,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				AccountRegisterFirstRoleAdmin = true
 			}, new FakeIWebLogger(), _memoryCache);
 			
-			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).Where(p => p.Credentials != null).ToList() )
+			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).Where(p => p.Credentials != null && p.Credentials.Any()).ToList() )
 			{
 				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier!);
 			}
@@ -883,7 +883,12 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			}, new FakeIWebLogger(), _memoryCache);
 			
 			var roleAddToUser = userManager.GetRoleAddToUser(testEmail, beforeItem!);
-			
+
+			// clean user
+			_dbContext.Users.Remove(_dbContext.Users.FirstOrDefault(p => p.Name == id));
+			await _dbContext.SaveChangesAsync();
+
+			// check right roles
 			Assert.AreEqual("Administrator", roleAddToUser);
 		}
 	}
