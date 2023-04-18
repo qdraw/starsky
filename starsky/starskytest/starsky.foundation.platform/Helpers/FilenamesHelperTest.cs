@@ -50,7 +50,30 @@ public class FilenamesHelperTest
 		Assert.AreEqual("file.pdf", fileName2);
 		Assert.AreEqual("file.csv", fileName3);
 	}
-	
+
+
+	[TestMethod]
+	public void GetFileName_IgnoreEscapedValues()
+	{
+		// Arrange
+		const string filePath1 = "/path/to/file\\d.txt";
+
+		// Act
+		var fileName1 = FilenamesHelper.GetFileName(filePath1);
+		Assert.AreEqual("file\\d.txt", fileName1);
+	}
+
+	[TestMethod]
+	public void GetFileName_IgnoreMultipleEscapedValues()
+	{
+		// Arrange
+		const string filePath1 = "/path/to/file\\d\\e.txt";
+
+		// Act
+		var fileName1 = FilenamesHelper.GetFileName(filePath1);
+		Assert.AreEqual("file\\d\\e.txt", fileName1);
+	}
+
 	[TestMethod]
 	public void GetFileNameWithoutExtension_ValidFilePath_ReturnsFileNameWithoutExtension()
 	{

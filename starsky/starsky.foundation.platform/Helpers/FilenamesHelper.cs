@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
@@ -31,8 +32,17 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>filename with extension and without its parent path</returns>
 		public static string GetFileName(string filePath)
 		{
-			return Path.GetFileName(filePath.Replace("/",
-				Path.DirectorySeparatorChar.ToString()));
+			if( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
+			{
+				return Path.GetFileName(filePath);
+			}
+
+			var magicString = "!@&#$#";
+			var systemPath = filePath.Replace("\\", magicString).Replace("/",
+				Path.DirectorySeparatorChar.ToString());
+			return Path.GetFileName(systemPath)
+				.Replace(Path.DirectorySeparatorChar.ToString(), "/")
+				.Replace(magicString, "\\\\");
 		}
 
 		/// <summary>
