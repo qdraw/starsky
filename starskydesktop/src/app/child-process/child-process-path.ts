@@ -25,7 +25,7 @@ export function childProcessPath(): string {
           "..",
           "starsky",
           "osx-x64",
-          "starsky.exe"
+          "starsky"
         );
       case "win32":
         return path.join(
