@@ -88,10 +88,7 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 
 				await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
 
-				console.log("---done");
-				setTimeout(() => {
-					process.exit(0);
-				}, 100);
+				console.log(`---done latest dotnet release`);
 			}
 		})
 		.catch((err) => {
@@ -123,6 +120,7 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 			await updateMcrDockerFile(filePathList);
 			await updateGlobalJsonFiles(filePathList, sdkVersion);
 			await updateDockerEnvFile(filePathList);
+			console.log(`---done sdk version`);
 		})
 		.catch((err) => {
 			console.log(err);
@@ -515,7 +513,7 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 			let fileContent = buffer.toString("utf8");
 
 			var actionsSetupDotNet = new RegExp(
-				"uses: actions\\/setup-dotnet@v1\n\\s+with:\n\\s+dotnet-version: [0-9.]+",
+				"uses: actions\\/setup-dotnet@v[0-9.]+\n\\s+with:\n\\s+dotnet-version: [0-9.]+",
 				"g"
 			);
 			const actionsSetupDotNetMatch =
@@ -533,6 +531,12 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 					`✅ ✓ ${filePath} - Github Yml is updated to ${sdkVersion}`
 				);
 			}
+			else {
+				console.log(
+					`❌ ${filePath} - Github Yml is not updated to ${sdkVersion}`
+				);
+			}
+
 		}
 	});
 }
