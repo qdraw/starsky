@@ -106,7 +106,7 @@ namespace starsky.foundation.database.Query
         private List<FileIndexItem> CacheQueryDisplayFileFolders(string subPath)
         {
             // The CLI programs uses no cache
-            if( _cache == null || _appSettings?.AddMemoryCache == false) return QueryDisplayFileFolders(subPath);
+            if( _cache == null || _appSettings.AddMemoryCache == false) return QueryDisplayFileFolders(subPath);
 
             var (isSuccess, objectFileFolders) = CacheGetParentFolder(subPath);
 

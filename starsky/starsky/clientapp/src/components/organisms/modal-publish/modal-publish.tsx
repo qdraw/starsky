@@ -65,6 +65,11 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     "Profile setting"
   );
 
+  const MessagePublishProfileNamesErrored = language.text(
+    "Profiel instelling: {publishProfileNames} bevat bestand locatie fouten",
+    "Profile setting: {publishProfileNames} contains filepath errors"
+  );
+
   const [isProcessing, setProcessing] = React.useState(ProcessingState.default);
   const [createZipKey, setCreateZipKey] = React.useState("");
   const [itemName, setItemName] = React.useState("");
@@ -103,11 +108,13 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     await ExportIntervalUpdate(zipKeyResult.data, setProcessing);
   }
 
-  const allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get").data;
+  const allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get")
+    .data as { key: string; value: string }[] | null;
+
   useEffect(() => {
     // set the default option
     if (!allPublishProfiles) return;
-    setPublishProfileName(allPublishProfiles[0]);
+    setPublishProfileName(allPublishProfiles[0].key);
   }, [allPublishProfiles]);
 
   useInterval(async () => {
@@ -173,9 +180,28 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
             {existItemNameComponent}
             <h4>{MessagePublishProfileName}</h4>
             <Select
-              selectOptions={allPublishProfiles}
+              selectOptions={allPublishProfiles
+                ?.filter((x) => !x.value)
+                .map((x) => x.key)}
               callback={setPublishProfileName}
             ></Select>
+
+            {allPublishProfiles?.filter((x) => x.value)?.length ? (
+              <div className="warning-box">
+                {language.token(
+                  MessagePublishProfileNamesErrored,
+                  ["{publishProfileNames}"],
+                  [
+                    allPublishProfiles
+                      .filter((x) => x.value)
+                      .map((x) => x.key)
+                      .join(", ")
+                  ]
+                )}
+                <br />
+              </div>
+            ) : null}
+
             <button
               disabled={!itemName || !publishProfileName}
               onClick={postZip}

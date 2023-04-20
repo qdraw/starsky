@@ -38,6 +38,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.5.8 _(Unreleased)_ - 2023-04-?? {#v0.5.8}
 
 - [x] (Fixed) _Back-end_ Update item takes 3 seconds, so this must be faster Issue #1142 (PR #1146)
+- [x] (Fixed) _Back-end_ Info API gives last write date back (PR #1147)
+
 
 ## version 0.5.7 - 2023-04-14 {#v0.5.7}
 

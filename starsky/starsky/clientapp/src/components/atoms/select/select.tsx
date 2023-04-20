@@ -2,7 +2,7 @@ import React from "react";
 
 type SelectPropTypes = {
   children?: React.ReactNode;
-  selectOptions: string[];
+  selectOptions: string[] | undefined;
   selected?: string;
   callback?(option: string): void;
 };

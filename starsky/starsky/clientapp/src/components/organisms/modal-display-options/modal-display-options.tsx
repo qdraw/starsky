@@ -150,7 +150,7 @@ const ModalDisplayOptions: React.FunctionComponent<
         <div className="modal content--text">
           <Select
             data-test="sort"
-            selectOptions={Object.values(SortType) as any}
+            selectOptions={Object.values(SortType) as string[]}
             callback={toggleSort}
             selected={currentSort()}
           />

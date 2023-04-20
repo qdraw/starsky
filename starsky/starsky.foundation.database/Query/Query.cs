@@ -422,6 +422,11 @@ namespace starsky.foundation.database.Query
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
             
             var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+
+            if ( updateStatusContent.FilePath == "/" )
+            {
+	            return;
+            }
             
             displayFileFolders.Add(updateStatusContent);
             // Order by filename

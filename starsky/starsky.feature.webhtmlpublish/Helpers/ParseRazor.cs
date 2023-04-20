@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using RazorLight;
 using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 
@@ -12,11 +13,13 @@ namespace starsky.feature.webhtmlpublish.Helpers
     {
         private readonly RazorLightEngine _engine;
         private readonly IStorage _hostFileSystemStorage;
+        private readonly IWebLogger _logger;
 
-        public ParseRazor(IStorage fileSystemStorage)
+        public ParseRazor(IStorage fileSystemStorage, IWebLogger logger)
         {
 	        _hostFileSystemStorage = fileSystemStorage;
-            _engine = new RazorLightEngineBuilder()
+	        _logger = logger;
+	        _engine = new RazorLightEngineBuilder()
                 .UseEmbeddedResourcesProject(typeof(PublishManifest))
 				.UseEmbeddedResourcesProject(typeof(WebHtmlViewModel))
 				.UseEmbeddedResourcesProject(typeof(AppSettings))
@@ -28,21 +31,25 @@ namespace starsky.feature.webhtmlpublish.Helpers
                 .UseMemoryCachingProvider()
                 .Build();
         }
+
+        public bool Exist(string viewName)
+        {
+	        var path = EmbeddedViewsPath.GetViewFullPath(viewName);
+	        return _hostFileSystemStorage.ExistFile(path);
+        }
         
         public async Task<string> EmbeddedViews(string viewName, object viewModel)
         {
+	        if ( Exist(viewName) )
+	        {
+		        // has an dependency on the filesystem by _engine.CompileRenderAsync
+		        return await
+			        _engine.CompileRenderAsync(
+				        "WebHtmlPublish/EmbeddedViews/" + viewName, viewModel);
+	        }
 	        
-            if (!_hostFileSystemStorage.ExistFile(EmbeddedViewsPath.GetViewFullPath(viewName)))
-            {
-                Console.WriteLine("View Not Exist " + EmbeddedViewsPath.GetViewFullPath(viewName));
-            }
-            else 
-            {
-	            // has an dependency on the filesystem by _engine.CompileRenderAsync
-                return await 
-                    _engine.CompileRenderAsync("WebHtmlPublish/EmbeddedViews/" + viewName, viewModel);
-            }
-            return string.Empty;
+	        _logger.LogInformation("View Not Exist " + EmbeddedViewsPath.GetViewFullPath(viewName));
+	        return string.Empty;
         }
     }
 }

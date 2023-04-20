@@ -12,7 +12,7 @@ namespace starskytest.starskyWebHtmlCli.Services
 		[TestMethod]
 		public async Task ParseRazorTestNotFound()
 		{
-			var result = await new ParseRazor(new FakeIStorage()).EmbeddedViews(null, null);
+			var result = await new ParseRazor(new FakeIStorage(), new FakeIWebLogger()).EmbeddedViews(null, null);
 			Assert.AreEqual(string.Empty,result);
 		}
 	}

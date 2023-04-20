@@ -17,10 +17,15 @@ namespace starskytest.FakeMocks
 			}
 		}
 		
-		public IEnumerable<string> GetAllPublishProfileNames()
+		public IEnumerable<KeyValuePair<string,bool>> GetAllPublishProfileNames()
 		{
 			Console.WriteLine("GetAllPublishProfileNames -> mocking data with test");
-			return new List<string>{"test"};
+			return new List<KeyValuePair<string,bool>>{new KeyValuePair<string, bool>("test",true)};
+		}
+
+		public Tuple<bool, List<string>> IsProfileValid(string publishProfileName)
+		{
+			return new Tuple<bool, List<string>>(true, new List<string>());
 		}
 
 		public string GetNameConsole(string inputPath, IReadOnlyList<string> args)

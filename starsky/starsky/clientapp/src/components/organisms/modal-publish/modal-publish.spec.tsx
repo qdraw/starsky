@@ -71,7 +71,7 @@ describe("ModalPublish", () => {
     // use ==> import * as useFetch from '../hooks/use-fetch';
     const mockGetIConnectionDefault = {
       statusCode: 200,
-      data: ["_default"]
+      data: [{ key: "key", value: true }]
     } as IConnectionDefault;
     const useFetchSpy = jest
       .spyOn(useFetch, "default")
@@ -120,7 +120,7 @@ describe("ModalPublish", () => {
 
     const connectionDefault2: IConnectionDefault = {
       statusCode: 206,
-      data: "key"
+      data: ["key"]
     };
     const mockIConnectionDefault2: Promise<IConnectionDefault> =
       Promise.resolve(connectionDefault2);
@@ -166,7 +166,7 @@ describe("ModalPublish", () => {
     // use ==> import * as useFetch from '../hooks/use-fetch';
     const mockGetIConnectionDefault = {
       statusCode: 200,
-      data: ["_default"]
+      data: [{ key: "key", value: true }]
     } as IConnectionDefault;
     const useFetchSpy = jest
       .spyOn(useFetch, "default")
@@ -386,6 +386,7 @@ describe("ModalPublish", () => {
     expect(tags).not.toBe(undefined);
 
     // update component + now press a key
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       tags.textContent = "a";
       const inputEvent = createEvent.input(tags, { key: "a" });
@@ -395,6 +396,7 @@ describe("ModalPublish", () => {
     expect(screen.getByTestId("modal-publish-warning-box")).toBeTruthy();
 
     // and now undo
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       tags.textContent = "";
       const inputEvent = createEvent.input(tags, { key: "" });

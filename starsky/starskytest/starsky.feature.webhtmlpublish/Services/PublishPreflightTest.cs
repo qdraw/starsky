@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,7 +11,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 	[TestClass]
 	public sealed class PublishPreflightTest
 	{
-		private AppSettings _testAppSettings = new AppSettings{
+		private readonly AppSettings _testAppSettings = new AppSettings{
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
@@ -26,7 +25,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		{
 			var appSettings = new AppSettings();
 			var list = new PublishPreflight(appSettings, 
-				new ConsoleWrapper()).GetPublishProfileNames();
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetPublishProfileNames();
 			
 			Assert.AreEqual(0, list.Count);
 		}
@@ -35,7 +34,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void GetPublishProfileNames_list()
 		{
 			var list = new PublishPreflight(_testAppSettings, 
-				new ConsoleWrapper()).GetPublishProfileNames();
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetPublishProfileNames();
 			
 			Assert.AreEqual(1, list.Count);
 			Assert.AreEqual("test", list[0].Item2);
@@ -46,16 +45,16 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void GetAllPublishProfileNames_item()
 		{
 			var list = new PublishPreflight(_testAppSettings, 
-				new ConsoleWrapper()).GetAllPublishProfileNames();
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetAllPublishProfileNames();
 			
-			Assert.AreEqual("test", list.FirstOrDefault());
+			Assert.AreEqual("test", list.FirstOrDefault().Key);
 		}
 
 		[TestMethod]
 		public void GetPublishProfileNameByIndex_0()
 		{
 			var data = new PublishPreflight(_testAppSettings, 
-				new ConsoleWrapper()).GetPublishProfileNameByIndex(0);
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetPublishProfileNameByIndex(0);
 			Assert.AreEqual("test", data);
 		}
 		
@@ -63,7 +62,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void GetPublishProfileNameByIndex_LargerThanIndex()
 		{
 			var data = new PublishPreflight(_testAppSettings, 
-				new ConsoleWrapper()).GetPublishProfileNameByIndex(1);
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetPublishProfileNameByIndex(1);
 			Assert.AreEqual(null, data);
 		}
 
@@ -71,7 +70,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void GetNameConsole_WithArg()
 		{
 			var result= new PublishPreflight(_testAppSettings,
-				new FakeConsoleWrapper()).GetNameConsole("/", new List<string> {"-n", "t"});
+				new FakeConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetNameConsole("/", new List<string> {"-n", "t"});
 
 			Assert.AreEqual("t", result );
 		}
@@ -85,7 +84,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 
 			var result= new PublishPreflight(_testAppSettings, 
-				consoleWrapper).GetNameConsole("/test", new List<string> ());
+				consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger()).GetNameConsole("/test", new List<string> ());
 			
 			Assert.AreEqual("test",result);
 		}
@@ -99,7 +98,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 
 			var result= new PublishPreflight(_testAppSettings, 
-				consoleWrapper).GetNameConsole("/test", new List<string> ());
+				consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger()).GetNameConsole("/test", new List<string> ());
 			
 			Assert.AreEqual("updated",result);
 		}

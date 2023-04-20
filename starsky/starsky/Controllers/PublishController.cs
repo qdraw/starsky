@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -67,17 +68,28 @@ namespace starsky.Controllers
 		/// <response code="401">User unauthorized</response>
 		[ProducesResponseType(typeof(string), 200)]
 		[ProducesResponseType(typeof(string), 409)]
+		[ProducesResponseType(typeof(List<string>), 400)]
 		[ProducesResponseType(typeof(void), 401)]
 		[HttpPost("/api/publish/create")]
 		[Produces("application/json")]
 		public async Task<IActionResult> PublishCreate(string f, string itemName, 
 			string publishProfileName, bool force = false)
 		{
+			var (isValid, preflightErrors) = _publishPreflight.IsProfileValid(publishProfileName);
+			if ( !isValid )
+			{
+				return BadRequest(preflightErrors);
+			}
+			
 			_webLogger.LogInformation($"[/api/publish/create] Press publish: {itemName} {f} {DateTime.UtcNow}");
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 			var info = _metaInfo.GetInfo(inputFilePaths, false);
-			if (info.All(p => p.Status != FileIndexItem.ExifStatus.Ok && p.Status != FileIndexItem.ExifStatus.ReadOnly))
+			if ( info.All(p =>
+				    p.Status != FileIndexItem.ExifStatus.Ok &&
+				    p.Status != FileIndexItem.ExifStatus.ReadOnly) )
+			{
 				return NotFound(info);
+			}
 
 			var slugItemName = _appSettings.GenerateSlug(itemName, true);
 			var location = Path.Combine(_appSettings.TempFolder,slugItemName );
@@ -87,8 +99,6 @@ namespace starsky.Controllers
 				if ( !force ) return Conflict($"name {slugItemName} exist");
 				ForceCleanPublishFolderAndZip(location);
 			}
-			
-			// todo: check if overlay image path: WebHtmlPublish/EmbeddedViews/default.png or something else exists
 
 			// Creating Publish is a background task
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>

@@ -95,9 +95,9 @@ namespace starskytest.Controllers
 				_bgTaskQueue, new FakeIWebLogger());
 			
 			var actionResult = controller.PublishGet() as JsonResult;
-			var result = actionResult.Value as IEnumerable<string>;
+			var result = actionResult?.Value as IEnumerable<KeyValuePair<string,bool>>;
 
-			Assert.AreEqual("test", result.FirstOrDefault());
+			Assert.AreEqual("test", result?.FirstOrDefault().Key);
 		}
 
 		[TestMethod]

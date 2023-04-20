@@ -23,6 +23,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly IStorage _subPathStorage;
 		private readonly IWebLogger _logger;
+		private readonly ISelectorStorage _storageSelector;
 
 		public PublishCli(ISelectorStorage storageSelector, IPublishPreflight publishPreflight,
 			IWebHtmlPublishService publishService, AppSettings appSettings, IConsole console, IWebLogger logger)
@@ -34,6 +35,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			_argsHelper = new ArgsHelper(appSettings, console);
 			_hostFileSystemStorage = storageSelector.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_subPathStorage = storageSelector.Get(SelectorStorage.StorageServices.SubPath);
+			_storageSelector = storageSelector;
 			_logger = logger;
 		}
 		
@@ -96,7 +98,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 				.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
 			         
 			// todo introduce selector
-			var profileName = new PublishPreflight(_appSettings,_console)
+			var profileName = new PublishPreflight(_appSettings,_console, _storageSelector, _logger)
 				.GetPublishProfileNameByIndex(0);
 			
 			await _publishService.RenderCopy(fileIndexList,  profileName, 
