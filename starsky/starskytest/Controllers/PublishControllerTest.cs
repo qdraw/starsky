@@ -3,17 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
@@ -29,24 +24,10 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class PublishControllerTest
 	{
-		private readonly IQuery _query;
-		private readonly AppSettings _appSettings;
-		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 
 		public PublishControllerTest()
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
-
-			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
-			var options = builderDb.Options;
-			var context = new ApplicationDbContext(options);
-			_query = new Query(context,new AppSettings(), null, new FakeIWebLogger(), memoryCache);
-
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
 			services.AddSingleton<IExifTool, FakeExifTool>();
@@ -57,11 +38,11 @@ namespace starskytest.Controllers
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
-			_createAnImage = new CreateAnImage();
+			var createAnImage = new CreateAnImage();
 			var dict = new Dictionary<string, string>
 			{
-				{"App:StorageFolder", _createAnImage.BasePath},
-				{"App:ThumbnailTempFolder", _createAnImage.BasePath},
+				{"App:StorageFolder", createAnImage.BasePath},
+				{"App:ThumbnailTempFolder", createAnImage.BasePath},
 				{"App:Verbose", "true"}
 			};
 			// Start using dependency injection
@@ -80,11 +61,10 @@ namespace starskytest.Controllers
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
-			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
+			serviceProvider.GetRequiredService<AppSettings>();
 
 			// get the background helper
 			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
-			
 		}
 
 		[TestMethod]
@@ -112,9 +92,9 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/test.jpg", 
+			var actionResult = await controller.PublishCreateAsync("/test.jpg", 
 				"test", "test", true) as JsonResult;
-			var result = actionResult.Value as string;
+			var result = actionResult?.Value as string;
 			
 			Assert.AreEqual("test", result);
 		}
@@ -131,15 +111,15 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/test.jpg", 
+			var actionResult = await controller.PublishCreateAsync("/test.jpg", 
 				"test", "test", true) as JsonResult;
-			var result = actionResult.Value as string;
+			var result = actionResult?.Value as string;
 			
 			Assert.AreEqual("test", result);
 		}
 		
 		[TestMethod]
-		public void PublishCreate_FakeBg_Expect_Generate_FakeZip_newItem()
+		public async Task PublishCreate_FakeBg_Expect_Generate_FakeZip_newItem()
 		{
 			var fakeBg = new FakeIUpdateBackgroundTaskQueue();
 			var fakeIWebHtmlPublishService = new FakeIWebHtmlPublishService();
@@ -149,7 +129,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				fakeBg, new FakeIWebLogger());
 			
-			 controller.PublishCreate("/test.jpg", 
+			 await controller.PublishCreateAsync("/test.jpg", 
 				"test", "test", true);
 			
 			Assert.AreEqual(1, fakeIWebHtmlPublishService.ItemNamesGenerateZip.Count);
@@ -169,10 +149,30 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/not-found.jpg", 
+			var actionResult = await controller.PublishCreateAsync("/not-found.jpg", 
 				"test", "test", true) as NotFoundObjectResult;
 			
-			Assert.AreEqual(404, actionResult.StatusCode);
+			Assert.AreEqual(404, actionResult?.StatusCode);
+		}
+		
+				
+		[TestMethod]
+		public async Task PublishCreate_InvalidResult()
+		{
+			var controller = new PublishController(new AppSettings(), 
+				new FakeIPublishPreflight(new List<AppSettingsPublishProfiles>(),false),
+				new FakeIWebHtmlPublishService(), 
+				new FakeIMetaInfo(
+					new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+						{Status = FileIndexItem.ExifStatus.NotFoundNotInIndex}}
+				),
+				new FakeSelectorStorage(),
+				_bgTaskQueue, new FakeIWebLogger());
+			
+			var actionResult = await controller.PublishCreateAsync("/not-found.jpg", 
+				"test", "test", true) as BadRequestObjectResult;
+			
+			Assert.AreEqual(400, actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -188,9 +188,9 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(storage),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/test.jpg", 
-				"test", "test", false) as ConflictObjectResult;
-			var result = actionResult.Value as string;
+			var actionResult = await controller.PublishCreateAsync("/test.jpg", 
+				"test", "test") as ConflictObjectResult;
+			var result = actionResult?.Value as string;
 			
 			Assert.AreEqual("name test exist", result);
 		}
@@ -211,9 +211,9 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(storage),
 				_bgTaskQueue, new FakeIWebLogger());
 			
-			var actionResult = await controller.PublishCreate("/test.jpg", 
+			var actionResult = await controller.PublishCreateAsync("/test.jpg", 
 				"test", "test", true) as JsonResult;
-			var result = actionResult.Value as string;
+			var result = actionResult?.Value as string;
 			
 			Assert.AreEqual("test", result);
 			Assert.IsFalse(storage.ExistFolder(Path.DirectorySeparatorChar + "test"));
@@ -229,7 +229,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			var actionResult = controller.Exist(string.Empty)as JsonResult;
-			var result = actionResult.Value is bool;
+			var result = actionResult?.Value is bool;
 			Assert.IsTrue(result);
 		}
 

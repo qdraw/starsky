@@ -72,7 +72,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(void), 401)]
 		[HttpPost("/api/publish/create")]
 		[Produces("application/json")]
-		public async Task<IActionResult> PublishCreate(string f, string itemName, 
+		public async Task<IActionResult> PublishCreateAsync(string f, string itemName, 
 			string publishProfileName, bool force = false)
 		{
 			var (isValid, preflightErrors) = _publishPreflight.IsProfileValid(publishProfileName);
