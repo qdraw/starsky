@@ -125,11 +125,14 @@ fi
 # check if nodejs is installed
 if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
     if [ -x "$(command -v npm)" ] && npm --version &>/dev/null; then
-        echo "npm installed"
+        echo "   npm installed"
         if [ -x "$(command -v brew)" ] && brew --version &>/dev/null; then
             if [ -f $(brew --prefix nvm)/nvm.sh ]; then
               echo 'sourcing nvm from $(brew --prefix nvm)/nvm.sh'
-              . $(brew --prefix nvm)/nvm.sh
+              chmod +x $(brew --prefix nvm)/nvm.sh
+              set +ue +o pipefail
+              source $(brew --prefix nvm)/nvm.sh &>/dev/null
+              set -eo pipefail
             fi
         fi
                     
@@ -159,7 +162,6 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
                 mkdir -p $HOME/.nvm
 
                 if [[ "$(uname -m)" == "x86_64" ]]; then               
-                    chmod +x $(brew --prefix nvm)/nvm.sh
                     echo 'export NVM_DIR="$HOME/.nvm"' >> $HOME/.zshrc
                     echo ' [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm' >> $HOME/.zshrc
                     echo '[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion' >> $HOME/.zshrc
@@ -172,6 +174,8 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
                 echo "nvm installed"
             fi
             
+            chmod +x $(brew --prefix nvm)/nvm.sh
+
             if [ -f $(brew --prefix nvm)/nvm.sh ]; then
               echo 'sourcing nvm from $(brew --prefix nvm)/nvm.sh'
               . $(brew --prefix nvm)/nvm.sh
@@ -187,10 +191,6 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
         fi 
     fi 
 fi
-
-
-echo "Sdf"
-exit 1
 
 
 echo "Microsoft (R) .NET SDK version $("$DOTNET_EXE" --version)"
