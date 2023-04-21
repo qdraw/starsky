@@ -124,7 +124,7 @@ fi
 
 # check if nodejs is installed
 if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
-    if [ -x "$(command -v npm)" ] && npm --version &>/dev/null; then
+    if [ -x "$(command -v npm)" ] && npm --version &>/dev/null && [ -d "${HOME}/.nvm/" ]; then
         echo "   npm installed"
         if [ -x "$(command -v brew)" ] && brew --version &>/dev/null; then
             if [ -f $(brew --prefix nvm)/nvm.sh ]; then
@@ -178,13 +178,16 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
 
             if [ -f $(brew --prefix nvm)/nvm.sh ]; then
               echo 'sourcing nvm from $(brew --prefix nvm)/nvm.sh'
-              . $(brew --prefix nvm)/nvm.sh
+              set +ue +o pipefail
+              source $(brew --prefix nvm)/nvm.sh &>/dev/null
+              set -eo pipefail
             fi
 
             # https://github.com/nvm-sh/nvm/issues/1290#issuecomment-737964030
             if [ -f $NVM_RC_FILE ]; then
                 NVM_RC_FILE_CONTENT="$(cat $NVM_RC_FILE)"
                 nvm install $NVM_RC_FILE_CONTENT
+                nvm use node
                 cd $SCRIPT_DIR
                 nvm use
             fi
