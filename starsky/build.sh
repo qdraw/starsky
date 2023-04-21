@@ -123,6 +123,7 @@ else
 fi
 
 # check if nodejs is installed
+# depends on NVM_RC_FILE, SCRIPT_DIR variables
 if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(uname)" == "Darwin" && "$FORCE_INSTALL_CHECK" == true ]]; then
     if [ -x "$(command -v npm)" ] && npm --version &>/dev/null && [ -d "${HOME}/.nvm/" ]; then
         echo "   npm installed"
@@ -149,9 +150,7 @@ if [[ "$(uname)" == "Darwin" && $CI != true && $TF_BUILD != true ]] || [[ "$(una
               nvm use
             fi
         fi
-        
     else
-                 
         if [ -x "$(command -v brew)" ] && brew --version &>/dev/null; then
             echo "homebrew installed"
 
