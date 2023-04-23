@@ -144,6 +144,67 @@ describe("ModalPublish", () => {
     });
   });
 
+  it("Preflight check fails and gives error", async () => {
+    const mockGetIConnectionDefault = {
+      statusCode: 200,
+      data: [{ key: "failed-key", value: false }]
+    } as IConnectionDefault;
+    const useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const modal = render(
+      <ModalPublish
+        select={["/"]}
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalPublish>
+    );
+
+    expect(screen.getByTestId("publish-profile-preflight-error")).toBeTruthy();
+    expect(
+      screen.getByTestId("publish-profile-preflight-error").innerHTML
+    ).toContain("failed-key");
+
+    expect(useFetchSpy).toBeCalled();
+
+    // and clean afterwards
+    act(() => {
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
+  });
+
+  it("Preflight check succeeds and gives no error", async () => {
+    const mockGetIConnectionDefault = {
+      statusCode: 200,
+      data: [{ key: "succeed-key", value: true }]
+    } as IConnectionDefault;
+    const useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const modal = render(
+      <ModalPublish
+        select={["/"]}
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalPublish>
+    );
+
+    expect(screen.queryByTestId("publish-profile-preflight-error")).toBeFalsy();
+
+    expect(useFetchSpy).toBeCalled();
+
+    // and clean afterwards
+    act(() => {
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
+  });
+
   it("Fail - Publish flow with default options -> and waiting 2", async () => {
     const connectionDefault: IConnectionDefault = {
       statusCode: 500,
