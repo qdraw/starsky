@@ -190,5 +190,54 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			Assert.AreEqual($"View Path {publishProfile.Template} should exists", result.Item2[0]);
 		}
 
+		[TestMethod]
+		public void IsProfileValid_ReturnsFalseWithErrorMessage_WhenJpegDoesNotExist()
+		{
+			// Arrange
+			const string publishProfileName = "non-exist-jpeg";
+			var publishProfile = new AppSettingsPublishProfiles
+			{
+				Path = "test.jpg",
+				ContentType = TemplateContentType.Jpeg,
+			};
+			_testAppSettings.PublishProfiles[publishProfileName] =
+				new List<AppSettingsPublishProfiles> { publishProfile };
+			
+			var publishPreflight = new PublishPreflight(_testAppSettings, 
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
+
+			// Act
+			var result = publishPreflight.IsProfileValid(publishProfileName);
+
+			// Assert
+			Assert.IsFalse(result.Item1);
+			Assert.AreEqual(1, result.Item2.Count);
+			Assert.AreEqual($"Image Path {publishProfile.Path} should exists", result.Item2[0]);
+		}
+		
+		[TestMethod]
+		public void IsProfileValid_ReturnsFalseWithErrorMessage_WhenOnlyFirstJpegDoesNotExist()
+		{
+			// Arrange
+			const string publishProfileName = "non-exist-only-first-jpeg";
+			var publishProfile = new AppSettingsPublishProfiles
+			{
+				Path = "non-exist-only-first-jpeg.jpg",
+				ContentType = TemplateContentType.OnlyFirstJpeg,
+			};
+			_testAppSettings.PublishProfiles[publishProfileName] =
+				new List<AppSettingsPublishProfiles> { publishProfile };
+			
+			var publishPreflight = new PublishPreflight(_testAppSettings, 
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
+
+			// Act
+			var result = publishPreflight.IsProfileValid(publishProfileName);
+
+			// Assert
+			Assert.IsFalse(result.Item1);
+			Assert.AreEqual(1, result.Item2.Count);
+			Assert.AreEqual($"Image Path {publishProfile.Path} should exists", result.Item2[0]);
+		}
 	}
 }
