@@ -40,6 +40,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Update item takes 3 seconds, so this must be faster Issue #1142 (PR #1146)
 - [x] (Fixed) _Back-end_ Info API gives last write date back (PR #1147)
 - [x] (Changed) _Back-end_ `api/publish` checks now if files exists Issue #1126 (PR #1148)
+- [x] (Fixed) _Back-end_  Fix for duplicate entry for key 'PRIMARY' Issue #1151 (PR #1148)
+- [x] (Fixed) _Back-end_ RegexMatchTimeoutException ExtensionRolesHelper.IsExtensionForce Issue #1152 (PR #1148)
 
 ## version 0.5.7 - 2023-04-14 {#v0.5.7}
 
