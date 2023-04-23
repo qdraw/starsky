@@ -84,7 +84,7 @@ describe("ModalPublish", () => {
 
     const connectionDefault: IConnectionDefault = {
       statusCode: 200,
-      data: "key"
+      data: [{ key: "key", value: true }]
     };
     const mockIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve(connectionDefault);
