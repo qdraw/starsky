@@ -70,7 +70,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void GetNameConsole_WithArg()
 		{
 			var result= new PublishPreflight(_testAppSettings,
-				new FakeConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger()).GetNameConsole("/", new List<string> {"-n", "t"});
+				new FakeConsoleWrapper(), new FakeSelectorStorage(), 
+				new FakeIWebLogger()).GetNameConsole("/", new List<string> {"-n", "t"});
 
 			Assert.AreEqual("t", result );
 		}
@@ -84,7 +85,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 
 			var result= new PublishPreflight(_testAppSettings, 
-				consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger()).GetNameConsole("/test", new List<string> ());
+				consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger())
+				.GetNameConsole("/test", new List<string> ());
 			
 			Assert.AreEqual("test",result);
 		}
@@ -98,9 +100,94 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 
 			var result= new PublishPreflight(_testAppSettings, 
-				consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger()).GetNameConsole("/test", new List<string> ());
+				consoleWrapper, new FakeSelectorStorage(), new FakeIWebLogger())
+				.GetNameConsole("/test", new List<string> ());
 			
 			Assert.AreEqual("updated",result);
+		}
+
+		[TestMethod]
+		public void IsProfileValid_ReturnsFalseWithErrorMessage_WhenProfileKeyIsNull()
+		{
+			// Arrange
+			var publishPreflight = new PublishPreflight(_testAppSettings, 
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
+
+			// Act
+			var result = publishPreflight.IsProfileValid(null);
+
+			// Assert
+			Assert.IsFalse(result.Item1);
+			Assert.AreEqual(1, result.Item2.Count);
+			Assert.AreEqual("Profile not found", result.Item2[0]);
+		}
+
+		[TestMethod]
+		public void IsProfileValid_ReturnsFalseWithErrorMessage_WhenProfileValueIsNull()
+		{
+			// Arrange
+			const string publishProfileName = "invalid-profile";
+			
+			var publishPreflight = new PublishPreflight(_testAppSettings, 
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
+
+			// Act
+			var result = publishPreflight.IsProfileValid(publishProfileName);
+
+			// Assert
+			Assert.IsFalse(result.Item1);
+			Assert.AreEqual(1, result.Item2.Count);
+			Assert.AreEqual("Profile not found", result.Item2[0]);
+		}
+
+		[TestMethod]
+		public void IsProfileValid_ReturnsFalseWithErrorMessage_WhenProfilePathIsEmpty()
+		{
+			// Arrange
+			var publishProfileName = "invalid-profile-2";
+			var publishProfile = new AppSettingsPublishProfiles
+			{
+				Path = string.Empty,
+				ContentType = TemplateContentType.Jpeg
+			};
+			_testAppSettings.PublishProfiles[publishProfileName] =
+				new List<AppSettingsPublishProfiles> { publishProfile };
+
+			var publishPreflight = new PublishPreflight(_testAppSettings, 
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
+
+			// Act
+			var result = publishPreflight.IsProfileValid(publishProfileName);
+
+			// Assert
+			Assert.IsFalse(result.Item1);
+			Assert.AreEqual(1, result.Item2.Count);
+		}
+
+		[TestMethod]
+		public void IsProfileValid_ReturnsFalseWithErrorMessage_WhenHtmlTemplateDoesNotExist()
+		{
+			// Arrange
+			const string publishProfileName = "non-existent-template";
+			var publishProfile = new AppSettingsPublishProfiles
+			{
+				Path = "test.jpg",
+				ContentType = TemplateContentType.Html,
+				Template = "non-existent-template.cshtml"
+			};
+			_testAppSettings.PublishProfiles[publishProfileName] =
+				new List<AppSettingsPublishProfiles> { publishProfile };
+			
+			var publishPreflight = new PublishPreflight(_testAppSettings, 
+				new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
+
+			// Act
+			var result = publishPreflight.IsProfileValid(publishProfileName);
+
+			// Assert
+			Assert.IsFalse(result.Item1);
+			Assert.AreEqual(1, result.Item2.Count);
+			Assert.AreEqual($"View Path {publishProfile.Template} should exists", result.Item2[0]);
 		}
 
 	}

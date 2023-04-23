@@ -181,19 +181,19 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
             <h4>{MessagePublishProfileName}</h4>
             <Select
               selectOptions={allPublishProfiles
-                ?.filter((x) => !x.value)
+                ?.filter((x) => x.value)
                 .map((x) => x.key)}
               callback={setPublishProfileName}
             ></Select>
 
-            {allPublishProfiles?.filter((x) => x.value)?.length ? (
+            {allPublishProfiles?.filter((x) => !x.value)?.length ? (
               <div className="warning-box">
                 {language.token(
                   MessagePublishProfileNamesErrored,
                   ["{publishProfileNames}"],
                   [
                     allPublishProfiles
-                      .filter((x) => x.value)
+                      .filter((x) => !x.value)
                       .map((x) => x.key)
                       .join(", ")
                   ]

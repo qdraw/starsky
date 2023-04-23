@@ -94,7 +94,7 @@ namespace starsky.feature.webhtmlpublish.Services
 				}
 			}
 			
-			return new Tuple<bool, List<string>>(errors.Any(), errors);
+			return new Tuple<bool, List<string>>(!errors.Any(), errors);
 		}
 
 		/// <summary>
