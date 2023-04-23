@@ -20,7 +20,6 @@ using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -87,36 +86,45 @@ namespace starsky.feature.export.Services
 				
 				if ( detailView.FileIndexItem.IsDirectory == true )
 				{
-					// Collection is only relevant for when selecting one file
-					var allFilesInFolder =
-						await _query.GetAllRecursiveAsync(detailView
-							.FileIndexItem.FilePath);
-					foreach ( var item in 
-					         allFilesInFolder.
-							Where(item => item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
-					{
-						item.Status = FileIndexItem.ExifStatus.Ok;
-						fileIndexResultsList.Add(item);
-					}
+					await AddFileIndexResultsListForDirectory(detailView, fileIndexResultsList);
 					continue;
 				}
 				
 				// Now Add Collection based images
-				var collectionSubPathList = DetailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
-				foreach ( var item in collectionSubPathList )
-				{
-					var itemFileIndexItem = _query.SingleItem(item, null, 
-						false, false)?.FileIndexItem;
-					if ( itemFileIndexItem == null ) continue;
-					itemFileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-					fileIndexResultsList.Add(itemFileIndexItem);
-				}
+				AddCollectionBasedImages(detailView, fileIndexResultsList, collections, subPath);
 			}
 
 			var isThumbnail = thumbnail ? "TN" : "SR"; // has:notHas
 			var zipHash = isThumbnail + GetName(fileIndexResultsList);
 			
 			return new Tuple<string, List<FileIndexItem>>(zipHash, fileIndexResultsList);
+		}
+
+		private async Task AddFileIndexResultsListForDirectory(DetailView detailView, List<FileIndexItem> fileIndexResultsList)
+		{
+			var allFilesInFolder =
+				await _query.GetAllRecursiveAsync(detailView?
+					.FileIndexItem?.FilePath!);
+			foreach ( var item in 
+			         allFilesInFolder.
+				         Where(item => item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
+			{
+				item.Status = FileIndexItem.ExifStatus.Ok;
+				fileIndexResultsList.Add(item);
+			}
+		}
+
+		private void AddCollectionBasedImages(DetailView detailView, List<FileIndexItem> fileIndexResultsList, bool collections, string subPath)
+		{
+			var collectionSubPathList = DetailView.GetCollectionSubPathList(detailView.FileIndexItem!, collections, subPath);
+			foreach ( var item in collectionSubPathList )
+			{
+				var itemFileIndexItem = _query.SingleItem(item, null, 
+					false, false)?.FileIndexItem;
+				if ( itemFileIndexItem == null ) continue;
+				itemFileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				fileIndexResultsList.Add(itemFileIndexItem);
+			}
 		}
 
 		/// <summary>
