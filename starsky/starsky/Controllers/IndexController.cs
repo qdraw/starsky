@@ -59,9 +59,9 @@ namespace starsky.Controllers
             var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections,hidedelete, sort);
             // returns no object when it a directory
             
-            if (singleItem?.IsDirectory == false)
+            if (singleItem is { IsDirectory: false })
             {
-	            singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem.ParentDirectory);
+	            singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem?.ParentDirectory);
                 return Json(singleItem);
             }
 

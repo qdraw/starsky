@@ -107,6 +107,7 @@ namespace starsky.feature.export.Services
 				{
 					var itemFileIndexItem = _query.SingleItem(item, null, 
 						false, false)?.FileIndexItem;
+					if ( itemFileIndexItem == null ) continue;
 					itemFileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 					fileIndexResultsList.Add(itemFileIndexItem);
 				}
