@@ -188,7 +188,10 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
             ></Select>
 
             {allPublishProfiles?.filter((x) => !x.value)?.length ? (
-              <div className="warning-box warning-box--optional">
+              <div
+                className="warning-box warning-box--optional"
+                data-test="publish-profile-preflight-error"
+              >
                 {language.token(
                   MessagePublishProfileNamesErrored,
                   ["{publishProfileNames}"],
