@@ -84,7 +84,7 @@ public class SqlXmlRepositoryTest
 			typeof(MySqlException).GetConstructors(BindingFlags.Instance |
 			                                       BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
 		var instance =
-			( MySqlException ) ctor.Invoke(new object[]
+			( MySqlException ) ctor?.Invoke(new object[]
 			{
 				info,
 				new StreamingContext(StreamingContextStates.All)
