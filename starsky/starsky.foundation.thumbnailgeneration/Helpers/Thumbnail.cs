@@ -444,7 +444,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				await image.SaveAsync(outputStream, new PngEncoder{
 					ColorType = PngColorType.Rgb, 
 					CompressionLevel = PngCompressionLevel.BestSpeed, 
-					IgnoreMetadata = true,
+					// IgnoreMetadata in older versions
+					SkipMetadata = true,
 					TransparentColorMode = PngTransparentColorMode.Clear,
 				});
 				return;
