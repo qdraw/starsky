@@ -229,7 +229,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    }
             
 		    // has a direct dependency on the filesystem
-		    var embeddedResult = await new ParseRazor(_hostFileSystemStorage)
+		    var embeddedResult = await new ParseRazor(_hostFileSystemStorage, _logger)
 			    .EmbeddedViews(currentProfile.Template, viewModel);
 
 		    var stream = PlainTextFileHelper.StringToStream(embeddedResult);

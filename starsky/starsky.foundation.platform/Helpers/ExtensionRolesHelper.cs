@@ -286,9 +286,10 @@ namespace starsky.foundation.platform.Helpers
 			if ( string.IsNullOrEmpty(filename) ) return false;
 
 			// without escaped values:
-			//		\.([0-9a-z]+)(?=[?#])|(.meta)?(\.)(?:[\w]+)$
-			var matchCollection = new Regex(@"\.([0-9a-z]+)(?=[?#])|(.meta)?(\.)(?:[\w]+)$", 
-				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100)).Matches(filename);
+			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
+			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$", 
+				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(200)).Matches(filename);
+			
 			if ( matchCollection.Count == 0 ) return false;
 			foreach ( var matchValue in matchCollection.Select(p => p.Value) )
 			{
@@ -296,6 +297,13 @@ namespace starsky.foundation.platform.Helpers
 				var ext = matchValue.Remove(0, 1).ToLowerInvariant();
 				if ( checkThisList.Contains(ext) ) return true;
 			}
+
+			// ReSharper disable once ConvertIfStatementToReturnStatement
+			if ( filename.ToLowerInvariant().EndsWith(".meta.json") && checkThisList.Contains("meta.json") )
+			{
+				return true;
+			}
+			
 			return false;
 		}
 		

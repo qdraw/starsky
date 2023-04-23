@@ -71,7 +71,7 @@ describe("ModalPublish", () => {
     // use ==> import * as useFetch from '../hooks/use-fetch';
     const mockGetIConnectionDefault = {
       statusCode: 200,
-      data: ["_default"]
+      data: [{ key: "key", value: true }]
     } as IConnectionDefault;
     const useFetchSpy = jest
       .spyOn(useFetch, "default")
@@ -84,7 +84,7 @@ describe("ModalPublish", () => {
 
     const connectionDefault: IConnectionDefault = {
       statusCode: 200,
-      data: "key"
+      data: [{ key: "key", value: true }]
     };
     const mockIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve(connectionDefault);
@@ -120,7 +120,7 @@ describe("ModalPublish", () => {
 
     const connectionDefault2: IConnectionDefault = {
       statusCode: 206,
-      data: "key"
+      data: ["key"]
     };
     const mockIConnectionDefault2: Promise<IConnectionDefault> =
       Promise.resolve(connectionDefault2);
@@ -136,6 +136,67 @@ describe("ModalPublish", () => {
     expect(screen.queryByTestId("modal-publish-subheader")?.textContent).toBe(
       "One moment please"
     );
+
+    // and clean afterwards
+    act(() => {
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
+  });
+
+  it("Preflight check fails and gives error", async () => {
+    const mockGetIConnectionDefault = {
+      statusCode: 200,
+      data: [{ key: "failed-key", value: false }]
+    } as IConnectionDefault;
+    const useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const modal = render(
+      <ModalPublish
+        select={["/"]}
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalPublish>
+    );
+
+    expect(screen.getByTestId("publish-profile-preflight-error")).toBeTruthy();
+    expect(
+      screen.getByTestId("publish-profile-preflight-error").innerHTML
+    ).toContain("failed-key");
+
+    expect(useFetchSpy).toBeCalled();
+
+    // and clean afterwards
+    act(() => {
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
+  });
+
+  it("Preflight check succeeds and gives no error", async () => {
+    const mockGetIConnectionDefault = {
+      statusCode: 200,
+      data: [{ key: "succeed-key", value: true }]
+    } as IConnectionDefault;
+    const useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const modal = render(
+      <ModalPublish
+        select={["/"]}
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalPublish>
+    );
+
+    expect(screen.queryByTestId("publish-profile-preflight-error")).toBeFalsy();
+
+    expect(useFetchSpy).toBeCalled();
 
     // and clean afterwards
     act(() => {
@@ -166,7 +227,7 @@ describe("ModalPublish", () => {
     // use ==> import * as useFetch from '../hooks/use-fetch';
     const mockGetIConnectionDefault = {
       statusCode: 200,
-      data: ["_default"]
+      data: [{ key: "key", value: true }]
     } as IConnectionDefault;
     const useFetchSpy = jest
       .spyOn(useFetch, "default")
@@ -386,6 +447,7 @@ describe("ModalPublish", () => {
     expect(tags).not.toBe(undefined);
 
     // update component + now press a key
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       tags.textContent = "a";
       const inputEvent = createEvent.input(tags, { key: "a" });
@@ -395,6 +457,7 @@ describe("ModalPublish", () => {
     expect(screen.getByTestId("modal-publish-warning-box")).toBeTruthy();
 
     // and now undo
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       tags.textContent = "";
       const inputEvent = createEvent.input(tags, { key: "" });
