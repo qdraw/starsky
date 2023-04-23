@@ -172,6 +172,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
         {isProcessing === ProcessingState.default && props.select ? (
           <>
             <h4>{MessageItemName}</h4>
+
             <FormControl
               contentEditable={true}
               onInput={updateItemName}
@@ -187,7 +188,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
             ></Select>
 
             {allPublishProfiles?.filter((x) => !x.value)?.length ? (
-              <div className="warning-box">
+              <div className="warning-box warning-box--optional">
                 {language.token(
                   MessagePublishProfileNamesErrored,
                   ["{publishProfileNames}"],
