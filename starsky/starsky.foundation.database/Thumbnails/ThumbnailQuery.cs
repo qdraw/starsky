@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -76,7 +77,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		if ( newThumbnailItems.Any() )
 		{
 			await dbContext.Thumbnails.AddRangeAsync(newThumbnailItems);
-			await dbContext.SaveChangesAsync();
+			await SaveChangesDuplicate(dbContext);
 		}
 		
 		if ( alreadyExistingThumbnailItems.Any() )
@@ -84,6 +85,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			dbContext.Thumbnails.UpdateRange(alreadyExistingThumbnailItems);
 			// not optimized for bulk operations yet
 			await dbContext.SaveChangesAsync();
+			await SaveChangesDuplicate(dbContext);
 		}
 		
 		var allResults = alreadyExistingThumbnailItems
@@ -97,6 +99,21 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 		
 		return allResults;
+	}
+
+	private static async Task SaveChangesDuplicate(DbContext dbContext)
+	{
+		try
+		{
+			await dbContext.SaveChangesAsync();
+		}
+		catch ( MySqlException exception )
+		{
+			if ( !exception.Message.Contains("Duplicate") )
+			{
+				throw;
+			}
+		}
 	}
 
 	public async Task<List<ThumbnailItem>> Get(string? fileHash = null)
