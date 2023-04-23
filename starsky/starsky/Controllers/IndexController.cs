@@ -28,7 +28,7 @@ namespace starsky.Controllers
 	    /// <param name="f">subPath</param>
 	    /// <param name="colorClass">filter on colorClass (use int)</param>
 	    /// <param name="collections">to combine files with the same name before the extension</param>
-	    /// <param name="hidedelete">ignore deleted files</param>
+	    /// <param name="hideDelete">ignore deleted files</param>
 	    /// <param name="sort">how to orderBy, defaults to fileName</param>
 	    /// <returns></returns>
 	    /// <response code="200">returns a list of items from the database</response>
@@ -43,9 +43,8 @@ namespace starsky.Controllers
             string f = "/", 
             string colorClass = null,
             bool collections = true,
-            bool hidedelete = true,
-            SortType sort = SortType.FileName
-            )
+            bool hideDelete = true,
+            SortType sort = SortType.FileName)
         {
             
             // Used in Detail and Index View => does not hide this single item
@@ -56,10 +55,10 @@ namespace starsky.Controllers
             if ( string.IsNullOrEmpty(subPath) ) subPath = "/";
 
             // First check if it is a single Item
-            var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections,hidedelete, sort);
+            var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections,hideDelete, sort);
             // returns no object when it a directory
             
-            if (singleItem is { IsDirectory: false })
+            if (singleItem?.IsDirectory == false)
             {
 	            singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem?.ParentDirectory);
                 return Json(singleItem);
@@ -67,9 +66,9 @@ namespace starsky.Controllers
 
             var fileIndexItems = SortHelper.Helper(
 	            _query.DisplayFileFolders(subPath, colorClassActiveList,
-		            collections, hidedelete), sort).ToList();
+		            collections, hideDelete), sort).ToList();
             var fileIndexItemsWithoutCollections = _query.DisplayFileFolders(
-	            subPath, null, false, hidedelete).ToList();
+	            subPath, null, false, hideDelete).ToList();
             
             // (singleItem.IsDirectory) or not found
             var directoryModel = new ArchiveViewModel
@@ -90,22 +89,22 @@ namespace starsky.Controllers
                 Collections = collections,
             };
 
-            if (singleItem == null)
+            // For showing a new database
+            var queryIfFolder = _query.GetObjectByFilePath(subPath);
+
+            // For showing a new database
+            if ( f == "/" && queryIfFolder == null )
             {
-                // For showing a new database
-                var queryIfFolder = _query.GetObjectByFilePath(subPath);
-
-                // For showing a new database
-                if ( f == "/" && queryIfFolder == null ) return Json(directoryModel);
-
-                if (queryIfFolder == null) // used to have: singleItem?.FileIndexItem.FilePath == null &&
-                {
-                    Response.StatusCode = 404;
-                    return Json("not found");
-                }
+	            return Json(directoryModel);
             }
 
-            return Json(directoryModel);
+            if ( queryIfFolder != null )
+            {
+	            return Json(directoryModel);
+            }
+            
+            Response.StatusCode = 404;
+            return Json("not found");
         }
 
     }
