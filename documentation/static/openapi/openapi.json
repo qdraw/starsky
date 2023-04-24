@@ -5917,7 +5917,7 @@
             },
             {
               "unresolvedReference": false,
-              "name": "hidedelete",
+              "name": "hideDelete",
               "in": 0,
               "description": "ignore deleted files",
               "required": false,
