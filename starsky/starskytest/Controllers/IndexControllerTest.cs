@@ -68,7 +68,7 @@ namespace starskytest.Controllers
 			await InsertSearchData();
 			var controller = new IndexController(_query, new AppSettings());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var actionResult = controller.Index("/homecontrollertest/hi.jpg",null,true) as JsonResult;
+			var actionResult = controller.Index("/homecontrollertest/hi.jpg") as JsonResult;
 			Assert.AreNotEqual(null,actionResult);
 			var jsonCollection = actionResult?.Value as DetailView;
 			Assert.AreEqual("home0012304590",jsonCollection?.FileIndexItem?.FileHash);
@@ -83,7 +83,8 @@ namespace starskytest.Controllers
 			var actionResult = controller.Index("/homecontrollertest") as JsonResult;
 			Assert.AreNotEqual(null,actionResult);
 			var jsonCollection = actionResult?.Value as ArchiveViewModel;
-			Assert.AreEqual("home0012304590",jsonCollection?.FileIndexItems.FirstOrDefault()?.FileHash);
+			Assert.AreEqual("home0012304590",jsonCollection?
+				.FileIndexItems.FirstOrDefault()?.FileHash);
 		}
 		
 		[TestMethod]
@@ -143,6 +144,5 @@ namespace starskytest.Controllers
 			var jsonCollection = actionResult?.Value as ArchiveViewModel;
 			Assert.AreEqual(0,jsonCollection?.FileIndexItems.Count());
 		}
-
 	}
 }
