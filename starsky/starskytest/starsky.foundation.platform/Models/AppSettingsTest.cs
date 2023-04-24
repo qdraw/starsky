@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn;
@@ -232,37 +233,13 @@ namespace starskytest.starsky.foundation.platform.Models
 		
 		[TestMethod]
 		public void ConvertTimeZoneId_Antarctica_IanaId__UnixOnly()
-		{
-			if ( _appSettings.IsWindows )
-			{
-				Assert.Inconclusive("This test if for Unix Only");
-				return;
-			}
-			
+		{			
 			var value = AppSettings.ConvertTimeZoneId("Antarctica/Troll");
 			
 			// Linux: Antarctica/Troll
-			// Windows: Does not exist at the moment
+			// Windows: In older versions it does not exists
 			
 			Assert.AreEqual("Antarctica/Troll", value.Id);
-		}
-		
-		[TestMethod]
-		[ExpectedException(typeof(TimeZoneNotFoundException))]
-		public void ConvertTimeZoneId_Antarctica_WindowsId_WindowsOnly()
-		{
-			if ( !_appSettings.IsWindows )
-			{
-				Assert.Inconclusive("This test if for Windows Only");
-				return;
-			}
-			
-			AppSettings.ConvertTimeZoneId("Antarctica/Troll");
-			
-			// Expect exception
-			
-			// Linux: Antarctica/Troll
-			// Windows: Does not exist at the moment
 		}
 
 		[TestMethod]

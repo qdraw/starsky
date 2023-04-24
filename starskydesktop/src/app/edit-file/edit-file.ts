@@ -4,7 +4,10 @@ import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
 import { createErrorWindow } from "../error-window/create-error-window";
 import logger from "../logger/logger";
-import { GetNetRequest, IGetNetRequestResponse } from "../net-request/get-net-request";
+import {
+  GetNetRequest,
+  IGetNetRequestResponse,
+} from "../net-request/get-net-request";
 import { createParentFolders } from "./create-parent-folders";
 import { downloadBinary } from "./download-binary";
 import { downloadXmpFile } from "./download-xmp-file";
@@ -21,7 +24,7 @@ function getFilePathFromWindow(fromMainWindow: BrowserWindow): string {
 async function openWindow(filePathOnDisk: string) {
   try {
     await openPath(filePathOnDisk);
-  } catch (error :unknown) {
+  } catch (error: unknown) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     createErrorWindow(error as string);
     logger.warn("openPath error");
@@ -33,7 +36,7 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
   const subPath = new UrlQuery().Index(getFilePathFromWindow(fromMainWindow));
   const url = (await GetBaseUrlFromSettings()).location + subPath;
 
-  let result :IGetNetRequestResponse;
+  let result: IGetNetRequestResponse;
   try {
     result = await GetNetRequest(url, fromMainWindow.webContents.session);
   } catch (error) {
@@ -43,18 +46,16 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
   }
 
   if (!IsDetailViewResult(result)) {
+    logger.warn("IsDetailViewResult error", result);
     return;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
-  const fileIndexItem = ((result.data as any).fileIndexItem as IFileIndexItem);
+  const fileIndexItem = (result.data as any).fileIndexItem as IFileIndexItem;
 
   await createParentFolders(fileIndexItem.parentDirectory);
 
-  await downloadXmpFile(
-    fileIndexItem,
-    fromMainWindow.webContents.session
-  );
+  await downloadXmpFile(fileIndexItem, fromMainWindow.webContents.session);
   const filePathOnDisk = await downloadBinary(
     fileIndexItem,
     fromMainWindow.webContents.session

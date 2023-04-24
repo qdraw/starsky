@@ -10,6 +10,7 @@ export function IsDetailViewResult(result: IGetNetRequestResponse) {
     && result.data.fileIndexItem.collectionPaths
     && result.data.fileIndexItem.sidecarExtensionsList
     && (result.data.fileIndexItem.status === "Ok"
+      || result.data.fileIndexItem.status === "OkAndSame"
       || result.data.fileIndexItem.status === "Default")
   );
 }
