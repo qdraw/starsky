@@ -46,7 +46,6 @@ namespace starsky.Controllers
             bool hideDelete = true,
             SortType sort = SortType.FileName)
         {
-            
             // Used in Detail and Index View => does not hide this single item
             var colorClassActiveList = FileIndexItem.GetColorClassList(colorClass);
 
@@ -55,10 +54,11 @@ namespace starsky.Controllers
             if ( string.IsNullOrEmpty(subPath) ) subPath = "/";
 
             // First check if it is a single Item
-            var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections,hideDelete, sort);
+            var singleItem = _query.SingleItem(subPath, colorClassActiveList,
+	            collections,hideDelete, sort);
             // returns no object when it a directory
             
-            if (singleItem?.IsDirectory == false)
+            if (singleItem is { IsDirectory: false })
             {
 	            singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem?.ParentDirectory);
                 return Json(singleItem);
@@ -81,7 +81,7 @@ namespace starsky.Controllers
                 SubPath = subPath,
                 CollectionsCount = fileIndexItemsWithoutCollections.
 	                Count(p => p.IsDirectory == false),
-                // when change colorclass selection you should see all options
+                // when change colorClass selection you should see all options
                 ColorClassUsage = fileIndexItemsWithoutCollections
 	                .Select( p => p.ColorClass).Distinct()
 	                .OrderBy(p => (int) (p)).ToList(),
@@ -106,6 +106,5 @@ namespace starsky.Controllers
             Response.StatusCode = 404;
             return Json("not found");
         }
-
     }
 }
