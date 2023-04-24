@@ -4,7 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 #pragma warning disable CS8618
 
-[assembly: InternalsVisibleTo("starskytest")]
+[assembly:InternalsVisibleTo("starskytest"), 
+          InternalsVisibleTo("starsky.foundation.settings")]
 namespace starsky.foundation.database.Query
 {
 	public class InjectServiceScope

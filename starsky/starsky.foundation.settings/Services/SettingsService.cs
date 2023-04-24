@@ -2,8 +2,10 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.injection;
 using starsky.foundation.settings.Enums;
 using starsky.foundation.settings.Formats;
@@ -15,15 +17,31 @@ namespace starsky.foundation.settings.Services;
 public sealed class SettingsService : ISettingsService
 {
 	private readonly ApplicationDbContext _context;
+	private readonly IServiceScopeFactory _scopeFactory;
 
-	public SettingsService(ApplicationDbContext dbContext)
+	public SettingsService(ApplicationDbContext dbContext, IServiceScopeFactory scopeFactory)
 	{
 		_context = dbContext;
+		_scopeFactory = scopeFactory;
 	}
 
 	public async Task<SettingsItem?> GetSetting(SettingsType key)
 	{
-		return await _context.Settings.AsNoTracking().FirstOrDefaultAsync(p => p.Key == Enum.GetName(key));
+		async Task<SettingsItem?> GetSettingLocal(ApplicationDbContext context)
+		{
+			return await context.Settings.AsNoTracking()
+				.FirstOrDefaultAsync(p => p.Key == Enum.GetName(key));
+		}
+		
+		try
+		{
+			return await GetSettingLocal(_context);
+		}
+		catch ( ObjectDisposedException )
+		{
+			var context = new InjectServiceScope(_scopeFactory).Context();
+			return await GetSettingLocal(context);
+		}
 	}
 
 	public async Task<T?> GetSetting<T>(SettingsType key)
@@ -74,16 +92,43 @@ public sealed class SettingsService : ISettingsService
 		var existingItem = ( await GetSetting(settingsType) )?.Value;
 		if (string.IsNullOrEmpty(existingItem))
 		{
-			_context.Settings.Add(item);
-			await _context.SaveChangesAsync();
-			_context.Attach(item).State = EntityState.Detached;
-			return item;
+
+			try
+			{
+				return await AddItem(_context,item);
+			}
+			catch ( ObjectDisposedException )
+			{
+				var context = new InjectServiceScope(_scopeFactory).Context();
+				return await AddItem(context,item);
+			}
 		}
 		
-		_context.Attach(item).State = EntityState.Modified;
-		_context.Settings.Update(item);
-		await _context.SaveChangesAsync();
-		_context.Attach(item).State = EntityState.Detached;
+		try
+		{
+			return await UpdateItem(_context,item);
+		}
+		catch ( ObjectDisposedException )
+		{
+			var context = new InjectServiceScope(_scopeFactory).Context();
+			return await UpdateItem(context,item);
+		}
+	}
+		
+	private static async Task<SettingsItem> AddItem(ApplicationDbContext context, SettingsItem item)
+	{
+		context.Settings.Add(item);
+		await context.SaveChangesAsync();
+		context.Attach(item).State = EntityState.Detached;
+		return item;
+	}
+	
+	private static async Task<SettingsItem> UpdateItem(ApplicationDbContext context, SettingsItem item)
+	{
+		context.Attach(item).State = EntityState.Modified;
+		context.Settings.Update(item);
+		await context.SaveChangesAsync();
+		context.Attach(item).State = EntityState.Detached;
 		return item;
 	}
 }
