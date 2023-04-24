@@ -42,6 +42,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ `api/publish` checks now if files exists Issue #1126 (PR #1148)
 - [x] (Fixed) _Back-end_  Fix for duplicate entry for key 'PRIMARY' Issue #1151 (PR #1148)
 - [x] (Fixed) _Back-end_ RegexMatchTimeoutException ExtensionRolesHelper.IsExtensionForce Issue #1152 (PR #1148)
+- [x] (Fixed) _Back-end_ Desktop app Cmd+E check xmp files / upload Issue #1114 (PR #1154)
+- [x] (Fixed) _Back-end_ Index Code bug with null reference (PR #1154)
+- [x] (Fixed) _Back-end_ Update ImageSharp/ TimeZoneConverter to latest version (PR #1154)
 
 ## version 0.5.7 - 2023-04-14 {#v0.5.7}
 
