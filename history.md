@@ -45,6 +45,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Desktop app Cmd+E check xmp files / upload Issue #1114 (PR #1154)
 - [x] (Fixed) _Back-end_ Index Code bug with null reference (PR #1154)
 - [x] (Fixed) _Back-end_ Update ImageSharp/ TimeZoneConverter to latest version (PR #1154)
+- [x] (Fixed) _Back-end_ GetSetting ObjectDisposedException bug #1155 (PR #1155)
 
 ## version 0.5.7 - 2023-04-14 {#v0.5.7}
 
