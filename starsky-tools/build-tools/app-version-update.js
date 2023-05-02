@@ -4,6 +4,8 @@
  * Update the project versions to have the same version
  */
 
+// other script: use release-version-check.js to check if the version is correct based on the branch name in the CI
+
 const { join } = require("path");
 const { readFile, writeFile } = require("fs").promises;
 const { getFiles } = require("./lib/get-files-directory");

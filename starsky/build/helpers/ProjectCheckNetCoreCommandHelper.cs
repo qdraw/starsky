@@ -24,6 +24,7 @@ namespace helpers
 			ClientHelper.NpmPreflight();
 
 			// check branch names on CI
+			// release-version-check.js triggers app-version-update.js to update the csproj and package.json files
 			Run(NpmBaseCommand, "run release-version-check", GetBuildToolsFolder());
 		
 			/* Checks for valid Project GUIDs in csproj files */
