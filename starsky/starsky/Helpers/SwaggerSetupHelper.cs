@@ -18,7 +18,7 @@ namespace starsky.Helpers
 		
 		public void Add01SwaggerGenHelper(IServiceCollection services)
 		{
-			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 			
 			services.AddSwaggerGen(c =>
 			{
