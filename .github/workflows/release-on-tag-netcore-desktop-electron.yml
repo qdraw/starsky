@@ -10,7 +10,9 @@ on:
   workflow_dispatch:
 
 jobs:
+
   build_core:
+
     name: Build Net Core
     runs-on: ubuntu-latest
     steps:
@@ -25,14 +27,14 @@ jobs:
       - name: Build  --no-unit-test  linux-arm,linux-arm64,win-x64,osx-x64,linux-x64
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test    
-   
+        run: bash build.sh --runtime "linux-arm,linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test
+
       - name: Upload linux-arm as build artifact
         uses: actions/upload-artifact@v3
         with:
           name: linux-arm
           path: ./starsky/starsky-linux-arm.zip
-    
+
       - name: Upload linux-arm64 as build artifact
         uses: actions/upload-artifact@v3
         with:
@@ -49,25 +51,25 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: linux-x64
-          path: ./starsky/starsky-linux-x64.zip         
+          path: ./starsky/starsky-linux-x64.zip
 
       - name: Upload osx-x64 as build artifact
         uses: actions/upload-artifact@v3
         with:
           name: osx-x64
-          path: ./starsky/starsky-osx-x64.zip      
+          path: ./starsky/starsky-osx-x64.zip
  
       - name: Upload osx-arm64 as build artifact
         uses: actions/upload-artifact@v3
         with:
           name: osx-arm64
-          path: ./starsky/starsky-osx-arm64.zip      
+          path: ./starsky/starsky-osx-arm64.zip
  
       - name: Upload slack-notification as build artifact
         uses: actions/upload-artifact@v3
         with:
           name: starsky-tools-slack-notification
-          path: ./starsky-tools/slack-notification      
+          path: ./starsky-tools/slack-notification
 
   build_mac:
     name: Update Mac Desktop app
@@ -86,23 +88,28 @@ jobs:
       - name: Unzip Mac OS bundle
         shell: bash
         working-directory: ./starsky
-        run: unzip starsky-osx-x64.zip -d osx-x64     
-        
+        run: unzip starsky-osx-x64.zip -d osx-x64
+
       - name: Restore rights pm2-restore-x-rights.sh 
         shell: bash
         working-directory: ./starsky/osx-x64
         run: chmod 777 pm2-restore-x-rights.sh 
-        
+
       - name: run pm2-restore-x-rights.sh 
         shell: bash
         working-directory: ./starsky/osx-x64
         run: bash pm2-restore-x-rights.sh 
-                
+
       - name: List
         shell: bash
         working-directory: ./starsky
-        run: ls -lah       
-        
+        run: ls -lah 
+
+      - name: fix release version (release-version-check)
+        shell: bash
+        working-directory: ./starsky-tools/build-tools
+        run: npm run release-version-check
+
       - name: NpmCi
         working-directory: ./starskydesktop
         run: npm ci
@@ -115,7 +122,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: starsky-mac-x64-desktop
-          path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg   
+          path: ./starskydesktop/dist-prod/starsky-mac-x64-desktop.dmg 
  
   build_win:
     name: Update Windows Desktop app
@@ -134,13 +141,18 @@ jobs:
       - name: Unzip Windows bundle
         shell: bash
         working-directory: ./starsky
-        run: unzip starsky-win-x64.zip -d win-x64    
+        run: unzip starsky-win-x64.zip -d win-x64
 
       - name: List
         shell: bash
         working-directory: ./starsky
-        run: ls -lah           
-                
+        run: ls -lah
+
+      - name: fix release version (release-version-check)
+        shell: bash
+        working-directory: ./starsky-tools/build-tools
+        run: npm run release-version-check
+
       - name: NpmCi
         working-directory: ./starskydesktop
         run: npm ci
@@ -153,9 +165,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: starsky-win-x64-desktop
-          path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe   
+          path: ./starskydesktop/dist-prod/starsky-win-x64-desktop.exe
  
-  
   create_release:
     name: Create Release
     needs: [build_core, build_mac, build_win]
@@ -169,7 +180,6 @@ jobs:
         shell: bash
         working-directory: ./
         run: mkdir -p starsky && mkdir -p starskydesktop && mkdir -p starskydesktop/dist-prod
-
  
       - name: Download starsky-win-x64-desktop as build artifact
         uses: actions/download-artifact@v3
@@ -273,7 +283,7 @@ jobs:
       #     upload_url: ${{ steps.create_release.outputs.upload_url }}
       #     asset_path: ./starsky/starsky-osx-x64.zip
       #     asset_name: starsky-osx-x64.zip
-      #     asset_content_type: application/zip      
+      #     asset_content_type: application/zip
 
       - name: Download slack-notification as build artifact
         uses: actions/download-artifact@v3
