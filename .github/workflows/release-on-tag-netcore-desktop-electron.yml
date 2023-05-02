@@ -310,7 +310,7 @@ jobs:
         env:
            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
            SLACK_TITLE: 'Release ${{ steps.get_tag_name.outputs.VERSION }} is ready'
-           SLACK_MESSAGE: 'The release is ready ${{ steps.create_release_outputs_url.EDIT_URL }}'
+           SLACK_MESSAGE: 'The release is ready ${{ steps.create_release_outputs_url.outputs.EDIT_URL }}'
 
   trigger_pipe:
     runs-on: ubuntu-latest
