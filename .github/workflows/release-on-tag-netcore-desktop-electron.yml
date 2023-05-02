@@ -269,7 +269,7 @@ jobs:
             - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 (Intel 64 bits)
 
             ## Changelog
-            [There is an changelog to see the recent changes](https://docs.qdraw.nl/docs/advanced-options/history)
+            [There is an changelog to see the recent changes](https://docs.qdraw.nl/docs/advanced-options/history/#${{ steps.get_tag_name.outputs.VERSION }})
           draft: true
           prerelease: false
            
@@ -303,6 +303,7 @@ jobs:
            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
            SLACK_TITLE: 'Release ${{ steps.get_tag_name.outputs.VERSION }} is ready'
            SLACK_MESSAGE: 'The release is ready ${{ steps.create_release.outputs.url }}'
+           REPLACE_OUTPUT_EDIT_URL: "true"
 
   trigger_pipe:
     runs-on: ubuntu-latest
