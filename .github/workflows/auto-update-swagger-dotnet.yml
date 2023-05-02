@@ -11,12 +11,12 @@ on:
     - '**.cake'
     - '**.json'
     - '.github/workflows/auto-update-swagger-dotnet.yml'
+    - 'starsky-tools/build-tools/app-version-update.js'    
   pull_request:
     branches: [ master ]
     paths:
     - '.github/workflows/auto-update-swagger-dotnet.yml'
     - 'documentation/static/openapi/openapi.json'
-
  
 jobs:
   build:
@@ -81,5 +81,3 @@ jobs:
         message: "[Swagger] Auto commited swagger/openapi list"
         add: "docs/api/readme.md"
         github_token: ${{ secrets.GITHUB_TOKEN }}
-
-
