@@ -17,11 +17,9 @@ using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
-using starsky.foundation.database.Thumbnails;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
-using starskytest.starsky.foundation.database.Thumbnails;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
