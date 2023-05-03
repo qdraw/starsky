@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +13,15 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.database.Thumbnails;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
+using starskytest.starsky.foundation.database.Thumbnails;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -279,6 +284,83 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.IsTrue(InvalidOperationExceptionDbContextCount == 1);
 		}
 
+		private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }
+
+		private class MySqlSaveDbExceptionContext : ApplicationDbContext
+		{
+			private readonly string _error;
+
+			public MySqlSaveDbExceptionContext(DbContextOptions options, string error) : base(options)
+			{
+				_error = error;
+			}
+		
+			public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+			{
+				IsCalledMySqlSaveDbExceptionContext = true;
+				throw CreateMySqlException(_error);
+			}
+		}
+		
+		private static MySqlException CreateMySqlException(string message)
+		{
+			var info = new SerializationInfo(typeof(Exception),
+				new FormatterConverter());
+			info.AddValue("Number", 1);
+			info.AddValue("SqlState", "SqlState");
+			info.AddValue("Message", message);
+			info.AddValue("InnerException", new Exception());
+			info.AddValue("HelpURL", "");
+			info.AddValue("StackTraceString", "");
+			info.AddValue("RemoteStackTraceString", "");
+			info.AddValue("RemoteStackIndex", 1);
+			info.AddValue("HResult", 1);
+			info.AddValue("Source", "");
+			info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
+					
+			// private MySqlException(SerializationInfo info, StreamingContext context)
+			var ctor =
+				typeof(MySqlException).GetConstructors(BindingFlags.Instance |
+					BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
+			var instance =
+				( MySqlException? ) ctor?.Invoke(new object[]
+				{
+					info,
+					new StreamingContext(StreamingContextStates.All)
+				});
+			return instance!;
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(MySqlException))]
+		public async Task UpdateItemAsync_SomethingElseShould_ExpectedException()
+		{
+			IsCalledMySqlSaveDbExceptionContext = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new MySqlSaveDbExceptionContext(options,"Something else"),
+				null!,null!, new FakeIWebLogger());
+		
+			await fakeQuery.UpdateItemAsync(new FileIndexItem("test"));
+		}
+		
+		[TestMethod]
+		public async Task UpdateItemAsync_ShouldCatchPrimaryKeyHit()
+		{
+			IsCalledMySqlSaveDbExceptionContext = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new MySqlSaveDbExceptionContext(options,"Duplicate entry '1' for key 'PRIMARY'"),
+				null!,null!, new FakeIWebLogger());
+		
+			await fakeQuery.UpdateItemAsync(new FileIndexItem("test"));
+			
+			Assert.IsTrue(IsCalledMySqlSaveDbExceptionContext);
+		}
 				
 		[TestMethod]
 		public async Task Query_UpdateItemAsync_Multiple_DbUpdateConcurrencyException()
