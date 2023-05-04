@@ -228,7 +228,7 @@ public class ThumbnailQueryErrorTest
 	}
 	private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }
 
-	public class MySqlSaveDbExceptionContext : ApplicationDbContext
+	private class MySqlSaveDbExceptionContext : ApplicationDbContext
 	{
 		private readonly string _error;
 

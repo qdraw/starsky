@@ -109,6 +109,8 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 		catch ( MySqlException exception )
 		{
+			// Skip if Duplicate entry
+			// MySqlConnector.MySqlException (0x80004005): Duplicate entry for key 'PRIMARY'
 			if ( !exception.Message.Contains("Duplicate") )
 			{
 				throw;

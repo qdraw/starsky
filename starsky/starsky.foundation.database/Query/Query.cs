@@ -257,6 +257,16 @@ namespace starsky.foundation.database.Query
 			        _logger.LogInformation(e, "[UpdateItemAsync] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
+	        catch ( MySqlException exception )
+	        {
+		        // Skip if Duplicate entry
+		        // MySqlConnector.MySqlException (0x80004005): Duplicate entry for key 'PRIMARY'
+		        if ( !exception.Message.Contains("Duplicate") )
+		        {
+			        throw;
+		        }
+		        _logger.LogError(exception, $"[UpdateItemAsync] Skipped MySqlException Duplicate entry for key {updateStatusContent.FilePath}");
+	        }
             
 	        return updateStatusContent;
         }
