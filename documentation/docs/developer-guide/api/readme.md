@@ -65,7 +65,7 @@ This document is auto generated
 | __/api/import/thumbnail__                         | POST  | Upload thumbnail to ThumbnailTempFolderMake sure that the filename is correct...|
 | __/api/index__                                    | GET   | The database-view of a directory                                                |
 | _Parameters: f (subPath), colorClass (filter on colorClass (use int)), collections (to combine files with the same                        _ |
-| _ name before the extension), hidedelete (ignore deleted files), sort (how to orderBy, defaults to fileName)                              _ |
+| _ name before the extension), hideDelete (ignore deleted files), sort (how to orderBy, defaults to fileName)                              _ |
 | __/api/memory-cache-debug__                       | GET   | View data from the memory cache - use to debug                                  |
 | __/api/info__                                     | GET   | Get realtime (cached a few minutes) about the file                              |
 | _Parameters: f (subPaths split by dot comma), collections (true is to update files with the same name before the                          _ |
