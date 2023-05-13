@@ -4,6 +4,7 @@
   "description": "",
   "main": "mail.js",
   "scripts": {
+    "start": "node mail.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "update": "npx --yes npm-check-updates",
     "update:install": "npx --yes npm-check-updates -u && npm install"
