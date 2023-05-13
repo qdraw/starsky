@@ -54,6 +54,8 @@ imaps.connect(config).then(function (connection) {
 		})
 		.then(function (messages) {
 			var attachments = [];
+			
+			console.log(`messages in last 60 hours > ${messages.length} (skip messages that don't have an attachment)`);
 
 			messages.forEach(function (message) {
 				var parts = imaps.getParts(message.attributes.struct);
