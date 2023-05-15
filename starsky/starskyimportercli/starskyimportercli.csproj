@@ -15,6 +15,10 @@
         <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj" />
     </ItemGroup>
 
+    <ItemGroup Condition="!Exists('Properties/launchSettings.json')">
+        <ContentWithTargetPath Include="Properties/default-init-launchSettings.json" TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+    
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>

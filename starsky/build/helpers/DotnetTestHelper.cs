@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using build;
-using Microsoft.Extensions.FileSystemGlobbing;
 using Nuke.Common.IO;
 using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 namespace helpers
 {
@@ -17,16 +13,6 @@ namespace helpers
 		static void Information(string input)
 		{
 			Console.WriteLine(input);
-		}
-
-		static List<string> GetFiles(string globSearch)
-		{
-			Matcher matcher = new();
-			matcher.AddIncludePatterns( new List<string>{globSearch});
-			var result = matcher.Execute(
-				new DirectoryInfoWrapper(
-					new DirectoryInfo(WorkingDirectory.GetSolutionParentFolder())));
-			return result.Files.Select(p => p.Path).ToList();
 		}
 
 		static bool DirectoryExists(string path)
@@ -44,7 +30,7 @@ namespace helpers
 				return;
 			}
 			
-			var projects = GetFiles("*test/*.csproj");
+			var projects = GetFilesHelper.GetFiles("*test/*.csproj");
 			if ( projects.Count == 0 )
 			{
 				throw new FileNotFoundException("missing tests in *test/*.csproj" );
@@ -84,7 +70,7 @@ namespace helpers
 					.SetProjectFile(projectFullPath));
 
 				Information("on Error: search for: Error Message");
-				var coverageEnum = GetFiles("**/coverage.opencover.xml");
+				var coverageEnum = GetFilesHelper.GetFiles("**/coverage.opencover.xml");
 
 				foreach ( var coverageItem in coverageEnum )
 				{
