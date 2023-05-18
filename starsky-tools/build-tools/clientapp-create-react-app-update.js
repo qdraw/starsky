@@ -233,7 +233,11 @@ function npmInstall(packageName, force, dev) {
 	}
 }
 
+console.log("next un-install");
 npmUnInstall("web-vitals");
+npmUnInstall("@types/node");
+
+console.log("next install");
 npmInstall("abortcontroller-polyfill", false, false);
 npmInstall("@reach/router", true, false);
 npmInstall("intersection-observer", false, false);
@@ -246,7 +250,6 @@ npmInstall("eslint-config-prettier", false), false;
 npmInstall("eslint-plugin-prettier", false, false);
 npmInstall("prettier", false, false);
 npmInstall("eslint-plugin-prettier", false, false);
-npmUnInstall("@types/node");
 npmInstall("@types/node", false, false);
 npmInstall("concurrently", false, true);
 npmInstall("@testing-library/user-event", false, false);
@@ -264,7 +267,20 @@ npmInstall("@storybook/preset-create-react-app", false, true);
 
 npmInstall("webpack", false, true);
 
-npmCi();
+console.log("npm install result:");
+const npmInstallSpawnResult = spawnSync(
+	"npm",
+	[
+		"install"
+	],
+	{
+		cwd: clientAppFolderPath,
+		env: process.env,
+		encoding: "utf-8",
+	}
+);
+console.log(npmInstallSpawnResult.stdout);
+
 
 // clean afterwards
 if (process.env.DEBUG !== "true") {
@@ -275,11 +291,12 @@ if (process.env.DEBUG !== "true") {
 }
 
 // run linter
+console.log("next: run linter");
 const lintSpawn = spawnSync("npm", ["run", "lint:fix"], {
 	cwd: clientAppFolderPath,
 	env: process.env,
 	encoding: "utf-8",
 });
-console.log(lintSpawn.output);
+console.log(lintSpawn.stdout);
 
 console.log("done");
