@@ -35,7 +35,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.5.9 _(Unreleased)_ - 2023-05-?? {#v0.5.9}
+## version 0.5.10 _(Unreleased)_ - 2023-05-?? {#v0.5.10}
+- nothing yet
+
+## version 0.5.9 - 2023-05-18 {#v0.5.9}
 
 - [x] (Fixed) _Back-end_ Fix for duplicate entry for key 'PRIMARY' (PR #1157)
 - [x] (Fixed) _Tools_ Update dependencies (PR #1162) 
