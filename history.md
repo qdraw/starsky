@@ -38,6 +38,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.5.9 _(Unreleased)_ - 2023-05-?? {#v0.5.9}
 
 - [x] (Fixed) _Back-end_ Fix for duplicate entry for key 'PRIMARY' (PR #1157)
+- [x] (Fixed) _Tools_ Update dependencies (PR #1162) 
+- [x] (Fixed) _Docs_ update documentation (PR #1160, #1167)
+- [x] (Fixed) _Back-end_ Add default launchSettings.json (PR #1168)
 
 ## version 0.5.8 - 2023-04-26 {#v0.5.8}
 
