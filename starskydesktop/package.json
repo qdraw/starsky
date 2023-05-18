@@ -26,7 +26,8 @@
     "build:mac": "electron-builder build --mac",
     "build:runtime": "pwsh ../starsky/build.ps1 --runtime=osx-x64,win-x64",
     "update": "npx --yes npm-check-updates",
-    "update:install": "npx  --yes npm-check-updates -u && npm install"
+    "update:install": "npx  --yes npm-check-updates -u && npm install",
+    "update:yes" : "npm run update:install"
   },
   "build": {
     "beforeBuild": "dist/setup/before-build.js",
@@ -93,10 +94,10 @@
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
     "@types/wait-on": "^5.3.1",
-    "@typescript-eslint/eslint-plugin": "^5.59.5",
-    "@typescript-eslint/parser": "^5.59.5",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
+    "@typescript-eslint/parser": "^5.59.6",
     "cross-env": "^7.0.3",
-    "electron": "24.3.0",
+    "electron": "24.3.1",
     "eslint": "^8.40.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
@@ -117,12 +118,12 @@
     "electron-builder": "^24.1.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.1",
-    "rimraf": "^5.0.0",
+    "rimraf": "^5.0.1",
     "style-loader": "^3.3.2",
     "ts-loader": "^9.4.2",
     "tsconfig-paths": "^4.2.0",
     "tsconfig-paths-webpack-plugin": "^4.0.1",
-    "webpack": "^5.82.1",
+    "webpack": "^5.83.1",
     "webpack-cli": "^5.1.1",
     "webpack-merge": "^5.8.0"
   },
