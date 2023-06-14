@@ -175,7 +175,7 @@ function Get-Test-Results {
 }
 
 # Entry Point
-Write-Host "Azure DevOps Test Result Attacher v.0.1b - edited"
+Write-Host "Azure DevOps Test Result Attacher v.0.1b - edited for releases"
 Write-Host ""
 Write-Host "TeamFoundationCollectionUri: $teamFoundationCollectionUri"
 Write-Host "TeamProjectId: $teamProjectId"
