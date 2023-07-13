@@ -35,7 +35,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.410
+        dotnet-version: 6.0.412
         
     - name: Build (Windows)
       shell: pwsh
