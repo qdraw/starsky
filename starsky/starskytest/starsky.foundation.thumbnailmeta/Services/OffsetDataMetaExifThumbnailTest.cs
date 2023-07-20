@@ -85,7 +85,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var storage = new FakeIStorage();
 			
 			var (_,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
-				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory());
+				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory(1));
 
 			Assert.AreEqual(12,width);
 			Assert.AreEqual(10,height);
@@ -106,7 +106,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var storage = new FakeIStorage();
 			
 			var (_,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
-				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory());
+				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory(1));
 
 			Assert.AreEqual(12,width);
 			Assert.AreEqual(10,height);
@@ -124,7 +124,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var storage = new FakeIStorage();
 			
 			var (_,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
-				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory());
+				new FakeIWebLogger()).ParseMetaThumbnail(container, new ExifThumbnailDirectory(1));
 
 			Assert.AreEqual(0,width);
 			Assert.AreEqual(0,height);
