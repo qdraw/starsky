@@ -159,7 +159,7 @@ For SonarScanner you need to additionally install:
 To enable SonarScanner you need to set the following environment variables:
 
 -   `STARSKY_SONAR_KEY` - the public name of the project
--   `STARSKY_SONAR_LOGIN` - the token to login
+-   `STARSKY_SONAR_TOKEN` - the token to login
 -   `STARSKY_SONAR_ORGANISATION` - the name of the organisation
 -   `STARSKY_SONAR_URL` - defaults to sonarcloud.io
 
