@@ -86,6 +86,9 @@ namespace helpers
 		public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
 		{
 			var key = EnvironmentVariable("STARSKY_SONAR_KEY");
+			
+			Information($">> SonarQube key={key}");
+			
 			var sonarToken = EnvironmentVariable("STARSKY_SONAR_TOKEN");
 			var organisation = EnvironmentVariable("STARSKY_SONAR_ORGANISATION");
 
@@ -149,10 +152,10 @@ namespace helpers
 				.Append($"sonarscanner ")
 				.Append($"begin ")
 				/* .Append($"/d:sonar.verbose=true ") */
-				.Append($"/d:sonar.host.url=\"{url}\" ")
-				.Append($"/k:\"{key}\" ")
+				.Append($"/d:sonar.host.url={url} ")
+				.Append($"/k:{key} ")
 				.Append($"/n:\"Starsky\" ")
-				.Append($"/d:sonar.token=\"{sonarToken}\" ")
+				.Append($"/d:sonar.token={sonarToken} ")
 				.Append($"/o:" + organisation +" ")
 				.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
 				.Append($"/d:sonar.coverageReportPaths={sonarQubeCoverageFile} ")
@@ -219,7 +222,7 @@ namespace helpers
 			var sonarArguments = new StringBuilder()
 				.Append($"sonarscanner ")
 				.Append($"end ")
-				.Append($"/d:sonar.token=\"{sonarToken}\" ");
+				.Append($"/d:sonar.token={sonarToken} ");
 
 			DotNet(sonarArguments.ToString());
 			
