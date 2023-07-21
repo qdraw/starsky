@@ -86,7 +86,10 @@ namespace helpers
 		public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
 		{
 			var key = EnvironmentVariable("STARSKY_SONAR_KEY");
-			var login = EnvironmentVariable("STARSKY_SONAR_LOGIN");
+			
+			Information($">> SonarQube key={key}");
+			
+			var sonarToken = EnvironmentVariable("STARSKY_SONAR_TOKEN");
 			var organisation = EnvironmentVariable("STARSKY_SONAR_ORGANISATION");
 
 			var url = EnvironmentVariable("STARSKY_SONAR_URL");
@@ -94,8 +97,8 @@ namespace helpers
 				url = "https://sonarcloud.io";
 			}
 
-			if( string.IsNullOrEmpty(key) || string.IsNullOrEmpty(login) || string.IsNullOrEmpty(organisation) ) {
-				Information($">> SonarQube is disabled $ key={key}|login={login}|organisation={organisation}");
+			if( string.IsNullOrEmpty(key) || string.IsNullOrEmpty(sonarToken) || string.IsNullOrEmpty(organisation) ) {
+				Information($">> SonarQube is disabled $ key={key}|login={sonarToken}|organisation={organisation}");
 				return false;
 			}
 
@@ -149,10 +152,10 @@ namespace helpers
 				.Append($"sonarscanner ")
 				.Append($"begin ")
 				/* .Append($"/d:sonar.verbose=true ") */
-				.Append($"/d:sonar.host.url=\"{url}\" ")
-				.Append($"/k:\"{key}\" ")
+				.Append($"/d:sonar.host.url={url} ")
+				.Append($"/k:{key} ")
 				.Append($"/n:\"Starsky\" ")
-				.Append($"/d:sonar.login=\"{login}\" ")
+				.Append($"/d:sonar.token={sonarToken} ")
 				.Append($"/o:" + organisation +" ")
 				.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
 				.Append($"/d:sonar.coverageReportPaths={sonarQubeCoverageFile} ")
@@ -200,9 +203,9 @@ namespace helpers
 
 		public static void SonarEnd(bool noUnitTest, bool noSonar)
 		{
-			var login = EnvironmentVariable("STARSKY_SONAR_LOGIN");
-			if( string.IsNullOrEmpty(login) ) {
-				Information($">> SonarQube is disabled $ login={login}");
+			var sonarToken = EnvironmentVariable("STARSKY_SONAR_TOKEN");
+			if( string.IsNullOrEmpty(sonarToken) ) {
+				Information($">> SonarQube is disabled $ login={sonarToken}");
 				return;
 			}
 
@@ -219,7 +222,7 @@ namespace helpers
 			var sonarArguments = new StringBuilder()
 				.Append($"sonarscanner ")
 				.Append($"end ")
-				.Append($"/d:sonar.login=\"{login}\" ");
+				.Append($"/d:sonar.token={sonarToken} ");
 
 			DotNet(sonarArguments.ToString());
 			

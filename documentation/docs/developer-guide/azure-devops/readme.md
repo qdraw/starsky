@@ -28,7 +28,7 @@ So **no** desktop application is build. This is referenced by: `pipelines/azure/
 The following variables are used:
 
 - `$(STARSKY_SONAR_KEY)` - project key for sonarcloud
-- `$(STARSKY_SONAR_LOGIN)` - login key for sonarcloud
+- `$(STARSKY_SONAR_TOKEN)` - login key for sonarcloud
 - `$(STARSKY_SONAR_ORGANISATION)` - organisation in sonarcloud
 
 ### azure-pipelines-starsky-shared-web-only 

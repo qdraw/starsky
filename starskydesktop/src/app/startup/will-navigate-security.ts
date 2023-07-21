@@ -1,5 +1,6 @@
 import * as appConfig from "electron-settings";
 import { LocationUrlSettingsKey } from "../config/location-settings.const";
+/* eslint-disable @typescript-eslint/no-base-to-string */
 
 export async function willNavigateSecurity(
   event: Electron.Event,

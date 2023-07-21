@@ -15,7 +15,7 @@ namespace helpers
 		public static List<string> GetSolutionAllProjectsList(Solution solution)
 		{
 			var slnListOutput =  
-				DotNet($"sln {solution} list", null, 
+				DotNet($"sln {solution.ToString()} list", null, 
 					null, null, false);
 
 			var result = new List<string>();

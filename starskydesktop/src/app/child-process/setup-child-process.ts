@@ -69,11 +69,11 @@ export async function setupChildProcess() {
   });
 
   starskyChild.stdout.on("data", (data: object) => {
-    logger.info(data.toString());
+    logger.info(JSON.stringify(data));
   });
 
   starskyChild.stderr.on("data", (data : object) => {
-    logger.warn(data.toString());
+    logger.warn(JSON.stringify(data));
   });
 
   readline.emitKeypressEvents(process.stdin);
