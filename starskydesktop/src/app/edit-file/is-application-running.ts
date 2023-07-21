@@ -27,7 +27,7 @@ export const IsApplicationRunning = (query: string) => {
     let stdOutData = "";
 
     starskyChild.stdout.on("data", (stdout: object) => {
-      stdOutData += stdout.toString();
+      stdOutData += JSON.stringify(stdout);
     });
 
     starskyChild.stdout.on("end", () => {
@@ -41,7 +41,7 @@ export const IsApplicationRunning = (query: string) => {
 
     starskyChild.stderr.on("data", (data :object) => {
       logger.info("IsApplicationRunning");
-      logger.info(`stderr: ${data.toString()}`);
+      logger.info(`stderr: ${JSON.stringify(data)}`);
       reject();
     });
   });
