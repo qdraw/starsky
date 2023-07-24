@@ -53,7 +53,7 @@ export class UpdateChange {
       const fileIndexObject: any = this.fileIndexItem;
 
       if (fileIndexObject[name] === undefined) {
-        console.log("missing name", name);
+        console.error("missing name", name);
         continue; //to update empty start to first fill
       }
 
