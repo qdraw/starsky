@@ -79,4 +79,54 @@ describe("ClipboardHelper", () => {
       ]);
     });
   });
+
+  describe("PasteAsync", () => {
+    it("non valid ref", async () => {
+      expect(await clipboardHelper.PasteAsync(null as any)).toBeFalsy();
+    });
+
+    it("should return false if updateChange returns false", async () => {
+      const clipboardHelper = new ClipboardHelper();
+      const mockUpdateChange = jest.fn().mockResolvedValue(false);
+      const mockRead = jest.spyOn(clipboardHelper, "Read").mockReturnValue({
+        tags: "test tags",
+        description: "test description",
+        title: "test title"
+      });
+
+      await clipboardHelper.PasteAsync(mockUpdateChange);
+
+      expect(mockRead).toHaveBeenCalledTimes(1);
+      expect(mockUpdateChange).toHaveBeenCalledTimes(1);
+      expect(mockUpdateChange).toHaveBeenCalledWith([
+        ["tags", "test tags"],
+        ["description", "test description"],
+        ["title", "test title"]
+      ]);
+
+      mockRead.mockRestore();
+    });
+
+    it("Copy and Paste", () => {
+      const callback = jest.fn();
+
+      clipboardHelper.Copy(
+        refGenerator("A"),
+        refGenerator("B"),
+        refGenerator("C")
+      );
+
+      const result = clipboardHelper.PasteAsync(callback);
+
+      expect(result).toBeTruthy();
+
+      expect(callback).toBeCalled();
+
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        ["tags", "A"],
+        ["description", "B"],
+        ["title", "C"]
+      ]);
+    });
+  });
 });
