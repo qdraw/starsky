@@ -33,7 +33,7 @@ namespace starsky.feature.health.HealthCheck
 					$"Not configured"));
 
 			return Task.FromResult(
-				resultsList.Any(p => p == FolderOrFileModel.FolderOrFileTypeList.Deleted) ? 
+				resultsList.Exists(p => p == FolderOrFileModel.FolderOrFileTypeList.Deleted) ? 
 				new HealthCheckResult(context.Registration.FailureStatus, $"Configured path is not present on system") : 
 				HealthCheckResult.Healthy("Configured path is present"));
 		}

@@ -59,8 +59,9 @@ namespace starsky.feature.health.HealthCheck
 				return ( false, 0L );
 			}
 
-			var driveInfo = drivesList.FirstOrDefault(
-				drive => string.Equals(drive.Name, driveName, StringComparison.InvariantCultureIgnoreCase));
+			var driveInfo = Array.Find(drivesList,
+				drive => string.Equals(drive.Name, driveName,
+					StringComparison.InvariantCultureIgnoreCase));
 			return driveInfo?.AvailableFreeSpace != null ? (true, driveInfo.AvailableFreeSpace / 1024L / 1024L) : (false, 0L);
 		}
 	}

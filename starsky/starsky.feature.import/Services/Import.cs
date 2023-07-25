@@ -142,7 +142,7 @@ namespace starsky.feature.import.Services
 				var parentFolder = Directory.GetParent(itemSourceFullFilePath)
 					?.FullName;
 
-				if ( parentFolders.All(p => p.Item1 != parentFolder) )
+				if ( parentFolders.TrueForAll(p => p.Item1 != parentFolder) )
 				{
 					parentFolders.Add(new Tuple<string?, List<string>>(parentFolder, new List<string>{itemSourceFullFilePath}));
 					continue;
