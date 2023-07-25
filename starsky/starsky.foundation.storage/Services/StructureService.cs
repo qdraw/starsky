@@ -141,7 +141,7 @@ namespace starsky.foundation.storage.Services
 			// should return a list of: </2019/10/2019_10_08>
 			var childDirectories = _storage.GetDirectories(parentFolderBuilder.ToString()).ToList();
 
-			var matchingFoldersPath= childDirectories.FirstOrDefault(p => 
+			var matchingFoldersPath= childDirectories.Find(p => 
 				MatchChildFolderSearch(parentFolderBuilder,currentChildFolderBuilder,p) 
 				);
 			
@@ -182,7 +182,13 @@ namespace starsky.foundation.storage.Services
 		/// <exception cref="FieldAccessException">When not start with / or is /.ext or not end with .ext</exception>
 		private void CheckStructureFormat()
 		{
-			if (!string.IsNullOrEmpty(_structure) &&  _structure.StartsWith("/") && _structure.EndsWith(".ext") && _structure != "/.ext" ) return;
+			if ( !string.IsNullOrEmpty(_structure) &&
+			     _structure.StartsWith('/') && _structure.EndsWith(".ext") &&
+			     _structure != "/.ext" )
+			{
+				return;
+			}
+			
 			throw new FieldAccessException("Structure is not right formatted, please read the documentation");
 		}
 		
@@ -252,7 +258,7 @@ namespace starsky.foundation.storage.Services
 			foreach ( Match match in matchCollection )
 			{
 				// Ignore escaped items
-				if ( !match.Value.StartsWith("\\") && match.Index == 0 && match.Length == pattern.Length )
+				if ( !match.Value.StartsWith('\\') && match.Index == 0 && match.Length == pattern.Length )
 				{
 					return dateTime.ToString(pattern, CultureInfo.InvariantCulture);
 				}

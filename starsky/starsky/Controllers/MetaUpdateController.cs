@@ -98,7 +98,7 @@ namespace starsky.Controllers
 			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f,collections, stopwatch);
 
 			// When all items are not found
-			if ( fileIndexResultsList.All(p =>
+			if ( fileIndexResultsList.TrueForAll(p =>
 				    p.Status != FileIndexItem.ExifStatus.Ok
 				    && p.Status != FileIndexItem.ExifStatus.Deleted) )
 			{

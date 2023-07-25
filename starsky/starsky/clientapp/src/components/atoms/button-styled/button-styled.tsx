@@ -14,7 +14,7 @@ export interface IButtonProps {
 const ButtonStyled: React.FunctionComponent<IButtonProps> = memo((props) => {
   return (
     <button
-      type={props.type || "button"}
+      type={props.type ?? "button"}
       disabled={props.disabled}
       className={props.className}
       data-test={props["data-test"]}

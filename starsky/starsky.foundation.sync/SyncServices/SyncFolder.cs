@@ -137,7 +137,7 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			if ( subPaths.Count == folderList.Count ) return;
 			
-			foreach ( var path in subPaths.Where(path => folderList.All(p => p.FilePath != path) &&
+			foreach ( var path in subPaths.Where(path => folderList.Exists(p => p.FilePath != path) &&
 				_subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path) ) )
 			{
 				await _query.AddItemAsync(new FileIndexItem(path)
@@ -155,7 +155,7 @@ namespace starsky.foundation.sync.SyncServices
 			// used to check later if the item already exists, to avoid duplicates
 			var filePathsAllResults = allResults.Select(p => p.FilePath).ToList();
 
-			if ( allResults.All(p => p.FilePath != subPath))
+			if ( allResults.TrueForAll(p => p.FilePath != subPath))
 			{
 				var subPathStatus = _subPathStorage.IsFolderOrFile(subPath);
 				var exifStatus = subPathStatus ==
@@ -301,7 +301,7 @@ namespace starsky.foundation.sync.SyncServices
 			var resultDatabaseItems = new List<FileIndexItem>(databaseItems);
 			foreach ( var path in pathsOnDisk )
 			{
-				var item = databaseItems.FirstOrDefault(p => string.Equals(p.FilePath, path, StringComparison.InvariantCultureIgnoreCase));
+				var item = databaseItems.Find(p => string.Equals(p.FilePath, path, StringComparison.InvariantCultureIgnoreCase));
 				if (item == null ) // when the file should be added to the index
 				{
 					// Status is used by MultiFile

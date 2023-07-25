@@ -40,15 +40,19 @@ namespace starsky.Controllers
             var fileIndexResultsList = _metaInfo.GetInfo(inputFilePaths, collections);
             
             // returns read only
-            if (fileIndexResultsList.All(p => p.Status == FileIndexItem.ExifStatus.ReadOnly))
+            if (fileIndexResultsList.TrueForAll(p => p.Status == FileIndexItem.ExifStatus.ReadOnly))
             {
                 Response.StatusCode = 203; // is readonly
                 return Json(fileIndexResultsList);
             }
                 
             // When all items are not found
-            if (fileIndexResultsList.All(p => (p.Status != FileIndexItem.ExifStatus.Ok && p.Status != FileIndexItem.ExifStatus.Deleted)))
-                return NotFound(fileIndexResultsList);
+            if ( fileIndexResultsList.TrueForAll(p =>
+	                ( p.Status != FileIndexItem.ExifStatus.Ok &&
+	                  p.Status != FileIndexItem.ExifStatus.Deleted )) )
+            {
+	            return NotFound(fileIndexResultsList);
+            }
             
             return Json(fileIndexResultsList);
         }

@@ -110,7 +110,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 				_storage.CreateDirectory(FilenamesHelper.GetParentPath(output));
 			}
 
-			if (!name.EndsWith("/")) //Directories are zero size and don't need anything written
+			if (!name.EndsWith('/')) // Directories are zero size and don't need anything written
 			{
 				var str = new MemoryStream();
 				var buf = new byte[size];

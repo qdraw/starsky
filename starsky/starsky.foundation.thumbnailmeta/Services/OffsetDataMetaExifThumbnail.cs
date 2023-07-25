@@ -46,7 +46,7 @@ namespace starsky.foundation.thumbnailmeta.Services
 				var allExifItems =
 					ImageMetadataReader.ReadMetadata(stream).ToList();
 				var exifThumbnailDir =
-					allExifItems.FirstOrDefault(p =>
+					allExifItems.Find(p =>
 						p.Name == "Exif Thumbnail") as ExifThumbnailDirectory;
 
 				return ( allExifItems,  exifThumbnailDir);

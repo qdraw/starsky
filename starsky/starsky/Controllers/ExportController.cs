@@ -49,7 +49,7 @@ namespace starsky.Controllers
 			
 			// When all items are not found
 			// allow read only
-			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok) )
+			if (fileIndexResultsList.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok) )
 				return NotFound(fileIndexResultsList);
 			
 			// NOT covered: when try to export for example image thumbnails of xml file
