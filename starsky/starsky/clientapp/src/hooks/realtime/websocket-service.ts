@@ -6,7 +6,7 @@ export default class WebSocketService {
     } catch (error) {}
   }
 
-  public onOpen(callback: (ev: Event) => void): void {
+  public onOpen(callback: (ev: Event) => Promise<void>): void {
     if (!this.websocket) return;
     this.websocket.onopen = callback;
   }

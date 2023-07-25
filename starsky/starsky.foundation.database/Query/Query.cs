@@ -93,7 +93,6 @@ namespace starsky.foundation.database.Query
 			     _cache.TryGetValue(
 				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 			{
-				_logger.LogInformation("Get from cache " + GetObjectByFilePathAsyncCacheName(filePath));
 				if ( !(data is FileIndexItem fileIndexItem) ) return null;
 				fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
 				return fileIndexItem;
