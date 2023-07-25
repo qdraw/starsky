@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -28,7 +29,7 @@ namespace starsky.foundation.platform.Helpers
             foreach ( var propertyB in propertiesB )
             {
 	            // only for when TransferObject is Nullable<bool> and AppSettings is bool
-	            var propertyInfoFromA = propertiesA.FirstOrDefault(p => p.Name == propertyB.Name);
+	            var propertyInfoFromA = Array.Find(propertiesA, p => p.Name == propertyB.Name);
 	            if ( propertyInfoFromA == null ) continue;
 	            if (propertyInfoFromA.PropertyType == typeof(bool?) && propertyB.PropertyType == typeof(bool?))
 	            {
@@ -277,8 +278,7 @@ namespace starsky.foundation.platform.Helpers
 	    /// <returns></returns>
 	    private static object? GetPropertyValue(object car, string propertyName)
 	    {
-		    return car.GetType().GetProperties()
-			    .FirstOrDefault(pi => pi.Name == propertyName)?
+		    return Array.Find(car.GetType().GetProperties(), pi => pi.Name == propertyName)?
 			    .GetValue(car, null);
 	    }
 

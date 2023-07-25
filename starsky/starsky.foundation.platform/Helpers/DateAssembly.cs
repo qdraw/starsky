@@ -20,7 +20,11 @@ namespace starsky.foundation.platform.Helpers
 			// <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
 			// </PropertyGroup>
 			var attribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-			if ( attribute?.InformationalVersion == null ) return new DateTime();
+			if ( attribute?.InformationalVersion == null )
+			{
+				return new DateTime(0, DateTimeKind.Utc);
+			}
+			
 			var value = attribute.InformationalVersion;
 			return ParseBuildTime(value);
 		}
@@ -29,7 +33,10 @@ namespace starsky.foundation.platform.Helpers
 		{
 			const string buildVersionMetadataPrefix = "+build";
 			var index = value.IndexOf(buildVersionMetadataPrefix, StringComparison.Ordinal);
-			if ( index <= 0 ) return new DateTime();
+			if ( index <= 0 )
+			{
+				return new DateTime(0, DateTimeKind.Utc);
+			}
 			value = value.Substring(index + buildVersionMetadataPrefix.Length);
 			return DateTime.TryParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, 
 				DateTimeStyles.AssumeUniversal, out var result) ? result : new DateTime();

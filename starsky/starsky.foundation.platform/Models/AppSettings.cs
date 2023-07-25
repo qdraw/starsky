@@ -519,7 +519,7 @@ namespace starsky.foundation.platform.Models
 		{
 			if (!ReadOnlyFolders.Any() ) return false;
             
-			var result = ReadOnlyFolders.FirstOrDefault(f.Contains);
+			var result = ReadOnlyFolders.Find(f.Contains);
 			return result != null;
 		}
         
@@ -1038,9 +1038,9 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		/// <param name="input">the input, the env should start with a $</param>
 		/// <returns>the value or the input when nothing is found</returns>
-		internal string ReplaceEnvironmentVariable(string input)
+		internal static string ReplaceEnvironmentVariable(string input)
 		{
-			if ( string.IsNullOrEmpty(input) || !input.StartsWith("$") ) return input;
+			if ( string.IsNullOrEmpty(input) || !input.StartsWith('$') ) return input;
 			var value = Environment.GetEnvironmentVariable(input.Remove(0, 1));
 			return string.IsNullOrEmpty(value) ? input : value;
 		}

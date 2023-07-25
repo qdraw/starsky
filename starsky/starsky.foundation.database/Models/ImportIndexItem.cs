@@ -118,7 +118,10 @@ namespace starsky.foundation.database.Models
         {
             // Depends on 'AppSettingsProvider.Structure'
             // depends on SourceFullFilePath
-            if(string.IsNullOrEmpty(SourceFullFilePath)) {return new DateTime();}
+            if ( string.IsNullOrEmpty(SourceFullFilePath) )
+            {
+	            return new DateTime(0, DateTimeKind.Utc);
+            }
 
             var fileName = Path.GetFileNameWithoutExtension(SourceFullFilePath);
             

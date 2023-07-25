@@ -27,7 +27,7 @@ namespace starsky.foundation.database.Query
 						fileHashesList.Contains(p.FileHash!)).ToListAsync();
 				foreach ( var fileHash in fileHashesList )
 				{
-					if ( result.FirstOrDefault(p => p.FileHash == fileHash) == null )
+					if ( result.Find(p => p.FileHash == fileHash) == null )
 					{
 						result.Add(new FileIndexItem(){FileHash = fileHash, 
 							Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
