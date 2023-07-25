@@ -81,7 +81,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		
 		foreach ( var item in chuckedItems )
 		{
-			var fileIndexItem = fileIndexItems.FirstOrDefault(p => p.FileHash == item.FileHash);
+			var fileIndexItem = fileIndexItems.Find(p => p.FileHash == item.FileHash);
 			if ( fileIndexItem?.FilePath == null || 
 			     fileIndexItem.Status != FileIndexItem.ExifStatus.Ok )
 			{

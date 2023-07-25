@@ -13,7 +13,7 @@ namespace starsky.feature.metaupdate.Helpers
 			foreach (var subPath in inputFilePaths)
 			{
 				// when item is not in the database
-				if ( fileIndexResultsList.Any(p => p.FilePath == subPath) )
+				if ( fileIndexResultsList.Exists(p => p.FilePath == subPath) )
 				{
 					continue;
 				}

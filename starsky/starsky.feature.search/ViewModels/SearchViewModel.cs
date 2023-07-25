@@ -503,9 +503,14 @@ namespace starsky.feature.search.ViewModels
 
 			for ( var i = 0; i < model.SearchIn.Count; i++ )
 			{
-				var propertyStringName = FileIndexItem.FileIndexPropList().FirstOrDefault(p =>
-					string.Equals(p, model.SearchIn[i], StringComparison.InvariantCultureIgnoreCase));
-				if ( string.IsNullOrEmpty(propertyStringName) ) continue;
+				var propertyStringName =  FileIndexItem.FileIndexPropList().Find( p =>
+						string.Equals(p, model.SearchIn[i],
+							StringComparison.InvariantCultureIgnoreCase));
+
+				if ( string.IsNullOrEmpty(propertyStringName) )
+				{
+					continue;
+				}
 
 				var property = new FileIndexItem().GetType().GetProperty(propertyStringName)!;
 					    
@@ -518,7 +523,7 @@ namespace starsky.feature.search.ViewModels
 			}
 		    
 			// hide xmp files in default view
-			if ( model.SearchIn.All(p => !string.Equals(p, nameof(SearchInTypes.imageformat), 
+			if ( model.SearchIn.TrueForAll(p => !string.Equals(p, nameof(SearchInTypes.imageformat), 
 				    StringComparison.InvariantCultureIgnoreCase)))
 			{
 				model.FileIndexItems = model.FileIndexItems!

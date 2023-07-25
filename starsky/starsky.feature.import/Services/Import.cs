@@ -157,10 +157,16 @@ namespace starsky.feature.import.Services
 				var fileStorageInfo = _filesystemStorage.Info(parentFolder.Item1!);
 				if ( fileStorageInfo.IsFolderOrFile !=
 				     FolderOrFileModel.FolderOrFileTypeList.Folder ||
-				     fileStorageInfo.IsFileSystemReadOnly != true ) continue;
+				     fileStorageInfo.IsFileSystemReadOnly != true )
+				{
+					continue;
+				}
+
+				var items = parentFolder.Item2.Select(parentItem => 
+						Array.Find(importIndexItemsList.ToArray(), 
+							p => p.SourceFullFilePath == parentItem)).Cast<ImportIndexItem>();
 				
-				foreach ( var item in parentFolder.Item2.Select(parentItem => importIndexItemsList.FirstOrDefault(p =>
-					         p.SourceFullFilePath == parentItem)).Where(item => item != null).Cast<ImportIndexItem>() )
+				foreach ( var item in items )
 				{
 					importIndexItemsList[importIndexItemsList.IndexOf(item)]
 						.Status = ImportStatus.ReadOnlyFileSystem;
@@ -229,7 +235,7 @@ namespace starsky.feature.import.Services
 					var currentDirectoryContent =
 						directoriesContent[importIndexItem.FileIndexItem.ParentDirectory!];
 					
-					if ( currentDirectoryContent.Any(p => p == updatedFilePath)  )
+					if ( currentDirectoryContent.Contains(updatedFilePath)  )
 					{
 						indexer++;
 						continue;
@@ -291,7 +297,7 @@ namespace starsky.feature.import.Services
 		internal async Task<ImportIndexItem> PreflightPerFile(KeyValuePair<string,bool> inputFileFullPath, 
 			ImportSettingsModel importSettings)
 		{
-			if ( _appSettings.ImportIgnore.Any(p => inputFileFullPath.Key.Contains(p)) )
+			if ( _appSettings.ImportIgnore.Exists(p => inputFileFullPath.Key.Contains(p)) )
 			{
 				ConsoleIfVerbose($"❌ skip due rules: {inputFileFullPath.Key} ");
 				return new ImportIndexItem{ 

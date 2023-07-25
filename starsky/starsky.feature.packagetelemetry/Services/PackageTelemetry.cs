@@ -127,7 +127,7 @@ namespace starsky.feature.packagetelemetry.Services
 			// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (var property in properties)
 			{
-				var someAttribute = Attribute.GetCustomAttributes(property).FirstOrDefault(x => x is PackageTelemetryAttribute);
+				var someAttribute = Array.Find(Attribute.GetCustomAttributes(property), x => x is PackageTelemetryAttribute);
 				if ( someAttribute == null )
 				{
 					continue;

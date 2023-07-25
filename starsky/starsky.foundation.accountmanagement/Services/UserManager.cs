@@ -164,7 +164,7 @@ namespace starsky.foundation.accountmanagement.Services
 			if ( !IsCacheEnabled() ) return;
 			var allUsers = (await AllUsersAsync()).Users;
 			var index = allUsers.Find(p => p.Id == user.Id);
-			if ( allUsers.Any(p => p.Id == user.Id) && index != null )
+			if ( allUsers.Exists(p => p.Id == user.Id) && index != null )
 			{
 				var indexOf = allUsers.IndexOf(index);
 				allUsers[indexOf] = user;

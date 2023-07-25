@@ -135,8 +135,10 @@ namespace starsky.feature.metaupdate.Services
 				
 				var propertiesA = new FileIndexItem().GetType().GetProperties(
 					BindingFlags.Public | BindingFlags.Instance);
-				var property = propertiesA.FirstOrDefault(p => string.Equals(
-					p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
+
+				var property = Array.Find(propertiesA, p => string.Equals(
+					p.Name, fieldName,
+					StringComparison.InvariantCultureIgnoreCase));
 
 				if ( property?.PropertyType == typeof(string))
 				{
