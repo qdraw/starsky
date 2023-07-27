@@ -38,12 +38,13 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.5.11 _(Unreleased)_ - 2023-07-?? {#v0.5.10}
 - nothing yet
 
-## version 0.5.10 - 2023-07-?? {#v0.5.10}
+## version 0.5.10 - 2023-07-27 {#v0.5.10}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.410 (Runtime: 6.0.16 (PR #1178)
 - [x] (Changed) _Back-end_ [Upgrade to .NET 6 - SDK 6.0.412 (Runtime: 6.0.20)](https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.20/6.0.20.md) (PR #1193)
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR #1198)
 - [x] (Changed) _Back-end_ Sonarqube settings from sonar.login to sonar.token (PR #1198)
+- [x] (Fixed) _Back-end_ Various code smells (PR #1199)
 
 ## version 0.5.9 - 2023-05-18 {#v0.5.9}
 
