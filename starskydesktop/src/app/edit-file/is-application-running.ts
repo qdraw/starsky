@@ -26,8 +26,8 @@ export const IsApplicationRunning = (query: string) => {
 
     let stdOutData = "";
 
-    starskyChild.stdout.on("data", (stdout: object) => {
-      stdOutData += JSON.stringify(stdout);
+    starskyChild.stdout.on("data", (stdout: string) => {
+      stdOutData += stdout.toString();
     });
 
     starskyChild.stdout.on("end", () => {
@@ -39,9 +39,9 @@ export const IsApplicationRunning = (query: string) => {
       resolve(matches.length >= 1);
     });
 
-    starskyChild.stderr.on("data", (data :object) => {
+    starskyChild.stderr.on("data", (data :string) => {
       logger.info("IsApplicationRunning");
-      logger.info(`stderr: ${JSON.stringify(data)}`);
+      logger.info(`stderr: ${data.toString()}`);
       reject();
     });
   });

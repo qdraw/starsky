@@ -1,7 +1,7 @@
 import { existsSync, renameSync, rmSync } from "fs";
 import * as path from "path";
-import { FileExtensions } from "../../shared/file-extensions";
 import { IFileIndexItem } from "../../shared/IFileindexItem";
+import { FileExtensions } from "../../shared/file-extensions";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
 import logger from "../logger/logger";
@@ -52,9 +52,9 @@ export async function downloadBinary(
         session,
         `${fileOnDisk}.tmp`
       );
-    } catch (error2: unknown) {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      logger.info(`error > ${JSON.stringify(error2)}`);
+    } catch (error2: any) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions , @typescript-eslint/no-unsafe-member-access
+      logger.info(`error > ${error2.toString()}`);
     }
   }
 
