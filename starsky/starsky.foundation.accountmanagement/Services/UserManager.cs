@@ -164,7 +164,7 @@ namespace starsky.foundation.accountmanagement.Services
 			if ( !IsCacheEnabled() ) return;
 			var allUsers = (await AllUsersAsync()).Users;
 			var index = allUsers.Find(p => p.Id == user.Id);
-			if ( allUsers.Any(p => p.Id == user.Id) && index != null )
+			if ( allUsers.Exists(p => p.Id == user.Id) && index != null )
 			{
 				var indexOf = allUsers.IndexOf(index);
 				allUsers[indexOf] = user;
@@ -211,7 +211,7 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 			
 			var users = (await AllUsersAsync()).Users;
-			return users.FirstOrDefault(p => p.Id == userTableId);
+			return users.Find(p => p.Id == userTableId);
 		}
 
 		/// <summary>
@@ -284,7 +284,7 @@ namespace starsky.foundation.accountmanagement.Services
 			}
 
 			// Add a user role based on a user id
-			var roleToAdd = roles.FirstOrDefault(p => p.Code == GetRoleAddToUser(identifier,user));
+			var roleToAdd = roles.Find(p => p.Code == GetRoleAddToUser(identifier,user));
 			AddToRole(user, roleToAdd);
 
 			if (credentialType == null)
@@ -555,7 +555,7 @@ namespace starsky.foundation.accountmanagement.Services
 				return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
 			}
 			
-			var userData = (await AllUsersAsync()).Users.FirstOrDefault(p => p.Id == credential.UserId);
+			var userData = (await AllUsersAsync()).Users.Find(p => p.Id == credential.UserId);
 			if ( userData == null )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.UserNotFound);

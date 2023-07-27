@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises, @typescript-eslint/comma-dangle */
 import { app, ipcMain } from "electron";
 import * as appConfig from "electron-settings";
+import { IlocationUrlSettings } from "../config/IlocationUrlSettings";
 import { AppVersionIpcKey } from "../config/app-version-ipc-key.const";
 import DefaultImageApplicationSetting from "../config/default-image-application-settings";
 import {
@@ -8,7 +9,6 @@ import {
   IDefaultImageApplicationProps
 } from "../config/default-image-application-settings-ipc-key.const";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
-import { IlocationUrlSettings } from "../config/IlocationUrlSettings";
 import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
@@ -78,10 +78,10 @@ export async function LocationIsRemoteCallback(
   args: boolean,
 ) {
   if (args !== undefined && args !== null) {
-    await closeAndCreateNewWindow();
     await appConfig.set(LocationIsRemoteSettingsKey, args.toString());
     // filewatcher need to be after update/set
     await SetupFileWatcher();
+    await closeAndCreateNewWindow();
   }
 
   event.reply(LocationIsRemoteIpcKey, await IsRemote());

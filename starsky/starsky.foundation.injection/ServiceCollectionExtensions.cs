@@ -138,7 +138,7 @@ namespace starsky.foundation.injection
 		        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 		        foreach ( var assemblyFilter in assemblyFilters )
 		        {
-			        var isThere = assemblies.Any(p => p.FullName == assemblyName.FullName);
+			        var isThere = assemblies.Exists(p => p.FullName == assemblyName.FullName);
 			        if (IsWildcardMatch(assemblyName.Name!, assemblyFilter) && !isThere )
 			        {
 				        assemblies.Add(AppDomain.CurrentDomain.Load(assemblyName));
@@ -165,7 +165,7 @@ namespace starsky.foundation.injection
 			        foreach ( var referencedAssembly in assembly.GetReferencedAssemblies() )
 			        {
 				        if ( IsWildcardMatch(referencedAssembly.Name!, assemblyFilter) 
-				             && assemblies.All(p => p.FullName != referencedAssembly.FullName) )
+				             && assemblies.TrueForAll(p => p.FullName != referencedAssembly.FullName) )
 				        {
 					        assemblies.Add(Assembly.Load(referencedAssembly));
 				        }

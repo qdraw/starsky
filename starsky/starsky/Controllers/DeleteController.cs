@@ -36,8 +36,12 @@ namespace starsky.Controllers
 			var fileIndexResultsList = await _deleteItem.DeleteAsync(f, collections);
             // When all items are not found
 	        // ok = file is deleted
-            if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
-                return NotFound(fileIndexResultsList);
+	        if ( fileIndexResultsList.TrueForAll(p =>
+		            p.Status != FileIndexItem.ExifStatus.Ok) )
+	        {
+		        return NotFound(fileIndexResultsList);
+	        }
+                
      
             return Json(fileIndexResultsList);
         }

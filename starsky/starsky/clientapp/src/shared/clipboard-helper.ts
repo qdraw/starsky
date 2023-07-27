@@ -71,4 +71,29 @@ export class ClipboardHelper {
 
     return true;
   }
+
+  /**
+   * Paste values in callback
+   * @param updateChange callback function
+   */
+  public async PasteAsync(
+    updateChange: (items: [string, string][]) => Promise<string | boolean>
+  ): Promise<boolean> {
+    if (!updateChange) {
+      return false;
+    }
+    const readData = this.Read();
+
+    if (!readData) {
+      return false;
+    }
+
+    await updateChange([
+      ["tags", readData.tags],
+      ["description", readData.description],
+      ["title", readData.title]
+    ]);
+
+    return true;
+  }
 }

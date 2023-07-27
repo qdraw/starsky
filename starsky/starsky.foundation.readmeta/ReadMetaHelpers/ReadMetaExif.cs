@@ -284,16 +284,16 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 		private static ExtensionRolesHelper.ImageFormat GetFileSpecificTags(List<Directory> allExifItems)
 		{
-			if ( allExifItems.Any(p => p.Name == "JPEG") )
+			if ( allExifItems.Exists(p => p.Name == "JPEG") )
 				return ExtensionRolesHelper.ImageFormat.jpg;
 				
-			if ( allExifItems.Any(p => p.Name == "PNG-IHDR") )
+			if ( allExifItems.Exists(p => p.Name == "PNG-IHDR") )
 				return ExtensionRolesHelper.ImageFormat.png;
 			
-			if ( allExifItems.Any(p => p.Name == "BMP Header") )
+			if ( allExifItems.Exists(p => p.Name == "BMP Header") )
 				return ExtensionRolesHelper.ImageFormat.bmp;	
 			
-			if ( allExifItems.Any(p => p.Name == "GIF Header") )
+			if ( allExifItems.Exists(p => p.Name == "GIF Header") )
 				return ExtensionRolesHelper.ImageFormat.gif;	
 				
 			return ExtensionRolesHelper.ImageFormat.unknown;

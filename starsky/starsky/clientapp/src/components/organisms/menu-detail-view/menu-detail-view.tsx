@@ -282,15 +282,17 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     }
 
     // there is an async backend event triggered, sometimes there is an que
-    setTimeout(async () => {
-      const result = await requestNewFileHash();
-      if (result === false) {
-        setTimeout(async () => {
-          await requestNewFileHash();
-          // when it didn't change after two tries
-          setIsLoading(false);
-        }, 7000);
-      }
+    setTimeout(() => {
+      requestNewFileHash().then((result) => {
+        if (result === false) {
+          setTimeout(() => {
+            requestNewFileHash().then(() => {
+              // when it didn't change after two tries
+              setIsLoading(false);
+            });
+          }, 7000);
+        }
+      });
     }, 3000);
   }
 

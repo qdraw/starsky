@@ -93,7 +93,6 @@ namespace starsky.foundation.database.Query
 			     _cache.TryGetValue(
 				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 			{
-				_logger.LogInformation("Get from cache " + GetObjectByFilePathAsyncCacheName(filePath));
 				if ( !(data is FileIndexItem fileIndexItem) ) return null;
 				fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
 				return fileIndexItem;
@@ -478,7 +477,7 @@ namespace starsky.foundation.database.Query
 			    // make it a list to avoid enum errors
 			    displayFileFolders = displayFileFolders.ToList();
 				
-			    var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
+			    var obj = displayFileFolders.Find(p => p.FilePath == item.FilePath);
 			    if ( obj != null )
 			    {
 				    // remove add again

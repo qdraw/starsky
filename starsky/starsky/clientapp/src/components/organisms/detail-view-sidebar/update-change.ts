@@ -52,7 +52,10 @@ export class UpdateChange {
       // compare
       const fileIndexObject: any = this.fileIndexItem;
 
-      if (!fileIndexObject[name] === undefined) continue; //to update empty start to first fill
+      if (fileIndexObject[name] === undefined) {
+        console.error("missing name", name);
+        continue; //to update empty start to first fill
+      }
 
       const currentString: string = fileIndexObject[name];
       if (replacedValue === currentString) continue;

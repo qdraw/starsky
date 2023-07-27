@@ -88,7 +88,7 @@ namespace starsky.foundation.database.Query
 	            };
             }
             
-            var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
+            var currentFileIndexItem = fileIndexItemsList.Find(p => p.FileName == fileName);
 
             // Could be not found or not in directory cache
             if ( currentFileIndexItem == null )

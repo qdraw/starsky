@@ -86,10 +86,10 @@ namespace starsky.Controllers
 		/// <returns>int as index, fallback == -1</returns>
 		internal static int GetIndexFilePathFromSearch(SearchViewModel searchViewModel, string f)
 		{
-			var result = searchViewModel.FileIndexItems.FirstOrDefault(p => p.FilePath == f);
-			var photoIndexOfQuery = searchViewModel.FileIndexItems.IndexOf(result);
-			if ( result == null ) return -1;
-			return photoIndexOfQuery;
+			var result = searchViewModel.FileIndexItems?.Find(p => p.FilePath == f);
+			var photoIndexOfQuery = searchViewModel.FileIndexItems?.IndexOf(result);
+			if ( result == null || photoIndexOfQuery == null) return -1;
+			return photoIndexOfQuery.Value;
 		}
         
 		/// <summary>

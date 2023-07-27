@@ -51,7 +51,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
 
 	        var title = readGpxFile.FirstOrDefault()?.Title ?? string.Empty;
-	        var dateTime = readGpxFile.FirstOrDefault()?.DateTime ?? new DateTime();
+	        var dateTime = readGpxFile.FirstOrDefault()?.DateTime ?? new DateTime(0, DateTimeKind.Utc);
 	        var latitude = readGpxFile.FirstOrDefault()?.Latitude ?? 0d;
 	        var longitude = readGpxFile.FirstOrDefault()?.Longitude ?? 0d;
 	        var altitude = readGpxFile.FirstOrDefault()?.Altitude ?? 0d;

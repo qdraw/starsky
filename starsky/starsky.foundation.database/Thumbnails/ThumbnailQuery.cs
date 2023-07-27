@@ -32,7 +32,7 @@ public class ThumbnailQuery : IThumbnailQuery
 	
 	public Task<List<ThumbnailItem>?> AddThumbnailRangeAsync(List<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
-		if ( thumbnailItems.Any(p => string.IsNullOrEmpty(p.FileHash) ) )
+		if ( thumbnailItems.Exists(p => string.IsNullOrEmpty(p.FileHash) ) )
 		{
 			throw new ArgumentNullException(nameof(thumbnailItems), "[AddThumbnailRangeAsync] FileHash is null or empty");
 		}
@@ -208,8 +208,8 @@ public class ThumbnailQuery : IThumbnailQuery
 		var beforeOrNewItems = await dbContext.Thumbnails.Where(p =>
 			p.FileHash == beforeFileHash || p.FileHash == newFileHash).ToListAsync();
 		
-		var beforeItem = beforeOrNewItems.FirstOrDefault(p => p.FileHash == beforeFileHash);
-		var newItem = beforeOrNewItems.FirstOrDefault(p => p.FileHash == newFileHash);
+		var beforeItem = beforeOrNewItems.Find(p => p.FileHash == beforeFileHash);
+		var newItem = beforeOrNewItems.Find(p => p.FileHash == newFileHash);
 
 		if ( beforeItem == null) return false;
 

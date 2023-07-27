@@ -63,21 +63,21 @@ namespace starskytest.starsky.foundation.platform.Models
 		[TestMethod]
 		public void ReplaceEnvironmentVariable_Nothing()
 		{
-			var value = _appSettings.ReplaceEnvironmentVariable(string.Empty);
+			var value = AppSettings.ReplaceEnvironmentVariable(string.Empty);
 			Assert.AreEqual(string.Empty, value);
 		}
 
 		[TestMethod]
 		public void ReplaceEnvironmentVariable_SomethingThatShouldBeIgnored()
 		{
-			var value = _appSettings.ReplaceEnvironmentVariable("/test");
+			var value = AppSettings.ReplaceEnvironmentVariable("/test");
 			Assert.AreEqual("/test", value);
 		}
 
 		[TestMethod]
 		public void ReplaceEnvironmentVariable_Non_Existing_EnvVariable()
 		{
-			var value = _appSettings.ReplaceEnvironmentVariable("$sdhfdskfbndsfjb38");
+			var value = AppSettings.ReplaceEnvironmentVariable("$sdhfdskfbndsfjb38");
 			Assert.AreEqual("$sdhfdskfbndsfjb38", value);
 		}
 		
@@ -86,7 +86,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		{
 			Environment.SetEnvironmentVariable("test123456789","123456789");
 			// should start with a dollar sign
-			var value = _appSettings.ReplaceEnvironmentVariable("$test123456789");
+			var value = AppSettings.ReplaceEnvironmentVariable("$test123456789");
 			Assert.AreEqual("123456789", value);
 		}
 

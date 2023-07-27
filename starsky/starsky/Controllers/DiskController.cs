@@ -88,7 +88,7 @@ namespace starsky.Controllers
 			}
 	        
 			// When all items are not found
-			if (syncResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			if (syncResultsList.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok))
 				Response.StatusCode = 409; // A conflict, Directory already exist
 	        
 			await SyncMessageToSocket(syncResultsList, ApiNotificationType.Mkdir);
@@ -141,7 +141,7 @@ namespace starsky.Controllers
 			var rename = await new RenameService(_query, _iStorage).Rename(f, to, collections);
 		    
 			// When all items are not found
-			if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			if (rename.TrueForAll(p => p.Status != FileIndexItem.ExifStatus.Ok))
 				return NotFound(rename);
 		    
 			var webSocketResponse =

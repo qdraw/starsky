@@ -102,13 +102,13 @@ namespace starsky.foundation.database.Helpers
             }
 
 	        // Last Edited is not needed
-	        if ( differenceList.Any(p => p == nameof(FileIndexItem.LastEdited).ToLowerInvariant()) )
+	        if ( differenceList.Exists(p => p == nameof(FileIndexItem.LastEdited).ToLowerInvariant()) )
 	        {
 		        differenceList.Remove(nameof(FileIndexItem.LastEdited).ToLowerInvariant());
 	        }
 	        
 	        // Last Changed is a generated list
-	        if ( differenceList.Any(p => p == nameof(FileIndexItem.LastChanged).ToLowerInvariant()) )
+	        if ( differenceList.Exists(p => p == nameof(FileIndexItem.LastChanged).ToLowerInvariant()) )
 	        {
 		        differenceList.Remove(nameof(FileIndexItem.LastChanged).ToLowerInvariant());
 	        }
@@ -134,7 +134,7 @@ namespace starsky.foundation.database.Helpers
 		    
 		    PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(
 			    BindingFlags.Public | BindingFlags.Instance);
-		    var property = propertiesA.FirstOrDefault(p =>
+		    var property = Array.Find(propertiesA,p =>
 			    string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
 		    
 		    var fieldType = fieldContent.GetType();
@@ -158,7 +158,7 @@ namespace starsky.foundation.database.Helpers
 		    {
 			    PropertyInfo[] propertiesA = new FileIndexItem().GetType()
 				    .GetProperties(BindingFlags.Public | BindingFlags.Instance);
-			    return propertiesA.FirstOrDefault(p => 
+			    return Array.Find(propertiesA,p => 
 				    string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase))?
 				    .GetValue(sourceIndexItem, null);
 		    }

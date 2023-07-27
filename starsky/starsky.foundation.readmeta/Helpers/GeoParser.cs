@@ -88,7 +88,7 @@ namespace starsky.foundation.readmeta.Helpers
 
             // Check for minimum length
             // Check for trailing slash
-            if ( isoStr.Length < 18 || !isoStr.EndsWith("/") )
+            if ( isoStr.Length < 18 || !isoStr.EndsWith('/') )
             {
 	            return geoListItem;
             }

@@ -72,8 +72,11 @@ namespace starsky.feature.health.UpdateCheck.Services
 		{
 			var orderedReleaseModelList = releaseModelList.OrderByDescending(p => p.TagName);
 			var tagName = orderedReleaseModelList.FirstOrDefault(p => !p.Draft && !p.PreRelease)?.TagName;
-			if ( string.IsNullOrWhiteSpace(tagName) || !tagName.StartsWith("v") )
+			if ( string.IsNullOrWhiteSpace(tagName) ||
+			     !tagName.StartsWith('v') )
+			{
 				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound,string.Empty);
+			}
 
 			try
 			{

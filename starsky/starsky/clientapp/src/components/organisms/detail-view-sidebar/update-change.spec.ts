@@ -2,7 +2,6 @@ import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
-import { UrlQuery } from "../../../shared/url-query";
 import { UpdateChange } from "./update-change";
 
 describe("Update Change", () => {
@@ -165,14 +164,14 @@ describe("Update Change", () => {
       expect(fetchPostSpy).toBeCalledTimes(1);
     });
 
-    it("no content 2", () => {
+    it("no content 2", async () => {
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => {
           return Promise.resolve({} as IConnectionDefault);
         });
 
-      new UpdateChange(
+      await new UpdateChange(
         {} as any,
         jest.fn(),
         jest.fn(),
@@ -180,11 +179,7 @@ describe("Update Change", () => {
         {} as any
       ).Update([["tags", "test"]]);
 
-      expect(fetchPostSpy).toBeCalledTimes(1);
-      expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlUpdateApi(),
-        "tags=test"
-      );
+      expect(fetchPostSpy).toBeCalledTimes(0);
     });
   });
 });

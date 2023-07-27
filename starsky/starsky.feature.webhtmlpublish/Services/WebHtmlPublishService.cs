@@ -97,7 +97,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    internal bool ShouldSkipExtraLarge(string publishProfileName)
 	    {
 		    var skipExtraLarge = _publishPreflight?.GetPublishProfileName(publishProfileName)?
-			    .All(p => p.SourceMaxWidth <= 1999);
+			    .TrueForAll(p => p.SourceMaxWidth <= 1999);
 		    return skipExtraLarge == true;
 
 	    }
@@ -156,9 +156,10 @@ namespace starsky.feature.webhtmlpublish.Services
             
 		    // Order alphabetically
 		    // Ignore Items with Errors
-		    fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName)
+		    fileIndexItemsList = fileIndexItemsList
 			    .Where(p=> p.Status == FileIndexItem.ExifStatus.Ok || 
-			               p.Status == FileIndexItem.ExifStatus.ReadOnly).ToList();
+			               p.Status == FileIndexItem.ExifStatus.ReadOnly)
+			    .OrderBy(p => p.FileName).ToList();
 
 		    var copyResult = new Dictionary<string,bool>();
             
