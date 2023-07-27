@@ -54,7 +54,7 @@ namespace starsky.foundation.sync.Helpers
 				var stopWatch = Stopwatch.StartNew();
 				_console.WriteLine($"Start indexing {subPath}");
 				var result = await _synchronize.Sync(subPath);
-				if ( result.TrueForAll(p => p.FilePath != subPath) )
+				if ( result.All(p => p.FilePath != subPath) )
 				{
 					_console.WriteLine($"Not Found: {subPath}");
 				}

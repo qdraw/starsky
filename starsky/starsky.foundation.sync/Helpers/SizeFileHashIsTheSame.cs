@@ -26,7 +26,7 @@ public class SizeFileHashIsTheSameHelper
 	/// <returns>Last Edited is the bool (null is should check further in process), FileHash Same bool (null is not checked) , database item</returns>
 	internal async Task<Tuple<bool?,bool?,FileIndexItem>> SizeFileHashIsTheSame(List<FileIndexItem> dbItems, string subPath)
 	{
-		var dbItem = dbItems.Find(p => p.FilePath == subPath);
+		var dbItem = dbItems.FirstOrDefault(p => p.FilePath == subPath);
 		if ( dbItem == null )
 		{
 			return new Tuple<bool?, bool?, FileIndexItem>(false, false, null);

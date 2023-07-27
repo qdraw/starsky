@@ -44,7 +44,7 @@ namespace starsky.foundation.sync.SyncServices
 			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			// when item does not exist in db
-			if ( dbItems?.Find(p => p.FilePath == subPath) == null )
+			if ( dbItems?.FirstOrDefault(p => p.FilePath == subPath) == null )
 			{
 				return await SingleFile(subPath);
 			}
@@ -81,7 +81,7 @@ namespace starsky.foundation.sync.SyncServices
 			var dbItems =  await _query.GetObjectsByFilePathAsync(subPath,true);
 			foreach ( var item in statusItems )
 			{
-				var dbItem = dbItems.Find(p => item.FilePath == p.FilePath);
+				var dbItem = dbItems.FirstOrDefault(p => item.FilePath == p.FilePath);
 				if ( dbItem != null  )
 				{
 					scanItems.Add(dbItem);
@@ -91,7 +91,7 @@ namespace starsky.foundation.sync.SyncServices
 				scanItems.Add(item);
 			}
 
-			foreach ( var item in dbItems.Where(item => scanItems.TrueForAll(p => p.FilePath != item.FilePath)) )
+			foreach ( var item in dbItems.Where(item => scanItems.All(p => p.FilePath != item.FilePath)) )
 			{
 				scanItems.Add(item);
 			}
