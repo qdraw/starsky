@@ -191,7 +191,7 @@ namespace helpers
 			if (!isPrBuild) {
 				Information($">> Normal Build (non-pr)");
 				sonarArguments
-					.Append($"/d:sonar.branch.name=\"{branchName}\" ");
+					.Append($"/d:sonar.branch.name={branchName} ");
 			}
         
 			// Pull Request Build
@@ -200,10 +200,10 @@ namespace helpers
 				            $"{githubPrNumber} githubBaseBranch {githubBaseBranch} githubRepoSlug {githubRepoSlug}");
 
 				sonarArguments
-					.Append($"/d:sonar.pullrequest.key=\"{githubPrNumber}\" ")
-					.Append($"/d:sonar.pullrequest.branch=\"{gitBranchName}\" ")
-					.Append($"/d:sonar.pullrequest.base=\"{githubBaseBranch}\" ")
-					.Append($"/d:sonar.pullrequest.provider=\"github\" ")
+					.Append($"/d:sonar.pullrequest.key={githubPrNumber} ")
+					.Append($"/d:sonar.pullrequest.branch={gitBranchName} ")
+					.Append($"/d:sonar.pullrequest.base={githubBaseBranch} ")
+					.Append($"/d:sonar.pullrequest.provider=github ")
 					.Append($"/d:sonar.pullrequest.github.endpoint=\"https://api.github.com/\" ")
 					.Append($"/d:sonar.pullrequest.github.repository=\"{githubRepoSlug}\" ");
 			}
