@@ -82,6 +82,15 @@ namespace helpers
 			Console.WriteLine("Checking if Java is installed, will fail if not on this step");
 			Run(Build.JavaBaseCommand, "-version");
 		}
+
+		private static string GetSonarToken()
+		{
+			var sonarToken = EnvironmentVariable("STARSKY_SONAR_TOKEN");
+			if( string.IsNullOrEmpty(sonarToken) ) {
+				sonarToken = EnvironmentVariable("SONAR_TOKEN");
+			}
+			return sonarToken;
+		}
 	
 		public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
 		{
@@ -89,7 +98,8 @@ namespace helpers
 			
 			Information($">> SonarQube key={key}");
 			
-			var sonarToken = EnvironmentVariable("STARSKY_SONAR_TOKEN");
+			var sonarToken = GetSonarToken();
+
 			var organisation = EnvironmentVariable("STARSKY_SONAR_ORGANISATION");
 
 			var url = EnvironmentVariable("STARSKY_SONAR_URL");
@@ -204,7 +214,7 @@ namespace helpers
 
 		public static void SonarEnd(bool noUnitTest, bool noSonar)
 		{
-			var sonarToken = EnvironmentVariable("STARSKY_SONAR_TOKEN");
+			var sonarToken = GetSonarToken();
 			if( string.IsNullOrEmpty(sonarToken) ) {
 				Information($">> SonarQube is disabled $ login={sonarToken}");
 				return;

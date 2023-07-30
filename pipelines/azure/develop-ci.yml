@@ -11,7 +11,7 @@ variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
-  STARSKY_SONAR_TOKEN: $(STARSKY_SONAR_TOKEN)
+  SONAR_TOKEN: $(STARSKY_SONAR_TOKEN)
 
 trigger:
   branches:
