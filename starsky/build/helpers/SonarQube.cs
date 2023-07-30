@@ -98,7 +98,7 @@ namespace helpers
 			}
 
 			if( string.IsNullOrEmpty(key) || string.IsNullOrEmpty(sonarToken) || string.IsNullOrEmpty(organisation) ) {
-				Information($">> SonarQube is disabled $ key={key}|login={sonarToken}|organisation={organisation}");
+				Information($">> SonarQube is disabled $ key={key}|token={sonarToken}|organisation={organisation}");
 				return false;
 			}
 

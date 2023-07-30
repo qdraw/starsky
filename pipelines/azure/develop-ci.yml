@@ -76,6 +76,7 @@ stages:
       parameters:
         vstest: ${{ parameters.unitTestsEnabled }}
         nugetPackages: $(NUGET_PACKAGES)
+        sonarQubeToken: $(STARSKY_SONAR_TOKEN)
 
     - template: /pipelines/azure/steps/coverage_report_merge.yml
       parameters:
