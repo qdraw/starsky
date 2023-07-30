@@ -170,22 +170,22 @@ namespace helpers
 				.Append($"/o:" + organisation +" ")
 				.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
 				.Append($"/d:sonar.coverageReportPaths={sonarQubeCoverageFile} ")
-				.Append($"/d:sonar.exclusions=\"**/build/*,**/build/helpers/*," +
+				.Append($"/d:sonar.exclusions=**/build/*,**/build/helpers/*," +
 				        "**/documentation/*,"+
 				        "**/Interfaces/IQuery.cs," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
 				        $"**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
 				        $"**/prestorybook.js," +
-				        $"**/_bigimages-helper.js\" ")
-				.Append($"/d:sonar.coverage.exclusions=\"**/build/*,**/build/helpers/*," +
+				        $"**/_bigimages-helper.js ")
+				.Append($"/d:sonar.coverage.exclusions=**/build/*,**/build/helpers/*," +
 				        "**/documentation/*,"+
 				        "**/Interfaces/IQuery.cs," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
 				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*," +
 				        $"**/prestorybook.js," +
-				        $"**/_bigimages-helper.js\" ");
+				        $"**/_bigimages-helper.js ");
         
 			// Normal build
 			if (!isPrBuild) {
@@ -204,8 +204,8 @@ namespace helpers
 					.Append($"/d:sonar.pullrequest.branch={gitBranchName} ")
 					.Append($"/d:sonar.pullrequest.base={githubBaseBranch} ")
 					.Append($"/d:sonar.pullrequest.provider=github ")
-					.Append($"/d:sonar.pullrequest.github.endpoint=\"https://api.github.com/\" ")
-					.Append($"/d:sonar.pullrequest.github.repository=\"{githubRepoSlug}\" ");
+					.Append($"/d:sonar.pullrequest.github.endpoint=https://api.github.com/ ")
+					.Append($"/d:sonar.pullrequest.github.repository={githubRepoSlug} ");
 			}
 
 			DotNet(sonarArguments.ToString());
