@@ -137,7 +137,8 @@ namespace helpers
 			// For Pull Requests  
 			var isPrBuild = EnvironmentVariable("GITHUB_ACTIONS") != null && 
 			                EnvironmentVariable("GITHUB_JOB") != null && 
-			                EnvironmentVariable("GITHUB_BASE_REF") != null;
+			                EnvironmentVariable("GITHUB_BASE_REF") != null &&
+							!string.IsNullOrEmpty(EnvironmentVariable("PR_NUMBER_GITHUB"));
         
 			var githubPrNumber = EnvironmentVariable("PR_NUMBER_GITHUB");
 			var githubBaseBranch = EnvironmentVariable("GITHUB_BASE_REF"); 
