@@ -92,7 +92,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   /**
    * Fallback if there is no result or when mounting with no context
    */
-  if (!usesFileList || !usesFileList.archive) {
+  if (!usesFileList?.archive) {
     usesFileList = {
       archive: newIArchive(),
       pageType: PageType.Loading

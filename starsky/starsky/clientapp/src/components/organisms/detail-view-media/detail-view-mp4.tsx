@@ -76,7 +76,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
   // Check if media is found
   useEffect(() => {
-    if (!state || !state.fileIndexItem || !state.fileIndexItem.status) return;
+    if (!state?.fileIndexItem?.status) return;
     if (state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing) {
       setIsError(MessageVideoNotFound);
       return;

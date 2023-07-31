@@ -103,7 +103,7 @@ const Login: React.FC<ILoginProps> = () => {
         "Email=" + userEmail + "&Password=" + userPassword
       );
       setLoading(false);
-      if (!response || !response.data) {
+      if (!response?.data) {
         setError(MessageConnection);
       } else if (response.statusCode === 423) {
         setError(MessageLockedOut);

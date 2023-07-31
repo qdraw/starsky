@@ -308,7 +308,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
       : MessageViewLocation;
   }
 
-  function updateButton(): JSX.Element {
+  function updateButton(): React.JSX.Element {
     return isLocationUpdated ? (
       <button
         onClick={async () => {
