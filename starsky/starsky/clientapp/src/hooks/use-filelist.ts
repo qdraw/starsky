@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
 import {
   IDetailView,
-  newDetailView,
-  PageType
+  PageType,
+  newDetailView
 } from "../interfaces/IDetailView";
 import { CastToInterface } from "../shared/cast-to-interface";
 import { FileListCache } from "../shared/filelist-cache";
@@ -114,10 +114,9 @@ const useFileList = (
     setParent(new URLPath().getParent(locationSearch));
 
     if (
-      !responseObject ||
-      !responseObject.pageType ||
-      responseObject.pageType === PageType.NotFound ||
-      responseObject.pageType === PageType.ApplicationException
+      !responseObject?.pageType ||
+      responseObject?.pageType === PageType.NotFound ||
+      responseObject?.pageType === PageType.ApplicationException
     )
       return;
 

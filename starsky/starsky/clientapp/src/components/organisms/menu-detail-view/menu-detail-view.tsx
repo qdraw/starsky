@@ -307,7 +307,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   const [isModalMoveFile, setModalMoveFile] = React.useState(false);
   const [isModalPublishOpen, setModalPublishOpen] = useState(false);
 
-  const goToParentFolderJSX: JSX.Element | null = isSearchQuery ? (
+  const goToParentFolderJSX: React.JSX.Element | null = isSearchQuery ? (
     <li
       className="menu-option"
       data-test="go-to-parent-folder"
