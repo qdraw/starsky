@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -23,6 +24,9 @@ using Directory = MetadataExtractor.Directory;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
+	[SuppressMessage("Usage", "S3966: Resource '_iStorage.ReadStream' has " +
+	                          "already been disposed explicitly or through a using statement implicitly. " +
+	                          "Remove the redundant disposal.")]
 	public sealed class ReadMetaExif
 	{
 		private readonly IStorage _iStorage;
@@ -346,7 +350,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    }
 		    
 		    var quickTimeMetaDataDirectory = allExifItems.OfType<QuickTimeMetadataHeaderDirectory>().FirstOrDefault();
-		    var tagMakeModelQuickTime = isMake ? QuickTimeMetadataHeaderDirectory.TagMake : QuickTimeMetadataHeaderDirectory.TagModel;
+		    var tagMakeModelQuickTime = isMake ? 
+			    QuickTimeMetadataHeaderDirectory.TagMake : QuickTimeMetadataHeaderDirectory.TagModel;
 		    
 		    var captionQuickTime = quickTimeMetaDataDirectory?.GetDescription(tagMakeModelQuickTime);
 		    return !string.IsNullOrEmpty(captionQuickTime) ? captionQuickTime : string.Empty;
@@ -418,7 +423,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    if ( exifItem is not XmpDirectory xmpDirectory || xmpDirectory.XmpMeta == null )
 			    return string.Empty;
 		    
-		    return ( from property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value)) 
+		    return ( from property in xmpDirectory.XmpMeta.
+				    Properties.Where(p => !string.IsNullOrEmpty(p.Value)) 
 			    where property.Path == propertyPath select property.Value ).FirstOrDefault();
 	    }
 
@@ -541,8 +547,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        var exifSubIfdList = allExifItems.OfType<ExifSubIfdDirectory>().ToList();
 	        foreach ( var exifSubIfd in exifSubIfdList )
 	        {
-		        //     https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
-		        //     2018:01:01 11:29:36
+		        // https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
+		        // 2018:01:01 11:29:36
 		        var tagDateTimeDigitized = exifSubIfd.GetDescription(ExifDirectoryBase.TagDateTimeDigitized);
 		        DateTime.TryParseExact(tagDateTimeDigitized, 
 			        pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeDigitized);
@@ -560,7 +566,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        }
 	        }
 
-	        return new DateTime();
+	        return new DateTime(0, DateTimeKind.Utc);
         }
 
         internal DateTime ParseQuickTimeDateTime(CameraMakeModel cameraMakeModel,
@@ -568,7 +574,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         {
 	        if ( _appSettings == null ) Console.WriteLine("[ParseQuickTimeDateTime] app settings is null");
 	        if ( cameraMakeModel == null ) cameraMakeModel = new CameraMakeModel();
-	        var useUseLocalTime = _appSettings?.VideoUseLocalTime?.Any(p =>
+	        var useUseLocalTime = _appSettings?.VideoUseLocalTime?.Exists(p =>
 		        string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) && (
 			        string.Equals(p.Model, cameraMakeModel.Model, StringComparison.InvariantCultureIgnoreCase) ||
 			        string.IsNullOrEmpty(p.Model) ));
@@ -793,7 +799,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
             if (!string.IsNullOrWhiteSpace(longitudeString))
             {
-                var longitude = GeoParser.ConvertDegreeMinutesSecondsToDouble(longitudeString, longitudeRef);
+                var longitude = GeoParser.
+	                ConvertDegreeMinutesSecondsToDouble(longitudeString, longitudeRef);
                 longitude = Math.Floor(longitude * 10000000000) / 10000000000; 
                 return longitude;
             }
@@ -914,7 +921,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        focalLengthString = focalLengthString.Replace(" mm", string.Empty);
 	        
 	        // Note: focalLengthString: (Dutch) 2,2 or (English) 2.2 based CultureInfo.CurrentCulture
-	        float.TryParse(focalLengthString, NumberStyles.Number, CultureInfo.CurrentCulture, out var focalLength);
+	        float.TryParse(focalLengthString, NumberStyles.Number, 
+		        CultureInfo.CurrentCulture, out var focalLength);
 	        
 	        return Math.Round(focalLength, 5);
         }
@@ -965,7 +973,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ExposureTime,1/20
 		    var exposureTimeXmp = GetXmpData(exifItem, "exif:ExposureTime");
-		    if (string.IsNullOrEmpty(shutterSpeedString) && !string.IsNullOrEmpty(exposureTimeXmp) && exposureTimeXmp.Length <= 20)
+		    if (string.IsNullOrEmpty(shutterSpeedString) && 
+		        !string.IsNullOrEmpty(exposureTimeXmp) && exposureTimeXmp.Length <= 20)
 		    {
 			    return exposureTimeXmp;
 		    }
@@ -998,8 +1007,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 					    p.DirectoryName == "Canon Makernote" && p.Name == "Base ISO")?.Description;
 				    if ( !string.IsNullOrEmpty(autoIso) && !string.IsNullOrEmpty(baseIso) )
 				    {
-					    int.TryParse(autoIso, NumberStyles.Number, CultureInfo.InvariantCulture, out var autoIsoSpeed);
-					    int.TryParse(baseIso, NumberStyles.Number, CultureInfo.InvariantCulture, out var baseIsoSpeed);
+					    int.TryParse(autoIso, NumberStyles.Number, 
+						    CultureInfo.InvariantCulture, out var autoIsoSpeed);
+					    int.TryParse(baseIso, NumberStyles.Number, 
+						    CultureInfo.InvariantCulture, out var baseIsoSpeed);
 					    return baseIsoSpeed * autoIsoSpeed / 100;
 				    }
 			    }

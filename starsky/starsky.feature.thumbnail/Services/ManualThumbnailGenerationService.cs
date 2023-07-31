@@ -82,7 +82,7 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 	{
 		var result = new List<FileIndexItem>();
 		var searchFor = getAllFilesAsync.Where(item =>
-			thumbs.FirstOrDefault(p => p.SubPath == item.FilePath && item.Tags != null)
+			thumbs.Find(p => p.SubPath == item.FilePath && item.Tags != null)
 				?.Success == true).DistinctBy(p => p.FilePath);
 		foreach ( var item in searchFor )
 		{
