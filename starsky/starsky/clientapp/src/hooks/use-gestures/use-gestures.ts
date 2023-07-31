@@ -6,11 +6,11 @@ import {
   useRef,
   useState
 } from "react";
+import { ICurrentTouches } from "./ICurrentTouches.types";
+import { IHandlers } from "./IHandlers.types";
 import { callHandler } from "./call-handler";
 import { debounce } from "./debounce";
 import { getCurrentTouches } from "./get-current-touches";
-import { ICurrentTouches } from "./ICurrentTouches.types";
-import { IHandlers } from "./IHandlers.types";
 import { Pointer } from "./pointer";
 
 /**
@@ -125,7 +125,7 @@ const executeTouchEnd = (
   touches: ICurrentTouches,
   gesture: string
 ) => {
-  if (touches && touches.pointers) {
+  if (touches?.pointers) {
     if (touches.pointers.length === 2) {
       callHandler("onPinchEnd", currentTouches, handlers);
     } else {

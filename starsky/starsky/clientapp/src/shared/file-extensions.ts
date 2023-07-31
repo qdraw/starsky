@@ -7,11 +7,12 @@ export class FileExtensions {
   public MatchExtension(from: string, to: string): boolean | null {
     const extensionRegex = /\.[0-9a-z]+$/;
 
-    const fromExtMatchArray = from.match(extensionRegex);
+    const fromExtMatchArray = extensionRegex.exec(from);
     if (!fromExtMatchArray) return null;
 
-    const toExtMatchArray = to.match(extensionRegex);
+    const toExtMatchArray = extensionRegex.exec(to);
     if (!toExtMatchArray) return false;
+
     return toExtMatchArray[0] === fromExtMatchArray[0];
   }
 
@@ -20,10 +21,9 @@ export class FileExtensions {
    * @param filename
    */
   public IsValidFileName(filename: string): boolean {
-    // before 02/23  /^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
     const extensionRegex =
       /^\w(?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/;
-    const fromExtMatchArray = filename.match(extensionRegex);
+    const fromExtMatchArray = extensionRegex.exec(filename);
     return !!fromExtMatchArray;
   }
 
@@ -33,7 +33,7 @@ export class FileExtensions {
    */
   public IsValidDirectoryName(directoryName: string): boolean {
     const extensionRegex = /^[$a-zA-Z0-9_\s-]{2,}$/;
-    const fromDirMatchArray = directoryName.match(extensionRegex);
+    const fromDirMatchArray = extensionRegex.exec(directoryName);
     return !!fromDirMatchArray;
   }
 
@@ -44,15 +44,18 @@ export class FileExtensions {
    */
   public GetParentPath(filePath: string) {
     if (!filePath) return "/";
+
     const parentRegex = /.+(?=\/[^/]+$)/;
 
-    // remove slash from end
+    // Remove slash from end
     if (filePath.length >= 2 && filePath.endsWith("/")) {
       filePath = filePath.slice(0, -1);
     }
 
-    const parentMatchArray = filePath.match(parentRegex);
+    const parentMatchArray = parentRegex.exec(filePath);
+
     if (!parentMatchArray) return "/";
+
     return parentMatchArray[0];
   }
 
@@ -81,7 +84,10 @@ export class FileExtensions {
    */
   public GetFileExtensionWithoutDot(fileNameWithDot: string) {
     if (fileNameWithDot.indexOf(".") === -1) return "";
-    const fileNameMatchArray = fileNameWithDot.match(/[^.][a-zA-Z0-9]{1,4}$/);
+
+    const extensionRegex = /[^.][a-zA-Z0-9]{1,4}$/;
+    const fileNameMatchArray = extensionRegex.exec(fileNameWithDot);
+
     if (!fileNameMatchArray) return "";
     return fileNameMatchArray[0].toLowerCase();
   }

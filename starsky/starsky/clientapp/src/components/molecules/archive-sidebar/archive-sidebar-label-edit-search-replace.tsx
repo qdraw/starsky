@@ -134,7 +134,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
         const replaceFieldName = "replace" + Capitalize(fieldName);
         const replaceAnyValue = (update as any)[replaceFieldName];
-        const replaceValue: string = replaceAnyValue ? replaceAnyValue : "";
+        const replaceValue: string = replaceAnyValue ?? "";
 
         bodyParams.set("replace", replaceValue);
 

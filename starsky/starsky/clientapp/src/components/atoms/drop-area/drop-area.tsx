@@ -19,7 +19,7 @@ export interface IDropAreaProps {
  * @param event DragEvent which should contain files
  */
 const containsFiles = (event: DragEvent) => {
-  if (event.dataTransfer && event.dataTransfer.types) {
+  if (event?.dataTransfer?.types) {
     for (const type of event.dataTransfer.types) {
       if (type === "Files") {
         return true;

@@ -38,7 +38,7 @@ function useHotKeys(
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
       if (new Keyboard().isInForm(event)) return;
-      if (!predefined || !predefined.key) {
+      if (!predefined?.key) {
         return;
       }
 

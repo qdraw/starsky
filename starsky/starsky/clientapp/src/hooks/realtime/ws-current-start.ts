@@ -7,7 +7,7 @@ import { useSocketsEventName } from "./use-sockets.const";
 import WebSocketService from "./websocket-service";
 
 export function isKeepAliveMessage(item: any) {
-  if (!item || !item.type) return false;
+  if (!item?.type) return false;
   return item.type === "Welcome" || item.type === "Heartbeat";
 }
 

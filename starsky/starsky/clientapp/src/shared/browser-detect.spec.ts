@@ -24,9 +24,23 @@ describe("browser-detect", () => {
     jest.spyOn(navigator, "userAgent", "get").mockImplementationOnce(() => {
       return "Safari";
     });
-    jest.spyOn(navigator, "platform", "get").mockImplementationOnce(() => {
+    jest.spyOn(navigator, "userAgent", "get").mockImplementationOnce(() => {
       return "iPhone";
     });
+    expect(new BrowserDetect().IsIOS()).toBeTruthy();
+  });
+
+  it("Fake IsIOS iPad", () => {
+    (document.documentElement.style as any)["WebkitAppearance"] = true;
+    document.ontouchend = jest.fn();
+
+    Object.defineProperty(navigator, "maxTouchPoints", {
+      value: 2
+    });
+    jest.spyOn(navigator, "userAgent", "get").mockImplementationOnce(() => {
+      return "Safari";
+    });
+
     expect(new BrowserDetect().IsIOS()).toBeTruthy();
   });
 });

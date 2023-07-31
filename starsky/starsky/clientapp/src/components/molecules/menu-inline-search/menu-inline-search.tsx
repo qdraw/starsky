@@ -223,23 +223,22 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
                   );
                 })
               : null}
-            {suggest &&
-              suggest.map((item, index) =>
-                index <= 8 ? (
-                  <li
-                    key={item}
-                    data-key={item}
-                    className="menu-item menu-item--results"
+            {suggest?.map((item, index) =>
+              index <= 8 ? (
+                <li
+                  key={item}
+                  data-key={item}
+                  className="menu-item menu-item--results"
+                >
+                  <button
+                    onClick={() => navigate(item)}
+                    className="search-icon"
                   >
-                    <button
-                      onClick={() => navigate(item)}
-                      className="search-icon"
-                    >
-                      {item}
-                    </button>
-                  </li>
-                ) : null
-              )}
+                    {item}
+                  </button>
+                </li>
+              ) : null
+            )}
           </ul>
         </div>
       </div>

@@ -56,7 +56,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo(
       );
     }
 
-    function next(): JSX.Element {
+    function next(): React.JSX.Element {
       if (!urlObject || !lastPageNumber) return <></>;
       urlObject.p = urlObject.p ? urlObject.p : 0;
       const nextObject = { ...urlObject };

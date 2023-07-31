@@ -32,7 +32,7 @@ export class Language {
     ]);
 
     const content = selectedLanguageMap.get(this.selectedLanguage);
-    return content ? content : "";
+    return content ?? "";
   }
 
   /**

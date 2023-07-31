@@ -30,7 +30,7 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
 
   // Gets the content of the props and inject into the state
   useEffect(() => {
-    if (!detailViewProp || !detailViewProp.fileIndexItem) return;
+    if (!detailViewProp?.fileIndexItem) return;
     dispatch({ type: "reset", payload: detailViewProp });
     // should run only at start or change page
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -31,10 +31,8 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
   useEffect(() => {
     function permissions(): boolean {
       if (
-        !permissionsData ||
-        !permissionsData.data ||
-        !permissionsData.data.includes ||
-        permissionsData.statusCode !== 200
+        !permissionsData?.data?.includes ||
+        permissionsData?.statusCode !== 200
       ) {
         return false;
       }

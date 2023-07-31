@@ -175,7 +175,7 @@ export function addDefaultClickSetMarker(
 }
 
 function latLongRound(latitudeLong: number | undefined) {
-  return !!latitudeLong ? Math.round(latitudeLong * 1000000) / 1000000 : 0;
+  return latitudeLong ? Math.round(latitudeLong * 1000000) / 1000000 : 0;
 }
 
 function updateMap(
@@ -308,7 +308,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
       : MessageViewLocation;
   }
 
-  function updateButton(): JSX.Element {
+  function updateButton(): React.JSX.Element {
     return isLocationUpdated ? (
       <button
         onClick={async () => {
