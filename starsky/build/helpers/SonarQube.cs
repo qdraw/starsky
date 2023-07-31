@@ -164,7 +164,7 @@ namespace helpers
 				/* .Append($"/d:sonar.verbose=true ") */
 				.Append($"/d:sonar.host.url={url} ")
 				.Append($"/k:{key} ")
-				.Append($"/n:\"Starsky\" ")
+				.Append($"/n:Starsky ")
 				.Append($"/d:sonar.token={sonarToken} ")
 				.Append($"/o:" + organisation +" ")
 				.Append($"/d:sonar.typescript.tsconfigPath={tsconfig} ")
