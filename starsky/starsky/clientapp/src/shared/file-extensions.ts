@@ -47,8 +47,8 @@ export class FileExtensions {
     const parentRegex = /.+(?=\/[^/]+$)/;
 
     // remove slash from end
-    if (filePath.length >= 2 && filePath[filePath.length - 1] === "/") {
-      filePath = filePath.substr(0, filePath.length - 1);
+    if (filePath.length >= 2 && filePath.endsWith("/")) {
+      filePath = filePath.slice(0, -1);
     }
 
     const parentMatchArray = filePath.match(parentRegex);

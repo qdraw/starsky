@@ -50,24 +50,24 @@ export interface IFileIndexItem {
 }
 
 export enum ImageFormat {
-  notfound = "notfound" as any,
-  unknown = "unknown" as any,
-  jpg = "jpg" as any,
-  tiff = "tiff" as any,
-  bmp = "bmp" as any,
-  gif = "gif" as any,
-  png = "png" as any,
-  xmp = "xmp" as any,
-  meta_json = "meta_json" as any,
-  gpx = "gpx" as any,
-  mp4 = "mp4" as any
+  notfound = "notfound",
+  unknown = "unknown",
+  jpg = "jpg",
+  tiff = "tiff",
+  bmp = "bmp",
+  gif = "gif",
+  png = "png",
+  xmp = "xmp",
+  meta_json = "meta_json",
+  gpx = "gpx",
+  mp4 = "mp4"
 }
 
 export enum Orientation {
-  Horizontal = "Horizontal" as any,
-  Rotate90Cw = "Rotate90Cw" as any,
-  Rotate180 = "Rotate180" as any,
-  Rotate270Cw = "Rotate270Cw" as any
+  Horizontal = "Horizontal",
+  Rotate90Cw = "Rotate90Cw",
+  Rotate180 = "Rotate180",
+  Rotate270Cw = "Rotate270Cw"
 }
 
 // Warning: Input elements should not switch from uncontrolled to controlled https://fb.me/react-controlled-components

@@ -8,8 +8,8 @@ type NotificationPropTypes = {
 };
 
 export enum NotificationType {
-  default = "default" as any,
-  danger = "danger" as any
+  default = "default",
+  danger = "danger"
 }
 
 const Notification: React.FunctionComponent<NotificationPropTypes> = ({

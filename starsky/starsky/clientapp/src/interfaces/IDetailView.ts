@@ -1,14 +1,14 @@
 import { IFileIndexItem } from "./IFileIndexItem";
 
 export enum PageType {
-  Loading = "Loading" as any,
-  Archive = "Archive" as any,
-  DetailView = "DetailView" as any,
-  Search = "Search" as any,
-  ApplicationException = "ApplicationException" as any,
-  NotFound = "NotFound" as any,
-  Unauthorized = "Unauthorized" as any,
-  Trash = "Trash" as any
+  Loading = "Loading",
+  Archive = "Archive",
+  DetailView = "DetailView",
+  Search = "Search",
+  ApplicationException = "ApplicationException",
+  NotFound = "NotFound",
+  Unauthorized = "Unauthorized",
+  Trash = "Trash"
 }
 
 export interface IRelativeObjects {

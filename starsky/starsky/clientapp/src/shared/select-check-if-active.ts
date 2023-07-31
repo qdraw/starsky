@@ -21,7 +21,7 @@ export class SelectCheckIfActive {
     select.forEach((selectedPath) => {
       if (fileNameList.indexOf(selectedPath) === -1) {
         const selectIndex = select.indexOf(selectedPath);
-        delete select[selectIndex];
+        select.splice(selectIndex, 1);
       }
     });
     // remove emthy items from the list
