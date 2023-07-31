@@ -33,7 +33,7 @@ export class FileExtensions {
    */
   public IsValidDirectoryName(directoryName: string): boolean {
     const extensionRegex = /^[$a-zA-Z0-9_\s-]{2,}$/;
-    const fromDirMatchArray = directoryName.match(extensionRegex);
+    const fromDirMatchArray = extensionRegex.exec(directoryName);
     return !!fromDirMatchArray;
   }
 
@@ -84,7 +84,10 @@ export class FileExtensions {
    */
   public GetFileExtensionWithoutDot(fileNameWithDot: string) {
     if (fileNameWithDot.indexOf(".") === -1) return "";
-    const fileNameMatchArray = fileNameWithDot.match(/[^.][a-zA-Z0-9]{1,4}$/);
+
+    const extensionRegex = /[^.][a-zA-Z0-9]{1,4}$/;
+    const fileNameMatchArray = extensionRegex.exec(fileNameWithDot);
+
     if (!fileNameMatchArray) return "";
     return fileNameMatchArray[0].toLowerCase();
   }

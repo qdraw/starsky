@@ -23,7 +23,7 @@ function useKeyboardEvent(
 ) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
-      if (regex && event.key.match(regex)) {
+      if (regex && regex.exec(event.key)) {
         callback(event);
       }
     };
