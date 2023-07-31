@@ -76,12 +76,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
       "get"
     );
     useEffect(() => {
-      if (
-        !responseObject ||
-        !responseObject.data ||
-        !responseObject.data.length ||
-        responseObject.statusCode !== 200
-      ) {
+      if (!responseObject?.data?.length || responseObject.statusCode !== 200) {
         if (suggest && suggest.length >= 1) setSuggest([]);
         return;
       }

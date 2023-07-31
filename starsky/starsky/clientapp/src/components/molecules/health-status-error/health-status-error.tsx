@@ -24,11 +24,11 @@ const HealthStatusError: React.FunctionComponent = () => {
   )
     return null;
 
-  const content: JSX.Element[] = [
+  const content: React.JSX.Element[] = [
     <span key="warning">{MessageCriticalErrors}</span>
   ];
 
-  if (!healthCheck.data || !healthCheck.data.entries) {
+  if (!healthCheck.data?.entries) {
     content.push(
       <li key="backend-services">
         BackendServices HTTP StatusCode: {healthCheck.statusCode}

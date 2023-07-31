@@ -46,7 +46,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   useEffect(() => {
     const navigationState = history.location.state as INavigateState;
 
-    if (!navigationState || !navigationState.filePath) return;
+    if (!navigationState?.filePath) return;
 
     // for the DOM delay
     setTimeout(() => {
