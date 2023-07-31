@@ -46,7 +46,6 @@
     </Target>
 
     <ItemGroup>
-      <Folder Include="build" />
       <Folder Include="docs\developer-guide\api" />
       <Folder Include="docs\developer-guide\contributing" />
     </ItemGroup>
