@@ -4,7 +4,6 @@ export class BrowserDetect {
       "WebkitAppearance" in document.documentElement.style &&
       navigator.userAgent.indexOf("Safari") !== -1;
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    console.log(isIOS);
 
     const isIPadOS = "ontouchend" in document && navigator.maxTouchPoints > 1;
     return isWebKit && (isIOS || isIPadOS);
