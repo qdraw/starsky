@@ -666,7 +666,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			        RegexOptions.None, TimeSpan.FromMilliseconds(100));
 		        if(split.Length != 2) continue;
 		        latitudeString = split[0];
-		        latitudeRef = latitudeLocal[latitudeLocal.Length-1].ToString();
+		        latitudeRef = latitudeLocal[^1].ToString();
 	        }
 
 	        if ( string.IsNullOrWhiteSpace(latitudeString) ) return 0;
