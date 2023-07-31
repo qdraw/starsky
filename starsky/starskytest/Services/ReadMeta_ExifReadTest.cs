@@ -15,6 +15,7 @@ using starsky.foundation.readmeta.ReadMetaHelpers;
 using starskycore.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starskytest.starsky.foundation.database.Helpers;
 using XmpCore;
 using XmpCore.Impl;
 
@@ -367,14 +368,14 @@ namespace starskytest.Services
 		[TestMethod]
 		public void LocationCountryCode_ListDir()
 		{
-			var xmpData = "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
-			              "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.42'>\n" +
-			              "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n" +
-			              " <rdf:Description rdf:about=''\n" +
-			              "  xmlns:Iptc4xmpCore='http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/'>\n" +
-			              "  <Iptc4xmpCore:CountryCode>NLD</Iptc4xmpCore:CountryCode>\n" +
-			              " </rdf:Description>\n</rdf:RDF>\n" +
-			              "</x:xmpmeta>\n<?xpacket end='w'?>";
+			const string xmpData = "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+			                       "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.42'>\n" +
+			                       "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n" +
+			                       " <rdf:Description rdf:about=''\n" +
+			                       "  xmlns:Iptc4xmpCore='http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/'>\n" +
+			                       "  <Iptc4xmpCore:CountryCode>NLD</Iptc4xmpCore:CountryCode>\n" +
+			                       " </rdf:Description>\n</rdf:RDF>\n" +
+			                       "</x:xmpmeta>\n<?xpacket end='w'?>";
 			
 			var xmpMeta = XmpMetaFactory.ParseFromString(xmpData);
 
@@ -799,6 +800,25 @@ namespace starskytest.Services
 			
 			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
 			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw,rotation);
+		}
+		
+		[TestMethod]
+		public void TestGetXmpGeoData()
+		{
+			// Arrange
+			var allExifItems = new List<Directory>();
+			var dir2 = new XmpDirectory();
+			dir2.Set(GpsDirectory.TagLatitude, "45.5602777778");
+			dir2.Set(GpsDirectory.TagLatitudeRef, "N");
+			allExifItems.Add(dir2);
+
+			var propertyPath = "exif:GPSLatitude";
+
+			// Act
+			var result = ReadMetaExif.GetXmpGeoData(allExifItems, propertyPath);
+
+			// Assert
+			Assert.AreEqual(45.5602777778, result, 0.0000000001);
 		}
 	}
 }

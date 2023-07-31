@@ -652,7 +652,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
         }
 
-        private static double GetXmpGeoData(List<Directory> allExifItems, string propertyPath)
+        internal static double GetXmpGeoData(List<Directory> allExifItems, string propertyPath)
         {
 	        var latitudeString = string.Empty;
 	        var latitudeRef = string.Empty;
