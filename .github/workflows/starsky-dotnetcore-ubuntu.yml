@@ -15,7 +15,7 @@ on:
     - '.github/workflows/**'
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [release/*]
     paths:
     - '**.cshtml'
     - '**.cs'
