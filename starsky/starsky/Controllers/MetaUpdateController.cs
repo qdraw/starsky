@@ -74,7 +74,8 @@ namespace starsky.Controllers
 			
 			var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
 
-			var (fileIndexResultsList, changedFileIndexItemName) =  await _metaPreflight.PreflightAsync(inputModel, 
+			var (fileIndexResultsList, changedFileIndexItemName) = 
+				await _metaPreflight.PreflightAsync(inputModel, 
 				inputFilePaths.ToList(), append, collections, rotateClock);
 
 			var operationId = HttpContext.GetOperationId();
@@ -112,7 +113,7 @@ namespace starsky.Controllers
 			_metaUpdateService.UpdateReadMetaCache(returnNewResultList);
 			
 			// Push direct to socket when update or replace to avoid undo after a second
-			_logger.LogInformation($"[UpdateController] send to socket {f}");
+			_logger.LogInformation($"[UpdateController] send to socket {inputFilePaths.FirstOrDefault()}");
 
 			await Task.Run(async () => await UpdateWebSocketTaskRun(fileIndexResultsList));
 

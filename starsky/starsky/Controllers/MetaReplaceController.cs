@@ -77,7 +77,8 @@ namespace starsky.Controllers
 			}, string.Empty);
 			
 			// before sending not founds
-			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f,collections, stopwatch);
+			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", 
+				fileIndexResultsList.FirstOrDefault()?.FilePath, collections, stopwatch);
 			
 			// When all items are not found
 			if (!resultsOkOrDeleteList.Any())
