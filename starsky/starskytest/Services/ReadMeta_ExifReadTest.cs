@@ -367,14 +367,14 @@ namespace starskytest.Services
 		[TestMethod]
 		public void LocationCountryCode_ListDir()
 		{
-			var xmpData = "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
-			              "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.42'>\n" +
-			              "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n" +
-			              " <rdf:Description rdf:about=''\n" +
-			              "  xmlns:Iptc4xmpCore='http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/'>\n" +
-			              "  <Iptc4xmpCore:CountryCode>NLD</Iptc4xmpCore:CountryCode>\n" +
-			              " </rdf:Description>\n</rdf:RDF>\n" +
-			              "</x:xmpmeta>\n<?xpacket end='w'?>";
+			const string xmpData = "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+			                       "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.42'>\n" +
+			                       "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n" +
+			                       " <rdf:Description rdf:about=''\n" +
+			                       "  xmlns:Iptc4xmpCore='http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/'>\n" +
+			                       "  <Iptc4xmpCore:CountryCode>NLD</Iptc4xmpCore:CountryCode>\n" +
+			                       " </rdf:Description>\n</rdf:RDF>\n" +
+			                       "</x:xmpmeta>\n<?xpacket end='w'?>";
 			
 			var xmpMeta = XmpMetaFactory.ParseFromString(xmpData);
 
@@ -799,6 +799,82 @@ namespace starskytest.Services
 			
 			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
 			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw,rotation);
+		}
+		
+		[TestMethod]
+		public void TestGetXmpGeoData()
+		{
+			// Arrange
+		
+			const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.56'>\n" +
+			                       "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n\n " +
+			                       "<rdf:Description rdf:about=''\n  xmlns:Iptc4xmpCore='http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/'>\n" +
+			                       "  <Iptc4xmpCore:CountryCode>ALB</Iptc4xmpCore:CountryCode>\n </rdf:Description>\n\n" +
+			                       " <rdf:Description rdf:about=''\n  xmlns:exif='http://ns.adobe.com/exif/1.0/'>\n" +
+			                       "  <exif:GPSAltitude>800796/527</exif:GPSAltitude>\n" +
+			                       "  <exif:GPSAltitudeRef>0</exif:GPSAltitudeRef>\n" +
+			                       "  <exif:GPSLatitude>42,27.7005N</exif:GPSLatitude>\n" +
+			                       "  <exif:GPSLongitude>19,52.86888E</exif:GPSLongitude>\n" +
+			                       " </rdf:Description>\n\n <rdf:Description rdf:about=''\n" +
+			                       "  xmlns:photoshop='http://ns.adobe.com/photoshop/1.0/'>\n" +
+			                       "  <photoshop:City>Valbone</photoshop:City>\n" +
+			                       "  <photoshop:Country>Shqipëri</photoshop:Country>\n" +
+			                       "  <photoshop:DateCreated>2023-06-29T11:21:36</photoshop:DateCreated>\n" +
+			                       "  <photoshop:State>Kukes County</photoshop:State>\n </rdf:Description>" +
+			                       "\n\n</rdf:RDF>\n</x:xmpmeta>\n";
+			
+			var xmpMeta = XmpMetaFactory.ParseFromString(xmpData);
+			
+			var container = new List<Directory>();
+			var dir2 = new XmpDirectory();
+			dir2.SetXmpMeta(xmpMeta);
+			container.Add(dir2);
+			
+			const string propertyPath = "exif:GPSLatitude";
+
+			// Act
+			var result = ReadMetaExif.GetXmpGeoData(container, propertyPath);
+
+			// Assert
+			Assert.AreEqual(42.461675, result, 0.0000000001);
+		}
+				
+		[TestMethod]
+		public void TestGetXmpGeoData2()
+		{
+			// Arrange
+		
+			const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.56'>\n" +
+			                       "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n\n " +
+			                       "<rdf:Description rdf:about=''\n  xmlns:Iptc4xmpCore='http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/'>\n" +
+			                       "  <Iptc4xmpCore:CountryCode>ALB</Iptc4xmpCore:CountryCode>\n </rdf:Description>\n\n" +
+			                       " <rdf:Description rdf:about=''\n  xmlns:exif='http://ns.adobe.com/exif/1.0/'>\n" +
+			                       "  <exif:GPSAltitude>800796/527</exif:GPSAltitude>\n" +
+			                       "  <exif:GPSAltitudeRef>0</exif:GPSAltitudeRef>\n" +
+			                       "  <exif:GPSLatitude>42,27.7005N</exif:GPSLatitude>\n" +
+			                       "  <exif:GPSLongitude>19,52.86888E</exif:GPSLongitude>\n" +
+			                       " </rdf:Description>\n\n <rdf:Description rdf:about=''\n" +
+			                       "  xmlns:photoshop='http://ns.adobe.com/photoshop/1.0/'>\n" +
+			                       "  <photoshop:City>Valbone</photoshop:City>\n" +
+			                       "  <photoshop:Country>Shqipëri</photoshop:Country>\n" +
+			                       "  <photoshop:DateCreated>2023-06-29T11:21:36</photoshop:DateCreated>\n" +
+			                       "  <photoshop:State>Kukes County</photoshop:State>\n </rdf:Description>" +
+			                       "\n\n</rdf:RDF>\n</x:xmpmeta>\n";
+			
+			var xmpMeta = XmpMetaFactory.ParseFromString(xmpData);
+			
+			var container = new List<Directory>();
+			var dir2 = new XmpDirectory();
+			dir2.SetXmpMeta(xmpMeta);
+			container.Add(dir2);
+			
+			const string propertyPath = "exif:GPSLongitude";
+
+			// Act
+			var result = ReadMetaExif.GetXmpGeoData(container, propertyPath);
+
+			// Assert
+			Assert.AreEqual(19.881148, result, 0.0000000001);
 		}
 	}
 }

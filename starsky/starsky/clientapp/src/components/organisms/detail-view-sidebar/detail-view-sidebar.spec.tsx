@@ -498,7 +498,7 @@ describe("DetailViewSidebar", () => {
       colorClassActiveList: []
     } as any;
 
-    it("Press v to paste", () => {
+    it("Press v to paste return false", () => {
       let vPasteIsCalled = false;
       function keyboardCallback(regex: RegExp, callback: Function) {
         if (regex.source === "^v$") {
@@ -527,9 +527,57 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(() => false);
 
       jest
-        .spyOn(ClipboardHelper.prototype, "Paste")
+        .spyOn(ClipboardHelper.prototype, "PasteAsync")
         .mockImplementationOnce(() => {
-          return false;
+          return Promise.resolve(false);
+        });
+
+      const component = render(
+        <DetailViewSidebar
+          status={IExifStatus.Default}
+          filePath={"/t"}
+          state={state}
+          dispatch={jest.fn()}
+        ></DetailViewSidebar>
+      );
+
+      expect(vPasteIsCalled).toBeTruthy();
+
+      component.unmount();
+    });
+
+    it("Press v to paste return true", () => {
+      let vPasteIsCalled = false;
+      function keyboardCallback(regex: RegExp, callback: Function) {
+        if (regex.source === "^v$") {
+          const event = new KeyboardEvent("keydown", {
+            bubbles: true,
+            cancelable: true,
+            key: "v"
+          });
+          vPasteIsCalled = true;
+          callback(event);
+        }
+      }
+
+      jest
+        .spyOn(useKeyboardEvent, "default")
+        .mockImplementationOnce(keyboardCallback)
+        .mockImplementationOnce(keyboardCallback)
+        .mockImplementationOnce(keyboardCallback);
+
+      jest
+        .spyOn(Keyboard.prototype, "SetFocusOnEndField")
+        .mockImplementationOnce(() => {});
+
+      jest
+        .spyOn(Keyboard.prototype, "isInForm")
+        .mockImplementationOnce(() => false);
+
+      jest
+        .spyOn(ClipboardHelper.prototype, "PasteAsync")
+        .mockImplementationOnce(() => {
+          return Promise.resolve(true);
         });
 
       const component = render(

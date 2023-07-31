@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -24,6 +25,9 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			_appSettings = appSettings;
 		}
 		
+		[SuppressMessage("Usage", "S3966: Resource 'memoryStream' has " +
+		                          "already been disposed explicitly or through a using statement implicitly. " +
+		                          "Remove the redundant disposal.")]
 		public async Task<string[]> Create(List<FileIndexItem> fileIndexList)
 		{
 			var base64ImageArray = new string[fileIndexList.Count];

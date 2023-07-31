@@ -81,7 +81,7 @@ namespace starsky.foundation.sync.SyncServices
 			var dbItems =  await _query.GetObjectsByFilePathAsync(subPath,true);
 			foreach ( var item in statusItems )
 			{
-				var dbItem = dbItems.FirstOrDefault(p => item.FilePath == p.FilePath);
+				var dbItem = dbItems.Find(p => item.FilePath == p.FilePath);
 				if ( dbItem != null  )
 				{
 					scanItems.Add(dbItem);

@@ -81,7 +81,6 @@ namespace starsky.Controllers
 				return BadRequest(preflightErrors);
 			}
 			
-			_webLogger.LogInformation($"[/api/publish/create] Press publish: {itemName} {f} {DateTime.UtcNow}");
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 			var info = _metaInfo.GetInfo(inputFilePaths, false);
 			if ( info.TrueForAll(p =>
@@ -92,6 +91,8 @@ namespace starsky.Controllers
 			}
 
 			var slugItemName = _appSettings.GenerateSlug(itemName, true);
+			_webLogger.LogInformation($"[/api/publish/create] Press publish: {slugItemName} {f} {DateTime.UtcNow}");
+
 			var location = Path.Combine(_appSettings.TempFolder,slugItemName );
 			
 			if ( CheckIfNameExist(slugItemName) )

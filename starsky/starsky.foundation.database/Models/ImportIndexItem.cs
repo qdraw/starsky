@@ -127,7 +127,9 @@ namespace starsky.foundation.database.Models
             
             // Replace asterisk > escape all options
             var structuredFileName = Structure.Split("/".ToCharArray()).LastOrDefault();
-            if ( structuredFileName == null || string.IsNullOrEmpty(fileName) ) return new DateTime();
+            if ( structuredFileName == null || string.IsNullOrEmpty(fileName) ) {
+	            return new DateTime(0, DateTimeKind.Utc);
+            }
             structuredFileName = structuredFileName.Replace("*", "");
             structuredFileName = structuredFileName.Replace(".ext", string.Empty);
             structuredFileName = structuredFileName.Replace("{filenamebase}", string.Empty);

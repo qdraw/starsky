@@ -1,10 +1,9 @@
 using System;
 using System.IO;
-using build;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static build.Build;
+using static Build;
 
 namespace helpers
 {

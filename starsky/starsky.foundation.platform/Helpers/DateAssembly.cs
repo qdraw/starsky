@@ -39,7 +39,9 @@ namespace starsky.foundation.platform.Helpers
 			}
 			value = value.Substring(index + buildVersionMetadataPrefix.Length);
 			return DateTime.TryParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, 
-				DateTimeStyles.AssumeUniversal, out var result) ? result : new DateTime();
+				DateTimeStyles.AssumeUniversal, out var result) ? 
+					result : 
+					new DateTime(0, DateTimeKind.Utc);
 		}
 	}
 }

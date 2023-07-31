@@ -197,10 +197,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
           state
         );
 
-        const paste = new ClipboardHelper().PasteAsync(updateChange.Update);
-
-        if (!paste) return;
-        setCopyPasteAction(MessagePasteLabels);
+        new ClipboardHelper().PasteAsync(updateChange.Update).then((paste) => {
+          if (!paste) return;
+          setCopyPasteAction(MessagePasteLabels);
+        });
       },
       [props]
     );

@@ -1,13 +1,13 @@
 export enum IExifStatus {
-  Default = "Default" as any,
-  ReadOnly = "ReadOnly" as any,
-  Ok = "Ok" as any,
-  OkAndSame = "OkAndSame" as any,
-  Deleted = "Deleted" as any,
-  NotFoundSourceMissing = "NotFoundSourceMissing" as any,
-  ServerError = "ServerError" as any,
-  IgnoredAlreadyImported = "IgnoredAlreadyImported" as any,
-  OperationNotSupported = "OperationNotSupported" as any,
-  NotFoundNotInIndex = "NotFoundNotInIndex" as any,
-  FileError = "FileError" as any
+  Default = "Default",
+  ReadOnly = "ReadOnly",
+  Ok = "Ok",
+  OkAndSame = "OkAndSame",
+  Deleted = "Deleted",
+  NotFoundSourceMissing = "NotFoundSourceMissing",
+  ServerError = "ServerError",
+  IgnoredAlreadyImported = "IgnoredAlreadyImported",
+  OperationNotSupported = "OperationNotSupported",
+  NotFoundNotInIndex = "NotFoundNotInIndex",
+  FileError = "FileError"
 }
