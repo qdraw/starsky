@@ -91,17 +91,13 @@ export class FileListCache {
 
     parentItem.fileIndexItems.forEach((item, index) => {
       if (!urlObject.collections) {
-        if (
-          item.fileName &&
-          item.fileName === detailview.fileIndexItem.fileName
-        ) {
+        if (item?.fileName === detailview.fileIndexItem.fileName) {
           parentItem.fileIndexItems[index] = detailview.fileIndexItem;
         }
       }
       if (urlObject.collections) {
         if (
-          item.fileName &&
-          item.fileName.startsWith(detailview.fileIndexItem.fileCollectionName)
+          item?.fileName.startsWith(detailview.fileIndexItem.fileCollectionName)
         ) {
           parentItem.fileIndexItems[index] = detailview.fileIndexItem;
         }
@@ -164,7 +160,7 @@ export class FileListCache {
     for (const itemName of Object.keys(sessionStorage)) {
       if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
       const item = this.ParseJson(sessionStorage.getItem(itemName));
-      if (!item || !item.dateCache) continue;
+      if (!item?.dateCache) continue;
       list.push({
         name: itemName,
         item

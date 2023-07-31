@@ -42,7 +42,7 @@ export class ClipboardHelper {
     let result = {};
     try {
       const resultString = sessionStorage.getItem(this.clipBoardName);
-      result = JSON.parse(resultString ? resultString : "");
+      result = JSON.parse(resultString || "");
     } catch (error) {
       return null;
     }

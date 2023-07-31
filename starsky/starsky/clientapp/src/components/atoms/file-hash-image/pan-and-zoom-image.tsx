@@ -49,9 +49,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
 
     const imageReference = containerRef.current?.querySelector("img");
     const isLoaded =
-      imageReference &&
-      imageReference.complete &&
-      imageReference.naturalHeight !== 0;
+      imageReference?.complete && imageReference?.naturalHeight !== 0;
     props.setIsLoading(isLoaded === false);
 
     // use Memo gives issues elsewhere

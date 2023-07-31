@@ -175,7 +175,7 @@ export function addDefaultClickSetMarker(
 }
 
 function latLongRound(latitudeLong: number | undefined) {
-  return !!latitudeLong ? Math.round(latitudeLong * 1000000) / 1000000 : 0;
+  return latitudeLong ? Math.round(latitudeLong * 1000000) / 1000000 : 0;
 }
 
 function updateMap(

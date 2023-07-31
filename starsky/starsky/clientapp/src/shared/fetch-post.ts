@@ -7,9 +7,8 @@ const FetchPost = async (
   headers: object = {}
 ): Promise<IConnectionDefault> => {
   function getCookie(name: string): string {
-    const match = document.cookie.match(
-      new RegExp("(^| )" + name + "=([^;]+)")
-    );
+    const regex = new RegExp("(^| )" + name + "=([^;]+)");
+    const match = regex.exec(document.cookie);
     if (match) return match[2];
     return "X-XSRF-TOKEN";
   }

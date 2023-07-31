@@ -28,17 +28,17 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   const MessageTitleName = language.text("Titel", "Title");
   const MessageErrorReadOnly = new Language(settings.language).text(
     "Eén of meerdere bestanden zijn alleen lezen. " +
-      "Alleen de bestanden met schrijfrechten zijn geupdate.",
+    "Alleen de bestanden met schrijfrechten zijn geupdate.",
     "One or more files are read only. " +
-      "Only the files with write permissions have been updated."
+    "Only the files with write permissions have been updated."
   );
   const MessageErrorNotFoundSourceMissing = new Language(
     settings.language
   ).text(
     "Eén of meerdere bestanden zijn al verdwenen. " +
-      "Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
+    "Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
     "One or more files are already gone. " +
-      "Only the files that are present are updated. Run a manual sync"
+    "Only the files that are present are updated. Run a manual sync"
   );
   const MessageErrorGenericFail = new Language(settings.language).text(
     "Er is iets misgegaan met het updaten. Probeer het opnieuw",
@@ -114,9 +114,9 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       "collections",
       state.pageType !== PageType.Search
         ? (
-            new URLPath().StringToIUrl(history.location.search).collections !==
-            false
-          ).toString()
+          new URLPath().StringToIUrl(history.location.search).collections !==
+          false
+        ).toString()
         : "false"
     );
 
@@ -134,7 +134,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
         const replaceFieldName = "replace" + Capitalize(fieldName);
         const replaceAnyValue = (update as any)[replaceFieldName];
-        const replaceValue: string = replaceAnyValue ? replaceAnyValue : "";
+        const replaceValue: string = replaceAnyValue ?? "";
 
         bodyParams.set("replace", replaceValue);
 
