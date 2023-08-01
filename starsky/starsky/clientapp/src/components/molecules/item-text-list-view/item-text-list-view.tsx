@@ -10,6 +10,20 @@ interface ItemListProps {
   isLoading?: boolean;
   callback?(path: string): void;
 }
+
+function GetBoxClass(item: IFileIndexItem): string {
+  if (item.isDirectory) {
+    return "box isDirectory-true";
+  } else if (
+    item.status === IExifStatus.Ok ||
+    item.status === IExifStatus.Default
+  ) {
+    return "box isDirectory-false";
+  } else {
+    return "box isDirectory-false error";
+  }
+}
+
 /**
  * A list with links to the items
  */
@@ -47,14 +61,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
       <ul>
         {props.fileIndexItems.map((item, index) => (
           <li
-            className={
-              item.isDirectory
-                ? "box isDirectory-true"
-                : item.status === IExifStatus.Ok ||
-                  item.status === IExifStatus.Default
-                ? "box isDirectory-false"
-                : "box isDirectory-false error"
-            }
+            className={GetBoxClass(item)}
             key={item.filePath + item.lastEdited}
           >
             {item.isDirectory ? (
