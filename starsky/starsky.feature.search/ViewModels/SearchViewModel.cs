@@ -28,7 +28,7 @@ namespace starsky.feature.search.ViewModels
 			Breadcrumb ??= new List<string>();
 
 			// to know how long a query takes
-			_dateTime = DateTime.Now;
+			_dateTime = DateTime.UtcNow;
 		}
 
 		/// <summary>
@@ -275,7 +275,9 @@ namespace starsky.feature.search.ViewModels
 		/// Used to know how old the search query is
 		/// Used to know if a page is cached
 		/// </summary>
-		public double Offset =>   Math.Round(Math.Abs((DateTime.Now - _dateTime).TotalSeconds),2);
+		[SuppressMessage("Usage", "S6561: Avoid using DateTime.Now " +
+		                          "for benchmarking or timespan calculation operations.")]
+		public double Offset => Math.Round(Math.Abs((DateTime.UtcNow - _dateTime).TotalSeconds), 2);
 
 
 		/// <summary>
