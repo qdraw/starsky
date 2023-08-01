@@ -12,6 +12,14 @@ namespace starskytest.Helpers
 	public sealed class FileIndexCompareHelperTest
 	{
 		[TestMethod]
+		public void FileIndexCompareHelperTest_UpdateNull()
+		{
+			var source = new FileIndexItem {Tags = "hi"};
+			var changes = FileIndexCompareHelper.Compare(source);
+			Assert.AreEqual(0,changes.Count);
+		}
+		
+		[TestMethod]
 		public void FileIndexCompareHelperTest_String_Compare()
 		{
 			var source = new FileIndexItem {Tags = "hi"};
@@ -352,5 +360,109 @@ namespace starskytest.Helpers
 			Assert.IsNotNull(list);
 		}
 		
+		[TestMethod]
+		public void TestCompare_NullColor()
+		{
+			// Arrange
+			var sourceIndexItem = new FileIndexItem();
+			var updateObject = new FileIndexItem();
+			sourceIndexItem.ColorClass = ColorClassParser.Color.None;
+
+			// Act
+			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
+
+			// Assert
+			CollectionAssert.DoesNotContain(result, "ColorClass");
+		}
+
+		[TestMethod]
+		public void TestCompare_NullDateTime()
+		{
+			// Arrange
+			var sourceIndexItem = new FileIndexItem();
+			var updateObject = new FileIndexItem();
+			sourceIndexItem.DateTime = DateTime.MinValue;
+
+			// Act
+			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
+
+			// Assert
+			CollectionAssert.DoesNotContain(result, "DateTaken");
+		}
+
+		[TestMethod]
+		public void TestCompare_NullRotation()
+		{
+			// Arrange
+			var sourceIndexItem = new FileIndexItem();
+			var updateObject = new FileIndexItem();
+			sourceIndexItem.Orientation = FileIndexItem.Rotation.DoNotChange;
+
+			// Act
+			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
+
+			// Assert
+			CollectionAssert.DoesNotContain(result, "Orientation");
+		}
+
+		[TestMethod]
+		public void TestCompare_NullImageStabilisationType()
+		{
+			// Arrange
+			var sourceIndexItem = new FileIndexItem();
+			var updateObject = new FileIndexItem();
+			sourceIndexItem.ImageStabilisation = ImageStabilisationType.Unknown;
+
+			// Act
+			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
+
+			// Assert
+			CollectionAssert.DoesNotContain(result, "ImageStabilisation");
+		}
+
+		[TestMethod]
+		public void TestCompare_NullDouble()
+		{
+			// Arrange
+			var sourceIndexItem = new FileIndexItem();
+			var updateObject = new FileIndexItem();
+			sourceIndexItem.Aperture = 0;
+
+			// Act
+			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
+
+			// Assert
+			CollectionAssert.DoesNotContain(result, "Aperture");
+		}
+
+		[TestMethod]
+		public void TestCompare_NullUshort()
+		{
+			// Arrange
+			var sourceIndexItem = new FileIndexItem();
+			var updateObject = new FileIndexItem();
+			sourceIndexItem.IsoSpeed = 0;
+
+			// Act
+			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
+
+			// Assert
+			CollectionAssert.DoesNotContain(result, "IsoSpeed");
+		}
+
+		[TestMethod]
+		public void TestCompare_NullImageFormat()
+		{
+			// Arrange
+			var sourceIndexItem = new FileIndexItem();
+			var updateObject = new FileIndexItem();
+			sourceIndexItem.ImageFormat = ExtensionRolesHelper.ImageFormat.unknown;
+
+			// Act
+			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
+
+			// Assert
+			CollectionAssert.DoesNotContain(result, "ImageFormat");
+		}
 	}
 }

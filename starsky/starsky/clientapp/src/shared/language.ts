@@ -1,6 +1,6 @@
 export enum SupportedLanguages {
-  nl = "nl" as any,
-  en = "en" as any
+  nl = "nl",
+  en = "en"
 }
 
 export class Language {
@@ -24,9 +24,10 @@ export class Language {
 
   /**
    * Get the right content based on the language
+   * Map used to be Map<any,string> and  nl = "nl" as any
    */
   public text(nl: string, en: string): string {
-    const selectedLanguageMap = new Map<number, string>([
+    const selectedLanguageMap = new Map<SupportedLanguages, string>([
       [SupportedLanguages.nl, nl],
       [SupportedLanguages.en, en]
     ]);

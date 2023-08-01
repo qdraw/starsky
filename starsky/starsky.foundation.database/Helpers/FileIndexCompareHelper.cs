@@ -96,7 +96,6 @@ namespace starsky.foundation.database.Helpers
 			return differenceList;
 		}
 
-
 		/// <summary>
 		/// Set values by string name. fieldContent must by the right type
 		/// wrong types are ignored by default
