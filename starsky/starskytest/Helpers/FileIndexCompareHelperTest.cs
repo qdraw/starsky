@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -349,6 +350,12 @@ namespace starskytest.Helpers
 			Assert.IsNotNull(list);
 		}
 		
+		public static void SetNull(object obj, string propertyName)
+		{
+			PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName);
+			propertyInfo.SetValue(obj, null);
+		}
+		
 		[TestMethod]
 		public void CompareString_NotFound()
 		{
@@ -366,7 +373,8 @@ namespace starskytest.Helpers
 			// Arrange
 			var sourceIndexItem = new FileIndexItem();
 			var updateObject = new FileIndexItem();
-			sourceIndexItem.ColorClass = ColorClassParser.Color.None;
+
+			SetNull(sourceIndexItem, "ColorClass");
 
 			// Act
 			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
@@ -381,13 +389,13 @@ namespace starskytest.Helpers
 			// Arrange
 			var sourceIndexItem = new FileIndexItem();
 			var updateObject = new FileIndexItem();
-			sourceIndexItem.DateTime = DateTime.MinValue;
+			SetNull(sourceIndexItem, "DateTime");
 
 			// Act
 			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
 
 			// Assert
-			CollectionAssert.DoesNotContain(result, "DateTaken");
+			CollectionAssert.DoesNotContain(result, "DateTime");
 		}
 
 		[TestMethod]
@@ -441,7 +449,7 @@ namespace starskytest.Helpers
 			// Arrange
 			var sourceIndexItem = new FileIndexItem();
 			var updateObject = new FileIndexItem();
-			sourceIndexItem.IsoSpeed = 0;
+			SetNull(sourceIndexItem, "IsoSpeed");
 
 			// Act
 			var result = FileIndexCompareHelper.Compare(sourceIndexItem, updateObject);
