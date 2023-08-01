@@ -37,6 +37,25 @@ export interface MenuDetailViewProps {
   dispatch: React.Dispatch<DetailViewAction>;
 }
 
+function GetHeaderClass(
+  isDetails: boolean | undefined,
+  isMarkedAsDeleted: boolean
+): string {
+  if (isDetails) {
+    if (isMarkedAsDeleted) {
+      return "header header--main header--edit header--deleted";
+    } else {
+      return "header header--main header--edit";
+    }
+  } else {
+    if (isMarkedAsDeleted) {
+      return "header header--main header--deleted";
+    } else {
+      return "header header--main";
+    }
+  }
+}
+
 const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   state,
   dispatch
@@ -244,10 +263,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       return null;
     }
     const media = new CastToInterface().MediaDetailView(resultGet.data).data;
-    const orientation =
-      media.fileIndexItem && media.fileIndexItem.orientation
-        ? media.fileIndexItem.orientation
-        : Orientation.Horizontal;
+    const orientation = media?.fileIndexItem?.orientation
+      ? media.fileIndexItem.orientation
+      : Orientation.Horizontal;
 
     // the hash changes if you rotate an image
     if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash)
@@ -366,17 +384,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
         setModalPublishOpen={setModalPublishOpen}
       />
 
-      <header
-        className={
-          isDetails
-            ? isMarkedAsDeleted
-              ? "header header--main header--edit header--deleted"
-              : "header header--main header--edit"
-            : isMarkedAsDeleted
-            ? "header header--main header--deleted"
-            : "header header--main"
-        }
-      >
+      <header className={GetHeaderClass(isDetails, isMarkedAsDeleted)}>
         <div className="wrapper">
           {/* in directory state aka no search */}
           {!isSearchQuery ? (

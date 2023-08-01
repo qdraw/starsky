@@ -27,7 +27,7 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
 
     function handleExit(result: IFileIndexItem[] | null) {
       setModalDatetimeOpen(false);
-      if (!result || !result[0]) return;
+      if (!result?.[0]) return;
       // only update the content that can be changed
       setFileIndexItem({
         ...fileIndexItem,

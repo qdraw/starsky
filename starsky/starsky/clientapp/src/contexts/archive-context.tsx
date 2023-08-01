@@ -450,7 +450,7 @@ function updateCache(stateLocal: IArchiveProps): IArchiveProps {
 function ArchiveContextProvider({ children }: ReactNodeProps) {
   // [A]
   let [state, dispatch] = React.useReducer(archiveReducer, initialState);
-  let value1 = { state, dispatch };
+  let value1 = React.useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   // [B]
   return (
@@ -461,7 +461,7 @@ function ArchiveContextProvider({ children }: ReactNodeProps) {
 let ArchiveContextConsumer = ArchiveContext.Consumer;
 
 // [C]
-export { ArchiveContext, ArchiveContextProvider, ArchiveContextConsumer };
+export { ArchiveContext, ArchiveContextConsumer, ArchiveContextProvider };
 
 // exporter
 export const useArchiveContext = () => React.useContext(ArchiveContext);

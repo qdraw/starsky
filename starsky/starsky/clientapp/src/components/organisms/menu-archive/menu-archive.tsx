@@ -10,6 +10,7 @@ import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
+import { GetArchiveSearchMenuHeaderClass } from "../../../shared/menu/get-archive-search-menu-header-class";
 import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
 import { URLPath } from "../../../shared/url-path";
@@ -214,15 +215,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       />
 
       {/* Menu */}
-      <header
-        className={
-          sidebar
-            ? "header header--main header--select header--edit"
-            : select
-            ? "header header--main header--select"
-            : "header header--main "
-        }
-      >
+      <header className={GetArchiveSearchMenuHeaderClass(sidebar, select)}>
         <div className="wrapper">
           <HamburgerMenuToggle
             select={select}

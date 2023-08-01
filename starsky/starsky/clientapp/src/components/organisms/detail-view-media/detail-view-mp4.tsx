@@ -12,6 +12,18 @@ import Notification, {
 } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
 
+function GetVideoClass(isPaused: boolean, isStarted: boolean): string {
+  if (isPaused) {
+    if (isStarted) {
+      return "video play";
+    } else {
+      return "video first";
+    }
+  } else {
+    return "video pause";
+  }
+}
+
 const DetailViewMp4: React.FunctionComponent = memo(() => {
   // content
   const settings = useGlobalSettings();
@@ -219,13 +231,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
       {!isError ? (
         <figure
           data-test="video"
-          className={
-            isPaused
-              ? isStarted
-                ? "video play"
-                : "video first"
-              : "video pause"
-          }
+          className={GetVideoClass(isPaused, isStarted)}
           onClick={() => {
             playPause();
             timeUpdate();

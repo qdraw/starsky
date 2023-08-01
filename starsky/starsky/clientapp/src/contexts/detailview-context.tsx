@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   IDetailView,
   IRelativeObjects,
@@ -157,7 +157,8 @@ function updateCache(stateLocal: IDetailView): IDetailView {
 function DetailViewContextProvider({ children }: ReactNodeProps) {
   // [A]
   let [state, dispatch] = React.useReducer(detailviewReducer, initialState);
-  let value1 = { state, dispatch };
+  // Use useMemo to memoize the value object
+  let value1 = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   // [B]
   return (
@@ -171,8 +172,8 @@ let DetailViewContextConsumer = DetailViewContext.Consumer;
 
 export {
   DetailViewContext,
-  DetailViewContextProvider,
-  DetailViewContextConsumer
+  DetailViewContextConsumer,
+  DetailViewContextProvider
 };
 
 export const useDetailViewContext = () => React.useContext(DetailViewContext);

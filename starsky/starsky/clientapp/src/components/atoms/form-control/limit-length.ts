@@ -59,12 +59,14 @@ export class LimitLength {
 
     const elementLength = element.currentTarget.textContent.trim().length;
 
+    const anyKeyRegex = new RegExp(/^.?$/);
+
     if (
       elementLength < this.maxlength ||
       window.getSelection()?.type === "Range" ||
       (element.key === "x" && element.ctrlKey) ||
       (element.key === "x" && element.metaKey) ||
-      !element.key.match(/^.?$/)
+      !anyKeyRegex.exec(element.key)
     )
       return;
 
