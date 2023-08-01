@@ -32,6 +32,19 @@ import NavContainer from "../nav-container/nav-container";
 
 interface IMenuArchiveProps {}
 
+function GetHeaderClass(
+  sidebar: boolean | undefined,
+  select: string[] | undefined
+): string {
+  if (sidebar) {
+    return "header header--main header--select header--edit";
+  } else if (select) {
+    return "header header--main header--select";
+  } else {
+    return "header header--main";
+  }
+}
+
 const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -214,15 +227,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       />
 
       {/* Menu */}
-      <header
-        className={
-          sidebar
-            ? "header header--main header--select header--edit"
-            : select
-            ? "header header--main header--select"
-            : "header header--main "
-        }
-      >
+      <header className={GetHeaderClass(sidebar, select)}>
         <div className="wrapper">
           <HamburgerMenuToggle
             select={select}

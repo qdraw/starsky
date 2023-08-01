@@ -219,13 +219,9 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
       {!isError ? (
         <figure
           data-test="video"
-          className={
-            isPaused
-              ? isStarted
-                ? "video play"
-                : "video first"
-              : "video pause"
-          }
+          className={`video ${
+            isPaused ? (isStarted ? "play" : "first") : "pause"
+          }`}
           onClick={() => {
             playPause();
             timeUpdate();

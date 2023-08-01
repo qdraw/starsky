@@ -301,11 +301,17 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
   }, []);
 
   function subHeader(): string {
-    return isFormEnabled
-      ? !latitude && !longitude
-        ? MessageAddLocation
-        : MessageUpdateLocation
-      : MessageViewLocation;
+    let message: string;
+    if (isFormEnabled) {
+      if (!latitude && !longitude) {
+        message = MessageAddLocation;
+      } else {
+        message = MessageUpdateLocation;
+      }
+    } else {
+      message = MessageViewLocation;
+    }
+    return message;
   }
 
   function updateButton(): React.JSX.Element {

@@ -26,6 +26,19 @@ export interface IMenuSearchProps {
   dispatch: React.Dispatch<ArchiveAction>;
 }
 
+function GetHeaderClass(
+  sidebar: boolean | undefined,
+  select: string[] | undefined
+): string {
+  if (sidebar) {
+    return "header header--main header--select header--edit";
+  } else if (select) {
+    return "header header--main header--select";
+  } else {
+    return "header header--main";
+  }
+}
+
 export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   state,
   dispatch
@@ -113,15 +126,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
         setModalPublishOpen={setModalPublishOpen}
       />
 
-      <header
-        className={
-          sidebar
-            ? "header header--main header--select header--edit"
-            : select
-            ? "header header--main header--select"
-            : "header header--main "
-        }
-      >
+      <header className={GetHeaderClass(sidebar, select)}>
         <div className="wrapper">
           <HamburgerMenuToggle
             select={select}
