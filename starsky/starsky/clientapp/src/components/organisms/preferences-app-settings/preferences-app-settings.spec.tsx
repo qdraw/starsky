@@ -13,7 +13,9 @@ import {
 } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
-import PreferencesAppSettings from "./preferences-app-settings";
+import PreferencesAppSettings, {
+  ChangeSetting
+} from "./preferences-app-settings";
 
 describe("PreferencesAppSettings", () => {
   it("renders", () => {
@@ -264,6 +266,40 @@ describe("PreferencesAppSettings", () => {
       await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
       component.unmount();
+    });
+  });
+
+  describe("ChangeSetting", () => {
+    it("should set value with empty string as name when name is not provided", async () => {
+      const value = "test value";
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => {
+          return Promise.resolve({
+            statusCode: 200,
+            data: null
+          });
+        });
+
+      const statusCode = await ChangeSetting(value);
+      expect(statusCode).toBe(200);
+      expect(fetchPostSpy).toBeCalled();
+    });
+
+    it("should set value with provided name when name is provided", async () => {
+      const value = "test value";
+      const name = "test name";
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => {
+          return Promise.resolve({
+            statusCode: 200,
+            data: null
+          });
+        });
+      const statusCode = await ChangeSetting(value, name);
+      expect(statusCode).toBe(200);
+      expect(fetchPostSpy).toBeCalled();
     });
   });
 });
