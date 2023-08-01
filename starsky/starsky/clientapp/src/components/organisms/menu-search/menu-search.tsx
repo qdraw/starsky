@@ -9,6 +9,7 @@ import useLocation from "../../../hooks/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
+import { GetArchiveSearchMenuHeaderClass } from "../../../shared/menu/get-archive-search-menu-header-class";
 import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
 import { URLPath } from "../../../shared/url-path";
@@ -24,19 +25,6 @@ import NavContainer from "../nav-container/nav-container";
 export interface IMenuSearchProps {
   state: IArchiveProps;
   dispatch: React.Dispatch<ArchiveAction>;
-}
-
-function GetHeaderClass(
-  sidebar: boolean | undefined,
-  select: string[] | undefined
-): string {
-  if (sidebar) {
-    return "header header--main header--select header--edit";
-  } else if (select) {
-    return "header header--main header--select";
-  } else {
-    return "header header--main";
-  }
 }
 
 export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
@@ -126,7 +114,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
         setModalPublishOpen={setModalPublishOpen}
       />
 
-      <header className={GetHeaderClass(sidebar, select)}>
+      <header className={GetArchiveSearchMenuHeaderClass(sidebar, select)}>
         <div className="wrapper">
           <HamburgerMenuToggle
             select={select}

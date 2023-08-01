@@ -10,6 +10,7 @@ import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
+import { GetArchiveSearchMenuHeaderClass } from "../../../shared/menu/get-archive-search-menu-header-class";
 import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
 import { URLPath } from "../../../shared/url-path";
@@ -31,19 +32,6 @@ import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wra
 import NavContainer from "../nav-container/nav-container";
 
 interface IMenuArchiveProps {}
-
-function GetHeaderClass(
-  sidebar: boolean | undefined,
-  select: string[] | undefined
-): string {
-  if (sidebar) {
-    return "header header--main header--select header--edit";
-  } else if (select) {
-    return "header header--main header--select";
-  } else {
-    return "header header--main";
-  }
-}
 
 const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const settings = useGlobalSettings();
@@ -227,7 +215,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       />
 
       {/* Menu */}
-      <header className={GetHeaderClass(sidebar, select)}>
+      <header className={GetArchiveSearchMenuHeaderClass(sidebar, select)}>
         <div className="wrapper">
           <HamburgerMenuToggle
             select={select}
