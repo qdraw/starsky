@@ -98,14 +98,19 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     );
   }
 
-  const className = error
-    ? `img-box--error img-box--${props.imageFormat}`
-    : isLoading
-    ? "img-box img-box--loading"
-    : "img-box";
+  let className = "img-box";
+  if (error) {
+    className += ` img-box--error img-box--${props.imageFormat}`;
+  } else if (isLoading) {
+    className += " img-box--loading";
+  }
 
   return (
-    <div ref={target} className={className}>
+    <div
+      ref={target}
+      className={className}
+      data-test="list-image-img-parent-div"
+    >
       {intersected ? (
         <img
           src={src}

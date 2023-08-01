@@ -8,6 +8,19 @@ import { UrlQuery } from "../../../shared/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import SwitchButton from "../../atoms/switch-button/switch-button";
 
+export async function ChangeSetting(
+  value: string,
+  name?: string
+): Promise<number> {
+  const bodyParams = new URLSearchParams();
+  bodyParams.set(name ?? "", value);
+  const result = await FetchPost(
+    new UrlQuery().UrlApiAppSettings(),
+    bodyParams.toString()
+  );
+  return result?.statusCode;
+}
+
 export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -43,16 +56,6 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
 
   const [storageFolderNotFound, setStorageFolderNotFound] = useState(false);
 
-  async function changeSetting(value: string, name?: string): Promise<number> {
-    const bodyParams = new URLSearchParams();
-    bodyParams.set(name ? name : "", value);
-    const result = await FetchPost(
-      new UrlQuery().UrlApiAppSettings(),
-      bodyParams.toString()
-    );
-    return result?.statusCode;
-  }
-
   const appSettings = useFetch(new UrlQuery().UrlApiAppSettings(), "get")
     ?.data as IAppSettings | null;
 
@@ -80,7 +83,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
           isEnabled={enabled}
           isOn={!verbose}
           onToggle={(toggle, name) => {
-            changeSetting((!toggle).toString(), name);
+            ChangeSetting((!toggle).toString(), name);
             setIsVerbose(!toggle);
           }}
           leftLabel={"on"}
@@ -92,7 +95,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
         <FormControl
           name="storageFolder"
           onBlur={async (e) => {
-            const resultStatusCode = await changeSetting(
+            const resultStatusCode = await ChangeSetting(
               e.target.innerText,
               "storageFolder"
             );

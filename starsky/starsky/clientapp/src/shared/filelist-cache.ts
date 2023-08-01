@@ -158,7 +158,7 @@ export class FileListCache {
   private GetAll(): IGetAllTransferObject[] {
     const list = [];
     for (const itemName of Object.keys(sessionStorage)) {
-      if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
+      if (!itemName?.startsWith(this.cachePrefix)) continue;
       const item = this.ParseJson(sessionStorage.getItem(itemName));
       if (!item?.dateCache) continue;
       list.push({

@@ -79,7 +79,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   function removeCache() {
     setIsLoading(true);
     new FileListCache().CacheCleanEverything();
-    const parentFolder = props.parentFolder ? props.parentFolder : "/";
+    const parentFolder = props.parentFolder ?? "/";
     FetchGet(
       new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))
     ).then((_) => {
@@ -106,7 +106,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   const [geoSyncPercentage, setGeoSyncPercentage] = useState(0);
 
   function geoSync() {
-    const parentFolder = props.parentFolder ? props.parentFolder : "/";
+    const parentFolder = props.parentFolder ?? "/";
 
     const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
@@ -116,7 +116,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   }
 
   function fetchGeoSyncStatus() {
-    const parentFolder = props.parentFolder ? props.parentFolder : "/";
+    const parentFolder = props.parentFolder ?? "/";
     FetchGet(
       new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))
     ).then((anyData) => {
@@ -136,7 +136,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   useInterval(() => fetchGeoSyncStatus(), 10000);
 
   function manualThumbnailSync() {
-    const parentFolder = props.parentFolder ? props.parentFolder : "/";
+    const parentFolder = props.parentFolder ?? "/";
     const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
     setIsLoading(true);
@@ -144,7 +144,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
     FetchPost(
       new UrlQuery().UrlThumbnailGeneration(),
       bodyParams.toString()
-    ).then((anyData) => {
+    ).then((_) => {
       setTimeout(() => {
         setIsLoading(false);
         props.handleExit();

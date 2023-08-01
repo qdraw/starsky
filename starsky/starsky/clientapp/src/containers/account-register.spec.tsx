@@ -3,7 +3,8 @@ import {
   fireEvent,
   render,
   RenderResult,
-  screen
+  screen,
+  waitFor
 } from "@testing-library/react";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import * as FetchGet from "../shared/fetch-get";
@@ -366,5 +367,52 @@ describe("AccountRegister", () => {
     console.log(container.container.innerHTML);
 
     expect(error).toBeTruthy();
+  });
+
+  it("displays an error message when the response data is falsy", async () => {
+    // use ==> import * as FetchPost from '../shared/fetch-post';
+    const mockPostIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
+        statusCode: 200,
+        data: null
+      } as IConnectionDefault);
+
+    const fetchPostSpy = jest
+      .spyOn(FetchPost, "default")
+      .mockClear()
+      .mockImplementationOnce(() => mockPostIConnectionDefault)
+      .mockImplementationOnce(() => mockPostIConnectionDefault);
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockPostIConnectionDefault);
+
+    const component = render(<AccountRegister />);
+
+    const emailInput = screen.getByTestId("email");
+    const passwordInput = screen.getByTestId("password");
+    const confirmPasswordInput = screen.getByTestId("confirm-password");
+    const submitButton = screen.getByTestId("account-register-submit");
+
+    // Act
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password" } });
+    fireEvent.change(confirmPasswordInput, { target: { value: "password" } });
+    fireEvent.click(submitButton);
+
+    // Assert
+    await waitFor(() => {
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+    });
+
+    expect(fetchPostSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      "Email=test@example.com&Password=password&ConfirmPassword=password"
+    );
+
+    await waitFor(() => {
+      const errorMessage = screen.getByTestId("account-register-error");
+      expect(errorMessage).toBeTruthy();
+    });
+    component.unmount();
   });
 });

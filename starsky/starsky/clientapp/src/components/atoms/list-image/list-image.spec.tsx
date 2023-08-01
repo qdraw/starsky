@@ -1,5 +1,11 @@
-import { createEvent, fireEvent, render, screen } from "@testing-library/react";
-import useIntersection from "../../../hooks/use-intersection-observer";
+import {
+  createEvent,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from "@testing-library/react";
+import * as useIntersection from "../../../hooks/use-intersection-observer";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
 import { UrlQuery } from "../../../shared/url-query";
 import ListImage from "./list-image";
@@ -14,7 +20,7 @@ describe("ListImageTest", () => {
   });
 
   it("useIntersection = true", () => {
-    (useIntersection as jest.Mock<any>).mockImplementation(() => true);
+    (useIntersection.default as jest.Mock<any>).mockImplementation(() => true);
     const element = render(
       <ListImage fileHash={"test.jpg"} imageFormat={ImageFormat.jpg}>
         test
@@ -53,6 +59,40 @@ describe("ListImageTest", () => {
     expect(img.className).toContain("img-box--error");
 
     element.unmount();
+  });
+
+  it("should have correct class name when error is true", async () => {
+    const props = {
+      fileHash: "abc123",
+      alt: "test image",
+      imageFormat: ImageFormat.jpg
+    };
+
+    jest.spyOn(useIntersection, "default").mockReturnValue(true);
+    const container = render(<ListImage {...props} />);
+
+    const imgBox = screen.getByTestId("list-image-img-parent-div");
+    const img = screen.getByTestId("list-image-img");
+
+    fireEvent.error(img);
+
+    await waitFor(() => expect(imgBox.className).toContain("img-box--error"));
+    container.unmount();
+  });
+
+  it("unknown type", async () => {
+    const props = {
+      fileHash: "abc123",
+      alt: "test image",
+      imageFormat: ImageFormat.unknown
+    };
+
+    jest.spyOn(useIntersection, "default").mockReturnValue(true);
+    const container = render(<ListImage {...props} />);
+
+    const imgBox = screen.getByTestId("list-image-img-error");
+    expect(imgBox.className).toContain("img-box--unsupported");
+    container.unmount();
   });
 
   it("img-box--error null 2", () => {

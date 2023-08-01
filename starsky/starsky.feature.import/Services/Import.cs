@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -69,6 +70,7 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		internal const string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
 
+		[SuppressMessage("Usage", "S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,

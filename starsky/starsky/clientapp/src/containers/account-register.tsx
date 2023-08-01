@@ -119,7 +119,7 @@ const AccountRegister: FunctionComponent = () => {
       return;
     }
 
-    if (!response || !response.data) {
+    if (!response?.data) {
       setError(MessageConnection);
       setLoading(false);
       return;
