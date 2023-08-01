@@ -55,7 +55,7 @@ const ForceSyncWaitButton: React.FunctionComponent<
   ForceSyncWaitButtonPropTypes
 > = ({ propsParentFolder, historyLocationSearch, callback, dispatch }) => {
   function forceSync(): Promise<IConnectionDefault> {
-    const parentFolder = propsParentFolder ? propsParentFolder : "/";
+    const parentFolder = propsParentFolder ?? "/";
     setIsLoading(true);
     new FileListCache().CacheCleanEverything();
 

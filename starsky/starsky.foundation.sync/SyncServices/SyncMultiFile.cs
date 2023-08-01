@@ -50,7 +50,7 @@ namespace starsky.foundation.sync.SyncServices
 			var resultDatabaseItems = new List<FileIndexItem>();
 			foreach ( var path in subPathInFiles )
 			{
-				var item = databaseItems.FirstOrDefault(p => 
+				var item = databaseItems.Find(p => 
 					string.Equals(p.FilePath, path, StringComparison.InvariantCultureIgnoreCase));
 				if (item == null ) // when the file should be added to the index
 				{

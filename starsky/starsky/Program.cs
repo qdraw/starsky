@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace starsky
 {
 	public static class Program
 	{
+		[SuppressMessage("Usage", "S6603: The collection-specific TrueForAll " +
+		                          "method should be used instead of the All extension")]
 		public static async Task Main(string[] args)
 		{
 			var appSettingsPath = Path.Join(

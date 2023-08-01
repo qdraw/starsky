@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using starsky.foundation.database.Models;
@@ -141,6 +142,8 @@ namespace starsky.foundation.database.Helpers
 		/// </summary>
 		/// <param name="fieldName">name e.g. Tags</param>
 		/// <returns>bool, true=exist</returns>
+		[SuppressMessage("Usage", "Collection-specific Exists " +
+		                          "method should be used instead of the Any extension.")]
 		public static bool CheckIfPropertyExist(string fieldName)
 		{
 			PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(

@@ -45,7 +45,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
 
   async function changeSetting(value: string, name?: string): Promise<number> {
     const bodyParams = new URLSearchParams();
-    bodyParams.set(name ? name : "", value);
+    bodyParams.set(name ?? "", value);
     const result = await FetchPost(
       new UrlQuery().UrlApiAppSettings(),
       bodyParams.toString()
