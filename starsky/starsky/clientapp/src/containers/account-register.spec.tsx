@@ -370,9 +370,6 @@ describe("AccountRegister", () => {
   });
 
   it("displays an error message when the response data is falsy", async () => {
-    // Arrange
-    // FetchPost.mockResolvedValueOnce({ statusCode: 200, data: null });
-
     // use ==> import * as FetchPost from '../shared/fetch-post';
     const mockPostIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
@@ -388,8 +385,6 @@ describe("AccountRegister", () => {
     jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockPostIConnectionDefault);
-
-    console.log("---");
 
     const component = render(<AccountRegister />);
 

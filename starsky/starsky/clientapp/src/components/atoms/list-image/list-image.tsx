@@ -106,7 +106,11 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   }
 
   return (
-    <div ref={target} className={className}>
+    <div
+      ref={target}
+      className={className}
+      data-test="list-image-img-parent-div"
+    >
       {intersected ? (
         <img
           src={src}
