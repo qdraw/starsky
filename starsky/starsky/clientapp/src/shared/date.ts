@@ -44,6 +44,18 @@ const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   return difference <= 0.2;
 };
 
+function ConvertUTCDateToLocalDate(date: Date): Date {
+  const newDate = new Date(
+    date.getTime() + date.getTimezoneOffset() * 60 * 1000
+  );
+
+  const offset = date.getTimezoneOffset() / 60;
+  const hours = date.getHours();
+
+  newDate.setHours(hours - offset);
+  return newDate;
+}
+
 /**
  * Get the relative date, for example 6 hour ago
  * @param inputDateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
@@ -56,7 +68,7 @@ const parseRelativeDate = (
   let date = "";
 
   if (!inputDateTime) return date;
-  let input = new Date(`${inputDateTime}`).valueOf();
+  let input = ConvertUTCDateToLocalDate(new Date(`${inputDateTime}`)).valueOf();
 
   if (!input) return date;
 
