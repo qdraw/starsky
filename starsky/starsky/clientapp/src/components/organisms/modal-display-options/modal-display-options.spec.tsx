@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
-import React from "react";
 import { act } from "react-dom/test-utils";
 import * as Modal from "../../atoms/modal/modal";
 import ModalDisplayOptions from "./modal-display-options";

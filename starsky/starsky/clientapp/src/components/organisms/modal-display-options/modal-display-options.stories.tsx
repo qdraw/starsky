@@ -1,4 +1,3 @@
-import React from "react";
 import ModalDisplayOptions from "./modal-display-options";
 
 export default {

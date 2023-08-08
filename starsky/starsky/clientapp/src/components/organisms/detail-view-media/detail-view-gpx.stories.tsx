@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import React from "react";
 import DetailViewGpx from "./detail-view-gpx";
 
 export default {

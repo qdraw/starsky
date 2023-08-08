@@ -1,7 +1,6 @@
-import React from "react";
 import {
-  IFileIndexItem,
-  newIFileIndexItemArray
+    IFileIndexItem,
+    newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
 import ItemTextListView from "./item-text-list-view";
 

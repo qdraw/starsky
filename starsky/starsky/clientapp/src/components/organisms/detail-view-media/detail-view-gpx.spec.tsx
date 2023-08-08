@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { act, render, screen, waitFor } from "@testing-library/react";
 import L from "leaflet";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -14,7 +15,7 @@ describe("DetailViewGpx", () => {
   const mockGetIConnectionDefault: Promise<IConnectionDefault> =
     Promise.resolve({
       statusCode: 200,
-      data: xmlParser.parseFromString(responseString, "text/xml")
+      data: xmlParser.parseFromString(responseString, "text/xml"),
     } as IConnectionDefault);
 
   it("renders (without state component)", () => {
@@ -35,7 +36,7 @@ describe("DetailViewGpx", () => {
         .spyOn(L, "polyline")
         .mockImplementationOnce(() => {
           return {
-            addTo: jest.fn()
+            addTo: jest.fn(),
           } as any;
         });
 
@@ -69,7 +70,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml")
+          data: xmlParser.parseFromString(responseString, "text/xml"),
         } as IConnectionDefault);
 
       jest.spyOn(FetchXml, "default").mockReset();
@@ -92,7 +93,7 @@ describe("DetailViewGpx", () => {
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
-          tap: { disable: jest.fn() }
+          tap: { disable: jest.fn() },
         };
       });
 
@@ -100,7 +101,7 @@ describe("DetailViewGpx", () => {
         .spyOn(L, "polyline")
         .mockImplementationOnce(() => {
           return {
-            addTo: jest.fn()
+            addTo: jest.fn(),
           } as any;
         });
 
@@ -119,7 +120,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml")
+          data: xmlParser.parseFromString(responseString, "text/xml"),
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchXml, "default")
@@ -143,7 +144,7 @@ describe("DetailViewGpx", () => {
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
           tap: { disable: jest.fn() },
-          zoomIn
+          zoomIn,
         };
       });
 
@@ -151,7 +152,7 @@ describe("DetailViewGpx", () => {
         .spyOn(L, "polyline")
         .mockImplementationOnce(() => {
           return {
-            addTo: jest.fn()
+            addTo: jest.fn(),
           } as any;
         });
 
@@ -180,7 +181,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml")
+          data: xmlParser.parseFromString(responseString, "text/xml"),
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchXml, "default")
@@ -204,7 +205,7 @@ describe("DetailViewGpx", () => {
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
           tap: { disable: jest.fn() },
-          zoomOut
+          zoomOut,
         };
       });
 
@@ -212,7 +213,7 @@ describe("DetailViewGpx", () => {
         .spyOn(L, "polyline")
         .mockImplementationOnce(() => {
           return {
-            addTo: jest.fn()
+            addTo: jest.fn(),
           } as any;
         });
 
@@ -242,7 +243,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml")
+          data: xmlParser.parseFromString(responseString, "text/xml"),
         } as IConnectionDefault);
 
       jest.spyOn(FetchXml, "default").mockClear();
@@ -274,13 +275,13 @@ describe("DetailViewGpx", () => {
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
           tap: { disable: jest.fn() },
-          zoomOut
+          zoomOut,
         };
       });
 
       jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
-          addTo: jest.fn()
+          addTo: jest.fn(),
         } as any;
       });
 
@@ -314,7 +315,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml")
+          data: xmlParser.parseFromString(responseString, "text/xml"),
         } as IConnectionDefault);
 
       jest
@@ -337,14 +338,14 @@ describe("DetailViewGpx", () => {
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
           tap: { disable: jest.fn() },
-          setView: setViewSpy
+          setView: setViewSpy,
         };
       };
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(lMapMock);
 
       jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
-          addTo: jest.fn()
+          addTo: jest.fn(),
         } as any;
       });
 
@@ -373,7 +374,7 @@ describe("DetailViewGpx", () => {
       await waitFor(() => expect(spyMap).toBeCalled());
 
       const button = screen.queryByTestId(
-        "current-location-button"
+        "current-location-button",
       ) as HTMLButtonElement;
       expect(button).toBeTruthy();
       await button.click();
@@ -381,7 +382,7 @@ describe("DetailViewGpx", () => {
       expect(currentLocationButtonSpy).toBeCalled();
       expect(setViewSpy).toBeCalled();
       expect(setViewSpy).toBeCalledWith(new L.LatLng(1, 1), 15, {
-        animate: true
+        animate: true,
       });
 
       act(() => {
@@ -393,7 +394,7 @@ describe("DetailViewGpx", () => {
   const LeafletMock: any = jest.genMockFromModule("leaflet");
 
   class MapMock extends LeafletMock.Map {
-    constructor(id: any, options: any = {}) {
+    constructor(_id: any, options: any = {}) {
       super();
       Object.assign(this, L.Evented.prototype);
 
@@ -416,9 +417,11 @@ describe("DetailViewGpx", () => {
       return Math.max(0, Math.min(0, zoom));
     }
 
-    _resetView(center: any, zoom: any) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _resetView(_center: any, _zoom: any) {}
 
-    fitBounds(bounds: any, options: any) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    fitBounds(_bounds: any, _options: any) {}
 
     getBounds() {}
 
@@ -430,9 +433,11 @@ describe("DetailViewGpx", () => {
 
     getZoom() {}
 
-    setMaxBounds(bounds: any) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setMaxBounds(_bounds: any) {}
 
-    setView(center: any, zoom: any) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setView(_center: any, _zoom: any) {}
 
     setZoom(zoom: any) {
       return this.setView(this.getCenter(), zoom);

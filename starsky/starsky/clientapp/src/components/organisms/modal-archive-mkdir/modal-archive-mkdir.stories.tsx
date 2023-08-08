@@ -1,4 +1,3 @@
-import React from "react";
 import ModalArchiveMkdir from "./modal-archive-mkdir";
 
 export default {

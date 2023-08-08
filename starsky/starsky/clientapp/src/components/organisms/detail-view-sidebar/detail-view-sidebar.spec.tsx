@@ -4,13 +4,13 @@ import {
   render,
   RenderResult,
   screen,
-  waitFor
+  waitFor,
 } from "@testing-library/react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import {
   IConnectionDefault,
-  newIConnectionDefault
+  newIConnectionDefault,
 } from "../../../interfaces/IConnectionDefault";
 import { IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -34,7 +34,7 @@ describe("DetailViewSidebar", () => {
         filePath={"/t"}
         state={{ fileIndexItem: { lastEdited: "" } } as any}
         dispatch={jest.fn()}
-      ></DetailViewSidebar>
+      ></DetailViewSidebar>,
     );
   });
 
@@ -49,10 +49,10 @@ describe("DetailViewSidebar", () => {
         filePath={"/t"}
         state={undefined as any}
         dispatch={jest.fn()}
-      ></DetailViewSidebar>
+      ></DetailViewSidebar>,
     );
     const serverError = screen.queryByTestId(
-      "detailview-exifstatus-status-server-error"
+      "detailview-exifstatus-status-server-error",
     );
     expect(serverError).not.toBeNull();
 
@@ -84,14 +84,14 @@ describe("DetailViewSidebar", () => {
             aperture: 2,
             focalLength: 10,
             longitude: 1,
-            latitude: 1
+            latitude: 1,
           } as IFileIndexItem,
           relativeObjects: {} as IRelativeObjects,
           subPath: "/",
           status: IExifStatus.Default,
           pageType: PageType.DetailView,
-          colorClassActiveList: []
-        } as any
+          colorClassActiveList: [],
+        } as any,
       };
 
       TestComponent = () => (
@@ -114,7 +114,7 @@ describe("DetailViewSidebar", () => {
 
     function findDataName(name: string) {
       return Component.queryAllByTestId("form-control").find(
-        (p) => p.getAttribute("data-name") === name
+        (p) => p.getAttribute("data-name") === name,
       );
     }
 
@@ -144,7 +144,7 @@ describe("DetailViewSidebar", () => {
 
       expect(dateTime?.textContent).toBe(
         parseDate("2019-09-15T17:29:59", SupportedLanguages.en) +
-          parseTime("2019-09-15T17:29:59")
+          parseTime("2019-09-15T17:29:59"),
       );
     });
 
@@ -155,7 +155,7 @@ describe("DetailViewSidebar", () => {
       // import * as ModalDatetime from './modal-datetime';
       const modalDatetimeSpy = jest
         .spyOn(ModalDatetime, "default")
-        .mockImplementationOnce((props) => {
+        .mockImplementationOnce(() => {
           return <></>;
         });
 
@@ -175,7 +175,7 @@ describe("DetailViewSidebar", () => {
         .spyOn(ModalDatetime, "default")
         .mockImplementationOnce((props) => {
           props.handleExit([
-            { dateTime: "2020-02-01T13:15:20" }
+            { dateTime: "2020-02-01T13:15:20" },
           ] as IFileIndexItem[]);
           return <></>;
         });
@@ -187,19 +187,19 @@ describe("DetailViewSidebar", () => {
       expect(modalDatetimeSpy).toBeCalled();
 
       const updatedDatetime = Component.queryByTestId(
-        "dateTime"
+        "dateTime",
       ) as HTMLElement;
       expect(updatedDatetime).not.toBeNull();
 
       expect(updatedDatetime.textContent).toBe(
         parseDate("2020-02-01T13:15:20", SupportedLanguages.en) +
-          parseTime("2020-02-01T13:15:20")
+          parseTime("2020-02-01T13:15:20"),
       );
     });
 
     it("click on ColorClassSelect and return value", () => {
       const colorClassSelectItem = Component.queryByTestId(
-        "color-class-select-5"
+        "color-class-select-5",
       ) as HTMLElement;
 
       act(() => {
@@ -249,7 +249,7 @@ describe("DetailViewSidebar", () => {
 
     it("test if lat/long icon from the context is displayed", () => {
       const locationDiv = Component.queryByTestId(
-        "detailview-location-div"
+        "detailview-location-div",
       ) as HTMLElement;
 
       expect(locationDiv).not.toBeNull();
@@ -282,7 +282,7 @@ describe("DetailViewSidebar", () => {
 
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlUpdateApi(),
-        expectedBodyParams.toString()
+        expectedBodyParams.toString(),
       );
 
       fetchPostSpy.mockClear();
@@ -300,7 +300,7 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const tagsField = screen.queryByTestId(
-        "detailview-sidebar-tags"
+        "detailview-sidebar-tags",
       ) as HTMLInputElement;
 
       act(() => {
@@ -321,7 +321,7 @@ describe("DetailViewSidebar", () => {
 
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlUpdateApi(),
-        expectedBodyString
+        expectedBodyString,
       );
 
       fetchPostSpy.mockClear();
@@ -336,12 +336,12 @@ describe("DetailViewSidebar", () => {
         Promise.resolve({
           ...newIConnectionDefault(),
           statusCode: 200,
-          data: [{ filePath: "/test.jpg" } as IFileIndexItem]
+          data: [{ filePath: "/test.jpg" } as IFileIndexItem],
         });
 
       const clearSearchCacheSpy = jest.spyOn(
         ClearSearchCache,
-        "ClearSearchCache"
+        "ClearSearchCache",
       );
 
       const fetchPostSpy = jest
@@ -351,7 +351,7 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const tagsField = screen.queryByTestId(
-        "detailview-sidebar-tags"
+        "detailview-sidebar-tags",
       ) as HTMLInputElement;
 
       // need to await here
@@ -393,18 +393,18 @@ describe("DetailViewSidebar", () => {
             aperture: 2,
             focalLength: 10,
             longitude: 1,
-            latitude: 1
+            latitude: 1,
           } as IFileIndexItem,
           relativeObjects: {} as IRelativeObjects,
           subPath: "/",
           status: IExifStatus.Default,
           pageType: PageType.DetailView,
-          colorClassActiveList: []
-        } as any
+          colorClassActiveList: [],
+        } as any,
       };
     });
 
-    function findDataNameCurrent(component: RenderResult, name: string) {
+    function findDataNameCurrent(_component: RenderResult, name: string) {
       return screen
         .queryAllByTestId("form-control")
         .find((p) => (p as HTMLElement).getAttribute("data-name") === name);
@@ -426,14 +426,14 @@ describe("DetailViewSidebar", () => {
       const component = render(<DeletedTestComponent />);
 
       const statusDeleted = component.queryByTestId(
-        "detailview-exifstatus-status-deleted"
+        "detailview-exifstatus-status-deleted",
       );
       expect(statusDeleted).not.toBeNull();
 
       contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
 
       const tagsField = screen.queryByTestId(
-        "detailview-sidebar-tags"
+        "detailview-sidebar-tags",
       ) as HTMLInputElement;
 
       const description = findDataNameCurrent(component as any, "description");
@@ -463,13 +463,13 @@ describe("DetailViewSidebar", () => {
       const component = render(<DeletedTestComponent />);
 
       const statusReadOnly = component.queryByTestId(
-        "detailview-exifstatus-status-read-only"
+        "detailview-exifstatus-status-read-only",
       );
       expect(statusReadOnly).not.toBeNull();
 
       // Tags and other input fields are disabled
       const tags = screen.queryByTestId(
-        "detailview-sidebar-tags"
+        "detailview-sidebar-tags",
       ) as HTMLInputElement;
       const description = findDataNameCurrent(component as any, "description");
       const title = findDataNameCurrent(component as any, "title");
@@ -477,7 +477,7 @@ describe("DetailViewSidebar", () => {
       await waitFor(() => expect(tags?.classList).toContain("form-control"));
 
       await waitFor(() => expect(tags?.classList).toContain("disabled"), {
-        timeout: 8000
+        timeout: 8000,
       });
       await waitFor(() => expect(description?.classList).toContain("disabled"));
       await waitFor(() => expect(title?.classList).toContain("disabled"));
@@ -491,11 +491,11 @@ describe("DetailViewSidebar", () => {
       breadcrumb: [],
       fileIndexItem: {
         filePath: "/test.jpg",
-        status: IExifStatus.Ok
+        status: IExifStatus.Ok,
       } as IFileIndexItem,
       status: IExifStatus.Default,
       pageType: PageType.DetailView,
-      colorClassActiveList: []
+      colorClassActiveList: [],
     } as any;
 
     it("Press v to paste return false", () => {
@@ -505,7 +505,7 @@ describe("DetailViewSidebar", () => {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
             cancelable: true,
-            key: "v"
+            key: "v",
           });
           vPasteIsCalled = true;
           callback(event);
@@ -538,7 +538,7 @@ describe("DetailViewSidebar", () => {
           filePath={"/t"}
           state={state}
           dispatch={jest.fn()}
-        ></DetailViewSidebar>
+        ></DetailViewSidebar>,
       );
 
       expect(vPasteIsCalled).toBeTruthy();
@@ -553,7 +553,7 @@ describe("DetailViewSidebar", () => {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
             cancelable: true,
-            key: "v"
+            key: "v",
           });
           vPasteIsCalled = true;
           callback(event);
@@ -586,7 +586,7 @@ describe("DetailViewSidebar", () => {
           filePath={"/t"}
           state={state}
           dispatch={jest.fn()}
-        ></DetailViewSidebar>
+        ></DetailViewSidebar>,
       );
 
       expect(vPasteIsCalled).toBeTruthy();
@@ -601,7 +601,7 @@ describe("DetailViewSidebar", () => {
           const event = new KeyboardEvent("keydown", {
             bubbles: true,
             cancelable: true,
-            key: "c"
+            key: "c",
           });
           cCopyIsCalled = true;
           callback(event);
@@ -634,7 +634,7 @@ describe("DetailViewSidebar", () => {
           filePath={"/t"}
           state={state}
           dispatch={jest.fn()}
-        ></DetailViewSidebar>
+        ></DetailViewSidebar>,
       );
 
       expect(cCopyIsCalled).toBeTruthy();
@@ -651,12 +651,12 @@ describe("DetailViewSidebar", () => {
           breadcrumb: [],
           fileIndexItem: {
             filePath: "/test.jpg",
-            status: IExifStatus.Ok
+            status: IExifStatus.Ok,
           } as IFileIndexItem,
           status: IExifStatus.Default,
           pageType: PageType.DetailView,
-          colorClassActiveList: []
-        } as any
+          colorClassActiveList: [],
+        } as any,
       };
 
       const isInFormSpy = jest
@@ -674,7 +674,7 @@ describe("DetailViewSidebar", () => {
         .spyOn(useKeyboardEvent, "default")
         .mockImplementationOnce(() => {})
         .mockImplementationOnce(() => {})
-        .mockImplementationOnce((key, callback) => {
+        .mockImplementationOnce((_, callback) => {
           callback({ preventDefault: () => {} });
         })
         .mockImplementationOnce(() => {});
@@ -691,7 +691,7 @@ describe("DetailViewSidebar", () => {
       );
 
       const component = render(<TestComponent />, {
-        baseElement: document.body
+        baseElement: document.body,
       });
 
       expect(useKeyboardEventSpy).toBeCalled();

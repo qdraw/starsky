@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import React from "react";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { PageType } from "../../../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";

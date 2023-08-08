@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   ArchiveAction,
-  defaultStateFallback
+  defaultStateFallback,
 } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
@@ -29,7 +29,7 @@ export interface IMenuSearchProps {
 
 export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   state,
-  dispatch
+  dispatch,
 }) => {
   state = defaultStateFallback(state);
 
@@ -41,7 +41,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   // Content
   const MessageNoneSelected = language.text(
     "Niets geselecteerd",
-    "Nothing selected"
+    "Nothing selected",
   );
   const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
   const MessageSelectAction = language.text("Selecteer", "Select");
@@ -49,13 +49,13 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
   const MessageSelectFurther = language.text(
     "Verder selecteren",
-    "Select further"
+    "Select further",
   );
 
   // Selection
   const history = useLocation();
   const [select, setSelect] = React.useState(
-    new URLPath().StringToIUrl(history.location.search).select
+    new URLPath().StringToIUrl(history.location.search).select,
   );
   useEffect(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
@@ -73,15 +73,14 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
 
   // Sidebar
   const [sidebar, setSidebar] = React.useState(
-    new URLPath().StringToIUrl(history.location.search).sidebar
+    new URLPath().StringToIUrl(history.location.search).sidebar,
   );
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
 
   useEffect(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
-  const toggleLabels = () =>
-    new Sidebar(sidebar, setSidebar, history).toggleSidebar();
+  const toggleLabels = () => new Sidebar(setSidebar, history).toggleSidebar();
 
   // download modal
   const [isModalExportOpen, setModalExportOpen] = useState(false);
@@ -98,7 +97,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
             select
               ? new URLPath().MergeSelectFileIndexItem(
                   select,
-                  state.fileIndexItems
+                  state.fileIndexItems,
                 )
               : []
           }

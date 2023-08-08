@@ -15,7 +15,7 @@ describe("ArchiveSidebarColorClass", () => {
         pageType={PageType.Archive}
         fileIndexItems={newIFileIndexItemArray()}
         isReadOnly={false}
-      />
+      />,
     );
   });
 
@@ -26,12 +26,12 @@ describe("ArchiveSidebarColorClass", () => {
           pageType={PageType.Archive}
           fileIndexItems={newIFileIndexItemArray()}
           isReadOnly={false}
-        />
+        />,
       );
     }
     it("colorclass--select class exist", () => {
       expect(wrapperHelper().container.innerHTML).toContain(
-        "colorclass--select"
+        "colorclass--select",
       );
     });
 
@@ -51,12 +51,12 @@ describe("ArchiveSidebarColorClass", () => {
       const dispatch = jest.fn();
       const contextValues = {
         state: newIArchive(),
-        dispatch
+        dispatch,
       } as AppContext.IArchiveContext;
 
       jest.mock("@reach/router", () => ({
         navigate: jest.fn(),
-        globalHistory: jest.fn()
+        globalHistory: jest.fn(),
       }));
 
       // to use with: => import { act } from 'react-dom/test-utils';
@@ -86,7 +86,7 @@ describe("ArchiveSidebarColorClass", () => {
           pageType={PageType.Archive}
           isReadOnly={false}
           fileIndexItems={newIFileIndexItemArray()}
-        />
+        />,
       );
 
       act(() => {
@@ -98,7 +98,7 @@ describe("ArchiveSidebarColorClass", () => {
       expect(dispatch).toBeCalledWith({
         colorclass: 1,
         select: ["test.jpg"],
-        type: "update"
+        type: "update",
       });
 
       useContextSpy.mockClear();

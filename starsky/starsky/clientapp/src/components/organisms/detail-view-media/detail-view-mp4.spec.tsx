@@ -71,7 +71,7 @@ describe("DetailViewMp4", () => {
       figure.click();
 
       expect(screen.queryByTestId("video-time")?.textContent).toBe(
-        "0:00 / 0:00"
+        "0:00 / 0:00",
       );
 
       expect(playSpy).toBeCalled();
@@ -99,7 +99,7 @@ describe("DetailViewMp4", () => {
       Object.defineProperty(HTMLElement.prototype, "offsetParent", {
         get() {
           return this.parentNode;
-        }
+        },
       });
       jest
         .spyOn(HTMLMediaElement.prototype, "load")
@@ -108,7 +108,7 @@ describe("DetailViewMp4", () => {
         });
 
       const progress = component.container.querySelector(
-        "progress"
+        "progress",
       ) as HTMLElement;
 
       // ClickEvent
@@ -117,12 +117,12 @@ describe("DetailViewMp4", () => {
         new MouseEvent("click", {
           bubbles: true,
           cancelable: true,
-          target: progress
-        } as any)
+          target: progress,
+        } as any),
       );
 
       expect(screen.queryByTestId("video-time")?.textContent).toBe(
-        "0:00 / 0:00"
+        "0:00 / 0:00",
       );
 
       expect(playSpy).toBeCalled();
@@ -133,8 +133,8 @@ describe("DetailViewMp4", () => {
     it("state not found and show error", () => {
       const state = {
         fileIndexItem: {
-          status: IExifStatus.NotFoundSourceMissing
-        } as IFileIndexItem
+          status: IExifStatus.NotFoundSourceMissing,
+        } as IFileIndexItem,
       } as IDetailView;
 
       const contextValues = { state, dispatch: jest.fn() };

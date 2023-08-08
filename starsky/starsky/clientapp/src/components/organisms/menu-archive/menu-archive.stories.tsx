@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import React from "react";
 import MenuArchive from "./menu-archive";
 
 export default {

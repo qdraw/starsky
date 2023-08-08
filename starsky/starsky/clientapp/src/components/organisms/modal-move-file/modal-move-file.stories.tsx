@@ -1,4 +1,3 @@
-import React from "react";
 import ModalMoveFile from "./modal-move-file";
 
 export default {

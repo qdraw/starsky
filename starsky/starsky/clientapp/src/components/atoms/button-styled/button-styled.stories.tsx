@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import React from "react";
 import ButtonStyled from "./button-styled";
 
 export default {
@@ -13,7 +12,7 @@ export const Default = () => {
       className="btn btn--default"
       type="submit"
       disabled={false}
-      onClick={(e) => {}}
+      onClick={() => {}}
     >
       Loading...
     </ButtonStyled>

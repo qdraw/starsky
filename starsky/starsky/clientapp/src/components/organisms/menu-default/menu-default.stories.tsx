@@ -1,4 +1,3 @@
-import React from "react";
 import MenuDefault from "./menu-default";
 
 export default {

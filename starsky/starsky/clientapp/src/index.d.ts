@@ -9,3 +9,6 @@
 // source: https://github.com/microsoft/TypeScript-React-Starter/issues/12#issuecomment-385165319
 
 declare module "*.gif";
+declare module "*.jpg";
+declare module "*.svg";
+declare module "*.png";

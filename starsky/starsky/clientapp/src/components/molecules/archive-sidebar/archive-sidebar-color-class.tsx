@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useLocation from "../../../hooks/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
@@ -21,26 +21,26 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
     const history = useLocation();
 
     // show select info
-    const [select, setSelect] = React.useState(
-      new URLPath().getSelect(history.location.search)
+    const [select, setSelect] = useState(
+      new URLPath().getSelect(history.location.search),
     );
     useEffect(() => {
       setSelect(new URLPath().getSelect(history.location.search));
     }, [history.location.search]);
 
     // updated parameters based on select
-    const [selectParams, setSelectParams] = React.useState("");
+    const [selectParams, setSelectParams] = useState("");
     useEffect(() => {
       const subPaths = new URLPath().MergeSelectFileIndexItem(
         select,
-        props.fileIndexItems
+        props.fileIndexItems,
       );
       const selectParamsLocal =
         new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "");
       setSelectParams(selectParamsLocal);
     }, [select, props.fileIndexItems]);
 
-    let { dispatch } = React.useContext(ArchiveContext);
+    const { dispatch } = React.useContext(ArchiveContext);
 
     return (
       <ColorClassSelect

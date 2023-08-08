@@ -1,14 +1,13 @@
-import React from "react";
 import {
-  IFileIndexItem,
-  ImageFormat
+    IFileIndexItem,
+    ImageFormat
 } from "../../../interfaces/IFileIndexItem";
 import BytesFormat from "../../../shared/bytes-format";
 import {
-  parseDateDate,
-  parseDateMonth,
-  parseDateYear,
-  parseTime
+    parseDateDate,
+    parseDateMonth,
+    parseDateYear,
+    parseTime
 } from "../../../shared/date";
 
 interface IFlatListItem {

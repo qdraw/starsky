@@ -4,7 +4,7 @@ import {
   createEvent,
   fireEvent,
   render,
-  screen
+  screen,
 } from "@testing-library/react";
 import React from "react";
 import * as AppContext from "../../../contexts/archive-context";
@@ -57,22 +57,22 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           fileIndexItems: [
             {
               fileName: "test.jpg",
-              parentDirectory: "/"
+              parentDirectory: "/",
             },
             {
               fileName: "test1.jpg",
-              parentDirectory: "/"
-            }
-          ]
+              parentDirectory: "/",
+            },
+          ],
         } as IArchive,
         dispatch: (value: any) => {
           dispatchedValues.push(value);
-        }
+        },
       } as AppContext.IArchiveContext;
 
       jest.mock("@reach/router", () => ({
         navigate: jest.fn(),
-        globalHistory: jest.fn()
+        globalHistory: jest.fn(),
       }));
 
       act(() => {
@@ -148,7 +148,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("click overwrite > generic fail > remove message retry when success", async () => {
       const connectionDefault: IConnectionDefault = {
         statusCode: 200,
-        data: [] as any[]
+        data: [] as any[],
       };
 
       const mockIConnectionDefaultReject: Promise<IConnectionDefault> =
@@ -187,7 +187,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       // force update to show message
       let notification = screen.queryByTestId(
-        "notification-content"
+        "notification-content",
       ) as HTMLElement;
 
       expect(notification).toBeTruthy();
@@ -200,7 +200,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       // force update to show message
       notification = screen.queryByTestId(
-        "notification-content"
+        "notification-content",
       ) as HTMLElement;
       expect(notification).toBeFalsy();
 
@@ -242,9 +242,9 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
             fileName: "test.jpg",
             parentDirectory: "/",
             tags: "test1, test2",
-            status: IExifStatus.Ok
-          }
-        ] as IFileIndexItem[]
+            status: IExifStatus.Ok,
+          },
+        ] as IFileIndexItem[],
       };
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(connectionDefault);
@@ -277,7 +277,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       expect(spy).toBeCalled();
       expect(spy).toBeCalledWith(
         new UrlQuery().prefix + "/api/update",
-        "append=true&collections=true&tags=a&f=%2Ftest.jpg"
+        "append=true&collections=true&tags=a&f=%2Ftest.jpg",
       );
 
       expect(dispatchedValues).toStrictEqual([
@@ -287,8 +287,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           parentDirectory: "/",
           tags: "test1, test2",
           select: ["test.jpg"],
-          status: IExifStatus.Ok
-        }
+          status: IExifStatus.Ok,
+        },
       ]);
 
       act(() => {
@@ -306,9 +306,9 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
             fileName: "test.jpg",
             parentDirectory: "/",
             tags: "test1, readonly",
-            status: IExifStatus.ReadOnly
-          }
-        ] as IFileIndexItem[]
+            status: IExifStatus.ReadOnly,
+          },
+        ] as IFileIndexItem[],
       };
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(connectionDefault);
@@ -338,7 +338,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
 
       const notification = screen.queryByTestId(
-        "notification-content"
+        "notification-content",
       ) as HTMLElement;
       expect(notification).toBeTruthy();
 
@@ -362,15 +362,15 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
             fileName: "test.jpg",
             parentDirectory: "/",
             tags: "test1, test2",
-            status: IExifStatus.Ok
+            status: IExifStatus.Ok,
           },
           {
             fileName: "test1.jpg",
             parentDirectory: "/",
             tags: "test, test2",
-            status: IExifStatus.Ok
-          }
-        ] as IFileIndexItem[]
+            status: IExifStatus.Ok,
+          },
+        ] as IFileIndexItem[],
       };
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(connectionDefault);
@@ -402,7 +402,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       expect(spy).toBeCalled();
       expect(spy).toBeCalledWith(
         new UrlQuery().prefix + "/api/update",
-        "append=true&collections=true&tags=a&f=%2Ftest.jpg%3B%2Ftest1.jpg"
+        "append=true&collections=true&tags=a&f=%2Ftest.jpg%3B%2Ftest1.jpg",
       );
 
       expect(dispatchedValues).toStrictEqual([
@@ -412,7 +412,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           parentDirectory: "/",
           tags: "test1, test2",
           select: ["test.jpg"],
-          status: IExifStatus.Ok
+          status: IExifStatus.Ok,
         },
         {
           type: "update",
@@ -420,8 +420,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           parentDirectory: "/",
           tags: "test, test2",
           select: ["test1.jpg"],
-          status: IExifStatus.Ok
-        }
+          status: IExifStatus.Ok,
+        },
       ]);
 
       component.unmount();
@@ -438,7 +438,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         bubbles: true,
         cancelable: true,
         key: "t",
-        shiftKey: true
+        shiftKey: true,
       });
       window.dispatchEvent(event);
 

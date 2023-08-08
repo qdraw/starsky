@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import DetectAutomaticRotation from "../../../shared/detect-automatic-rotation";
 import FetchGet from "../../../shared/fetch-get";
@@ -20,8 +20,8 @@ export interface IFileHashImageProps {
 
 const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   // To Get the rotation update
-  const [translateRotation, setTranslateRotation] = React.useState(
-    Orientation.Horizontal
+  const [translateRotation, setTranslateRotation] = useState(
+    Orientation.Horizontal,
   );
   useEffect(() => {
     (async () => {
@@ -32,7 +32,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
         return;
       }
       const result = await FetchGet(
-        new UrlQuery().UrlThumbnailJsonApi(props.fileHash)
+        new UrlQuery().UrlThumbnailJsonApi(props.fileHash),
       );
 
       if (result.statusCode === 202) {
@@ -45,12 +45,12 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     })();
   }, [props.fileHash, props.orientation]);
 
-  const [imageUrl, setImageUrl] = React.useState(
+  const [imageUrl, setImageUrl] = useState(
     new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
       props.fileHash,
       props.id,
-      window.innerWidth > 1000
-    )
+      window.innerWidth > 1000,
+    ),
   );
 
   useEffect(() => {
@@ -58,8 +58,8 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
       new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
         props.fileHash,
         props.id,
-        window.innerWidth > 1000
-      )
+        window.innerWidth > 1000,
+      ),
     );
   }, [props.fileHash, props.id]);
 
@@ -81,8 +81,8 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
           new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
             props.fileHash,
             props.id,
-            window.innerWidth > 1000
-          )
+            window.innerWidth > 1000,
+          ),
         );
         if (props.onResetCallback) props.onResetCallback();
       }}

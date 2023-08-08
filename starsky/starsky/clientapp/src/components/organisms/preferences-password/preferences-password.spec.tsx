@@ -2,7 +2,7 @@ import {
   fireEvent,
   render,
   RenderResult,
-  screen
+  screen,
 } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -24,7 +24,7 @@ describe("PreferencesPassword", () => {
       });
 
       const warning = screen.queryByTestId(
-        "preferences-password-warning"
+        "preferences-password-warning",
       ) as HTMLDivElement;
       expect(warning).not.toBeNull();
 
@@ -34,29 +34,29 @@ describe("PreferencesPassword", () => {
     });
 
     function submitPassword(
-      container: RenderResult,
+      _container: RenderResult,
       passwordInput: string,
       changedPassword: string,
       confirmPassword: string,
-      submit: boolean = true
+      submit: boolean = true,
     ) {
       const passwordElement = screen.queryByTestId(
-        "preferences-password-input"
+        "preferences-password-input",
       ) as HTMLInputElement;
       fireEvent.change(passwordElement, { target: { value: passwordInput } });
 
       const passwordChangedElement = screen.queryByTestId(
-        "preferences-password-changed-input"
+        "preferences-password-changed-input",
       ) as HTMLInputElement;
       fireEvent.change(passwordChangedElement, {
-        target: { value: changedPassword }
+        target: { value: changedPassword },
       });
 
       const confirmPasswordElement = screen.queryByTestId(
-        "preferences-password-changed-confirm-input"
+        "preferences-password-changed-confirm-input",
       ) as HTMLInputElement;
       fireEvent.change(confirmPasswordElement, {
-        target: { value: confirmPassword }
+        target: { value: confirmPassword },
       });
 
       if (!submit) {
@@ -65,7 +65,7 @@ describe("PreferencesPassword", () => {
 
       // submit
       const loginContent = screen.queryByTestId(
-        "preferences-password-submit"
+        "preferences-password-submit",
       ) as HTMLButtonElement;
       act(() => {
         loginContent.click();
@@ -78,7 +78,7 @@ describe("PreferencesPassword", () => {
       submitPassword(component, "12345", "password1", "something-else");
 
       const warning = screen.queryByTestId(
-        "preferences-password-warning"
+        "preferences-password-warning",
       ) as HTMLDivElement;
       expect(warning).not.toBeNull();
 
@@ -99,13 +99,13 @@ describe("PreferencesPassword", () => {
 
       submitPassword(component, "12345", "password1", "password1", false);
 
-      let warning = screen.queryByTestId(
-        "preferences-password-warning"
+      const warning = screen.queryByTestId(
+        "preferences-password-warning",
       ) as HTMLDivElement;
       expect(warning).toBeNull();
 
       const loginContent = screen.queryByTestId(
-        "preferences-password-submit"
+        "preferences-password-submit",
       ) as HTMLButtonElement;
 
       // need await here
@@ -116,16 +116,16 @@ describe("PreferencesPassword", () => {
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlAccountChangeSecret(),
-        "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
+        "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1",
       );
 
       const warning1 = screen.queryByTestId(
-        "preferences-password-warning"
+        "preferences-password-warning",
       ) as HTMLDivElement;
       expect(warning1).not.toBeNull();
 
       expect(warning1.textContent).toBe(
-        "Your password has been successfully changed"
+        "Your password has been successfully changed",
       );
 
       component.unmount();
@@ -144,7 +144,7 @@ describe("PreferencesPassword", () => {
       submitPassword(component, "12345", "password1", "password1", false);
 
       const loginContent = screen.queryByTestId(
-        "preferences-password-submit"
+        "preferences-password-submit",
       ) as HTMLButtonElement;
 
       // need await here
@@ -155,11 +155,11 @@ describe("PreferencesPassword", () => {
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlAccountChangeSecret(),
-        "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
+        "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1",
       );
 
       const warning = screen.queryByTestId(
-        "preferences-password-warning"
+        "preferences-password-warning",
       ) as HTMLDivElement;
       expect(warning).not.toBeNull();
 
@@ -181,7 +181,7 @@ describe("PreferencesPassword", () => {
       submitPassword(component, "12345", "password1", "password1", false);
 
       const loginContent = screen.queryByTestId(
-        "preferences-password-submit"
+        "preferences-password-submit",
       ) as HTMLButtonElement;
 
       // need await here
@@ -192,16 +192,16 @@ describe("PreferencesPassword", () => {
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlAccountChangeSecret(),
-        "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
+        "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1",
       );
 
       const warning = screen.queryByTestId(
-        "preferences-password-warning"
+        "preferences-password-warning",
       ) as HTMLDivElement;
       expect(warning).not.toBeNull();
 
       expect(warning.textContent).toBe(
-        "The new password does not meet the criteria"
+        "The new password does not meet the criteria",
       );
 
       component.unmount();

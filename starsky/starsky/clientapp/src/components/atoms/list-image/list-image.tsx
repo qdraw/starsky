@@ -4,7 +4,7 @@ import useLocation from "../../../hooks/use-location";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
-import EmptyImage from "../../../style/images/empty-image.gif";
+import EmptyImage from "../../../../src/style/images/empty-image.gif";
 
 interface IListImageProps {
   children?: React.ReactNode;

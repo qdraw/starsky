@@ -1,4 +1,3 @@
-import React from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { Language } from "../../../shared/language";

@@ -1,7 +1,6 @@
-import React from "react";
 import {
-  IFileIndexItem,
-  ImageFormat
+    IFileIndexItem,
+    ImageFormat
 } from "../../../interfaces/IFileIndexItem";
 import ListImageChildItem from "./list-image-child-item";
 

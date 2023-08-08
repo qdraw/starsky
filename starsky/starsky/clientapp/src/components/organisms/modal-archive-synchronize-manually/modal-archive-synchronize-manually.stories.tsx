@@ -1,4 +1,3 @@
-import React from "react";
 import ModalArchiveSynchronizeManually from "./modal-archive-synchronize-manually";
 
 export default {

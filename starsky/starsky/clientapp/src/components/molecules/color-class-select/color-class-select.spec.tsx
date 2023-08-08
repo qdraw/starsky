@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import {
   IConnectionDefault,
-  newIConnectionDefault
+  newIConnectionDefault,
 } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -20,7 +20,7 @@ describe("ColorClassSelect", () => {
         isEnabled={true}
         filePath={"/test"}
         onToggle={() => {}}
-      />
+      />,
     );
   });
 
@@ -30,8 +30,8 @@ describe("ColorClassSelect", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
       {
         statusCode: 200,
-        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
-      }
+        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[],
+      },
     );
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
@@ -43,12 +43,12 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => {}}
-      />
+        onToggle={() => {}}
+      />,
     );
 
     const colorClass = screen.queryByTestId(
-      "color-class-select-2"
+      "color-class-select-2",
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
@@ -58,7 +58,7 @@ describe("ColorClassSelect", () => {
     expect(fetchPostSpy).toHaveBeenCalledTimes(1);
     expect(fetchPostSpy).toHaveBeenCalledWith(
       new UrlQuery().prefix + "/api/update",
-      "f=%2Ftest1&colorclass=2&collections=true"
+      "f=%2Ftest1&colorclass=2&collections=true",
     );
 
     // Cleanup: To avoid that mocks are shared
@@ -68,7 +68,7 @@ describe("ColorClassSelect", () => {
 
   it("onClick disabled", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      newIConnectionDefault()
+      newIConnectionDefault(),
     );
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
@@ -81,11 +81,11 @@ describe("ColorClassSelect", () => {
         isEnabled={false}
         filePath={"/test1"}
         onToggle={() => {}}
-      />
+      />,
     );
 
     const colorClass = screen.queryByTestId(
-      "color-class-select-2"
+      "color-class-select-2",
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
@@ -108,8 +108,8 @@ describe("ColorClassSelect", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
       {
         statusCode: 200,
-        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
-      }
+        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[],
+      },
     );
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
@@ -122,13 +122,13 @@ describe("ColorClassSelect", () => {
         isEnabled={true}
         filePath={"/test1"}
         onToggle={() => {}}
-      />
+      />,
     );
 
     // need to await this click
 
     let colorClass = screen.queryByTestId(
-      "color-class-select-2"
+      "color-class-select-2",
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
@@ -138,7 +138,7 @@ describe("ColorClassSelect", () => {
     });
 
     colorClass = screen.queryByTestId(
-      "color-class-select-2"
+      "color-class-select-2",
     ) as HTMLAnchorElement;
 
     expect(colorClass.classList).toContain("active");
@@ -149,7 +149,7 @@ describe("ColorClassSelect", () => {
     });
 
     colorClass = screen.queryByTestId(
-      "color-class-select-2"
+      "color-class-select-2",
     ) as HTMLAnchorElement;
 
     expect(colorClass.classList).not.toContain("active");
@@ -165,8 +165,8 @@ describe("ColorClassSelect", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
       {
         statusCode: 404,
-        data: [{ status: IExifStatus.ReadOnly }] as IFileIndexItem[]
-      }
+        data: [{ status: IExifStatus.ReadOnly }] as IFileIndexItem[],
+      },
     );
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
@@ -178,8 +178,8 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => {}}
-      />
+        onToggle={() => {}}
+      />,
     );
 
     const notificationSpy = jest
@@ -187,7 +187,7 @@ describe("ColorClassSelect", () => {
       .mockImplementationOnce(() => <></>);
 
     const colorClass = screen.queryByTestId(
-      "color-class-select-2"
+      "color-class-select-2",
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 
@@ -204,7 +204,7 @@ describe("ColorClassSelect", () => {
   it("when error is it should able to close the warning box", async () => {
     const colorClassUpdateSingleSpy = jest
       .spyOn(ColorClassUpdateSingle, "ColorClassUpdateSingle")
-      .mockImplementationOnce((p1, p2, p3, p4, setIsError) => {
+      .mockImplementationOnce((_p1, _p2, _p3, _p4, setIsError) => {
         setIsError("true");
         return { Update: jest.fn() } as any;
       });
@@ -216,7 +216,7 @@ describe("ColorClassSelect", () => {
         isEnabled={true}
         filePath={"/test1"}
         onToggle={() => {}}
-      />
+      />,
     );
 
     const notificationSpy = jest
@@ -224,8 +224,8 @@ describe("ColorClassSelect", () => {
       .mockImplementationOnce(() => <></>);
 
     // need to await this click
-    let colorClass = screen.queryByTestId(
-      "color-class-select-2"
+    const colorClass = screen.queryByTestId(
+      "color-class-select-2",
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();
 

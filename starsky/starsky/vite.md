@@ -18,5 +18,11 @@ npm install --save prettier
 npm install --save @types/node
 npm install concurrently --save-dev
 npm install --save core-js
-
+npm install --save-dev jest
+npm install --save-dev @types/jest
+npm install --save-dev @testing-library/react
+npm install --save-dev @testing-library/jest-dom
+npm install --save-dev @testing-library/user-event
+npm install --save-dev @types/leaflet
+npm install --save-dev @types/react
 ``````

@@ -3,7 +3,7 @@ import {
   createEvent,
   fireEvent,
   render,
-  screen
+  screen,
 } from "@testing-library/react";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -25,7 +25,7 @@ describe("ModalDetailviewRenameFile", () => {
         state={{} as any}
         isOpen={true}
         handleExit={() => {}}
-      />
+      />,
     );
   });
 
@@ -43,8 +43,8 @@ describe("ModalDetailviewRenameFile", () => {
         fileIndexItem: {
           status: IExifStatus.Ok,
           filePath: "/test/image.jpg",
-          fileName: "image.jpg"
-        }
+          fileName: "image.jpg",
+        },
       } as IDetailView;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -62,18 +62,18 @@ describe("ModalDetailviewRenameFile", () => {
           isOpen={true}
           state={state}
           handleExit={() => {}}
-        ></ModalDetailviewRenameFile>
+        ></ModalDetailviewRenameFile>,
       );
 
       const button = screen.queryByTestId(
-        "modal-detailview-rename-file-btn-default"
+        "modal-detailview-rename-file-btn-default",
       ) as HTMLButtonElement;
 
       const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
       const directoryName = screen.queryByTestId(
-        "form-control"
+        "form-control",
       ) as HTMLInputElement;
 
       // update component + now press a key
@@ -87,7 +87,7 @@ describe("ModalDetailviewRenameFile", () => {
       });
 
       expect(
-        screen.getByTestId("modal-detailview-rename-file-warning-box")
+        screen.getByTestId("modal-detailview-rename-file-warning-box"),
       ).toBeTruthy();
 
       const submitButtonAfter = button.disabled;
@@ -96,7 +96,7 @@ describe("ModalDetailviewRenameFile", () => {
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlDiskRename(),
-        "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff&collections=true"
+        "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff&collections=true",
       );
 
       // cleanup
@@ -109,8 +109,8 @@ describe("ModalDetailviewRenameFile", () => {
         fileIndexItem: {
           status: IExifStatus.Ok,
           filePath: "/test/image.jpg",
-          fileName: "image.jpg"
-        }
+          fileName: "image.jpg",
+        },
       } as IDetailView;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -131,18 +131,18 @@ describe("ModalDetailviewRenameFile", () => {
           isOpen={true}
           state={state}
           handleExit={() => {}}
-        ></ModalDetailviewRenameFile>
+        ></ModalDetailviewRenameFile>,
       );
 
       const button = screen.queryByTestId(
-        "modal-detailview-rename-file-btn-default"
+        "modal-detailview-rename-file-btn-default",
       ) as HTMLButtonElement;
 
       const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
       const directoryName = screen.queryByTestId(
-        "form-control"
+        "form-control",
       ) as HTMLInputElement;
 
       // update component + now press a key
@@ -156,7 +156,7 @@ describe("ModalDetailviewRenameFile", () => {
       });
 
       expect(
-        screen.getByTestId("modal-detailview-rename-file-warning-box")
+        screen.getByTestId("modal-detailview-rename-file-warning-box"),
       ).toBeTruthy();
 
       const submitButtonAfter = button.disabled;
@@ -180,8 +180,8 @@ describe("ModalDetailviewRenameFile", () => {
         fileIndexItem: {
           status: IExifStatus.Ok,
           filePath: "/test/image.jpg",
-          fileName: "image.jpg"
-        }
+          fileName: "image.jpg",
+        },
       } as IDetailView;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -199,15 +199,15 @@ describe("ModalDetailviewRenameFile", () => {
           isOpen={true}
           state={state}
           handleExit={() => {}}
-        ></ModalDetailviewRenameFile>
+        ></ModalDetailviewRenameFile>,
       );
 
       const button = screen.queryByTestId(
-        "modal-detailview-rename-file-btn-default"
+        "modal-detailview-rename-file-btn-default",
       ) as HTMLButtonElement;
 
       const directoryName = screen.queryByTestId(
-        "form-control"
+        "form-control",
       ) as HTMLInputElement;
 
       // update component + now press a key
@@ -223,7 +223,7 @@ describe("ModalDetailviewRenameFile", () => {
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlDiskRename(),
-        "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Fname.jpg&collections=true"
+        "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Fname.jpg&collections=true",
       );
 
       // cleanup
@@ -246,7 +246,7 @@ describe("ModalDetailviewRenameFile", () => {
           state={{} as any}
           isOpen={true}
           handleExit={handleExitSpy}
-        />
+        />,
       );
 
       expect(handleExitSpy).toBeCalled();

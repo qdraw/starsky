@@ -8,14 +8,11 @@ export class Sidebar {
     /* should do nothing */
   };
   private history: IUseLocation;
-  private sidebar: boolean | undefined;
 
   constructor(
-    sidebar: boolean | undefined,
     setSidebar: React.Dispatch<React.SetStateAction<boolean | undefined>>,
-    history: IUseLocation
+    history: IUseLocation,
   ) {
-    this.sidebar = sidebar;
     this.setSidebar = setSidebar;
     this.history = history;
   }
@@ -29,7 +26,7 @@ export class Sidebar {
 
     this.setSidebar(urlObject.details);
     this.history.navigate(new URLPath().IUrlToString(urlObject), {
-      replace: true
+      replace: true,
     });
   }
 }

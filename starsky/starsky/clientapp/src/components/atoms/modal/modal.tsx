@@ -1,5 +1,5 @@
 import "core-js/features/dom-collections/for-each";
-import React from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
@@ -7,7 +7,7 @@ import modalFreezeHelper from "./modal-freeze-helper";
 import modalInserPortalDiv from "./modal-insert-portal-div";
 
 type ModalPropTypes = {
-  children: React.ReactNode;
+  children: ReactNode;
   root?: string;
   id?: string;
   isOpen: boolean;
@@ -20,7 +20,7 @@ export const ModalOpenClassName = "modal-bg--open";
 
 function ifModalOpenHandleExit(
   event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  handleExit: Function
+  handleExit: Function,
 ) {
   const target = event.target as HTMLElement;
   if (target.className.indexOf(ModalOpenClassName) === -1) return;
@@ -34,31 +34,31 @@ export default function Modal({
   isOpen,
   handleExit,
   focusAfterExit,
-  className = ""
+  className = "",
 }: ModalPropTypes): any {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageCloseDialog = language.text("Sluiten", "Close");
 
-  const [hasUpdated, forceUpdate] = React.useState(false);
+  const [hasUpdated, forceUpdate] = useState(false);
 
-  const exitButton = React.useRef<HTMLButtonElement>(null);
-  const modal = React.useRef<HTMLDivElement | null>(null);
+  const exitButton = useRef<HTMLButtonElement>(null);
+  const modal = useRef<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     return modalInserPortalDiv(modal, hasUpdated, forceUpdate, id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const initialRender = React.useRef(false);
-  React.useEffect(() => {
+  const initialRender = useRef(false);
+  useEffect(() => {
     return modalFreezeHelper(
       initialRender,
       root,
       id,
       isOpen,
       exitButton,
-      focusAfterExit
+      focusAfterExit,
     );
   }, [isOpen, focusAfterExit, id, root]);
 
@@ -91,7 +91,7 @@ export default function Modal({
           </div>
         </div>
       </>,
-      modal.current
+      modal.current,
     );
   }
   return null;

@@ -1,4 +1,3 @@
-import React from "react";
 import ModalArchiveRename from "./modal-archive-rename";
 
 export default {

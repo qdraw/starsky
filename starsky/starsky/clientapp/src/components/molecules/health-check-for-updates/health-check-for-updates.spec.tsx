@@ -1,10 +1,9 @@
 import { render } from "@testing-library/react";
-import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as Notification from "../../atoms/notification/notification";
 import HealthCheckForUpdates, {
-  CheckForUpdatesLocalStorageName
+    CheckForUpdatesLocalStorageName
 } from "./health-check-for-updates";
 
 describe("HealthCheckForUpdates", () => {

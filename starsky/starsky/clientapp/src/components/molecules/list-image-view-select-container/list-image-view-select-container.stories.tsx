@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import React from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageBox from "./list-image-view-select-container";

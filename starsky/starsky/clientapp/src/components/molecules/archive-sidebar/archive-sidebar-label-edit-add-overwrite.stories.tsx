@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import React from "react";
 import { ArchiveContextProvider } from "../../../contexts/archive-context";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import ArchiveSidebarLabelEditAddOverwrite from "./archive-sidebar-label-edit-add-overwrite";

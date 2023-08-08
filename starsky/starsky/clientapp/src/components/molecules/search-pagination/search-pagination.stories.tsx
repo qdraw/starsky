@@ -1,4 +1,3 @@
-import React from "react";
 import SearchPagination from "./search-pagination";
 
 export default {

@@ -9,11 +9,11 @@ import DocumentTitle from "../shared/document-title";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url-query";
 
-const ImportPage: FunctionComponent<RouteComponentProps> = (props) => {
+const ImportPage: FunctionComponent<RouteComponentProps> = () => {
   document.title = new DocumentTitle().GetDocumentTitle("Import");
 
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(
-    newIFileIndexItemArray()
+    newIFileIndexItemArray(),
   );
 
   // Content

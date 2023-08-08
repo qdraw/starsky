@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
@@ -18,39 +18,39 @@ interface IModalRenameFolderProps {
 }
 
 const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
-  props
+  props,
 ) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageRenameFolder = language.text(
     "Huidige mapnaam wijzigen",
-    "Rename current folder"
+    "Rename current folder",
   );
   const MessageNonValidDirectoryName: string = language.text(
     "Deze mapnaam is niet valide",
-    "Directory name is not valid"
+    "Directory name is not valid",
   );
   const MessageGeneralError: string = language.text(
     "Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
-    "Something went wrong with the request, please try again later"
+    "Something went wrong with the request, please try again later",
   );
 
   // to show errors
   const useErrorHandler = (initialState: string | null) => {
     return initialState;
   };
-  const [error, setError] = React.useState(useErrorHandler(null));
+  const [error, setError] = useState(useErrorHandler(null));
 
   // when you are waiting on the API
-  const [loading, setIsLoading] = React.useState(false);
+  const [loading, setIsLoading] = useState(false);
 
   // The Updated that is send to the api
-  const [folderName, setFolderName] = React.useState(
-    new FileExtensions().GetFileName(props.subPath)
+  const [folderName, setFolderName] = useState(
+    new FileExtensions().GetFileName(props.subPath),
   );
 
-  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  const [isFormEnabled, setFormEnabled] = useState(true);
 
   // to know where you are
   const history = useLocation();
@@ -62,16 +62,16 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
   function handleUpdateChange(
     event:
       | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+      | React.KeyboardEvent<HTMLDivElement>,
   ) {
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
-    let fieldValue = event.currentTarget.textContent.trim();
+    const fieldValue = event.currentTarget.textContent.trim();
 
     setFolderName(fieldValue);
 
     const isValidDirectoryName = new FileExtensions().IsValidDirectoryName(
-      fieldValue
+      fieldValue,
     );
     if (!isValidDirectoryName) {
       setError(MessageNonValidDirectoryName);
@@ -84,7 +84,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     if (!props.dispatch) return;
     props.dispatch({
       type: "rename-folder",
-      path: path
+      path: path,
     });
   }
 
@@ -92,7 +92,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
    * Send Change request to back-end services
    * @param event : change vent
    */
-  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+  async function pushRenameChange() {
     // Show icon with load ++ disable forms
     setFormEnabled(false);
     setIsLoading(true);
@@ -100,7 +100,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     // subPath style including parent folder
     const filePathAfterChange = props.subPath.replace(
       new FileExtensions().GetFileName(props.subPath),
-      folderName
+      folderName,
     );
 
     // do a rename in the current context
@@ -114,7 +114,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
 
     const result = await FetchPost(
       new UrlQuery().UrlDiskRename(),
-      bodyParams.toString()
+      bodyParams.toString(),
     );
 
     if (result.statusCode !== 200) {
@@ -134,7 +134,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     // redirect to new path (so if you press refresh the image is shown)
     const replacePath = new UrlQuery().updateFilePathHash(
       history.location.search,
-      filePathAfterChange
+      filePathAfterChange,
     );
 
     await history.navigate(replacePath, { replace: true });

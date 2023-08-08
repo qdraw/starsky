@@ -1,4 +1,3 @@
-import React from "react";
 import ModalDatetime from "./modal-edit-datetime";
 
 export default {

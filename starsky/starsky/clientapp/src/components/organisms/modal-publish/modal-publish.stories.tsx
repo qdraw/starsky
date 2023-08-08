@@ -1,4 +1,3 @@
-import React from "react";
 import ModalPublish from "./modal-publish";
 
 export default {

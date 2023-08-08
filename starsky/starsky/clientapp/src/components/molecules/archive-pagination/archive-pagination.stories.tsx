@@ -1,4 +1,3 @@
-import React from "react";
 import { newIRelativeObjects } from "../../../interfaces/IDetailView";
 import ArchivePagination from "./archive-pagination";
 

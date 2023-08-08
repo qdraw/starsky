@@ -18,7 +18,7 @@ describe("MenuSearch", () => {
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
           dispatch={jest.fn()}
-        />
+        />,
       );
 
       let hamburger = screen.queryByTestId("hamburger") as HTMLDivElement;
@@ -42,12 +42,12 @@ describe("MenuSearch", () => {
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
           dispatch={jest.fn()}
-        />
+        />,
       );
 
       expect(globalHistory.location.search).toBe("?select=1");
 
-      let selected1 = screen.queryByTestId("selected-1") as HTMLDivElement;
+      const selected1 = screen.queryByTestId("selected-1") as HTMLDivElement;
 
       act(() => {
         selected1.click();
@@ -74,9 +74,9 @@ describe("MenuSearch", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -88,7 +88,7 @@ describe("MenuSearch", () => {
         .mockImplementationOnce(() => contextValues);
 
       const component = render(
-        <MenuSearch state={undefined as any} dispatch={jest.fn()} />
+        <MenuSearch state={undefined as any} dispatch={jest.fn()} />,
       );
 
       expect(useHotkeysSpy).toBeCalled();

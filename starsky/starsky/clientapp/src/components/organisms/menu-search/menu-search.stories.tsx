@@ -1,4 +1,3 @@
-import React from "react";
 import MenuSearch from "./menu-search";
 
 export default {

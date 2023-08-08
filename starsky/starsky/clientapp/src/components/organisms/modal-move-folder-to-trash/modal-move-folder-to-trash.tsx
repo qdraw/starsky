@@ -1,4 +1,3 @@
-import React from "react";
 import { useSocketsEventName } from "../../../hooks/realtime/use-sockets.const";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";

@@ -1,4 +1,3 @@
-import React from "react";
 import PreferencesUsername from "./preferences-username";
 
 export default {

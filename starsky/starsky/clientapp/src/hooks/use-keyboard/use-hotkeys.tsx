@@ -26,14 +26,15 @@ export interface IHotkeysKeyboardEvent {
     ```
  * @param regex - the or statement
  * @param callback - function that is called
- * @param dependencies - deps array 
+ * @param _dependencies - deps array 
  */
 function useHotKeys(
   predefined: IHotkeysKeyboardEvent = { key: "" },
   callback: (event: KeyboardEvent) => void = () => {
     /* should do nothing, you should overwrite this */
   },
-  dependencies: any = []
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _dependencies: any = [],
 ) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
@@ -47,7 +48,7 @@ function useHotKeys(
         altKey: eventAltKey,
         ctrlKey: eventCtrlKey,
         metaKey: eventMetaKey,
-        shiftKey: eventShiftKey
+        shiftKey: eventShiftKey,
       } = event;
 
       const {
@@ -56,7 +57,7 @@ function useHotKeys(
         ctrlKey: preDefinedCtrlKey = false,
         metaKey: preDefinedMetaKey = false,
         shiftKey: preDefinedShiftKey = false,
-        ctrlKeyOrMetaKey: preDefinedCtrlKeyOrMetaKey = false
+        ctrlKeyOrMetaKey: preDefinedCtrlKeyOrMetaKey = false,
       } = predefined;
 
       if (

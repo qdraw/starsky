@@ -1,5 +1,3 @@
-import React from "react";
-
 type SelectPropTypes = {
   children?: React.ReactNode;
   selectOptions: string[] | undefined;
@@ -11,7 +9,7 @@ const Select: React.FunctionComponent<SelectPropTypes> = ({
   children,
   selectOptions,
   callback,
-  selected
+  selected,
 }) => {
   const change = (value: string) => {
     if (!callback) {
@@ -31,7 +29,7 @@ const Select: React.FunctionComponent<SelectPropTypes> = ({
       data-test="select"
       onChange={(e) => change(e.target.value)}
     >
-      {selectOptions.map((value, index) => {
+      {selectOptions.map((value) => {
         return (
           <option key={value} value={value}>
             {value}

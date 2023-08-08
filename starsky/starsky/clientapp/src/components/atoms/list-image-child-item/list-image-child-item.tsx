@@ -1,4 +1,3 @@
-import React from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ListImage from "../list-image/list-image";
 

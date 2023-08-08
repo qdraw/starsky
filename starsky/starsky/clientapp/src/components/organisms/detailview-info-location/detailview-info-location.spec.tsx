@@ -1,7 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
-import React from "react";
 import * as useLocation from "../../../hooks/use-location";
 
+import React from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import * as ModalGeo from "../modal-geo/modal-geo";

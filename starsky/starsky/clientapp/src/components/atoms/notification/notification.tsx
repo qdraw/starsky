@@ -1,4 +1,3 @@
-import React from "react";
 import Portal, { PortalId } from "../portal/portal";
 
 type NotificationPropTypes = {

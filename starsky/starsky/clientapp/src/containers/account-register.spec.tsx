@@ -4,7 +4,7 @@ import {
   render,
   RenderResult,
   screen,
-  waitFor
+  waitFor,
 } from "@testing-library/react";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import * as FetchGet from "../shared/fetch-get";
@@ -17,7 +17,7 @@ describe("AccountRegister", () => {
     jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(
-        () => Promise.resolve({ statusCode: 4638 }) as any
+        () => Promise.resolve({ statusCode: 4638 }) as any,
       );
     render(<AccountRegister />);
   });
@@ -26,7 +26,7 @@ describe("AccountRegister", () => {
     jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(
-        () => Promise.resolve({ statusCode: 876 }) as any
+        () => Promise.resolve({ statusCode: 876 }) as any,
       );
     const component = render(<AccountRegister />);
     expect(screen.getByTestId("toc")).toBeTruthy();
@@ -38,7 +38,7 @@ describe("AccountRegister", () => {
     jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(
-        () => Promise.resolve({ statusCode: 123 }) as any
+        () => Promise.resolve({ statusCode: 123 }) as any,
       );
     const component = render(<AccountRegister />);
     expect(component.getByTestId("privacy")).toBeTruthy();
@@ -51,7 +51,7 @@ describe("AccountRegister", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 403,
-        data: null
+        data: null,
       } as IConnectionDefault);
     jest.spyOn(FetchGet, "default").mockReset();
     const fetchGetSpy = jest
@@ -71,7 +71,7 @@ describe("AccountRegister", () => {
     expect(password.disabled).toBeTruthy();
 
     const confirmPassword = screen.getByTestId(
-      "confirm-password"
+      "confirm-password",
     ) as HTMLInputElement;
     expect(confirmPassword.disabled).toBeTruthy();
 
@@ -85,7 +85,7 @@ describe("AccountRegister", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 200,
-        data: null
+        data: null,
       } as IConnectionDefault);
 
     const fetchGetSpy = jest
@@ -105,7 +105,7 @@ describe("AccountRegister", () => {
     expect(password.disabled).toBeFalsy();
 
     const confirmPassword = screen.getByTestId(
-      "confirm-password"
+      "confirm-password",
     ) as HTMLInputElement;
     expect(confirmPassword.disabled).toBeFalsy();
 
@@ -119,7 +119,7 @@ describe("AccountRegister", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 202,
-        data: null
+        data: null,
       } as IConnectionDefault);
 
     const fetchGetSpy = jest
@@ -139,7 +139,7 @@ describe("AccountRegister", () => {
     expect(password.disabled).toBeFalsy();
 
     const confirmPassword = screen.getByTestId(
-      "confirm-password"
+      "confirm-password",
     ) as HTMLInputElement;
     expect(confirmPassword.disabled).toBeFalsy();
 
@@ -159,7 +159,7 @@ describe("AccountRegister", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 200,
-        data: null
+        data: null,
       } as IConnectionDefault);
 
     jest
@@ -174,7 +174,7 @@ describe("AccountRegister", () => {
     });
 
     const button = screen.queryByTestId(
-      "account-register-submit"
+      "account-register-submit",
     ) as HTMLButtonElement;
 
     act(() => {
@@ -183,14 +183,15 @@ describe("AccountRegister", () => {
 
     const error = screen.queryByTestId("account-register-error") as HTMLElement;
     expect(error).toBeTruthy();
+    container.unmount();
   });
 
   function submitEmailPassword(
-    container: RenderResult,
+    _container: RenderResult,
     email: string,
     password: string,
     confirmPassword: string,
-    submit: boolean = true
+    submit: boolean = true,
   ) {
     // email
     const emailElement = screen.queryByTestId("email") as HTMLInputElement;
@@ -198,16 +199,16 @@ describe("AccountRegister", () => {
 
     // password
     const passwordElement = screen.queryByTestId(
-      "password"
+      "password",
     ) as HTMLInputElement;
     fireEvent.change(passwordElement, { target: { value: password } });
 
     // confirm-password
     const confirmPasswordElement = screen.queryByTestId(
-      "confirm-password"
+      "confirm-password",
     ) as HTMLInputElement;
     fireEvent.change(confirmPasswordElement, {
-      target: { value: confirmPassword }
+      target: { value: confirmPassword },
     });
 
     if (!submit) {
@@ -216,7 +217,7 @@ describe("AccountRegister", () => {
 
     // submit
     const loginContent = screen.queryByTestId(
-      "account-register-form"
+      "account-register-form",
     ) as HTMLFormElement;
     act(() => {
       loginContent.submit();
@@ -228,7 +229,7 @@ describe("AccountRegister", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 200,
-        data: null
+        data: null,
       } as IConnectionDefault);
 
     jest
@@ -252,7 +253,7 @@ describe("AccountRegister", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 200,
-        data: null
+        data: null,
       } as IConnectionDefault);
 
     jest
@@ -276,7 +277,7 @@ describe("AccountRegister", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 200,
-        data: null
+        data: null,
       } as IConnectionDefault);
 
     jest
@@ -287,7 +288,7 @@ describe("AccountRegister", () => {
     const mockPostIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 200,
-        data: "Ok"
+        data: "Ok",
       } as IConnectionDefault);
 
     const fetchPostSpy = jest
@@ -306,7 +307,7 @@ describe("AccountRegister", () => {
 
     expect(fetchPostSpy).toBeCalledWith(
       new UrlQuery().UrlAccountRegisterApi(),
-      `Email=dont@mail.me&Password=987654321&ConfirmPassword=987654321`
+      `Email=dont@mail.me&Password=987654321&ConfirmPassword=987654321`,
     );
   });
 
@@ -315,7 +316,7 @@ describe("AccountRegister", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 200,
-        data: null
+        data: null,
       } as IConnectionDefault);
 
     jest
@@ -329,7 +330,7 @@ describe("AccountRegister", () => {
     const mockPostIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 400,
-        data: null
+        data: null,
       } as IConnectionDefault);
 
     const fetchPostSpy = jest
@@ -346,12 +347,12 @@ describe("AccountRegister", () => {
       "dont@mail.me",
       "987654321",
       "987654321",
-      false
+      false,
     );
 
     // submit & await
     const loginContent = screen.queryByTestId(
-      "account-register-form"
+      "account-register-form",
     ) as HTMLFormElement;
 
     // need to await
@@ -374,7 +375,7 @@ describe("AccountRegister", () => {
     const mockPostIConnectionDefault: Promise<IConnectionDefault> =
       Promise.resolve({
         statusCode: 200,
-        data: null
+        data: null,
       } as IConnectionDefault);
 
     const fetchPostSpy = jest
@@ -406,7 +407,7 @@ describe("AccountRegister", () => {
 
     expect(fetchPostSpy).toHaveBeenCalledWith(
       expect.any(String),
-      "Email=test@example.com&Password=password&ConfirmPassword=password"
+      "Email=test@example.com&Password=password&ConfirmPassword=password",
     );
 
     await waitFor(() => {

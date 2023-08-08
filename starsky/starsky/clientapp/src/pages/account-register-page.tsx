@@ -1,8 +1,8 @@
 import { RouteComponentProps } from "@reach/router";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import AccountRegister from "../containers/account-register";
 
-const AccountRegisterPage: FunctionComponent<RouteComponentProps> = (props) => {
+const AccountRegisterPage: FunctionComponent<RouteComponentProps> = () => {
   return <AccountRegister />;
 };
 

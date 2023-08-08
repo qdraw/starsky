@@ -1,6 +1,6 @@
 import { globalHistory } from "@reach/router";
 import { act, render, screen } from "@testing-library/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { PageType } from "../../../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import ArchiveSidebar from "./archive-sidebar";
@@ -16,14 +16,14 @@ describe("ArchiveSidebar", () => {
         isReadOnly={true}
         colorClassUsage={[]}
         fileIndexItems={newIFileIndexItemArray()}
-      />
+      />,
     );
   });
 
   describe("with mount", () => {
     beforeEach(() => {
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
-      jest.spyOn(React, "useLayoutEffect").mockImplementation(React.useEffect);
+      jest.spyOn(React, "useLayoutEffect").mockImplementation(useEffect);
 
       globalHistory.navigate("/?sidebar=true");
     });
@@ -41,7 +41,7 @@ describe("ArchiveSidebar", () => {
           isReadOnly={true}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />
+        />,
       );
 
       act(() => {
@@ -61,11 +61,11 @@ describe("ArchiveSidebar", () => {
           isReadOnly={false}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />
+        />,
       );
 
       const element = screen.queryByTestId(
-        "sidebar-selection-none"
+        "sidebar-selection-none",
       ) as HTMLDivElement;
 
       expect(element).toBeTruthy();
@@ -81,11 +81,11 @@ describe("ArchiveSidebar", () => {
           isReadOnly={true}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />
+        />,
       );
 
       const element = screen.queryByTestId(
-        "sidebar-read-only"
+        "sidebar-read-only",
       ) as HTMLDivElement;
 
       expect(element).toBeTruthy();
@@ -101,7 +101,7 @@ describe("ArchiveSidebar", () => {
           isReadOnly={false}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />
+        />,
       );
 
       Object.defineProperty(window, "scrollY", { value: 1 });
@@ -122,7 +122,7 @@ describe("ArchiveSidebar", () => {
           isReadOnly={false}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />
+        />,
       );
 
       window.dispatchEvent(new Event("scroll"));

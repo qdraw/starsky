@@ -17,25 +17,25 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo(
     const MessageSelectionName = language.text("Selectie", "Selection");
     const MessageReadOnlyFolder = language.text(
       "Alleen lezen map",
-      "Read only folder"
+      "Read only folder",
     );
     const MessageUpdateLabels = language.text(
       "Labels wijzigingen",
-      "Update labels"
+      "Update labels",
     );
     const MessageColorClassification = language.text(
       "Kleur-Classificatie",
-      "Color Classification"
+      "Color Classification",
     );
 
     // Update view based on url parameters
     const history = useLocation();
     const [isSidebar, setIsSidebar] = React.useState(
-      new URLPath().StringToIUrl(history.location.search).sidebar
+      new URLPath().StringToIUrl(history.location.search).sidebar,
     );
     useEffect(() => {
       const sidebarLocal = new URLPath().StringToIUrl(
-        history.location.search
+        history.location.search,
       ).sidebar;
       setIsSidebar(sidebarLocal);
     }, [history.location.search]);
@@ -59,7 +59,7 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo(
     /**
      * to avoid changes in location when scrolling while the sidebar is open
      */
-    const listener = (e: Event) => {
+    const listener = () => {
       if (!window.scrollY) return;
       document.body.style.top = `-${window.scrollY}px`;
     };
@@ -101,7 +101,7 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default ArchiveSidebar;

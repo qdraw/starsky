@@ -1,5 +1,5 @@
 import { Link, RouteComponentProps } from "@reach/router";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import MenuDefault from "../components/organisms/menu-default/menu-default";
 import useGlobalSettings from "../hooks/use-global-settings";
 import { Language } from "../shared/language";
@@ -13,7 +13,7 @@ const NotFoundPage: FunctionComponent<RouteComponentProps<any>> = () => {
   const MessageNotFound = language.text("Oeps niet gevonden", "Not Found");
   const MessageGoToHome = language.text(
     "Ga naar de homepagina",
-    "Go to the homepage"
+    "Go to the homepage",
   );
 
   return (

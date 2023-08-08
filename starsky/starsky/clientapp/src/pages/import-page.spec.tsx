@@ -32,7 +32,8 @@ describe("ImportPage", () => {
       });
     const dropAreaSpy = jest
       .spyOn(DropArea, "default")
-      .mockImplementationOnce(({ ...props }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .mockImplementationOnce(() => {
         return <></>;
       });
     const modal = jest

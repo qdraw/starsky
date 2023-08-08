@@ -4,7 +4,7 @@ import {
   fireEvent,
   render,
   RenderResult,
-  screen
+  screen,
 } from "@testing-library/react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -23,7 +23,7 @@ describe("ModalArchiveMkdir", () => {
         isOpen={true}
         subPath="/"
         handleExit={() => {}}
-      ></ModalDatetime>
+      ></ModalDatetime>,
     );
   });
   describe("with Context", () => {
@@ -33,14 +33,14 @@ describe("ModalArchiveMkdir", () => {
 
     it("no date input", () => {
       const modal = render(
-        <ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />
+        <ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />,
       );
 
       expect(screen.getByTestId("modal-edit-datetime-non-valid")).toBeTruthy();
 
       // and button is disabled
       const submitButtonBefore = screen.queryByTestId(
-        "modal-edit-datetime-btn-default"
+        "modal-edit-datetime-btn-default",
       ) as HTMLButtonElement;
       expect(submitButtonBefore).not.toBeNull();
 
@@ -56,34 +56,35 @@ describe("ModalArchiveMkdir", () => {
           subPath={"/test"}
           isOpen={true}
           handleExit={() => {}}
-        />
+        />,
       );
 
       // no warning
       expect(screen.queryByTestId("modal-edit-datetime-non-valid")).toBeFalsy();
 
       const submitButtonBefore = screen.queryByTestId(
-        "modal-edit-datetime-btn-default"
+        "modal-edit-datetime-btn-default",
       ) as HTMLButtonElement;
       expect(submitButtonBefore).not.toBeNull();
 
       // and button is NOT disabled
       expect(submitButtonBefore.disabled).toBeFalsy();
+      modal.unmount();
     });
 
     async function fireEventOnFormControl(
-      modal: RenderResult,
+      _modal: RenderResult,
       dataName: string,
-      input: string
+      input: string,
     ) {
       const formControls = screen.queryAllByTestId("form-control");
 
       const year = formControls.find(
-        (p) => p.getAttribute("data-name") === dataName
+        (p) => p.getAttribute("data-name") === dataName,
       ) as HTMLElement;
       // use focusout instead of .blur
       const blurEventYear = createEvent.focusOut(year, {
-        textContent: input
+        textContent: input,
       });
 
       year.innerHTML = input;
@@ -107,7 +108,7 @@ describe("ModalArchiveMkdir", () => {
           handleExit={() => {
             // done();
           }}
-        />
+        />,
       );
 
       await fireEventOnFormControl(modal, "year", "1998");
@@ -124,7 +125,7 @@ describe("ModalArchiveMkdir", () => {
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().prefix + "/api/update",
-        "f=%2Ftest&datetime=1998-12-01T13%3A05%3A05"
+        "f=%2Ftest&datetime=1998-12-01T13%3A05%3A05",
       );
     });
 
@@ -143,7 +144,7 @@ describe("ModalArchiveMkdir", () => {
           subPath="/test.jpg"
           isOpen={true}
           handleExit={handleExitSpy}
-        />
+        />,
       );
 
       expect(handleExitSpy).toBeCalled();

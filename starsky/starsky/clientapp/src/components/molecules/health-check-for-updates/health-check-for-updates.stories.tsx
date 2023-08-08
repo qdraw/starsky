@@ -1,6 +1,5 @@
-import React from "react";
 import HealthCheckForUpdates, {
-  CheckForUpdatesLocalStorageName
+    CheckForUpdatesLocalStorageName
 } from "./health-check-for-updates";
 
 export default {

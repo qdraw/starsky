@@ -9,9 +9,9 @@ describe("sidebar", () => {
   beforeEach(() => {
     navigateSpy = jest.fn();
     setSidebarSpy = jest.fn();
-    sidebar = new Sidebar(true, setSidebarSpy, {
+    sidebar = new Sidebar(setSidebarSpy, {
       location: globalHistory.location,
-      navigate: navigateSpy
+      navigate: navigateSpy,
     });
   });
 
@@ -26,9 +26,9 @@ describe("sidebar", () => {
       globalHistory.navigate("/test?sidebar=true");
 
       // invoke after update
-      sidebar = new Sidebar(true, setSidebarSpy, {
+      sidebar = new Sidebar(setSidebarSpy, {
         location: globalHistory.location,
-        navigate: navigateSpy
+        navigate: navigateSpy,
       });
 
       sidebar.toggleSidebar();

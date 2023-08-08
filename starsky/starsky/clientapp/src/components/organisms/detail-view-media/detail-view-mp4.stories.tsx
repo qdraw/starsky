@@ -1,4 +1,3 @@
-import React from "react";
 import DetailViewMp4 from "./detail-view-mp4";
 
 export default {

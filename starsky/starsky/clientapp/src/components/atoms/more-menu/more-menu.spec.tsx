@@ -1,5 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
-import React from "react";
+import { useState } from "react";
 import MoreMenu, { MoreMenuEventCloseConst } from "./more-menu";
 
 describe("More Menu", () => {
@@ -8,7 +8,7 @@ describe("More Menu", () => {
   });
 
   function MoreMenuWrapper() {
-    const [_, setEnableMoreMenu] = React.useState(false);
+    const [_, setEnableMoreMenu] = useState(false);
     return <MoreMenu setEnableMoreMenu={setEnableMoreMenu}>test</MoreMenu>;
   }
 

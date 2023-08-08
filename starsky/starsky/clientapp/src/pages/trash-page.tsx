@@ -1,5 +1,5 @@
 import { RouteComponentProps } from "@reach/router";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import Preloader from "../components/atoms/preloader/preloader";
 import ApplicationException from "../components/organisms/application-exception/application-exception";
 import ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";

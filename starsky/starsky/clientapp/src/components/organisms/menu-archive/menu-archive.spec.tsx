@@ -6,7 +6,7 @@ import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
 import {
   IConnectionDefault,
-  newIConnectionDefault
+  newIConnectionDefault,
 } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -81,9 +81,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -112,9 +112,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -145,9 +145,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -187,9 +187,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -232,9 +232,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const dispatch = jest.fn();
       const contextValues = { state, dispatch };
@@ -250,7 +250,7 @@ describe("MenuArchive", () => {
                 if (props.dispatch) {
                   props.dispatch({
                     type: "rename-folder",
-                    path: "t"
+                    path: "t",
                   });
                 }
               }}
@@ -279,7 +279,7 @@ describe("MenuArchive", () => {
       expect(dispatch).toBeCalled();
       expect(dispatch).toBeCalledWith({
         type: "rename-folder",
-        path: "t"
+        path: "t",
       });
 
       component.unmount();
@@ -298,9 +298,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -351,9 +351,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -402,9 +402,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -453,9 +453,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -502,9 +502,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -561,9 +561,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -627,9 +627,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -666,9 +666,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -693,8 +693,8 @@ describe("MenuArchive", () => {
       const connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [
-          { fileName: "test.jpg", parentDirectory: "/" }
-        ] as IFileIndexItem[]
+          { fileName: "test.jpg", parentDirectory: "/" },
+        ] as IFileIndexItem[],
       };
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve(connectionDefault);
@@ -713,7 +713,7 @@ describe("MenuArchive", () => {
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlMoveToTrashApi(),
-        "f=%2Fundefined%2Ftest1.jpg&Tags=%21delete%21&append=true&Colorclass=8&collections=true"
+        "f=%2Fundefined%2Ftest1.jpg&Tags=%21delete%21&append=true&Colorclass=8&collections=true",
       );
 
       await act(async () => {
@@ -732,9 +732,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -785,9 +785,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -839,9 +839,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -884,9 +884,9 @@ describe("MenuArchive", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 

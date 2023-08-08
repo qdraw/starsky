@@ -1,4 +1,3 @@
-import React from "react";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
 import ListImage from "./list-image";
 

@@ -7,7 +7,7 @@ import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
 import {
   IConnectionDefault,
-  newIConnectionDefault
+  newIConnectionDefault,
 } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -18,7 +18,7 @@ import MenuTrash from "./menu-trash";
 describe("MenuTrash", () => {
   it("renders", () => {
     render(
-      <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
+      <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />,
     );
   });
 
@@ -32,9 +32,9 @@ describe("MenuTrash", () => {
           {
             status: IExifStatus.Deleted,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
 
       contextValues = { state, dispatch: jest.fn() };
@@ -55,7 +55,10 @@ describe("MenuTrash", () => {
 
     it("open hamburger menu (MenuTrash)", () => {
       const component = render(
-        <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
+        <MenuTrash
+          state={{ fileIndexItems: [] } as any}
+          dispatch={jest.fn()}
+        />,
       );
 
       let hamburger = screen.queryByTestId("hamburger") as HTMLDivElement;
@@ -75,11 +78,11 @@ describe("MenuTrash", () => {
 
     it("select is not disabled", () => {
       const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />,
       );
 
       const menuTrashItemSelect = screen.queryByTestId(
-        "menu-trash-item-select"
+        "menu-trash-item-select",
       ) as HTMLDivElement;
       expect(menuTrashItemSelect).toBeTruthy();
 
@@ -101,11 +104,11 @@ describe("MenuTrash", () => {
       });
 
       const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />,
       );
 
       const menuTrashItemSelect = screen.queryByTestId(
-        "menu-trash-item-select"
+        "menu-trash-item-select",
       ) as HTMLDivElement;
       expect(menuTrashItemSelect).toBeTruthy();
 
@@ -127,11 +130,11 @@ describe("MenuTrash", () => {
       });
 
       const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />,
       );
 
       const menuContext = screen.queryByTestId(
-        "menu-context"
+        "menu-context",
       ) as HTMLInputElement;
       const menuContextParent = menuContext.parentElement as HTMLInputElement;
       expect(menuContextParent.classList).not.toContain("disabled");
@@ -174,11 +177,11 @@ describe("MenuTrash", () => {
       });
 
       const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />,
       );
 
       const menuContext = screen.queryByTestId(
-        "menu-context"
+        "menu-context",
       ) as HTMLInputElement;
       const menuContextParent = menuContext.parentElement as HTMLInputElement;
       expect(menuContextParent.classList).not.toContain("disabled");
@@ -215,7 +218,7 @@ describe("MenuTrash", () => {
       });
 
       const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />,
       );
 
       const item = screen.queryByTestId("delete");
@@ -256,7 +259,7 @@ describe("MenuTrash", () => {
       });
 
       const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />,
       );
 
       const item = screen.queryByTestId("delete");
@@ -308,7 +311,7 @@ describe("MenuTrash", () => {
       });
 
       const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />,
       );
 
       const item = screen.queryByTestId("restore-from-trash");
@@ -323,7 +326,7 @@ describe("MenuTrash", () => {
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlReplaceApi(),
-        "fieldName=tags&search=%21delete%21&f=%2Fundefined%2Ftest1.jpg"
+        "fieldName=tags&search=%21delete%21&f=%2Fundefined%2Ftest1.jpg",
       );
 
       // cleanup
@@ -349,9 +352,9 @@ describe("MenuTrash", () => {
           {
             status: IExifStatus.Ok,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg"
-          }
-        ]
+            fileName: "test1.jpg",
+          },
+        ],
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -363,7 +366,7 @@ describe("MenuTrash", () => {
         .mockImplementationOnce(() => contextValues);
 
       const component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />,
       );
 
       expect(useHotkeysSpy).toBeCalled();

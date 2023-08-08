@@ -1,4 +1,3 @@
-import React from "react";
 import MenuDetailView from "./menu-detail-view";
 
 export default {

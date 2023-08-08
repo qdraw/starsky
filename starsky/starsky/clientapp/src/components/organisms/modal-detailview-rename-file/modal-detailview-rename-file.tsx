@@ -26,20 +26,20 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
   const language = new Language(settings.language);
   const MessageNonValidExtension: string = language.text(
     "Dit bestand kan zo niet worden weggeschreven",
-    "This file cannot be saved"
+    "This file cannot be saved",
   );
   const MessageChangeToDifferentExtension = language.text(
     "Let op! Je veranderd de extensie van het bestand, " +
       "deze kan hierdoor onleesbaar worden",
-    "Pay attention! You change the file extension, which can make it unreadable"
+    "Pay attention! You change the file extension, which can make it unreadable",
   );
   const MessageGeneralError: string = language.text(
     "Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
-    "Something went wrong with the request, please try again later"
+    "Something went wrong with the request, please try again later",
   );
   const MessageRenameFileName = language.text(
     "Bestandsnaam wijzigen",
-    "Rename file name"
+    "Rename file name",
   );
 
   // Fallback for no context
@@ -88,18 +88,18 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
   function handleUpdateChange(
     event:
       | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+      | React.KeyboardEvent<HTMLDivElement>,
   ) {
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
-    let fieldValue = event.currentTarget.textContent.trim();
+    const fieldValue = event.currentTarget.textContent.trim();
 
     setFileName(fieldValue);
     setButtonState(true);
 
     const extensionsState = new FileExtensions().MatchExtension(
       state.fileIndexItem.fileName,
-      fieldValue
+      fieldValue,
     );
     const isValidFileName = new FileExtensions().IsValidFileName(fieldValue);
 
@@ -113,14 +113,14 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
     }
   }
 
-  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+  async function pushRenameChange() {
     // Show icon with load ++ disable forms
     setFormEnabled(false);
     setIsLoading(true);
 
     const filePathAfterChange = state.fileIndexItem.filePath.replace(
       state.fileIndexItem.fileName,
-      fileName
+      fileName,
     );
 
     // API call
@@ -129,12 +129,12 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
     bodyParams.append("to", filePathAfterChange);
     bodyParams.append(
       "collections",
-      state.collections !== undefined ? state.collections.toString() : "true"
+      state.collections !== undefined ? state.collections.toString() : "true",
     );
 
     const result = await FetchPost(
       new UrlQuery().UrlDiskRename(),
-      bodyParams.toString()
+      bodyParams.toString(),
     );
 
     if (result.statusCode !== 200) {
@@ -149,7 +149,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
     // redirect to new path (so if you press refresh the image is shown)
     const replacePath = new UrlQuery().updateFilePathHash(
       history.location.search,
-      filePathAfterChange
+      filePathAfterChange,
     );
     await history.navigate(replacePath, { replace: true });
 

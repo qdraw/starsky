@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export interface ISwitchButtonProps {
   onToggle(value: boolean, name?: string): void;
@@ -11,13 +11,13 @@ export interface ISwitchButtonProps {
 }
 
 function SwitchButton(props: ISwitchButtonProps) {
-  const [random, setRandom] = React.useState(0);
+  const [random, setRandom] = useState(0);
 
   useEffect(() => {
     setRandom(Math.ceil(Math.random() * 100));
   }, []);
 
-  const [checked, setChecked] = React.useState(props.isOn ? props.isOn : false);
+  const [checked, setChecked] = useState(props.isOn ? props.isOn : false);
 
   useEffect(() => {
     if (props.isOn === undefined) return;

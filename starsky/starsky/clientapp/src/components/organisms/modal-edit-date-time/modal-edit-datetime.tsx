@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import {
@@ -9,7 +9,7 @@ import {
   parseDateMonth,
   parseDateYear,
   parseTime,
-  parseTimeHour
+  parseTimeHour,
 } from "../../../shared/date";
 import FetchPost from "../../../shared/fetch-post";
 import { Language } from "../../../shared/language";
@@ -25,14 +25,14 @@ interface IModalDatetimeProps {
 }
 
 const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
-  props
+  props,
 ) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageModalDatetime = language.text(
     "Datum en tijd bewerken",
-    "Edit date and time"
+    "Edit date and time",
   );
   const MessageYear = language.text("Jaar", "Year");
   const MessageMonth = language.text("Maand", "Month");
@@ -40,20 +40,20 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
   const MessageTime = language.text("Tijd", "Time");
   const MessageErrorDatetime = language.text(
     "De datum en tijd zijn incorrect ingegeven",
-    "The date and time were entered incorrectly"
+    "The date and time were entered incorrectly",
   );
 
-  const [isFormEnabled] = React.useState(true);
+  const [isFormEnabled] = useState(true);
 
-  const [fullYear, setFullYear] = React.useState(parseDateYear(props.dateTime));
-  const [month, setMonth] = React.useState(parseDateMonth(props.dateTime));
-  const [date, setDate] = React.useState(parseDateDate(props.dateTime));
-  const [hour, setHour] = React.useState(parseTimeHour(props.dateTime));
-  const [minute, setMinute] = React.useState(
-    props.dateTime ? new Date(props.dateTime).getMinutes() : 1
+  const [fullYear, setFullYear] = useState(parseDateYear(props.dateTime));
+  const [month, setMonth] = useState(parseDateMonth(props.dateTime));
+  const [date, setDate] = useState(parseDateDate(props.dateTime));
+  const [hour, setHour] = useState(parseTimeHour(props.dateTime));
+  const [minute, setMinute] = useState(
+    props.dateTime ? new Date(props.dateTime).getMinutes() : 1,
   );
-  const [seconds, setSeconds] = React.useState(
-    props.dateTime ? new Date(props.dateTime).getSeconds() : 1
+  const [seconds, setSeconds] = useState(
+    props.dateTime ? new Date(props.dateTime).getSeconds() : 1,
   );
 
   function getDates() {

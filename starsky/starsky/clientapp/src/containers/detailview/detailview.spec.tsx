@@ -1,7 +1,6 @@
 /* eslint-disable testing-library/prefer-presence-queries */
 import { globalHistory } from "@reach/router";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
-import React from "react";
 import { act } from "react-dom/test-utils";
 import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
 import * as ContextDetailview from "../../contexts/detailview-context";
@@ -13,7 +12,7 @@ import {
   IDetailView,
   IRelativeObjects,
   newDetailView,
-  PageType
+  PageType,
 } from "../../interfaces/IDetailView";
 import { IExifStatus } from "../../interfaces/IExifStatus";
 import { IFileIndexItem, Orientation } from "../../interfaces/IFileIndexItem";
@@ -47,17 +46,17 @@ describe("DetailView", () => {
       fileName: "test.jpg",
       filePath: "/parentDirectory/test.jpg",
       parentDirectory: "/parentDirectory",
-      status: IExifStatus.Ok
+      status: IExifStatus.Ok,
     } as IFileIndexItem,
     relativeObjects: {
       nextFilePath: "next",
-      prevFilePath: "prev"
+      prevFilePath: "prev",
     } as IRelativeObjects,
     status: IExifStatus.Default,
     pageType: PageType.DetailView,
     colorClassActiveList: [],
     subPath: "/parentDirectory/test.jpg",
-    dateCache: Date.now()
+    dateCache: Date.now(),
   } as IDetailView;
 
   describe("With context and test if image is loaded", () => {
@@ -69,7 +68,7 @@ describe("DetailView", () => {
     beforeEach(() => {
       contextProvider = {
         dispatch: () => jest.fn(),
-        state: defaultState
+        state: defaultState,
       };
 
       TestComponent = () => (
@@ -97,7 +96,7 @@ describe("DetailView", () => {
     it("test if image is loaded", () => {
       // eslint-disable-next-line testing-library/prefer-screen-queries
       const imgContainer = Component.queryByTestId(
-        "pan-zoom-image"
+        "pan-zoom-image",
       ) as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
       // eslint-disable-next-line testing-library/no-node-access
@@ -109,8 +108,8 @@ describe("DetailView", () => {
           new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
             contextProvider.state.fileIndexItem.fileHash,
             contextProvider.state.fileIndexItem.filePath,
-            true
-          )
+            true,
+          ),
       );
 
       // eslint-disable-next-line testing-library/no-node-access
@@ -121,7 +120,7 @@ describe("DetailView", () => {
     it("test if image is failed", () => {
       // eslint-disable-next-line testing-library/prefer-screen-queries
       const imgContainer = Component.queryByTestId(
-        "pan-zoom-image"
+        "pan-zoom-image",
       ) as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
       // eslint-disable-next-line testing-library/no-node-access
@@ -138,7 +137,7 @@ describe("DetailView", () => {
     it("check if Details exist", () => {
       expect(
         /* eslint-disable */
-        Component.queryByTestId("detailview-sidebar") as HTMLDivElement
+        Component.queryByTestId("detailview-sidebar") as HTMLDivElement,
         /* eslint-enable */
       ).toBeTruthy();
     });
@@ -158,7 +157,7 @@ describe("DetailView", () => {
       defaultState.fileIndexItem.orientation = Orientation.Rotate270Cw;
       const contextProvider = {
         dispatch: () => jest.fn(),
-        state: defaultState
+        state: defaultState,
       };
 
       TestComponent = () => (
@@ -182,7 +181,7 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => {
           return {
             location: globalHistory.location,
-            navigate: navigateSpy
+            navigate: navigateSpy,
           };
         });
 
@@ -191,7 +190,7 @@ describe("DetailView", () => {
 
       // eslint-disable-next-line testing-library/prefer-screen-queries
       const next = detailview.queryByTestId(
-        "detailview-next"
+        "detailview-next",
       ) as HTMLDivElement;
       expect(next).toBeTruthy();
       act(() => {
@@ -202,7 +201,7 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=next", {
-        replace: true
+        replace: true,
       });
 
       act(() => {
@@ -215,7 +214,7 @@ describe("DetailView", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
         location: globalHistory.location,
-        navigate: navigateSpy
+        navigate: navigateSpy,
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
@@ -229,7 +228,7 @@ describe("DetailView", () => {
 
       // eslint-disable-next-line testing-library/prefer-screen-queries
       const prev = detailview.queryByTestId(
-        "detailview-prev"
+        "detailview-prev",
       ) as HTMLDivElement;
       expect(prev).toBeTruthy();
       act(() => {
@@ -240,7 +239,7 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", {
-        replace: true
+        replace: true,
       });
 
       act(() => {
@@ -252,7 +251,7 @@ describe("DetailView", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
         location: globalHistory.location,
-        navigate: navigateSpy
+        navigate: navigateSpy,
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
@@ -274,7 +273,7 @@ describe("DetailView", () => {
         bubbles: true,
         cancelable: true,
         key: "ArrowLeft",
-        shiftKey: true
+        shiftKey: true,
       });
 
       act(() => {
@@ -285,7 +284,7 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", {
-        replace: true
+        replace: true,
       });
 
       act(() => {
@@ -297,7 +296,7 @@ describe("DetailView", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
         location: globalHistory.location,
-        navigate: navigateSpy
+        navigate: navigateSpy,
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
@@ -319,7 +318,7 @@ describe("DetailView", () => {
         bubbles: true,
         cancelable: true,
         key: "ArrowRight",
-        shiftKey: true
+        shiftKey: true,
       });
 
       act(() => {
@@ -330,7 +329,7 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=next", {
-        replace: true
+        replace: true,
       });
       compontent.unmount();
     });
@@ -347,7 +346,7 @@ describe("DetailView", () => {
       const locationFaker = () => {
         return {
           location: globalHistory.location,
-          navigate: navigateSpy
+          navigate: navigateSpy,
         };
       };
 
@@ -356,13 +355,13 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => {
           return Promise.resolve({
             nextFilePath: "t",
-            nextHash: "t"
+            nextHash: "t",
           } as IRelativeObjects);
         })
         .mockImplementationOnce(() => {
           return Promise.resolve({
             nextFilePath: "t",
-            nextHash: "t"
+            nextHash: "t",
           } as IRelativeObjects);
         });
 
@@ -378,7 +377,7 @@ describe("DetailView", () => {
 
       // eslint-disable-next-line testing-library/prefer-screen-queries
       const prev = detailview.queryByTestId(
-        "detailview-prev"
+        "detailview-prev",
       ) as HTMLDivElement;
       expect(prev).toBeTruthy();
       act(() => {
@@ -401,7 +400,7 @@ describe("DetailView", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
         location: { ...globalHistory.location, search: "" },
-        navigate: navigateSpy
+        navigate: navigateSpy,
       };
 
       const locationSpy = jest
@@ -422,7 +421,7 @@ describe("DetailView", () => {
         bubbles: true,
         cancelable: true,
         key: "Escape",
-        shiftKey: true
+        shiftKey: true,
       });
       window.dispatchEvent(event);
 
@@ -430,7 +429,7 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toHaveBeenNthCalledWith(1, "/?f=/parentDirectory", {
-        state: { filePath: "/parentDirectory/test.jpg" }
+        state: { filePath: "/parentDirectory/test.jpg" },
       });
 
       component.unmount();
@@ -441,7 +440,7 @@ describe("DetailView", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
         location: { ...globalHistory.location, search: "" },
-        navigate: navigateSpy
+        navigate: navigateSpy,
       };
 
       jest
@@ -464,7 +463,8 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => {});
 
       const fakeElement = (
-        props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>,
       ) => (
         <>
           <button
@@ -497,7 +497,7 @@ describe("DetailView", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
         location: { ...globalHistory.location, search: "" },
-        navigate: navigateSpy
+        navigate: navigateSpy,
       };
 
       jest
@@ -520,7 +520,8 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => {});
 
       const fakeElement = (
-        props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>,
       ) => (
         <>
           <button

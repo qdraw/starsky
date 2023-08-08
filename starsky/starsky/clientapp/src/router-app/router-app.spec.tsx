@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
 import { render } from "@testing-library/react";
-import React from "react";
 import * as ContentPage from "../pages/content-page";
 import * as ImportPage from "../pages/import-page";
 import * as LoginPage from "../pages/login-page";
