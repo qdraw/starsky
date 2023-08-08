@@ -1,152 +1,42 @@
 {
-  "name": "clientapp",
-  "version": "0.5.10",
-  "proxy": "http://localhost:4000",
-  "homepage": "/starsky/",
+  "name": "clientapp2",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@reach/router": "^1.3.4",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/leaflet": "^1.9.2",
-    "@types/node": "^20.4.2",
+    "@types/leaflet": "^1.9.3",
+    "@types/node": "^20.4.5",
     "@types/reach__router": "^1.3.11",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
     "@types/storybook__react": "^5.2.1",
     "abortcontroller-polyfill": "^1.7.5",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^4.2.1",
+    "core-js": "^3.32.0",
+    "eslint-config-prettier": "^8.9.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "intersection-observer": "^0.12.2",
     "leaflet": "^1.9.4",
-    "prettier": "^2.8.8",
+    "prettier": "^3.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.9.5"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "dev": "concurrently --kill-others \"npm run mock\" \"npm run start\"",
-    "mock": "node ../../../starsky-tools/mock/mock.js",
-    "lint": "node node_modules/eslint/bin/eslint.js \"src/**/*{ts,tsx}\" --max-warnings 315",
-    "lint:fix": "node node_modules/eslint/bin/eslint.js --fix \"src/**/*{ts,tsx}\"",
-    "fix": "npm run lint:fix",
-    "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
-    "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
-    "prestorybook": "node scripts/prestorybook.js",
-    "storybook": "storybook dev -p 6006",
-    "prebuild-storybook": "node scripts/prestorybook.js",
-    "build-storybook": "storybook build",
-    "update": "node ../../../starsky-tools/build-tools/clientapp-create-react-app-update.js",
-    "update:install": "npm run update"
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "**/*.{ts,tsx}",
-      "!coverage/**",
-      "!**/*.stories.{ts,tsx}",
-      "!node_modules/**",
-      "!src/index.*ts*",
-      "!src/service-worker.ts",
-      "!src/react-app-env.d.ts",
-      "!src/setupTests.js",
-      "!public/**",
-      "!build/**"
-    ],
-    "coverageReporters": [
-      "text",
-      [
-        "lcov",
-        {
-          "projectRoot": "../../"
-        }
-      ],
-      "json",
-      "cobertura"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    }
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest",
-      "plugin:prettier/recommended"
-    ],
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "endOfLine": "auto"
-        }
-      ],
-      "testing-library/render-result-naming-convention": "off",
-      "testing-library/no-container": "warn",
-      "testing-library/prefer-screen-queries": "warn",
-      "testing-library/prefer-presence-queries": "warn",
-      "testing-library/no-unnecessary-act": "warn",
-      "testing-library/no-node-access": "warn",
-      "testing-library/no-render-in-setup": "warn",
-      "testing-library/no-wait-for-multiple-assertions": "warn"
-    },
-    "overrides": [
-      {
-        "files": [
-          "**/*.stories.*"
-        ],
-        "rules": {
-          "import/no-anonymous-default-export": "off"
-        }
-      }
-    ]
-  },
-  "prettier": {
-    "trailingComma": "none",
-    "bracketSpacing": true,
-    "semi": true,
-    "singleQuote": false,
-    "tabWidth": 2,
-    "useTabs": false
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "^7.1.0",
-    "@storybook/addon-interactions": "^7.1.0",
-    "@storybook/addon-links": "^7.1.0",
-    "@storybook/blocks": "^7.1.0",
-    "@storybook/node-logger": "^7.1.0",
-    "@storybook/preset-create-react-app": "^4.1.2",
-    "@storybook/react": "^7.1.0",
-    "@storybook/react-webpack5": "^7.0.2",
-    "@storybook/testing-library": "^0.0.14-next.2",
-    "babel-plugin-named-exports-order": "^0.0.2",
-    "concurrently": "^7.6.0",
-    "prop-types": "^15.8.1",
-    "storybook": "^7.1.0",
-    "webpack": "^5.88.2"
+    "@storybook/react": "^7.2.0",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "concurrently": "^8.2.0",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
   }
 }
