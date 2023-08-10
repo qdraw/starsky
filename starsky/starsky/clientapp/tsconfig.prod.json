@@ -1,0 +1,11 @@
+// tsconfig.prod.json
+{
+  "extends": "./tsconfig",
+  "exclude": [
+    "./src/__tests__/**",
+    "./src/*.spec.ts",
+    "./src/*.spec.tsx",
+    "./src/__mocks__/**",
+    "./src/test-utils"
+  ]
+}

@@ -79,7 +79,6 @@ namespace starsky.foundation.platform.Models
 			.Replace("starskythumbnailmetacli", "starsky")
 			.Replace("starskysynccli", "starsky")
 			.Replace("starsky.foundation.database", "starsky")
-			.Replace("starskyImporterNetFrameworkCli", "starsky")
 			.Replace("netframework-msbuild", "starsky")
 			.Replace("starskySyncNetFrameworkCli", "starsky")
 			.Replace("starskyimportercli", "starsky")

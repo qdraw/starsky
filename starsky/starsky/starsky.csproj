@@ -160,8 +160,8 @@
         <Content Include="clientapp\build\*.*">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Remove="clientapp\build\static\*\*.*" />
-        <Content Include="clientapp\build\static\*\*.*">
+        <Content Remove="clientapp\build\assets\*.*" />
+        <Content Include="clientapp\build\assets\*.*">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

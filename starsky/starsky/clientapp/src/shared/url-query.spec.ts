@@ -1,4 +1,3 @@
-import * as isDev from "./is-dev";
 import { UrlQuery } from "./url-query";
 
 describe("url-query", () => {
@@ -17,7 +16,7 @@ describe("url-query", () => {
 
   it("UrlQueryServerApi f/colorclass/collections", () => {
     const result = urlQuery.UrlQueryServerApi(
-      "?f=test&colorClass=1&collections=false&details=true"
+      "?f=test&colorClass=1&collections=false&details=true",
     );
     expect(result).toContain("1");
     expect(result).toContain("false");
@@ -145,7 +144,7 @@ describe("url-query", () => {
       const test = urlQuery.updateFilePathHash(
         "?f=test&colorclass=1&t=1",
         "test1",
-        true
+        true,
       );
       expect(test).toStrictEqual("/?f=test1&colorClass=1");
     });
@@ -153,7 +152,7 @@ describe("url-query", () => {
     it("keep search query", () => {
       const test = urlQuery.updateFilePathHash(
         "?f=test&colorclass=1&t=1",
-        "test1"
+        "test1",
       );
       expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1");
     });
@@ -163,7 +162,7 @@ describe("url-query", () => {
         "?f=test&colorclass=1&t=1&select=t5",
         "test1",
         false,
-        true
+        true,
       );
       expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1&select=");
     });
@@ -201,7 +200,7 @@ describe("url-query", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
         "hash_test",
         "filePath",
-        false
+        false,
       );
       expect(test).toContain("hash_test");
     });
@@ -210,7 +209,7 @@ describe("url-query", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
         "hash_test",
         "filePath",
-        true
+        true,
       );
       expect(test).toContain("hash_test");
     });
@@ -227,7 +226,7 @@ describe("url-query", () => {
       delete window.location;
       // @ts-ignore
       window.location = {
-        href: ""
+        href: "",
       };
     });
 
@@ -248,25 +247,6 @@ describe("url-query", () => {
       window.location.host = "localhost:7382";
       const url = new UrlQuery().UrlRealtime();
       expect(url).toBe("ws://localhost:7382/starsky/realtime");
-      expect(url).toContain("realtime");
-    });
-
-    it("when not in Dev ignore port 3000 replacement", () => {
-      jest.spyOn(isDev, "default").mockImplementationOnce(() => false);
-
-      window.location.protocol = "http:";
-      window.location.host = "localhost:3000";
-      const url = new UrlQuery().UrlRealtime();
-      expect(url).toBe("ws://localhost:3000/starsky/realtime");
-      expect(url).toContain("realtime");
-    });
-    it("replace port 3000 with 4000 in dev context", () => {
-      jest.spyOn(isDev, "default").mockImplementationOnce(() => true);
-
-      window.location.protocol = "http:";
-      window.location.host = "localhost:3000";
-      const url = new UrlQuery().UrlRealtime();
-      expect(url).toBe("ws://localhost:4000/starsky/realtime");
       expect(url).toContain("realtime");
     });
   });

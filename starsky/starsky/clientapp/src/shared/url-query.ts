@@ -1,5 +1,4 @@
 import { IUrl, newIUrl } from "../interfaces/IUrl";
-import isDev from "./is-dev";
 import { URLPath } from "./url-path";
 
 export class UrlQuery {
@@ -24,9 +23,9 @@ export class UrlQuery {
    */
   public GetReturnUrl(locationHash: string): string {
     // ?ReturnUrl=%2F
-    let hash = new URLPath().RemovePrefixUrl(locationHash);
-    let search = new URLSearchParams(hash);
-    let getReturnUrl = search.get("ReturnUrl");
+    const hash = new URLPath().RemovePrefixUrl(locationHash);
+    const search = new URLSearchParams(hash);
+    const getReturnUrl = search.get("ReturnUrl");
 
     // add only prefix for default situation
     if (!getReturnUrl) return `/${new URLPath().AddPrefixUrl("f=/")}`;
@@ -92,7 +91,7 @@ export class UrlQuery {
   }
 
   private urlReplacePath(input: string): string {
-    let output = input.replace("#", "");
+    const output = input.replace("#", "");
     return output.replace(/\+/gi, "%2B");
   }
 
@@ -107,7 +106,7 @@ export class UrlQuery {
   public UrlSearchRelativeApi = (
     f: string,
     t: string | undefined,
-    pageNumber = 0
+    pageNumber = 0,
   ): string => {
     return (
       `${this.prefix}/api/search/relative-objects?f=` +
@@ -160,7 +159,7 @@ export class UrlQuery {
     historyLocationHash: string,
     toUpdateFilePath: string,
     clearTSearchQuery?: boolean,
-    emthySelectQuery?: boolean
+    emthySelectQuery?: boolean,
   ): string {
     const url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
@@ -280,7 +279,7 @@ export class UrlQuery {
   public UrlThumbnailImageLargeOrExtraLarge = (
     fileHash: string,
     filePath?: string,
-    extraLarge = true
+    extraLarge = true,
   ): string => {
     if (!extraLarge) {
       return (
@@ -304,7 +303,7 @@ export class UrlQuery {
 
   public UrlThumbnailImage = (
     fileHash: string,
-    alwaysLoadImage: boolean
+    alwaysLoadImage: boolean,
   ): string => {
     if (alwaysLoadImage) {
       return (
@@ -323,7 +322,7 @@ export class UrlQuery {
   public UrlThumbnailZoom = (
     f: string,
     id: string | undefined,
-    z: number
+    z: number,
   ): string => {
     return `${this.prefix}/api/thumbnail/zoom/${f}@${z}?filePath=${id}`;
   };
@@ -335,7 +334,7 @@ export class UrlQuery {
   public UrlDownloadPhotoApi = (
     f: string,
     isThumbnail: boolean = true,
-    cache: boolean = true
+    cache: boolean = true,
   ): string => {
     return (
       this.prefix +
@@ -368,7 +367,7 @@ export class UrlQuery {
    */
   public UrlExportZipApi = (
     createZipId: string,
-    json: boolean = true
+    json: boolean = true,
   ): string => {
     return this.prefix + "/api/export/zip/" + createZipId + ".zip?json=" + json;
   };
@@ -450,11 +449,6 @@ export class UrlQuery {
   public UrlRealtime(): string {
     let url = window.location.protocol === "https:" ? "wss:" : "ws:";
     url += "//" + window.location.host + this.prefix + "/realtime";
-
-    // Create React App is not supporting websockets. At least is isn't working
-    if (isDev()) {
-      url = url.replace(":3000", ":4000");
-    }
     return url;
   }
 }
