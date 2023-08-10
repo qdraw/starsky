@@ -29,7 +29,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.412
+        dotnet-version: 6.0.413
 
     - name: Cache nuget packages (*nix)
       uses: actions/cache@v3

@@ -43,7 +43,7 @@ jobs:
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.412
+          dotnet-version: 6.0.413
         
       - name: Use Java 11   
         uses: actions/setup-java@v3
