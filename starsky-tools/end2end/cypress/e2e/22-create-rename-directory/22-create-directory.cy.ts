@@ -190,24 +190,7 @@ describe("Create Rename Dir (22)", () => {
         console.log("next check if is in trash");
         cy.wait(10);
 
-        cy.request(config.apiTrash).then((response) => {
-          const message = response.body.fileIndexItems.find(
-            (x: any) =>
-              x.filePath === "/starsky-end2end-test/z_test_auto_created_update"
-          );
-          if (
-            message?.filePath ===
-            "/starsky-end2end-test/z_test_auto_created_update"
-          ) {
-            cy.log("found");
-            cy.log(message);
-            cy.log(message.filePath);
-          } else {
-            cy.log(" z_test_auto_created_update NOT found");
-            cy.log(response.body);
-            expect("").to.be("not found");
-          }
-
+        function runTest() {
           cy.visit(config.trash);
           cy.get(".item.item--select").click();
           cy.get(
@@ -231,6 +214,50 @@ describe("Create Rename Dir (22)", () => {
           cy.get(
             '[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button'
           ).should("not.exist");
+        }
+
+        cy.request(config.apiTrash).then((response) => {
+          const message = response.body.fileIndexItems.find(
+            (x: any) =>
+              x.filePath === "/starsky-end2end-test/z_test_auto_created_update"
+          );
+          if (
+            message?.filePath ===
+            "/starsky-end2end-test/z_test_auto_created_update"
+          ) {
+            cy.log("found");
+            cy.log(message);
+            cy.log(message.filePath);
+
+            runTest();
+          } else {
+            cy.log(" z_test_auto_created_update NOT found");
+            cy.log(response.body);
+
+            cy.wait(100);
+
+            cy.request(config.apiTrash).then((response2) => {
+              const message2 = response2.body.fileIndexItems.find(
+                (x: any) =>
+                  x.filePath === "/starsky-end2end-test/z_test_auto_created_update"
+              );
+              if (
+                message2?.filePath ===
+                "/starsky-end2end-test/z_test_auto_created_update"
+              ) {
+                cy.log("found");
+                cy.log(message2);
+                cy.log(message2.filePath);
+                runTest();
+
+              }
+              else {
+                expect("value").to.be("z_test_auto_created_update not found");
+              }
+            });
+
+          }
+
         });
       });
     }
