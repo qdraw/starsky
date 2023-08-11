@@ -16,6 +16,15 @@ steps:
     displayName: "[doc..] Cache npm"
 
   - task: PowerShell@2
+    displayName: "[doc..] check versions node npm"
+    inputs:
+      targetType: "inline"
+      workingDirectory: documentation
+      script: |
+        node -v 
+        npm -v
+
+  - task: PowerShell@2
     displayName: "[doc..] npm ci"
     inputs:
       targetType: "inline"
