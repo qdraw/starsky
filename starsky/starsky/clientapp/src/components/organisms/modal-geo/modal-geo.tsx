@@ -1,19 +1,21 @@
 import L from "leaflet";
 import React, { useCallback, useEffect, useState } from "react";
-import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import { Geo } from "../../../shared/geo";
-import { Language } from "../../../shared/language";
 import {
   tileLayerAttribution,
   tileLayerLocation
 } from "../../../shared/tile-layer-location.const";
-import MarkerBlueSvg from "../../../style/images/fa-map-marker-blue.svg";
-import MarkerShadowPng from "../../../style/images/marker-shadow.png";
+
+import useGlobalSettings from "../../../hooks/use-global-settings";
+import { Language } from "../../../shared/language";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 import Preloader from "../../atoms/preloader/preloader";
-import { updateGeoLocation } from "./update-geo-location";
+import { AddDefaultMarker } from "./shared/add-default-marker";
+import { latLongRound } from "./shared/lat-long-round";
+import { SetMarker } from "./shared/set-marker";
+import { UpdateGeoLocation } from "./shared/update-geo-location";
 
 export interface IModalMoveFileProps {
   isOpen: boolean;
@@ -31,15 +33,7 @@ export interface ILatLong {
   longitude: number;
 }
 
-const blueIcon = L.icon({
-  iconUrl: MarkerBlueSvg,
-  shadowUrl: MarkerShadowPng,
-  iconSize: [50, 50], // size of the icon
-  shadowSize: [50, 50], // size of the shadow
-  iconAnchor: [25, 50], // point of the icon which will correspond to marker's location
-  shadowAnchor: [15, 55], // the same for the shadow
-  popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
-});
+
 
 export function getZoom(location: ILatLong): number {
   let zoom = 12;
@@ -62,30 +56,7 @@ export const onDrag = function (
   setIsLocationUpdated(true);
 };
 
-export function addDefaultMarker(
-  location: ILatLong,
-  map: L.Map,
-  isFormEnabled: boolean,
-  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
-  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>
-): void {
-  if (location.latitude && location.longitude) {
-    const markerLocal = new L.Marker(
-      {
-        lat: location.latitude,
-        lng: location.longitude
-      },
-      {
-        draggable: isFormEnabled,
-        icon: blueIcon
-      }
-    );
-    markerLocal.on("dragend", (event) =>
-      onDrag(event, setLocation, setIsLocationUpdated)
-    );
-    map.addLayer(markerLocal);
-  }
-}
+
 
 export function addMapLocationCenter(location: ILatLong): L.LatLng {
   let mapLocationCenter = L.latLng(52.375, 4.9);
@@ -117,44 +88,6 @@ export function addMap(
   return map;
 }
 
-function setMarker(
-  map: L.Map,
-  isFormEnabled: boolean,
-  setLocation: React.Dispatch<React.SetStateAction<ILatLong>>,
-  setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>,
-  lat: number,
-  lng: number
-) {
-  if (!isFormEnabled) {
-    return;
-  }
-
-  map.eachLayer(function (layer) {
-    if (layer instanceof L.Marker) {
-      map.removeLayer(layer);
-    }
-  });
-
-  const markerLocal = new L.Marker(
-    { lat, lng },
-    {
-      draggable: true,
-      icon: blueIcon
-    }
-  );
-
-  markerLocal.on("dragend", (event) =>
-    onDrag(event, setLocation, setIsLocationUpdated)
-  );
-
-  setLocation({
-    latitude: latLongRound(lat),
-    longitude: latLongRound(lng)
-  });
-
-  setIsLocationUpdated(true);
-  map.addLayer(markerLocal);
-}
 
 export function addDefaultClickSetMarker(
   map: L.Map,
@@ -163,7 +96,7 @@ export function addDefaultClickSetMarker(
   setIsLocationUpdated: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   map.on("click", function (event) {
-    setMarker(
+    SetMarker(
       map,
       isFormEnabled,
       setLocation,
@@ -172,10 +105,6 @@ export function addDefaultClickSetMarker(
       event.latlng.lng
     );
   });
-}
-
-function latLongRound(latitudeLong: number | undefined) {
-  return latitudeLong ? Math.round(latitudeLong * 1000000) / 1000000 : 0;
 }
 
 function updateMap(
@@ -192,13 +121,15 @@ function updateMap(
 
   const map = addMap(mapLocationCenter, node, zoom);
 
-  addDefaultMarker(
+  isFormEnabled = AddDefaultMarker(
     location,
     map,
     isFormEnabled,
     setLocation,
     setIsLocationUpdated
   );
+  console.log("isFormEnabled: " + isFormEnabled);
+  
 
   addDefaultClickSetMarker(
     map,
@@ -218,7 +149,7 @@ export function realtimeMapUpdate(
   latitude: number,
   longitude: number
 ) {
-  setMarker(
+  SetMarker(
     mapState,
     isFormEnabled,
     setLocation,
@@ -318,7 +249,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
     return isLocationUpdated ? (
       <button
         onClick={async () => {
-          const model = await updateGeoLocation(
+          const model = await UpdateGeoLocation(
             parentDirectory,
             selectedSubPath,
             location,

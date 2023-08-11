@@ -16,8 +16,8 @@ import WsCurrentStart, {
 import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 
 describe("WsCurrentStart", () => {
-  let onOpenEvent = new Event("t");
-  let onCloseEvent = new CloseEvent("t");
+  const onOpenEvent = new Event("t");
+  const onCloseEvent = new CloseEvent("t");
   const NewFakeWebSocketService = (): WebSocketService => {
     return new FakeWebSocketService(onOpenEvent, onCloseEvent);
   };

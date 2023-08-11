@@ -132,7 +132,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
 
     function handleChange(event: React.ChangeEvent<HTMLDivElement>) {
       let value = event.currentTarget.textContent;
-      let name = event.currentTarget.dataset["name"];
+      const name = event.currentTarget.dataset["name"];
 
       if (!name) return;
       if (!value) value = AsciiNull();

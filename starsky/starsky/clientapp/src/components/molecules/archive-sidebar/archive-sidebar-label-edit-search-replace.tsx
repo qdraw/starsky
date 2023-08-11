@@ -120,7 +120,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         : "false"
     );
 
-    for (let key of Object.entries(update)) {
+    for (const key of Object.entries(update)) {
       const fieldName = key[0];
       const fieldValue = key[1];
 

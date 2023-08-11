@@ -26,7 +26,7 @@ export default function DetailViewContextWrapper(detailview: IDetailView) {
 }
 
 function DetailViewWrapper(detailViewProp: IDetailView) {
-  let { state, dispatch } = useDetailViewContext();
+  const { state, dispatch } = useDetailViewContext();
 
   // Gets the content of the props and inject into the state
   useEffect(() => {

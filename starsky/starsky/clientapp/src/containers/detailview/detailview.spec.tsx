@@ -136,7 +136,7 @@ describe("DetailView", () => {
 
     it("check if Details exist", () => {
       expect(
-        /* eslint-disable */
+         
         Component.queryByTestId("detailview-sidebar") as HTMLDivElement,
         /* eslint-enable */
       ).toBeTruthy();

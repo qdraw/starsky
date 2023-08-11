@@ -61,7 +61,7 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
       "Go to the release overview"
     );
 
-  let MessageNewVersionUpdateToken = language.text(
+  const MessageNewVersionUpdateToken = language.text(
     "Er is een nieuwe versie beschikbaar {WhereToFindRelease}",
     "A new version is available {WhereToFindRelease}"
   );

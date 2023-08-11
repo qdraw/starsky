@@ -59,7 +59,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   const [isLoading, setIsLoading] = useState(false);
 
   const history = useLocation();
-  let { dispatch } = React.useContext(ArchiveContext);
+  const { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
   const [collections, setCollections] = React.useState(

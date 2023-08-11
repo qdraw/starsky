@@ -1,4 +1,6 @@
 import "@testing-library/jest-dom/extend-expect";
+import { configure } from "@testing-library/react";
+import "isomorphic-fetch";
 
 // Mock IntersectionObserver
 class IntersectionObserver {
@@ -19,8 +21,4 @@ Object.defineProperty(global, "IntersectionObserver", {
   value: IntersectionObserver,
 });
 
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({ test: 100 }),
-  }),
-) as jest.Mock;
+configure({ testIdAttribute: "data-test" });

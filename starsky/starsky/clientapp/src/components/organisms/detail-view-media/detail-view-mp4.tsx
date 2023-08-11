@@ -43,7 +43,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState("");
-  let { state } = React.useContext(DetailViewContext);
+  const { state } = React.useContext(DetailViewContext);
 
   /** update to make useEffect simpler te read */
   const [downloadApi, setDownloadPhotoApi] = useState(

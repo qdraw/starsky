@@ -1,13 +1,13 @@
-import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import * as FetchGet from "../../../shared/fetch-get";
-import * as FetchPost from "../../../shared/fetch-post";
-import { ILatLong } from "./modal-geo";
-import { updateGeoLocation } from "./update-geo-location";
+import { IConnectionDefault } from "../../../../interfaces/IConnectionDefault";
+import * as FetchGet from "../../../../shared/fetch-get";
+import * as FetchPost from "../../../../shared/fetch-post";
+import { ILatLong } from "../modal-geo";
+import { UpdateGeoLocation } from "./update-geo-location";
 
 describe("updateGeoLocation", () => {
   it("no location null result", async () => {
     const setErrorSpy = jest.fn();
-    const result = await updateGeoLocation(
+    const result = await UpdateGeoLocation(
       "",
       "/",
       null,
@@ -35,7 +35,7 @@ describe("updateGeoLocation", () => {
       throw new Error("test");
     });
 
-    await updateGeoLocation(
+    await UpdateGeoLocation(
       "",
       "/",
       { latitude: 1, longitude: 1 } as ILatLong,
@@ -67,7 +67,7 @@ describe("updateGeoLocation", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    await updateGeoLocation(
+    await UpdateGeoLocation(
       "",
       "/",
       { latitude: 1, longitude: 1 } as ILatLong,
@@ -107,7 +107,7 @@ describe("updateGeoLocation", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    const result = await updateGeoLocation(
+    const result = await UpdateGeoLocation(
       "",
       "/",
       { latitude: 1, longitude: 1 } as ILatLong,

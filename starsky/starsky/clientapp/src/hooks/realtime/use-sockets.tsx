@@ -20,7 +20,7 @@ function IsClientSideFeatureDisabled(): boolean {
  * Use Socket as react hook
  */
 const useSockets = (): IUseSockets => {
-  let ws = useRef({} as WebSocketService);
+  const ws = useRef({} as WebSocketService);
   // When the connection is lost
   const [socketConnected, setSocketConnected] = useState(false);
   // show a error message

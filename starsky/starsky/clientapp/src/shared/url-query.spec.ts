@@ -222,8 +222,10 @@ describe("url-query", () => {
      * @see: https://wildwolf.name/jest-how-to-mock-window-location-href/
      */
     beforeAll(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       delete window.location;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.location = {
         href: "",

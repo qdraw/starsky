@@ -34,7 +34,7 @@ describe("FileHashImage", () => {
         } as IDetailView
       } as IConnectionDefault);
 
-    let detectRotationSpy = jest
+    const detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
       .mockImplementationOnce(() => {
         return Promise.resolve(false);
@@ -79,7 +79,7 @@ describe("FileHashImage", () => {
         } as IDetailView
       } as IConnectionDefault);
 
-    let detectRotationSpy = jest
+    const detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
       .mockImplementationOnce(() => {
         return Promise.resolve(false);
@@ -111,7 +111,7 @@ describe("FileHashImage", () => {
         statusCode: 200
       } as IConnectionDefault);
 
-    let detectRotationSpy = jest
+    const detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
       .mockImplementationOnce(() => {
         return Promise.resolve(true);
@@ -121,7 +121,7 @@ describe("FileHashImage", () => {
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    let component = render(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"

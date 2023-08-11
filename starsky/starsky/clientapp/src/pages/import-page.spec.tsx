@@ -32,7 +32,7 @@ describe("ImportPage", () => {
       });
     const dropAreaSpy = jest
       .spyOn(DropArea, "default")
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       .mockImplementationOnce(() => {
         return <></>;
       });

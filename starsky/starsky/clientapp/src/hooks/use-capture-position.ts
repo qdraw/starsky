@@ -6,7 +6,7 @@ export interface ICaptionPosition {
 }
 
 const capturePosition = () => {
-  let topCachedPosition = window.scrollY;
+  const topCachedPosition = window.scrollY;
   return {
     freeze: () => {
       (document.body as any).style.position = "fixed";

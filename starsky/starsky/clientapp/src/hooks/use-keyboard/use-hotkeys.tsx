@@ -90,7 +90,7 @@ function useHotKeys(
     return () => {
       window.removeEventListener("keydown", handler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   });
 }
 

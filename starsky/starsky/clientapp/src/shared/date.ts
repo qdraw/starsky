@@ -6,7 +6,7 @@ import { SupportedLanguages } from "./language";
  */
 const isValidDate = (inputDateTime: string | undefined): boolean => {
   if (inputDateTime) {
-    let input = new Date(inputDateTime).valueOf();
+    const input = new Date(inputDateTime).valueOf();
     return input > 0 && input < 7258118400 * 1000; // 01/01/2200
   }
   return false;
@@ -38,9 +38,9 @@ const DifferenceInDate = (
  */
 const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   if (!inputDateTime) return null;
-  let input = new Date(inputDateTime).valueOf();
+  const input = new Date(inputDateTime).valueOf();
   if (!input) return null;
-  let difference = DifferenceInDate(input);
+  const difference = DifferenceInDate(input);
   return difference <= 0.2;
 };
 
@@ -53,14 +53,14 @@ const parseRelativeDate = (
   inputDateTime: string | undefined,
   locate: SupportedLanguages
 ): string => {
-  let date = "";
+  const date = "";
 
   if (!inputDateTime) return date;
-  let input = new Date(`${inputDateTime}`).valueOf();
+  const input = new Date(`${inputDateTime}`).valueOf();
 
   if (!input) return date;
 
-  let difference = DifferenceInDate(input);
+  const difference = DifferenceInDate(input);
 
   switch (true) {
     case difference <= 1:

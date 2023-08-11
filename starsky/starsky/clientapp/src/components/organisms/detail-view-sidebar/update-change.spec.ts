@@ -63,6 +63,7 @@ describe("Update Change", () => {
     it("should ignore same content", () => {
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => {
           return Promise.resolve({} as IConnectionDefault);
         });
@@ -115,6 +116,7 @@ describe("Update Change", () => {
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => {
           return Promise.resolve({
             data: [{ filePath: "/test" }] as IFileIndexItem[],
@@ -143,6 +145,7 @@ describe("Update Change", () => {
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => {
           return Promise.resolve({
             data: [{ filePath: "/test.jpg" }] as IFileIndexItem[],
@@ -167,6 +170,7 @@ describe("Update Change", () => {
     it("no content 2", async () => {
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => {
           return Promise.resolve({} as IConnectionDefault);
         });

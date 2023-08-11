@@ -24,7 +24,7 @@ const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo(
     // used for reading current location
     const history = useLocation();
 
-    let { relativeObjects } = props;
+    const { relativeObjects } = props;
 
     if (!relativeObjects) return <div className="relativelink" />;
 
@@ -43,13 +43,13 @@ const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo(
       true
     );
 
-    let prev =
+    const prev =
       relativeObjects.prevFilePath !== null ? (
         <Link className="prev" data-test="archive-pagination-prev" to={prevUrl}>
           {MessagePrevious}
         </Link>
       ) : null;
-    let next =
+    const next =
       relativeObjects.nextFilePath !== null ? (
         <Link className="next" data-test="archive-pagination-next" to={nextUrl}>
           {MessageNext}

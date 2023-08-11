@@ -81,7 +81,7 @@ export function detailviewReducer(
       // Need to update otherwise other events are not triggerd
       return updateCache({ ...state, lastUpdated: new Date() });
     case "update":
-      /* eslint-disable-next-line no-redeclare */
+       
       const {
         filePath,
         tags,

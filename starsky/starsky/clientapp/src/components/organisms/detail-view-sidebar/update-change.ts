@@ -42,7 +42,7 @@ export class UpdateChange {
   public Update(items: [string, string][]): Promise<string | boolean> {
     const updateObject: any = { f: this.fileIndexItem.filePath };
 
-    for (let [name, value] of items) {
+    for (const [name, value] of items) {
       if (!name) continue;
 
       let replacedValue = value.replace(AsciiNull(), "");

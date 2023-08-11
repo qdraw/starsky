@@ -72,7 +72,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
     );
   }
 
-  let items = props.fileIndexItems;
+  const items = props.fileIndexItems;
   if (!items) return <div className="folder">no content</div>;
 
   return (

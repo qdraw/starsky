@@ -32,7 +32,7 @@ export default function ArchiveContextWrapper(archive: IArchiveProps) {
 }
 
 function ArchiveWrapper(archive: IArchiveProps) {
-  let { state, dispatch } = React.useContext(ArchiveContext);
+  const { state, dispatch } = React.useContext(ArchiveContext);
 
   /**
    * Running on changing searchQuery or subpath
