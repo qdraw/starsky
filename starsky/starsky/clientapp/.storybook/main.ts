@@ -1,5 +1,4 @@
-import type { StorybookConfig } from "@storybook/react-webpack5";
-const config: StorybookConfig = {
+const config = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
     "@storybook/addon-links",
@@ -7,13 +6,10 @@ const config: StorybookConfig = {
     "@storybook/preset-create-react-app",
     "@storybook/addon-interactions"
   ],
-  framework: {
-    name: "@storybook/react-webpack5",
-    options: {}
-  },
   core: {
     disableTelemetry: true,
-    enableCrashReports: false
+    enableCrashReports: false,
+    builder: '@storybook/builder-vite', // 👈 The builder enabled here.
   },
   docs: {
     autodocs: "tag"

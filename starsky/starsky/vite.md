@@ -43,12 +43,9 @@ npm install --save-dev jest-environment-jsdom --force
 npm install eslint eslint-plugin-react --save-dev --force
 npm install --save-dev eslint-plugin-testing-library --force
 npm install --save-dev eslint-plugin-jest-react --force
+npm install @storybook/builder-vite --save-dev --force
 ```
 
-npm install --save-dev @babel/preset-env
-npm install --save-dev @babel/preset-react
-npm install --save-dev @babel/preset-typescript
-npm install --save-dev @types/react-dom
 npm install --save abortcontroller-polyfill
 npm install --save intersection-observer
 
