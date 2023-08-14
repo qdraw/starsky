@@ -82,7 +82,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
     const parentFolder = props.parentFolder ?? "/";
     FetchGet(
       new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))
-    ).then((_) => {
+    ).then(() => {
       setTimeout(() => {
         const url = new UrlQuery().UrlIndexServerApi(
           new URLPath().StringToIUrl(history.location.search)
@@ -110,7 +110,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
 
     const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
-    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then((_) => {
+    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then(() => {
       // do nothing with result
     });
   }
@@ -144,7 +144,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
     FetchPost(
       new UrlQuery().UrlThumbnailGeneration(),
       bodyParams.toString()
-    ).then((_) => {
+    ).then(() => {
       setTimeout(() => {
         setIsLoading(false);
         props.handleExit();

@@ -46,6 +46,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   );
 
   const history = useLocation();
+  // eslint-disable-next-line prefer-const
   let { state, dispatch } = React.useContext(ArchiveContext);
 
   // state without any context

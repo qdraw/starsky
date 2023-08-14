@@ -15,7 +15,7 @@ export const Default = () => {
   return (
     <>
       <div>
-        Drag 'n drop file to show
+        Drag &apos;n drop file to show
         <br />
         <br />
       </div>

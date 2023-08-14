@@ -102,7 +102,7 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
               className="icon icon--location"
               data-test="detailview-location-div"
             />
-            {true ? <div className="icon icon--right icon--edit" /> : null}
+            <div className="icon icon--right icon--edit" />
             {locationCity && locationCountry ? (
               <>
                 <b data-test="detailview-info-location-city">{locationCity}</b>

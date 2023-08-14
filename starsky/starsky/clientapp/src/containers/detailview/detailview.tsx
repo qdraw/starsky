@@ -23,6 +23,7 @@ import { statusRemoved } from "./helpers/status-removed";
 const DetailView: React.FC<IDetailView> = () => {
   const history = useLocation();
 
+  // eslint-disable-next-line prefer-const
   let { state, dispatch } = React.useContext(DetailViewContext);
 
   // if there is no state

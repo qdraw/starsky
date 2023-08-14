@@ -36,6 +36,7 @@ function Trash(archive: IArchiveProps) {
   }, [history.location.search]);
 
   // to dynamic update the number of trashed items
+  // eslint-disable-next-line prefer-const
   let { state, dispatch } = React.useContext(ArchiveContext);
   state = defaultStateFallback(state);
 

@@ -8,6 +8,7 @@ describe("More Menu", () => {
   });
 
   function MoreMenuWrapper() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, setEnableMoreMenu] = useState(false);
     return <MoreMenu setEnableMoreMenu={setEnableMoreMenu}>test</MoreMenu>;
   }

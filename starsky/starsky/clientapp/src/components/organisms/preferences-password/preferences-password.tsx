@@ -5,7 +5,7 @@ import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import ButtonStyled from "../../atoms/button-styled/button-styled";
 
-const PreferencesPassword: React.FunctionComponent<any> = (_) => {
+const PreferencesPassword: React.FunctionComponent<any> = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageChangePassword = language.text(

@@ -449,7 +449,6 @@ describe("ModalPublish", () => {
     expect(tags).not.toBe(undefined);
 
     // update component + now press a key
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       tags.textContent = "a";
       const inputEvent = createEvent.input(tags, { key: "a" });
@@ -459,7 +458,6 @@ describe("ModalPublish", () => {
     expect(screen.getByTestId("modal-publish-warning-box")).toBeTruthy();
 
     // and now undo
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       tags.textContent = "";
       const inputEvent = createEvent.input(tags, { key: "" });

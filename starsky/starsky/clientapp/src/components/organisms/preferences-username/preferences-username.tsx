@@ -4,7 +4,7 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 
-const PreferencesUsername: React.FunctionComponent<any> = (_) => {
+const PreferencesUsername: React.FunctionComponent<any> = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageUnknownUsername = language.text(

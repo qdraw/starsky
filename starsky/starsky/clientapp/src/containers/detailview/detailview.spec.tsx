@@ -1,4 +1,4 @@
-/* eslint-disable testing-library/prefer-presence-queries */
+ 
 import { globalHistory } from "@reach/router";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
 import { useState } from "react";
@@ -99,7 +99,6 @@ describe("DetailView", () => {
       // Show extra information
       globalHistory.navigate("/?details=true");
 
-      // eslint-disable-next-line testing-library/no-render-in-setup
       Component = render(<TestComponent />);
     });
 
@@ -113,12 +112,12 @@ describe("DetailView", () => {
     });
 
     it("test if image is loaded", () => {
-      // eslint-disable-next-line testing-library/prefer-screen-queries
+       
       const imgContainer = Component.queryByTestId(
         "pan-zoom-image",
       ) as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
-      // eslint-disable-next-line testing-library/no-node-access
+       
       const image = imgContainer?.querySelector("img") as HTMLImageElement;
       expect(image).toBeTruthy();
 
@@ -133,24 +132,24 @@ describe("DetailView", () => {
           ),
       );
 
-      // eslint-disable-next-line testing-library/no-node-access
+       
       const mainError = Component.container.querySelector(".main--error");
       expect(mainError).toBeFalsy();
     });
 
     it("test if image is failed", () => {
-      // eslint-disable-next-line testing-library/prefer-screen-queries
+       
       const imgContainer = Component.queryByTestId(
         "pan-zoom-image",
       ) as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
-      // eslint-disable-next-line testing-library/no-node-access
+       
       const image = imgContainer?.querySelector("img") as HTMLImageElement;
       expect(image).toBeTruthy();
 
       fireEvent.error(image);
 
-      // eslint-disable-next-line testing-library/no-node-access
+       
       const mainError = Component.container.querySelector(".main--error");
       expect(mainError).toBeTruthy();
     });
@@ -206,10 +205,10 @@ describe("DetailView", () => {
           };
         });
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+       
       const detailview = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
+       
       const next = detailview.queryByTestId(
         "detailview-next",
       ) as HTMLDivElement;
@@ -244,10 +243,10 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+       
       const detailview = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
+       
       const prev = detailview.queryByTestId(
         "detailview-prev",
       ) as HTMLDivElement;
@@ -287,7 +286,7 @@ describe("DetailView", () => {
           return Promise.resolve() as any;
         });
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+       
       const detailview = render(<TestComponent />);
 
       const event = new KeyboardEvent("keydown", {
@@ -332,7 +331,7 @@ describe("DetailView", () => {
           return Promise.resolve() as any;
         });
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+       
       const compontent = render(<TestComponent />);
 
       const event = new KeyboardEvent("keydown", {
@@ -393,10 +392,10 @@ describe("DetailView", () => {
         .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker);
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+       
       const detailview = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
+       
       const prev = detailview.queryByTestId(
         "detailview-prev",
       ) as HTMLDivElement;
@@ -436,7 +435,7 @@ describe("DetailView", () => {
           return Promise.resolve() as any;
         });
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+       
       const component = render(<TestComponent />);
 
       const event = new KeyboardEvent("keydown", {
@@ -503,10 +502,10 @@ describe("DetailView", () => {
       );
 
       jest.spyOn(FileHashImage, "default").mockReset().mockImplementationOnce(fakeElement);
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+       
       const component = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
+       
       (component.queryByTestId("fake-button") as HTMLButtonElement).click();
 
       expect(updateRelativeObjectSpy).toBeCalled();
@@ -563,10 +562,10 @@ describe("DetailView", () => {
         .mockReset()
         .mockImplementationOnce(fakeElement);
         
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+       
       const component = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
+       
       (component.queryByTestId("fake-button") as HTMLButtonElement).click();
 
       expect(updateRelativeObjectSpy).toBeCalled();

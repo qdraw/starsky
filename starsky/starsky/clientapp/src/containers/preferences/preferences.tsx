@@ -5,7 +5,7 @@ import PreferencesUsername from "../../components/organisms/preferences-username
 import useGlobalSettings from "../../hooks/use-global-settings";
 import { Language } from "../../shared/language";
 
-export const Preferences: React.FunctionComponent<any> = (_) => {
+export const Preferences: React.FunctionComponent<any> = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessagePreferences = language.text("Voorkeuren", "Preferences");
