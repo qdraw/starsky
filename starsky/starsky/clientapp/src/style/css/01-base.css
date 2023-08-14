@@ -143,7 +143,9 @@ button {
   font-style: normal;
   font-weight: 100;
   font-display: auto;
-  src: local("Gloriola Std Light"), local("Gloriola-Std-Light"),
+  src:
+    local("Gloriola Std Light"),
+    local("Gloriola-Std-Light"),
     url(../fonts/GloriolaStd-Light.woff2) format("woff2"),
     url(../fonts/GloriolaStd-Light.woff) format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC,
@@ -155,7 +157,9 @@ button {
   font-style: normal;
   font-weight: 300;
   font-display: auto;
-  src: local("Gloriola Std Medium"), local("Gloriola-Std-Medium"),
+  src:
+    local("Gloriola Std Medium"),
+    local("Gloriola-Std-Medium"),
     url(../fonts/GloriolaStd-Medium.woff2) format("woff2"),
     url(../fonts/GloriolaStd-Medium.woff) format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC,
@@ -167,7 +171,9 @@ button {
   font-style: normal;
   font-weight: 800;
   font-display: auto;
-  src: local("Gloriola Std Bold"), local("Gloriola-Std-Bold"),
+  src:
+    local("Gloriola Std Bold"),
+    local("Gloriola-Std-Bold"),
     url(../fonts/GloriolaStd-Bold.woff2) format("woff2"),
     url(../fonts/GloriolaStd-Bold.woff) format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC,

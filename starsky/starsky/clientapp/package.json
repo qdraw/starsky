@@ -8,6 +8,7 @@
     "build": "tsc && vite build --config tsconfig.prod.json",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
     "lint:fix": "eslint --fix . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
     "test": "jest --watch",
     "test:ci": "jest --ci",
     "preview": "vite preview"
@@ -43,6 +44,7 @@
     "@types/react": "^18.2.20",
     "concurrently": "^8.2.0",
     "eslint": "^8.47.0",
+    "eslint-plugin-jest-react": "^0.1.0",
     "eslint-plugin-react": "^7.33.1",
     "eslint-plugin-testing-library": "^6.0.0",
     "identity-obj-proxy": "^3.0.0",
@@ -71,7 +73,8 @@
       "plugin:@typescript-eslint/recommended",
       "plugin:react-hooks/recommended",
       "plugin:react/recommended",
-      "plugin:prettier/recommended"
+      "plugin:prettier/recommended",
+      "plugin:jest-react/recommended"
     ],
     "ignorePatterns": [
       "dist",
@@ -83,7 +86,9 @@
     "plugins": [
       "react-refresh",
       "testing-library",
-      "prettier"
+      "prettier",
+      "jest-react",
+      "react-hooks"
     ],
     "rules": {
       "prettier/prettier": [
@@ -103,7 +108,7 @@
       "no-case-declarations": "warn",
       "react/display-name": "warn",
       "react/prop-types": "warn",
-      "@typescript-eslint/no-loss-of-precision":"warn",
+      "@typescript-eslint/no-loss-of-precision": "warn",
       "react/react-in-jsx-scope": "off"
     },
     "parserOptions": {

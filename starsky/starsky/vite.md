@@ -21,7 +21,7 @@ npm install --save react-dom
 npm install --save @types/leaflet
 npm install --save @types/storybook__react
 npm install --save-dev @storybook/react --force
-npm install --save eslint-config-prettier
+npm install --save-dev eslint-config-prettier
 npm install --save eslint-plugin-prettier
 npm install --save prettier
 npm install --save @types/node
@@ -42,7 +42,7 @@ npm install --save-dev isomorphic-fetch
 npm install --save-dev jest-environment-jsdom --force
 npm install eslint eslint-plugin-react --save-dev --force
 npm install --save-dev eslint-plugin-testing-library --force
-
+npm install --save-dev eslint-plugin-jest-react --force
 ```
 
 npm install --save-dev @babel/preset-env
