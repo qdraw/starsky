@@ -2,12 +2,50 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="shortcut icon" href="/starsky/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Starsky web app" />
+    <link rel="apple-touch-icon" href="/starsky/baseline-searcher-detective-263238__192px.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>Starsky App</title>
+    <link rel="manifest" href="/starsky/manifest.json" />
   </head>
   <body>
     <div id="root"></div>
+
     <script type="module" src="/src/main.tsx"></script>
+
+    <div class="modal-bg modal-bg--open trouble-loading">
+      <div class="modal-content modal-content--show trouble-loading">
+        <div class="modal-close-bar"></div>
+        <div class="modal content--subheader">
+          For some reason, Starsky couldn't load
+        </div>
+        <div class="modal content--text">
+          <p>We're quite sorry about this</p>
+          <h4>Troubleshooting</h4>
+          <p>Here are a few things to try:</p>
+          <noscript>
+            <ul>
+              <li>You need to enable JavaScript to run this app.</li>
+            </ul>
+          </noscript>
+          <ul>
+            <li>
+              <a href="/?force_cold_boot=1">Reload starsky</a> or even restart
+              your browser
+            </li>
+            <li>Make sure your security software isn't blocking Starksy</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <script
+      defer
+      async
+      type="text/javascript"
+      src="/starsky/api/health/application-insights"
+    ></script>
   </body>
 </html>

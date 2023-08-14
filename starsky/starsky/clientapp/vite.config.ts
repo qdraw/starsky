@@ -5,7 +5,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: "./build"
+    outDir: "./build",
+    assetsInlineLimit: 0,
+    chunkSizeWarningLimit: 600
   },
   server: {
     proxy: {

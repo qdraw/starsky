@@ -175,7 +175,7 @@ namespace helpers
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
 				        $"**/*stories.tsx,**/*spec.ts,**/src/main.tsx,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
-				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**," +
+				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
 				        $"**/_bigimages-helper.js ")
 				.Append($"/d:sonar.coverage.exclusions=**/build/*,**/build/helpers/*," +
 				        "**/documentation/*,"+
@@ -183,7 +183,7 @@ namespace helpers
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
 				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +
-				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**," +
+				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**,**/jest.setup.ts," +
 				        $"**/_bigimages-helper.js ");
         
 			// Normal build
