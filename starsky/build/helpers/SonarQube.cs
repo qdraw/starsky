@@ -174,16 +174,16 @@ namespace helpers
 				        "**/Interfaces/IQuery.cs," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx," +
-				        $"**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
-				        $"**/prestorybook.js," +
+				        $"**/*stories.tsx,**/*spec.ts,**/src/main.tsx,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*," +
+				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**," +
 				        $"**/_bigimages-helper.js ")
 				.Append($"/d:sonar.coverage.exclusions=**/build/*,**/build/helpers/*," +
 				        "**/documentation/*,"+
 				        "**/Interfaces/IQuery.cs," +
 				        $"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts," +
 				        $"*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*," +
-				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*," +
-				        $"**/prestorybook.js," +
+				        $"**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/main.tsx,**/src/index.tsx,**/node_modules/*," +
+				        $"**/prestorybook.js,**/vite.config.ts,**/.storybook/**," +
 				        $"**/_bigimages-helper.js ");
         
 			// Normal build
