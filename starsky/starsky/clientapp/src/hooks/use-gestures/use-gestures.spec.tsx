@@ -199,6 +199,7 @@ describe("useGestures", () => {
     it("touchstart single onPanStart", () => {
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
+        .mockReset()
         .mockImplementationOnce(() => {});
 
       const demoElement = document.createElement("div");
@@ -224,6 +225,7 @@ describe("useGestures", () => {
     it("touchstart double onPinchStart", () => {
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
+        .mockReset()
         .mockImplementationOnce(() => {});
 
       const demoElement = document.createElement("div");
@@ -249,6 +251,7 @@ describe("useGestures", () => {
     it("touchmove single onPanMove", () => {
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
+        .mockReset()
         .mockImplementationOnce(() => {});
 
       const demoElement = document.createElement("div");
@@ -281,6 +284,8 @@ describe("useGestures", () => {
             deltaY: undefined
           } as any;
         });
+
+      jest.spyOn(callHandler,'callHandler').mockImplementationOnce(()=>{})
 
       const debounceAnonymousFnSpy = jest.fn();
       const debounceSpy = jest
@@ -320,6 +325,9 @@ describe("useGestures", () => {
         .spyOn(debounce, "debounce")
         .mockReset()
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
+
+      jest.spyOn(callHandler,'callHandler').mockImplementationOnce(()=>{})
+
       const demoElement = document.createElement("div");
 
       const hook = mountReactHook(useGestures, [{ current: demoElement }]);
@@ -344,12 +352,14 @@ describe("useGestures", () => {
     it("touchmove large delta swipeLeft should call deBounce", () => {
       jest
         .spyOn(getCurrentTouchesAll, "getCurrentTouches")
+        .mockReset()
         .mockImplementationOnce(() => {
           return {
             deltaX: -30,
             deltaY: 0
           } as any;
         });
+      jest.spyOn(callHandler,'callHandler').mockImplementationOnce(()=>{})
 
       const debounceAnonymousFnSpy = jest.fn();
       const debounceSpy = jest
@@ -380,16 +390,19 @@ describe("useGestures", () => {
     it("touchmove large delta swipeDown should call deBounce", () => {
       jest
         .spyOn(getCurrentTouchesAll, "getCurrentTouches")
+        .mockReset()
         .mockImplementationOnce(() => {
           return {
             deltaX: 0,
             deltaY: 30
           } as any;
         });
+      jest.spyOn(callHandler,'callHandler').mockImplementationOnce(()=>{})
 
       const debounceAnonymousFnSpy = jest.fn();
       const debounceSpy = jest
         .spyOn(debounce, "debounce")
+        .mockReset()
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
@@ -415,12 +428,15 @@ describe("useGestures", () => {
     it("touchmove large delta onSwipeUp should call deBounce", () => {
       jest
         .spyOn(getCurrentTouchesAll, "getCurrentTouches")
+        .mockReset()
         .mockImplementationOnce(() => {
           return {
             deltaX: 0,
             deltaY: -30
           } as any;
         });
+
+      jest.spyOn(callHandler,'callHandler').mockImplementationOnce(()=>{})
 
       const debounceAnonymousFnSpy = jest.fn();
       const debounceSpy = jest
@@ -446,10 +462,13 @@ describe("useGestures", () => {
 
     it("touchmove double", () => {
       jest.spyOn(callHandler, "callHandler").mockReset();
+
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
         .mockReset()
         .mockImplementationOnce(() => {});
+
+      jest.spyOn(callHandler,'callHandler').mockImplementationOnce(()=>{})
 
       const demoElement = document.createElement("div");
 
@@ -464,7 +483,7 @@ describe("useGestures", () => {
       expect(callHandlerSpy).toBeCalled();
       expect(callHandlerSpy).toBeCalledWith(
         "onPinchChanged",
-        undefined,
+        expect.any(Object),
         undefined
       );
 
@@ -475,12 +494,14 @@ describe("useGestures", () => {
     it("touchend single onPinchEnd", () => {
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
+        .mockReset()
         .mockImplementationOnce(() => {});
 
       jest
         .spyOn(React, "useState")
         .mockReset()
         .mockImplementationOnce(() => [{ pointers: ["", "1"] }, jest.fn()]);
+        
       const touchEndEvent = new TouchEvent("touchend", exampleSingleTouches);
 
       const demoElement = document.createElement("div");
@@ -492,7 +513,7 @@ describe("useGestures", () => {
       });
 
       expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledWith("onPinchEnd", undefined, undefined);
+      expect(callHandlerSpy).toBeCalledWith("onPinchEnd", expect.any(Object), undefined);
 
       const component = hook.componentMount as any;
       component.unmount();
@@ -501,10 +522,13 @@ describe("useGestures", () => {
     it("touchend double onPinchEnd", () => {
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
+        .mockReset()
+        .mockImplementationOnce(() => {})
         .mockImplementationOnce(() => {});
 
       jest
         .spyOn(React, "useState")
+        .mockReset()        
         .mockImplementationOnce(() => [{ pointers: ["a"] }, jest.fn()])
         .mockImplementationOnce(() => ["gesture1", jest.fn()]);
 
@@ -519,17 +543,17 @@ describe("useGestures", () => {
       });
 
       expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledWith("onPanEnd", undefined, undefined);
+      expect(callHandlerSpy).toBeCalledWith("onPanEnd", expect.any(Object), undefined);
       expect(callHandlerSpy).toHaveBeenNthCalledWith(
         1,
         "onPanEnd",
-        undefined,
+        expect.any(Object),
         undefined
       );
       expect(callHandlerSpy).toHaveBeenNthCalledWith(
         2,
         "onGesture1End",
-        undefined,
+        expect.any(Object),
         undefined
       );
       const component = hook.componentMount as any;
