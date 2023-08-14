@@ -3,7 +3,7 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import NavContainer from "./nav-container";
 
 export default {
-  title: "components/organisms/nav-container",
+  title: "components/organisms/nav-container"
 };
 
 export const Default = () => {
@@ -26,5 +26,5 @@ export const Default = () => {
 };
 
 Default.story = {
-  name: "default",
+  name: "default"
 };

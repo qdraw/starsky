@@ -15,9 +15,11 @@ describe("FileHashImage", () => {
     render(<FileHashImage isError={false} fileHash={""} />);
   });
 
-  beforeEach(()=> {
-    jest.spyOn(DetectAutomaticRotation,'default').mockImplementationOnce(()=> Promise.resolve(true))
-  })
+  beforeEach(() => {
+    jest
+      .spyOn(DetectAutomaticRotation, "default")
+      .mockImplementationOnce(() => Promise.resolve(true));
+  });
 
   it("Rotation API is called return 202", async () => {
     console.log("-- Rotation API is called return 202 --");

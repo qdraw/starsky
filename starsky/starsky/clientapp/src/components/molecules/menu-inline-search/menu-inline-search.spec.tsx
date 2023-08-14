@@ -63,8 +63,7 @@ describe("Menu.SearchBar", () => {
       console.log("menu searchbar - blur");
 
       jest.spyOn(React, "useEffect").mockReset();
-      
-      
+
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
@@ -74,7 +73,7 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
-        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
 
       const menuBar = render(<MenuInlineSearch />);
 
@@ -271,8 +270,7 @@ describe("Menu.SearchBar", () => {
     });
 
     it("reset suggestions after change to nothing", () => {
-      
-      console.log("reset suggestions after change to nothing")
+      console.log("reset suggestions after change to nothing");
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
@@ -308,7 +306,6 @@ describe("Menu.SearchBar", () => {
     });
 
     it("ArrowKeyDown called", () => {
-
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
@@ -321,7 +318,6 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
-
 
       const callback = jest.fn();
       const menuBar = render(

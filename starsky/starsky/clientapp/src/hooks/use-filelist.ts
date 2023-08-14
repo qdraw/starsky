@@ -42,7 +42,7 @@ export const fetchContentUseFileList = async (
       credentials: "include",
       method: "get"
     });
-    
+
     if (res.status === 404) {
       setPageType(PageType.NotFound);
       return;

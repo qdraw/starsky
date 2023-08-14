@@ -13,7 +13,7 @@ const ImportPage: FunctionComponent<RouteComponentProps> = () => {
   document.title = new DocumentTitle().GetDocumentTitle("Import");
 
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(
-    newIFileIndexItemArray(),
+    newIFileIndexItemArray()
   );
 
   // Content

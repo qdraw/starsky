@@ -12,11 +12,11 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const MessageModifyName = new Language(settings.language).text(
     "Wijzigen",
-    "Modify",
+    "Modify"
   );
   const MessageSearchAndReplaceName = new Language(settings.language).text(
     "Vervangen",
-    "Replace",
+    "Replace"
   );
 
   // Toggle

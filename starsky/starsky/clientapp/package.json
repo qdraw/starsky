@@ -70,7 +70,8 @@
       "eslint:recommended",
       "plugin:@typescript-eslint/recommended",
       "plugin:react-hooks/recommended",
-      "plugin:react/recommended"
+      "plugin:react/recommended",
+      "plugin:prettier/recommended"
     ],
     "ignorePatterns": [
       "dist",
@@ -81,9 +82,16 @@
     "parser": "@typescript-eslint/parser",
     "plugins": [
       "react-refresh",
-      "testing-library"
+      "testing-library",
+      "prettier"
     ],
     "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "endOfLine": "auto"
+        }
+      ],
       "react-refresh/only-export-components": [
         "warn",
         {

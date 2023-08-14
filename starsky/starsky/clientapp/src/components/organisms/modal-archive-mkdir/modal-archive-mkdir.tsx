@@ -29,19 +29,19 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
   const language = new Language(settings.language);
   const MessageFeatureName = language.text(
     "Nieuwe map aanmaken",
-    "Create new folder",
+    "Create new folder"
   );
   const MessageNonValidDirectoryName = language.text(
     "Controleer de naam, deze map kan niet zo worden aangemaakt",
-    "Check the name, this folder cannot be created in this way",
+    "Check the name, this folder cannot be created in this way"
   );
   const MessageGeneralMkdirCreateError = language.text(
     "Er is misgegaan met het aanmaken van deze map",
-    "An error occurred while creating this folder",
+    "An error occurred while creating this folder"
   );
   const MessageDirectoryExistError = language.text(
     "De map bestaat al, probeer een andere naam",
-    "The folder already exists, try a different name",
+    "The folder already exists, try a different name"
   );
 
   // to show errors
@@ -64,7 +64,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
   function handleUpdateChange(
     event:
       | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>,
+      | React.KeyboardEvent<HTMLDivElement>
   ) {
     let fieldValue = "";
     if (event.currentTarget.textContent) {
@@ -75,7 +75,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
     setButtonState(true);
 
     const isValidFileName = new FileExtensions().IsValidDirectoryName(
-      fieldValue,
+      fieldValue
     );
 
     if (!isValidFileName) {
@@ -99,14 +99,14 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
 
     const result = await FetchPost(
       new UrlQuery().UrlDiskMkdir(),
-      bodyParams.toString(),
+      bodyParams.toString()
     );
 
     if (result.statusCode !== 200) {
       setError(
         result.statusCode !== 409
           ? MessageGeneralMkdirCreateError
-          : MessageDirectoryExistError,
+          : MessageDirectoryExistError
       );
       // and renable
       setIsLoading(false);
@@ -116,10 +116,10 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
 
     // Force update
     const connectionResult = await FetchGet(
-      new UrlQuery().UrlIndexServerApi({ f: state.subPath }),
+      new UrlQuery().UrlIndexServerApi({ f: state.subPath })
     );
     const forceSyncResult = new CastToInterface().MediaArchive(
-      connectionResult.data,
+      connectionResult.data
     );
     const payload = forceSyncResult.data as IArchiveProps;
     if (payload.fileIndexItems) {

@@ -16,7 +16,7 @@ describe("ArchiveSidebar", () => {
         isReadOnly={true}
         colorClassUsage={[]}
         fileIndexItems={newIFileIndexItemArray()}
-      />,
+      />
     );
   });
 
@@ -41,7 +41,7 @@ describe("ArchiveSidebar", () => {
           isReadOnly={true}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />,
+        />
       );
 
       act(() => {
@@ -61,11 +61,11 @@ describe("ArchiveSidebar", () => {
           isReadOnly={false}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />,
+        />
       );
 
       const element = screen.queryByTestId(
-        "sidebar-selection-none",
+        "sidebar-selection-none"
       ) as HTMLDivElement;
 
       expect(element).toBeTruthy();
@@ -81,11 +81,11 @@ describe("ArchiveSidebar", () => {
           isReadOnly={true}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />,
+        />
       );
 
       const element = screen.queryByTestId(
-        "sidebar-read-only",
+        "sidebar-read-only"
       ) as HTMLDivElement;
 
       expect(element).toBeTruthy();
@@ -101,7 +101,7 @@ describe("ArchiveSidebar", () => {
           isReadOnly={false}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />,
+        />
       );
 
       Object.defineProperty(window, "scrollY", { value: 1 });
@@ -122,7 +122,7 @@ describe("ArchiveSidebar", () => {
           isReadOnly={false}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        />,
+        />
       );
 
       window.dispatchEvent(new Event("scroll"));

@@ -20,11 +20,11 @@ describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
     gridlayer.fire = fire;
 
     // to skip some check in leaflet TypeError: symbol is not a function
-    Object.defineProperty(L.Browser, 'androidStock', {
+    Object.defineProperty(L.Browser, "androidStock", {
       value: true,
       writable: true
     });
-    
+
     // this is normaly excuted by leaflet
     gridlayer._removeTile("test");
 

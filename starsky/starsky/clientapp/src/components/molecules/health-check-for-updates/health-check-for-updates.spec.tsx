@@ -3,7 +3,8 @@ import * as useFetch from "../../../hooks/use-fetch";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as Notification from "../../atoms/notification/notification";
 import HealthCheckForUpdates, {
-  CheckForUpdatesLocalStorageName, SkipDisplayOfUpdate
+  CheckForUpdatesLocalStorageName,
+  SkipDisplayOfUpdate
 } from "./health-check-for-updates";
 
 describe("HealthCheckForUpdates", () => {
@@ -56,19 +57,23 @@ describe("HealthCheckForUpdates", () => {
     });
 
     it("Click on close and expect that date is set in local storage", () => {
-      
-      console.log("Click on close and expect that date is set in local storage");
-      
+      console.log(
+        "Click on close and expect that date is set in local storage"
+      );
+
       const mockGetIConnectionDefault = {
         statusCode: 202,
         data: null
       } as IConnectionDefault;
 
-      jest.spyOn(Notification, "default").mockReset().mockImplementationOnce((arg) => {
-        if (!arg || !arg.callback) return null;
-        arg.callback();
-        return <></>;
-      });
+      jest
+        .spyOn(Notification, "default")
+        .mockReset()
+        .mockImplementationOnce((arg) => {
+          if (!arg || !arg.callback) return null;
+          arg.callback();
+          return <></>;
+        });
       jest
         .spyOn(useFetch, "default")
         .mockReset()
@@ -77,7 +82,7 @@ describe("HealthCheckForUpdates", () => {
       const shouldSkip = SkipDisplayOfUpdate();
       expect(shouldSkip).toBeFalsy();
 
-      const component = render(<HealthCheckForUpdates />);      
+      const component = render(<HealthCheckForUpdates />);
 
       component.unmount();
 

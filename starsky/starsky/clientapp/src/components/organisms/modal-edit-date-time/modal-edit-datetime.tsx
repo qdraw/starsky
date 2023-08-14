@@ -9,7 +9,7 @@ import {
   parseDateMonth,
   parseDateYear,
   parseTime,
-  parseTimeHour,
+  parseTimeHour
 } from "../../../shared/date";
 import FetchPost from "../../../shared/fetch-post";
 import { Language } from "../../../shared/language";
@@ -25,14 +25,14 @@ interface IModalDatetimeProps {
 }
 
 const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
-  props,
+  props
 ) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageModalDatetime = language.text(
     "Datum en tijd bewerken",
-    "Edit date and time",
+    "Edit date and time"
   );
   const MessageYear = language.text("Jaar", "Year");
   const MessageMonth = language.text("Maand", "Month");
@@ -40,7 +40,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
   const MessageTime = language.text("Tijd", "Time");
   const MessageErrorDatetime = language.text(
     "De datum en tijd zijn incorrect ingegeven",
-    "The date and time were entered incorrectly",
+    "The date and time were entered incorrectly"
   );
 
   const [isFormEnabled] = useState(true);
@@ -50,10 +50,10 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
   const [date, setDate] = useState(parseDateDate(props.dateTime));
   const [hour, setHour] = useState(parseTimeHour(props.dateTime));
   const [minute, setMinute] = useState(
-    props.dateTime ? new Date(props.dateTime).getMinutes() : 1,
+    props.dateTime ? new Date(props.dateTime).getMinutes() : 1
   );
   const [seconds, setSeconds] = useState(
-    props.dateTime ? new Date(props.dateTime).getSeconds() : 1,
+    props.dateTime ? new Date(props.dateTime).getSeconds() : 1
   );
 
   function getDates() {

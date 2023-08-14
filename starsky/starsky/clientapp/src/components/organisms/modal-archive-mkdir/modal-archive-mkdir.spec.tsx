@@ -3,7 +3,7 @@ import {
   createEvent,
   fireEvent,
   render,
-  screen,
+  screen
 } from "@testing-library/react";
 import React from "react";
 import { IArchive, newIArchive } from "../../../interfaces/IArchive";
@@ -28,7 +28,7 @@ describe("ModalArchiveMkdir", () => {
         state={{} as any}
         isOpen={true}
         handleExit={() => {}}
-      />,
+      />
     );
   });
 
@@ -55,18 +55,18 @@ describe("ModalArchiveMkdir", () => {
           dispatch={jest.fn()}
           isOpen={true}
           handleExit={() => {}}
-        ></ModalArchiveMkdir>,
+        ></ModalArchiveMkdir>
       );
 
       const button = screen.queryByTestId(
-        "modal-archive-mkdir-btn-default",
+        "modal-archive-mkdir-btn-default"
       ) as HTMLButtonElement;
 
       const submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
       const directoryName = screen.queryByTestId(
-        "form-control",
+        "form-control"
       ) as HTMLInputElement;
 
       // update component + now press a key
@@ -80,7 +80,7 @@ describe("ModalArchiveMkdir", () => {
       });
 
       expect(
-        screen.getByTestId("modal-archive-mkdir-warning-box"),
+        screen.getByTestId("modal-archive-mkdir-warning-box")
       ).toBeTruthy();
 
       const submitButtonAfter = button.disabled;
@@ -108,8 +108,8 @@ describe("ModalArchiveMkdir", () => {
           data: {
             ...newIArchive(),
             fileIndexItems: [],
-            pageType: PageType.Search,
-          } as IArchiveProps,
+            pageType: PageType.Search
+          } as IArchiveProps
         } as IConnectionDefault);
 
       const fetchGetSpy = jest
@@ -117,7 +117,7 @@ describe("ModalArchiveMkdir", () => {
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       const state = {
-        subPath: "/test",
+        subPath: "/test"
       } as IArchive;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -127,15 +127,15 @@ describe("ModalArchiveMkdir", () => {
           dispatch={contextValues.dispatch}
           isOpen={true}
           handleExit={() => {}}
-        ></ModalArchiveMkdir>,
+        ></ModalArchiveMkdir>
       );
 
       const button = screen.queryByTestId(
-        "modal-archive-mkdir-btn-default",
+        "modal-archive-mkdir-btn-default"
       ) as HTMLButtonElement;
 
       const directoryName = screen.queryByTestId(
-        "form-control",
+        "form-control"
       ) as HTMLInputElement;
 
       directoryName.textContent = "new folder";
@@ -151,20 +151,20 @@ describe("ModalArchiveMkdir", () => {
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlDiskMkdir(),
-        "f=%2Ftest%2Fnew+folder",
+        "f=%2Ftest%2Fnew+folder"
       );
 
       // to get the update
       expect(fetchGetSpy).toBeCalled();
       expect(fetchGetSpy).toBeCalledWith(
-        new UrlQuery().UrlIndexServerApi({ f: "/test" }),
+        new UrlQuery().UrlIndexServerApi({ f: "/test" })
       );
 
       // to update context
       expect(contextValues.dispatch).toBeCalled();
       expect(contextValues.dispatch).toBeCalledWith({
         payload: { fileIndexItems: [], pageType: "Search" },
-        type: "force-reset",
+        type: "force-reset"
       });
 
       // cleanup
@@ -188,7 +188,7 @@ describe("ModalArchiveMkdir", () => {
           isOpen={true}
           dispatch={jest.fn()}
           handleExit={handleExitSpy}
-        />,
+        />
       );
 
       expect(handleExitSpy).toBeCalled();

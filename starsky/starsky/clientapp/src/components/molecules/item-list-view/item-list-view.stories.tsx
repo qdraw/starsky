@@ -1,7 +1,7 @@
 import { globalHistory } from "@reach/router";
 import {
-    IFileIndexItem,
-    newIFileIndexItemArray
+  IFileIndexItem,
+  newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
 import ItemListView from "./item-list-view";
 

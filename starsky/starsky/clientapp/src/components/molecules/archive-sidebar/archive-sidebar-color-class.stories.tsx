@@ -1,9 +1,9 @@
 import { globalHistory } from "@reach/router";
 import { PageType } from "../../../interfaces/IDetailView";
 import {
-    IFileIndexItem,
-    newIFileIndexItem,
-    newIFileIndexItemArray
+  IFileIndexItem,
+  newIFileIndexItem,
+  newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
 import ArchiveSidebarColorClass from "./archive-sidebar-color-class";
 

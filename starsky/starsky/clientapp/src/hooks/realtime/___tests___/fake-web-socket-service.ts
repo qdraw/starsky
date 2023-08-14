@@ -11,7 +11,7 @@ export class FakeWebSocketService implements WebSocketService {
 
   constructor(
     onOpenEvent: Event = new Event("t"),
-    onCloseEvent: CloseEvent = new CloseEvent("t"),
+    onCloseEvent: CloseEvent = new CloseEvent("t")
   ) {
     this.onOpenEvent = onOpenEvent;
     this.onCloseEvent = onCloseEvent;
@@ -36,7 +36,7 @@ export class FakeWebSocketService implements WebSocketService {
 
   public send(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView,
+    _data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView
   ): void {
     // it should do nothing
   }

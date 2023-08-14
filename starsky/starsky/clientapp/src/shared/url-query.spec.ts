@@ -16,7 +16,7 @@ describe("url-query", () => {
 
   it("UrlQueryServerApi f/colorclass/collections", () => {
     const result = urlQuery.UrlQueryServerApi(
-      "?f=test&colorClass=1&collections=false&details=true",
+      "?f=test&colorClass=1&collections=false&details=true"
     );
     expect(result).toContain("1");
     expect(result).toContain("false");
@@ -144,7 +144,7 @@ describe("url-query", () => {
       const test = urlQuery.updateFilePathHash(
         "?f=test&colorclass=1&t=1",
         "test1",
-        true,
+        true
       );
       expect(test).toStrictEqual("/?f=test1&colorClass=1");
     });
@@ -152,7 +152,7 @@ describe("url-query", () => {
     it("keep search query", () => {
       const test = urlQuery.updateFilePathHash(
         "?f=test&colorclass=1&t=1",
-        "test1",
+        "test1"
       );
       expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1");
     });
@@ -162,7 +162,7 @@ describe("url-query", () => {
         "?f=test&colorclass=1&t=1&select=t5",
         "test1",
         false,
-        true,
+        true
       );
       expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1&select=");
     });
@@ -200,7 +200,7 @@ describe("url-query", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
         "hash_test",
         "filePath",
-        false,
+        false
       );
       expect(test).toContain("hash_test");
     });
@@ -209,7 +209,7 @@ describe("url-query", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
         "hash_test",
         "filePath",
-        true,
+        true
       );
       expect(test).toContain("hash_test");
     });
@@ -228,7 +228,7 @@ describe("url-query", () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.location = {
-        href: "",
+        href: ""
       };
     });
 

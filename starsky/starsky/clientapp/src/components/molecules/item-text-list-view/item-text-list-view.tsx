@@ -32,7 +32,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
   const language = new Language(settings.language);
   const MessageNoPhotos = language.text(
     "Er zijn geen foto's",
-    "There are no pictures",
+    "There are no pictures"
   );
 
   if (!props.fileIndexItems)

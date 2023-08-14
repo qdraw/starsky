@@ -1,6 +1,6 @@
 import {
-    IFileIndexItem,
-    ImageFormat
+  IFileIndexItem,
+  ImageFormat
 } from "../../../interfaces/IFileIndexItem";
 import FlatListItemBox from "./flat-list-item";
 

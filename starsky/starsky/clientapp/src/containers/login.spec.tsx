@@ -182,8 +182,7 @@ describe("Login", () => {
       .mockReset()
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample2)
-            .mockImplementationOnce(() => connectionDefaultExample2);
-
+      .mockImplementationOnce(() => connectionDefaultExample2);
 
     const login = render(<Login />);
 
@@ -212,7 +211,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
-      .mockImplementationOnce(() => connectionDefaultExample)      
+      .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
     const mockPost: Promise<any> = Promise.resolve({

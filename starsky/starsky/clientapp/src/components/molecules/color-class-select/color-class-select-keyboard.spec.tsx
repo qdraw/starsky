@@ -17,7 +17,7 @@ describe("ColorClassSelectKeyboard", () => {
         isEnabled={true}
         filePath={"/test"}
         onToggle={() => {}}
-      />,
+      />
     );
   });
 
@@ -27,8 +27,8 @@ describe("ColorClassSelectKeyboard", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
       {
         statusCode: 200,
-        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[],
-      },
+        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
+      }
     );
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
@@ -41,14 +41,14 @@ describe("ColorClassSelectKeyboard", () => {
         isEnabled={true}
         filePath={"/test1"}
         onToggle={() => {}}
-      />,
+      />
     );
 
     const event = new KeyboardEvent("keydown", {
       bubbles: true,
       cancelable: true,
       key: "5",
-      shiftKey: true,
+      shiftKey: true
     });
 
     // need to await this
@@ -60,7 +60,7 @@ describe("ColorClassSelectKeyboard", () => {
     expect(fetchPostSpy).toHaveBeenCalledTimes(1);
     expect(fetchPostSpy).toHaveBeenCalledWith(
       new UrlQuery().prefix + "/api/update",
-      "f=%2Ftest1&colorclass=5&collections=true",
+      "f=%2Ftest1&colorclass=5&collections=true"
     );
 
     // clean
@@ -80,13 +80,13 @@ describe("ColorClassSelectKeyboard", () => {
         isEnabled={true}
         filePath={"/test1"}
         onToggle={() => {}}
-      />,
+      />
     );
     const event = new KeyboardEvent("keydown", {
       bubbles: true,
       cancelable: true,
       key: "5",
-      shiftKey: true,
+      shiftKey: true
     });
 
     const colorClassUpdateSingleSpy = jest
@@ -128,14 +128,14 @@ describe("ColorClassSelectKeyboard", () => {
         isEnabled={true}
         filePath={"/test1"}
         onToggle={() => {}}
-      />,
+      />
     );
 
     const event = new KeyboardEvent("keydown", {
       bubbles: true,
       cancelable: true,
       key: "5",
-      shiftKey: true,
+      shiftKey: true
     });
 
     // need to await this
@@ -160,7 +160,7 @@ describe("ColorClassSelectKeyboard", () => {
         (_p1, _p2, _p3, _p4, _p5, _p6, setCurrentColorClass) => {
           setCurrentColorClass(1);
           return { Update: jest.fn() } as any;
-        },
+        }
       );
 
     const component = render(
@@ -170,14 +170,14 @@ describe("ColorClassSelectKeyboard", () => {
         isEnabled={true}
         filePath={"/test1"}
         onToggle={() => {}}
-      />,
+      />
     );
 
     const event = new KeyboardEvent("keydown", {
       bubbles: true,
       cancelable: true,
       key: "5",
-      shiftKey: true,
+      shiftKey: true
     });
 
     // need to await this

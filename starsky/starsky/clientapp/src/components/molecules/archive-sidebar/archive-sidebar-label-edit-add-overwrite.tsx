@@ -16,7 +16,7 @@ import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Notification, {
-  NotificationType,
+  NotificationType
 } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
 
@@ -24,34 +24,34 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   const settings = useGlobalSettings();
   const MessageAddName = new Language(settings.language).text(
     "Toevoegen",
-    "Add to",
+    "Add to"
   );
   const MessageOverwriteName = new Language(settings.language).text(
     "Overschrijven",
-    "Overwrite",
+    "Overwrite"
   );
   const MessageTitleName = new Language(settings.language).text(
     "Titel",
-    "Title",
+    "Title"
   );
   const MessageErrorReadOnly = new Language(settings.language).text(
     "Eén of meerdere bestanden zijn alleen lezen. " +
       "Alleen de bestanden met schrijfrechten zijn geupdate.",
     "One or more files are read only. " +
-      "Only the files with write permissions have been updated.",
+      "Only the files with write permissions have been updated."
   );
   const MessageErrorGenericFail = new Language(settings.language).text(
     "Er is iets misgegaan met het updaten. Probeer het opnieuw",
-    "Something went wrong with the update. Please try again",
+    "Something went wrong with the update. Please try again"
   );
 
   const MessageErrorNotFoundSourceMissing = new Language(
-    settings.language,
+    settings.language
   ).text(
     "Eén of meerdere bestanden zijn al verdwenen. " +
       "Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
     "One or more files are already gone. " +
-      "Only the files that are present are updated. Run a manual sync",
+      "Only the files that are present are updated. Run a manual sync"
   );
 
   const history = useLocation();
@@ -63,7 +63,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
   // show select info
   const [select, setSelect] = useState(
-    new URLPath().getSelect(history.location.search),
+    new URLPath().getSelect(history.location.search)
   );
   useEffect(() => {
     setSelect(new URLPath().getSelect(history.location.search));
@@ -72,7 +72,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   // The Updated that is send to the api
   const [update, setUpdate] = useState({
     append: true,
-    collections: true,
+    collections: true
   } as ISidebarUpdate);
 
   // Add/Hide disabled state
@@ -88,7 +88,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   function handleUpdateChange(
     event:
       | React.ChangeEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>,
+      | React.KeyboardEvent<HTMLDivElement>
   ) {
     const sideBarUpdate = new SidebarUpdate().Change(event, update);
     if (!sideBarUpdate) return;
@@ -117,12 +117,12 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
     const subPaths = new URLPath().MergeSelectFileIndexItem(
       select,
-      state.fileIndexItems,
+      state.fileIndexItems
     );
     if (!subPaths) return;
     const selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
       subPaths,
-      "",
+      ""
     );
 
     if (selectParams.length === 0) return;
@@ -143,7 +143,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
             dispatch({
               type: "update",
               ...element,
-              select: [element.fileName],
+              select: [element.fileName]
             });
           }
         });
@@ -175,7 +175,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       const current = tagsReference.current as HTMLDivElement;
       new Keyboard().SetFocusOnEndField(current);
     },
-    [],
+    []
   );
 
   // noinspection HtmlUnknownAttribute

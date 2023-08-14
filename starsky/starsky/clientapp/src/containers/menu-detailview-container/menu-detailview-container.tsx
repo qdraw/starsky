@@ -16,8 +16,8 @@ const MenuDetailViewContainer: React.FunctionComponent = () => {
         parentDirectory: "/",
         fileName: "",
         filePath: "/",
-        lastEdited: new Date(1970, 1, 1).toISOString(),
-      },
+        lastEdited: new Date(1970, 1, 1).toISOString()
+      }
     } as IDetailView;
   }
 

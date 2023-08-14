@@ -103,9 +103,12 @@ export const Default = () => {
   return (
     <div className={"folder"}>
       {/* EXAMPLE STORY */}
-      <div className={"list-image-box box--view"} >
+      <div className={"list-image-box box--view"}>
         {exampleItems.map((item) => (
-          <div className={"box-content colorclass--0 isDirectory-true"} key={item.fileName + item.lastEdited + item.colorClass}>
+          <div
+            className={"box-content colorclass--0 isDirectory-true"}
+            key={item.fileName + item.lastEdited + item.colorClass}
+          >
             <ListImageChildItem
               {...item}
               key={item.fileName + item.lastEdited + item.colorClass}

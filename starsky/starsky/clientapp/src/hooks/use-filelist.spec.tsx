@@ -219,14 +219,15 @@ describe("UseFileList", () => {
 
     it("[use file list] with connection rejected", async () => {
       console.log("[use file list] with connection rejected");
-      
+
       const controller = new AbortController();
 
       const mockResult = Promise.reject();
 
-      fetchSpy = jest.spyOn(window, "fetch")
-      .mockReset()
-      .mockImplementationOnce(() => mockResult);
+      fetchSpy = jest
+        .spyOn(window, "fetch")
+        .mockReset()
+        .mockImplementationOnce(() => mockResult);
 
       const setPageTypeFn = jest.fn();
 
@@ -250,10 +251,12 @@ describe("UseFileList", () => {
 
 describe("UseFileList error", () => {
   it("aborted should not call", async () => {
-    const fetchSpy = jest.spyOn(window, "fetch")
-    .mockReset().mockImplementationOnce(() => {
-      throw new DOMException("aborted");
-    });
+    const fetchSpy = jest
+      .spyOn(window, "fetch")
+      .mockReset()
+      .mockImplementationOnce(() => {
+        throw new DOMException("aborted");
+      });
 
     const controller = new AbortController();
     const setDataSpy = jest.fn();
@@ -278,9 +281,12 @@ describe("UseFileList error", () => {
   });
 
   it("generic error", async () => {
-    const fetchSpy = jest.spyOn(window, "fetch").mockReset().mockImplementationOnce(() => {
-      throw new Error("default error");
-    });
+    const fetchSpy = jest
+      .spyOn(window, "fetch")
+      .mockReset()
+      .mockImplementationOnce(() => {
+        throw new Error("default error");
+      });
 
     const controller = new AbortController();
     const setDataSpy = jest.fn();

@@ -230,11 +230,11 @@ describe("date", () => {
 
       let dayBeforeYesterday = `${dayBeforeYesterdayDate.getFullYear()}-
         ${leftPad(dayBeforeYesterdayDate.getMonth() + 1)}-${leftPad(
-        dayBeforeYesterdayDate.getDate()
-      )}T
+          dayBeforeYesterdayDate.getDate()
+        )}T
         ${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(
-        dayBeforeYesterdayDate.getMinutes()
-      )}:
+          dayBeforeYesterdayDate.getMinutes()
+        )}:
         ${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
 
       // remove space and newlines from prev variable

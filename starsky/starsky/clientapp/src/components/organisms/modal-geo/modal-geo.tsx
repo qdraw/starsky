@@ -33,8 +33,6 @@ export interface ILatLong {
   longitude: number;
 }
 
-
-
 export function getZoom(location: ILatLong): number {
   let zoom = 12;
   if (location.latitude && location.longitude) {
@@ -55,8 +53,6 @@ export const onDrag = function (
   });
   setIsLocationUpdated(true);
 };
-
-
 
 export function addMapLocationCenter(location: ILatLong): L.LatLng {
   let mapLocationCenter = L.latLng(52.375, 4.9);
@@ -87,7 +83,6 @@ export function addMap(
   });
   return map;
 }
-
 
 export function addDefaultClickSetMarker(
   map: L.Map,
@@ -129,7 +124,6 @@ function updateMap(
     setIsLocationUpdated
   );
   console.log("isFormEnabled: " + isFormEnabled);
-  
 
   addDefaultClickSetMarker(
     map,

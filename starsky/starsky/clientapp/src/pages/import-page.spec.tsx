@@ -32,7 +32,7 @@ describe("ImportPage", () => {
       });
     const dropAreaSpy = jest
       .spyOn(DropArea, "default")
-       
+
       .mockImplementationOnce(() => {
         return <></>;
       });

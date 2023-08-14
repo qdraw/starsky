@@ -34,7 +34,7 @@ function useHotKeys(
     /* should do nothing, you should overwrite this */
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _dependencies: any = [],
+  _dependencies: any = []
 ) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
@@ -48,7 +48,7 @@ function useHotKeys(
         altKey: eventAltKey,
         ctrlKey: eventCtrlKey,
         metaKey: eventMetaKey,
-        shiftKey: eventShiftKey,
+        shiftKey: eventShiftKey
       } = event;
 
       const {
@@ -57,7 +57,7 @@ function useHotKeys(
         ctrlKey: preDefinedCtrlKey = false,
         metaKey: preDefinedMetaKey = false,
         shiftKey: preDefinedShiftKey = false,
-        ctrlKeyOrMetaKey: preDefinedCtrlKeyOrMetaKey = false,
+        ctrlKeyOrMetaKey: preDefinedCtrlKeyOrMetaKey = false
       } = predefined;
 
       if (
@@ -90,7 +90,6 @@ function useHotKeys(
     return () => {
       window.removeEventListener("keydown", handler);
     };
-     
   });
 }
 

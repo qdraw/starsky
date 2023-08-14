@@ -5,7 +5,6 @@ import { URLPath } from "../../../../shared/url-path";
 import { UrlQuery } from "../../../../shared/url-query";
 import { ILatLong } from "../modal-geo";
 
-
 export async function UpdateGeoLocation(
   parentDirectory: string,
   selectedSubPath: string,

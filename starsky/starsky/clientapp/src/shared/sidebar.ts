@@ -11,7 +11,7 @@ export class Sidebar {
 
   constructor(
     setSidebar: React.Dispatch<React.SetStateAction<boolean | undefined>>,
-    history: IUseLocation,
+    history: IUseLocation
   ) {
     this.setSidebar = setSidebar;
     this.history = history;
@@ -26,7 +26,7 @@ export class Sidebar {
 
     this.setSidebar(urlObject.details);
     this.history.navigate(new URLPath().IUrlToString(urlObject), {
-      replace: true,
+      replace: true
     });
   }
 }

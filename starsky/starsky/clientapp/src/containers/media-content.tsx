@@ -1,5 +1,5 @@
 import Notification, {
-    NotificationType
+  NotificationType
 } from "../components/atoms/notification/notification";
 import Preloader from "../components/atoms/preloader/preloader";
 import HealthStatusError from "../components/molecules/health-status-error/health-status-error";

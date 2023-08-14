@@ -39,7 +39,7 @@ describe("SearchPage", () => {
   it("Internal Error plain object", () => {
     jest
       .spyOn(useSearchList, "default")
-      .mockImplementationOnce(() => ({} as any));
+      .mockImplementationOnce(() => ({}) as any);
 
     const component = render(<SearchPage>t</SearchPage>);
     expect(component.container.innerHTML).toBe("Something went wrong");

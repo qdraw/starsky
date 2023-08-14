@@ -6,9 +6,8 @@ export const callHandler = (
   event: ICurrentTouches,
   handlers: IHandlers
 ) => {
-  
   if (!handlers) {
-    throw new Error(`handler ${eventName} is missing`)
+    throw new Error(`handler ${eventName} is missing`);
   }
 
   if (

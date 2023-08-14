@@ -1,4 +1,3 @@
-
 /**
  * When select is true, the menu will be disabled
  */

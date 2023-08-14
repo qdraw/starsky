@@ -15,7 +15,7 @@ describe("DetailViewGpx", () => {
   const mockGetIConnectionDefault: Promise<IConnectionDefault> =
     Promise.resolve({
       statusCode: 200,
-      data: xmlParser.parseFromString(responseString, "text/xml"),
+      data: xmlParser.parseFromString(responseString, "text/xml")
     } as IConnectionDefault);
 
   it("renders (without state component)", () => {
@@ -36,7 +36,7 @@ describe("DetailViewGpx", () => {
         .spyOn(L, "polyline")
         .mockImplementationOnce(() => {
           return {
-            addTo: jest.fn(),
+            addTo: jest.fn()
           } as any;
         });
 
@@ -70,7 +70,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml"),
+          data: xmlParser.parseFromString(responseString, "text/xml")
         } as IConnectionDefault);
 
       jest.spyOn(FetchXml, "default").mockReset();
@@ -93,7 +93,7 @@ describe("DetailViewGpx", () => {
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
-          tap: { disable: jest.fn() },
+          tap: { disable: jest.fn() }
         };
       });
 
@@ -101,7 +101,7 @@ describe("DetailViewGpx", () => {
         .spyOn(L, "polyline")
         .mockImplementationOnce(() => {
           return {
-            addTo: jest.fn(),
+            addTo: jest.fn()
           } as any;
         });
 
@@ -120,7 +120,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml"),
+          data: xmlParser.parseFromString(responseString, "text/xml")
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchXml, "default")
@@ -145,7 +145,7 @@ describe("DetailViewGpx", () => {
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
           tap: { disable: jest.fn() },
-          zoomIn,
+          zoomIn
         };
       });
 
@@ -153,7 +153,7 @@ describe("DetailViewGpx", () => {
         .spyOn(L, "polyline")
         .mockImplementationOnce(() => {
           return {
-            addTo: jest.fn(),
+            addTo: jest.fn()
           } as any;
         });
 
@@ -182,7 +182,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml"),
+          data: xmlParser.parseFromString(responseString, "text/xml")
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchXml, "default")
@@ -207,7 +207,7 @@ describe("DetailViewGpx", () => {
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
           tap: { disable: jest.fn() },
-          zoomOut,
+          zoomOut
         };
       });
 
@@ -215,7 +215,7 @@ describe("DetailViewGpx", () => {
         .spyOn(L, "polyline")
         .mockImplementationOnce(() => {
           return {
-            addTo: jest.fn(),
+            addTo: jest.fn()
           } as any;
         });
 
@@ -245,7 +245,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml"),
+          data: xmlParser.parseFromString(responseString, "text/xml")
         } as IConnectionDefault);
 
       jest.spyOn(FetchXml, "default").mockClear();
@@ -277,13 +277,13 @@ describe("DetailViewGpx", () => {
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
           tap: { disable: jest.fn() },
-          zoomOut,
+          zoomOut
         };
       });
 
       jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
-          addTo: jest.fn(),
+          addTo: jest.fn()
         } as any;
       });
 
@@ -317,7 +317,7 @@ describe("DetailViewGpx", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml"),
+          data: xmlParser.parseFromString(responseString, "text/xml")
         } as IConnectionDefault);
 
       jest
@@ -340,14 +340,14 @@ describe("DetailViewGpx", () => {
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
           tap: { disable: jest.fn() },
-          setView: setViewSpy,
+          setView: setViewSpy
         };
       };
       const spyMap = jest.spyOn(L, "map").mockImplementationOnce(lMapMock);
 
       jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
-          addTo: jest.fn(),
+          addTo: jest.fn()
         } as any;
       });
 
@@ -376,7 +376,7 @@ describe("DetailViewGpx", () => {
       await waitFor(() => expect(spyMap).toBeCalled());
 
       const button = screen.queryByTestId(
-        "current-location-button",
+        "current-location-button"
       ) as HTMLButtonElement;
       expect(button).toBeTruthy();
       await button.click();
@@ -384,7 +384,7 @@ describe("DetailViewGpx", () => {
       expect(currentLocationButtonSpy).toBeCalled();
       expect(setViewSpy).toBeCalled();
       expect(setViewSpy).toBeCalledWith(new L.LatLng(1, 1), 15, {
-        animate: true,
+        animate: true
       });
 
       act(() => {

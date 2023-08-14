@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from "react";
 import {
   ArchiveContext,
-  defaultStateFallback,
+  defaultStateFallback
 } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
@@ -42,18 +42,18 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
   const MessageNoneSelected = language.text(
     "Niets geselecteerd",
-    "Nothing selected",
+    "Nothing selected"
   );
   const MessageMkdir = language.text("Map maken", "Create folder");
   const MessageRenameDir = language.text("Naam wijzigen", "Rename");
   const MessageDisplayOptions = language.text(
     "Weergave opties",
-    "Display options",
+    "Display options"
   );
 
   const MessageSelectFurther = language.text(
     "Verder selecteren",
-    "Select further",
+    "Select further"
   );
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
@@ -85,7 +85,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   // Sidebar
   const [sidebar, setSidebar] = React.useState(
-    new URLPath().StringToIUrl(history.location.search).sidebar,
+    new URLPath().StringToIUrl(history.location.search).sidebar
   );
   useEffect(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
@@ -98,7 +98,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   // Selection
   const [select, setSelect] = React.useState(
-    new URLPath().StringToIUrl(history.location.search).select,
+    new URLPath().StringToIUrl(history.location.search).select
   );
   useEffect(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
@@ -110,7 +110,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const [isModalMkdirOpen, setModalMkdirOpen] = React.useState(false);
   const [isModalRenameFolder, setModalRenameFolder] = React.useState(false);
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(
-    newIFileIndexItemArray(),
+    newIFileIndexItemArray()
   );
 
   const UploadMenuItem = () => {
@@ -145,7 +145,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           handleExit={() => setModalExportOpen(!isModalExportOpen)}
           select={new URLPath().MergeSelectParent(
             select,
-            new URLPath().StringToIUrl(history.location.search).f,
+            new URLPath().StringToIUrl(history.location.search).f
           )}
           collections={
             new URLPath().StringToIUrl(history.location.search).collections !==

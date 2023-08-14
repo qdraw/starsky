@@ -14,9 +14,7 @@ import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
 import { sorter } from "./sorter";
 
-const ArchiveContext = createContext<IArchiveContext>(
-  {} as IArchiveContext
-);
+const ArchiveContext = createContext<IArchiveContext>({} as IArchiveContext);
 
 export type IArchiveContext = {
   state: State;

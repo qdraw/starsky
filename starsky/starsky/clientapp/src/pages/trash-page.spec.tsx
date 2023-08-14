@@ -54,7 +54,7 @@ describe("TrashPage", () => {
   it("Internal Error plain object", () => {
     jest
       .spyOn(useSearchList, "default")
-      .mockImplementationOnce(() => ({} as any));
+      .mockImplementationOnce(() => ({}) as any);
 
     const component = render(<TrashPage>t</TrashPage>);
     expect(component.container.innerHTML).toBe("Something went wrong");

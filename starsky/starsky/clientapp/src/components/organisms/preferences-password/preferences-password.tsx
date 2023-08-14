@@ -10,37 +10,37 @@ const PreferencesPassword: React.FunctionComponent<any> = () => {
   const language = new Language(settings.language);
   const MessageChangePassword = language.text(
     "Verander je wachtwoord",
-    "Change your password",
+    "Change your password"
   );
 
   const MessageExamplePassword = language.text("superveilig", "supersafe");
   const MessageCurrentPassword = language.text(
     "Geef je huidige wachtwoord op",
-    "Enter your current password",
+    "Enter your current password"
   );
   const MessageChangedPassword = language.text(
     "Geef je nieuwe wachtwoord op",
-    "Enter your new password",
+    "Enter your new password"
   );
   const MessageChangedConfirmPassword = language.text(
     "Herhaal je nieuwe wachtwoord",
-    "And your new password again",
+    "And your new password again"
   );
   const MessageNoPassword = language.text(
     "Voer het huidige en nieuwe wachtwoord in",
-    "Enter the current and new password",
+    "Enter the current and new password"
   );
   const MessagePasswordChanged = language.text(
     "Je wachtwoord is succesvol veranderd",
-    "Your password has been successfully changed",
+    "Your password has been successfully changed"
   );
   const MessagePasswordNoMatch = language.text(
     "De wachtwoorden komen niet overeen",
-    "The passwords do not match",
+    "The passwords do not match"
   );
   const MessagePasswordModalError = language.text(
     "Het nieuwe wachtwoord voldoet niet aan de criteria",
-    "The new password does not meet the criteria",
+    "The new password does not meet the criteria"
   );
 
   const [loading, setLoading] = useState(false);
@@ -80,7 +80,7 @@ const PreferencesPassword: React.FunctionComponent<any> = () => {
 
     const response = await FetchPost(
       new UrlQuery().UrlAccountChangeSecret(),
-      bodyParams.toString(),
+      bodyParams.toString()
     );
     setLoading(false);
     if (response.statusCode === 200 && response.data && response.data.success) {

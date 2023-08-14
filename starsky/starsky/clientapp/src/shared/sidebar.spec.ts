@@ -11,7 +11,7 @@ describe("sidebar", () => {
     setSidebarSpy = jest.fn();
     sidebar = new Sidebar(setSidebarSpy, {
       location: globalHistory.location,
-      navigate: navigateSpy,
+      navigate: navigateSpy
     });
   });
 
@@ -28,7 +28,7 @@ describe("sidebar", () => {
       // invoke after update
       sidebar = new Sidebar(setSidebarSpy, {
         location: globalHistory.location,
-        navigate: navigateSpy,
+        navigate: navigateSpy
       });
 
       sidebar.toggleSidebar();

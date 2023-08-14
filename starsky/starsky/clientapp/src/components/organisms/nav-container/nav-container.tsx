@@ -1,4 +1,3 @@
-
 type NavContainerPropTypes = {
   children?: React.ReactNode;
   hamburgerMenu: boolean;

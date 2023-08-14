@@ -9,7 +9,7 @@ const Select: React.FunctionComponent<SelectPropTypes> = ({
   children,
   selectOptions,
   callback,
-  selected,
+  selected
 }) => {
   const change = (value: string) => {
     if (!callback) {

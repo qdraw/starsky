@@ -4,7 +4,7 @@ import { IHealthEntry } from "../../../interfaces/IHealthEntry";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import Notification, {
-    NotificationType
+  NotificationType
 } from "../../atoms/notification/notification";
 
 const HealthStatusError: React.FunctionComponent = () => {

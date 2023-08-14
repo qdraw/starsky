@@ -22,7 +22,7 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
 
     // show select info
     const [select, setSelect] = useState(
-      new URLPath().getSelect(history.location.search),
+      new URLPath().getSelect(history.location.search)
     );
     useEffect(() => {
       setSelect(new URLPath().getSelect(history.location.search));
@@ -33,7 +33,7 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
     useEffect(() => {
       const subPaths = new URLPath().MergeSelectFileIndexItem(
         select,
-        props.fileIndexItems,
+        props.fileIndexItems
       );
       const selectParamsLocal =
         new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "");

@@ -11,7 +11,7 @@ import ModalGeo, {
   getZoom,
   ILatLong,
   onDrag,
-  realtimeMapUpdate,
+  realtimeMapUpdate
 } from "./modal-geo";
 import * as updateGeoLocation from "./shared/update-geo-location";
 
@@ -20,13 +20,12 @@ describe("ModalGeo", () => {
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
     jest.spyOn(L, "map").mockImplementationOnce(() => {
-      return {  
+      return {
         addLayer: jest.fn(),
-        on: jest.fn(),
+        on: jest.fn()
       } as any;
     });
   });
-
 
   it("renders", () => {
     render(
@@ -38,7 +37,7 @@ describe("ModalGeo", () => {
         latitude={51}
         longitude={3}
         isFormEnabled={false}
-      ></ModalGeo>,
+      ></ModalGeo>
     );
   });
 
@@ -55,26 +54,31 @@ describe("ModalGeo", () => {
   });
 
   describe("addDefaultMarker", () => {
-
     it("no location so not called", () => {
       const map = {
-        addLayer: jest.fn(),
+        addLayer: jest.fn()
       } as unknown as L.Map;
-      AddDefaultMarker.AddDefaultMarker({} as ILatLong, map, true, jest.fn(), jest.fn());
+      AddDefaultMarker.AddDefaultMarker(
+        {} as ILatLong,
+        map,
+        true,
+        jest.fn(),
+        jest.fn()
+      );
 
       expect(map.addLayer).toBeCalledTimes(0);
     });
 
     it("location so called", () => {
       const map = {
-        addLayer: jest.fn(),
+        addLayer: jest.fn()
       } as unknown as L.Map;
       AddDefaultMarker.AddDefaultMarker(
         { latitude: 10, longitude: 15 } as ILatLong,
         map,
         true,
         jest.fn(),
-        jest.fn(),
+        jest.fn()
       );
 
       expect(map.addLayer).toBeCalledTimes(1);
@@ -90,19 +94,19 @@ describe("ModalGeo", () => {
             getLatLng: () => {
               return {
                 lat: 2,
-                lng: 3,
+                lng: 3
               };
-            },
-          },
+            }
+          }
         } as L.DragEndEvent,
         setLocationSpy,
-        jest.fn(),
+        jest.fn()
       );
 
       expect(setLocationSpy).toBeCalledTimes(1);
       expect(setLocationSpy).toBeCalledWith({
         latitude: 2,
-        longitude: 3,
+        longitude: 3
       });
     });
   });
@@ -118,7 +122,7 @@ describe("ModalGeo", () => {
           fn({});
         },
         addLayer: jest.fn(),
-        removeLayer: jest.fn(),
+        removeLayer: jest.fn()
       } as unknown as L.Map;
       addDefaultClickSetMarker(map, true, jest.fn(), jest.fn());
 
@@ -136,7 +140,7 @@ describe("ModalGeo", () => {
           fn({});
         },
         addLayer: jest.fn(),
-        removeLayer: jest.fn(),
+        removeLayer: jest.fn()
       } as unknown as L.Map;
       addDefaultClickSetMarker(map, false, jest.fn(), jest.fn());
 
@@ -158,7 +162,7 @@ describe("ModalGeo", () => {
         },
         panTo: panToSpy,
         addLayer: jest.fn(),
-        removeLayer: jest.fn(),
+        removeLayer: jest.fn()
       } as unknown as L.Map;
 
       realtimeMapUpdate(map, false, jest.fn(), jest.fn(), 1, 1);
@@ -187,7 +191,7 @@ describe("ModalGeo", () => {
           latitude={51}
           longitude={3}
           isFormEnabled={true}
-        ></ModalGeo>,
+        ></ModalGeo>
       );
 
       expect(screen.queryByTestId("update-geo-location")).toBeNull();
@@ -205,8 +209,10 @@ describe("ModalGeo", () => {
           return Promise.resolve(null);
         });
 
-      jest.spyOn(AddDefaultMarker, "AddDefaultMarker").mockImplementationOnce(() => true);
-      
+      jest
+        .spyOn(AddDefaultMarker, "AddDefaultMarker")
+        .mockImplementationOnce(() => true);
+
       const handleExitSpy = jest.fn();
       const modal = render(
         <ModalGeo
@@ -217,7 +223,7 @@ describe("ModalGeo", () => {
           latitude={51}
           longitude={3}
           isFormEnabled={true}
-        ></ModalGeo>,
+        ></ModalGeo>
       );
 
       console.log(modal.container.innerHTML);
@@ -233,11 +239,11 @@ describe("ModalGeo", () => {
         "/test.jpg",
         {
           latitude: 51.00001,
-          longitude: 2.999997,
+          longitude: 2.999997
         },
         expect.any(Function),
         expect.any(Function),
-        undefined,
+        undefined
       );
       expect(handleExitSpy).toBeCalledTimes(0);
       modal.unmount();
@@ -248,7 +254,7 @@ describe("ModalGeo", () => {
         .spyOn(updateGeoLocation, "UpdateGeoLocation")
         .mockImplementationOnce(() => {
           return Promise.resolve({
-            locationCity: "t",
+            locationCity: "t"
           } as IGeoLocationModel);
         });
       const handleExitSpy = jest.fn();
@@ -261,7 +267,7 @@ describe("ModalGeo", () => {
           latitude={51}
           longitude={3}
           isFormEnabled={true}
-        ></ModalGeo>,
+        ></ModalGeo>
       );
 
       (await screen.findByTestId("content-geo")).click();
@@ -275,11 +281,11 @@ describe("ModalGeo", () => {
         "/test.jpg",
         {
           latitude: 51.00001,
-          longitude: 2.999997,
+          longitude: 2.999997
         },
         expect.any(Function),
         expect.any(Function),
-        undefined,
+        undefined
       );
 
       await waitFor(() => expect(handleExitSpy).toBeCalledTimes(1));
@@ -298,7 +304,7 @@ describe("ModalGeo", () => {
           latitude={51}
           longitude={3}
           isFormEnabled={true}
-        ></ModalGeo>,
+        ></ModalGeo>
       );
 
       (await screen.findByTestId("force-cancel")).click();
@@ -318,7 +324,7 @@ describe("ModalGeo", () => {
           latitude={51}
           longitude={3}
           isFormEnabled={true}
-        ></ModalGeo>,
+        ></ModalGeo>
       );
 
       (await screen.findByTestId("force-cancel")).click();
@@ -339,7 +345,7 @@ describe("ModalGeo", () => {
       const handleExitSpy = jest.fn();
 
       // suppress error once
-      jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+      jest.spyOn(console, "error").mockImplementationOnce(() => {});
 
       const modal = render(
         <ModalGeo
@@ -350,14 +356,13 @@ describe("ModalGeo", () => {
           latitude={51}
           longitude={3}
           isFormEnabled={true}
-        ></ModalGeo>,
+        ></ModalGeo>
       );
 
       expect(handleExitSpy).toBeCalled();
 
       // and clean afterwards
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
-      
 
       modal.unmount();
     });

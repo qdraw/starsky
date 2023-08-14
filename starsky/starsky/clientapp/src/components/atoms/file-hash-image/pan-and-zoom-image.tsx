@@ -59,7 +59,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // only needed to re-render when the component is mounted
-   
+
   useEffect(() => {
     const mouseup = () => {
       setPanning(false);

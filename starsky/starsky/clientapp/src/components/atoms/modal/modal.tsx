@@ -20,7 +20,7 @@ export const ModalOpenClassName = "modal-bg--open";
 
 function ifModalOpenHandleExit(
   event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  handleExit: Function,
+  handleExit: Function
 ) {
   const target = event.target as HTMLElement;
   if (target.className.indexOf(ModalOpenClassName) === -1) return;
@@ -34,7 +34,7 @@ export default function Modal({
   isOpen,
   handleExit,
   focusAfterExit,
-  className = "",
+  className = ""
 }: ModalPropTypes): any {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -58,7 +58,7 @@ export default function Modal({
       id,
       isOpen,
       exitButton,
-      focusAfterExit,
+      focusAfterExit
     );
   }, [isOpen, focusAfterExit, id, root]);
 
@@ -91,7 +91,7 @@ export default function Modal({
           </div>
         </div>
       </>,
-      modal.current,
+      modal.current
     );
   }
   return null;

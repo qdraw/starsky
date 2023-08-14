@@ -6,7 +6,7 @@ import { newIArchive } from "../../../interfaces/IArchive";
 import { PageType } from "../../../interfaces/IDetailView";
 import {
   IFileIndexItem,
-  newIFileIndexItemArray,
+  newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch-post";
@@ -27,7 +27,7 @@ interface IModalMoveFileProps {
 
 const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   const [currentFolderPath, setCurrentFolderPath] = useState(
-    props.parentDirectory,
+    props.parentDirectory
   );
 
   const settings = useGlobalSettings();
@@ -55,7 +55,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
     const resultDo = await FetchPost(
       new UrlQuery().UrlDiskRename(),
-      bodyParams.toString(),
+      bodyParams.toString()
     );
 
     if (
@@ -81,7 +81,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     // now go to the new location
     const toNavigateUrl = new UrlQuery().updateFilePathHash(
       history.location.search,
-      fileIndexItems[0].filePath,
+      fileIndexItems[0].filePath
     );
     history.navigate(toNavigateUrl, { replace: true });
 
@@ -95,7 +95,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
   if (!usesFileList?.archive) {
     usesFileList = {
       archive: newIArchive(),
-      pageType: PageType.Loading,
+      pageType: PageType.Loading
     } as IFileList;
   }
   const usesFileListArchive = usesFileList.archive
@@ -115,7 +115,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
           {MessageMove}{" "}
           {new StringOptions().LimitLength(
             new FileExtensions().GetFileName(props.selectedSubPath),
-            30,
+            30
           )}{" "}
           {MessageTo}:&nbsp;
           <b>{new StringOptions().LimitLength(currentFolderPath, 44)}</b>
@@ -134,7 +134,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
                   data-test="parent"
                   onClick={() => {
                     setCurrentFolderPath(
-                      new FileExtensions().GetParentPath(currentFolderPath),
+                      new FileExtensions().GetParentPath(currentFolderPath)
                     );
                   }}
                 >

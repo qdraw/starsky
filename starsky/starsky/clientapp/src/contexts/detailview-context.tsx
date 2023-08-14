@@ -81,7 +81,6 @@ export function detailviewReducer(
       // Need to update otherwise other events are not triggerd
       return updateCache({ ...state, lastUpdated: new Date() });
     case "update":
-       
       const {
         filePath,
         tags,

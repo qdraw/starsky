@@ -12,12 +12,12 @@ import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
 import {
   IFileIndexItem,
-  newIFileIndexItem,
+  newIFileIndexItem
 } from "../interfaces/IFileIndexItem";
 import ArchiveContextWrapper, {
   ArchiveEventListenerUseEffect,
   dispatchEmptyFolder,
-  filterArchiveFromEvent,
+  filterArchiveFromEvent
 } from "./archive-wrapper";
 
 describe("ArchiveContextWrapper", () => {
@@ -30,7 +30,7 @@ describe("ArchiveContextWrapper", () => {
       const args = {
         ...newIArchive(),
         fileIndexItems: [],
-        pageType: PageType.Archive,
+        pageType: PageType.Archive
       } as IArchiveProps;
       const archive = jest
         .spyOn(Archive, "default")
@@ -40,7 +40,7 @@ describe("ArchiveContextWrapper", () => {
 
       args.fileIndexItems.push({} as IFileIndexItem);
       const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>,
+        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
       expect(archive).toBeCalled();
       component.unmount();
@@ -51,7 +51,7 @@ describe("ArchiveContextWrapper", () => {
         ...newIArchive(),
         fileIndexItems: [],
         pageType: PageType.Search,
-        searchQuery: "",
+        searchQuery: ""
       } as IArchiveProps;
       const search = jest
         .spyOn(Search, "default")
@@ -67,7 +67,7 @@ describe("ArchiveContextWrapper", () => {
       args.fileIndexItems.push({} as IFileIndexItem);
 
       const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>,
+        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
       expect(search).toBeCalled();
       component.unmount();
@@ -77,7 +77,7 @@ describe("ArchiveContextWrapper", () => {
       const args = {
         ...newIArchive(),
         fileIndexItems: [],
-        pageType: PageType.Unauthorized,
+        pageType: PageType.Unauthorized
       } as IArchiveProps;
       const login = jest.spyOn(Login, "default").mockImplementationOnce(() => {
         return <></>;
@@ -93,7 +93,7 @@ describe("ArchiveContextWrapper", () => {
       const args = {
         ...newIArchive(),
         fileIndexItems: [],
-        pageType: PageType.Trash,
+        pageType: PageType.Trash
       } as IArchiveProps;
       const login = jest.spyOn(Trash, "default").mockImplementationOnce(() => {
         return <></>;
@@ -114,10 +114,10 @@ describe("ArchiveContextWrapper", () => {
       const args = {
         ...newIArchive(),
         fileIndexItems: [],
-        pageType: PageType.Search,
+        pageType: PageType.Search
       } as IArchiveProps;
       const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>,
+        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
       expect(component.container.innerHTML).toBe("(ArchiveWrapper) = no state");
@@ -131,10 +131,10 @@ describe("ArchiveContextWrapper", () => {
       const args = {
         ...newIArchive(),
         fileIndexItems: [],
-        pageType: PageType.Search,
+        pageType: PageType.Search
       } as IArchiveProps;
       const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>,
+        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
       expect(component.container.innerHTML).toBe("");
@@ -145,16 +145,16 @@ describe("ArchiveContextWrapper", () => {
       jest.spyOn(React, "useContext").mockImplementationOnce(() => {
         return {
           state: { fileIndexItems: [], pageType: undefined },
-          dispatch: jest.fn(),
+          dispatch: jest.fn()
         };
       });
       const args = {
         ...newIArchive(),
         fileIndexItems: [],
-        pageType: PageType.Search,
+        pageType: PageType.Search
       } as IArchiveProps;
       const component = render(
-        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>,
+        <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
       expect(component.container.innerHTML).toBe("");
@@ -175,7 +175,7 @@ describe("ArchiveContextWrapper", () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.location = {
-        search: "/?f=/",
+        search: "/?f=/"
       };
     });
 
@@ -196,10 +196,10 @@ describe("ArchiveContextWrapper", () => {
               parentDirectory: "/",
               status: IExifStatus.Ok,
               tags: "",
-              title: "",
-            },
+              title: ""
+            }
           ],
-          type: "add",
+          type: "add"
         });
       };
 
@@ -212,12 +212,12 @@ describe("ArchiveContextWrapper", () => {
             filePath: "/test.jpg",
             fileName: "test",
             parentDirectory: "/",
-            status: IExifStatus.Ok,
-          },
-        ],
+            status: IExifStatus.Ok
+          }
+        ]
       };
       const event = new CustomEvent(useSocketsEventName, {
-        detail,
+        detail
       });
 
       document.body.dispatchEvent(event);
@@ -230,7 +230,7 @@ describe("ArchiveContextWrapper", () => {
         // should ignore the first one
         expect(e).toStrictEqual({
           add: [],
-          type: "add",
+          type: "add"
         });
       };
 
@@ -242,12 +242,12 @@ describe("ArchiveContextWrapper", () => {
             ...newIFileIndexItem(),
             filePath: "/test.jpg",
             fileName: "test",
-            parentDirectory: "__something__different",
-          },
-        ],
+            parentDirectory: "__something__different"
+          }
+        ]
       };
       const event = new CustomEvent(useSocketsEventName, {
-        detail,
+        detail
       });
 
       document.body.dispatchEvent(event);
@@ -262,8 +262,8 @@ describe("ArchiveContextWrapper", () => {
         {
           filePath: "/test",
           parentDirectory: "/",
-          status: IExifStatus.NotFoundSourceMissing,
-        },
+          status: IExifStatus.NotFoundSourceMissing
+        }
       ] as IFileIndexItem[];
 
       const dispatch = jest.fn();
@@ -276,8 +276,8 @@ describe("ArchiveContextWrapper", () => {
         {
           filePath: "/test",
           parentDirectory: "/",
-          status: IExifStatus.Ok,
-        },
+          status: IExifStatus.Ok
+        }
       ] as IFileIndexItem[];
 
       const dispatch = jest.fn();
@@ -290,8 +290,8 @@ describe("ArchiveContextWrapper", () => {
         {
           filePath: "/test/image.jpg",
           parentDirectory: "/test",
-          status: IExifStatus.Ok,
-        },
+          status: IExifStatus.Ok
+        }
       ] as IFileIndexItem[];
 
       const dispatch = jest.fn();
@@ -305,12 +305,12 @@ describe("ArchiveContextWrapper", () => {
       const list = [
         {
           filePath: "/test.jpg",
-          parentDirectory: "/",
+          parentDirectory: "/"
         },
         {
           filePath: "/child/test.jpg",
-          parentDirectory: "/child",
-        },
+          parentDirectory: "/child"
+        }
       ] as IFileIndexItem[];
       const result = filterArchiveFromEvent(list, "/");
       expect(result.length).toBe(1);
@@ -320,12 +320,12 @@ describe("ArchiveContextWrapper", () => {
       const list = [
         {
           filePath: "/",
-          parentDirectory: "/",
+          parentDirectory: "/"
         },
         {
           filePath: "/test.jpg",
-          parentDirectory: "/",
-        },
+          parentDirectory: "/"
+        }
       ] as IFileIndexItem[];
       const result = filterArchiveFromEvent(list, "/");
       expect(result.length).toBe(2);
@@ -335,12 +335,12 @@ describe("ArchiveContextWrapper", () => {
       const list = [
         {
           filePath: "/",
-          parentDirectory: "/",
+          parentDirectory: "/"
         },
         {
           filePath: "/test.jpg",
-          parentDirectory: "/",
-        },
+          parentDirectory: "/"
+        }
       ] as IFileIndexItem[];
       const result = filterArchiveFromEvent(list, undefined);
       expect(result.length).toBe(2);

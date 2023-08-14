@@ -110,9 +110,8 @@ describe("statusRemoved", () => {
     history.navigate = () => Promise.resolve(navigate) as any;
 
     const setIsLoading = jest.fn();
-    
-    jest
-      .spyOn(UpdateRelativeObject.prototype, "Update").mockReset();
+
+    jest.spyOn(UpdateRelativeObject.prototype, "Update").mockReset();
 
     const updateSpy = jest
       .spyOn(UpdateRelativeObject.prototype, "Update")
@@ -151,8 +150,7 @@ describe("statusRemoved", () => {
 
     const setIsLoading = jest.fn();
 
-    jest
-      .spyOn(UpdateRelativeObject.prototype, "Update").mockReset();
+    jest.spyOn(UpdateRelativeObject.prototype, "Update").mockReset();
 
     const updateSpy = jest
       .spyOn(UpdateRelativeObject.prototype, "Update")

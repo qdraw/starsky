@@ -24,8 +24,8 @@ describe("MenuDetailView", () => {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
         lastEdited: new Date(1970, 1, 1).toISOString(),
-        parentDirectory: "/test",
-      },
+        parentDirectory: "/test"
+      }
     } as IDetailView;
     render(<MenuDetailView state={state} dispatch={jest.fn()} />);
   });
@@ -40,8 +40,8 @@ describe("MenuDetailView", () => {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
         lastEdited: new Date(1970, 1, 1).toISOString(),
-        parentDirectory: "/test",
-      },
+        parentDirectory: "/test"
+      }
     } as IDetailView;
 
     it("readonly - move click", () => {
@@ -52,7 +52,7 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const move = component.queryByTestId("move");
@@ -76,7 +76,7 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const rename = component.queryByTestId("rename");
@@ -100,7 +100,7 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const trash = component.queryByTestId("trash");
@@ -125,19 +125,19 @@ describe("MenuDetailView", () => {
           filePath: "/test/image.jpg",
           fileName: "image.jpg",
           lastEdited: new Date(1970, 1, 1).toISOString(),
-          parentDirectory: "/test",
-        },
+          parentDirectory: "/test"
+        }
       } as IDetailView;
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const anchor = component.queryByTestId(
-        "menu-detail-view-close",
+        "menu-detail-view-close"
       ) as HTMLAnchorElement;
 
       fireEvent.click(anchor, {
-        metaKey: true,
+        metaKey: true
       });
 
       expect(component.queryByTestId("preloader")).toBeNull();
@@ -154,19 +154,19 @@ describe("MenuDetailView", () => {
           filePath: "/test/image.jpg",
           fileName: "image.jpg",
           lastEdited: new Date(1970, 1, 1).toISOString(),
-          parentDirectory: "/test",
-        },
+          parentDirectory: "/test"
+        }
       } as IDetailView;
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const anchor = component.queryByTestId(
-        "menu-detail-view-close",
+        "menu-detail-view-close"
       ) as HTMLAnchorElement;
 
       fireEvent.click(anchor, {
-        metaKey: false,
+        metaKey: false
       });
 
       expect(component.queryByTestId("preloader")).not.toBeNull();
@@ -184,8 +184,8 @@ describe("MenuDetailView", () => {
         filePath: "/test/image.jpg",
         fileName: "image.jpg",
         lastEdited: new Date(1970, 1, 1).toISOString(),
-        parentDirectory: "/test",
-      },
+        parentDirectory: "/test"
+      }
     } as IDetailView;
 
     it("as search Result button exist", () => {
@@ -193,11 +193,11 @@ describe("MenuDetailView", () => {
       globalHistory.navigate("/?t=test&p=0");
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const anchor = component.queryByTestId(
-        "menu-detail-view-close",
+        "menu-detail-view-close"
       ) as HTMLAnchorElement;
 
       expect(anchor).toBeTruthy();
@@ -215,11 +215,11 @@ describe("MenuDetailView", () => {
       globalHistory.navigate("/");
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const anchor = component.queryByTestId(
-        "menu-detail-view-close",
+        "menu-detail-view-close"
       ) as HTMLAnchorElement;
 
       expect(anchor).toBeTruthy();
@@ -241,12 +241,12 @@ describe("MenuDetailView", () => {
         ...state,
         fileIndexItem: {
           ...state.fileIndexItem,
-          lastEdited: new Date().toISOString(),
-        },
+          lastEdited: new Date().toISOString()
+        }
       };
 
       const component = render(
-        <MenuDetailView state={updateState} dispatch={jest.fn()} />,
+        <MenuDetailView state={updateState} dispatch={jest.fn()} />
       );
 
       expect(component.queryByTestId("menu-detail-view-autosave")).toBeTruthy();
@@ -264,7 +264,7 @@ describe("MenuDetailView", () => {
       });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       expect(component.queryByTestId("menu-detail-view-autosave")).toBeFalsy();
@@ -284,7 +284,7 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const exportButton = component.queryByTestId("export");
@@ -304,7 +304,7 @@ describe("MenuDetailView", () => {
 
     it("labels click .item--labels [menu]", () => {
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const labels = component.queryByTestId("menu-detail-view-labels");
@@ -314,7 +314,7 @@ describe("MenuDetailView", () => {
       });
 
       const urlObject = new URLPath().StringToIUrl(
-        globalHistory.location.search,
+        globalHistory.location.search
       );
 
       expect(urlObject.details).toBeTruthy();
@@ -329,7 +329,7 @@ describe("MenuDetailView", () => {
 
     it("labels click (in MoreMenu)", () => {
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       //       const item = component.find('[data-test="labels"]');
@@ -338,7 +338,7 @@ describe("MenuDetailView", () => {
       labels?.click();
 
       const urlObject = new URLPath().StringToIUrl(
-        globalHistory.location.search,
+        globalHistory.location.search
       );
       expect(urlObject.details).toBeTruthy();
 
@@ -353,7 +353,7 @@ describe("MenuDetailView", () => {
       globalHistory.navigate("/?t=test");
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const goToParentFolder = component.queryByTestId("go-to-parent-folder");
@@ -376,7 +376,7 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const move = component.queryByTestId("move");
@@ -403,7 +403,7 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const rename = component.queryByTestId("rename");
@@ -430,7 +430,7 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const trash = component.queryByTestId("trash");
@@ -441,7 +441,7 @@ describe("MenuDetailView", () => {
       expect(spy).toBeCalledTimes(1);
       expect(spy).toBeCalledWith(
         new UrlQuery().UrlMoveToTrashApi(),
-        "f=%2Ftest%2Fimage.jpg",
+        "f=%2Ftest%2Fimage.jpg"
       );
 
       act(() => {
@@ -456,12 +456,12 @@ describe("MenuDetailView", () => {
             ...state,
             fileIndexItem: {
               ...state.fileIndexItem,
-              collectionPaths: [".jpg", "t.arw"],
+              collectionPaths: [".jpg", "t.arw"]
             },
-            collections: true,
+            collections: true
           }}
           dispatch={jest.fn()}
-        />,
+        />
       );
 
       const trashIncl = component.queryByTestId("trash-including");
@@ -495,16 +495,16 @@ describe("MenuDetailView", () => {
               fileHash: "needed",
               status: IExifStatus.Ok,
               filePath: "/test/image.jpg",
-              fileName: "image.jpg",
-            },
-          } as IDetailView,
+              fileName: "image.jpg"
+            }
+          } as IDetailView
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       const item = component.queryByTestId("rotate");
@@ -517,7 +517,7 @@ describe("MenuDetailView", () => {
       expect(spyPost).toBeCalled();
       expect(spyPost).toBeCalledWith(
         new UrlQuery().UrlUpdateApi(),
-        "f=%2Ftest%2Fimage.jpg&rotateClock=1",
+        "f=%2Ftest%2Fimage.jpg&rotateClock=1"
       );
 
       act(() => {
@@ -527,7 +527,7 @@ describe("MenuDetailView", () => {
       expect(setTimeoutSpy).toBeCalled();
       expect(spyGet).toBeCalled();
       expect(spyGet).toBeCalledWith(
-        new UrlQuery().UrlIndexServerApi({ f: "/test/image.jpg" }),
+        new UrlQuery().UrlIndexServerApi({ f: "/test/image.jpg" })
       );
 
       // cleanup afterwards
@@ -545,8 +545,8 @@ describe("MenuDetailView", () => {
         fileIndexItem: {
           status: IExifStatus.Deleted,
           filePath: "/trashed/test1.jpg",
-          fileName: "test1.jpg",
-        },
+          fileName: "test1.jpg"
+        }
       } as IDetailView;
       const contextValues = { state, dispatch: jest.fn() };
 
@@ -555,7 +555,7 @@ describe("MenuDetailView", () => {
       });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       // spy on fetch
@@ -573,7 +573,7 @@ describe("MenuDetailView", () => {
 
       expect(spy).toBeCalledWith(
         new UrlQuery().UrlReplaceApi(),
-        "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21",
+        "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21"
       );
 
       // for some reason the spy is called 2 times here?
@@ -591,16 +591,16 @@ describe("MenuDetailView", () => {
         fileIndexItem: {
           status: IExifStatus.Deleted,
           filePath: "/trashed/test1.jpg",
-          fileName: "test1.jpg",
+          fileName: "test1.jpg"
         },
         relativeObjects: {
           nextFilePath: "/",
-          prevFilePath: "/",
-        },
+          prevFilePath: "/"
+        }
       } as IDetailView;
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />,
+        <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
       // spy on fetch
@@ -616,7 +616,7 @@ describe("MenuDetailView", () => {
         cancelable: true,
         key: "Delete",
         shiftKey: false,
-        repeat: false,
+        repeat: false
       });
 
       act(() => {
@@ -627,7 +627,7 @@ describe("MenuDetailView", () => {
       expect(spyFetchPost).toBeCalledTimes(1);
       expect(spyFetchPost).toBeCalledWith(
         new UrlQuery().UrlReplaceApi(),
-        "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21",
+        "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21"
       );
 
       act(() => {
@@ -642,15 +642,15 @@ describe("MenuDetailView", () => {
           status: IExifStatus.Deleted,
           filePath: "/trashed/test1.jpg",
           fileName: "test1.jpg",
-          lastEdited: "",
-        },
+          lastEdited: ""
+        }
       } as IDetailView;
 
       const component = render(
-        <MenuDetailView state={state1} dispatch={jest.fn()} />,
+        <MenuDetailView state={state1} dispatch={jest.fn()} />
       );
       let header = component.container.querySelector(
-        "header",
+        "header"
       ) as HTMLHeadingElement;
       expect(header.className).toBe("header header--main header--deleted");
 
@@ -663,7 +663,7 @@ describe("MenuDetailView", () => {
       });
 
       header = component.container.querySelector(
-        "header",
+        "header"
       ) as HTMLHeadingElement;
 
       expect(header.className).toBe("header header--main");
@@ -682,12 +682,12 @@ describe("MenuDetailView", () => {
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg",
-          },
+            fileName: "test1.jpg"
+          }
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />,
+          <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
         const item = component.queryByTestId("export") as HTMLDivElement;
@@ -702,12 +702,12 @@ describe("MenuDetailView", () => {
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg",
-          },
+            fileName: "test1.jpg"
+          }
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />,
+          <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
         const item = component.queryByTestId("move") as HTMLDivElement;
@@ -722,12 +722,12 @@ describe("MenuDetailView", () => {
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg",
-          },
+            fileName: "test1.jpg"
+          }
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />,
+          <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
         const item = component.queryByTestId("rename") as HTMLDivElement;
@@ -742,12 +742,12 @@ describe("MenuDetailView", () => {
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg",
-          },
+            fileName: "test1.jpg"
+          }
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />,
+          <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
         const item = component.queryByTestId("trash") as HTMLDivElement;
@@ -760,12 +760,12 @@ describe("MenuDetailView", () => {
           fileIndexItem: {
             status: IExifStatus.NotFoundSourceMissing,
             filePath: "/trashed/test1.jpg",
-            fileName: "test1.jpg",
-          },
+            fileName: "test1.jpg"
+          }
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />,
+          <MenuDetailView state={state} dispatch={jest.fn()} />
         );
 
         const item = component.queryByTestId("rotate") as HTMLDivElement;

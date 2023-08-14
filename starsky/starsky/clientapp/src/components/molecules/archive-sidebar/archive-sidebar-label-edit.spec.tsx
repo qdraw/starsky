@@ -9,7 +9,7 @@ describe("ArchiveSidebarLabelEdit", () => {
 
   it("click on SwitchButton go to Replace", () => {
     const state = {
-      state: { isReadOnly: false },
+      state: { isReadOnly: false }
     };
     jest
       .spyOn(React, "useContext")

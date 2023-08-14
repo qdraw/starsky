@@ -4,7 +4,7 @@ import { LeafletEmptyImageUrlTileLayer } from "./leaflet-modify-empty-image-url-
 describe("LeafletEmptyImageUrlTileLayer [leaflet-extension]", () => {
   it("remove tile form leaflet [extension]", () => {
     // to skip some check in leaflet TypeError: symbol is not a function
-    Object.defineProperty(L.Browser, 'androidStock', {
+    Object.defineProperty(L.Browser, "androidStock", {
       value: true,
       writable: true
     });
