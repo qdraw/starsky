@@ -1,11 +1,11 @@
 {
-  "name": "clientapp2",
+  "name": "clientapp",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --config tsconfig.prod.json",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --fix . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "jest --watch",
@@ -49,5 +49,13 @@
     "jest-environment-jsdom": "^29.6.2",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1"
+  },
+  "prettier": {
+    "trailingComma": "none",
+    "bracketSpacing": true,
+    "semi": true,
+    "singleQuote": false,
+    "tabWidth": 2,
+    "useTabs": false
   }
 }

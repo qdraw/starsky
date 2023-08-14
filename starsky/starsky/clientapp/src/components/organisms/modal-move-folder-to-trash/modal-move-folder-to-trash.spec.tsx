@@ -357,6 +357,7 @@ describe("ModalMoveFolderToTrash component", () => {
     );
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
+      .mockReset()
       .mockImplementationOnce(() => mockIConnectionDefault);
 
     render(<ModalMoveFolderToTrash {...props} />);

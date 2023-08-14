@@ -1,4 +1,3 @@
-// tsconfig.prod.json
 {
   "extends": "./tsconfig",
   "exclude": [

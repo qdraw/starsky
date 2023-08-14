@@ -1,8 +1,8 @@
 import { render } from "@testing-library/react";
 import * as DetailView from "../containers/detailview/detailview";
 import * as useDetailViewContext from "../contexts/detailview-context";
-import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { mountReactHook } from "../hooks/___tests___/test-hook";
+import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { IDetailView, newDetailView } from "../interfaces/IDetailView";
 import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import DetailViewWrapper, {
@@ -61,7 +61,7 @@ describe("DetailViewWrapper", () => {
   });
 
   describe("no context", () => {
-    it("No context if used", () => {
+    it("[detail view] No context if used", () => {
       const contextValues = {
         state: null,
         dispatch: jest.fn()
@@ -69,6 +69,7 @@ describe("DetailViewWrapper", () => {
 
       jest
         .spyOn(useDetailViewContext, "useDetailViewContext")
+        .mockReset()
         .mockImplementationOnce(() => contextValues as any);
 
       const args = { ...newDetailView() } as IDetailView;

@@ -1,4 +1,4 @@
-import "abortcontroller-polyfill/dist/abortcontroller-polyfill-only"; // for the feature
+// import "abortcontroller-polyfill/dist/abortcontroller-polyfill-only"; // for the feature
 import "core-js/features/array/filter"; // array filter
 import "core-js/features/array/some"; // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
 import "core-js/features/dom-collections/for-each"; // queryselector.forEach

@@ -173,15 +173,17 @@ describe("Login", () => {
   });
 
   it("account 406 UrlAccountRegister", () => {
-    jest.spyOn(useFetch, "default").mockReset();
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 406 } as IConnectionDefault;
+    const connectionDefaultExample2 = { statusCode: 200 } as IConnectionDefault;
 
     const useFetchSpy = jest
       .spyOn(useFetch, "default")
+      .mockReset()
       .mockImplementationOnce(() => connectionDefaultExample)
-      .mockImplementationOnce(() => connectionDefaultExample)
-      .mockImplementationOnce(() => connectionDefaultExample);
+      .mockImplementationOnce(() => connectionDefaultExample2)
+            .mockImplementationOnce(() => connectionDefaultExample2);
+
 
     const login = render(<Login />);
 
@@ -206,9 +208,11 @@ describe("Login", () => {
 
     const useFetchSpy = jest
       .spyOn(useFetch, "default")
+      .mockReset()
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
+      .mockImplementationOnce(() => connectionDefaultExample)      
       .mockImplementationOnce(() => connectionDefaultExample);
 
     const mockPost: Promise<any> = Promise.resolve({

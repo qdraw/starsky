@@ -6,11 +6,11 @@ import {
   newIFileIndexItemArray
 } from "../interfaces/IFileIndexItem";
 import { FileListCache } from "../shared/filelist-cache";
-import useFileList, {
-  fetchContentUseFileList,
-  IFileList
-} from "./use-filelist";
 import { mountReactHook } from "./___tests___/test-hook";
+import useFileList, {
+  IFileList,
+  fetchContentUseFileList
+} from "./use-filelist";
 
 describe("UseFileList", () => {
   describe("Archive", () => {
@@ -217,13 +217,15 @@ describe("UseFileList", () => {
       expect(fetchSpy).toBeCalled();
     });
 
-    it("with connection rejected", async () => {
+    it("[use file list] with connection rejected", async () => {
       const { hook } = mounter();
 
       const controller = new AbortController();
 
       const mockResult = Promise.reject();
-      fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+
+      fetchSpy = jest.spyOn(window, "fetch").mockReset()
+      .mockImplementationOnce(() => {
         return mockResult;
       });
 

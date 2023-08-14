@@ -65,6 +65,7 @@ describe("updateGeoLocation", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
+      .mockReset()
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     await UpdateGeoLocation(
@@ -105,6 +106,7 @@ describe("updateGeoLocation", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
+      .mockReset()
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const result = await UpdateGeoLocation(

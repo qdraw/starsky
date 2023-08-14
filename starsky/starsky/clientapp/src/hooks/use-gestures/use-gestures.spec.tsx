@@ -274,6 +274,7 @@ describe("useGestures", () => {
     it("touchmove deltaX/Y undefined", () => {
       jest
         .spyOn(getCurrentTouchesAll, "getCurrentTouches")
+        .mockReset()
         .mockImplementationOnce(() => {
           return {
             deltaX: undefined,
@@ -284,7 +285,9 @@ describe("useGestures", () => {
       const debounceAnonymousFnSpy = jest.fn();
       const debounceSpy = jest
         .spyOn(debounce, "debounce")
+        .mockReset()
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
+
       const demoElement = document.createElement("div");
 
       const hook = mountReactHook(useGestures, [{ current: demoElement }]);
@@ -315,6 +318,7 @@ describe("useGestures", () => {
       const debounceAnonymousFnSpy = jest.fn();
       const debounceSpy = jest
         .spyOn(debounce, "debounce")
+        .mockReset()
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
@@ -350,6 +354,7 @@ describe("useGestures", () => {
       const debounceAnonymousFnSpy = jest.fn();
       const debounceSpy = jest
         .spyOn(debounce, "debounce")
+        .mockReset()
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
@@ -420,6 +425,7 @@ describe("useGestures", () => {
       const debounceAnonymousFnSpy = jest.fn();
       const debounceSpy = jest
         .spyOn(debounce, "debounce")
+        .mockReset()
         .mockImplementationOnce(() => debounceAnonymousFnSpy);
       const demoElement = document.createElement("div");
 
@@ -442,6 +448,7 @@ describe("useGestures", () => {
       jest.spyOn(callHandler, "callHandler").mockReset();
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
+        .mockReset()
         .mockImplementationOnce(() => {});
 
       const demoElement = document.createElement("div");
@@ -472,6 +479,7 @@ describe("useGestures", () => {
 
       jest
         .spyOn(React, "useState")
+        .mockReset()
         .mockImplementationOnce(() => [{ pointers: ["", "1"] }, jest.fn()]);
       const touchEndEvent = new TouchEvent("touchend", exampleSingleTouches);
 

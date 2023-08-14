@@ -1,4 +1,4 @@
-import { Coords, InternalTiles } from "leaflet";
+import L, { Coords, InternalTiles } from "leaflet";
 import { LeafletEmptyImageUrlTileLayer } from "./leaflet-modify-empty-image-url-tilelayer";
 
 describe("LeafletEmptyImageUrlTileLayer [leaflet-extension]", () => {

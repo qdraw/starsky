@@ -39,6 +39,7 @@ npm install --save-dev jest-environment-jsdom
 npm install --save-dev identity-obj-proxy
 npm install --save core-js
 npm install --save-dev isomorphic-fetch
+npm install --save-dev jest-environment-jsdom --force
 
 ```
 

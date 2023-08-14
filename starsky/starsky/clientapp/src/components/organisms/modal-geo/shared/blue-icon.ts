@@ -1,6 +1,6 @@
 import L from "leaflet";
-import MarkerBlueSvg from "../../../style/images/fa-map-marker-blue.svg";
-import MarkerShadowPng from "../../../style/images/marker-shadow.png";
+import MarkerBlueSvg from "../../../../style/images/fa-map-marker-blue.svg";
+import MarkerShadowPng from "../../../../style/images/marker-shadow.png";
 
 export const blueIcon = L.icon({
   iconUrl: MarkerBlueSvg,

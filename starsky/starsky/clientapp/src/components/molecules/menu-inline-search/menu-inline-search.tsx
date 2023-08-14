@@ -6,7 +6,7 @@ import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
-import ArrowKeyDown from "./arrow-key-down";
+import ArrowKeyDown from "./shared/arrow-key-down";
 
 interface IMenuSearchBarProps {
   defaultText?: string;

@@ -221,9 +221,8 @@ describe("ModalGeo", () => {
       );
 
       console.log(modal.container.innerHTML);
-      
 
-      // (await modal.findByTestId("content-geo")).click();
+      (await modal.findByTestId("content-geo")).click();
 
       const button = await screen.findByTestId("update-geo-location");
       button.click();
@@ -288,7 +287,7 @@ describe("ModalGeo", () => {
       modal.unmount();
     });
 
-    xit("press cancel button", async () => {
+    it("press cancel button", async () => {
       const handleExitSpy = jest.fn();
       const modal = render(
         <ModalGeo
@@ -308,7 +307,7 @@ describe("ModalGeo", () => {
       modal.unmount();
     });
 
-    xit("press cancel1 button", async () => {
+    it("press cancel1 button", async () => {
       const handleExitSpy = jest.fn();
       const modal = render(
         <ModalGeo

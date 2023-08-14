@@ -661,6 +661,7 @@ describe("DetailViewSidebar", () => {
 
       const isInFormSpy = jest
         .spyOn(Keyboard.prototype, "isInForm")
+        .mockReset()
         .mockImplementationOnce(() => false)
         .mockImplementationOnce(() => false)
         .mockImplementationOnce(() => false)

@@ -1,8 +1,10 @@
 /* eslint-disable testing-library/prefer-presence-queries */
 import { globalHistory } from "@reach/router";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
+import { useState } from "react";
 import { act } from "react-dom/test-utils";
 import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
+import { IFileHashImageProps } from "../../components/atoms/file-hash-image/file-hash-image";
 import * as ContextDetailview from "../../contexts/detailview-context";
 import * as useFetch from "../../hooks/use-fetch";
 import * as useGestures from "../../hooks/use-gestures/use-gestures";
@@ -21,7 +23,24 @@ import { UrlQuery } from "../../shared/url-query";
 import DetailView from "./detailview";
 
 describe("DetailView", () => {
+
+  const fileHashImageMock = (props: IFileHashImageProps)=> {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [isError, setIsError] = useState(false);
+    return (
+  <div data-test="pan-zoom-image" className={isError ? "main--error": undefined}>
+      <img src={"http://localhost" +
+          new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
+            props.fileHash, props.id,
+            true,
+          )} onError={() => setIsError(true)} /></div>) };
+
+  beforeEach(() => {
+    jest.spyOn(FileHashImage,'default').mockImplementationOnce(props => fileHashImageMock(props))
+  })
+
   it("renders", () => {
+    jest.spyOn(FileHashImage,'default').mockImplementationOnce(props => fileHashImageMock(props))
     render(<DetailView {...newDetailView()} />);
   });
 
@@ -102,6 +121,8 @@ describe("DetailView", () => {
       // eslint-disable-next-line testing-library/no-node-access
       const image = imgContainer?.querySelector("img") as HTMLImageElement;
       expect(image).toBeTruthy();
+
+      console.log(image.src)
 
       expect(image.src).toBe(
         "http://localhost" +
@@ -405,6 +426,7 @@ describe("DetailView", () => {
 
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
@@ -445,6 +467,7 @@ describe("DetailView", () => {
 
       jest
         .spyOn(useLocation, "default")
+        .mockReset()
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
@@ -479,7 +502,7 @@ describe("DetailView", () => {
         </>
       );
 
-      jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
+      jest.spyOn(FileHashImage, "default").mockReset().mockImplementationOnce(fakeElement);
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const component = render(<TestComponent />);
 
@@ -536,7 +559,10 @@ describe("DetailView", () => {
         </>
       );
 
-      jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
+      jest.spyOn(FileHashImage, "default")
+        .mockReset()
+        .mockImplementationOnce(fakeElement);
+        
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const component = render(<TestComponent />);
 

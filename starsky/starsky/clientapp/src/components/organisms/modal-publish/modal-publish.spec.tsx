@@ -416,6 +416,7 @@ describe("ModalPublish", () => {
 
     jest
       .spyOn(useFetch, "default")
+      .mockReset()
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault)
@@ -425,6 +426,7 @@ describe("ModalPublish", () => {
 
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
+      .mockReset()
       .mockImplementationOnce(() => {
         return Promise.resolve({
           statusCode: 200,

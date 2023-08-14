@@ -31,12 +31,11 @@ describe("MenuArchive", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        })
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        });
+        .mockReset()
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
 
       jest
         .spyOn(window, "scrollTo")
@@ -288,7 +287,7 @@ describe("MenuArchive", () => {
     });
 
     it("[archive] display options (default menu)", () => {
-      jest.spyOn(React, "useContext").mockRestore();
+      jest.spyOn(React, "useContext").mockReset();
 
       globalHistory.navigate("/?f=/test");
 
@@ -494,7 +493,6 @@ describe("MenuArchive", () => {
     });
 
     it("more and click on select all", () => {
-      jest.spyOn(React, "useContext").mockReset();
 
       const state = {
         subPath: "/",
@@ -510,10 +508,12 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
+        .mockReset()
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues)
-
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
@@ -525,12 +525,15 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        })
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        });
+        .mockReset()
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
 
       const component = render(<MenuArchive />);
 
@@ -569,22 +572,21 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        });
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
+        .mockReset()
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
@@ -722,7 +724,6 @@ describe("MenuArchive", () => {
     });
 
     it("menu click export", () => {
-      jest.spyOn(React, "useContext").mockReset();
 
       globalHistory.navigate("/?select=test1.jpg");
 
@@ -740,19 +741,15 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
       jest
         .spyOn(React, "useContext")
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        });
+        .mockReset()
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
       const exportModalSpy = jest
         .spyOn(ModalDownload, "default")
@@ -775,7 +772,6 @@ describe("MenuArchive", () => {
     });
 
     it("[archive] menu click publish", () => {
-      jest.spyOn(React, "useContext").mockReset();
 
       globalHistory.navigate("/?select=test1.jpg");
 
@@ -793,19 +789,15 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
       jest
         .spyOn(React, "useContext")
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        });
+        .mockReset()
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
       const exportModalSpy = jest
         .spyOn(ModalPublish, "default")

@@ -116,7 +116,7 @@ describe("DetailViewGpx", () => {
       gpx.unmount();
     });
 
-    it("zoom in", async () => {
+    it("[gpx] zoom in", async () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
@@ -124,6 +124,7 @@ describe("DetailViewGpx", () => {
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchXml, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       // // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
@@ -177,7 +178,7 @@ describe("DetailViewGpx", () => {
       expect(spyGet).toBeCalledTimes(1);
     });
 
-    it("detail view gpx - zoom out 1", async () => {
+    it("[detail view gpx] - zoom out 1", async () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
@@ -185,6 +186,7 @@ describe("DetailViewGpx", () => {
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchXml, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen

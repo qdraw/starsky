@@ -21,4 +21,6 @@ Object.defineProperty(global, "IntersectionObserver", {
   value: IntersectionObserver,
 });
 
+window.scrollTo = jest.fn();
+
 configure({ testIdAttribute: "data-test" });

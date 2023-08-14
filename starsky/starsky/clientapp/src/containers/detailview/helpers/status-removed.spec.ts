@@ -49,6 +49,7 @@ describe("statusRemoved", () => {
   it("should call up", () => {
     const prevNextSpy = jest
       .spyOn(PrevNext.prototype, "next")
+      .mockReset()
       .mockImplementationOnce(() => {});
     const moveFolderUpSpy = jest
       .spyOn(moveFolderUp, "moveFolderUp")
@@ -77,9 +78,11 @@ describe("statusRemoved", () => {
   it("should not call up due delete", () => {
     const prevNextSpy = jest
       .spyOn(PrevNext.prototype, "next")
+      .mockReset()
       .mockImplementationOnce(() => {});
     const moveFolderUpSpy = jest
       .spyOn(moveFolderUp, "moveFolderUp")
+      .mockReset()
       .mockImplementationOnce(() => {});
 
     statusRemoved(
@@ -102,12 +105,14 @@ describe("statusRemoved", () => {
     expect(moveFolderUpSpy).toHaveBeenCalledTimes(0);
   });
 
-  it("should tigger none", () => {
+  it("should trigger none", () => {
     const prevNextSpy = jest
       .spyOn(PrevNext.prototype, "next")
+      .mockReset()
       .mockImplementationOnce(() => {});
     const moveFolderUpSpy = jest
       .spyOn(moveFolderUp, "moveFolderUp")
+      .mockReset()
       .mockImplementationOnce(() => {});
 
     statusRemoved(
@@ -133,9 +138,11 @@ describe("statusRemoved", () => {
   it("skip when undefined", () => {
     const prevNextSpy = jest
       .spyOn(PrevNext.prototype, "next")
+      .mockReset()
       .mockImplementationOnce(() => {});
     const moveFolderUpSpy = jest
       .spyOn(moveFolderUp, "moveFolderUp")
+      .mockReset()
       .mockImplementationOnce(() => {});
 
     statusRemoved(

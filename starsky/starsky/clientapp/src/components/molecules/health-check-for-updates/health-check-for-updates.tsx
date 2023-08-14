@@ -5,7 +5,7 @@ import { DifferenceInDate } from "../../../shared/date";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import Notification, {
-    NotificationType
+  NotificationType
 } from "../../atoms/notification/notification";
 
 /**
@@ -28,7 +28,7 @@ export function SkipDisplayOfUpdate(): boolean {
 }
 
 /**
- * Compontent with health check for updates
+ * Component with health check for updates
  */
 const HealthCheckForUpdates: React.FunctionComponent = () => {
   const checkForUpdates = useFetch(
@@ -37,7 +37,7 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
   );
 
   const settings = useGlobalSettings();
-
+  
   if (SkipDisplayOfUpdate() || checkForUpdates.statusCode !== 202) return null;
 
   const language = new Language(settings.language);
