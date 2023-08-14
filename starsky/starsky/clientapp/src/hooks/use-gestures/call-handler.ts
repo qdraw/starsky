@@ -4,7 +4,7 @@ import { IHandlers } from "./IHandlers.types";
 export const callHandler = (
   eventName: string,
   event: ICurrentTouches,
-  handlers: IHandlers
+  handlers: IHandlers | undefined
 ) => {
   if (!handlers) {
     throw new Error(`handler ${eventName} is missing`);

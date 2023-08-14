@@ -1,3 +1,4 @@
+import { ICurrentTouches } from "./ICurrentTouches.types";
 import { callHandler } from "./call-handler";
 
 describe("callHandler", () => {
@@ -15,5 +16,15 @@ describe("callHandler", () => {
 
       expect(handlers.test).toBeCalledTimes(0);
     });
+  });
+
+  it("should throw an error when the handler is missing", () => {
+    const eventName = "someEvent";
+    const event = {} as ICurrentTouches; // Provide an appropriate event object
+    const handlers = undefined;
+
+    expect(() => {
+      callHandler(eventName, event, handlers);
+    }).toThrow(`handler ${eventName} is missing`);
   });
 });
