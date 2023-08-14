@@ -10,7 +10,7 @@
     "lint:fix": "eslint --fix . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
     "test": "jest --watch",
-    "test:ci": "jest --ci",
+    "test:ci": "jest --ci --coverage",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -53,6 +53,47 @@
     "jest-environment-jsdom": "^29.6.2",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1"
+  },
+  "jest": {
+    "testEnvironment": "jest-environment-jsdom",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg|gif)$": "identity-obj-proxy"
+    },
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.ts"],
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx}",
+      "!coverage/**",
+      "!**/*.stories.{ts,tsx}",
+      "!node_modules/**",
+      "!src/index.*ts*",
+      "!src/service-worker.ts",
+      "!src/react-app-env.d.ts",
+      "!src/setupTests.js",
+      "!public/**",
+      "!build/**"
+    ],
+    "coverageReporters": [
+      "text",
+      [
+        "lcov",
+        {
+          "projectRoot": "../../"
+        }
+      ],
+      "json",
+      "cobertura"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
   },
   "prettier": {
     "trailingComma": "none",
