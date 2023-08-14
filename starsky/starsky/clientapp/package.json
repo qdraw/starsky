@@ -10,7 +10,8 @@
     "lint:fix": "eslint --fix . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
     "test": "jest --watch",
-    "test:ci": "jest --ci --coverage",
+    "test:ci": "jest --ci --coverage --silent",
+    "test:ci:debug": "jest --ci --coverage",
     "preview": "vite preview"
   },
   "dependencies": {
