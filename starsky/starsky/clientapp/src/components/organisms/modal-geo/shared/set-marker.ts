@@ -1,7 +1,8 @@
 import L from "leaflet";
-import { ILatLong, onDrag } from "../modal-geo";
+import { ILatLong } from "../modal-geo";
 import { blueIcon } from "./blue-icon";
-import { latLongRound } from "./lat-long-round";
+import { LatLongRound } from "./lat-long-round";
+import { OnDrag } from "./on-drag";
 
 export function SetMarker(
   map: L.Map,
@@ -30,12 +31,12 @@ export function SetMarker(
   );
 
   markerLocal.on("dragend", (event) =>
-    onDrag(event, setLocation, setIsLocationUpdated)
+    OnDrag(event, setLocation, setIsLocationUpdated)
   );
 
   setLocation({
-    latitude: latLongRound(lat),
-    longitude: latLongRound(lng)
+    latitude: LatLongRound(lat),
+    longitude: LatLongRound(lng)
   });
 
   setIsLocationUpdated(true);

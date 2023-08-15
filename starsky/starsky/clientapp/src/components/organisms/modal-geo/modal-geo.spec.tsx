@@ -3,16 +3,12 @@ import { render, screen, waitFor } from "@testing-library/react";
 import L, { LatLng } from "leaflet";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import * as Modal from "../../atoms/modal/modal";
-
+import ModalGeo, { ILatLong } from "./modal-geo";
+import { AddDefaultClickSetMarker } from "./shared/add-default-click-set-marker";
 import * as AddDefaultMarker from "./shared/add-default-marker";
-
-import ModalGeo, {
-  addDefaultClickSetMarker,
-  getZoom,
-  ILatLong,
-  onDrag,
-  realtimeMapUpdate
-} from "./modal-geo";
+import { GetZoom } from "./shared/get-zoom";
+import { OnDrag } from "./shared/on-drag";
+import { RealtimeMapUpdate } from "./shared/realtime-map-update";
 import * as updateGeoLocation from "./shared/update-geo-location";
 
 describe("ModalGeo", () => {
@@ -43,12 +39,12 @@ describe("ModalGeo", () => {
 
   describe("getZoom", () => {
     it("getZoom none", () => {
-      const result = getZoom({} as ILatLong);
+      const result = GetZoom({} as ILatLong);
       expect(result).toBe(12);
     });
 
     it("getZoom with location", () => {
-      const result = getZoom({ latitude: 10, longitude: 15 } as ILatLong);
+      const result = GetZoom({ latitude: 10, longitude: 15 } as ILatLong);
       expect(result).toBe(15);
     });
   });
@@ -88,7 +84,7 @@ describe("ModalGeo", () => {
   describe("onDrag", () => {
     it("should update setter", () => {
       const setLocationSpy = jest.fn();
-      onDrag(
+      OnDrag(
         {
           target: {
             getLatLng: () => {
@@ -124,7 +120,7 @@ describe("ModalGeo", () => {
         addLayer: jest.fn(),
         removeLayer: jest.fn()
       } as unknown as L.Map;
-      addDefaultClickSetMarker(map, true, jest.fn(), jest.fn());
+      AddDefaultClickSetMarker(map, true, jest.fn(), jest.fn());
 
       expect(map.addLayer).toBeCalledTimes(1);
       expect(map.removeLayer).toBeCalledTimes(1);
@@ -142,7 +138,7 @@ describe("ModalGeo", () => {
         addLayer: jest.fn(),
         removeLayer: jest.fn()
       } as unknown as L.Map;
-      addDefaultClickSetMarker(map, false, jest.fn(), jest.fn());
+      AddDefaultClickSetMarker(map, false, jest.fn(), jest.fn());
 
       expect(map.addLayer).toBeCalledTimes(0);
       expect(map.removeLayer).toBeCalledTimes(0);
@@ -165,7 +161,7 @@ describe("ModalGeo", () => {
         removeLayer: jest.fn()
       } as unknown as L.Map;
 
-      realtimeMapUpdate(map, false, jest.fn(), jest.fn(), 1, 1);
+      RealtimeMapUpdate(map, false, jest.fn(), jest.fn(), 1, 1);
 
       expect(map.addLayer).toBeCalledTimes(0);
       expect(map.removeLayer).toBeCalledTimes(0);

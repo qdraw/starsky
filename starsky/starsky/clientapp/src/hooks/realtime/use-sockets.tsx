@@ -1,19 +1,13 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { DifferenceInDate } from "../../shared/date";
 import useInterval from "../use-interval";
+import { IsClientSideFeatureDisabled } from "./shared/Is-client-side-feature-disabled";
 import WebSocketService from "./websocket-service";
 import WsCurrentStart, { NewWebSocketService } from "./ws-current-start";
 
 export interface IUseSockets {
   showSocketError: boolean | null;
   setShowSocketError: Dispatch<SetStateAction<boolean | null>>;
-}
-
-/**
- * Set an localStorage cookie when no websocket client is used
- */
-function IsClientSideFeatureDisabled(): boolean {
-  return localStorage.getItem("use-sockets") === "false";
 }
 
 /**

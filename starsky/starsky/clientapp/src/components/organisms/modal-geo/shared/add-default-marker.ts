@@ -1,6 +1,7 @@
 import L from "leaflet";
-import { ILatLong, onDrag } from "../modal-geo";
+import { ILatLong } from "../modal-geo";
 import { blueIcon } from "./blue-icon";
+import { OnDrag } from "./on-drag";
 
 export function AddDefaultMarker(
   location: ILatLong,
@@ -21,7 +22,7 @@ export function AddDefaultMarker(
       }
     );
     markerLocal.on("dragend", (event) =>
-      onDrag(event, setLocation, setIsLocationUpdated)
+      OnDrag(event, setLocation, setIsLocationUpdated)
     );
     map.addLayer(markerLocal);
   }

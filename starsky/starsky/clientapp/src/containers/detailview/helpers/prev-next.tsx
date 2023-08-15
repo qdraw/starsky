@@ -110,6 +110,6 @@ export class PrevNext {
     }
 
     this.history.navigate(prevPath, { replace: true });
-    this.setIsLoading(false);
+    //this.setIsLoading(false);
   }
 }

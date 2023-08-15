@@ -11,6 +11,9 @@ export default defineConfig({
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 600
   },
+  optimizeDeps: {
+    include: ["leaflet", "core-js", "react", "react-dom", "react-router-dom"]
+  },
   server: {
     proxy: {
       "/starsky/api": "http://localhost:4000",

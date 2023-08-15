@@ -1,5 +1,5 @@
 import { INavigateState } from "../interfaces/INavigateState";
-import history from "../shared/global-history/global-history";
+import { Router } from "../router-app/router-app";
 
 export interface INavigateOptions {
   replace?: boolean;
@@ -21,17 +21,24 @@ export interface INavigateFunction {
 }
 
 function navigateFn(to: string, options?: INavigateOptions) {
-  if (options?.replace === true) {
-    history.replace(to, options.state);
-    return;
-  }
-  history.push(to, options?.state);
+  Router.navigate(to, {
+    relative: "path",
+    replace: options?.replace
+  });
 }
 
 const useLocation = () => {
+  console.log(Router.state.location);
+
   const result = {
     navigate: navigateFn,
-    location: history.location as unknown as ILocationObject
+    location: {
+      ...Router.state.location,
+      href:
+        Router.state.location.pathname +
+        Router.state.location.search +
+        Router.state.location.hash
+    }
   } as IUseLocation;
 
   return result;

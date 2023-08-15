@@ -132,8 +132,15 @@ namespace starsky
 			{
 				options.AddPolicy("CorsDevelopment",
 					builder => builder
-						.WithOrigins("http://localhost:4200",
-							"http://localhost:8080")
+						.WithOrigins(
+							"http://localhost:4000",
+							"https://localhost:4001",
+							"http://localhost:4200",
+							"http://localhost:5000",
+							"https://localhost:5001",
+							"http://localhost:5173",
+							"http://localhost:8080"
+						)
 						.AllowAnyMethod()
 						.AllowAnyHeader()
 						.AllowCredentials() );
