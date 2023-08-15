@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "tsc -p tsconfig.prod.json && vite build --config tsconfig.prod.json",
+    "build": "tsc -p tsconfig.prod.json && vite build",
     "spell": "cspell --config cspell.json \"src/**/*.{ts,tsx,js,md}\" --exclude build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
     "lint:fix": "eslint --fix . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
