@@ -56,7 +56,7 @@ describe("keyboard", () => {
       expect(result).toBeFalsy();
     });
 
-    it("non valid directory name string.emthy", () => {
+    it("non valid directory name string.empty", () => {
       const result = fileExt.IsValidDirectoryName("");
       expect(result).toBeFalsy();
     });
@@ -129,8 +129,8 @@ describe("keyboard", () => {
 
   describe("GetFileName", () => {
     it("get file name no slash", () => {
-      const result = fileExt.GetFileName("testung.jpg");
-      expect(result).toBe("testung.jpg");
+      const result = fileExt.GetFileName("test.jpg");
+      expect(result).toBe("test.jpg");
     });
 
     it("get file name no ext", () => {

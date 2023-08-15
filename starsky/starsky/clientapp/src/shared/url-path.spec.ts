@@ -203,18 +203,18 @@ describe("url-path", () => {
     });
   });
 
-  describe("ArrayToCommaSeperatedString", () => {
+  describe("ArrayToCommaSeparatedString", () => {
     it("default", () => {
-      const test = urlPath.ArrayToCommaSeperatedString([]);
+      const test = urlPath.ArrayToCommaSeparatedString([]);
       expect(test).toStrictEqual("");
     });
 
     it("list 1 item", () => {
-      const test = urlPath.ArrayToCommaSeperatedString(["/test.jpg"]);
+      const test = urlPath.ArrayToCommaSeparatedString(["/test.jpg"]);
       expect(test).toStrictEqual("/test.jpg");
     });
     it("list 2 items", () => {
-      const test = urlPath.ArrayToCommaSeperatedString([
+      const test = urlPath.ArrayToCommaSeparatedString([
         "/parent/test.jpg",
         "/parent/test2.jpg"
       ]);
@@ -222,21 +222,21 @@ describe("url-path", () => {
     });
   });
 
-  describe("ArrayToCommaSeperatedStringOneParent", () => {
+  describe("ArrayToCommaSeparatedStringOneParent", () => {
     it("default", () => {
-      const test = urlPath.ArrayToCommaSeperatedStringOneParent([], "");
+      const test = urlPath.ArrayToCommaSeparatedStringOneParent([], "");
       expect(test).toStrictEqual("");
     });
 
     it("list 1 item", () => {
-      const test = urlPath.ArrayToCommaSeperatedStringOneParent(
+      const test = urlPath.ArrayToCommaSeparatedStringOneParent(
         ["test.jpg"],
         "/parent"
       );
       expect(test).toStrictEqual("/parent/test.jpg");
     });
     it("list 2 items", () => {
-      const test = urlPath.ArrayToCommaSeperatedStringOneParent(
+      const test = urlPath.ArrayToCommaSeparatedStringOneParent(
         ["test.jpg", "test2.jpg"],
         "/parent"
       );

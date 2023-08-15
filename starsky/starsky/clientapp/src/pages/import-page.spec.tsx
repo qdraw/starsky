@@ -18,7 +18,7 @@ describe("ImportPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    const component = render(<ImportPage>t</ImportPage>);
+    const component = render(<ImportPage />);
     expect(menuDefaultSpy).toBeCalled();
     expect(dropAreaSpy).toBeCalled();
     component.unmount();
@@ -47,7 +47,7 @@ describe("ImportPage", () => {
       .mockImplementationOnce(() => [[newIFileIndexItem()], jest.fn()])
       .mockImplementationOnce(() => [[newIFileIndexItem()], jest.fn()]);
 
-    const component = render(<ImportPage>t</ImportPage>);
+    const component = render(<ImportPage />);
     expect(menuDefaultSpy).toBeCalled();
     expect(dropAreaSpy).toBeCalled();
     expect(modal).toBeCalled();

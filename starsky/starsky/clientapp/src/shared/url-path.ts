@@ -304,10 +304,10 @@ export class URLPath {
   }
 
   /**
-   * Combine select to dot comma seperated
+   * Combine select to dot comma Separated
    * @param select Array with path
    */
-  public ArrayToCommaSeperatedString(select: string[]): string {
+  public ArrayToCommaSeparatedString(select: string[]): string {
     let selectString = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];
@@ -320,7 +320,7 @@ export class URLPath {
     return selectString;
   }
 
-  public ArrayToCommaSeperatedStringOneParent(
+  public ArrayToCommaSeparatedStringOneParent(
     select: string[],
     parent: string
   ): string {

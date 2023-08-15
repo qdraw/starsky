@@ -159,7 +159,7 @@ export class UrlQuery {
     historyLocationHash: string,
     toUpdateFilePath: string,
     clearTSearchQuery?: boolean,
-    emthySelectQuery?: boolean
+    emptySelectQuery?: boolean
   ): string {
     const url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
@@ -169,7 +169,7 @@ export class UrlQuery {
       delete url.p;
     }
     // when in select mode and navigate next to the select mode is still on but there are no items selected
-    if (emthySelectQuery && url.select && url.select?.length >= 1) {
+    if (emptySelectQuery && url.select && url.select?.length >= 1) {
       url.select = [];
     }
     return document.location.pathname.indexOf(this.prefix) === -1
@@ -178,7 +178,7 @@ export class UrlQuery {
   }
 
   /**
-   * Used with localisation hash
+   * Used with localization hash
    */
   public UrlQueryServerApi = (historyLocationHash: string): string => {
     const requested = new URLPath().StringToIUrl(historyLocationHash);

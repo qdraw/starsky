@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import {
   createEvent,
   fireEvent,
@@ -7,6 +6,7 @@ import {
   waitFor
 } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
+import { globalHistory } from "react-router-dom";
 import * as useLocation from "../../../hooks/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";

@@ -1,9 +1,9 @@
 import {
-  act,
-  createEvent,
-  fireEvent,
-  render,
-  screen
+    act,
+    createEvent,
+    fireEvent,
+    render,
+    screen
 } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
@@ -464,7 +464,7 @@ describe("ModalPublish", () => {
       await fireEvent(tags, inputEvent);
     });
 
-    // should only send get once. the second time should be avoid due sending emthy string
+    // should only send get once. the second time should be avoid due sending empty string
 
     expect(fetchGetSpy).toBeCalled();
     expect(fetchGetSpy).toBeCalledTimes(1);

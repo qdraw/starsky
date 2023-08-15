@@ -54,7 +54,7 @@ describe("MediaContent", () => {
       if (props.callback) {
         props.callback();
       }
-      return <div className="test">testung</div>;
+      return <div className="test">test</div>;
     });
 
     const component = render(<MediaContent />);

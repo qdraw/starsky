@@ -1,4 +1,6 @@
-import { Router } from "@reach/router";
+import { createBrowserHistory } from "history";
+import { Route, Routes } from "react-router-dom";
+import { CustomRouter } from "../components/atoms/custom-router/custom-router";
 import AccountRegisterPage from "../pages/account-register-page";
 import ContentPage from "../pages/content-page";
 import ImportPage from "../pages/import-page";
@@ -8,31 +10,40 @@ import PreferencesPage from "../pages/preferences-page";
 import SearchPage from "../pages/search-page";
 import TrashPage from "../pages/trash-page";
 
-const RouterApp = () => (
-  <Router>
-    <ContentPage path="/" />
-    <ContentPage path="starsky/" />
+const RouterApp = () => {
+  const history = createBrowserHistory();
 
-    <SearchPage path="search" />
-    <SearchPage path="starsky/search" />
+  return (
+    <CustomRouter history={history}>
+      <Routes>
+        <Route path="/" element={<ContentPage />} />
+        <Route path="starsky/" element={<ContentPage />} />
 
-    <TrashPage path="trash" />
-    <TrashPage path="starsky/trash" />
+        <Route path="search" element={<SearchPage />} />
+        <Route path="starsky/search" element={<SearchPage />} />
 
-    <ImportPage path="import" />
-    <ImportPage path="starsky/import" />
+        <Route path="trash" element={<TrashPage />} />
+        <Route path="starsky/trash" element={<TrashPage />} />
 
-    <LoginPage path="account/login" />
-    <LoginPage path="starsky/account/login" />
+        <Route path="import" element={<ImportPage />} />
+        <Route path="starsky/import" element={<ImportPage />} />
 
-    <AccountRegisterPage path="account/register" />
-    <AccountRegisterPage path="starsky/account/register" />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="starsky/account/login" element={<LoginPage />} />
 
-    <PreferencesPage path="preferences" />
-    <PreferencesPage path="starsky/preferences" />
+        <Route path="account/register" element={<AccountRegisterPage />} />
+        <Route
+          path="starsky/account/register"
+          element={<AccountRegisterPage />}
+        />
 
-    <NotFoundPage default />
-  </Router>
-);
+        <Route path="preferences" element={<PreferencesPage />} />
+        <Route path="starsky/preferences" element={<PreferencesPage />} />
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </CustomRouter>
+  );
+};
 
 export default RouterApp;

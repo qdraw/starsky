@@ -81,7 +81,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
       state.fileIndexItems
     );
     if (!toUndoTrashList) return;
-    const selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(
+    const selectPaths = new URLPath().ArrayToCommaSeparatedStringOneParent(
       toUndoTrashList,
       ""
     );

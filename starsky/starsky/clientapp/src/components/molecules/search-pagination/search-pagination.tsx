@@ -1,10 +1,10 @@
-import { Link } from "@reach/router";
 import React, { memo, useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
 import { IUrl } from "../../../interfaces/IUrl";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
+import Link from "../../atoms/link/link";
 
 export interface IRelativeLink {
   lastPageNumber?: number;

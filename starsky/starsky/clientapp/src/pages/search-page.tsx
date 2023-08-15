@@ -1,4 +1,3 @@
-import { RouteComponentProps } from "@reach/router";
 import { FunctionComponent } from "react";
 import Preloader from "../components/atoms/preloader/preloader";
 import ApplicationException from "../components/organisms/application-exception/application-exception";
@@ -8,7 +7,7 @@ import useSearchList from "../hooks/use-searchlist";
 import { PageType } from "../interfaces/IDetailView";
 import { URLPath } from "../shared/url-path";
 
-const SearchPage: FunctionComponent<RouteComponentProps<any>> = () => {
+const SearchPage: FunctionComponent = () => {
   const history = useLocation();
 
   const urlObject = new URLPath().StringToIUrl(history.location.search);

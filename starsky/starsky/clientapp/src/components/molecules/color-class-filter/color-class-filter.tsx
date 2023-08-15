@@ -1,4 +1,3 @@
-import { Link } from "@reach/router";
 import React, { memo, useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
@@ -7,6 +6,7 @@ import { newIArchive } from "../../../interfaces/IArchive";
 import { Language } from "../../../shared/language";
 import { SelectCheckIfActive } from "../../../shared/select-check-if-active";
 import { URLPath } from "../../../shared/url-path";
+import Link from "../../atoms/link/link";
 import Preloader from "../../atoms/preloader/preloader";
 
 //  <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath}

@@ -1,32 +1,19 @@
-import { globalHistory, HistoryLocation, NavigateFn } from "@reach/router";
-import { useEffect, useState } from "react";
+import { Location, NavigateFunction, useNavigate } from "react-router-dom";
+import history from "../shared/global-history/global-history";
 
 export interface IUseLocation {
-  location: HistoryLocation;
-  navigate: NavigateFn;
+  location: Location;
+  navigate: NavigateFunction;
 }
 
 const useLocation = () => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const initialState = {
-    location: globalHistory.location,
-    navigate: globalHistory.navigate
-  };
+  const navigate = useNavigate();
+  const result = {
+    navigate,
+    location: history.location as Location
+  } as IUseLocation;
 
-  const [state, setState] = useState(initialState);
-  useEffect(() => {
-    const removeListener = globalHistory.listen((params) => {
-      const { location } = params;
-      const newState = Object.assign({}, initialState, { location });
-      setState(newState);
-    });
-    return () => {
-      removeListener();
-    };
-  }, [initialState]);
-
-  return state as IUseLocation;
+  return result;
 };
 
 export default useLocation;
-// credits: https://github.com/reach/router/issues/203#issuecomment-453941158

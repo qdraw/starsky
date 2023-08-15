@@ -36,7 +36,7 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
         props.fileIndexItems
       );
       const selectParamsLocal =
-        new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "");
+        new URLPath().ArrayToCommaSeparatedStringOneParent(subPaths, "");
       setSelectParams(selectParamsLocal);
     }, [select, props.fileIndexItems]);
 

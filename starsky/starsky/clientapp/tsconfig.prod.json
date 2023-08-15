@@ -1,10 +1,9 @@
 {
   "extends": "./tsconfig",
   "exclude": [
-    "./src/__tests__/**",
-    "./src/*.spec.ts",
-    "./src/*.spec.tsx",
-    "./src/__mocks__/**",
-    "./src/test-utils"
+    "node_modules",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.stories.tsx"
   ]
 }

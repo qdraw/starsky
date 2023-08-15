@@ -24,7 +24,7 @@ export class SelectCheckIfActive {
         select.splice(selectIndex, 1);
       }
     });
-    // remove emthy items from the list
+    // remove empty items from the list
     return select.filter((res) => res);
   }
 }

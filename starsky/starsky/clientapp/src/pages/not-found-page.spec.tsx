@@ -3,7 +3,7 @@ import NotFoundPage from "./not-found-page";
 
 describe("NotFoundPage", () => {
   it("has MenuDefault child Component", () => {
-    const notFoundComponent = render(<NotFoundPage></NotFoundPage>);
+    const notFoundComponent = render(<NotFoundPage />);
     const headerText = (
       notFoundComponent.container.querySelector(
         ".content--header"

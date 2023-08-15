@@ -1,4 +1,3 @@
-import { Link } from "@reach/router";
 import React, { useEffect, useState } from "react";
 import { DetailViewAction } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
@@ -23,6 +22,7 @@ import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
+import Link from "../../atoms/link/link";
 import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
@@ -245,7 +245,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     ClearSearchCache(history.location.search);
 
     // Client side Caching: the order of files in a normal folder has changed
-    // Entire cache becouse the relativeObjects objects can reference to this page
+    // Entire cache because the relativeObjects objects can reference to this page
     new FileListCache().CacheCleanEverything();
   }
 

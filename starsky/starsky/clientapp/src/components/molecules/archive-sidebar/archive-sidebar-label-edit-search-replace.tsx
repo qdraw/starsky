@@ -102,7 +102,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       state.fileIndexItems
     );
     if (!subPaths) return;
-    const selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(
+    const selectPaths = new URLPath().ArrayToCommaSeparatedStringOneParent(
       subPaths,
       ""
     );

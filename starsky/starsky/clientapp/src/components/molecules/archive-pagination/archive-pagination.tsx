@@ -1,10 +1,10 @@
-import { Link } from "@reach/router";
 import React, { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
 import { IRelativeObjects } from "../../../interfaces/IDetailView";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
+import Link from "../../atoms/link/link";
 
 export interface IRelativeLink {
   relativeObjects: IRelativeObjects;

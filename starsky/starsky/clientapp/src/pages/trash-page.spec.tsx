@@ -14,7 +14,7 @@ describe("TrashPage", () => {
       return {} as ISearchList;
     });
 
-    const error = render(<TrashPage>t</TrashPage>);
+    const error = render(<TrashPage />);
 
     expect(error.container.innerHTML).toBe("Something went wrong");
   });
@@ -33,7 +33,7 @@ describe("TrashPage", () => {
       } as ISearchList;
     });
 
-    const trashPage = render(<TrashPage>t</TrashPage>);
+    const trashPage = render(<TrashPage />);
 
     expect(contextSpy).toBeCalled();
 
@@ -45,7 +45,7 @@ describe("TrashPage", () => {
       .spyOn(useSearchList, "default")
       .mockImplementationOnce(() => null as any);
 
-    const component = render(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
@@ -56,7 +56,7 @@ describe("TrashPage", () => {
       .spyOn(useSearchList, "default")
       .mockImplementationOnce(() => ({}) as any);
 
-    const component = render(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
@@ -73,7 +73,7 @@ describe("TrashPage", () => {
       } as any;
     });
 
-    const component = render(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage />);
 
     expect(applicationExceptionSpy).toBeCalled();
 
@@ -94,7 +94,7 @@ describe("TrashPage", () => {
       return <></>;
     });
 
-    const component = render(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage />);
 
     expect(preloaderSpy).toBeCalled();
 

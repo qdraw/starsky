@@ -13,13 +13,10 @@ wordt geleverd met:
 "vite": "^4.4.5"
 
 ```
-npm install --save @reach/router --force
-npm install --save @types/reach__router
 npm install --save leaflet
 npm install --save react
 npm install --save react-dom
 npm install --save @types/leaflet
-npm install --save @types/storybook__react
 npm install --save-dev @storybook/react --force
 npm install --save-dev eslint-config-prettier
 npm install --save eslint-plugin-prettier
@@ -44,6 +41,9 @@ npm install eslint eslint-plugin-react --save-dev --force
 npm install --save-dev eslint-plugin-testing-library --force
 npm install --save-dev eslint-plugin-jest-react --force
 npm install @storybook/builder-vite --save-dev --force
+npm install --save react-router-dom
+npm install --save-dev cspell
+npm install --save history
 ```
 
 npm install --save abortcontroller-polyfill

@@ -1,11 +1,11 @@
-import { globalHistory } from "@reach/router";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
+import history from "./global-history/global-history";
 import { Select } from "./select";
 
 describe("select", () => {
   describe("removeSidebarSelection", () => {
     it("single disable", () => {
-      globalHistory.navigate("/?select=");
+      history.navigate("/?select=");
       const setSelectSpy = jest.fn();
       const select = new Select(
         [],

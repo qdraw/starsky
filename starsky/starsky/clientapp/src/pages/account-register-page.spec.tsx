@@ -9,7 +9,7 @@ describe("ContentPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    render(<AccountRegisterPage>g</AccountRegisterPage>);
+    render(<AccountRegisterPage />);
     expect(accountRegisterSpy).toBeCalledTimes(1);
   });
 });

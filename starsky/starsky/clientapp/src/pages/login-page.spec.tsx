@@ -9,7 +9,7 @@ describe("LoginPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    render(<LoginPage>t</LoginPage>);
+    render(<LoginPage />);
     expect(spyLoginComponent).toBeCalled();
   });
 });

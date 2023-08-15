@@ -1,4 +1,3 @@
-import { RouteComponentProps } from "@reach/router";
 import React, { FunctionComponent } from "react";
 import DropArea from "../components/atoms/drop-area/drop-area";
 import ModalDropAreaFilesAdded from "../components/molecules/modal-drop-area-files-added/modal-drop-area-files-added";
@@ -9,7 +8,7 @@ import DocumentTitle from "../shared/document-title";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url-query";
 
-const ImportPage: FunctionComponent<RouteComponentProps> = () => {
+const ImportPage: FunctionComponent = () => {
   document.title = new DocumentTitle().GetDocumentTitle("Import");
 
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(

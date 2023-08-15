@@ -65,9 +65,7 @@ const MediaContent: React.FC = () => {
       {pageType === PageType.Loading ? (
         <Preloader isOverlay={true} isWhite={false} />
       ) : null}
-      {pageType === PageType.NotFound ? (
-        <NotFoundPage>not found</NotFoundPage>
-      ) : null}
+      {pageType === PageType.NotFound ? <NotFoundPage /> : null}
       {pageType === PageType.Unauthorized ? <Login /> : null}
       {pageType === PageType.ApplicationException ? (
         <ApplicationException></ApplicationException>

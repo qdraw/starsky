@@ -45,7 +45,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       );
 
       if (!toUndoTrashList) return;
-      const selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
+      const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(
         toUndoTrashList,
         ""
       );

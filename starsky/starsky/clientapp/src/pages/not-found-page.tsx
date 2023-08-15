@@ -1,11 +1,11 @@
-import { Link, RouteComponentProps } from "@reach/router";
 import { FunctionComponent } from "react";
+import Link from "../components/atoms/link/link";
 import MenuDefault from "../components/organisms/menu-default/menu-default";
 import useGlobalSettings from "../hooks/use-global-settings";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url-query";
 
-const NotFoundPage: FunctionComponent<RouteComponentProps<any>> = () => {
+const NotFoundPage: FunctionComponent = () => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);

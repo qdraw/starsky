@@ -120,7 +120,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       state.fileIndexItems
     );
     if (!subPaths) return;
-    const selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
+    const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(
       subPaths,
       ""
     );

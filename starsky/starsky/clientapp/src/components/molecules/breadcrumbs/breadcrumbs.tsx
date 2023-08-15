@@ -1,8 +1,8 @@
-import { Link } from "@reach/router";
 import React, { memo } from "react";
 import useLocation from "../../../hooks/use-location";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
+import Link from "../../atoms/link/link";
 
 /**
  * subPath is child folder
