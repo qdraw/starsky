@@ -139,7 +139,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
 
     if (result.statusCode !== 200) {
       setError(MessageGeneralError);
-      // and renable
+      // and renewable
       setIsLoading(false);
       setFormEnabled(true);
       return;

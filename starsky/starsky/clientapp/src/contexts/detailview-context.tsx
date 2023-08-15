@@ -74,11 +74,11 @@ export function detailviewReducer(
           action.tags,
           ""
         );
-      // Need to update otherwise other events are not triggerd
+      // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "append":
       if (action.tags) state.fileIndexItem.tags += "," + action.tags;
-      // Need to update otherwise other events are not triggerd
+      // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "update":
       const {
@@ -129,10 +129,10 @@ export function detailviewReducer(
       }
       if (locationState) state.fileIndexItem.locationState = locationState;
 
-      // Need to update otherwise other events are not triggerd
+      // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "reset":
-      // this is triggert a lot when loading a page
+      // this is triggered a lot when loading a page
       return action.payload;
   }
 }

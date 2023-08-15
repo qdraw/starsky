@@ -5,7 +5,7 @@ interface IDetailViewInfoMakeModelApertureProps {
   fileIndexItem: IFileIndexItem;
 }
 
-function ShowISOIfExistCompontent(fileIndexItemInside: IFileIndexItem) {
+function ShowISOIfExistComponent(fileIndexItemInside: IFileIndexItem) {
   return (
     <>
       {fileIndexItemInside.isoSpeed !== 0 ? (
@@ -37,7 +37,7 @@ const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMa
                 {fileIndexItem.focalLength.toFixed(1)}
               </span>{" "}
               mm&nbsp;&nbsp;&nbsp;
-              <ShowISOIfExistCompontent {...fileIndexItem} />
+              <ShowISOIfExistComponent {...fileIndexItem} />
             </p>
           </div>
         ) : null}

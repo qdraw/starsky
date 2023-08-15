@@ -23,9 +23,9 @@ describe("DetailViewWrapper", () => {
           return <></>;
         });
 
-      const compontent = render(<DetailViewWrapper {...args} />);
+      const component = render(<DetailViewWrapper {...args} />);
       expect(detailView).toBeCalled();
-      compontent.unmount();
+      component.unmount();
     });
 
     it("check if dispatch is called", () => {
@@ -51,12 +51,12 @@ describe("DetailViewWrapper", () => {
           return <></>;
         });
 
-      const compontent = render(<DetailViewWrapper {...args} />);
+      const component = render(<DetailViewWrapper {...args} />);
 
       expect(contextValues.dispatch).toBeCalled();
       expect(detailView).toBeCalled();
 
-      compontent.unmount();
+      component.unmount();
     });
   });
 
@@ -73,10 +73,10 @@ describe("DetailViewWrapper", () => {
         .mockImplementationOnce(() => contextValues as any);
 
       const args = { ...newDetailView() } as IDetailView;
-      const compontent = render(<DetailViewWrapper {...args} />);
+      const component = render(<DetailViewWrapper {...args} />);
 
-      expect(compontent.container.innerHTML).toBe("");
-      compontent.unmount();
+      expect(component.container.innerHTML).toBe("");
+      component.unmount();
     });
   });
 

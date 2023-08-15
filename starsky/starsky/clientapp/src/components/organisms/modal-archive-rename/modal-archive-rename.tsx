@@ -122,7 +122,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
       dispatchRename(props.subPath);
 
       setError(MessageGeneralError);
-      // and renable
+      // and renewable
       setIsLoading(false);
       setFormEnabled(true);
       return;

@@ -98,7 +98,7 @@ const fetchUseFileListContentCache = async (
 /**
  * Hook to get index API
  * @param locationSearch with query parameter "?f=/"
- * @param resetPageTypeBeforeLoading start direct with loading state = true is enable, use false to have smooth page transistions
+ * @param resetPageTypeBeforeLoading start direct with loading state = true is enable, use false to have smooth page transitions
  */
 const useFileList = (
   locationSearch: string,

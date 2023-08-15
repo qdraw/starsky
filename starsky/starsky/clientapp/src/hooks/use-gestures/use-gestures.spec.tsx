@@ -54,7 +54,7 @@ describe("useGestures", () => {
       expect(p).toBe(0);
     });
 
-    it("check output of getDistance and two lenght", () => {
+    it("check output of getDistance and two length", () => {
       const p = getDistance(
         new Pointer({ clientX: 10, clientY: 11 }),
         new Pointer({ clientX: 12, clientY: 11 })
@@ -80,7 +80,7 @@ describe("useGestures", () => {
       expect(p).toBe(0);
     });
 
-    it("check output of getDistance and two lenght", () => {
+    it("check output of getDistance and two length", () => {
       const p = getAngleDeg(
         new Pointer({ clientX: 10, clientY: 11 }),
         new Pointer({ clientX: 12, clientY: 11 })

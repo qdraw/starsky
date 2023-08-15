@@ -112,7 +112,7 @@ const DetailViewGpx: React.FC = () => {
     );
   }, [history.location.search]);
 
-  /** update only on intial load */
+  /** update only on initial load */
   useEffect(() => {
     setIsLoading(true);
     FetchXml(

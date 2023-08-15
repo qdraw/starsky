@@ -236,7 +236,7 @@ describe("MenuOptionMoveToTrash", () => {
       });
 
       expect(fetchPostSpy).toBeCalled();
-      // dont know why dispatch is not called
+      // don't know why dispatch is not called
 
       component.unmount();
     });

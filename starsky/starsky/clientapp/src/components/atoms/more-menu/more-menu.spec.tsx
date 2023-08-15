@@ -22,7 +22,7 @@ describe("More Menu", () => {
     expect(moreMenuButton.className).toBe("item item--more");
   });
 
-  it("get childeren", () => {
+  it("get children", () => {
     const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
     const menuOptions = screen.queryAllByTestId("menu-options")[0];
 
@@ -41,7 +41,7 @@ describe("More Menu", () => {
     expect(menuContext.className).toBe("menu-context menu-context--hide");
   });
 
-  it("toggle no childeren", () => {
+  it("toggle no children", () => {
     const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
 
     const menuContext = screen.queryAllByTestId("menu-context")[0];

@@ -21,7 +21,7 @@ describe("ColorClassSelectKeyboard", () => {
     );
   });
 
-  it("press keyboad and should fire http request", async () => {
+  it("press keyboard and should fire http request", async () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
@@ -71,7 +71,7 @@ describe("ColorClassSelectKeyboard", () => {
     fetchPostSpy.mockReset();
   });
 
-  it("press keyboad and should NOT fire http request", async () => {
+  it("press keyboard and should NOT fire http request", async () => {
     // should after press keyboard
     const component = render(
       <ColorClassSelectKeyboard

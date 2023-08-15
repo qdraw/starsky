@@ -312,7 +312,7 @@ describe("FormControl", () => {
           onBlur={onBlurSpy}
           name="test"
         >
-          abcdefghi
+          test
         </FormControl>
       );
 

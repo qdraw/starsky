@@ -1,9 +1,9 @@
 import {
-    act,
-    createEvent,
-    fireEvent,
-    render,
-    screen
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  screen
 } from "@testing-library/react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";

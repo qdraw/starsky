@@ -9,7 +9,7 @@ const config = {
   core: {
     disableTelemetry: true,
     enableCrashReports: false,
-    builder: '@storybook/builder-vite', // 👈 The builder enabled here.
+    builder: "@storybook/builder-vite" // 👈 The builder enabled here.
   },
   docs: {
     autodocs: "tag"

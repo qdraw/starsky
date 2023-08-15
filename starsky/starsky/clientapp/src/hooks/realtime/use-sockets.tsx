@@ -24,7 +24,7 @@ const useSockets = (): IUseSockets => {
   // When the connection is lost
   const [socketConnected, setSocketConnected] = useState(false);
   // show a error message
-  // (dont update this field every render to avoid endless re-rendering)
+  // (don't update this field every render to avoid endless re-rendering)
   const [showSocketError, setShowSocketError] = useState<boolean | null>(false);
   // server side feature toggle to disable/enable client
   const isEnabled = useRef(true);

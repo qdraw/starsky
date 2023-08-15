@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
 import modalFreezeHelper from "./modal-freeze-helper";
-import modalInserPortalDiv from "./modal-insert-portal-div";
+import modalInsertPortalDiv from "./modal-insert-portal-div";
 
 type ModalPropTypes = {
   children: ReactNode;
@@ -46,7 +46,7 @@ export default function Modal({
   const modal = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    return modalInserPortalDiv(modal, hasUpdated, forceUpdate, id);
+    return modalInsertPortalDiv(modal, hasUpdated, forceUpdate, id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

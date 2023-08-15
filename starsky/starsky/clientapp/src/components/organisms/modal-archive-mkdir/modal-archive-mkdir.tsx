@@ -108,7 +108,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
           ? MessageGeneralMkdirCreateError
           : MessageDirectoryExistError
       );
-      // and renable
+      // and renewable
       setIsLoading(false);
       setFormEnabled(true);
       return;

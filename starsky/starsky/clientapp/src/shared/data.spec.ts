@@ -29,7 +29,7 @@ describe("date", () => {
       expect(result).toBe("Invalid Date");
     });
 
-    it("right formated (nl)", () => {
+    it("right formatted (nl)", () => {
       const result = parseDate("2020-01-01T01:01:01", SupportedLanguages.nl);
       expect(result).toContain("2020");
     });
@@ -46,12 +46,12 @@ describe("date", () => {
       expect(result).toBe("");
     });
 
-    it("right formated (nl)", () => {
+    it("right formatted (nl)", () => {
       const result = parseTime("2020-01-01T01:01:01");
       expect(result).toBe("01:01:01");
     });
 
-    it("right formated summer time (nl)", () => {
+    it("right formatted summer time (nl)", () => {
       const result = parseTime("2020-04-10T23:40:33");
       expect(result).toBe("23:40:33");
     });
@@ -68,12 +68,12 @@ describe("date", () => {
       expect(result).toBe(1);
     });
 
-    it("right formated (nl)", () => {
+    it("right formatted (nl)", () => {
       const result = parseTimeHour("2020-01-01T01:01:01");
       expect(result).toBe(1);
     });
 
-    it("right formated summer time (nl)", () => {
+    it("right formatted summer time (nl)", () => {
       const result = parseTimeHour("2020-04-10T23:40:33");
       expect(result).toBe(23);
     });
@@ -90,12 +90,12 @@ describe("date", () => {
       expect(result).toBe(1);
     });
 
-    it("right formated (nl)", () => {
+    it("right formatted (nl)", () => {
       const result = parseDateDate("2020-01-01T01:01:01");
       expect(result).toBe(1);
     });
 
-    it("right formated summer time (nl)", () => {
+    it("right formatted summer time (nl)", () => {
       const result = parseDateDate("2020-04-10T23:40:33");
       expect(result).toBe(10);
     });
@@ -112,12 +112,12 @@ describe("date", () => {
       expect(result).toBe(1);
     });
 
-    it("right formated (nl)", () => {
+    it("right formatted (nl)", () => {
       const result = parseDateMonth("2020-01-01T01:01:01");
       expect(result).toBe(1);
     });
 
-    it("right formated summer time (nl)", () => {
+    it("right formatted summer time (nl)", () => {
       const result = parseDateMonth("2020-12-10T23:40:33");
       expect(result).toBe(12);
     });
@@ -134,12 +134,12 @@ describe("date", () => {
       expect(result).toBe(1);
     });
 
-    it("right formated (nl)", () => {
+    it("right formatted (nl)", () => {
       const result = parseDateYear("2020-01-01T01:01:01");
       expect(result).toBe(2020);
     });
 
-    it("right formated summer time (nl)", () => {
+    it("right formatted summer time (nl)", () => {
       const result = parseDateYear("2020-12-10T23:40:33");
       expect(result).toBe(2020);
     });

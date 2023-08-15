@@ -335,7 +335,7 @@ describe("DetailView", () => {
           return Promise.resolve() as any;
         });
 
-      const compontent = render(<TestComponent />);
+      const component = render(<TestComponent />);
 
       const event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -354,7 +354,7 @@ describe("DetailView", () => {
       expect(navigateSpy).toBeCalledWith("/?details=true&f=next", {
         replace: true
       });
-      compontent.unmount();
+      component.unmount();
     });
 
     it("[SearchResult] Next", async () => {

@@ -160,7 +160,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
         >
           <img
             className={`pan-zoom-image--image image--default ${props.translateRotation}`}
-            alt="floorplan"
+            alt="image"
             src={src}
             onLoad={
               new OnLoadMouseAction(

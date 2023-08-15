@@ -18,7 +18,7 @@ describe("PanAndZoomImage", () => {
   });
 
   describe("PanAndZoomImage", () => {
-    it("mouseDown & mousemove event triggerd", () => {
+    it("mouseDown & mousemove event triggered", () => {
       const onWheelCallback = jest.fn();
 
       const component = render(
@@ -246,7 +246,7 @@ describe("PanAndZoomImage", () => {
       component.unmount();
     });
 
-    it("when pessing cmd+0 expect reset callback to be called", () => {
+    it("when pressing cmd+0 expect reset callback to be called", () => {
       const onResetCallbackSpy = jest.fn();
       const component = render(
         <PanAndZoomImage
