@@ -1,4 +1,4 @@
-import { IUseLocation } from "../hooks/use-location";
+import { IUseLocation } from "../hooks/use-location/interfaces/IUseLocation";
 import { URLPath } from "./url-path";
 
 export class Sidebar {

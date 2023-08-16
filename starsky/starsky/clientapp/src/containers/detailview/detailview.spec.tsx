@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
 import { useState } from "react";
 import { act } from "react-dom/test-utils";
@@ -7,7 +6,7 @@ import { IFileHashImageProps } from "../../components/atoms/file-hash-image/file
 import * as ContextDetailview from "../../contexts/detailview-context";
 import * as useFetch from "../../hooks/use-fetch";
 import * as useGestures from "../../hooks/use-gestures/use-gestures";
-import * as useLocation from "../../hooks/use-location";
+import * as useLocation from "../../hooks/use-location/use-location";
 import { newIConnectionDefault } from "../../interfaces/IConnectionDefault";
 import {
   IDetailView,
@@ -20,6 +19,7 @@ import { IFileIndexItem, Orientation } from "../../interfaces/IFileIndexItem";
 import { UpdateRelativeObject } from "../../shared/update-relative-object";
 import { UrlQuery } from "../../shared/url-query";
 import DetailView from "./detailview";
+;
 
 describe("DetailView", () => {
   const fileHashImageMock = (props: IFileHashImageProps) => {
@@ -111,7 +111,7 @@ describe("DetailView", () => {
       );
 
       // Show extra information
-      globalHistory.navigate("/?details=true");
+      window.location.replace("/?details=true");
 
       Component = render(<TestComponent />);
     });
@@ -177,7 +177,7 @@ describe("DetailView", () => {
 
     beforeAll(() => {
       act(() => {
-        globalHistory.navigate("/?details=true");
+        window.location.replace("/?details=true");
       });
     });
 
@@ -204,7 +204,7 @@ describe("DetailView", () => {
     it("Next Click (click)", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
 
-      // use as ==> import * as useLocation from '../hooks/use-location';
+      // use as ==> import * as useLocation from '../hooks/use-location/use-location';
       const locationSpy = jest
         .spyOn(useLocation, "default")
         .mockImplementationOnce(() => {
@@ -362,7 +362,7 @@ describe("DetailView", () => {
 
       // add search query to url
       act(() => {
-        globalHistory.navigate("/?t=test&p=0");
+        window.location.replace("/?t=test&p=0");
       });
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");

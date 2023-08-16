@@ -14,7 +14,8 @@
     "test": "jest --watch",
     "test:ci": "jest --ci --coverage --silent",
     "test:ci:debug": "jest --ci --coverage",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@types/node": "^20.4.9",

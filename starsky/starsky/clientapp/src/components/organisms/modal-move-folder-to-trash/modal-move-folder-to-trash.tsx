@@ -1,6 +1,6 @@
 import { useSocketsEventName } from "../../../hooks/realtime/use-sockets.const";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IApiNotificationResponseModel } from "../../../interfaces/IApiNotificationResponseModel";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";

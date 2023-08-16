@@ -1,6 +1,6 @@
 import { HistoryLocation } from "@reach/router";
 import { ModalOpenClassName } from "../../../components/atoms/modal/modal";
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { Keyboard } from "../../../shared/keyboard";
 import { moveFolderUp } from "./move-folder-up";

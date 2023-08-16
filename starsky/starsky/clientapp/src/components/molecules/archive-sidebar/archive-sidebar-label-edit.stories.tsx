@@ -1,14 +1,12 @@
-import { globalHistory } from "@reach/router";
 import { ArchiveContextProvider } from "../../../contexts/archive-context";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import ArchiveSidebarLabelEdit from "./archive-sidebar-label-edit";
-
 export default {
   title: "components/molecules/archive-sidebar/label-edit"
 };
 
 export const Disabled = () => {
-  globalHistory.navigate("/");
+  window.location.replace("/");
   return <ArchiveSidebarLabelEdit />;
 };
 
@@ -17,7 +15,7 @@ Disabled.story = {
 };
 
 export const Enabled = () => {
-  globalHistory.navigate("/?select=test.jpg");
+  window.location.replace("/?select=test.jpg");
   const archive = {} as IArchiveProps;
   return (
     <ArchiveContextProvider {...archive}>

@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";

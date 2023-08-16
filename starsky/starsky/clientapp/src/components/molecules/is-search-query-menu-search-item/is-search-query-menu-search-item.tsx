@@ -1,5 +1,5 @@
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import localization from "../../../localization/localization.json";

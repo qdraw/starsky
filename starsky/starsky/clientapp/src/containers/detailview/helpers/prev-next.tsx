@@ -1,4 +1,4 @@
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView, IRelativeObjects } from "../../../interfaces/IDetailView";
 import { UpdateRelativeObject } from "../../../shared/update-relative-object";
 import { UrlQuery } from "../../../shared/url-query";

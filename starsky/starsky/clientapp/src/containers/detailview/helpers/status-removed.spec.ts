@@ -1,4 +1,4 @@
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView, IRelativeObjects } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -38,7 +38,7 @@ describe("statusRemoved", () => {
         location: {
           search: ""
         } as Location
-      } as IUseLocation,
+      } as unknown as IUseLocation,
       jest.fn(),
       jest.fn
     );
@@ -67,7 +67,7 @@ describe("statusRemoved", () => {
         location: {
           search: ""
         } as Location
-      } as IUseLocation,
+      } as unknown as IUseLocation,
       jest.fn(),
       jest.fn
     );
@@ -97,7 +97,7 @@ describe("statusRemoved", () => {
         location: {
           search: "!delete!"
         } as Location
-      } as IUseLocation,
+      } as unknown as IUseLocation,
       jest.fn(),
       jest.fn
     );
@@ -127,7 +127,7 @@ describe("statusRemoved", () => {
         location: {
           search: ""
         } as Location
-      } as IUseLocation,
+      } as unknown as IUseLocation,
       jest.fn(),
       jest.fn
     );

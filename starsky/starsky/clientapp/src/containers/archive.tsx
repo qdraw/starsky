@@ -5,7 +5,7 @@ import ColorClassFilter from "../components/molecules/color-class-filter/color-c
 import ItemListView from "../components/molecules/item-list-view/item-list-view";
 import ArchiveSidebar from "../components/organisms/archive-sidebar/archive-sidebar";
 import MenuArchive from "../components/organisms/menu-archive/menu-archive";
-import useLocation from "../hooks/use-location";
+import useLocation from "../hooks/use-location/use-location";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { URLPath } from "../shared/url-path";
 

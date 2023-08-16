@@ -1,7 +1,7 @@
-import { globalHistory } from "@reach/router";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageBox from "./list-image-view-select-container";
+;
 
 const fileIndexItem = {
   fileName: "test.jpg",
@@ -13,7 +13,7 @@ export default {
 };
 
 export const Default = () => {
-  globalHistory.navigate("/");
+  window.location.replace("/");
   return (
     <>
       <ListImageBox item={fileIndexItem}>
@@ -29,7 +29,7 @@ Default.story = {
 };
 
 export const Select = () => {
-  globalHistory.navigate("/?select=test.jpg");
+  window.location.replace("/?select=test.jpg");
   return (
     <>
       <ListImageBox item={fileIndexItem}>

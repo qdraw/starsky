@@ -1,4 +1,4 @@
-import { IUseLocation } from "../hooks/use-location";
+import { IUseLocation } from "../hooks/use-location/interfaces/IUseLocation";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { URLPath } from "./url-path";
 

@@ -1,7 +1,7 @@
-import { globalHistory } from "@reach/router";
 import { act, render, screen } from "@testing-library/react";
 import { URLPath } from "../../../shared/url-path";
 import ColorClassFilter from "./color-class-filter";
+;
 
 describe("ColorClassFilter", () => {
   it("renders", () => {
@@ -91,7 +91,7 @@ describe("ColorClassFilter", () => {
   });
 
   it("undo selection when clicking on already selected colorclass", () => {
-    globalHistory.navigate("/?colorclass=1");
+    window.location.replace("/?colorclass=1");
 
     const component = render(
       <ColorClassFilter
@@ -123,6 +123,6 @@ describe("ColorClassFilter", () => {
     expect(urlToStringSpy).toBeCalledWith({ colorClass: [] });
 
     component.unmount();
-    globalHistory.navigate("/");
+    window.location.replace("/");
   });
 });

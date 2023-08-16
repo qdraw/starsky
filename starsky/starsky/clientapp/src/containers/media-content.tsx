@@ -9,7 +9,7 @@ import DetailViewContextWrapper from "../contexts-wrappers/detailview-wrapper";
 import useSockets from "../hooks/realtime/use-sockets";
 import useFileList from "../hooks/use-filelist";
 import useGlobalSettings from "../hooks/use-global-settings";
-import useLocation from "../hooks/use-location";
+import useLocation from "../hooks/use-location/use-location";
 import { IArchive } from "../interfaces/IArchive";
 import { IDetailView, PageType } from "../interfaces/IDetailView";
 import NotFoundPage from "../pages/not-found-page";

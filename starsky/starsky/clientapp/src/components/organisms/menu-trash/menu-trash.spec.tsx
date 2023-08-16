@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
@@ -14,6 +13,7 @@ import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Modal from "../../atoms/modal/modal";
 import MenuTrash from "./menu-trash";
+;
 
 describe("MenuTrash", () => {
   it("renders", () => {
@@ -97,7 +97,7 @@ describe("MenuTrash", () => {
       });
 
       act(() => {
-        globalHistory.navigate("/");
+        window.location.replace("/");
       });
 
       const component = render(
@@ -123,7 +123,7 @@ describe("MenuTrash", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=");
+        window.location.replace("/?select=");
       });
 
       const component = render(
@@ -143,7 +143,7 @@ describe("MenuTrash", () => {
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });
@@ -170,7 +170,7 @@ describe("MenuTrash", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test1.jpg");
+        window.location.replace("/?select=test1.jpg");
       });
 
       const component = render(
@@ -190,7 +190,7 @@ describe("MenuTrash", () => {
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });
@@ -211,7 +211,7 @@ describe("MenuTrash", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test1.jpg");
+        window.location.replace("/?select=test1.jpg");
       });
 
       const component = render(
@@ -231,7 +231,7 @@ describe("MenuTrash", () => {
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });
@@ -252,7 +252,7 @@ describe("MenuTrash", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test1.jpg");
+        window.location.replace("/?select=test1.jpg");
       });
 
       const component = render(
@@ -272,7 +272,7 @@ describe("MenuTrash", () => {
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });
@@ -304,7 +304,7 @@ describe("MenuTrash", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test1.jpg");
+        window.location.replace("/?select=test1.jpg");
       });
 
       const component = render(
@@ -329,7 +329,7 @@ describe("MenuTrash", () => {
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });

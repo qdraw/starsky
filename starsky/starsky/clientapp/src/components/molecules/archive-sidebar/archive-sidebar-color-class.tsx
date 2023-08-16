@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { FileListCache } from "../../../shared/filelist-cache";

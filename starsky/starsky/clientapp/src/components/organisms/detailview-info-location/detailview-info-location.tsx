@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { DetailViewAction } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import { Language } from "../../../shared/language";

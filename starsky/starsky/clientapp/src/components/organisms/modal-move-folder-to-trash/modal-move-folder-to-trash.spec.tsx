@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import * as IUseLocation from "../../../hooks/use-location";
+import * as IUseLocation from "../../../hooks/use-location/use-location";
 import {
   IConnectionDefault,
   newIConnectionDefault

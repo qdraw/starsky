@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import {
   act,
   createEvent,
@@ -12,12 +11,12 @@ import { IArchive } from "../../../interfaces/IArchive";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import * as FetchPost from "../../../shared/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import ArchiveSidebarLabelEditAddOverwrite from "./archive-sidebar-label-edit-add-overwrite";
-
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
     render(<ArchiveSidebarLabelEditAddOverwrite />);
@@ -77,7 +76,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test.jpg");
+        Router.navigate("/?select=test.jpg");
       });
     });
 
@@ -350,7 +349,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("click append multiple", async () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test.jpg,test1.jpg,notfound.jpg");
+        Router.navigate("/?select=test.jpg,test1.jpg,notfound.jpg");
       });
 
       jest.spyOn(FetchPost, "default").mockReset();

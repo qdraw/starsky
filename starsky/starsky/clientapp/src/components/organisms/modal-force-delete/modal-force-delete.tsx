@@ -1,6 +1,6 @@
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import FetchPost from "../../../shared/fetch-post";
 import { Language } from "../../../shared/language";

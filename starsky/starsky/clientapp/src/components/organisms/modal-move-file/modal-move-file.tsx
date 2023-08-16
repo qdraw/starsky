@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useFileList, { IFileList } from "../../../hooks/use-filelist";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { PageType } from "../../../interfaces/IDetailView";
 import {

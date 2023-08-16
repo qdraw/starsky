@@ -1,7 +1,7 @@
-import { globalHistory } from "@reach/router";
 import { render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import SearchPagination from "./search-pagination";
+;
 
 describe("SearchPagination", () => {
   it("renders", () => {
@@ -11,7 +11,7 @@ describe("SearchPagination", () => {
   it("next page exist", () => {
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
-      globalHistory.navigate("/?p=0");
+      window.location.replace("/?p=0");
     });
 
     const component = render(
@@ -33,7 +33,7 @@ describe("SearchPagination", () => {
   it("prev page exist", () => {
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
-      globalHistory.navigate("/?p=1");
+      window.location.replace("/?p=1");
     });
 
     const component = render(
@@ -53,7 +53,7 @@ describe("SearchPagination", () => {
 
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
-      globalHistory.navigate("/?p=1&select=test");
+      window.location.replace("/?p=1&select=test");
     });
 
     const component = render(
@@ -72,7 +72,7 @@ describe("SearchPagination", () => {
     // due the fact that the selected item does not exist on that new page
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
-      globalHistory.navigate("/?p=0&select=test");
+      window.location.replace("/?p=0&select=test");
     });
 
     const component = render(

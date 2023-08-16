@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useLayoutEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";

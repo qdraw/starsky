@@ -2,7 +2,7 @@ import { FunctionComponent } from "react";
 import Preloader from "../components/atoms/preloader/preloader";
 import ApplicationException from "../components/organisms/application-exception/application-exception";
 import ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";
-import useLocation from "../hooks/use-location";
+import useLocation from "../hooks/use-location/use-location";
 import useSearchList from "../hooks/use-searchlist";
 import { PageType } from "../interfaces/IDetailView";
 import { URLPath } from "../shared/url-path";

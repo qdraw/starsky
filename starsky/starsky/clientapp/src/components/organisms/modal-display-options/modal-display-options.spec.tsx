@@ -1,9 +1,7 @@
-import { globalHistory } from "@reach/router";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import * as Modal from "../../atoms/modal/modal";
 import ModalDisplayOptions from "./modal-display-options";
-
 describe("ModalDisplayOptions", () => {
   beforeEach(() => {
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -85,7 +83,7 @@ describe("ModalDisplayOptions", () => {
           await toFalseButton?.click();
         });
 
-        expect(globalHistory.location.search).toBe("?collections=false");
+        expect(window.location.search).toBe("?collections=false");
 
         const toTrueButton = toggleCollections?.querySelectorAll("input")[0];
 
@@ -93,7 +91,7 @@ describe("ModalDisplayOptions", () => {
           await toTrueButton?.click();
         });
 
-        expect(globalHistory.location.search).toBe("?collections=true");
+        expect(window.location.search).toBe("?collections=true");
       });
 
       it("toggle-slow-files should set localStorage", async () => {
@@ -135,24 +133,24 @@ describe("ModalDisplayOptions", () => {
       });
 
       it("sort - change to imageFormat", async () => {
-        globalHistory.location.search = "";
+        window.location.search = "";
 
         const select = modal.queryByTestId("select") as HTMLSelectElement;
         expect(select).not.toBeNull();
 
         fireEvent.change(select, { target: { value: "imageFormat" } });
 
-        expect(globalHistory.location.search).toBe("?sort=imageFormat");
+        expect(window.location.search).toBe("?sort=imageFormat");
       });
 
       it("sort - change to fileName", () => {
-        globalHistory.location.search = "";
+        window.location.search = "";
 
         const select = modal.queryByTestId("select") as HTMLSelectElement;
         expect(select).not.toBeNull();
         fireEvent.change(select, { target: { value: "fileName" } });
 
-        expect(globalHistory.location.search).toBe("?sort=fileName");
+        expect(window.location.search).toBe("?sort=fileName");
       });
     });
 

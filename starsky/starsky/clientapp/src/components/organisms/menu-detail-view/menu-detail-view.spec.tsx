@@ -1,9 +1,9 @@
-import { globalHistory } from "@reach/router";
 import { act, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { Router } from "../../../router-app/router-app";
 import * as FetchGet from "../../../shared/fetch-get";
 import * as FetchPost from "../../../shared/fetch-post";
 import { URLPath } from "../../../shared/url-path";
@@ -12,7 +12,6 @@ import * as ModalDetailviewRenameFile from "../modal-detailview-rename-file/moda
 import * as ModalExport from "../modal-download/modal-download";
 import * as ModalMoveFile from "../modal-move-file/modal-move-file";
 import MenuDetailView from "./menu-detail-view";
-
 describe("MenuDetailView", () => {
   it("renders", () => {
     const state = {
@@ -63,7 +62,7 @@ describe("MenuDetailView", () => {
 
       // reset afterwards
       act(() => {
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });
@@ -190,7 +189,7 @@ describe("MenuDetailView", () => {
 
     it("as search Result button exist", () => {
       // add search query to url
-      globalHistory.navigate("/?t=test&p=0");
+      window.location.replace("/?t=test&p=0");
 
       const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
@@ -206,13 +205,13 @@ describe("MenuDetailView", () => {
       act(() => {
         // reset afterwards
         component.unmount();
-        globalHistory.navigate("/");
+        window.location.replace("/");
       });
     });
 
     it("as search Result button exist no ?t", () => {
       // add search query to url
-      globalHistory.navigate("/");
+      window.location.replace("/");
 
       const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
@@ -228,12 +227,12 @@ describe("MenuDetailView", () => {
       act(() => {
         // reset afterwards
         component.unmount();
-        globalHistory.navigate("/");
+        window.location.replace("/");
       });
     });
 
     it("last Edited change [true]", () => {
-      globalHistory.navigate("/?details=true");
+      window.location.replace("/?details=true");
 
       //  With updated LastEdited
 
@@ -254,13 +253,13 @@ describe("MenuDetailView", () => {
       act(() => {
         // reset afterwards
         component.unmount();
-        globalHistory.navigate("/");
+        window.location.replace("/");
       });
     });
 
     it("last Edited change [false]", () => {
       act(() => {
-        globalHistory.navigate("/?details=true");
+        window.location.replace("/?details=true");
       });
 
       const component = render(
@@ -272,7 +271,7 @@ describe("MenuDetailView", () => {
       act(() => {
         // reset afterwards
         component.unmount();
-        globalHistory.navigate("/");
+        window.location.replace("/");
       });
     });
 
@@ -313,9 +312,7 @@ describe("MenuDetailView", () => {
         labels?.click();
       });
 
-      const urlObject = new URLPath().StringToIUrl(
-        globalHistory.location.search
-      );
+      const urlObject = new URLPath().StringToIUrl(window.location.search);
 
       expect(urlObject.details).toBeTruthy();
 
@@ -323,7 +320,7 @@ describe("MenuDetailView", () => {
       act(() => {
         component.unmount();
         // reset afterwards
-        globalHistory.navigate("/");
+        window.location.replace("/");
       });
     });
 
@@ -338,19 +335,19 @@ describe("MenuDetailView", () => {
       labels?.click();
 
       const urlObject = new URLPath().StringToIUrl(
-        globalHistory.location.search
+        Router.state.location.search
       );
       expect(urlObject.details).toBeTruthy();
 
       // reset afterwards
       act(() => {
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });
 
     it("navigate to parent folder click", () => {
-      globalHistory.navigate("/?t=test");
+      window.location.replace("/?t=test");
 
       const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
@@ -360,11 +357,11 @@ describe("MenuDetailView", () => {
       expect(goToParentFolder).toBeTruthy();
       goToParentFolder?.click();
 
-      expect(globalHistory.location.search).toBe("?f=/test");
+      expect(Router.state.location.search).toBe("?f=/test");
 
       act(() => {
         component.unmount();
-        globalHistory.navigate("/");
+        window.location.replace("/");
       });
     });
 
@@ -390,7 +387,7 @@ describe("MenuDetailView", () => {
 
       // reset afterwards
       act(() => {
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });
@@ -659,7 +656,7 @@ describe("MenuDetailView", () => {
       });
 
       act(() => {
-        globalHistory.navigate("/?f=/test2.jpg");
+        window.location.replace("/?f=/test2.jpg");
       });
 
       header = component.container.querySelector(

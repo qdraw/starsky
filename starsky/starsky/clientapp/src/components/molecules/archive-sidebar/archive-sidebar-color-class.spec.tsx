@@ -1,13 +1,12 @@
-import { globalHistory } from "@reach/router";
 import { act, render } from "@testing-library/react";
 import React from "react";
 import * as AppContext from "../../../contexts/archive-context";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { PageType } from "../../../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import * as ColorClassSelect from "../color-class-select/color-class-select";
 import ArchiveSidebarColorClass from "./archive-sidebar-color-class";
-
 describe("ArchiveSidebarColorClass", () => {
   it("renders", () => {
     render(
@@ -60,7 +59,7 @@ describe("ArchiveSidebarColorClass", () => {
       }));
 
       // to use with: => import { act } from 'react-dom/test-utils';
-      globalHistory.navigate("/?select=test.jpg");
+      Router.navigate("/?select=test.jpg");
 
       let isCalled = false;
       jest

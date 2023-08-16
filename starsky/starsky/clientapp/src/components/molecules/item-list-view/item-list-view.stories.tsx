@@ -1,9 +1,9 @@
-import { globalHistory } from "@reach/router";
 import {
   IFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
 import ItemListView from "./item-list-view";
+;
 
 const exampleData8Selected = [
   { fileName: "test.jpg", filePath: "/test.jpg", lastEdited: "1" },
@@ -21,7 +21,7 @@ export default {
 };
 
 export const Default = () => {
-  globalHistory.navigate("/");
+  window.location.replace("/");
   return (
     <ItemListView
       iconList={true}
@@ -36,7 +36,7 @@ Default.story = {
 };
 
 export const _8ItemsSelectionDisabled = () => {
-  globalHistory.navigate("/");
+  window.location.replace("/");
   return (
     <ItemListView
       iconList={true}
@@ -51,7 +51,7 @@ _8ItemsSelectionDisabled.story = {
 };
 
 export const _8ItemsSelectionEnabled = () => {
-  globalHistory.navigate("/?select=");
+  window.location.replace("/?select=");
   return (
     <ItemListView
       iconList={true}

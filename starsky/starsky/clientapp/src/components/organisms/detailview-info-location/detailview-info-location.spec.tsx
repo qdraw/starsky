@@ -1,5 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
-import * as useLocation from "../../../hooks/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location";
 
 import React from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";

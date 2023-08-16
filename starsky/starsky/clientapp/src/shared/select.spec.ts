@@ -1,37 +1,39 @@
 import { IArchiveProps } from "../interfaces/IArchiveProps";
-import history from "./global-history/global-history";
+import { Router } from "../router-app/router-app";
 import { Select } from "./select";
 
 describe("select", () => {
   describe("removeSidebarSelection", () => {
     it("single disable", () => {
-      history.navigate("/?select=");
+      Router.navigate("/?select=");
       const setSelectSpy = jest.fn();
-      const select = new Select(
-        [],
-        setSelectSpy,
-        {} as IArchiveProps,
-        globalHistory
-      );
+      const select = new Select([], setSelectSpy, {} as IArchiveProps, {
+        location: {
+          href: "",
+          ...Router.state.location
+        },
+        navigate: Router.navigate
+      });
       select.removeSidebarSelection();
 
-      expect(globalHistory.location.search).toBe("");
+      expect(Router.state.location.search).toBe("");
       expect(setSelectSpy).toBeCalled();
       expect(setSelectSpy).toBeCalledWith([]);
     });
 
     it("multiple disable", () => {
-      globalHistory.navigate("/?select=1,2");
+      window.location.replace("/?select=1,2");
       const setSelectSpy = jest.fn();
-      const select = new Select(
-        [],
-        setSelectSpy,
-        {} as IArchiveProps,
-        globalHistory
-      );
+      const select = new Select([], setSelectSpy, {} as IArchiveProps, {
+        location: {
+          href: "",
+          ...Router.state.location
+        },
+        navigate: Router.navigate
+      });
       select.removeSidebarSelection();
 
-      expect(globalHistory.location.search).toBe("");
+      expect(Router.state.location.search).toBe("");
       expect(setSelectSpy).toBeCalled();
       expect(setSelectSpy).toBeCalledWith(["1", "2"]);
     });

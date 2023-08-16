@@ -1,18 +1,17 @@
-import { globalHistory } from "@reach/router";
 import { PageType } from "../../../interfaces/IDetailView";
 import {
   IFileIndexItem,
   newIFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import ArchiveSidebarColorClass from "./archive-sidebar-color-class";
-
 export default {
   title: "components/molecules/archive-sidebar/color-class"
 };
 
 export const NoItemsDisabled = () => {
-  globalHistory.navigate("/");
+  Router.navigate("/");
   return (
     <ArchiveSidebarColorClass
       pageType={PageType.Archive}
@@ -27,7 +26,7 @@ NoItemsDisabled.story = {
 };
 
 export const Enabled = () => {
-  globalHistory.navigate("/?select=test.jpg");
+  Router.navigate("/?select=test.jpg");
   return (
     <ArchiveSidebarColorClass
       pageType={PageType.Archive}

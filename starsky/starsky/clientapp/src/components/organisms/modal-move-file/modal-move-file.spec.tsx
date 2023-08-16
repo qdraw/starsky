@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import * as useFileList from "../../../hooks/use-filelist";
 import { IFileList } from "../../../hooks/use-filelist";
-import * as useLocation from "../../../hooks/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -218,7 +218,7 @@ describe("ModalMoveFile", () => {
       navigate: jest.fn()
     } as any;
 
-    // use as ==> import * as useLocation from '../hooks/use-location';
+    // use as ==> import * as useLocation from '../hooks/use-location/use-location';
     jest
       .spyOn(useLocation, "default")
       .mockImplementationOnce(() => locationMockData)

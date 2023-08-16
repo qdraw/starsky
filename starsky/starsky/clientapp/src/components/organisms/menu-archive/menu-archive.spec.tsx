@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
@@ -20,7 +19,6 @@ import * as ModalDisplayOptions from "../modal-display-options/modal-display-opt
 import * as ModalDownload from "../modal-download/modal-download";
 import * as ModalPublish from "../modal-publish/modal-publish";
 import MenuArchive from "./menu-archive";
-
 describe("MenuArchive", () => {
   it("renders", () => {
     render(<MenuArchive />);
@@ -44,7 +42,7 @@ describe("MenuArchive", () => {
     });
 
     it("default menu", () => {
-      globalHistory.navigate("/");
+      window.location.replace("/");
 
       const component = render(<MenuArchive />);
 
@@ -72,7 +70,7 @@ describe("MenuArchive", () => {
     });
 
     it("none selected", () => {
-      globalHistory.navigate("?select=");
+      window.location.replace("?select=");
 
       const state = {
         subPath: "/",
@@ -103,7 +101,7 @@ describe("MenuArchive", () => {
     });
 
     it("two selected", () => {
-      globalHistory.navigate("?select=test1,test2");
+      window.location.replace("?select=test1,test2");
 
       const state = {
         subPath: "/",
@@ -136,7 +134,7 @@ describe("MenuArchive", () => {
     it("[archive] menu click mkdir", async () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      globalHistory.navigate("/");
+      window.location.replace("/");
 
       const state = {
         subPath: "/",
@@ -178,7 +176,7 @@ describe("MenuArchive", () => {
     });
 
     it("[archive] menu click rename (dir)", async () => {
-      globalHistory.navigate("/?f=/test");
+      window.location.replace("/?f=/test");
 
       const state = {
         subPath: "/test",
@@ -219,11 +217,11 @@ describe("MenuArchive", () => {
 
       component.unmount();
 
-      globalHistory.navigate("/");
+      window.location.replace("/");
     });
 
     it("[archive] menu click rename should call dispatch(dir)", () => {
-      globalHistory.navigate("/?f=/test");
+      window.location.replace("/?f=/test");
 
       const state = {
         subPath: "/test",
@@ -283,13 +281,13 @@ describe("MenuArchive", () => {
 
       component.unmount();
 
-      globalHistory.navigate("/");
+      window.location.replace("/");
     });
 
     it("[archive] display options (default menu)", () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      globalHistory.navigate("/?f=/test");
+      window.location.replace("/?f=/test");
 
       const state = {
         subPath: "/test",
@@ -331,13 +329,13 @@ describe("MenuArchive", () => {
 
       component.unmount();
 
-      globalHistory.navigate("/");
+      window.location.replace("/");
     });
 
     it("[archive] display options (select menu)", () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      globalHistory.navigate("/?f=/trashed&select=test1.jpg");
+      window.location.replace("/?f=/trashed&select=test1.jpg");
 
       jest
         .spyOn(useFetch, "default")
@@ -387,13 +385,13 @@ describe("MenuArchive", () => {
 
       component.unmount();
 
-      globalHistory.navigate("/");
+      window.location.replace("/");
     });
 
     it("[archive] synchronize-manually (default menu)", async () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      globalHistory.navigate("/?f=/test");
+      window.location.replace("/?f=/test");
 
       const state = {
         subPath: "/test",
@@ -433,13 +431,13 @@ describe("MenuArchive", () => {
       expect(renameModalSpy).toBeCalled();
 
       component.unmount();
-      globalHistory.navigate("/");
+      window.location.replace("/");
     });
 
     it("[archive] synchronize-manually (select menu)", () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      globalHistory.navigate("/?f=/trashed&select=test1.jpg");
+      window.location.replace("/?f=/trashed&select=test1.jpg");
 
       jest
         .spyOn(useFetch, "default")
@@ -489,7 +487,7 @@ describe("MenuArchive", () => {
 
       component.unmount();
 
-      globalHistory.navigate("/");
+      window.location.replace("/");
     });
 
     it("more and click on select all", () => {
@@ -519,7 +517,7 @@ describe("MenuArchive", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test1.jpg");
+        window.location.replace("/?select=test1.jpg");
       });
 
       jest
@@ -544,12 +542,12 @@ describe("MenuArchive", () => {
       });
 
       // you did press to de-select all
-      expect(globalHistory.location.search).toBe("?select=");
+      expect(window.location.search).toBe("?select=");
 
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });
@@ -591,7 +589,7 @@ describe("MenuArchive", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test1.jpg");
+        window.location.replace("/?select=test1.jpg");
       });
 
       const component = render(<MenuArchive />);
@@ -603,12 +601,12 @@ describe("MenuArchive", () => {
         undoSelection?.click();
       });
 
-      expect(globalHistory.location.search).toBe("?select=");
+      expect(window.location.search).toBe("?select=");
 
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/");
+        window.location.replace("/");
         component.unmount();
       });
     });
@@ -652,7 +650,7 @@ describe("MenuArchive", () => {
     it("menu click MessageMoveToTrash", async () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      globalHistory.navigate("/?select=test1.jpg");
+      window.location.replace("/?select=test1.jpg");
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
@@ -723,7 +721,7 @@ describe("MenuArchive", () => {
     });
 
     it("menu click export", () => {
-      globalHistory.navigate("/?select=test1.jpg");
+      window.location.replace("/?select=test1.jpg");
 
       const state = {
         subPath: "/",
@@ -770,7 +768,7 @@ describe("MenuArchive", () => {
     });
 
     it("[archive] menu click publish", () => {
-      globalHistory.navigate("/?select=test1.jpg");
+      window.location.replace("/?select=test1.jpg");
 
       const state = {
         subPath: "/",
@@ -819,7 +817,7 @@ describe("MenuArchive", () => {
     it("readonly - menu click mkdir", () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      globalHistory.navigate("/");
+      window.location.replace("/");
 
       const state = {
         subPath: "/",
@@ -864,7 +862,7 @@ describe("MenuArchive", () => {
     });
 
     it("readonly - upload", () => {
-      globalHistory.navigate("/");
+      window.location.replace("/");
 
       const state = {
         subPath: "/",

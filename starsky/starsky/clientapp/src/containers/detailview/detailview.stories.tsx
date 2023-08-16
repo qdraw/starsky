@@ -1,5 +1,5 @@
 import DetailViewContextWrapper from "../../contexts-wrappers/detailview-wrapper";
-import useLocation from "../../hooks/use-location";
+import useLocation from "../../hooks/use-location/use-location";
 import { IDetailView } from "../../interfaces/IDetailView";
 import { IExifStatus } from "../../interfaces/IExifStatus";
 import { ImageFormat } from "../../interfaces/IFileIndexItem";

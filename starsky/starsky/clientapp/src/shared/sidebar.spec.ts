@@ -1,6 +1,5 @@
-import { globalHistory } from "@reach/router";
+import { Router } from "../router-app/router-app";
 import { Sidebar } from "./sidebar";
-
 describe("sidebar", () => {
   let setSidebarSpy = jest.fn();
   let sidebar: Sidebar;
@@ -10,7 +9,7 @@ describe("sidebar", () => {
     navigateSpy = jest.fn();
     setSidebarSpy = jest.fn();
     sidebar = new Sidebar(setSidebarSpy, {
-      location: globalHistory.location,
+      location: window.location,
       navigate: navigateSpy
     });
   });
@@ -23,12 +22,15 @@ describe("sidebar", () => {
     });
 
     it("toggle two times", () => {
-      globalHistory.navigate("/test?sidebar=true");
+      Router.navigate("/test?sidebar=true");
 
       // invoke after update
       sidebar = new Sidebar(setSidebarSpy, {
-        location: globalHistory.location,
-        navigate: navigateSpy
+        location: {
+          href: "",
+          ...Router.state.location
+        },
+        navigate: Router.navigate
       });
 
       sidebar.toggleSidebar();

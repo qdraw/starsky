@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import { act, render, screen } from "@testing-library/react";
 import {
   IFileIndexItem,
@@ -6,6 +5,7 @@ import {
 } from "../../../interfaces/IFileIndexItem";
 import { URLPath } from "../../../shared/url-path";
 import ArchiveSidebarSelectionList from "./archive-sidebar-selection-list";
+;
 
 describe("archive-sidebar-selection-list", () => {
   it("renders", () => {
@@ -23,7 +23,7 @@ describe("archive-sidebar-selection-list", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test.jpg");
+        window.location.replace("/?select=test.jpg");
       });
     });
 

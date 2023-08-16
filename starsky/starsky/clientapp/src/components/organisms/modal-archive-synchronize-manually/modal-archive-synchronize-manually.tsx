@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchGet from "../../../shared/fetch-get";

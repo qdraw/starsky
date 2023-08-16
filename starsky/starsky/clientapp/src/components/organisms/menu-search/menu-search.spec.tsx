@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
@@ -6,7 +5,6 @@ import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import MenuSearch from "./menu-search";
-
 describe("MenuSearch", () => {
   it("renders", () => {
     render(<MenuSearch state={undefined as any} dispatch={jest.fn()} />);
@@ -37,7 +35,7 @@ describe("MenuSearch", () => {
     });
 
     it("un select items", () => {
-      globalHistory.navigate("/?select=1");
+      window.location.replace("/?select=1");
       const component = render(
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
@@ -45,7 +43,7 @@ describe("MenuSearch", () => {
         />
       );
 
-      expect(globalHistory.location.search).toBe("?select=1");
+      expect(window.location.search).toBe("?select=1");
 
       const selected1 = screen.queryByTestId("selected-1") as HTMLDivElement;
 
@@ -53,10 +51,10 @@ describe("MenuSearch", () => {
         selected1.click();
       });
 
-      expect(globalHistory.location.search).toBe("");
+      expect(window.location.search).toBe("");
 
       component.unmount();
-      globalHistory.navigate("/");
+      window.location.replace("/");
     });
 
     it("keyboard ctrl a and command a", () => {

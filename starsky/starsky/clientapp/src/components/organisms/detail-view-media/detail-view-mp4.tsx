@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { secondsToHours } from "../../../shared/date";
 import { Language } from "../../../shared/language";

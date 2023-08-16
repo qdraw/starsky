@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { newIFileIndexItem } from "../../../interfaces/IFileIndexItem";

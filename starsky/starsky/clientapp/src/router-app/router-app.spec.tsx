@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import { render } from "@testing-library/react";
 import * as ContentPage from "../pages/content-page";
 import * as ImportPage from "../pages/import-page";
@@ -7,6 +6,7 @@ import * as NotFoundPage from "../pages/not-found-page";
 import * as SearchPage from "../pages/search-page";
 import * as TrashPage from "../pages/trash-page";
 import RouterApp from "./router-app";
+;
 
 describe("Router", () => {
   it("default", () => {
@@ -25,7 +25,7 @@ describe("Router", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    globalHistory.navigate("/search?q=t");
+    window.location.replace("/search?q=t");
     render(<RouterApp></RouterApp>);
     expect(searchPagePageSpy).toBeCalled();
   });
@@ -36,7 +36,7 @@ describe("Router", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    globalHistory.navigate("/trash?q=t");
+    window.location.replace("/trash?q=t");
     render(<RouterApp></RouterApp>);
     expect(trashPagePageSpy).toBeCalled();
   });
@@ -47,7 +47,7 @@ describe("Router", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    globalHistory.navigate("/import?q=t");
+    window.location.replace("/import?q=t");
     render(<RouterApp></RouterApp>);
     expect(importPagePageSpy).toBeCalled();
   });
@@ -58,7 +58,7 @@ describe("Router", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    globalHistory.navigate("/account/login");
+    window.location.replace("/account/login");
     render(<RouterApp></RouterApp>);
     expect(loginPagePageSpy).toBeCalled();
   });
@@ -69,7 +69,7 @@ describe("Router", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    globalHistory.navigate("/not-found");
+    window.location.replace("/not-found");
     render(<RouterApp></RouterApp>);
     expect(notFoundPageSpy).toBeCalled();
   });
