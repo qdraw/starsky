@@ -9,11 +9,12 @@ import {
   newIConnectionDefault
 } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { Router } from "../../../router-app/router-app";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Modal from "../../atoms/modal/modal";
+import * as NavContainer from "../nav-container/nav-container";
 import MenuTrash from "./menu-trash";
-;
 
 describe("MenuTrash", () => {
   it("renders", () => {
@@ -97,7 +98,7 @@ describe("MenuTrash", () => {
       });
 
       act(() => {
-        window.location.replace("/");
+        Router.navigate("/");
       });
 
       const component = render(
@@ -111,7 +112,7 @@ describe("MenuTrash", () => {
 
       menuTrashItemSelect.click();
 
-      expect(globalHistory.location.search).toBe("?select=");
+      expect(Router.state.location.search).toBe("?select=");
       component.unmount();
     });
 
@@ -123,7 +124,7 @@ describe("MenuTrash", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/?select=");
+        Router.navigate("/?select=");
       });
 
       const component = render(
@@ -138,12 +139,12 @@ describe("MenuTrash", () => {
 
       screen.queryByTestId("select-all")?.click();
 
-      expect(globalHistory.location.search).toBe("?select=test1.jpg");
+      expect(Router.state.location.search).toBe("?select=test1.jpg");
 
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/");
+        Router.navigate("/");
         component.unmount();
       });
     });
@@ -170,7 +171,7 @@ describe("MenuTrash", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/?select=test1.jpg");
+        Router.navigate("/?select=test1.jpg");
       });
 
       const component = render(
@@ -185,17 +186,17 @@ describe("MenuTrash", () => {
 
       screen.queryByTestId("undo-selection")?.click();
 
-      expect(globalHistory.location.search).toBe("?select=");
+      expect(Router.state.location.search).toBe("?select=");
 
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/");
+        Router.navigate("/");
         component.unmount();
       });
     });
 
-    it("more force delete, expect modal", () => {
+    it("more force delete, expect modal 1", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
         return newIConnectionDefault();
@@ -205,13 +206,14 @@ describe("MenuTrash", () => {
 
       const modalSpy = jest
         .spyOn(Modal, "default")
+        .mockReset()
         .mockImplementationOnce(({ children }) => {
           return <>{children}</>;
         });
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/?select=test1.jpg");
+        Router.navigate("/?select=test1.jpg");
       });
 
       const component = render(
@@ -226,12 +228,12 @@ describe("MenuTrash", () => {
 
       expect(modalSpy).toBeCalled();
 
-      expect(globalHistory.location.search).toBe("?select=test1.jpg");
+      expect(window.location.search).toBe("?select=test1.jpg");
 
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/");
+        Router.navigate("/");
         component.unmount();
       });
     });
@@ -250,14 +252,10 @@ describe("MenuTrash", () => {
           return <span id="test">{children}</span>;
         });
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/?select=test1.jpg");
-      });
-
       const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
+      Router.navigate("/?select=test1.jpg");
 
       const item = screen.queryByTestId("delete");
 
@@ -267,12 +265,12 @@ describe("MenuTrash", () => {
 
       expect(modalSpy).toBeCalled();
 
-      expect(globalHistory.location.search).toBe("?select=test1.jpg");
+      expect(Router.state.location.search).toBe("?select=test1.jpg");
 
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/");
+        Router.navigate("/");
         component.unmount();
       });
     });
@@ -304,7 +302,7 @@ describe("MenuTrash", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/?select=test1.jpg");
+        Router.navigate("/?select=test1.jpg");
       });
 
       const component = render(
@@ -318,7 +316,7 @@ describe("MenuTrash", () => {
         await item?.click();
       });
 
-      expect(globalHistory.location.search).toBe("?select=");
+      expect(Router.state.location.search).toBe("?select=");
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
@@ -329,18 +327,23 @@ describe("MenuTrash", () => {
       // cleanup
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/");
+        Router.navigate("/");
         component.unmount();
       });
     });
 
     it("keyboard ctrl a and command a", () => {
       jest.spyOn(React, "useContext").mockRestore();
+      jest.spyOn(NavContainer, "default").mockImplementationOnce(() => <></>);
 
       const useHotkeysSpy = jest
         .spyOn(useHotKeys, "default")
+        .mockReset()
         .mockImplementationOnce(() => {
           return { key: "a", ctrlKey: true };
+        })
+        .mockImplementationOnce(() => {
+          return {};
         });
 
       const state = {
@@ -353,10 +356,14 @@ describe("MenuTrash", () => {
           }
         ]
       } as IArchive;
+
       const contextValues = { state, dispatch: jest.fn() };
 
       jest
         .spyOn(React, "useContext")
+        .mockReset()
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues)
@@ -367,7 +374,15 @@ describe("MenuTrash", () => {
       );
 
       expect(useHotkeysSpy).toBeCalled();
-      expect(useHotkeysSpy).toBeCalledTimes(1);
+      expect(useHotkeysSpy).toHaveBeenNthCalledWith(
+        1,
+        {
+          ctrlKeyOrMetaKey: true,
+          key: "a"
+        },
+        expect.any(Function),
+        []
+      );
 
       jest.spyOn(React, "useContext").mockRestore();
       component.unmount();

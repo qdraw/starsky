@@ -213,6 +213,8 @@ describe("statusRemoved", () => {
   });
 
   it("navigatePrev same so ignore", () => {
+    console.log("navigatePrev same so ignore");
+
     const relative = {
       prevFilePath: "test",
       prevHash: "test"
@@ -238,7 +240,8 @@ describe("statusRemoved", () => {
     ).navigatePrev(relative);
 
     expect(navigate).toBeCalledTimes(0);
-    expect(setIsLoading).toBeCalledTimes(0);
+    expect(setIsLoading).toBeCalledTimes(1);
+    expect(setIsLoading).toBeCalledWith(false);
   });
 
   it("nextPrev same so ignore", () => {
@@ -267,6 +270,7 @@ describe("statusRemoved", () => {
     ).navigateNext(relative);
 
     expect(navigate).toBeCalledTimes(0);
-    expect(setIsLoading).toBeCalledTimes(0);
+    expect(setIsLoading).toBeCalledTimes(1);
+    expect(setIsLoading).toBeCalledWith(false);
   });
 });

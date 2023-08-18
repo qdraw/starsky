@@ -52,47 +52,53 @@ describe("ShiftSelectionHelper", () => {
   ];
 
   it("add item after and assume first is selected", () => {
-    window.location.replace("/");
+    const navigateFn = jest.fn();
     const result = ShiftSelectionHelper(
       {
-        navigate: jest.fn(),
+        navigate: navigateFn,
         location: window.location
       },
       [],
       "/test3",
       exampleItems
     );
-    expect(window.location.search).toBe("?select=test0,test3,test1,test2");
+    expect(navigateFn).toBeCalledWith("?select=test0,test3,test1,test2", {
+      replace: true
+    });
     expect(result).toBeTruthy();
   });
 
   it("add item before", () => {
-    window.location.replace("/");
+    const navigateFn = jest.fn();
+
     const result = ShiftSelectionHelper(
       {
-        navigate: jest.fn(),
+        navigate: navigateFn,
         location: window.location
       },
       ["test4"],
       "/test2",
       exampleItems
     );
-    expect(window.location.search).toBe("?select=test4,test2,test3");
+    expect(navigateFn).toBeCalledWith("?select=test4,test2,test3", {
+      replace: true
+    });
     expect(result).toBeTruthy();
   });
 
   it("add same item", () => {
-    window.location.replace("/");
+    const navigateFn = jest.fn();
+
     const result = ShiftSelectionHelper(
       {
-        navigate: jest.fn(),
+        navigate: navigateFn,
         location: window.location
       },
       ["test4"],
       "/test4",
       exampleItems
     );
-    expect(window.location.search).toBe("?select=test4");
+    expect(navigateFn).toBeCalledWith("?select=test4", { replace: true });
     expect(result).toBeTruthy();
   });
 });

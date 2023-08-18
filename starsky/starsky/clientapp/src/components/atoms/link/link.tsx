@@ -12,16 +12,17 @@ interface ILink {
 }
 
 const Link: React.FunctionComponent<ILink> = (item) => {
+  const test = () => {};
   return (
     <ReactRouterDomLink
-      data-test={item["data-test"]}
-      className={item.className}
-      onClick={item.onClick}
-      title={item.title}
-      to={item.to}
-      state={item.state}
+      data-test={item?.["data-test"]}
+      className={item?.className}
+      onClick={item?.onClick ?? test}
+      title={item?.title}
+      to={item?.to ?? "/"}
+      state={item?.state}
     >
-      {item.children}
+      {item?.children}
     </ReactRouterDomLink>
   );
 };

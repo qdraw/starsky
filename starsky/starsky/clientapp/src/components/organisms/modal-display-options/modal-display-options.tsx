@@ -102,6 +102,8 @@ const ModalDisplayOptions: React.FunctionComponent<
   function toggleSort(option: string) {
     const urlObject = new URLPath().StringToIUrl(history.location.search);
     urlObject.sort = SortType[option as keyof typeof SortType];
+    console.log(urlObject.sort);
+
     history.navigate(new URLPath().IUrlToString(urlObject), {
       replace: true
     });

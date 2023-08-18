@@ -1,8 +1,10 @@
 import { render, screen } from "@testing-library/react";
+import * as Link from "../../atoms/link/link";
 import Breadcrumb from "./breadcrumbs";
 
 describe("Breadcrumb", () => {
   it("renders", () => {
+    jest.spyOn(Link, "default").mockImplementationOnce(() => <a></a>);
     render(<Breadcrumb subPath="/" breadcrumb={["/"]} />);
   });
 
@@ -16,6 +18,11 @@ describe("Breadcrumb", () => {
   });
 
   it("check Length for breadcrumbs", () => {
+    jest
+      .spyOn(Link, "default")
+      .mockImplementationOnce(() => <></>)
+      .mockImplementationOnce(() => <></>);
+
     const breadcrumbs = ["/", "/test"];
     const wrapper = render(
       <Breadcrumb subPath="/test/01" breadcrumb={breadcrumbs} />
@@ -27,6 +34,12 @@ describe("Breadcrumb", () => {
   });
 
   it("check 3 Length for breadcrumbs", () => {
+    jest
+      .spyOn(Link, "default")
+      .mockImplementationOnce(() => <></>)
+      .mockImplementationOnce(() => <></>)
+      .mockImplementationOnce(() => <></>);
+
     const breadcrumbs = ["/", "/test", "/01"];
     const wrapper = render(
       <Breadcrumb subPath="/test/01/01" breadcrumb={breadcrumbs} />

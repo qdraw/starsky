@@ -1,24 +1,36 @@
 import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import * as Link from "../../atoms/link/link";
 import IsSearchQueryMenuSearchItem from "./is-search-query-menu-search-item";
 
 describe("IsSearchQueryMenuSearchItem", () => {
   it("renders", () => {
     const history = {
       location: {
+        basename: "",
         search: "test"
-      }
+      },
+      navigate: jest.fn()
     } as any;
     render(
-      <IsSearchQueryMenuSearchItem
-        history={history}
-        setIsLoading={jest.fn()}
-        isSearchQuery={true}
-        state={{ fileIndexItem: {} } as any}
-      />
+      <BrowserRouter>
+        <IsSearchQueryMenuSearchItem
+          history={history}
+          setIsLoading={jest.fn()}
+          isSearchQuery={true}
+          state={{ fileIndexItem: {} } as any}
+        />
+      </BrowserRouter>
     );
   });
 
   it("should contain test id", () => {
+    jest
+      .spyOn(Link, "default")
+      .mockImplementationOnce((props) => (
+        <a data-test={props["data-test"]}></a>
+      ));
+
     const history = {
       location: {
         search: "test"
@@ -40,17 +52,21 @@ describe("IsSearchQueryMenuSearchItem", () => {
   it("ctrl click not trigger loading", () => {
     const history = {
       location: {
+        basename: "/",
         search: "test"
       }
     } as any;
+
     const loadingSpy = jest.fn();
     render(
-      <IsSearchQueryMenuSearchItem
-        history={history}
-        setIsLoading={loadingSpy}
-        isSearchQuery={true}
-        state={{ fileIndexItem: {} } as any}
-      />
+      <BrowserRouter>
+        <IsSearchQueryMenuSearchItem
+          history={history}
+          setIsLoading={loadingSpy}
+          isSearchQuery={true}
+          state={{ fileIndexItem: {} } as any}
+        />
+      </BrowserRouter>
     );
 
     const id = screen.queryByTestId("menu-detail-view-close");
@@ -71,12 +87,14 @@ describe("IsSearchQueryMenuSearchItem", () => {
     } as any;
     const loadingSpy = jest.fn();
     render(
-      <IsSearchQueryMenuSearchItem
-        history={history}
-        setIsLoading={loadingSpy}
-        isSearchQuery={true}
-        state={{ fileIndexItem: {} } as any}
-      />
+      <BrowserRouter>
+        <IsSearchQueryMenuSearchItem
+          history={history}
+          setIsLoading={loadingSpy}
+          isSearchQuery={true}
+          state={{ fileIndexItem: {} } as any}
+        />
+      </BrowserRouter>
     );
 
     const id = screen.queryByTestId("menu-detail-view-close");
@@ -96,12 +114,14 @@ describe("IsSearchQueryMenuSearchItem", () => {
       }
     } as any;
     render(
-      <IsSearchQueryMenuSearchItem
-        history={history}
-        setIsLoading={jest.fn()}
-        isSearchQuery={true}
-        state={{ fileIndexItem: {} } as any}
-      />
+      <BrowserRouter>
+        <IsSearchQueryMenuSearchItem
+          history={history}
+          setIsLoading={jest.fn()}
+          isSearchQuery={true}
+          state={{ fileIndexItem: {} } as any}
+        />
+      </BrowserRouter>
     );
 
     const id = screen.queryByTestId("menu-detail-view-close");

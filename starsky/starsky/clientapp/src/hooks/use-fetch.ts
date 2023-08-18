@@ -45,7 +45,10 @@ export const fetchContent = async (
     data = await res.json();
     statusCode = res.status;
   } catch (event: any) {
-    if (event?.message?.indexOf("aborted") >= 0) {
+    if (
+      event?.message?.indexOf("aborted") >= 0 ||
+      event?.message?.indexOf("Only absolute URLs are supported") >= 0
+    ) {
       return;
     }
     // DOMException: "The operation was aborted"

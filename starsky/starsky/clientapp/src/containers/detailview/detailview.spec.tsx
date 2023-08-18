@@ -1,8 +1,11 @@
 import { fireEvent, render, RenderResult } from "@testing-library/react";
 import { useState } from "react";
 import { act } from "react-dom/test-utils";
+import { BrowserRouter } from "react-router-dom";
 import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
 import { IFileHashImageProps } from "../../components/atoms/file-hash-image/file-hash-image";
+import * as Link from "../../components/atoms/link/link";
+import * as MenuDetailView from "../../components/organisms/menu-detail-view/menu-detail-view";
 import * as ContextDetailview from "../../contexts/detailview-context";
 import * as useFetch from "../../hooks/use-fetch";
 import * as useGestures from "../../hooks/use-gestures/use-gestures";
@@ -16,10 +19,10 @@ import {
 } from "../../interfaces/IDetailView";
 import { IExifStatus } from "../../interfaces/IExifStatus";
 import { IFileIndexItem, Orientation } from "../../interfaces/IFileIndexItem";
+import { Router } from "../../router-app/router-app";
 import { UpdateRelativeObject } from "../../shared/update-relative-object";
 import { UrlQuery } from "../../shared/url-query";
 import DetailView from "./detailview";
-;
 
 describe("DetailView", () => {
   const fileHashImageMock = (props: IFileHashImageProps) => {
@@ -105,13 +108,15 @@ describe("DetailView", () => {
       };
 
       TestComponent = () => (
-        <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
-          <DetailView {...newDetailView()} />
-        </ContextDetailview.DetailViewContext.Provider>
+        <BrowserRouter>
+          <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
+            <DetailView {...newDetailView()} />
+          </ContextDetailview.DetailViewContext.Provider>
+        </BrowserRouter>
       );
 
       // Show extra information
-      window.location.replace("/?details=true");
+      Router.navigate("/?details=true");
 
       Component = render(<TestComponent />);
     });
@@ -177,7 +182,7 @@ describe("DetailView", () => {
 
     beforeAll(() => {
       act(() => {
-        window.location.replace("/?details=true");
+        Router.navigate("/?details=true");
       });
     });
 
@@ -190,36 +195,57 @@ describe("DetailView", () => {
       };
 
       TestComponent = () => (
-        <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
-          <DetailView {...newDetailView()} />
-        </ContextDetailview.DetailViewContext.Provider>
+        <BrowserRouter>
+          <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
+            <DetailView {...newDetailView()} />
+          </ContextDetailview.DetailViewContext.Provider>
+        </BrowserRouter>
       );
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
-      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
-        return newIConnectionDefault();
-      });
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault());
     });
 
     it("Next Click (click)", () => {
+      jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
+
+      const locationSpyData = {
+        location: {
+          ...Router.state.location,
+          href: "",
+          search: ""
+        },
+        navigate: navigateSpy
+      };
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockReset()
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
 
       // use as ==> import * as useLocation from '../hooks/use-location/use-location';
       const locationSpy = jest
         .spyOn(useLocation, "default")
-        .mockImplementationOnce(() => {
-          return {
-            location: globalHistory.location,
-            navigate: navigateSpy
-          };
-        });
+        .mockReset()
+        .mockImplementationOnce(() => locationSpyData)
+        .mockImplementationOnce(() => locationSpyData)
+        .mockImplementationOnce(() => locationSpyData)
+        .mockImplementationOnce(() => locationSpyData);
 
       const detailview = render(<TestComponent />);
 
       const next = detailview.queryByTestId(
         "detailview-next"
       ) as HTMLDivElement;
+
       expect(next).toBeTruthy();
+
       act(() => {
         next.click();
       });
@@ -227,7 +253,7 @@ describe("DetailView", () => {
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?details=true&f=next", {
+      expect(navigateSpy).toBeCalledWith("/?f=next", {
         replace: true
       });
 
@@ -240,7 +266,7 @@ describe("DetailView", () => {
     it("Prev Click", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: globalHistory.location,
+        location: window.location,
         navigate: navigateSpy
       };
       const locationSpy = jest
@@ -275,7 +301,7 @@ describe("DetailView", () => {
     it("Prev Keyboard", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: globalHistory.location,
+        location: window.location,
         navigate: navigateSpy
       };
       const locationSpy = jest
@@ -317,13 +343,17 @@ describe("DetailView", () => {
     });
 
     it("Next Keyboard", () => {
+      jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: globalHistory.location,
+        location: { ...window.location, search: "" },
         navigate: navigateSpy
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
@@ -331,6 +361,7 @@ describe("DetailView", () => {
 
       jest
         .spyOn(UpdateRelativeObject.prototype, "Update")
+        .mockReset()
         .mockImplementationOnce(() => {
           return Promise.resolve() as any;
         });
@@ -351,7 +382,7 @@ describe("DetailView", () => {
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?details=true&f=next", {
+      expect(navigateSpy).toBeCalledWith("/?f=next", {
         replace: true
       });
       component.unmount();
@@ -368,7 +399,7 @@ describe("DetailView", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationFaker = () => {
         return {
-          location: globalHistory.location,
+          location: window.location,
           navigate: navigateSpy
         };
       };
@@ -395,6 +426,8 @@ describe("DetailView", () => {
         .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker);
 
+      jest.spyOn(Link, "default").mockImplementationOnce(() => <></>);
+
       const detailview = render(<TestComponent />);
 
       const prev = detailview.queryByTestId(
@@ -420,7 +453,7 @@ describe("DetailView", () => {
     it("Escape key Keyboard", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...globalHistory.location, search: "" },
+        location: { ...window.location, search: "" },
         navigate: navigateSpy
       };
 
@@ -460,7 +493,7 @@ describe("DetailView", () => {
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...globalHistory.location, search: "" },
+        location: { ...window.location, search: "" },
         navigate: navigateSpy
       };
 
@@ -520,7 +553,7 @@ describe("DetailView", () => {
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...globalHistory.location, search: "" },
+        location: { ...window.location, search: "" },
         navigate: navigateSpy
       };
 

@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import { newIArchive } from "../interfaces/IArchive";
 import {
   newIFileIndexItem,
@@ -67,13 +68,15 @@ describe("Search", () => {
         numberOfFileIndexItems.push(newIFileIndexItem());
       }
       const component = render(
-        <Search
-          {...newIArchive()}
-          collectionsCount={1}
-          fileIndexItems={numberOfFileIndexItems}
-          pageNumber={1}
-          colorClassUsage={[]}
-        />
+        <BrowserRouter>
+          <Search
+            {...newIArchive()}
+            collectionsCount={1}
+            fileIndexItems={numberOfFileIndexItems}
+            pageNumber={1}
+            colorClassUsage={[]}
+          />
+        </BrowserRouter>
       );
       console.log(component.container.innerHTML);
 

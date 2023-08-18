@@ -5,8 +5,6 @@ import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import * as FetchPost from "../shared/fetch-post";
 import { UrlQuery } from "../shared/url-query";
 import Login from "./login";
-;
-
 describe("Login", () => {
   it("renders", () => {
     render(<Login />);
@@ -187,9 +185,7 @@ describe("Login", () => {
     const login = render(<Login />);
 
     expect(
-      globalHistory.location.pathname.indexOf(
-        new UrlQuery().UrlAccountRegisterApi()
-      )
+      window.location.pathname.indexOf(new UrlQuery().UrlAccountRegisterApi())
     ).toBeTruthy();
     expect(useFetchSpy).toBeCalled();
 
