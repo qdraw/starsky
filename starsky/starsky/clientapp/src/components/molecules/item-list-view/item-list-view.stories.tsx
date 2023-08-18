@@ -3,8 +3,6 @@ import {
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
 import ItemListView from "./item-list-view";
-;
-
 const exampleData8Selected = [
   { fileName: "test.jpg", filePath: "/test.jpg", lastEdited: "1" },
   { fileName: "test2.jpg", filePath: "/test2.jpg", lastEdited: "1" },

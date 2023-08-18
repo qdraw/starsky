@@ -33,7 +33,7 @@ describe("select", () => {
       });
       select.removeSidebarSelection();
 
-      expect(Router.state.location.search).toBe("");
+      expect(Router.state.location.search).toBe("?select=");
       expect(setSelectSpy).toBeCalled();
       expect(setSelectSpy).toBeCalledWith(["1", "2"]);
     });

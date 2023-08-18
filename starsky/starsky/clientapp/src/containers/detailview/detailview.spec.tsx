@@ -227,6 +227,7 @@ describe("DetailView", () => {
         .spyOn(useFetch, "default")
         .mockReset()
         .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
       // use as ==> import * as useLocation from '../hooks/use-location/use-location';

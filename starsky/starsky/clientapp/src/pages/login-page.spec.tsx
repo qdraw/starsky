@@ -5,7 +5,7 @@ import LoginPage from "./login-page";
 describe("LoginPage", () => {
   it("has Login child Component", () => {
     const spyLoginComponent = jest
-      .spyOn(Login, "default")
+      .spyOn(Login, "Login")
       .mockImplementationOnce(() => {
         return <></>;
       });

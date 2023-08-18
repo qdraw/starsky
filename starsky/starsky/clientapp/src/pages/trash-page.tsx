@@ -7,7 +7,7 @@ import useSearchList from "../hooks/use-searchlist";
 import { PageType } from "../interfaces/IDetailView";
 import { URLPath } from "../shared/url-path";
 
-const TrashPage: FunctionComponent = () => {
+export const TrashPage: FunctionComponent = () => {
   const history = useLocation();
 
   const urlObject = new URLPath().StringToIUrl(history.location.search);

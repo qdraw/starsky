@@ -2,8 +2,6 @@ import { ArchiveContextProvider } from "../../../contexts/archive-context";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import ArchiveSidebarSelectionList from "./archive-sidebar-selection-list";
-;
-
 export default {
   title: "components/molecules/archive-sidebar/selection-list"
 };

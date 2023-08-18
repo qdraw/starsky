@@ -1,6 +1,4 @@
 import MenuArchive from "./menu-archive";
-;
-
 export default {
   title: "components/organisms/menu-archive"
 };

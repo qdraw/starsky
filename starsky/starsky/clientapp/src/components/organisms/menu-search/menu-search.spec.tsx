@@ -4,6 +4,7 @@ import { act } from "react-dom/test-utils";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { Router } from "../../../router-app/router-app";
 import MenuSearch from "./menu-search";
 describe("MenuSearch", () => {
   it("renders", () => {
@@ -35,7 +36,7 @@ describe("MenuSearch", () => {
     });
 
     it("un select items", () => {
-      window.location.replace("/?select=1");
+      Router.navigate("/?select=1");
       const component = render(
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
@@ -43,7 +44,7 @@ describe("MenuSearch", () => {
         />
       );
 
-      expect(window.location.search).toBe("?select=1");
+      expect(Router.state.location.search).toBe("?select=1");
 
       const selected1 = screen.queryByTestId("selected-1") as HTMLDivElement;
 

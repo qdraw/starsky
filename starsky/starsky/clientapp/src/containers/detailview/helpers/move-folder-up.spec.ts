@@ -1,4 +1,3 @@
-import { HistoryLocation } from "@reach/router";
 import { ModalOpenClassName } from "../../../components/atoms/modal/modal";
 import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -16,7 +15,7 @@ describe("statusRemoved", () => {
   });
 
   it("should navigate [search query on]", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     history.navigate = jest.fn();
     moveFolderUp(new KeyboardEvent("delete"), history, true, {
       fileIndexItem: {
@@ -28,7 +27,7 @@ describe("statusRemoved", () => {
   });
 
   it("should navigate [search query off]", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     history.navigate = jest.fn();
     moveFolderUp(new KeyboardEvent("delete"), history, false, {
       fileIndexItem: {
@@ -40,7 +39,7 @@ describe("statusRemoved", () => {
   });
 
   it("should not navigate due isInForm", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     history.navigate = jest.fn();
     jest
       .spyOn(Keyboard.prototype, "isInForm")
@@ -56,7 +55,7 @@ describe("statusRemoved", () => {
   });
 
   it("should not navigate due portal", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     history.navigate = jest.fn();
     jest
       .spyOn(Keyboard.prototype, "isInForm")

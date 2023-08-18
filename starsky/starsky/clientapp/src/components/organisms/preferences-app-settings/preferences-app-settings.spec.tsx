@@ -237,6 +237,7 @@ describe("PreferencesAppSettings", () => {
       // usage ==> import * as useFetch from '../../../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
+        .mockReset()
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings)
         .mockImplementationOnce(() => permissions)

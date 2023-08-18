@@ -13,6 +13,7 @@
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
     "test": "jest --watch",
     "test:ci": "jest --ci --coverage --silent",
+    "test-ci": "npm run test:ci",
     "test:ci:debug": "jest --ci --coverage",
     "preview": "vite preview",
     "tsc": "tsc"

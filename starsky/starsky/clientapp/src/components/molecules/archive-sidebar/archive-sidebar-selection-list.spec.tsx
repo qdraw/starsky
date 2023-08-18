@@ -3,10 +3,9 @@ import {
   IFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import { URLPath } from "../../../shared/url-path";
 import ArchiveSidebarSelectionList from "./archive-sidebar-selection-list";
-;
-
 describe("archive-sidebar-selection-list", () => {
   it("renders", () => {
     render(
@@ -16,14 +15,9 @@ describe("archive-sidebar-selection-list", () => {
 
   describe("with select state", () => {
     beforeEach(() => {
-      jest.mock("@reach/router", () => ({
-        navigate: jest.fn(),
-        globalHistory: jest.fn()
-      }));
-
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        window.location.replace("/?select=test.jpg");
+        Router.navigate("/?select=test.jpg");
       });
     });
 

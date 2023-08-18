@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import * as DetailView from "../containers/detailview/detailview";
 import * as useDetailViewContext from "../contexts/detailview-context";
 import { mountReactHook } from "../hooks/___tests___/test-hook";
@@ -11,7 +12,11 @@ import DetailViewWrapper, {
 
 describe("DetailViewWrapper", () => {
   it("renders", () => {
-    render(<DetailViewWrapper {...newDetailView()} />);
+    render(
+      <MemoryRouter>
+        <DetailViewWrapper {...newDetailView()} />
+      </MemoryRouter>
+    );
   });
 
   describe("with mount", () => {

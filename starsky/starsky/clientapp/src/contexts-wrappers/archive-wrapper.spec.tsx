@@ -79,7 +79,7 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Unauthorized
       } as IArchiveProps;
-      const login = jest.spyOn(Login, "default").mockImplementationOnce(() => {
+      const login = jest.spyOn(Login, "Login").mockImplementationOnce(() => {
         return <></>;
       });
 

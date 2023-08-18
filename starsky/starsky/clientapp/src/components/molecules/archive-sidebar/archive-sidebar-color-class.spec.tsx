@@ -53,11 +53,6 @@ describe("ArchiveSidebarColorClass", () => {
         dispatch
       } as AppContext.IArchiveContext;
 
-      jest.mock("@reach/router", () => ({
-        navigate: jest.fn(),
-        globalHistory: jest.fn()
-      }));
-
       // to use with: => import { act } from 'react-dom/test-utils';
       Router.navigate("/?select=test.jpg");
 

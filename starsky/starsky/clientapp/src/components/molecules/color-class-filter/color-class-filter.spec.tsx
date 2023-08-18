@@ -1,28 +1,32 @@
 import { act, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { Router } from "../../../router-app/router-app";
 import { URLPath } from "../../../shared/url-path";
 import ColorClassFilter from "./color-class-filter";
-;
-
 describe("ColorClassFilter", () => {
   it("renders", () => {
     render(
-      <ColorClassFilter
-        itemsCount={1}
-        subPath={"/test"}
-        colorClassActiveList={[1, 2]}
-        colorClassUsage={[1, 2]}
-      ></ColorClassFilter>
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1, 2]}
+          colorClassUsage={[1, 2]}
+        ></ColorClassFilter>
+      </MemoryRouter>
     );
   });
 
   it("onClick value", () => {
     const component = render(
-      <ColorClassFilter
-        itemsCount={1}
-        subPath={"/test"}
-        colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]}
-      />
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1]}
+          colorClassUsage={[1, 2]}
+        />
+      </MemoryRouter>
     );
 
     const colorClass = screen.queryByTestId(
@@ -52,12 +56,14 @@ describe("ColorClassFilter", () => {
 
   it("outside current scope display reset", () => {
     const component = render(
-      <ColorClassFilter
-        itemsCount={1}
-        subPath={"/test"}
-        colorClassActiveList={[1]}
-        colorClassUsage={[3]}
-      />
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1]}
+          colorClassUsage={[3]}
+        />
+      </MemoryRouter>
     );
 
     expect(screen.getByTestId("color-class-filter-reset")).toBeTruthy();
@@ -67,12 +73,14 @@ describe("ColorClassFilter", () => {
 
   it("onClick value and preloader exist", () => {
     const component = render(
-      <ColorClassFilter
-        itemsCount={1}
-        subPath={"/test"}
-        colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]}
-      />
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1]}
+          colorClassUsage={[1, 2]}
+        />
+      </MemoryRouter>
     );
 
     const colorClass = screen.queryByTestId(
@@ -91,15 +99,17 @@ describe("ColorClassFilter", () => {
   });
 
   it("undo selection when clicking on already selected colorclass", () => {
-    window.location.replace("/?colorclass=1");
+    Router.navigate("/?colorclass=1");
 
     const component = render(
-      <ColorClassFilter
-        itemsCount={1}
-        subPath={"/test"}
-        colorClassActiveList={[1]}
-        colorClassUsage={[1, 2]}
-      />
+      <MemoryRouter>
+        <ColorClassFilter
+          itemsCount={1}
+          subPath={"/test"}
+          colorClassActiveList={[1]}
+          colorClassUsage={[1, 2]}
+        />
+      </MemoryRouter>
     );
 
     const colorClass = screen.queryByTestId(

@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import * as MediaContent from "../containers/media-content";
-import ContentPage from "./content-page";
+import { ContentPage } from "./content-page";
 
 describe("ContentPage", () => {
   it("default", () => {
@@ -10,7 +10,7 @@ describe("ContentPage", () => {
         return <></>;
       });
     render(<ContentPage />);
-    expect(mediaContentSpy).toBeCalledTimes(0);
+    expect(mediaContentSpy).toBeCalledTimes(1);
   });
 
   it("with navigate and location", () => {

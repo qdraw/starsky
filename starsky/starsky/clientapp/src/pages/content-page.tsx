@@ -1,10 +1,6 @@
 import { FunctionComponent } from "react";
 import MediaContent from "../containers/media-content";
 
-interface IContentPageProps {}
-
-const ContentPage: FunctionComponent<IContentPageProps> = () => {
+export const ContentPage: FunctionComponent = () => {
   return <MediaContent />;
 };
-
-export default ContentPage;

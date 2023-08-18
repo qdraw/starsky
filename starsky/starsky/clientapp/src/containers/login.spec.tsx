@@ -4,7 +4,8 @@ import * as useFetch from "../hooks/use-fetch";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import * as FetchPost from "../shared/fetch-post";
 import { UrlQuery } from "../shared/url-query";
-import Login from "./login";
+import { Login } from "./login";
+
 describe("Login", () => {
   it("renders", () => {
     render(<Login />);

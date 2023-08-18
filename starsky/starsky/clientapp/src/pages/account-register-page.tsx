@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import AccountRegister from "../containers/account-register";
 
-const AccountRegisterPage: FunctionComponent = () => {
+export const AccountRegisterPage: FunctionComponent = () => {
   return <AccountRegister />;
 };
 

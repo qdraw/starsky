@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
+import { MemoryRouter } from "react-router-dom";
 import {
   IFileIndexItem,
   newIFileIndexItemArray
@@ -26,11 +27,13 @@ describe("ItemListView", () => {
 
     it("search with data-filepath in child element", () => {
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
 
       const element = screen.queryAllByTestId(
@@ -50,11 +53,13 @@ describe("ItemListView", () => {
         .spyOn(FlatListItem, "default")
         .mockImplementationOnce(() => <></>);
       const component = render(
-        <ItemListView
-          iconList={false}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={false}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
       expect(flatListItemSpy).toBeCalled();
       component.unmount();
@@ -62,11 +67,13 @@ describe("ItemListView", () => {
 
     it("no content", () => {
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={undefined as any}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={undefined as any}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
       expect(component.container.textContent).toBe("no content");
     });
@@ -157,11 +164,13 @@ describe("ItemListView", () => {
         });
 
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
 
       const item = screen.queryByTestId(
@@ -199,11 +208,13 @@ describe("ItemListView", () => {
         .spyOn(ListImageChildItem, "default")
         .mockImplementationOnce(() => <>t</>);
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
       expect(listImageChildItemSpy).toBeCalled();
       component.unmount();

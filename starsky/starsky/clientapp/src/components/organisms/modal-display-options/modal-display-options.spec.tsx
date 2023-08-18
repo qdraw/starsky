@@ -144,6 +144,7 @@ describe("ModalDisplayOptions", () => {
         };
         jest
           .spyOn(useLocation, "default")
+          .mockReset()
           .mockImplementationOnce(() => spyObject)
           .mockImplementationOnce(() => spyObject);
 

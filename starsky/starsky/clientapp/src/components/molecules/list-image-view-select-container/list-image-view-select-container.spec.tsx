@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ListImageNormalSelectContainer from "./list-image-view-select-container";
@@ -8,7 +9,11 @@ describe("ListImageTest", () => {
       fileName: "test",
       status: IExifStatus.Ok
     } as IFileIndexItem;
-    render(<ListImageNormalSelectContainer item={fileIndexItem} />);
+    render(
+      <MemoryRouter>
+        <ListImageNormalSelectContainer item={fileIndexItem} />
+      </MemoryRouter>
+    );
   });
 
   describe("NonSelectMode", () => {
@@ -22,9 +27,9 @@ describe("ListImageTest", () => {
         status: IExifStatus.Ok
       } as IFileIndexItem;
       const component = render(
-        <ListImageNormalSelectContainer item={fileIndexItem}>
-          t
-        </ListImageNormalSelectContainer>
+        <MemoryRouter>
+          <ListImageNormalSelectContainer item={fileIndexItem} />
+        </MemoryRouter>
       );
 
       const anchor = component.container.querySelector(
@@ -50,7 +55,9 @@ describe("ListImageTest", () => {
         status: IExifStatus.Ok
       } as IFileIndexItem;
       const component = render(
-        <ListImageNormalSelectContainer item={fileIndexItem} />
+        <MemoryRouter>
+          <ListImageNormalSelectContainer item={fileIndexItem} />
+        </MemoryRouter>
       );
 
       const anchor = component.container.querySelector(
@@ -86,12 +93,12 @@ describe("ListImageTest", () => {
 
       const onSelectionCallback = jest.fn();
       const component = render(
-        <ListImageNormalSelectContainer
-          item={fileIndexItem}
-          onSelectionCallback={onSelectionCallback}
-        >
-          t
-        </ListImageNormalSelectContainer>
+        <MemoryRouter>
+          <ListImageNormalSelectContainer
+            item={fileIndexItem}
+            onSelectionCallback={onSelectionCallback}
+          />
+        </MemoryRouter>
       );
 
       const button = component.container.querySelector(
@@ -123,12 +130,12 @@ describe("ListImageTest", () => {
 
       const onSelectionCallback = jest.fn();
       const component = render(
-        <ListImageNormalSelectContainer
-          item={fileIndexItem}
-          onSelectionCallback={onSelectionCallback}
-        >
-          t
-        </ListImageNormalSelectContainer>
+        <MemoryRouter>
+          <ListImageNormalSelectContainer
+            item={fileIndexItem}
+            onSelectionCallback={onSelectionCallback}
+          />
+        </MemoryRouter>
       );
 
       const button = component.container.querySelector(
@@ -159,12 +166,12 @@ describe("ListImageTest", () => {
       } as IFileIndexItem;
 
       const component = render(
-        <ListImageNormalSelectContainer
-          item={fileIndexItem}
-          onSelectionCallback={undefined as any}
-        >
-          t
-        </ListImageNormalSelectContainer>
+        <MemoryRouter>
+          <ListImageNormalSelectContainer
+            item={fileIndexItem}
+            onSelectionCallback={undefined as any}
+          />
+        </MemoryRouter>
       );
 
       const button = component.container.querySelector(

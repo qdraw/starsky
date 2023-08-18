@@ -5,7 +5,7 @@ import useGlobalSettings from "../hooks/use-global-settings";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url-query";
 
-const NotFoundPage: FunctionComponent = () => {
+export const NotFoundPage: FunctionComponent = () => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -19,7 +19,7 @@ const NotFoundPage: FunctionComponent = () => {
   return (
     <div>
       <MenuDefault isEnabled={true}></MenuDefault>
-      <div className="content">
+      <div data-test="not-found-page" className="content">
         <div className="content--header">
           <Link to={new UrlQuery().UrlHomePage()}>{MessageNotFound}</Link>
         </div>
@@ -32,5 +32,3 @@ const NotFoundPage: FunctionComponent = () => {
     </div>
   );
 };
-
-export default NotFoundPage;

@@ -30,7 +30,7 @@ describe("sidebar", () => {
           href: "",
           ...Router.state.location
         },
-        navigate: Router.navigate
+        navigate: navigateSpy
       });
 
       sidebar.toggleSidebar();

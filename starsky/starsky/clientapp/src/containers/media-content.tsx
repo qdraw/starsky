@@ -12,9 +12,9 @@ import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location/use-location";
 import { IArchive } from "../interfaces/IArchive";
 import { IDetailView, PageType } from "../interfaces/IDetailView";
-import NotFoundPage from "../pages/not-found-page";
+import { NotFoundPage } from "../pages/not-found-page";
 import { Language } from "../shared/language";
-import Login from "./login";
+import { Login } from "./login";
 
 const MediaContent: React.FC = () => {
   const history = useLocation();

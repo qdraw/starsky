@@ -2,8 +2,6 @@ import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { PageType } from "../../../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import ArchiveSidebar from "./archive-sidebar";
-;
-
 export default {
   title: "components/organisms/archive-sidebar"
 };

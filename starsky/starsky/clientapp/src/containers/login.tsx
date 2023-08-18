@@ -15,7 +15,7 @@ export interface ILoginProps {
   defaultLoginStatus?: boolean;
 }
 
-const Login: React.FC<ILoginProps> = () => {
+export const Login: React.FC<ILoginProps> = () => {
   const history = useLocation();
   const [userEmail, setUserEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
@@ -266,5 +266,3 @@ const Login: React.FC<ILoginProps> = () => {
     </>
   );
 };
-
-export default Login;
