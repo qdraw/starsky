@@ -45,7 +45,7 @@ jobs:
           path: ./starsky/starsky/clientapp/storybook-static
 
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v2.0
+        uses: nwtgck/actions-netlify@v2.1
         if: github.event_name != 'pull_request'
         with:
           publish-dir: './starsky/starsky/clientapp/storybook-static'
