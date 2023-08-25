@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import ListImageNormalSelectContainer from "./list-image-view-select-container";
 describe("ListImageTest", () => {
   it("renders", () => {
@@ -18,7 +19,7 @@ describe("ListImageTest", () => {
 
   describe("NonSelectMode", () => {
     beforeAll(() => {
-      window.location.replace("/");
+      Router.navigate("/");
     });
 
     it("NonSelectMode - when click on Link, it should display a preloader", () => {
@@ -82,7 +83,7 @@ describe("ListImageTest", () => {
 
   describe("SelectMode", () => {
     beforeEach(() => {
-      window.location.replace("/?select=");
+      Router.navigate("/?select=");
     });
 
     it("when click on button it add the selected file to the history", () => {

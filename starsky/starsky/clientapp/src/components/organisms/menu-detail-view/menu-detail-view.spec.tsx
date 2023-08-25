@@ -1,5 +1,6 @@
 import { act, fireEvent, render } from "@testing-library/react";
 import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -12,6 +13,7 @@ import * as ModalDetailviewRenameFile from "../modal-detailview-rename-file/moda
 import * as ModalExport from "../modal-download/modal-download";
 import * as ModalMoveFile from "../modal-move-file/modal-move-file";
 import MenuDetailView from "./menu-detail-view";
+
 describe("MenuDetailView", () => {
   it("renders", () => {
     const state = {
@@ -26,7 +28,11 @@ describe("MenuDetailView", () => {
         parentDirectory: "/test"
       }
     } as IDetailView;
-    render(<MenuDetailView state={state} dispatch={jest.fn()} />);
+    render(
+      <MemoryRouter>
+        <MenuDetailView state={state} dispatch={jest.fn()} />
+      </MemoryRouter>
+    );
   });
 
   describe("readonly status context", () => {
@@ -51,7 +57,9 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const move = component.queryByTestId("move");
@@ -62,7 +70,7 @@ describe("MenuDetailView", () => {
 
       // reset afterwards
       act(() => {
-        window.location.replace("/");
+        Router.navigate("/");
         component.unmount();
       });
     });
@@ -75,7 +83,9 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const rename = component.queryByTestId("rename");
@@ -99,7 +109,9 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const trash = component.queryByTestId("trash");
@@ -128,7 +140,9 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const anchor = component.queryByTestId(
@@ -157,7 +171,9 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const anchor = component.queryByTestId(
@@ -189,10 +205,12 @@ describe("MenuDetailView", () => {
 
     it("as search Result button exist", () => {
       // add search query to url
-      window.location.replace("/?t=test&p=0");
+      Router.navigate("/?t=test&p=0");
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const anchor = component.queryByTestId(
@@ -205,16 +223,18 @@ describe("MenuDetailView", () => {
       act(() => {
         // reset afterwards
         component.unmount();
-        window.location.replace("/");
+        Router.navigate("/");
       });
     });
 
     it("as search Result button exist no ?t", () => {
       // add search query to url
-      window.location.replace("/");
+      Router.navigate("/");
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const anchor = component.queryByTestId(
@@ -227,12 +247,12 @@ describe("MenuDetailView", () => {
       act(() => {
         // reset afterwards
         component.unmount();
-        window.location.replace("/");
+        Router.navigate("/");
       });
     });
 
     it("last Edited change [true]", () => {
-      window.location.replace("/?details=true");
+      Router.navigate("/?details=true");
 
       //  With updated LastEdited
 
@@ -245,7 +265,9 @@ describe("MenuDetailView", () => {
       };
 
       const component = render(
-        <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       expect(component.queryByTestId("menu-detail-view-autosave")).toBeTruthy();
@@ -253,17 +275,19 @@ describe("MenuDetailView", () => {
       act(() => {
         // reset afterwards
         component.unmount();
-        window.location.replace("/");
+        Router.navigate("/");
       });
     });
 
     it("last Edited change [false]", () => {
       act(() => {
-        window.location.replace("/?details=true");
+        Router.navigate("/?details=true");
       });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       expect(component.queryByTestId("menu-detail-view-autosave")).toBeFalsy();
@@ -271,7 +295,7 @@ describe("MenuDetailView", () => {
       act(() => {
         // reset afterwards
         component.unmount();
-        window.location.replace("/");
+        Router.navigate("/");
       });
     });
 
@@ -283,7 +307,9 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const exportButton = component.queryByTestId("export");
@@ -303,7 +329,9 @@ describe("MenuDetailView", () => {
 
     it("labels click .item--labels [menu]", () => {
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const labels = component.queryByTestId("menu-detail-view-labels");
@@ -316,17 +344,19 @@ describe("MenuDetailView", () => {
 
       expect(urlObject.details).toBeTruthy();
 
-      // dont keep any menus open
+      // don't keep any menus open
       act(() => {
         component.unmount();
         // reset afterwards
-        window.location.replace("/");
+        Router.navigate("/");
       });
     });
 
     it("labels click (in MoreMenu)", () => {
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       //       const item = component.find('[data-test="labels"]');
@@ -341,16 +371,18 @@ describe("MenuDetailView", () => {
 
       // reset afterwards
       act(() => {
-        window.location.replace("/");
+        Router.navigate("/");
         component.unmount();
       });
     });
 
     it("navigate to parent folder click", () => {
-      window.location.replace("/?t=test");
+      Router.navigate("/?t=test");
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const goToParentFolder = component.queryByTestId("go-to-parent-folder");
@@ -361,7 +393,7 @@ describe("MenuDetailView", () => {
 
       act(() => {
         component.unmount();
-        window.location.replace("/");
+        Router.navigate("/");
       });
     });
 
@@ -373,7 +405,9 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const move = component.queryByTestId("move");
@@ -387,7 +421,7 @@ describe("MenuDetailView", () => {
 
       // reset afterwards
       act(() => {
-        window.location.replace("/");
+        Router.navigate("/");
         component.unmount();
       });
     });
@@ -400,7 +434,9 @@ describe("MenuDetailView", () => {
         });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const rename = component.queryByTestId("rename");
@@ -427,7 +463,9 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const trash = component.queryByTestId("trash");
@@ -448,17 +486,19 @@ describe("MenuDetailView", () => {
 
     it("trash click to trash and collection is true", () => {
       const component = render(
-        <MenuDetailView
-          state={{
-            ...state,
-            fileIndexItem: {
-              ...state.fileIndexItem,
-              collectionPaths: [".jpg", "t.arw"]
-            },
-            collections: true
-          }}
-          dispatch={jest.fn()}
-        />
+        <MemoryRouter>
+          <MenuDetailView
+            state={{
+              ...state,
+              fileIndexItem: {
+                ...state.fileIndexItem,
+                collectionPaths: [".jpg", "t.arw"]
+              },
+              collections: true
+            }}
+            dispatch={jest.fn()}
+          />
+        </MemoryRouter>
       );
 
       const trashIncl = component.queryByTestId("trash-including");
@@ -501,7 +541,9 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       const item = component.queryByTestId("rotate");
@@ -552,7 +594,9 @@ describe("MenuDetailView", () => {
       });
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       // spy on fetch
@@ -597,7 +641,9 @@ describe("MenuDetailView", () => {
       } as IDetailView;
 
       const component = render(
-        <MenuDetailView state={state} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
 
       // spy on fetch
@@ -644,7 +690,9 @@ describe("MenuDetailView", () => {
       } as IDetailView;
 
       const component = render(
-        <MenuDetailView state={state1} dispatch={jest.fn()} />
+        <MemoryRouter>
+          <MenuDetailView state={state1} dispatch={jest.fn()} />
+        </MemoryRouter>
       );
       let header = component.container.querySelector(
         "header"
@@ -656,7 +704,7 @@ describe("MenuDetailView", () => {
       });
 
       act(() => {
-        window.location.replace("/?f=/test2.jpg");
+        Router.navigate("/?f=/test2.jpg");
       });
 
       header = component.container.querySelector(
@@ -684,7 +732,9 @@ describe("MenuDetailView", () => {
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+          <MemoryRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </MemoryRouter>
         );
 
         const item = component.queryByTestId("export") as HTMLDivElement;
@@ -704,7 +754,9 @@ describe("MenuDetailView", () => {
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+          <MemoryRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </MemoryRouter>
         );
 
         const item = component.queryByTestId("move") as HTMLDivElement;
@@ -724,7 +776,9 @@ describe("MenuDetailView", () => {
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+          <MemoryRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </MemoryRouter>
         );
 
         const item = component.queryByTestId("rename") as HTMLDivElement;
@@ -744,7 +798,9 @@ describe("MenuDetailView", () => {
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+          <MemoryRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </MemoryRouter>
         );
 
         const item = component.queryByTestId("trash") as HTMLDivElement;
@@ -762,7 +818,9 @@ describe("MenuDetailView", () => {
         } as IDetailView;
 
         const component = render(
-          <MenuDetailView state={state} dispatch={jest.fn()} />
+          <MemoryRouter>
+            <MenuDetailView state={state} dispatch={jest.fn()} />
+          </MemoryRouter>
         );
 
         const item = component.queryByTestId("rotate") as HTMLDivElement;

@@ -40,7 +40,7 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
       const MessageLocation = language.text("locatie", "location");
 
       const [isLocationOpen, setLocationOpen] = React.useState(
-        history.location.href.includes("&modal=geo")
+        history.location.href?.includes("&modal=geo")
       );
 
       function handleExit(model: IGeoLocationModel | null) {

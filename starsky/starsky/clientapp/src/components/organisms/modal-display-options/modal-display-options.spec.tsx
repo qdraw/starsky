@@ -1,6 +1,6 @@
 import { fireEvent, render, RenderResult } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import * as useLocation from "../../../hooks/use-location/use-location";
+import { Router } from "../../../router-app/router-app";
 import * as Modal from "../../atoms/modal/modal";
 import ModalDisplayOptions from "./modal-display-options";
 
@@ -136,28 +136,18 @@ describe("ModalDisplayOptions", () => {
 
       it("sort - change to imageFormat", async () => {
         console.log("sort - change to imageFormat");
-
-        const navigateFn = jest.fn();
-        const spyObject = {
-          location: { href: "", search: "?sort=test" },
-          navigate: navigateFn
-        };
-        jest
-          .spyOn(useLocation, "default")
-          .mockReset()
-          .mockImplementationOnce(() => spyObject)
-          .mockImplementationOnce(() => spyObject);
+        Router.navigate("/?sort=test");
 
         const select = modal.queryByTestId("select") as HTMLSelectElement;
         expect(select).not.toBeNull();
 
         fireEvent.change(select, { target: { value: "imageFormat" } });
 
-        expect(navigateFn).toBeCalledWith("?sort=imageFormat");
+        expect(window.location.search).toBe("?sort=imageFormat");
       });
 
       it("sort - change to fileName", () => {
-        window.location.search = "";
+        Router.navigate("/?sort=test");
 
         const select = modal.queryByTestId("select") as HTMLSelectElement;
         expect(select).not.toBeNull();

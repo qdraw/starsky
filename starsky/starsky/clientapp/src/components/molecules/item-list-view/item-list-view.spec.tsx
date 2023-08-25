@@ -5,6 +5,7 @@ import {
   IFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import * as ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ItemListView from "./item-list-view";
@@ -156,12 +157,10 @@ describe("ItemListView", () => {
 
     it("when clicking shift in selection mode", () => {
       const listImageChildItemSpy = jest.spyOn(ListImageChildItem, "default");
-      window.location.replace("/?select=");
+      Router.navigate("/?select=");
       const shiftSelectionHelperSpy = jest
         .spyOn(ShiftSelectionHelper, "ShiftSelectionHelper")
-        .mockImplementationOnce(() => {
-          return true;
-        });
+        .mockImplementationOnce(() => true);
 
       const component = render(
         <MemoryRouter>

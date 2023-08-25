@@ -22,7 +22,7 @@ describe("select", () => {
     });
 
     it("multiple disable", () => {
-      window.location.replace("/?select=1,2");
+      Router.navigate("/?select=1,2");
       const setSelectSpy = jest.fn();
       const select = new Select([], setSelectSpy, {} as IArchiveProps, {
         location: {
@@ -33,7 +33,7 @@ describe("select", () => {
       });
       select.removeSidebarSelection();
 
-      expect(Router.state.location.search).toBe("?select=");
+      expect(Router.state.location.search).toBe("");
       expect(setSelectSpy).toBeCalled();
       expect(setSelectSpy).toBeCalledWith(["1", "2"]);
     });

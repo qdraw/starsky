@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../hooks/use-fetch";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
+import { Router } from "../router-app/router-app";
 import * as FetchPost from "../shared/fetch-post";
 import { UrlQuery } from "../shared/url-query";
 import { Login } from "./login";
@@ -12,7 +13,7 @@ describe("Login", () => {
   });
 
   it("account already logged in", () => {
-    window.location.replace("/?ReturnUrl=/");
+    Router.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = {
@@ -37,13 +38,13 @@ describe("Login", () => {
     expect(err).toBeTruthy();
 
     act(() => {
-      window.location.replace("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
 
   it("database error message-database-connection", () => {
-    window.location.replace("/?ReturnUrl=/");
+    Router.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = {
@@ -68,13 +69,13 @@ describe("Login", () => {
     expect(err).toBeTruthy();
 
     act(() => {
-      window.location.replace("/");
+      Router.navigate("/");
       view.unmount();
     });
   });
 
   it("account already logged in special return url", () => {
-    window.location.replace("/?ReturnUrl=/test");
+    Router.navigate("/?ReturnUrl=/test");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = {
@@ -103,13 +104,13 @@ describe("Login", () => {
     ).toBe("http://localhost/test");
 
     act(() => {
-      window.location.replace("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
 
   it("account logged in /starsky - return url", () => {
-    window.location.replace("/starsky/?ReturnUrl=/test");
+    Router.navigate("/starsky/?ReturnUrl=/test");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = {
@@ -138,13 +139,13 @@ describe("Login", () => {
     ).toBe("http://localhost/starsky/test");
 
     act(() => {
-      window.location.replace("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
 
   it("account not logged in", () => {
-    window.location.replace("/?ReturnUrl=/");
+    Router.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
@@ -166,7 +167,7 @@ describe("Login", () => {
     );
 
     act(() => {
-      window.location.replace("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
@@ -192,12 +193,12 @@ describe("Login", () => {
 
     act(() => {
       login.unmount();
-      window.location.replace("/");
+      Router.navigate("/");
     });
   });
 
   it("login flow succesfull", () => {
-    window.location.replace("/?ReturnUrl=/");
+    Router.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
@@ -254,7 +255,7 @@ describe("Login", () => {
     );
 
     act(() => {
-      window.location.replace("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
@@ -308,7 +309,7 @@ describe("Login", () => {
     expect(postSpy).toBeCalled();
 
     act(() => {
-      window.location.replace("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
@@ -363,7 +364,7 @@ describe("Login", () => {
     expect(postSpy).toBeCalled();
 
     act(() => {
-      window.location.replace("/");
+      Router.navigate("/");
       login.unmount();
     });
   });

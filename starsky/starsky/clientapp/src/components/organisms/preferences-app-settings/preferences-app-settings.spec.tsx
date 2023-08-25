@@ -243,12 +243,17 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings)
         .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
       const component = render(<PreferencesAppSettings />);
 
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => {
           return Promise.resolve({
             statusCode: 400,
