@@ -16,7 +16,7 @@
     "@types/react-dom": "^18.2.7",
     "@types/storybook__react": "^5.2.1",
     "abortcontroller-polyfill": "^1.7.5",
-    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-prettier": "^4.2.1",
     "intersection-observer": "^0.12.2",
     "leaflet": "^1.9.4",
