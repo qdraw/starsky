@@ -43,7 +43,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // boolean to get the details-side menu on or off
   const [isDetails, setDetails] = React.useState(
-    new URLPath().StringToIUrl(history?.location?.search).details
+    new URLPath().StringToIUrl(history?.location?.search)?.details
   );
   useEffect(() => {
     const details = new URLPath().StringToIUrl(history.location.search).details;

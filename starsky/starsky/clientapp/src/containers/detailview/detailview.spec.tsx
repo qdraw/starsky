@@ -177,7 +177,7 @@ describe("DetailView", () => {
     });
   });
 
-  describe("Nexts/Prev clicks ++ Rotation check", () => {
+  describe("Next's/Prev clicks ++ Rotation check", () => {
     let TestComponent: () => JSX.Element;
 
     beforeAll(() => {
@@ -237,6 +237,7 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => locationSpyData)
         .mockImplementationOnce(() => locationSpyData)
         .mockImplementationOnce(() => locationSpyData)
+        .mockImplementationOnce(() => locationSpyData)
         .mockImplementationOnce(() => locationSpyData);
 
       const detailview = render(<TestComponent />);
@@ -267,11 +268,19 @@ describe("DetailView", () => {
     it("Prev Click", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: window.location,
+        location: {
+          ...Router.state.location,
+          href: "",
+          search: ""
+        },
         navigate: navigateSpy
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
@@ -282,7 +291,9 @@ describe("DetailView", () => {
       const prev = detailview.queryByTestId(
         "detailview-prev"
       ) as HTMLDivElement;
+
       expect(prev).toBeTruthy();
+
       act(() => {
         prev.click();
       });
@@ -290,7 +301,7 @@ describe("DetailView", () => {
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", {
+      expect(navigateSpy).toBeCalledWith("/?f=prev", {
         replace: true
       });
 
@@ -301,12 +312,21 @@ describe("DetailView", () => {
 
     it("Prev Keyboard", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
       const locationObject = {
-        location: window.location,
+        location: {
+          ...Router.state.location,
+          href: "",
+          search: ""
+        },
         navigate: navigateSpy
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
@@ -334,7 +354,7 @@ describe("DetailView", () => {
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", {
+      expect(navigateSpy).toBeCalledWith("/?f=prev", {
         replace: true
       });
 
@@ -391,10 +411,11 @@ describe("DetailView", () => {
 
     it("[SearchResult] Next", async () => {
       console.log("[SearchResult] Next");
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
 
       // add search query to url
       act(() => {
-        window.location.replace("/?t=test&p=0");
+        Router.navigate("/?t=test&p=0");
       });
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
@@ -422,6 +443,9 @@ describe("DetailView", () => {
 
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker)
