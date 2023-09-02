@@ -116,7 +116,8 @@ export const Login: React.FC<ILoginProps> = () => {
         if (`/${history.location.search}` === returnUrl) {
           returnUrl += "&details=true";
         }
-        await history.navigate(returnUrl, { replace: true });
+
+        history.navigate(returnUrl, { replace: true });
       }
     } catch (err: any) {
       setLoading(false);

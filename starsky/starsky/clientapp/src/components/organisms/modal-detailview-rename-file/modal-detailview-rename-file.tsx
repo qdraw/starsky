@@ -151,7 +151,8 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
       history.location.search,
       filePathAfterChange
     );
-    await history.navigate(replacePath, { replace: true });
+
+    history.navigate(replacePath, { replace: true });
 
     // Close window
     props.handleExit();

@@ -14,7 +14,7 @@ const useLocation = () => {
   useEffect(() => {
     const removeListener = Router.subscribe((params) => {
       const { location } = params;
-      const newState = Object.assign({}, initialState, { location });
+      const newState = { ...initialState, ...location };
       setState(newState);
     });
     return () => {
