@@ -44,6 +44,10 @@ npm install @storybook/builder-vite --save-dev --force
 npm install --save react-router-dom
 npm install --save-dev cspell
 npm install --save history
+
+
+npm install @storybook/builder-vite --save-dev
+
 ```
 
 npm install --save abortcontroller-polyfill
