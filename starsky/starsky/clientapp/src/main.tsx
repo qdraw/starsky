@@ -27,3 +27,9 @@ const troubleLoading = document.querySelector(".trouble-loading");
 if (troubleLoading && troubleLoading.parentElement) {
   troubleLoading.parentElement.removeChild(troubleLoading);
 }
+
+// Add App insights
+const appInsightsScriptElement = document.createElement("script");
+appInsightsScriptElement.type = "text/javascript";
+appInsightsScriptElement.src = "/starsky/api/health/application-insights";
+document.body.appendChild(appInsightsScriptElement);
