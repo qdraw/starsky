@@ -1,3 +1,4 @@
+import { MemoryRouter } from "react-router-dom";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import { IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -37,14 +38,16 @@ export const Default = () => {
     } as any
   };
   return (
-    <DetailViewContext.Provider value={contextProvider}>
-      <DetailViewSidebar
-        state={contextProvider.state}
-        dispatch={contextProvider.dispatch}
-        status={IExifStatus.Default}
-        filePath={"/test.jpg"}
-      ></DetailViewSidebar>
-    </DetailViewContext.Provider>
+    <MemoryRouter>
+      <DetailViewContext.Provider value={contextProvider}>
+        <DetailViewSidebar
+          state={contextProvider.state}
+          dispatch={contextProvider.dispatch}
+          status={IExifStatus.Default}
+          filePath={"/test.jpg"}
+        ></DetailViewSidebar>
+      </DetailViewContext.Provider>
+    </MemoryRouter>
   );
 };
 

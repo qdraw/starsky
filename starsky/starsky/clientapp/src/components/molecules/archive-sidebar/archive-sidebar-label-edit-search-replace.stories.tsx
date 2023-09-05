@@ -16,7 +16,7 @@ Disabled.story = {
 };
 
 export const Enabled = () => {
-  window.location.replace("/?select=test.jpg");
+  Router.navigate("/?select=test.jpg");
   const archive = {} as IArchiveProps;
   return (
     <ArchiveContextProvider {...archive}>

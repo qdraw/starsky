@@ -1,3 +1,4 @@
+import { MemoryRouter } from "react-router-dom";
 import SearchPagination from "./search-pagination";
 
 export default {
@@ -5,7 +6,11 @@ export default {
 };
 
 export const Default = () => {
-  return <SearchPagination lastPageNumber={2} />;
+  return (
+    <MemoryRouter>
+      <SearchPagination lastPageNumber={2} />
+    </MemoryRouter>
+  );
 };
 
 Default.story = {

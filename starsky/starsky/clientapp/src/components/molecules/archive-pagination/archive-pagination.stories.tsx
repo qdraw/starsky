@@ -1,3 +1,4 @@
+import { MemoryRouter } from "react-router-dom";
 import { newIRelativeObjects } from "../../../interfaces/IDetailView";
 import ArchivePagination from "./archive-pagination";
 
@@ -6,7 +7,11 @@ export default {
 };
 
 export const Default = () => {
-  return <ArchivePagination relativeObjects={newIRelativeObjects()} />;
+  return (
+    <MemoryRouter>
+      <ArchivePagination relativeObjects={newIRelativeObjects()} />
+    </MemoryRouter>
+  );
 };
 
 Default.story = {

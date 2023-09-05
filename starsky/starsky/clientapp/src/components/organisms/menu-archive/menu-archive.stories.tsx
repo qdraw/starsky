@@ -1,10 +1,11 @@
+import { Router } from "../../../router-app/router-app";
 import MenuArchive from "./menu-archive";
 export default {
   title: "components/organisms/menu-archive"
 };
 
 export const Default = () => {
-  window.location.replace("/");
+  Router.navigate("/");
   return <MenuArchive></MenuArchive>;
 };
 
@@ -13,7 +14,7 @@ Default.story = {
 };
 
 export const Select = () => {
-  window.location.replace("/?select=true");
+  Router.navigate("/?select=true");
   return <MenuArchive></MenuArchive>;
 };
 
