@@ -40,12 +40,12 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
       const MessageLocation = language.text("locatie", "location");
 
       const [isLocationOpen, setLocationOpen] = React.useState(
-        history.location.href?.includes("&modal=geo")
+        history.location.search?.includes("&modal=geo")
       );
 
       function handleExit(model: IGeoLocationModel | null) {
         setLocationOpen(false);
-        history.navigate(history.location.href.replace(/&modal=geo/gi, ""), {
+        history.navigate(history.location.search.replace(/&modal=geo/gi, ""), {
           replace: true
         });
 
@@ -69,7 +69,7 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
       function onClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
         event.preventDefault();
         history.navigate(
-          history.location.href.replace(/&modal=geo/gi, "") + "&modal=geo",
+          history.location.search.replace(/&modal=geo/gi, "") + "&modal=geo",
           {
             replace: true
           }

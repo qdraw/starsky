@@ -4,8 +4,7 @@ export type IntersectionChangeHandler = (
   entry: IntersectionObserverEntry
 ) => void;
 
-// Polyfill needed for Safari 12.0 and older (12.1+ has native support)
-// require("intersection-observer");
+// Polyfill needed for Safari 12.0 and older (12.1+ has native support) - npm package: intersection-observer
 
 // credits for: https://github.com/cats-oss/use-intersection
 

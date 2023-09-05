@@ -133,6 +133,6 @@ describe("ColorClassFilter", () => {
     expect(urlToStringSpy).toBeCalledWith({ colorClass: [] });
 
     component.unmount();
-    window.location.replace("/");
+    Router.navigate("/");
   });
 });

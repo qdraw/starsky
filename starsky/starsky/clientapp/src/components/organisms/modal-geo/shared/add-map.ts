@@ -14,8 +14,8 @@ export function AddMap(
     center: mapLocationCenter,
     zoom,
     layers: [
-      L.tileLayer(TileLayerAttribution, {
-        attribution: TileLayerLocation
+      L.tileLayer(TileLayerLocation, {
+        attribution: TileLayerAttribution
       })
     ]
   });

@@ -55,7 +55,7 @@ describe("MenuSearch", () => {
       expect(window.location.search).toBe("");
 
       component.unmount();
-      window.location.replace("/");
+      Router.navigate("/");
     });
 
     it("keyboard ctrl a and command a", () => {
