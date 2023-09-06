@@ -121,7 +121,8 @@ describe("DetailViewInfoLocation", () => {
 
     const locationMock = {
       location: {
-        href: ""
+        href: "",
+        search: ""
       },
       navigate: jest.fn()
     } as any;
