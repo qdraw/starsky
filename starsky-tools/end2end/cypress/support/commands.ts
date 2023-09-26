@@ -63,6 +63,11 @@ function sendAuthenticationHeader() {
     followRedirect: false,
     failOnStatusCode: false,
   }).then((response) => {
+    if (!response?.headers) {
+      console.log("SKIP DUE -- response?.headers is null");      
+      return;
+    }
+    
     const cookies = response.headers["set-cookie"];
     let afCookie = "";
     for (const cookie of cookies) {
