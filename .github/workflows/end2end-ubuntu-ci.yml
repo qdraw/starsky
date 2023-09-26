@@ -13,7 +13,7 @@ jobs:
       WEBSITE_SITE_NAME: "ci"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create temp folder
         shell: bash
@@ -59,7 +59,7 @@ jobs:
           systemctl --user -l status starsky
 
       - name: Run Cypress in Electron 
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         env:
           CYPRESS_BASE_URL: http://localhost:4000
           cypress_name: local

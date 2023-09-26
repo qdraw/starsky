@@ -28,7 +28,7 @@ jobs:
         node-version: [20.5.1, 18.x, 16.x]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Build ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
