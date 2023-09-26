@@ -13,6 +13,7 @@ import { Router } from "../../../router-app/router-app";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as DropArea from "../../atoms/drop-area/drop-area";
+import * as Link from "../../atoms/link/link";
 import * as ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import * as ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
 import * as ModalArchiveSynchronizeManually from "../modal-archive-synchronize-manually/modal-archive-synchronize-manually";
@@ -20,6 +21,7 @@ import * as ModalDisplayOptions from "../modal-display-options/modal-display-opt
 import * as ModalDownload from "../modal-download/modal-download";
 import * as ModalPublish from "../modal-publish/modal-publish";
 import MenuArchive from "./menu-archive";
+
 describe("MenuArchive", () => {
   it("renders", () => {
     render(<MenuArchive />);
@@ -286,7 +288,12 @@ describe("MenuArchive", () => {
     });
 
     it("[archive] display options (default menu)", () => {
-      jest.spyOn(React, "useContext").mockReset();
+      jest
+        .spyOn(Link, "default")
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>);
 
       Router.navigate("/?f=/test");
 
@@ -310,12 +317,10 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        });
+        .mockReset()
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
       const component = render(<MenuArchive />);
 
@@ -437,6 +442,11 @@ describe("MenuArchive", () => {
 
     it("[archive] synchronize-manually (select menu)", () => {
       jest.spyOn(React, "useContext").mockReset();
+
+      jest
+        .spyOn(Link, "default")
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>);
 
       Router.navigate("/?f=/trashed&select=test1.jpg");
 

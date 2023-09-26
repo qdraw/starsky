@@ -1,6 +1,6 @@
 import { act, fireEvent, render } from "@testing-library/react";
 import React from "react";
-import { MemoryRouter } from "react-router-dom";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -9,6 +9,7 @@ import * as FetchGet from "../../../shared/fetch-get";
 import * as FetchPost from "../../../shared/fetch-post";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
+import * as Link from "../../atoms/link/link";
 import * as ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-detailview-rename-file";
 import * as ModalExport from "../modal-download/modal-download";
 import * as ModalMoveFile from "../modal-move-file/modal-move-file";
@@ -722,6 +723,11 @@ describe("MenuDetailView", () => {
       it("when source is missing file can't be downloaded", () => {
         jest.spyOn(React, "useContext").mockReset();
 
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
+
         const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {
@@ -743,6 +749,10 @@ describe("MenuDetailView", () => {
 
       it("when source is missing file can't be moved", () => {
         jest.spyOn(React, "useContext").mockReset();
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
 
         const state = {
           subPath: "/trashed/test1.jpg",
@@ -754,9 +764,9 @@ describe("MenuDetailView", () => {
         } as IDetailView;
 
         const component = render(
-          <MemoryRouter>
+          <BrowserRouter>
             <MenuDetailView state={state} dispatch={jest.fn()} />
-          </MemoryRouter>
+          </BrowserRouter>
         );
 
         const item = component.queryByTestId("move") as HTMLDivElement;
@@ -765,6 +775,10 @@ describe("MenuDetailView", () => {
 
       it("when source is missing file can't be renamed", () => {
         jest.spyOn(React, "useContext").mockReset();
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
 
         const state = {
           subPath: "/trashed/test1.jpg",
@@ -787,6 +801,10 @@ describe("MenuDetailView", () => {
 
       it("when source is missing file can't be moved to trash", () => {
         jest.spyOn(React, "useContext").mockReset();
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
 
         const state = {
           subPath: "/trashed/test1.jpg",
@@ -808,6 +826,11 @@ describe("MenuDetailView", () => {
       });
 
       it("when source is missing file can't be rotated", () => {
+        jest
+          .spyOn(Link, "default")
+          .mockImplementationOnce(() => <></>)
+          .mockImplementationOnce(() => <></>);
+
         const state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: {

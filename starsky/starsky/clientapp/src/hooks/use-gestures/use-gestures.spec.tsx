@@ -461,8 +461,6 @@ describe("useGestures", () => {
     });
 
     it("touchmove double", () => {
-      jest.spyOn(callHandler, "callHandler").mockReset();
-
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
         .mockReset()
@@ -483,7 +481,7 @@ describe("useGestures", () => {
       expect(callHandlerSpy).toBeCalled();
       expect(callHandlerSpy).toBeCalledWith(
         "onPinchChanged",
-        expect.any(Object),
+        undefined,
         undefined
       );
 
@@ -495,12 +493,36 @@ describe("useGestures", () => {
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
         .mockReset()
+        .mockImplementationOnce(() => {})
         .mockImplementationOnce(() => {});
 
       jest
         .spyOn(React, "useState")
         .mockReset()
-        .mockImplementationOnce(() => [{ pointers: ["", "1"] }, jest.fn()]);
+        .mockImplementationOnce(() => [
+          {
+            pointers: ["", "1"],
+            charAt: () => {
+              return {
+                toUpperCase: jest.fn()
+              };
+            },
+            slice: jest.fn()
+          },
+          jest.fn()
+        ])
+        .mockImplementationOnce(() => [
+          {
+            pointers: ["", "1"],
+            charAt: () => {
+              return {
+                toUpperCase: jest.fn()
+              };
+            },
+            slice: jest.fn()
+          },
+          jest.fn()
+        ]);
 
       const touchEndEvent = new TouchEvent("touchend", exampleSingleTouches);
 
@@ -513,11 +535,7 @@ describe("useGestures", () => {
       });
 
       expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledWith(
-        "onPinchEnd",
-        expect.any(Object),
-        undefined
-      );
+      expect(callHandlerSpy).toBeCalledWith("onPinchEnd", undefined, undefined);
 
       const component = hook.componentMount as any;
       component.unmount();
@@ -547,21 +565,16 @@ describe("useGestures", () => {
       });
 
       expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledWith(
-        "onPanEnd",
-        expect.any(Object),
-        undefined
-      );
       expect(callHandlerSpy).toHaveBeenNthCalledWith(
         1,
         "onPanEnd",
-        expect.any(Object),
+        undefined,
         undefined
       );
       expect(callHandlerSpy).toHaveBeenNthCalledWith(
         2,
         "onGesture1End",
-        expect.any(Object),
+        undefined,
         undefined
       );
       const component = hook.componentMount as any;

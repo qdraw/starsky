@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
@@ -13,237 +13,235 @@ interface IMenuSearchBarProps {
   callback?(query: string): void;
 }
 
-const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
-  (props) => {
-    const settings = useGlobalSettings();
-    const language = new Language(settings.language);
+const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
+  props
+) => {
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
 
-    const [defaultMenu, setDefaultMenu] = useState([
-      {
-        name: language.key(localization.MessageHome),
-        url: new UrlQuery().UrlHomePage(),
-        key: "home"
-      },
-      {
-        name: language.key(localization.MessagePhotosOfThisWeek),
-        // search?t=-Datetime>7 -ImageFormat-"xmp,tiff"
-        url: new UrlQuery().UrlSearchPage(
-          "-Datetime%3E7%20-ImageFormat-%22xmp,tiff%22"
-        ),
-        key: "photos-of-this-week"
-      },
-      {
-        name: language.key(localization.MessageTrash),
-        url: new UrlQuery().UrlTrashPage(),
-        key: "trash"
-      },
-      {
-        name: language.key(localization.MessageImport),
-        url: new UrlQuery().UrlImportPage(),
-        key: "import"
-      },
-      {
-        name: language.key(localization.MessagePreferences),
-        url: new UrlQuery().UrlPreferencesPage(),
-        key: "preferences"
-      },
-      {
-        name: language.key(localization.MessageLogout),
-        url: new UrlQuery().UrlLoginPage(),
-        key: "logout"
-      }
-    ]);
-
-    const history = useLocation();
-
-    // the results
-    const [suggest, setSuggest] = useState(new Array<string>());
-
-    // to store the search query
-    const [query, setQuery] = useState(
-      props.defaultText ? props.defaultText : ""
-    );
-
-    // When pressing enter within the same page
-    const inputFormControlReference = useRef<HTMLInputElement>(null);
-
-    // used for color of icon
-    const [inputFocus, setInputFocus] = useState(true);
-
-    // can't set this inside effect or if ==> performance issue, runs to often
-    const responseObject = useFetch(
-      new UrlQuery().UrlSearchSuggestApi(query),
-      "get"
-    );
-    useEffect(() => {
-      if (!responseObject?.data?.length || responseObject.statusCode !== 200) {
-        if (suggest && suggest.length >= 1) setSuggest([]);
-        return;
-      }
-      const result: Array<string> = [...responseObject.data];
-      setSuggest(result);
-
-      // to avoid endless loops
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [responseObject]);
-
-    /** Submit the form */
-    function onFormSubmit(e: React.FormEvent) {
-      e.preventDefault();
-      navigate(query);
+  const [defaultMenu, setDefaultMenu] = useState([
+    {
+      name: language.key(localization.MessageHome),
+      url: new UrlQuery().UrlHomePage(),
+      key: "home"
+    },
+    {
+      name: language.key(localization.MessagePhotosOfThisWeek),
+      // search?t=-Datetime>7 -ImageFormat-"xmp,tiff"
+      url: new UrlQuery().UrlSearchPage(
+        "-Datetime%3E7%20-ImageFormat-%22xmp,tiff%22"
+      ),
+      key: "photos-of-this-week"
+    },
+    {
+      name: language.key(localization.MessageTrash),
+      url: new UrlQuery().UrlTrashPage(),
+      key: "trash"
+    },
+    {
+      name: language.key(localization.MessageImport),
+      url: new UrlQuery().UrlImportPage(),
+      key: "import"
+    },
+    {
+      name: language.key(localization.MessagePreferences),
+      url: new UrlQuery().UrlPreferencesPage(),
+      key: "preferences"
+    },
+    {
+      name: language.key(localization.MessageLogout),
+      url: new UrlQuery().UrlLoginPage(),
+      key: "logout"
     }
+  ]);
 
-    /** Go to different search page */
-    function navigate(defQuery: string) {
-      // To do change to search page
-      history.navigate(new UrlQuery().UrlSearchPage(defQuery));
-      setFormFocus(false);
+  const history = useLocation();
 
-      // force update input field after navigate to page (only the input item)
-      (inputFormControlReference.current as HTMLInputElement).value = defQuery;
+  // the results
+  const [suggest, setSuggest] = useState(new Array<string>());
 
-      if (!props.callback) return;
-      props.callback(defQuery);
+  // to store the search query
+  const [query, setQuery] = useState(
+    props.defaultText ? props.defaultText : ""
+  );
+
+  // When pressing enter within the same page
+  const inputFormControlReference = useRef<HTMLInputElement>(null);
+
+  // used for color of icon
+  const [inputFocus, setInputFocus] = useState(true);
+
+  // can't set this inside effect or if ==> performance issue, runs to often
+  const responseObject = useFetch(
+    new UrlQuery().UrlSearchSuggestApi(query),
+    "get"
+  );
+  useEffect(() => {
+    if (!responseObject?.data?.length || responseObject.statusCode !== 200) {
+      if (suggest && suggest.length >= 1) setSuggest([]);
+      return;
     }
+    const result: Array<string> = [...responseObject.data];
+    setSuggest(result);
 
-    const featuresResult = useFetch(
-      new UrlQuery().UrlApiFeaturesAppSettings(),
-      "get"
-    );
-    useEffect(() => {
-      const dataFeatures = featuresResult?.data as IEnvFeatures | undefined;
-      if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktopUi) {
-        let newMenu = [...defaultMenu];
-        if (dataFeatures?.systemTrashEnabled) {
-          newMenu = newMenu.filter((item) => item.key !== "trash");
-        }
-        if (dataFeatures?.useLocalDesktopUi) {
-          newMenu = newMenu.filter((item) => item.key !== "logout");
-        }
-        setDefaultMenu([...newMenu]);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [featuresResult, featuresResult?.data?.systemTrashEnabled]);
+    // to avoid endless loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [responseObject]);
 
-    /**
-     * is form active
-     */
-    const [formFocus, setFormFocus] = useState(false);
-
-    /**
-     * Add listener to checks if you don't point outside the form
-     */
-    useEffect(() => {
-      // Bind the event listener
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        // Unbind the event listener on clean up
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    });
-
-    /**
-     * If check to know if you clicked inside the form and suggestions
-     * @param event mouse event from document
-     */
-    function handleClickOutside(event: MouseEvent) {
-      const target = event.target as HTMLElement;
-      if (
-        target.className.indexOf("menu-item") === -1 &&
-        target.className.indexOf("icon-addon") === -1 &&
-        target.className.indexOf("search-icon") === -1
-      ) {
-        setFormFocus(false);
-      }
-    }
-    const [keyDownIndex, setKeyDownIndex] = useState(-1);
-
-    return (
-      <div className="menu-inline-search">
-        <div
-          className={!formFocus ? "blur" : ""}
-          onFocus={() => setFormFocus(true)}
-        >
-          <ul>
-            <li className="menu-item menu-item--half-extra">
-              <form
-                className="form-inline form-nav icon-addon"
-                onSubmit={onFormSubmit}
-              >
-                <label
-                  htmlFor="menu-inline-search"
-                  className={
-                    inputFocus
-                      ? "icon-addon--search"
-                      : "icon-addon--search-focus"
-                  }
-                >
-                  Search
-                </label>
-                <input
-                  id={"menu-inline-search"}
-                  maxLength={80}
-                  className={"form-control icon-addon--input"}
-                  onBlur={() => {
-                    setInputFocus(!inputFocus);
-                  }}
-                  onFocus={() => {
-                    setInputFocus(!inputFocus);
-                  }}
-                  autoComplete="off"
-                  data-test="menu-inline-search"
-                  defaultValue={query}
-                  ref={inputFormControlReference}
-                  onKeyDown={(e) => {
-                    setInputFocus(false);
-                    ArrowKeyDown(
-                      e,
-                      keyDownIndex,
-                      setKeyDownIndex,
-                      inputFormControlReference.current,
-                      suggest
-                    );
-                  }}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                  }}
-                />
-              </form>
-            </li>
-            {suggest && suggest.length === 0
-              ? defaultMenu.map((value) => {
-                  return (
-                    <li
-                      className="menu-item menu-item--default"
-                      key={value.name}
-                      data-test={`default-menu-item-${value.key}`}
-                    >
-                      <a href={value.url}>{value.name}</a>{" "}
-                    </li>
-                  );
-                })
-              : null}
-            {suggest?.map((item, index) =>
-              index <= 8 ? (
-                <li
-                  key={item}
-                  data-key={item}
-                  className="menu-item menu-item--results"
-                >
-                  <button
-                    onClick={() => navigate(item)}
-                    className="search-icon"
-                  >
-                    {item}
-                  </button>
-                </li>
-              ) : null
-            )}
-          </ul>
-        </div>
-      </div>
-    );
+  /** Submit the form */
+  function onFormSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    navigate(query);
   }
-);
 
+  /** Go to different search page */
+  function navigate(defQuery: string) {
+    // To do change to search page
+    history.navigate(new UrlQuery().UrlSearchPage(defQuery));
+    setFormFocus(false);
+
+    // force update input field after navigate to page (only the input item)
+    (inputFormControlReference.current as HTMLInputElement).value = defQuery;
+
+    if (!props.callback) return;
+    props.callback(defQuery);
+  }
+
+  const featuresResult = useFetch(
+    new UrlQuery().UrlApiFeaturesAppSettings(),
+    "get"
+  );
+  useEffect(() => {
+    const dataFeatures = featuresResult?.data as IEnvFeatures | undefined;
+    if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktopUi) {
+      let newMenu = [...defaultMenu];
+      if (dataFeatures?.systemTrashEnabled) {
+        newMenu = newMenu.filter((item) => item.key !== "trash");
+      }
+      if (dataFeatures?.useLocalDesktopUi) {
+        newMenu = newMenu.filter((item) => item.key !== "logout");
+      }
+      setDefaultMenu([...newMenu]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [featuresResult, featuresResult?.data?.systemTrashEnabled]);
+
+  /**
+   * is form active
+   */
+  const [formFocus, setFormFocus] = useState(false);
+
+  /**
+   * Add listener to checks if you don't point outside the form
+   */
+  useEffect(() => {
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  });
+
+  /**
+   * If check to know if you clicked inside the form and suggestions
+   * @param event mouse event from document
+   */
+  function handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (
+      target.className.indexOf("menu-item") === -1 &&
+      target.className.indexOf("icon-addon") === -1 &&
+      target.className.indexOf("search-icon") === -1
+    ) {
+      setFormFocus(false);
+    }
+  }
+  const [keyDownIndex, setKeyDownIndex] = useState(-1);
+
+  return (
+    <div className="menu-inline-search">
+      <div
+        className={!formFocus ? "blur" : ""}
+        onFocus={() => setFormFocus(true)}
+      >
+        <ul>
+          <li className="menu-item menu-item--half-extra">
+            <form
+              className="form-inline form-nav icon-addon"
+              onSubmit={onFormSubmit}
+            >
+              <label
+                htmlFor="menu-inline-search"
+                className={
+                  inputFocus ? "icon-addon--search" : "icon-addon--search-focus"
+                }
+              >
+                Search
+              </label>
+              <input
+                id={"menu-inline-search"}
+                maxLength={80}
+                className={"form-control icon-addon--input"}
+                onBlur={() => {
+                  setInputFocus((name) => !name);
+                }}
+                onFocus={() => {
+                  setInputFocus((name) => !name);
+                }}
+                autoComplete="off"
+                data-test="menu-inline-search"
+                defaultValue={query}
+                ref={inputFormControlReference}
+                onKeyDown={(e) => {
+                  setInputFocus(false);
+                  ArrowKeyDown(
+                    e,
+                    keyDownIndex,
+                    setKeyDownIndex,
+                    inputFormControlReference.current,
+                    suggest
+                  );
+                }}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                }}
+              />
+            </form>
+          </li>
+          {suggest && suggest.length === 0
+            ? defaultMenu.map((value) => {
+                return (
+                  <li
+                    className="menu-item menu-item--default"
+                    key={value.name}
+                    data-test={`default-menu-item-${value.key}`}
+                  >
+                    <a href={value.url}>{value.name}</a>{" "}
+                  </li>
+                );
+              })
+            : null}
+          {suggest?.map((item, index) =>
+            index <= 8 ? (
+              <li
+                key={item}
+                data-key={item}
+                className="menu-item menu-item--results"
+              >
+                <button
+                  onClick={() => navigate(item)}
+                  className="search-icon"
+                  data-test="menu-inline-search-search-icon"
+                >
+                  {item}
+                </button>
+              </li>
+            ) : null
+          )}
+        </ul>
+      </div>
+    </div>
+  );
+};
 export default MenuInlineSearch;

@@ -1,4 +1,4 @@
-npm create -y vite@latest clientapp2 -- --template react-swc-ts
+npm create -y vite@latest clientapp -- --template react-ts
 
 wordt geleverd met:
 "@types/react": "^18.2.15",
