@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
-import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
-import { IEnvFeatures } from "../../../interfaces/IEnvFeatures";
-import localization from "../../../localization/localization.json";
-import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import ArrowKeyDown from "./shared/arrow-key-down";
+import InlineSearchSuggest from "./shared/inline-search-suggest";
+import Navigate from "./shared/navigate";
 
 interface IMenuSearchBarProps {
   defaultText?: string;
@@ -16,45 +14,6 @@ interface IMenuSearchBarProps {
 const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
   props
 ) => {
-  const settings = useGlobalSettings();
-  const language = new Language(settings.language);
-
-  const [defaultMenu, setDefaultMenu] = useState([
-    {
-      name: language.key(localization.MessageHome),
-      url: new UrlQuery().UrlHomePage(),
-      key: "home"
-    },
-    {
-      name: language.key(localization.MessagePhotosOfThisWeek),
-      // search?t=-Datetime>7 -ImageFormat-"xmp,tiff"
-      url: new UrlQuery().UrlSearchPage(
-        "-Datetime%3E7%20-ImageFormat-%22xmp,tiff%22"
-      ),
-      key: "photos-of-this-week"
-    },
-    {
-      name: language.key(localization.MessageTrash),
-      url: new UrlQuery().UrlTrashPage(),
-      key: "trash"
-    },
-    {
-      name: language.key(localization.MessageImport),
-      url: new UrlQuery().UrlImportPage(),
-      key: "import"
-    },
-    {
-      name: language.key(localization.MessagePreferences),
-      url: new UrlQuery().UrlPreferencesPage(),
-      key: "preferences"
-    },
-    {
-      name: language.key(localization.MessageLogout),
-      url: new UrlQuery().UrlLoginPage(),
-      key: "logout"
-    }
-  ]);
-
   const history = useLocation();
 
   // the results
@@ -91,40 +50,19 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
   /** Submit the form */
   function onFormSubmit(e: React.FormEvent) {
     e.preventDefault();
-    navigate(query);
-  }
-
-  /** Go to different search page */
-  function navigate(defQuery: string) {
-    // To do change to search page
-    history.navigate(new UrlQuery().UrlSearchPage(defQuery));
-    setFormFocus(false);
-
-    // force update input field after navigate to page (only the input item)
-    (inputFormControlReference.current as HTMLInputElement).value = defQuery;
-
-    if (!props.callback) return;
-    props.callback(defQuery);
+    Navigate(
+      history,
+      setFormFocus,
+      inputFormControlReference,
+      query,
+      props.callback
+    );
   }
 
   const featuresResult = useFetch(
     new UrlQuery().UrlApiFeaturesAppSettings(),
     "get"
   );
-  useEffect(() => {
-    const dataFeatures = featuresResult?.data as IEnvFeatures | undefined;
-    if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktopUi) {
-      let newMenu = [...defaultMenu];
-      if (dataFeatures?.systemTrashEnabled) {
-        newMenu = newMenu.filter((item) => item.key !== "trash");
-      }
-      if (dataFeatures?.useLocalDesktopUi) {
-        newMenu = newMenu.filter((item) => item.key !== "logout");
-      }
-      setDefaultMenu([...newMenu]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [featuresResult, featuresResult?.data?.systemTrashEnabled]);
 
   /**
    * is form active
@@ -209,36 +147,15 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
               />
             </form>
           </li>
-          {suggest && suggest.length === 0
-            ? defaultMenu.map((value) => {
-                return (
-                  <li
-                    className="menu-item menu-item--default"
-                    key={value.name}
-                    data-test={`default-menu-item-${value.key}`}
-                  >
-                    <a href={value.url}>{value.name}</a>{" "}
-                  </li>
-                );
-              })
-            : null}
-          {suggest?.map((item, index) =>
-            index <= 8 ? (
-              <li
-                key={item}
-                data-key={item}
-                className="menu-item menu-item--results"
-              >
-                <button
-                  onClick={() => navigate(item)}
-                  className="search-icon"
-                  data-test="menu-inline-search-search-icon"
-                >
-                  {item}
-                </button>
-              </li>
-            ) : null
-          )}
+
+          <InlineSearchSuggest
+            suggest={suggest}
+            defaultText={props.defaultText}
+            setFormFocus={setFormFocus}
+            inputFormControlReference={inputFormControlReference}
+            callback={props.callback}
+            featuresResult={featuresResult}
+          />
         </ul>
       </div>
     </div>
