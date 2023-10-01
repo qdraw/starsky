@@ -1,7 +1,7 @@
 import { ILocationObject } from "./ILocationObject";
-import { INavigateFunction } from "./INavigateFunction";
+import { NavigateFunction } from "../type/NavigateFunction";
 
 export interface IUseLocation {
   location: ILocationObject;
-  navigate: INavigateFunction;
+  navigate: NavigateFunction;
 }
