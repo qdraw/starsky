@@ -195,6 +195,17 @@ describe("url-query", () => {
     });
   });
 
+  describe("UrlIndexServerApiPath", () => {
+    it("returns the correct URL", () => {
+      const urlQuery = new UrlQuery();
+      urlQuery.prefix = "https://example.com";
+      const path = "example/path";
+      const expectedUrl = "https://example.com/api/index?f=example/path";
+      const result = urlQuery.UrlIndexServerApiPath(path);
+      expect(result).toBe(expectedUrl);
+    });
+  });
+
   describe("UrlThumbnailImageLargeOrExtraLarge", () => {
     it("should contain hash_test (large false)", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(

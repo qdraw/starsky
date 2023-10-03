@@ -14,6 +14,7 @@ type ModalPropTypes = {
   handleExit: () => any;
   focusAfterExit?: HTMLElement;
   className?: string;
+  dataTest?: string;
 };
 
 export const ModalOpenClassName = "modal-bg--open";
@@ -34,7 +35,8 @@ export default function Modal({
   isOpen,
   handleExit,
   focusAfterExit,
-  className = ""
+  className = "",
+  dataTest = "modal-bg"
 }: ModalPropTypes): any {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -67,7 +69,7 @@ export default function Modal({
       <>
         <div
           onClick={(event) => ifModalOpenHandleExit(event, handleExit)}
-          data-test="modal-bg"
+          data-test={dataTest}
           className={`modal-bg ${
             isOpen ? ` ${ModalOpenClassName} ` + className : ""
           }`}

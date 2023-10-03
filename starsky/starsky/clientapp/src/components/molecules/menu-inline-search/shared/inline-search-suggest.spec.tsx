@@ -93,4 +93,45 @@ describe("inline-search-suggest", () => {
       expect(queryByText("Logout")).toBeNull();
     });
   });
+
+  describe("max suggestions", () => {
+    it("renders up to 9 suggestions", () => {
+      const suggest = [
+        "suggestion1",
+        "suggestion2",
+        "suggestion3",
+        "suggestion4",
+        "suggestion5",
+        "suggestion6",
+        "suggestion7",
+        "suggestion8",
+        "suggestion9",
+        "suggestion10"
+      ];
+      const { queryAllByTestId } = render(
+        <InlineSearchSuggest
+          suggest={suggest}
+          setFormFocus={jest.fn()}
+          inputFormControlReference={{ current: null }}
+          featuresResult={{} as IConnectionDefault}
+          callback={jest.fn()}
+        />
+      );
+      expect(queryAllByTestId(/^menu-inline-search-suggest-/).length).toBe(9);
+    });
+
+    it("renders all suggestions when there are less than 9", () => {
+      const suggest = ["suggestion1", "suggestion2", "suggestion3"];
+      const { queryAllByTestId } = render(
+        <InlineSearchSuggest
+          suggest={suggest}
+          setFormFocus={jest.fn()}
+          inputFormControlReference={{ current: null }}
+          featuresResult={{} as IConnectionDefault}
+          callback={jest.fn()}
+        />
+      );
+      expect(queryAllByTestId(/^menu-inline-search-suggest-/).length).toBe(3);
+    });
+  });
 });

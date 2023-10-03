@@ -23,6 +23,7 @@ const ModalDropAreaFilesAdded: React.FunctionComponent<
     <Modal
       id="modal-drop-area-files-added"
       isOpen={props.isOpen}
+      dataTest="modal-drop-area-files-added"
       handleExit={() => {
         props.handleExit();
       }}

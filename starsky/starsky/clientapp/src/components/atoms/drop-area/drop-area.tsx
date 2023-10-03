@@ -171,6 +171,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
             id={dropAreaId}
             className="droparea-file-input"
             type="file"
+            data-test="droparea-file-input"
             multiple={true}
             onChange={onChange}
           />

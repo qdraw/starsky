@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import L, { LatLng } from "leaflet";
 import * as Modal from "../../atoms/modal/modal";
 import ModalGeo, { ILatLong } from "./modal-geo";
@@ -328,6 +328,42 @@ describe("ModalGeo", () => {
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
       modal.unmount();
+    });
+  });
+
+  describe("ModalGeo", () => {
+    const props = {
+      isOpen: true,
+      isFormEnabled: true,
+      handleExit: jest.fn(),
+      selectedSubPath: "path/to/sub",
+      parentDirectory: "path/to/parent",
+      latitude: 37.123456789,
+      longitude: -122.987654321,
+      collections: true
+    };
+
+    it("displays the correct subheader message", () => {
+      render(<ModalGeo {...props} />);
+      const subheader = screen.getByTestId("force-cancel");
+      expect(subheader).toBeDefined();
+    });
+
+    it("displays the correct latitude and longitude values", () => {
+      const component = render(<ModalGeo {...props} />);
+      const latitude = screen.getByTestId("modal-latitude");
+      const longitude = screen.getByTestId("modal-longitude");
+      expect(latitude.textContent).toEqual("37.123457");
+      expect(longitude.textContent).toEqual("-122.987654");
+      component.unmount();
+    });
+
+    it("calls handleExit with null when cancel button is clicked", () => {
+      const component = render(<ModalGeo {...props} />);
+      const cancelButton = screen.getByTestId("force-cancel");
+      fireEvent.click(cancelButton);
+      expect(props.handleExit).toHaveBeenCalledWith(null);
+      component.unmount();
     });
   });
 });
