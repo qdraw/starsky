@@ -108,9 +108,6 @@ describe("menu-inline-search", () => {
         menuBar.findByTestId("menu-inline-search-search-icon")
       ).toBeTruthy();
 
-      console.log(menuBar.container.innerHTML);
-      console.log("----");
-
       menuBar.unmount();
     });
   });

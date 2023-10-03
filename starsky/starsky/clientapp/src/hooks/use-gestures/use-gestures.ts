@@ -134,8 +134,6 @@ const executeTouchEnd = (
   }
 
   if (gesture) {
-    console.log(gesture);
-
     callHandler(
       `on${gesture.charAt(0).toUpperCase() + gesture.slice(1)}End`,
       currentTouches,

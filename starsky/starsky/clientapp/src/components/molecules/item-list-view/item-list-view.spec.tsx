@@ -134,10 +134,6 @@ describe("ItemListView", () => {
       (window as any).domNode = div;
       document.body.appendChild(div);
 
-      // window.location?. = {
-      //   filePath: exampleData[0].filePath
-      // } as INavigateState;
-
       const useLocationMock = {
         location: {
           state: {
