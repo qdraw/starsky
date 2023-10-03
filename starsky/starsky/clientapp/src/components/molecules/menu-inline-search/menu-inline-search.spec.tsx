@@ -200,7 +200,7 @@ describe("menu-inline-search", () => {
       menuBar.unmount();
     });
 
-    xit("reset suggestions after change to nothing", () => {
+    it("reset suggestions after change to nothing", () => {
       console.log("reset suggestions after change to nothing");
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
@@ -236,7 +236,7 @@ describe("menu-inline-search", () => {
       menuBar.unmount();
     });
 
-    xit("ArrowKeyDown called", () => {
+    it("ArrowKeyDown called", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")

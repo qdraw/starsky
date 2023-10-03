@@ -98,5 +98,37 @@
   "MessageIncludingColonWord": {
     "en": "Including: ",
     "nl": "Inclusief: "
+  },
+  "MessageAddLocation": {
+    "en": "Add location",
+    "nl": "Voeg locatie toe"
+  },
+  "MessageUpdateLocation": {
+    "en": "Update location",
+    "nl": "Werk locatie bij"
+  },
+  "MessageViewLocation": {
+    "en": "View location",
+    "nl": "Bekijk locatie"
+  },
+  "MessageErrorGenericFail": {
+    "en": "Something went wrong with the update. Please try again",
+    "nl": "Er is iets misgegaan met het updaten. Probeer het opnieuw"
+  },
+  "MessageNoPhotosInFolder": {
+    "en": "There are no photos in this folder",
+    "nl": "Er zijn geen foto's in deze map"
+  },
+  "MessageNewUserNoPhotosInFolder": {
+    "en": "New? Set your drive location in the settings.",
+    "nl": "Nieuw? Stel je schijflocatie in de instellingen."
+  },
+  "MessageItemsOutsideFilter": {
+    "en": "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'",
+    "nl": "Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'"
+  },
+  "temp": {
+    "en": "",
+    "nl": ""
   }
 }

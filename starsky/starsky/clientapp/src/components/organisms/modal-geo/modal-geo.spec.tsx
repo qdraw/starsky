@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import L, { LatLng } from "leaflet";
-import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import * as Modal from "../../atoms/modal/modal";
 import ModalGeo, { ILatLong } from "./modal-geo";
 import { AddDefaultClickSetMarker } from "./shared/add-default-click-set-marker";
@@ -9,6 +8,7 @@ import * as AddDefaultMarker from "./shared/add-default-marker";
 import { GetZoom } from "./shared/get-zoom";
 import { OnDrag } from "./shared/on-drag";
 import { RealtimeMapUpdate } from "./shared/realtime-map-update";
+import { UpdateButton } from "./shared/update-button";
 import * as updateGeoLocation from "./shared/update-geo-location";
 
 describe("ModalGeo", () => {
@@ -198,16 +198,12 @@ describe("ModalGeo", () => {
       modal.unmount();
     });
 
-    xit("click on update button with edit - failed api", async () => {
-      const updateSpy = jest
-        .spyOn(updateGeoLocation, "UpdateGeoLocation")
+    it("check if form is disabled it hides the button", async () => {
+      const updateButtonSpy = jest
+        .spyOn(UpdateButton.prototype, "updateButton")
         .mockImplementationOnce(() => {
-          return Promise.resolve(null);
+          return <div>test</div>;
         });
-
-      jest
-        .spyOn(AddDefaultMarker, "AddDefaultMarker")
-        .mockImplementationOnce(() => true);
 
       const handleExitSpy = jest.fn();
       const modal = render(
@@ -218,41 +214,22 @@ describe("ModalGeo", () => {
           handleExit={handleExitSpy}
           latitude={51}
           longitude={3}
-          isFormEnabled={true}
+          isFormEnabled={false}
         ></ModalGeo>
       );
 
-      console.log(modal.container.innerHTML);
+      expect(updateButtonSpy).toBeCalledTimes(0);
 
-      (await modal.findByTestId("content-geo")).click();
-
-      const button = await screen.findByTestId("update-geo-location");
-      button.click();
-
-      expect(updateSpy).toBeCalled();
-      expect(updateSpy).toBeCalledWith(
-        "/",
-        "/test.jpg",
-        {
-          latitude: 51.00001,
-          longitude: 2.999997
-        },
-        expect.any(Function),
-        expect.any(Function),
-        undefined
-      );
-      expect(handleExitSpy).toBeCalledTimes(0);
       modal.unmount();
     });
 
-    xit("click on update button with edit - success api", async () => {
-      const updateSpy = jest
-        .spyOn(updateGeoLocation, "UpdateGeoLocation")
+    it("check if form is enabled it shows the button", () => {
+      const updateButtonSpy = jest
+        .spyOn(UpdateButton.prototype, "updateButton")
         .mockImplementationOnce(() => {
-          return Promise.resolve({
-            locationCity: "t"
-          } as IGeoLocationModel);
+          return <div>test</div>;
         });
+
       const handleExitSpy = jest.fn();
       const modal = render(
         <ModalGeo
@@ -266,26 +243,16 @@ describe("ModalGeo", () => {
         ></ModalGeo>
       );
 
-      (await screen.findByTestId("content-geo")).click();
+      expect(updateButtonSpy).toBeCalledTimes(2);
 
-      const button = await screen.findByTestId("update-geo-location");
-      button.click();
-
-      expect(updateSpy).toBeCalled();
-      expect(updateSpy).toBeCalledWith(
-        "/",
-        "/test.jpg",
-        {
-          latitude: 51.00001,
-          longitude: 2.999997
-        },
+      expect(updateButtonSpy).toHaveBeenLastCalledWith(
+        false,
         expect.any(Function),
-        expect.any(Function),
-        undefined
+        51,
+        3,
+        { selectedLanguage: "en" }
       );
 
-      await waitFor(() => expect(handleExitSpy).toBeCalledTimes(1));
-      expect(handleExitSpy).toBeCalledWith({ locationCity: "t" });
       modal.unmount();
     });
 

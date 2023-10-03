@@ -1,15 +1,15 @@
 import L from "leaflet";
 import React, { useCallback, useEffect, useState } from "react";
-import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
-
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 import Preloader from "../../atoms/preloader/preloader";
 import { LatLongRound } from "./shared/lat-long-round";
 import { RealtimeMapUpdate } from "./shared/realtime-map-update";
-import { UpdateGeoLocation } from "./shared/update-geo-location";
+import { UpdateButton } from "./shared/update-button";
 import { UpdateMap } from "./shared/update-map";
 
 export interface IModalMoveFileProps {
@@ -38,20 +38,10 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
 }) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
+
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const MessageAddLocation = language.text("Voeg locatie toe", "Add location");
-  const MessageUpdateLocation = language.text(
-    "Werk locatie bij",
-    "Update location"
-  );
-  const MessageViewLocation = language.text("Bekijk locatie", "View location");
-  const MessageCancel = language.text("Annuleren", "Cancel");
-  const MessageErrorGenericFail = new Language(settings.language).text(
-    "Er is iets misgegaan met het updaten. Probeer het opnieuw",
-    "Something went wrong with the update. Please try again"
-  );
   const [mapState, setMapState] = useState<L.Map | null>(null);
 
   const [location, setLocation] = useState<ILatLong>({
@@ -101,43 +91,14 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
     let message: string;
     if (isFormEnabled) {
       if (!latitude && !longitude) {
-        message = MessageAddLocation;
+        message = language.key(localization.MessageAddLocation);
       } else {
-        message = MessageUpdateLocation;
+        message = language.key(localization.MessageUpdateLocation);
       }
     } else {
-      message = MessageViewLocation;
+      message = language.key(localization.MessageViewLocation);
     }
     return message;
-  }
-
-  function updateButton(): React.JSX.Element {
-    return isLocationUpdated ? (
-      <button
-        onClick={async () => {
-          const model = await UpdateGeoLocation(
-            parentDirectory,
-            selectedSubPath,
-            location,
-            setError,
-            setIsLoading,
-            props.collections
-          );
-          if (model) {
-            props.handleExit(model);
-          }
-        }}
-        data-test="update-geo-location"
-        className="btn btn--default"
-      >
-        {!latitude && !longitude ? MessageAddLocation : MessageUpdateLocation}
-      </button>
-    ) : (
-      <button className="btn btn--default" disabled={true}>
-        {/* disabled */}
-        {!latitude && !longitude ? MessageAddLocation : MessageUpdateLocation}
-      </button>
-    );
   }
 
   return (
@@ -154,7 +115,7 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
         {error ? (
           <div className="modal modal-button-bar-error">
             <div data-test="login-error" className="content--error-true">
-              {MessageErrorGenericFail}
+              {language.key(localization.MessageErrorGenericFail)}
             </div>
           </div>
         ) : null}
@@ -169,9 +130,24 @@ const ModalGeo: React.FunctionComponent<IModalMoveFileProps> = ({
             onClick={() => props.handleExit(null)}
             className="btn btn--info"
           >
-            {MessageCancel}
+            {language.key(localization.MessageCancel)}
           </button>
-          {isFormEnabled ? updateButton() : null}
+          {isFormEnabled
+            ? new UpdateButton(
+                parentDirectory,
+                selectedSubPath,
+                location,
+                setError,
+                setIsLoading,
+                props.collections
+              ).updateButton(
+                isLocationUpdated,
+                props.handleExit,
+                latitude,
+                longitude,
+                language
+              )
+            : null}
           <div className="lat-long">
             <b>Latitude:</b>{" "}
             <FormControl

@@ -148,14 +148,14 @@ npm create -y vite@latest clientapp -- --template react-ts
 
 cd clientapp
 npm install
-  
+
 ```
 
 **Normal dependencies, that are included**
 react, react-dom
 
 **Dev dependencies, that are included**
-@types/react, @types/react-dom, @typescript-eslint/eslint-plugin, @typescript-eslint/parser, 
+@types/react, @types/react-dom, @typescript-eslint/eslint-plugin, @typescript-eslint/parser,
 @vitejs/plugin-react, eslint, eslint-plugin-react-hooks, eslint-plugin-react-refresh, typescript, vite
 
 npm install --save leaflet
@@ -192,13 +192,9 @@ npm install --save-dev @storybook/react
 npm install --save-dev @storybook/react-vite
 npm install --save-dev @storybook/testing-library
 
-
 npm install --save-dev @testing-library/jest-dom
 npm install --save-dev @testing-library/react
 npm install --save-dev @testing-library/user-event
-
-
-
 
 #### Update the name of the project
 
@@ -295,7 +291,7 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
 
 You should replace the existing eslintConfig chapter
 
-``` 
+```
   "eslintConfig": {
     "root": true,
     "env": {
@@ -381,9 +377,7 @@ Cannot use JSX unless the '--jsx' flag is provided.
 read this:
 https://stackoverflow.com/questions/64974648/problem-with-visual-studio-code-using-react-jsx-as-jsx-value-with-create-react
 
-
-----------------
-
+---
 
 # React + TypeScript + Vite
 
@@ -412,5 +406,3 @@ If you are developing a production application, we recommend updating the config
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
-
-

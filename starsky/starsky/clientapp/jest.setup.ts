@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 import { configure } from "@testing-library/react";
 import "isomorphic-fetch";
 
