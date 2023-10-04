@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { DetailViewAction } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
 import { Language } from "../../../shared/language";
@@ -40,12 +40,12 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
       const MessageLocation = language.text("locatie", "location");
 
       const [isLocationOpen, setLocationOpen] = React.useState(
-        history.location.href.includes("&modal=geo")
+        history.location.search?.includes("&modal=geo")
       );
 
       function handleExit(model: IGeoLocationModel | null) {
         setLocationOpen(false);
-        history.navigate(history.location.href.replace(/&modal=geo/gi, ""), {
+        history.navigate(history.location.search.replace(/&modal=geo/gi, ""), {
           replace: true
         });
 
@@ -69,7 +69,7 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
       function onClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
         event.preventDefault();
         history.navigate(
-          history.location.href.replace(/&modal=geo/gi, "") + "&modal=geo",
+          history.location.search.replace(/&modal=geo/gi, "") + "&modal=geo",
           {
             replace: true
           }
@@ -102,7 +102,7 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
               className="icon icon--location"
               data-test="detailview-location-div"
             />
-            {true ? <div className="icon icon--right icon--edit" /> : null}
+            <div className="icon icon--right icon--edit" />
             {locationCity && locationCountry ? (
               <>
                 <b data-test="detailview-info-location-city">{locationCity}</b>

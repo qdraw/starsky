@@ -9,15 +9,14 @@ export class URLPath {
   }
 
   public StringToIUrl(locationHash: string): IUrl {
-    let hash = this.RemovePrefixUrl(locationHash);
-    let params = new URLSearchParams(hash).entries();
+    const hash = this.RemovePrefixUrl(locationHash);
+    const params = new URLSearchParams(hash).entries();
 
     const urlObject: IUrl = {};
-    for (let key of Array.from(params)) {
+    for (const key of Array.from(params)) {
       switch (key[0].toLowerCase()) {
         case "colorClass".toLowerCase():
-          const colorClassText = key[1];
-          urlObject.colorClass = this.stringToNumberArray(colorClassText);
+          urlObject.colorClass = this.stringToNumberArray(key[1]);
           break;
         case "collections".toLowerCase():
           // default is true
@@ -40,6 +39,7 @@ export class URLPath {
           urlObject.t = key[1];
           break;
         case "p": // used for search pagination
+          // eslint-disable-next-line no-case-declarations
           const pagination = Number(key[1]);
           if (isNaN(pagination)) continue;
           urlObject.p = pagination;
@@ -104,7 +104,7 @@ export class URLPath {
    */
   public IUrlToString(urlObject: IUrl): string {
     const params = new URLSearchParams();
-    for (let key of Object.entries(urlObject)) {
+    for (const key of Object.entries(urlObject)) {
       params.set(key[0], key[1]);
     }
     let url = this.AddPrefixUrl(params.toString());
@@ -122,9 +122,10 @@ export class URLPath {
    * append=true&collections=true&tags=update
    * @param toUpdate
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public ObjectToSearchParams(toUpdate: Object): URLSearchParams {
     const bodyParams = new URLSearchParams();
-    for (let key of Object.entries(toUpdate)) {
+    for (const key of Object.entries(toUpdate)) {
       if (key[1] && key[1].length >= 1) {
         bodyParams.set(key[0], key[1]);
       }
@@ -137,7 +138,7 @@ export class URLPath {
 
   public RemovePrefixUrl(input: string): string {
     if (!input) return "";
-    let output = input.replace(/^#?(\/)?/gi, "");
+    const output = input.replace(/^#?(\/)?/gi, "");
     return output.replace(/\+/gi, "%2B");
   }
 
@@ -156,8 +157,8 @@ export class URLPath {
   }
 
   public getParent(locationHash: string): string {
-    let hash = this.RemovePrefixUrl(locationHash);
-    let search = new URLSearchParams(hash);
+    const hash = this.RemovePrefixUrl(locationHash);
+    const search = new URLSearchParams(hash);
     let getFilePath = search.get("f");
 
     if (!getFilePath) return "/";
@@ -195,9 +196,9 @@ export class URLPath {
   }
 
   public getFilePath(locationHash: string): string {
-    let hash = this.RemovePrefixUrl(locationHash);
-    let search = new URLSearchParams(hash);
-    let getFilePath = search.get("f");
+    const hash = this.RemovePrefixUrl(locationHash);
+    const search = new URLSearchParams(hash);
+    const getFilePath = search.get("f");
     if (!getFilePath) return "/";
     return getFilePath.replace(/\/$/, "");
   }
@@ -303,10 +304,10 @@ export class URLPath {
   }
 
   /**
-   * Combine select to dot comma seperated
+   * Combine select to dot comma Separated
    * @param select Array with path
    */
-  public ArrayToCommaSeperatedString(select: string[]): string {
+  public ArrayToCommaSeparatedString(select: string[]): string {
     let selectString = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];
@@ -319,7 +320,7 @@ export class URLPath {
     return selectString;
   }
 
-  public ArrayToCommaSeperatedStringOneParent(
+  public ArrayToCommaSeparatedStringOneParent(
     select: string[],
     parent: string
   ): string {

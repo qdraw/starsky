@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import DetectAutomaticRotation from "../../../shared/detect-automatic-rotation";
 import FetchGet from "../../../shared/fetch-get";
@@ -20,7 +20,7 @@ export interface IFileHashImageProps {
 
 const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   // To Get the rotation update
-  const [translateRotation, setTranslateRotation] = React.useState(
+  const [translateRotation, setTranslateRotation] = useState(
     Orientation.Horizontal
   );
   useEffect(() => {
@@ -45,7 +45,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     })();
   }, [props.fileHash, props.orientation]);
 
-  const [imageUrl, setImageUrl] = React.useState(
+  const [imageUrl, setImageUrl] = useState(
     new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
       props.fileHash,
       props.id,

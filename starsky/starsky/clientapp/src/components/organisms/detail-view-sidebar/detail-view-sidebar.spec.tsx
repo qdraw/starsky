@@ -155,7 +155,7 @@ describe("DetailViewSidebar", () => {
       // import * as ModalDatetime from './modal-datetime';
       const modalDatetimeSpy = jest
         .spyOn(ModalDatetime, "default")
-        .mockImplementationOnce((props) => {
+        .mockImplementationOnce(() => {
           return <></>;
         });
 
@@ -404,7 +404,7 @@ describe("DetailViewSidebar", () => {
       };
     });
 
-    function findDataNameCurrent(component: RenderResult, name: string) {
+    function findDataNameCurrent(_component: RenderResult, name: string) {
       return screen
         .queryAllByTestId("form-control")
         .find((p) => (p as HTMLElement).getAttribute("data-name") === name);
@@ -661,6 +661,7 @@ describe("DetailViewSidebar", () => {
 
       const isInFormSpy = jest
         .spyOn(Keyboard.prototype, "isInForm")
+        .mockReset()
         .mockImplementationOnce(() => false)
         .mockImplementationOnce(() => false)
         .mockImplementationOnce(() => false)
@@ -674,7 +675,7 @@ describe("DetailViewSidebar", () => {
         .spyOn(useKeyboardEvent, "default")
         .mockImplementationOnce(() => {})
         .mockImplementationOnce(() => {})
-        .mockImplementationOnce((key, callback) => {
+        .mockImplementationOnce((_, callback) => {
           callback({ preventDefault: () => {} });
         })
         .mockImplementationOnce(() => {});

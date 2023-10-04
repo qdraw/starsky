@@ -1,9 +1,10 @@
 import React, { memo, useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
@@ -30,17 +31,14 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageNoPhotosInFolder = language.text(
-    "Er zijn geen foto's in deze map",
-    "There are no photos in this folder"
+  const MessageNoPhotosInFolder = language.key(
+    localization.MessageNoPhotosInFolder
   );
-  const MessageNewUserNoPhotosInFolder = language.text(
-    "Nieuw? Stel je schijflocatie in de instellingen. ",
-    "New? Set your drive location in the settings. "
+  const MessageNewUserNoPhotosInFolder = language.key(
+    localization.MessageNewUserNoPhotosInFolder
   );
-  const MessageItemsOutsideFilter = language.text(
-    "Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'",
-    "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'"
+  const MessageItemsOutsideFilter = language.key(
+    localization.MessageItemsOutsideFilter
   );
 
   useEffect(() => {
@@ -50,6 +48,8 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
 
     // for the DOM delay
     setTimeout(() => {
+      console.log("scroll to", navigationState.filePath);
+
       const dataTagQuery = `[data-filepath="${navigationState.filePath}"]`;
       const elementList = document.querySelectorAll(dataTagQuery);
       if (elementList.length !== 1) return;
@@ -72,7 +72,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
     );
   }
 
-  let items = props.fileIndexItems;
+  const items = props.fileIndexItems;
   if (!items) return <div className="folder">no content</div>;
 
   return (

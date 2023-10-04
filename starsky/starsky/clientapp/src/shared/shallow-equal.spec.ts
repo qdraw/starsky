@@ -40,7 +40,7 @@ describe("shallowEqual", function () {
   });
 
   it("returns true if values are not primitives but are ===", () => {
-    let obj = {};
+    const obj = {};
     expect(
       shallowEqual({ a: 1, b: 2, c: obj }, { a: 1, b: 2, c: obj })
     ).toEqual(true);

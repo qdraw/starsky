@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Preloader from "../components/atoms/preloader/preloader";
 import Archive from "../containers/archive";
-import Login from "../containers/login";
+import { Login } from "../containers/login";
 import Search from "../containers/search";
 import Trash from "../containers/trash";
 import {
@@ -32,7 +32,7 @@ export default function ArchiveContextWrapper(archive: IArchiveProps) {
 }
 
 function ArchiveWrapper(archive: IArchiveProps) {
-  let { state, dispatch } = React.useContext(ArchiveContext);
+  const { state, dispatch } = React.useContext(ArchiveContext);
 
   /**
    * Running on changing searchQuery or subpath

@@ -1,4 +1,3 @@
-import React from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import BrowserDetect from "../../../shared/browser-detect";
@@ -29,7 +28,7 @@ export function SkipDisplayOfUpdate(): boolean {
 }
 
 /**
- * Compontent with health check for updates
+ * Component with health check for updates
  */
 const HealthCheckForUpdates: React.FunctionComponent = () => {
   const checkForUpdates = useFetch(
@@ -62,7 +61,7 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
       "Go to the release overview"
     );
 
-  let MessageNewVersionUpdateToken = language.text(
+  const MessageNewVersionUpdateToken = language.text(
     "Er is een nieuwe versie beschikbaar {WhereToFindRelease}",
     "A new version is available {WhereToFindRelease}"
   );

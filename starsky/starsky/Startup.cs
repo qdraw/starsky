@@ -132,8 +132,15 @@ namespace starsky
 			{
 				options.AddPolicy("CorsDevelopment",
 					builder => builder
-						.WithOrigins("http://localhost:4200",
-							"http://localhost:8080")
+						.WithOrigins(
+							"http://localhost:4000",
+							"https://localhost:4001",
+							"http://localhost:4200",
+							"http://localhost:5000",
+							"https://localhost:5001",
+							"http://localhost:5173",
+							"http://localhost:8080"
+						)
 						.AllowAnyMethod()
 						.AllowAnyHeader()
 						.AllowCredentials() );
@@ -278,14 +285,14 @@ namespace starsky
 		        });
 	        }
 			
-			if ( _appSettings != null && Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "static")) )
+			if ( _appSettings != null && Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "assets")) )
 			{
 				app.UseStaticFiles(new StaticFileOptions
 					{
 						OnPrepareResponse = PrepareResponse,
 						FileProvider = new PhysicalFileProvider(
-							Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "static")),
-						RequestPath = $"/static",
+							Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "assets")),
+						RequestPath = $"/assets",
 					}
 				);
 			}

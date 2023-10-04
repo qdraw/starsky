@@ -1,4 +1,3 @@
-import React from "react";
 import HealthStatusError from "./health-status-error";
 
 export default {

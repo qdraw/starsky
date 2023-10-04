@@ -1,9 +1,8 @@
-import { globalHistory } from "@reach/router";
-import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageBox from "./list-image-view-select-container";
-
 const fileIndexItem = {
   fileName: "test.jpg",
   colorClass: 1
@@ -14,13 +13,13 @@ export default {
 };
 
 export const Default = () => {
-  globalHistory.navigate("/");
+  Router.navigate("/");
   return (
-    <>
+    <MemoryRouter>
       <ListImageBox item={fileIndexItem}>
         <ListImageChildItem {...fileIndexItem} />
       </ListImageBox>
-    </>
+    </MemoryRouter>
   );
   // for multiple items on page see: components/molecules/item-list-view
 };
@@ -30,13 +29,13 @@ Default.story = {
 };
 
 export const Select = () => {
-  globalHistory.navigate("/?select=test.jpg");
+  Router.navigate("/?select=test.jpg");
   return (
-    <>
+    <MemoryRouter>
       <ListImageBox item={fileIndexItem}>
         <ListImageChildItem {...fileIndexItem} />
       </ListImageBox>
-    </>
+    </MemoryRouter>
   );
 };
 

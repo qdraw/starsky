@@ -5,7 +5,7 @@ import {
 } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
 import { FileListCache } from "../../../shared/filelist-cache";
@@ -61,6 +61,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
 
+  // eslint-disable-next-line prefer-const
   let { state, dispatch } = React.useContext(ArchiveContext);
   state = defaultStateFallback(state);
 
@@ -90,8 +91,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
 
-  const toggleLabels = () =>
-    new Sidebar(sidebar, setSidebar, history).toggleSidebar();
+  const toggleLabels = () => new Sidebar(setSidebar, history).toggleSidebar();
 
   const [isModalExportOpen, setModalExportOpen] = useState(false);
   const [isModalPublishOpen, setModalPublishOpen] = useState(false);

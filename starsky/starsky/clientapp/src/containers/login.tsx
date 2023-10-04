@@ -3,7 +3,7 @@ import ButtonStyled from "../components/atoms/button-styled/button-styled";
 import Preloader from "../components/atoms/preloader/preloader";
 import useFetch from "../hooks/use-fetch";
 import useGlobalSettings from "../hooks/use-global-settings";
-import useLocation from "../hooks/use-location";
+import useLocation from "../hooks/use-location/use-location";
 import BrowserDetect from "../shared/browser-detect";
 import { DocumentTitle } from "../shared/document-title";
 import FetchPost from "../shared/fetch-post";
@@ -15,7 +15,7 @@ export interface ILoginProps {
   defaultLoginStatus?: boolean;
 }
 
-const Login: React.FC<ILoginProps> = () => {
+export const Login: React.FC<ILoginProps> = () => {
   const history = useLocation();
   const [userEmail, setUserEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
@@ -116,7 +116,8 @@ const Login: React.FC<ILoginProps> = () => {
         if (`/${history.location.search}` === returnUrl) {
           returnUrl += "&details=true";
         }
-        await history.navigate(returnUrl, { replace: true });
+
+        history.navigate(returnUrl, { replace: true });
       }
     } catch (err: any) {
       setLoading(false);
@@ -266,5 +267,3 @@ const Login: React.FC<ILoginProps> = () => {
     </>
   );
 };
-
-export default Login;

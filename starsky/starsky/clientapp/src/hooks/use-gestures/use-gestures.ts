@@ -168,7 +168,9 @@ const executeTouchEnd = (
 export function useGestures(
   ref: RefObject<HTMLElement>,
   handlers: IHandlers,
-  options = {
+  options: {
+    minDelta: number;
+  } = {
     minDelta: 30
   }
 ) {

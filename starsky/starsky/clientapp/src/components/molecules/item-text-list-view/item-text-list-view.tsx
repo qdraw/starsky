@@ -1,4 +1,3 @@
-import React from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -59,7 +58,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
         ""
       )}
       <ul>
-        {props.fileIndexItems.map((item, index) => (
+        {props.fileIndexItems.map((item) => (
           <li
             className={GetBoxClass(item)}
             key={item.filePath + item.lastEdited}

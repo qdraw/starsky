@@ -18,7 +18,7 @@ describe("PanAndZoomImage", () => {
   });
 
   describe("PanAndZoomImage", () => {
-    it("mouseDown & mousemove event triggerd", () => {
+    it("mouseDown & mousemove event triggered", () => {
       const onWheelCallback = jest.fn();
 
       const component = render(
@@ -46,7 +46,7 @@ describe("PanAndZoomImage", () => {
 
       fireEvent(panZoomImage, pasteEvent);
 
-      let ev = new MouseEvent("mousemove", {
+      const ev = new MouseEvent("mousemove", {
         view: window,
         bubbles: true,
         cancelable: true,
@@ -80,7 +80,7 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      let ev = new MouseEvent("mousemove", {
+      const ev = new MouseEvent("mousemove", {
         view: window,
         bubbles: true,
         cancelable: true,
@@ -111,7 +111,7 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      let ev = new MouseEvent("mouseup", {
+      const ev = new MouseEvent("mouseup", {
         view: window,
         bubbles: true,
         cancelable: true,
@@ -123,7 +123,7 @@ describe("PanAndZoomImage", () => {
         document.dispatchEvent(ev);
       });
 
-      let ev2 = new MouseEvent("mousemove", {
+      const ev2 = new MouseEvent("mousemove", {
         view: window,
         bubbles: true,
         cancelable: true,
@@ -246,7 +246,7 @@ describe("PanAndZoomImage", () => {
       component.unmount();
     });
 
-    it("when pessing cmd+0 expect reset callback to be called", () => {
+    it("when pressing cmd+0 expect reset callback to be called", () => {
       const onResetCallbackSpy = jest.fn();
       const component = render(
         <PanAndZoomImage

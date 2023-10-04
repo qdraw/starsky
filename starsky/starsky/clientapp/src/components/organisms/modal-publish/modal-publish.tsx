@@ -87,7 +87,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     const bodyParams = new URLSearchParams();
     bodyParams.set(
       "f",
-      new URLPath().ArrayToCommaSeperatedString(props.select)
+      new URLPath().ArrayToCommaSeparatedString(props.select)
     );
     bodyParams.set("itemName", itemName);
     bodyParams.set("publishProfileName", publishProfileName);

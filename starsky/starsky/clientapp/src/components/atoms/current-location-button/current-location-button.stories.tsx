@@ -1,4 +1,3 @@
-import React from "react";
 import CurrentLocationButton from "./current-location-button";
 
 export default {

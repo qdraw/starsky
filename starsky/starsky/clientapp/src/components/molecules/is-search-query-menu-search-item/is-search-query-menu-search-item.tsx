@@ -1,12 +1,12 @@
-import { Link } from "@reach/router";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
+import Link from "../../atoms/link/link";
 
 type IsSearchQueryMenuSearchItemProps = {
   isSearchQuery: boolean;

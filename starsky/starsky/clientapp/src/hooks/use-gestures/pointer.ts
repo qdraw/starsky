@@ -7,7 +7,7 @@ export class Pointer {
    * @param {{clientX:number, clientY: number}} touch event touch object
    */
   constructor(touch: any) {
-    this.x = touch.clientX;
-    this.y = touch.clientY;
+    this.x = touch?.clientX;
+    this.y = touch?.clientY;
   }
 }

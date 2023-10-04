@@ -1,5 +1,3 @@
-import React from "react";
-
 type NavContainerPropTypes = {
   children?: React.ReactNode;
   hamburgerMenu: boolean;

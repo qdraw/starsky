@@ -1,4 +1,3 @@
-import React from "react";
 import SwitchButton from "./switch-button";
 
 export default {

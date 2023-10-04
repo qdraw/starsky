@@ -1,5 +1,4 @@
 import { render } from "@testing-library/react";
-import React from "react";
 import * as Notification from "../components/atoms/notification/notification";
 import * as HealthStatusError from "../components/molecules/health-status-error/health-status-error";
 import * as useSockets from "../hooks/realtime/use-sockets";
@@ -55,7 +54,7 @@ describe("MediaContent", () => {
       if (props.callback) {
         props.callback();
       }
-      return <div className="test">testung</div>;
+      return <div className="test">test</div>;
     });
 
     const component = render(<MediaContent />);

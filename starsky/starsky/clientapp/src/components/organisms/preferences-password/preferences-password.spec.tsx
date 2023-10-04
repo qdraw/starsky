@@ -34,7 +34,7 @@ describe("PreferencesPassword", () => {
     });
 
     function submitPassword(
-      container: RenderResult,
+      _container: RenderResult,
       passwordInput: string,
       changedPassword: string,
       confirmPassword: string,
@@ -99,7 +99,7 @@ describe("PreferencesPassword", () => {
 
       submitPassword(component, "12345", "password1", "password1", false);
 
-      let warning = screen.queryByTestId(
+      const warning = screen.queryByTestId(
         "preferences-password-warning"
       ) as HTMLDivElement;
       expect(warning).toBeNull();

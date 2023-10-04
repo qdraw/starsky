@@ -183,10 +183,11 @@ describe("AccountRegister", () => {
 
     const error = screen.queryByTestId("account-register-error") as HTMLElement;
     expect(error).toBeTruthy();
+    container.unmount();
   });
 
   function submitEmailPassword(
-    container: RenderResult,
+    _container: RenderResult,
     email: string,
     password: string,
     confirmPassword: string,

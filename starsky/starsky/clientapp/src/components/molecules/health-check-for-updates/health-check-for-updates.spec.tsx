@@ -1,10 +1,10 @@
 import { render } from "@testing-library/react";
-import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as Notification from "../../atoms/notification/notification";
 import HealthCheckForUpdates, {
-  CheckForUpdatesLocalStorageName
+  CheckForUpdatesLocalStorageName,
+  SkipDisplayOfUpdate
 } from "./health-check-for-updates";
 
 describe("HealthCheckForUpdates", () => {
@@ -56,31 +56,46 @@ describe("HealthCheckForUpdates", () => {
       component.unmount();
     });
 
-    it("Click on close and expect that date is set in localstorage", () => {
+    it("Click on close and expect that date is set in local storage", () => {
+      console.log(
+        "Click on close and expect that date is set in local storage"
+      );
+
       const mockGetIConnectionDefault = {
         statusCode: 202,
         data: null
       } as IConnectionDefault;
 
-      jest.spyOn(Notification, "default").mockImplementationOnce((arg) => {
-        if (!arg || !arg.callback) return null;
-        arg.callback();
-        return <></>;
-      });
+      jest
+        .spyOn(Notification, "default")
+        .mockReset()
+        .mockImplementationOnce((arg) => {
+          if (!arg || !arg.callback) return null;
+          arg.callback();
+          return <></>;
+        });
       jest
         .spyOn(useFetch, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+      const shouldSkip = SkipDisplayOfUpdate();
+      expect(shouldSkip).toBeFalsy();
+
       const component = render(<HealthCheckForUpdates />);
+
       component.unmount();
 
       const item = localStorage.getItem(CheckForUpdatesLocalStorageName);
-      if (!item) throw new Error("item should not be null");
+
+      if (!item) throw new Error("item should not be null in test");
+
       expect(parseInt(item) > 1604424674178).toBeTruthy(); // 3 nov '20
 
       localStorage.removeItem(CheckForUpdatesLocalStorageName);
     });
 
-    it("Compontent should not shown when date is set in localstorage", () => {
+    it("Component should not shown when date is set in localstorage", () => {
       localStorage.setItem(
         CheckForUpdatesLocalStorageName,
         Date.now().toString()
@@ -95,6 +110,7 @@ describe("HealthCheckForUpdates", () => {
 
       const notificationSpy = jest
         .spyOn(Notification, "default")
+        .mockReset()
         .mockImplementationOnce(() => <></>);
 
       const component = render(<HealthCheckForUpdates />);
@@ -116,10 +132,12 @@ describe("HealthCheckForUpdates", () => {
 
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       const notificationSpy = jest
         .spyOn(Notification, "default")
+        .mockReset()
         .mockImplementationOnce(() => <>t</>);
 
       const component = render(<HealthCheckForUpdates></HealthCheckForUpdates>);
@@ -142,6 +160,7 @@ describe("HealthCheckForUpdates", () => {
 
       const notificationSpy = jest
         .spyOn(Notification, "default")
+        .mockReset()
         .mockImplementationOnce(() => <>t</>);
 
       const useFetchSpy = jest

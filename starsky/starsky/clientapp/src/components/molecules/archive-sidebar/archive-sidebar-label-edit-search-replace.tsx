@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
@@ -46,6 +46,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   );
 
   const history = useLocation();
+  // eslint-disable-next-line prefer-const
   let { state, dispatch } = React.useContext(ArchiveContext);
 
   // state without any context
@@ -101,7 +102,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       state.fileIndexItems
     );
     if (!subPaths) return;
-    const selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(
+    const selectPaths = new URLPath().ArrayToCommaSeparatedStringOneParent(
       subPaths,
       ""
     );
@@ -120,7 +121,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         : "false"
     );
 
-    for (let key of Object.entries(update)) {
+    for (const key of Object.entries(update)) {
       const fieldName = key[0];
       const fieldValue = key[1];
 

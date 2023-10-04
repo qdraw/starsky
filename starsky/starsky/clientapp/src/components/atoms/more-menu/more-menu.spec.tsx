@@ -1,5 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
-import React from "react";
+import { useState } from "react";
 import MoreMenu, { MoreMenuEventCloseConst } from "./more-menu";
 
 describe("More Menu", () => {
@@ -8,7 +8,8 @@ describe("More Menu", () => {
   });
 
   function MoreMenuWrapper() {
-    const [_, setEnableMoreMenu] = React.useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, setEnableMoreMenu] = useState(false);
     return <MoreMenu setEnableMoreMenu={setEnableMoreMenu}>test</MoreMenu>;
   }
 
@@ -21,7 +22,7 @@ describe("More Menu", () => {
     expect(moreMenuButton.className).toBe("item item--more");
   });
 
-  it("get childeren", () => {
+  it("get children", () => {
     const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
     const menuOptions = screen.queryAllByTestId("menu-options")[0];
 
@@ -40,7 +41,7 @@ describe("More Menu", () => {
     expect(menuContext.className).toBe("menu-context menu-context--hide");
   });
 
-  it("toggle no childeren", () => {
+  it("toggle no children", () => {
     const element = render(<MoreMenuWrapper></MoreMenuWrapper>);
 
     const menuContext = screen.queryAllByTestId("menu-context")[0];

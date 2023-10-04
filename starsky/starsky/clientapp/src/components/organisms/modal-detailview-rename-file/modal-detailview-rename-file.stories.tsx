@@ -1,4 +1,3 @@
-import React from "react";
 import ModalDetailviewRenameFile from "./modal-detailview-rename-file";
 
 export default {

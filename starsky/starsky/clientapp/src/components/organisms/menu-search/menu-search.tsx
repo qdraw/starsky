@@ -5,7 +5,7 @@ import {
 } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
@@ -80,8 +80,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   useEffect(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
-  const toggleLabels = () =>
-    new Sidebar(sidebar, setSidebar, history).toggleSidebar();
+  const toggleLabels = () => new Sidebar(setSidebar, history).toggleSidebar();
 
   // download modal
   const [isModalExportOpen, setModalExportOpen] = useState(false);

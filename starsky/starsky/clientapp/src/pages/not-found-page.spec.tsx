@@ -1,10 +1,16 @@
 import { render } from "@testing-library/react";
-import React from "react";
-import NotFoundPage from "./not-found-page";
+import { MemoryRouter } from "react-router-dom";
+import { NotFoundPage } from "./not-found-page";
 
 describe("NotFoundPage", () => {
   it("has MenuDefault child Component", () => {
-    let notFoundComponent = render(<NotFoundPage></NotFoundPage>);
+    jest.spyOn(console, "error").mockImplementationOnce(() => {});
+
+    const notFoundComponent = render(
+      <MemoryRouter>
+        <NotFoundPage />
+      </MemoryRouter>
+    );
     const headerText = (
       notFoundComponent.container.querySelector(
         ".content--header"

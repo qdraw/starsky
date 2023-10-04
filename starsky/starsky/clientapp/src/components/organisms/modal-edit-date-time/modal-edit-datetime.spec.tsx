@@ -69,10 +69,11 @@ describe("ModalArchiveMkdir", () => {
 
       // and button is NOT disabled
       expect(submitButtonBefore.disabled).toBeFalsy();
+      modal.unmount();
     });
 
     async function fireEventOnFormControl(
-      modal: RenderResult,
+      _modal: RenderResult,
       dataName: string,
       input: string
     ) {

@@ -1,8 +1,14 @@
-import { Coords, InternalTiles } from "leaflet";
+import L, { Coords, InternalTiles } from "leaflet";
 import { LeafletEmptyImageUrlTileLayer } from "./leaflet-modify-empty-image-url-tilelayer";
 
 describe("LeafletEmptyImageUrlTileLayer [leaflet-extension]", () => {
   it("remove tile form leaflet [extension]", () => {
+    // to skip some check in leaflet TypeError: symbol is not a function
+    Object.defineProperty(L.Browser, "androidStock", {
+      value: true,
+      writable: true
+    });
+
     const exampleCoords = {
       x: 51,
       y: 10,

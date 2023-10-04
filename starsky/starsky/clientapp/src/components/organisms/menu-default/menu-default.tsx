@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import NavContainer from "../nav-container/nav-container";
@@ -7,8 +7,8 @@ interface IMenuDefaultProps {
   isEnabled: boolean;
 }
 
-const MenuDefault: React.FunctionComponent<IMenuDefaultProps> = (props) => {
-  const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
+const MenuDefault: React.FunctionComponent<IMenuDefaultProps> = () => {
+  const [hamburgerMenu, setHamburgerMenu] = useState(false);
 
   return (
     <>

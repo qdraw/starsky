@@ -6,7 +6,7 @@ import { SupportedLanguages } from "./language";
  */
 const isValidDate = (inputDateTime: string | undefined): boolean => {
   if (inputDateTime) {
-    let input = new Date(inputDateTime).valueOf();
+    const input = new Date(inputDateTime).valueOf();
     return input > 0 && input < 7258118400 * 1000; // 01/01/2200
   }
   return false;
@@ -38,9 +38,9 @@ const DifferenceInDate = (
  */
 const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   if (!inputDateTime) return null;
-  let input = new Date(inputDateTime).valueOf();
+  const input = new Date(inputDateTime).valueOf();
   if (!input) return null;
-  let difference = DifferenceInDate(input);
+  const difference = DifferenceInDate(input);
   return difference <= 0.2;
 };
 
@@ -53,14 +53,14 @@ const parseRelativeDate = (
   inputDateTime: string | undefined,
   locate: SupportedLanguages
 ): string => {
-  let date = "";
+  const date = "";
 
   if (!inputDateTime) return date;
-  let input = new Date(`${inputDateTime}`).valueOf();
+  const input = new Date(`${inputDateTime}`).valueOf();
 
   if (!input) return date;
 
-  let difference = DifferenceInDate(input);
+  const difference = DifferenceInDate(input);
 
   switch (true) {
     case difference <= 1:
@@ -119,7 +119,7 @@ const parseDateDate = (dateTime: string | undefined): number => {
   const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
-  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
     day: "numeric"
@@ -138,7 +138,7 @@ const parseDateYear = (dateTime: string | undefined): number => {
   const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
-  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
     year: "numeric"
@@ -157,7 +157,7 @@ const parseDateMonth = (dateTime: string | undefined): number => {
   const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
-  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleDateString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
     month: "numeric"
@@ -177,7 +177,7 @@ const parseTime = (dateTime: string | undefined): string => {
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
 
-  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  // toLocaleDateString assumes that the input is UTC, which is usually not the case
   return dateTimeObject.toLocaleTimeString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
     hour12: false,
@@ -198,7 +198,7 @@ const parseTimeHour = (dateTime: string | undefined): number => {
   const dateTimeObject = new Date(
     !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
   );
-  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  // toLocaleDateString assumes that the input is UTC, which is usually not the case
   const numberValue = dateTimeObject.toLocaleTimeString([], {
     timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
     hour12: false,
@@ -223,16 +223,16 @@ const secondsToHours = (seconds: number): string => {
 };
 
 export {
-  IsEditedNow,
   DifferenceInDate,
+  IsEditedNow,
   isValidDate,
-  parseRelativeDate,
-  parseDate,
-  parseTime,
   leftPad,
-  secondsToHours,
-  parseTimeHour,
+  parseDate,
   parseDateDate,
   parseDateMonth,
-  parseDateYear
+  parseDateYear,
+  parseRelativeDate,
+  parseTime,
+  parseTimeHour,
+  secondsToHours
 };

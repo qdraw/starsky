@@ -1,14 +1,15 @@
-import { globalHistory } from "@reach/router";
 import {
   newIFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
 import { ShiftSelectionHelper } from "./shift-selection-helper";
-
 describe("ShiftSelectionHelper", () => {
   it("items undefined", () => {
     const result = ShiftSelectionHelper(
-      globalHistory,
+      {
+        navigate: jest.fn(),
+        location: window.location
+      },
       [],
       "test",
       undefined as any
@@ -18,7 +19,10 @@ describe("ShiftSelectionHelper", () => {
 
   it("select undefined", () => {
     const result = ShiftSelectionHelper(
-      globalHistory,
+      {
+        navigate: jest.fn(),
+        location: window.location
+      },
       undefined as any,
       "test",
       newIFileIndexItemArray()
@@ -28,7 +32,10 @@ describe("ShiftSelectionHelper", () => {
 
   it("filePath not found", () => {
     const result = ShiftSelectionHelper(
-      globalHistory,
+      {
+        navigate: jest.fn(),
+        location: window.location
+      },
       [],
       "test",
       newIFileIndexItemArray()
@@ -45,40 +52,53 @@ describe("ShiftSelectionHelper", () => {
   ];
 
   it("add item after and assume first is selected", () => {
-    globalHistory.navigate("/");
+    const navigateFn = jest.fn();
     const result = ShiftSelectionHelper(
-      globalHistory,
+      {
+        navigate: navigateFn,
+        location: window.location
+      },
       [],
       "/test3",
       exampleItems
     );
-    expect(globalHistory.location.search).toBe(
-      "?select=test0,test3,test1,test2"
-    );
+    expect(navigateFn).toBeCalledWith("?select=test0,test3,test1,test2", {
+      replace: true
+    });
     expect(result).toBeTruthy();
   });
 
   it("add item before", () => {
-    globalHistory.navigate("/");
+    const navigateFn = jest.fn();
+
     const result = ShiftSelectionHelper(
-      globalHistory,
+      {
+        navigate: navigateFn,
+        location: window.location
+      },
       ["test4"],
       "/test2",
       exampleItems
     );
-    expect(globalHistory.location.search).toBe("?select=test4,test2,test3");
+    expect(navigateFn).toBeCalledWith("?select=test4,test2,test3", {
+      replace: true
+    });
     expect(result).toBeTruthy();
   });
 
   it("add same item", () => {
-    globalHistory.navigate("/");
+    const navigateFn = jest.fn();
+
     const result = ShiftSelectionHelper(
-      globalHistory,
+      {
+        navigate: navigateFn,
+        location: window.location
+      },
       ["test4"],
       "/test4",
       exampleItems
     );
-    expect(globalHistory.location.search).toBe("?select=test4");
+    expect(navigateFn).toBeCalledWith("?select=test4", { replace: true });
     expect(result).toBeTruthy();
   });
 });

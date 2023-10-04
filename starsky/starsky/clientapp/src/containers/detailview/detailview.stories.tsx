@@ -1,8 +1,9 @@
+import { MemoryRouter } from "react-router-dom";
 import DetailViewContextWrapper from "../../contexts-wrappers/detailview-wrapper";
-import useLocation from "../../hooks/use-location";
 import { IDetailView } from "../../interfaces/IDetailView";
 import { IExifStatus } from "../../interfaces/IExifStatus";
 import { ImageFormat } from "../../interfaces/IFileIndexItem";
+import { Router } from "../../router-app/router-app";
 
 export default {
   title: "containers/detailview"
@@ -20,11 +21,13 @@ export const Default = () => {
     relativeObjects: {}
   } as IDetailView;
 
-  const history = useLocation();
+  Router.navigate("?details=true&modal=false");
 
-  history.location.search += "&details=true&modal=geo";
-
-  return <DetailViewContextWrapper {...item} />;
+  return (
+    <MemoryRouter>
+      <DetailViewContextWrapper {...item} />
+    </MemoryRouter>
+  );
 };
 
 Default.story = {

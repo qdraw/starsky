@@ -1,12 +1,12 @@
-import { Link } from "@reach/router";
 import React, { memo, useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { Language } from "../../../shared/language";
 import { SelectCheckIfActive } from "../../../shared/select-check-if-active";
 import { URLPath } from "../../../shared/url-path";
+import Link from "../../atoms/link/link";
 import Preloader from "../../atoms/preloader/preloader";
 
 //  <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath}
@@ -58,7 +58,6 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
     useEffect(() => {
       setIsColorClassUsage(state.colorClassUsage);
       // it should not update when the prop are changing
-      // eslint-disable-next-line
     }, [state.colorClassUsage]);
 
     const [colorClassActiveList, setIsColorClassActiveList] = useState(
@@ -67,14 +66,12 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
     useEffect(() => {
       setIsColorClassActiveList(state.colorClassActiveList);
       // it should not update when the prop are changing
-      // eslint-disable-next-line
     }, [state.colorClassActiveList]);
 
     const [collectionsCount, setCollectionsCount] = useState(props.itemsCount);
     useEffect(() => {
       setCollectionsCount(state.collectionsCount);
       // it should not update when the prop are changing
-      // eslint-disable-next-line
     }, [state.collectionsCount]);
 
     const [isLoading, setIsLoading] = useState(false);
@@ -114,7 +111,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
       return new URLPath().IUrlToString(urlObject);
     }
 
-    let resetButton = (
+    const resetButton = (
       <Link
         data-test="color-class-filter-reset"
         to={cleanColorClass()}
@@ -123,7 +120,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
         {colorContent[9]}
       </Link>
     );
-    let resetButtonDisabled = (
+    const resetButtonDisabled = (
       <div className="btn colorclass colorclass--reset disabled">
         {colorContent[9]}
       </div>

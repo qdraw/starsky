@@ -1,19 +1,20 @@
 import "core-js/features/dom-collections/for-each";
-import React from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
 import modalFreezeHelper from "./modal-freeze-helper";
-import modalInserPortalDiv from "./modal-insert-portal-div";
+import modalInsertPortalDiv from "./modal-insert-portal-div";
 
 type ModalPropTypes = {
-  children: React.ReactNode;
+  children: ReactNode;
   root?: string;
   id?: string;
   isOpen: boolean;
   handleExit: () => any;
   focusAfterExit?: HTMLElement;
   className?: string;
+  dataTest?: string;
 };
 
 export const ModalOpenClassName = "modal-bg--open";
@@ -34,24 +35,25 @@ export default function Modal({
   isOpen,
   handleExit,
   focusAfterExit,
-  className = ""
+  className = "",
+  dataTest = "modal-bg"
 }: ModalPropTypes): any {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageCloseDialog = language.text("Sluiten", "Close");
 
-  const [hasUpdated, forceUpdate] = React.useState(false);
+  const [hasUpdated, forceUpdate] = useState(false);
 
-  const exitButton = React.useRef<HTMLButtonElement>(null);
-  const modal = React.useRef<HTMLDivElement | null>(null);
+  const exitButton = useRef<HTMLButtonElement>(null);
+  const modal = useRef<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
-    return modalInserPortalDiv(modal, hasUpdated, forceUpdate, id);
+  useEffect(() => {
+    return modalInsertPortalDiv(modal, hasUpdated, forceUpdate, id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const initialRender = React.useRef(false);
-  React.useEffect(() => {
+  const initialRender = useRef(false);
+  useEffect(() => {
     return modalFreezeHelper(
       initialRender,
       root,
@@ -67,7 +69,7 @@ export default function Modal({
       <>
         <div
           onClick={(event) => ifModalOpenHandleExit(event, handleExit)}
-          data-test="modal-bg"
+          data-test={dataTest}
           className={`modal-bg ${
             isOpen ? ` ${ModalOpenClassName} ` + className : ""
           }`}

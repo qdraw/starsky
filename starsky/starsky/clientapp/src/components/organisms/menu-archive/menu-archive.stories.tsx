@@ -1,13 +1,11 @@
-import { globalHistory } from "@reach/router";
-import React from "react";
+import { Router } from "../../../router-app/router-app";
 import MenuArchive from "./menu-archive";
-
 export default {
   title: "components/organisms/menu-archive"
 };
 
 export const Default = () => {
-  globalHistory.navigate("/");
+  Router.navigate("/");
   return <MenuArchive></MenuArchive>;
 };
 
@@ -16,7 +14,7 @@ Default.story = {
 };
 
 export const Select = () => {
-  globalHistory.navigate("/?select=true");
+  Router.navigate("/?select=true");
   return <MenuArchive></MenuArchive>;
 };
 

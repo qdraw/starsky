@@ -1,4 +1,3 @@
-import React from "react";
 import PreferencesAppSettings from "./preferences-app-settings";
 
 export default {

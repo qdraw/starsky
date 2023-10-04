@@ -239,7 +239,7 @@ describe("useHotKeys", () => {
       test.componentMount.unmount();
     });
 
-    it("ctrlKeyOrMetaKey - should return when pessing cmdOrCtlr+shift+q", () => {
+    it("ctrlKeyOrMetaKey - should return when pressing cmdOrCtlr+shift+q", () => {
       const callback = jest.fn();
       const test = mountReactHook(useHotKeys, [
         {

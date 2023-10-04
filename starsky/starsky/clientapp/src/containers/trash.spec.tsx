@@ -1,5 +1,4 @@
 import { render } from "@testing-library/react";
-import React from "react";
 import * as useFetch from "../hooks/use-fetch";
 import { newIArchive } from "../interfaces/IArchive";
 import { newIConnectionDefault } from "../interfaces/IConnectionDefault";

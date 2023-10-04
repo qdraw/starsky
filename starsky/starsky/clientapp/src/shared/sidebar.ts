@@ -1,4 +1,4 @@
-import { IUseLocation } from "../hooks/use-location";
+import { IUseLocation } from "../hooks/use-location/interfaces/IUseLocation";
 import { URLPath } from "./url-path";
 
 export class Sidebar {
@@ -8,14 +8,11 @@ export class Sidebar {
     /* should do nothing */
   };
   private history: IUseLocation;
-  private sidebar: boolean | undefined;
 
   constructor(
-    sidebar: boolean | undefined,
     setSidebar: React.Dispatch<React.SetStateAction<boolean | undefined>>,
     history: IUseLocation
   ) {
-    this.sidebar = sidebar;
     this.setSidebar = setSidebar;
     this.history = history;
   }

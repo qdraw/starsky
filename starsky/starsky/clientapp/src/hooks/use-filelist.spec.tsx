@@ -6,11 +6,11 @@ import {
   newIFileIndexItemArray
 } from "../interfaces/IFileIndexItem";
 import { FileListCache } from "../shared/filelist-cache";
-import useFileList, {
-  fetchContentUseFileList,
-  IFileList
-} from "./use-filelist";
 import { mountReactHook } from "./___tests___/test-hook";
+import useFileList, {
+  IFileList,
+  fetchContentUseFileList
+} from "./use-filelist";
 
 describe("UseFileList", () => {
   describe("Archive", () => {
@@ -217,15 +217,19 @@ describe("UseFileList", () => {
       expect(fetchSpy).toBeCalled();
     });
 
-    it("with connection rejected", async () => {
-      const { hook } = mounter();
+    it("[use file list] with connection rejected", async () => {
+      console.log("[use file list] with connection rejected");
 
       const controller = new AbortController();
 
       const mockResult = Promise.reject();
-      fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
-        return mockResult;
-      });
+
+      fetchSpy = jest
+        .spyOn(window, "fetch")
+        .mockReset()
+        .mockImplementationOnce(() => mockResult);
+
+      const setPageTypeFn = jest.fn();
 
       // console.error == undefined
       await act(async () => {
@@ -236,20 +240,23 @@ describe("UseFileList", () => {
           controller,
           jest.fn(),
           false,
-          jest.fn()
+          setPageTypeFn
         );
       });
 
-      expect(hook.pageType).toBe(PageType.ApplicationException);
+      expect(setPageTypeFn).toBeCalledWith(PageType.ApplicationException);
     });
   });
 });
 
 describe("UseFileList error", () => {
   it("aborted should not call", async () => {
-    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
-      throw new DOMException("aborted");
-    });
+    const fetchSpy = jest
+      .spyOn(window, "fetch")
+      .mockReset()
+      .mockImplementationOnce(() => {
+        throw new DOMException("aborted");
+      });
 
     const controller = new AbortController();
     const setDataSpy = jest.fn();
@@ -274,9 +281,12 @@ describe("UseFileList error", () => {
   });
 
   it("generic error", async () => {
-    const fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
-      throw new Error("default error");
-    });
+    const fetchSpy = jest
+      .spyOn(window, "fetch")
+      .mockReset()
+      .mockImplementationOnce(() => {
+        throw new Error("default error");
+      });
 
     const controller = new AbortController();
     const setDataSpy = jest.fn();

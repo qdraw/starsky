@@ -1,10 +1,9 @@
-import { Link } from "@reach/router";
 import React, { memo, useEffect, useRef } from "react";
 import { DetailViewAction } from "../../../contexts/detailview-context";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -23,6 +22,7 @@ import { UrlQuery } from "../../../shared/url-query";
 import DetailViewExifStatus from "../../atoms/detailview-exifstatus/detailview-exifstatus";
 import DetailViewInfoMakeModelAperture from "../../atoms/detailview-info-make-model-aperture/detailview-info-make-model-aperture";
 import FormControl from "../../atoms/form-control/form-control";
+import Link from "../../atoms/link/link";
 import Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "../../molecules/color-class-select/color-class-select";
 import DetailViewInfoDateTime from "../detailview-info-datetime/detailview-info-datetime";
@@ -132,7 +132,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
 
     function handleChange(event: React.ChangeEvent<HTMLDivElement>) {
       let value = event.currentTarget.textContent;
-      let name = event.currentTarget.dataset["name"];
+      const name = event.currentTarget.dataset["name"];
 
       if (!name) return;
       if (!value) value = AsciiNull();
@@ -349,7 +349,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
           />
 
           {collections.map((item, index) => (
-            // some senarios details is set off, this is linked from details
+            // some scenarios details is set off, this is linked from details
             <Link
               to={new UrlQuery().updateFilePathHash(
                 history.location.search + "&details=true",

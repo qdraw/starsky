@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
@@ -48,18 +48,18 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
   const useErrorHandler = (initialState: string | null) => {
     return initialState;
   };
-  const [error, setError] = React.useState(useErrorHandler(null));
+  const [error, setError] = useState(useErrorHandler(null));
 
   // when you are waiting on the API
-  const [loading, setIsLoading] = React.useState(false);
+  const [loading, setIsLoading] = useState(false);
 
   // The directory name to submit
-  const [directoryName, setDirectoryName] = React.useState("");
+  const [directoryName, setDirectoryName] = useState("");
 
   // allow summit
-  const [buttonState, setButtonState] = React.useState(false);
+  const [buttonState, setButtonState] = useState(false);
 
-  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  const [isFormEnabled, setFormEnabled] = useState(true);
 
   function handleUpdateChange(
     event:
@@ -86,7 +86,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
     }
   }
 
-  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+  async function pushRenameChange() {
     // Show icon with load ++ disable forms
     setFormEnabled(false);
     setIsLoading(true);
@@ -108,7 +108,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
           ? MessageGeneralMkdirCreateError
           : MessageDirectoryExistError
       );
-      // and renable
+      // and renewable
       setIsLoading(false);
       setFormEnabled(true);
       return;

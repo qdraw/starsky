@@ -1,5 +1,3 @@
-import React from "react";
-
 export interface IPreloaderProps {
   isOverlay: boolean;
   isWhite?: boolean;

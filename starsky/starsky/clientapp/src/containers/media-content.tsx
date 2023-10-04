@@ -1,4 +1,3 @@
-import React from "react";
 import Notification, {
   NotificationType
 } from "../components/atoms/notification/notification";
@@ -10,12 +9,12 @@ import DetailViewContextWrapper from "../contexts-wrappers/detailview-wrapper";
 import useSockets from "../hooks/realtime/use-sockets";
 import useFileList from "../hooks/use-filelist";
 import useGlobalSettings from "../hooks/use-global-settings";
-import useLocation from "../hooks/use-location";
+import useLocation from "../hooks/use-location/use-location";
 import { IArchive } from "../interfaces/IArchive";
 import { IDetailView, PageType } from "../interfaces/IDetailView";
-import NotFoundPage from "../pages/not-found-page";
+import { NotFoundPage } from "../pages/not-found-page";
 import { Language } from "../shared/language";
-import Login from "./login";
+import { Login } from "./login";
 
 const MediaContent: React.FC = () => {
   const history = useLocation();
@@ -66,9 +65,7 @@ const MediaContent: React.FC = () => {
       {pageType === PageType.Loading ? (
         <Preloader isOverlay={true} isWhite={false} />
       ) : null}
-      {pageType === PageType.NotFound ? (
-        <NotFoundPage>not found</NotFoundPage>
-      ) : null}
+      {pageType === PageType.NotFound ? <NotFoundPage /> : null}
       {pageType === PageType.Unauthorized ? <Login /> : null}
       {pageType === PageType.ApplicationException ? (
         <ApplicationException></ApplicationException>

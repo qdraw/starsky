@@ -43,7 +43,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => {}}
+        onToggle={() => {}}
       />
     );
 
@@ -178,7 +178,7 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => {}}
+        onToggle={() => {}}
       />
     );
 
@@ -204,7 +204,7 @@ describe("ColorClassSelect", () => {
   it("when error is it should able to close the warning box", async () => {
     const colorClassUpdateSingleSpy = jest
       .spyOn(ColorClassUpdateSingle, "ColorClassUpdateSingle")
-      .mockImplementationOnce((p1, p2, p3, p4, setIsError) => {
+      .mockImplementationOnce((_p1, _p2, _p3, _p4, setIsError) => {
         setIsError("true");
         return { Update: jest.fn() } as any;
       });
@@ -224,7 +224,7 @@ describe("ColorClassSelect", () => {
       .mockImplementationOnce(() => <></>);
 
     // need to await this click
-    let colorClass = screen.queryByTestId(
+    const colorClass = screen.queryByTestId(
       "color-class-select-2"
     ) as HTMLAnchorElement;
     expect(colorClass).toBeTruthy();

@@ -77,7 +77,7 @@ describe("url-path", () => {
       expect(result).toStrictEqual({ replaceTitle: "test" });
     });
 
-    it("send emthy string replace-title", () => {
+    it("send empty string replace-title", () => {
       const result = sidebarUpdate.CastToISideBarUpdate(
         "replace-title",
         "",
@@ -86,7 +86,7 @@ describe("url-path", () => {
       expect(result).toStrictEqual({});
     });
 
-    it("send emthy string tags", () => {
+    it("send empty string tags", () => {
       const result = sidebarUpdate.CastToISideBarUpdate(
         "tags",
         "",
@@ -95,9 +95,9 @@ describe("url-path", () => {
       expect(result).toStrictEqual({});
     });
 
-    it("send emthy string non existing tag", () => {
+    it("send empty string non existing tag", () => {
       const result = sidebarUpdate.CastToISideBarUpdate(
-        "testung",
+        "test",
         "",
         {} as ISidebarUpdate
       );
@@ -113,7 +113,7 @@ describe("url-path", () => {
       expect(result).toStrictEqual(null);
     });
 
-    it("no text should return emthy object", () => {
+    it("no text should return empty object", () => {
       const result = sidebarUpdate.Change(
         {
           currentTarget: { textContent: null, dataset: { name: "test" } }

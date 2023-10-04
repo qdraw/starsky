@@ -1,6 +1,6 @@
 import modalInsertPortalDiv from "./modal-insert-portal-div";
 
-describe("modalInserPortalDiv", () => {
+describe("modalInsertPortalDiv", () => {
   it("should add div element", () => {
     modalInsertPortalDiv(
       { current: null } as any,

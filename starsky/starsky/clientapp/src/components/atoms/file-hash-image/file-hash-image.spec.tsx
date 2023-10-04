@@ -15,6 +15,12 @@ describe("FileHashImage", () => {
     render(<FileHashImage isError={false} fileHash={""} />);
   });
 
+  beforeEach(() => {
+    jest
+      .spyOn(DetectAutomaticRotation, "default")
+      .mockImplementationOnce(() => Promise.resolve(true));
+  });
+
   it("Rotation API is called return 202", async () => {
     console.log("-- Rotation API is called return 202 --");
 
@@ -34,14 +40,14 @@ describe("FileHashImage", () => {
         } as IDetailView
       } as IConnectionDefault);
 
-    let detectRotationSpy = jest
+    const detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
-      .mockImplementationOnce(() => {
-        return Promise.resolve(false);
-      });
+      .mockReset()
+      .mockImplementationOnce(() => Promise.resolve(false));
 
     const spyGet = jest
       .spyOn(FetchGet, "default")
+      .mockReset()
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
@@ -79,11 +85,10 @@ describe("FileHashImage", () => {
         } as IDetailView
       } as IConnectionDefault);
 
-    let detectRotationSpy = jest
+    const detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
-      .mockImplementationOnce(() => {
-        return Promise.resolve(false);
-      });
+      .mockReset()
+      .mockImplementationOnce(() => Promise.resolve(false));
 
     const spyGet = jest
       .spyOn(FetchGet, "default")
@@ -111,17 +116,17 @@ describe("FileHashImage", () => {
         statusCode: 200
       } as IConnectionDefault);
 
-    let detectRotationSpy = jest
+    const detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
-      .mockImplementationOnce(() => {
-        return Promise.resolve(true);
-      });
+      .mockReset()
+      .mockImplementationOnce(() => Promise.resolve(true));
 
     const spyGet = jest
       .spyOn(FetchGet, "default")
+      .mockReset()
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    let component = render(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"

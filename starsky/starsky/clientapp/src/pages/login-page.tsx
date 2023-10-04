@@ -1,8 +1,7 @@
-import { RouteComponentProps } from "@reach/router";
-import React, { FunctionComponent } from "react";
-import Login from "../containers/login";
+import { FunctionComponent } from "react";
+import { Login } from "../containers/login";
 
-const LoginPage: FunctionComponent<RouteComponentProps> = (props) => {
+export const LoginPage: FunctionComponent = () => {
   return <Login />;
 };
 

@@ -41,10 +41,12 @@ Make sure you run the Starsky API on http://localhost:4000 or us a local tunnel 
 
 Launches the test runner in the interactive watch mode.
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Although we **don't** use Create React App, we do use the same test runner.
+See https://jestjs.io/ and https://testing-library.com/docs/react-testing-library/intro/ for more information.
 
 ### `npm test:ci`
 
-Run all unittests and check if there are any errors
+Run all unit tests and check if there are any errors
 
 ### `npm run build`
 
@@ -118,15 +120,14 @@ The client app uses the following folder structure
            CSS Styling
 ```
 
-### Upgrade `Create React App` to a newer version
+### Upgrade `Vite` to a newer version
 
 #### Auto upgrade
 
-In this project there is a script that auto upgrades the `Create React App` to the latest version
-It replaces the `package.json` and `package-lock.json` from the output of the `npx create-react-app . --template typescript`
+In this project there is a script that auto upgrades the `Vite` to the latest version
 
 ```
-node starsky-tools/build-tools/clientapp-create-react-app-update.js
+npm run update:install
 ```
 
 Run the tests afterwards to check if everything is working
@@ -137,45 +138,63 @@ npm ci && npm test:ci
 
 #### Manual Upgrade
 
-The default Create React App package is used to keep future upgrades less painfull.
-In the repository of [Create React App releases](https://github.com/facebook/create-react-app/releases) you can find if we are using the latest version.
+The default Vite / Typescript package is used to keep future upgrades less painfull.
+In the repository of [Vite releases](https://github.com/vitejs/vite/releases) you can find if we are using the latest version.
 
-#### To keep all CRA dependencies in place
-
-```
-npx create-react-app my-app --template typescript
-```
-
-- copy the `package.json` and `package-lock.json` from the `my-app` folder to the `clientapp` folder
+#### To keep all Vite dependencies in place
 
 ```
-npm ci
+npm create -y vite@latest clientapp -- --template react-ts
+
+cd clientapp
+npm install
+
 ```
 
-The following packages are added and removed
+**Normal dependencies, that are included**
+react, react-dom
 
-```
-npm install --save abortcontroller-polyfill
-npm install --save @reach/router --force
-npm install --save intersection-observer
-npm install --save @types/reach__router
+**Dev dependencies, that are included**
+@types/react, @types/react-dom, @typescript-eslint/eslint-plugin, @typescript-eslint/parser,
+@vitejs/plugin-react, eslint, eslint-plugin-react-hooks, eslint-plugin-react-refresh, typescript, vite
+
 npm install --save leaflet
-npm install --save @types/leaflet
-npm install --save @types/storybook__react
-npm install --save-dev @storybook/react --force
-npm install --save eslint-config-prettier
-npm install --save eslint-plugin-prettier
-npm install --save prettier
-npm uninstall --save @types/node
-npm install --save @types/node
-npm uninstall --save web-vitals
-npm install concurrently --save-dev
-```
+npm install --save core-js
+npm install --save react-router-dom
 
-> Note:
-> `@types/storybook__react`is deprecated but needed to build devDependencies
+npm install --save-dev prettier
 
-> @types/node 16.x is used instead of 12.x
+npm install --save-dev ts-jest
+npm install --save-dev ts-node
+npm install --save-dev jest
+npm install --save-dev jest-environment-jsdom
+npm install --save-dev identity-obj-proxy
+npm install --save-dev isomorphic-fetch
+
+npm install --save-dev eslint-plugin-react
+npm install --save-dev eslint-config-prettier
+npm install --save-dev eslint-plugin-prettier
+npm install --save-dev eslint-plugin-jest-react
+npm install --save-dev eslint-plugin-storybook
+npm install --save-dev eslint-plugin-testing-library
+
+npm install --save-dev @types/leaflet
+npm install --save-dev @types/node
+npm install --save-dev @types/jest
+
+npm install --save-dev storybook
+npm install --save-dev @storybook/addon-essentials
+npm install --save-dev @storybook/addon-interactions
+npm install --save-dev @storybook/addon-links
+npm install --save-dev @storybook/blocks
+npm install --save-dev @storybook/builder-vite
+npm install --save-dev @storybook/react
+npm install --save-dev @storybook/react-vite
+npm install --save-dev @storybook/testing-library
+
+npm install --save-dev @testing-library/jest-dom
+npm install --save-dev @testing-library/react
+npm install --save-dev @testing-library/user-event
 
 #### Update the name of the project
 
@@ -197,15 +216,21 @@ Used when running `npm start`
 This is added to the `package.json`
 
 ```
-"dev": "concurrently --kill-others \"npm run mock\" \"npm run start\"",
-"mock": "node ../../../starsky-tools/mock/mock.js",
-"lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 715",
-"lint:fix": "node node_modules/eslint/bin/eslint.js --fix \"src/**\"",
-"fix": "npm run lint:fix",
-"format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
-"test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
-"storybook": "start-storybook",
-"upgrade": "echo 'check readme.md 20220415 v5.0.1'"
+"dev": "vite",
+"start": "vite --port 3000",
+"build": "tsc -p tsconfig.prod.json && vite build",
+"spell": "cspell --config cspell.json \"src/**/*.{ts,tsx,js,md}\" --exclude build",
+"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
+"lint:fix": "eslint --fix . --ext ts,tsx --report-unused-disable-directives --max-warnings 800",
+"format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
+"test": "jest --watch",
+"test:ci": "jest --ci --coverage --silent",
+"test-ci": "npm run test:ci",
+"test:ci:debug": "jest --ci --coverage",
+"preview": "vite preview",
+"tsc": "tsc",
+"storybook": "storybook dev -p 6006",
+"build-storybook": "storybook build"
 ```
 
 ### collectCoverageFrom and coverageReporters
@@ -213,34 +238,53 @@ This is added to the `package.json`
 With jest `collectCoverageFrom` and `coverageReporters` are used to get the right output
 
 ```
-"jest": {
-  "collectCoverageFrom": [
-    "**/*.{ts,tsx}",
-    "!coverage/**",
-    "!**/*.stories.{ts,tsx}",
-    "!node_modules/**",
-    "!src/index.*ts*",
-    "!src/service-worker.ts",
-    "!src/react-app-env.d.ts",
-    "!src/setupTests.js",
-    "!public/**",
-    "!build/**"
-  ],
-  "coverageReporters": [
-    "text",
-    ["lcov", {"projectRoot": "../../"}],
-    "json",
-    "cobertura"
-  ],
-  "coverageThreshold": {
-    "global": {
-      "branches": 80,
-      "functions": 80,
-      "lines": 80,
-      "statements": 80
+  "jest": {
+    "testEnvironment": "jest-environment-jsdom",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg|gif)$": "identity-obj-proxy"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
+    ],
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx}",
+      "!coverage/**",
+      "!**/*.stories.{ts,tsx}",
+      "!node_modules/**",
+      "!.storybook/**",
+      "!vite.config.ts",
+      "!jest.setup.ts",
+      "!src/index.*ts*",
+      "!src/main.*ts*",
+      "!src/service-worker.ts",
+      "!src/react-app-env.d.ts",
+      "!src/setupTests.js",
+      "!public/**",
+      "!build/**"
+    ],
+    "coverageReporters": [
+      "text",
+      [
+        "lcov",
+        {
+          "projectRoot": "../../"
+        }
+      ],
+      "json",
+      "cobertura"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
     }
-  }
-},
+  },
 ```
 
 ## ESlint/prettier
@@ -249,12 +293,34 @@ You should replace the existing eslintConfig chapter
 
 ```
   "eslintConfig": {
+    "root": true,
+    "env": {
+      "browser": true,
+      "es2020": true
+    },
     "extends": [
-      "react-app",
-      "react-app/jest",
-       "plugin:prettier/recommended"
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:react-hooks/recommended",
+      "plugin:react/recommended",
+      "plugin:prettier/recommended",
+      "plugin:jest-react/recommended",
+      "plugin:storybook/recommended"
     ],
-    "plugins": ["prettier"],
+    "ignorePatterns": [
+      "dist",
+      ".eslintrc.cjs",
+      "jest.setup.ts",
+      "jest.config.ts"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "react-refresh",
+      "testing-library",
+      "prettier",
+      "jest-react",
+      "react-hooks"
+    ],
     "rules": {
       "prettier/prettier": [
         "error",
@@ -262,24 +328,37 @@ You should replace the existing eslintConfig chapter
           "endOfLine": "auto"
         }
       ],
-        "testing-library/render-result-naming-convention": "off",
-        "testing-library/no-container": "warn",
-        "testing-library/prefer-screen-queries": "warn",
-        "testing-library/prefer-presence-queries": "warn",
-        "testing-library/no-unnecessary-act": "warn",
-        "testing-library/no-node-access": "warn",
-        "testing-library/no-render-in-setup": "warn",
-        "testing-library/no-wait-for-multiple-assertions": "warn"
+      "react-refresh/only-export-components": [
+        "warn",
+        {
+          "allowConstantExport": true
+        }
+      ],
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/ban-types": "warn",
+      "no-case-declarations": "warn",
+      "react/display-name": "warn",
+      "react/prop-types": "warn",
+      "@typescript-eslint/no-loss-of-precision": "warn",
+      "react/react-in-jsx-scope": "off"
+    },
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module",
+      "project": [
+        "./tsconfig.json",
+        "./tsconfig.node.json"
+      ]
     }
   },
-  "prettier": {
-		"trailingComma": "none",
+    "prettier": {
+    "trailingComma": "none",
     "bracketSpacing": true,
     "semi": true,
     "singleQuote": false,
     "tabWidth": 2,
     "useTabs": false
-  },
+  }
 ```
 
 ## Learn More
@@ -297,3 +376,33 @@ Cannot use JSX unless the '--jsx' flag is provided.
 
 read this:
 https://stackoverflow.com/questions/64974648/problem-with-visual-studio-code-using-react-jsx-as-jsx-value-with-create-react
+
+---
+
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+
+- Configure the top-level `parserOptions` property like this:
+
+```js
+   parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: ['./tsconfig.json', './tsconfig.node.json'],
+    tsconfigRootDir: __dirname,
+   },
+```
+
+- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
+- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list

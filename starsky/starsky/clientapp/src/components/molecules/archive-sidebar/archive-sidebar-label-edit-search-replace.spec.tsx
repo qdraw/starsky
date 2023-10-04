@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import {
   act,
   createEvent,
@@ -12,11 +11,11 @@ import { IArchive } from "../../../interfaces/IArchive";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Notification from "../../atoms/notification/notification";
 import ArchiveSidebarLabelEditSearchReplace from "./archive-sidebar-label-edit-search-replace";
-
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
     render(<ArchiveSidebarLabelEditSearchReplace />);
@@ -70,14 +69,9 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         }
       } as AppContext.IArchiveContext;
 
-      jest.mock("@reach/router", () => ({
-        navigate: jest.fn(),
-        globalHistory: jest.fn()
-      }));
-
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test.jpg");
+        Router.navigate("/?select=test.jpg");
       });
     });
 
@@ -350,7 +344,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     it("click append multiple", async () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test.jpg,test1.jpg,notfound.jpg");
+        Router.navigate("/?select=test.jpg,test1.jpg,notfound.jpg");
       });
 
       jest.spyOn(FetchPost, "default").mockReset();

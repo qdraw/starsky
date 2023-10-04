@@ -1,4 +1,3 @@
-import React from "react";
 import Preloader from "./preloader";
 
 export default {

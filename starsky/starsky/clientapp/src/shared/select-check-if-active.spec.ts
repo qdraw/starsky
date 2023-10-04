@@ -22,7 +22,7 @@ describe("SelectCheckIfActive", () => {
       expect(result[0]).toBe("test1.jpg");
     });
 
-    it("ignore files wihout colorclass marking", () => {
+    it("ignore files without colorclass marking", () => {
       const result = new SelectCheckIfActive().IsActive(
         ["test1.jpg", "test2.jpg"],
         [1],

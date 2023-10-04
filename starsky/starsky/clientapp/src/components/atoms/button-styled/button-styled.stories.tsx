@@ -1,5 +1,4 @@
-import { globalHistory } from "@reach/router";
-import React from "react";
+import { Router } from "../../../router-app/router-app";
 import ButtonStyled from "./button-styled";
 
 export default {
@@ -7,13 +6,13 @@ export default {
 };
 
 export const Default = () => {
-  globalHistory.navigate("/?select=test.jpg");
+  Router.navigate("/?select=test.jpg");
   return (
     <ButtonStyled
       className="btn btn--default"
       type="submit"
       disabled={false}
-      onClick={(e) => {}}
+      onClick={() => {}}
     >
       Loading...
     </ButtonStyled>

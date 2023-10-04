@@ -1,10 +1,10 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import EmptyImage from "../../../../src/style/images/empty-image.gif";
 import useIntersection from "../../../hooks/use-intersection-observer";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
-import EmptyImage from "../../../style/images/empty-image.gif";
 
 interface IListImageProps {
   children?: React.ReactNode;

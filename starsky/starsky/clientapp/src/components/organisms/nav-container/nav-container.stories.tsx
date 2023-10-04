@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import NavContainer from "./nav-container";
 
@@ -7,7 +7,7 @@ export default {
 };
 
 export const Default = () => {
-  const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
+  const [hamburgerMenu, setHamburgerMenu] = useState(false);
   return (
     <header className="header">
       <div style={{ backgroundColor: "red" }}>

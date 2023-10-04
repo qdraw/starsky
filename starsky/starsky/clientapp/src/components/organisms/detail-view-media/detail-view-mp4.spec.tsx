@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import ReactDOM from "react-dom";
+import { Root, createRoot } from "react-dom/client";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -79,12 +79,26 @@ describe("DetailViewMp4", () => {
       component.unmount();
     });
 
-    it("progress DOM", () => {
+    it("progress DOM", (done) => {
       const component = document.createElement("div");
-      ReactDOM.render(<DetailViewMp4 />, component);
-      const progress = component.querySelector("progress");
-      if (progress == null) throw new Error("missing progress tag");
-      progress.click();
+      document.body.appendChild(component); // Append the component to the body
+
+      let root: Root;
+      act(() => {
+        root = createRoot(component);
+        root.render(<DetailViewMp4 />);
+      });
+
+      // Wait for the component to finish rendering
+      setTimeout(() => {
+        console.log(component.innerHTML);
+
+        const progress = component.querySelector("progress");
+        if (progress == null) throw new Error("missing progress tag");
+        progress.click();
+        root.unmount();
+        done();
+      }, 0);
     });
 
     it("progress", () => {

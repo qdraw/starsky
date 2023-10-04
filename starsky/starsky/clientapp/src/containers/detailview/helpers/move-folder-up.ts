@@ -1,5 +1,5 @@
 import { ModalOpenClassName } from "../../../components/atoms/modal/modal";
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import { Keyboard } from "../../../shared/keyboard";

@@ -1,11 +1,11 @@
 import { act } from "@testing-library/react";
 import * as DifferenceInDate from "../../shared/date";
-import * as useInterval from "../use-interval";
 import { mountReactHook } from "../___tests___/test-hook";
+import * as useInterval from "../use-interval";
+import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 import useSockets, { IUseSockets } from "./use-sockets";
 import WebSocketService from "./websocket-service";
 import * as WsCurrentStart from "./ws-current-start";
-import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 
 describe("useSockets", () => {
   let setupComponent: any;
@@ -115,16 +115,13 @@ describe("useSockets", () => {
 
     jest
       .spyOn(useInterval, "default")
-      .mockImplementationOnce((props) => {
-        props();
-      })
-      .mockImplementationOnce((props) => {
-        props();
-      })
+      .mockImplementationOnce((props) => props())
+      .mockImplementationOnce((props) => props())
       .mockImplementationOnce(() => {});
 
     const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
+      .mockReset()
       .mockImplementationOnce(() => socketService)
       .mockImplementationOnce(() => socketService);
 
@@ -150,6 +147,7 @@ describe("useSockets", () => {
     localStorage.setItem("use-sockets", "false");
     const wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
+      .mockReset()
       .mockImplementationOnce(() => socketService);
 
     mountComponent();

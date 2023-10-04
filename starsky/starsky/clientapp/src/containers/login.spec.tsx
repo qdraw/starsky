@@ -1,11 +1,11 @@
-import { globalHistory } from "@reach/router";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../hooks/use-fetch";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
+import { Router } from "../router-app/router-app";
 import * as FetchPost from "../shared/fetch-post";
 import { UrlQuery } from "../shared/url-query";
-import Login from "./login";
+import { Login } from "./login";
 
 describe("Login", () => {
   it("renders", () => {
@@ -13,7 +13,7 @@ describe("Login", () => {
   });
 
   it("account already logged in", () => {
-    globalHistory.navigate("/?ReturnUrl=/");
+    Router.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = {
@@ -38,13 +38,13 @@ describe("Login", () => {
     expect(err).toBeTruthy();
 
     act(() => {
-      globalHistory.navigate("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
 
   it("database error message-database-connection", () => {
-    globalHistory.navigate("/?ReturnUrl=/");
+    Router.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = {
@@ -69,13 +69,13 @@ describe("Login", () => {
     expect(err).toBeTruthy();
 
     act(() => {
-      globalHistory.navigate("/");
+      Router.navigate("/");
       view.unmount();
     });
   });
 
   it("account already logged in special return url", () => {
-    globalHistory.navigate("/?ReturnUrl=/test");
+    Router.navigate("/?ReturnUrl=/test");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = {
@@ -104,13 +104,13 @@ describe("Login", () => {
     ).toBe("http://localhost/test");
 
     act(() => {
-      globalHistory.navigate("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
 
   it("account logged in /starsky - return url", () => {
-    globalHistory.navigate("/starsky/?ReturnUrl=/test");
+    Router.navigate("/starsky/?ReturnUrl=/test");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = {
@@ -139,13 +139,13 @@ describe("Login", () => {
     ).toBe("http://localhost/starsky/test");
 
     act(() => {
-      globalHistory.navigate("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
 
   it("account not logged in", () => {
-    globalHistory.navigate("/?ReturnUrl=/");
+    Router.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
@@ -167,45 +167,46 @@ describe("Login", () => {
     );
 
     act(() => {
-      globalHistory.navigate("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
 
   it("account 406 UrlAccountRegister", () => {
-    jest.spyOn(useFetch, "default").mockReset();
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 406 } as IConnectionDefault;
+    const connectionDefaultExample2 = { statusCode: 200 } as IConnectionDefault;
 
     const useFetchSpy = jest
       .spyOn(useFetch, "default")
+      .mockReset()
       .mockImplementationOnce(() => connectionDefaultExample)
-      .mockImplementationOnce(() => connectionDefaultExample)
-      .mockImplementationOnce(() => connectionDefaultExample);
+      .mockImplementationOnce(() => connectionDefaultExample2)
+      .mockImplementationOnce(() => connectionDefaultExample2);
 
     const login = render(<Login />);
 
     expect(
-      globalHistory.location.pathname.indexOf(
-        new UrlQuery().UrlAccountRegisterApi()
-      )
+      window.location.pathname.indexOf(new UrlQuery().UrlAccountRegisterApi())
     ).toBeTruthy();
     expect(useFetchSpy).toBeCalled();
 
     act(() => {
       login.unmount();
-      globalHistory.navigate("/");
+      Router.navigate("/");
     });
   });
 
   it("login flow succesfull", () => {
-    globalHistory.navigate("/?ReturnUrl=/");
+    Router.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
     const useFetchSpy = jest
       .spyOn(useFetch, "default")
+      .mockReset()
+      .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -254,7 +255,7 @@ describe("Login", () => {
     );
 
     act(() => {
-      globalHistory.navigate("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
@@ -308,7 +309,7 @@ describe("Login", () => {
     expect(postSpy).toBeCalled();
 
     act(() => {
-      globalHistory.navigate("/");
+      Router.navigate("/");
       login.unmount();
     });
   });
@@ -363,7 +364,7 @@ describe("Login", () => {
     expect(postSpy).toBeCalled();
 
     act(() => {
-      globalHistory.navigate("/");
+      Router.navigate("/");
       login.unmount();
     });
   });

@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useLayoutEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
@@ -59,7 +59,7 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo(
     /**
      * to avoid changes in location when scrolling while the sidebar is open
      */
-    const listener = (e: Event) => {
+    const listener = () => {
       if (!window.scrollY) return;
       document.body.style.top = `-${window.scrollY}px`;
     };

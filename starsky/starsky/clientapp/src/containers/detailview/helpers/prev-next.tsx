@@ -1,4 +1,4 @@
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView, IRelativeObjects } from "../../../interfaces/IDetailView";
 import { UpdateRelativeObject } from "../../../shared/update-relative-object";
 import { UrlQuery } from "../../../shared/url-query";
@@ -67,9 +67,8 @@ export class PrevNext {
       this.setIsLoading(true);
     }
 
-    this.history.navigate(nextPath, { replace: true }).then(() => {
-      this.setIsLoading(false);
-    });
+    this.history.navigate(nextPath, { replace: true });
+    this.setIsLoading(false);
   }
 
   /**
@@ -110,10 +109,7 @@ export class PrevNext {
       this.setIsLoading(true);
     }
 
-    this.history.navigate(prevPath, { replace: true }).then(() => {
-      // when the re-render happens un-expected
-      // window.location.search === history.location.search
-      this.setIsLoading(false);
-    });
+    this.history.navigate(prevPath, { replace: true });
+    this.setIsLoading(false);
   }
 }

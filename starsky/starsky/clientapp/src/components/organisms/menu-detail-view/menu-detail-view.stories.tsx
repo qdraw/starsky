@@ -1,4 +1,4 @@
-import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import MenuDetailView from "./menu-detail-view";
 
 export default {
@@ -7,7 +7,12 @@ export default {
 
 export const Default = () => {
   return (
-    <MenuDetailView state={{ fileIndexItem: {} } as any} dispatch={() => {}} />
+    <MemoryRouter>
+      <MenuDetailView
+        state={{ fileIndexItem: {} } as any}
+        dispatch={() => {}}
+      />
+    </MemoryRouter>
   );
 };
 
@@ -17,10 +22,12 @@ Default.story = {
 
 export const Deleted = () => {
   return (
-    <MenuDetailView
-      state={{ fileIndexItem: { status: "Deleted" } } as any}
-      dispatch={() => {}}
-    />
+    <MemoryRouter>
+      <MenuDetailView
+        state={{ fileIndexItem: { status: "Deleted" } } as any}
+        dispatch={() => {}}
+      />
+    </MemoryRouter>
   );
 };
 
@@ -30,10 +37,12 @@ Deleted.story = {
 
 export const ReadOnly = () => {
   return (
-    <MenuDetailView
-      state={{ isReadOnly: true, fileIndexItem: {} } as any}
-      dispatch={() => {}}
-    />
+    <MemoryRouter>
+      <MenuDetailView
+        state={{ isReadOnly: true, fileIndexItem: {} } as any}
+        dispatch={() => {}}
+      />
+    </MemoryRouter>
   );
 };
 

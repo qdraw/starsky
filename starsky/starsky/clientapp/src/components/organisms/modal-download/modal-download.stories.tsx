@@ -1,4 +1,3 @@
-import React from "react";
 import ModalDownload from "./modal-download";
 
 export default {

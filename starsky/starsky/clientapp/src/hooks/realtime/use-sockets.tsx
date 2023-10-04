@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { DifferenceInDate } from "../../shared/date";
 import useInterval from "../use-interval";
+import { IsClientSideFeatureDisabled } from "./shared/Is-client-side-feature-disabled";
 import WebSocketService from "./websocket-service";
 import WsCurrentStart, { NewWebSocketService } from "./ws-current-start";
 
@@ -10,21 +11,14 @@ export interface IUseSockets {
 }
 
 /**
- * Set an localStorage cookie when no websocket client is used
- */
-function IsClientSideFeatureDisabled(): boolean {
-  return localStorage.getItem("use-sockets") === "false";
-}
-
-/**
  * Use Socket as react hook
  */
 const useSockets = (): IUseSockets => {
-  let ws = useRef({} as WebSocketService);
+  const ws = useRef({} as WebSocketService);
   // When the connection is lost
   const [socketConnected, setSocketConnected] = useState(false);
   // show a error message
-  // (dont update this field every render to avoid endless re-rendering)
+  // (don't update this field every render to avoid endless re-rendering)
   const [showSocketError, setShowSocketError] = useState<boolean | null>(false);
   // server side feature toggle to disable/enable client
   const isEnabled = useRef(true);

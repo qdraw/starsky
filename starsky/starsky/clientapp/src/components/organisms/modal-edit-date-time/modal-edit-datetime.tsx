@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import {
@@ -43,16 +43,16 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
     "The date and time were entered incorrectly"
   );
 
-  const [isFormEnabled] = React.useState(true);
+  const [isFormEnabled] = useState(true);
 
-  const [fullYear, setFullYear] = React.useState(parseDateYear(props.dateTime));
-  const [month, setMonth] = React.useState(parseDateMonth(props.dateTime));
-  const [date, setDate] = React.useState(parseDateDate(props.dateTime));
-  const [hour, setHour] = React.useState(parseTimeHour(props.dateTime));
-  const [minute, setMinute] = React.useState(
+  const [fullYear, setFullYear] = useState(parseDateYear(props.dateTime));
+  const [month, setMonth] = useState(parseDateMonth(props.dateTime));
+  const [date, setDate] = useState(parseDateDate(props.dateTime));
+  const [hour, setHour] = useState(parseTimeHour(props.dateTime));
+  const [minute, setMinute] = useState(
     props.dateTime ? new Date(props.dateTime).getMinutes() : 1
   );
-  const [seconds, setSeconds] = React.useState(
+  const [seconds, setSeconds] = useState(
     props.dateTime ? new Date(props.dateTime).getSeconds() : 1
   );
 

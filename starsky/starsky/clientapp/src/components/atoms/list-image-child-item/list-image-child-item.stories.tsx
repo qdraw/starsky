@@ -1,4 +1,3 @@
-import React from "react";
 import {
   IFileIndexItem,
   ImageFormat
@@ -106,7 +105,10 @@ export const Default = () => {
       {/* EXAMPLE STORY */}
       <div className={"list-image-box box--view"}>
         {exampleItems.map((item) => (
-          <div className={"box-content colorclass--0 isDirectory-true"}>
+          <div
+            className={"box-content colorclass--0 isDirectory-true"}
+            key={item.fileName + item.lastEdited + item.colorClass}
+          >
             <ListImageChildItem
               {...item}
               key={item.fileName + item.lastEdited + item.colorClass}

@@ -2,7 +2,7 @@ import React, { memo } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch-post";
@@ -45,7 +45,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       );
 
       if (!toUndoTrashList) return;
-      const selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
+      const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(
         toUndoTrashList,
         ""
       );

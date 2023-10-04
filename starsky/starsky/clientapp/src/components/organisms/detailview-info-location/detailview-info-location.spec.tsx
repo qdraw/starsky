@@ -1,13 +1,14 @@
 import { act, render, screen } from "@testing-library/react";
-import React from "react";
-import * as useLocation from "../../../hooks/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location";
 
+import React from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
+import { Router } from "../../../router-app/router-app";
 import * as ModalGeo from "../modal-geo/modal-geo";
 import DetailViewInfoLocation from "./detailview-info-location";
 
-describe("ModalGeo", () => {
+describe("DetailViewInfoLocation", () => {
   it("renders", () => {
     render(
       <DetailViewInfoLocation
@@ -19,7 +20,9 @@ describe("ModalGeo", () => {
     );
   });
 
-  it("should open modal", async () => {
+  it("[DetailViewInfoLocation] should open modal", async () => {
+    Router.navigate("/");
+
     const modalSpy = jest
       .spyOn(ModalGeo, "default")
       .mockImplementationOnce(() => (
@@ -118,7 +121,8 @@ describe("ModalGeo", () => {
 
     const locationMock = {
       location: {
-        href: ""
+        href: "",
+        search: ""
       },
       navigate: jest.fn()
     } as any;

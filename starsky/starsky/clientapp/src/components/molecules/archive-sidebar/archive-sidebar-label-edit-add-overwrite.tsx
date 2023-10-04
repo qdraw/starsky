@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
@@ -55,13 +55,14 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   );
 
   const history = useLocation();
-  let { state, dispatch } = React.useContext(ArchiveContext);
+  // eslint-disable-next-line prefer-const
+  let { state, dispatch } = useContext(ArchiveContext);
 
   // state without any context
   state = new CastToInterface().UndefinedIArchiveReadonly(state);
 
   // show select info
-  const [select, setSelect] = React.useState(
+  const [select, setSelect] = useState(
     new URLPath().getSelect(history.location.search)
   );
   useEffect(() => {
@@ -69,13 +70,13 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   }, [history.location.search]);
 
   // The Updated that is send to the api
-  const [update, setUpdate] = React.useState({
+  const [update, setUpdate] = useState({
     append: true,
     collections: true
   } as ISidebarUpdate);
 
   // Add/Hide disabled state
-  const [isInputEnabled, setInputEnabled] = React.useState(false);
+  const [isInputEnabled, setInputEnabled] = useState(false);
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
@@ -119,7 +120,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       state.fileIndexItems
     );
     if (!subPaths) return;
-    const selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
+    const selectParams = new URLPath().ArrayToCommaSeparatedStringOneParent(
       subPaths,
       ""
     );

@@ -49,10 +49,10 @@ export class SidebarUpdate {
       | React.KeyboardEvent<HTMLDivElement>,
     update: ISidebarUpdate
   ): ISidebarUpdate | null => {
-    let fieldValue = event.currentTarget.textContent
+    const fieldValue = event.currentTarget.textContent
       ? event.currentTarget.textContent.trim()
       : "";
-    let fieldName = event.currentTarget.dataset["name"];
+    const fieldName = event.currentTarget.dataset["name"];
 
     if (!fieldName) return null;
 

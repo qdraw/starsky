@@ -1,5 +1,4 @@
 import { act, render, RenderResult, waitFor } from "@testing-library/react";
-import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchGet from "../../../shared/fetch-get";
 import * as FetchPost from "../../../shared/fetch-post";

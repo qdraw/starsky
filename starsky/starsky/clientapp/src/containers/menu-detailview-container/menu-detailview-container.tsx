@@ -1,10 +1,11 @@
-import React from "react";
+import { useContext } from "react";
 import MenuDetailView from "../../components/organisms/menu-detail-view/menu-detail-view";
 import { DetailViewContext } from "../../contexts/detailview-context";
 import { IDetailView, PageType } from "../../interfaces/IDetailView";
 
 const MenuDetailViewContainer: React.FunctionComponent = () => {
-  let { state, dispatch } = React.useContext(DetailViewContext);
+  // eslint-disable-next-line prefer-const
+  let { state, dispatch } = useContext(DetailViewContext);
 
   // fallback state
   if (!state) {

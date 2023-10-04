@@ -1,4 +1,4 @@
-import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import Breadcrumb from "./breadcrumbs";
 
 export default {
@@ -7,7 +7,11 @@ export default {
 
 export const Default = () => {
   const breadcrumbs = ["/", "/test"];
-  return <Breadcrumb subPath="/test/01" breadcrumb={breadcrumbs} />;
+  return (
+    <MemoryRouter>
+      <Breadcrumb subPath="/test/01" breadcrumb={breadcrumbs} />
+    </MemoryRouter>
+  );
 };
 
 Default.story = {

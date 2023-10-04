@@ -1,4 +1,3 @@
-import React from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { Language } from "../../../shared/language";
@@ -24,6 +23,7 @@ const ModalDropAreaFilesAdded: React.FunctionComponent<
     <Modal
       id="modal-drop-area-files-added"
       isOpen={props.isOpen}
+      dataTest="modal-drop-area-files-added"
       handleExit={() => {
         props.handleExit();
       }}

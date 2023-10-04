@@ -1,11 +1,10 @@
-import { globalHistory } from "@reach/router";
-import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import {
   IFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import ItemListView from "./item-list-view";
-
 const exampleData8Selected = [
   { fileName: "test.jpg", filePath: "/test.jpg", lastEdited: "1" },
   { fileName: "test2.jpg", filePath: "/test2.jpg", lastEdited: "1" },
@@ -22,7 +21,7 @@ export default {
 };
 
 export const Default = () => {
-  globalHistory.navigate("/");
+  Router.navigate("/");
   return (
     <ItemListView
       iconList={true}
@@ -37,13 +36,15 @@ Default.story = {
 };
 
 export const _8ItemsSelectionDisabled = () => {
-  globalHistory.navigate("/");
+  Router.navigate("/");
   return (
-    <ItemListView
-      iconList={true}
-      fileIndexItems={exampleData8Selected}
-      colorClassUsage={[]}
-    />
+    <MemoryRouter>
+      <ItemListView
+        iconList={true}
+        fileIndexItems={exampleData8Selected}
+        colorClassUsage={[]}
+      />
+    </MemoryRouter>
   );
 };
 
@@ -52,13 +53,15 @@ _8ItemsSelectionDisabled.story = {
 };
 
 export const _8ItemsSelectionEnabled = () => {
-  globalHistory.navigate("/?select=");
+  Router.navigate("/?select=");
   return (
-    <ItemListView
-      iconList={true}
-      fileIndexItems={exampleData8Selected}
-      colorClassUsage={[]}
-    />
+    <MemoryRouter>
+      <ItemListView
+        iconList={true}
+        fileIndexItems={exampleData8Selected}
+        colorClassUsage={[]}
+      />
+    </MemoryRouter>
   );
 };
 

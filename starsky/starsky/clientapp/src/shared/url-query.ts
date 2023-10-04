@@ -1,5 +1,4 @@
 import { IUrl, newIUrl } from "../interfaces/IUrl";
-import isDev from "./is-dev";
 import { URLPath } from "./url-path";
 
 export class UrlQuery {
@@ -24,9 +23,9 @@ export class UrlQuery {
    */
   public GetReturnUrl(locationHash: string): string {
     // ?ReturnUrl=%2F
-    let hash = new URLPath().RemovePrefixUrl(locationHash);
-    let search = new URLSearchParams(hash);
-    let getReturnUrl = search.get("ReturnUrl");
+    const hash = new URLPath().RemovePrefixUrl(locationHash);
+    const search = new URLSearchParams(hash);
+    const getReturnUrl = search.get("ReturnUrl");
 
     // add only prefix for default situation
     if (!getReturnUrl) return `/${new URLPath().AddPrefixUrl("f=/")}`;
@@ -77,22 +76,22 @@ export class UrlQuery {
       : `${this.prefix}/account/login`;
   }
 
-  public UrlLoginApi(): string {
-    return this.prefix + `/api/account/login`;
-  }
-
   public UrlLogoutPage(returnUrl: string): string {
     return document.location.pathname.indexOf(this.prefix) === -1
       ? `/account/logout?ReturnUrl=${returnUrl}`
       : `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`;
   }
 
+  public UrlLoginApi(): string {
+    return `${this.prefix}/api/account/login`;
+  }
+
   public UrlLogoutApi(): string {
-    return this.prefix + `/api/account/logout`;
+    return `${this.prefix}/api/account/logout`;
   }
 
   private urlReplacePath(input: string): string {
-    let output = input.replace("#", "");
+    const output = input.replace("#", "");
     return output.replace(/\+/gi, "%2B");
   }
 
@@ -120,37 +119,35 @@ export class UrlQuery {
   };
 
   public UrlQuerySearchApi = (query: string, pageNumber = 0): string => {
-    return (
-      this.prefix + "/api/search?json=true&t=" + query + "&p=" + pageNumber
-    );
+    return `${this.prefix}/api/search?json=true&t=${query}&p=${pageNumber}`;
   };
 
   public UrlSearchSuggestApi(query: string): string {
-    return this.prefix + "/api/suggest/?t=" + query;
+    return `${this.prefix}/api/suggest/?t=${query}`;
   }
 
   public UrlSearchRemoveCacheApi(): string {
-    return this.prefix + "/api/search/remove-cache";
+    return `${this.prefix}/api/search/remove-cache`;
   }
 
   public UrlSearchTrashApi = (pageNumber = 0): string => {
-    return this.prefix + "/api/search/trash?p=" + pageNumber;
+    return `${this.prefix}/api/search/trash?p=${pageNumber}`;
   };
 
   public UrlAccountStatus = (): string => {
-    return this.prefix + "/api/account/status";
+    return `${this.prefix}/api/account/status`;
   };
 
   public UrlAccountRegisterStatus = (): string => {
-    return this.prefix + "/api/account/register/status";
+    return `${this.prefix}/api/account/register/status`;
   };
 
   public UrlAccountChangeSecret = (): string => {
-    return this.prefix + "/api/account/change-secret";
+    return `${this.prefix}/api/account/change-secret`;
   };
 
   public UrlAccountPermissions = (): string => {
-    return this.prefix + "/api/account/permissions";
+    return `${this.prefix}/api/account/permissions`;
   };
 
   /**
@@ -160,7 +157,7 @@ export class UrlQuery {
     historyLocationHash: string,
     toUpdateFilePath: string,
     clearTSearchQuery?: boolean,
-    emthySelectQuery?: boolean
+    emptySelectQuery?: boolean
   ): string {
     const url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
@@ -170,7 +167,7 @@ export class UrlQuery {
       delete url.p;
     }
     // when in select mode and navigate next to the select mode is still on but there are no items selected
-    if (emthySelectQuery && url.select && url.select?.length >= 1) {
+    if (emptySelectQuery && url.select && url.select?.length >= 1) {
       url.select = [];
     }
     return document.location.pathname.indexOf(this.prefix) === -1
@@ -179,7 +176,7 @@ export class UrlQuery {
   }
 
   /**
-   * Used with localisation hash
+   * Used with localization hash
    */
   public UrlQueryServerApi = (historyLocationHash: string): string => {
     const requested = new URLPath().StringToIUrl(historyLocationHash);
@@ -210,14 +207,14 @@ export class UrlQuery {
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApi = (urlObject: IUrl): string => {
-    return this.prefix + "/api/index" + new URLPath().IUrlToString(urlObject);
+    return `${this.prefix}/api/index${new URLPath().IUrlToString(urlObject)}`;
   };
 
   /**
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApiPath = (path: string): string => {
-    return this.prefix + "/api/index?f=" + path;
+    return `${this.prefix}/api/index?f=${path}`;
   };
 
   /**
@@ -227,39 +224,35 @@ export class UrlQuery {
   public UrlQueryInfoApi(subPath: string): string {
     if (!subPath) return "";
     const url = this.urlReplacePath(subPath);
-    return this.prefix + "/api/info?f=" + url + "&json=true";
+    return `${this.prefix}/api/info?f=${url}&json=true`;
   }
 
   /**
    * POST to this to update meta information
    */
   public UrlUpdateApi = (): string => {
-    return this.prefix + "/api/update";
+    return `${this.prefix}/api/update`;
   };
 
   /**
    * POST to trash this item
    */
   public UrlMoveToTrashApi = (): string => {
-    return this.prefix + "/api/trash/move-to-trash";
+    return `${this.prefix}/api/trash/move-to-trash`;
   };
 
   /**
    * GET recent notifications
    */
   public UrlNotificationsGetApi = (keepAliveServerTime: string): string => {
-    return (
-      this.prefix +
-      "/api/notification/notification?dateTime=" +
-      keepAliveServerTime
-    );
+    return `${this.prefix}/api/notification/notification?dateTime=${keepAliveServerTime}`;
   };
 
   /**
    * POST to this to search and replace meta information like: tags, descriptions and titles
    */
   public UrlReplaceApi = (): string => {
-    return this.prefix + "/api/replace";
+    return `${this.prefix}/api/replace`;
   };
 
   /**
@@ -274,7 +267,7 @@ export class UrlQuery {
    * DELETE to endpoint to remove file from database and disk
    */
   public UrlDeleteApi = (): string => {
-    return this.prefix + "/api/delete";
+    return `${this.prefix}/api/delete`;
   };
 
   public UrlThumbnailImageLargeOrExtraLarge = (
@@ -450,11 +443,6 @@ export class UrlQuery {
   public UrlRealtime(): string {
     let url = window.location.protocol === "https:" ? "wss:" : "ws:";
     url += "//" + window.location.host + this.prefix + "/realtime";
-
-    // Create React App is not supporting websockets. At least is isn't working
-    if (isDev()) {
-      url = url.replace(":3000", ":4000");
-    }
     return url;
   }
 }

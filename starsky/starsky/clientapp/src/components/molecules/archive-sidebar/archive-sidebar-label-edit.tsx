@@ -1,4 +1,4 @@
-import React from "react";
+import { useContext, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { CastToInterface } from "../../../shared/cast-to-interface";
@@ -20,9 +20,9 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
   );
 
   // Toggle
-  const [isReplaceMode, setReplaceMode] = React.useState(false);
+  const [isReplaceMode, setReplaceMode] = useState(false);
 
-  let { state } = React.useContext(ArchiveContext);
+  let { state } = useContext(ArchiveContext);
 
   // state without any context
   state = new CastToInterface().UndefinedIArchiveReadonly(state);

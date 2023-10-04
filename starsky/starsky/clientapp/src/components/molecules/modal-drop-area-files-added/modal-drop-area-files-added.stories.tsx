@@ -1,4 +1,3 @@
-import React from "react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ModalDropAreaFilesAdded from "./modal-drop-area-files-added";

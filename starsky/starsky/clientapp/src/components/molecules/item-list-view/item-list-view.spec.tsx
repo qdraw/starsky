@@ -1,11 +1,13 @@
-import { globalHistory } from "@reach/router";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
+import { MemoryRouter } from "react-router-dom";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
+import * as useLocation from "../../../hooks/use-location/use-location";
 import {
   IFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
-import { INavigateState } from "../../../interfaces/INavigateState";
+import { Router } from "../../../router-app/router-app";
 import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import * as ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ItemListView from "./item-list-view";
@@ -29,11 +31,13 @@ describe("ItemListView", () => {
 
     it("search with data-filepath in child element", () => {
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
 
       const element = screen.queryAllByTestId(
@@ -53,11 +57,13 @@ describe("ItemListView", () => {
         .spyOn(FlatListItem, "default")
         .mockImplementationOnce(() => <></>);
       const component = render(
-        <ItemListView
-          iconList={false}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={false}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
       expect(flatListItemSpy).toBeCalled();
       component.unmount();
@@ -65,16 +71,18 @@ describe("ItemListView", () => {
 
     it("no content", () => {
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={undefined as any}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={undefined as any}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
       expect(component.container.textContent).toBe("no content");
     });
 
-    it("text should be: New? Set your drive location in the settings.  There are no photos in this folder", () => {
+    it("text should be: New? Set your drive location in the settings. There are no photos in this folder", () => {
       const component = render(
         <ItemListView
           iconList={true}
@@ -84,7 +92,7 @@ describe("ItemListView", () => {
         />
       );
       expect(component.container.textContent).toBe(
-        "New? Set your drive location in the settings.  There are no photos in this folder"
+        "New? Set your drive location in the settings. There are no photos in this folder"
       );
     });
 
@@ -118,6 +126,7 @@ describe("ItemListView", () => {
     it("scroll to state with filePath [item exist]", () => {
       const scrollTo = jest
         .spyOn(window, "scrollTo")
+        .mockReset()
         .mockImplementationOnce(() => {});
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
@@ -125,18 +134,29 @@ describe("ItemListView", () => {
       (window as any).domNode = div;
       document.body.appendChild(div);
 
-      globalHistory.location.state = {
-        filePath: exampleData[0].filePath
-      } as INavigateState;
+      const useLocationMock = {
+        location: {
+          state: {
+            filePath: exampleData[0].filePath
+          }
+        },
+        navigate: jest.fn()
+      } as unknown as IUseLocation;
+
+      jest
+        .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => useLocationMock);
+
       jest.useFakeTimers();
 
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        ></ItemListView>
-        // { attachTo: (window as any).domNode }
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          ></ItemListView>
+        </MemoryRouter>
       );
 
       act(() => {
@@ -152,19 +172,19 @@ describe("ItemListView", () => {
 
     it("when clicking shift in selection mode", () => {
       const listImageChildItemSpy = jest.spyOn(ListImageChildItem, "default");
-      globalHistory.navigate("/?select=");
+      Router.navigate("/?select=");
       const shiftSelectionHelperSpy = jest
         .spyOn(ShiftSelectionHelper, "ShiftSelectionHelper")
-        .mockImplementationOnce(() => {
-          return true;
-        });
+        .mockImplementationOnce(() => true);
 
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
 
       const item = screen.queryByTestId(
@@ -202,11 +222,13 @@ describe("ItemListView", () => {
         .spyOn(ListImageChildItem, "default")
         .mockImplementationOnce(() => <>t</>);
       const component = render(
-        <ItemListView
-          iconList={true}
-          fileIndexItems={exampleData}
-          colorClassUsage={[]}
-        />
+        <MemoryRouter>
+          <ItemListView
+            iconList={true}
+            fileIndexItems={exampleData}
+            colorClassUsage={[]}
+          />
+        </MemoryRouter>
       );
       expect(listImageChildItemSpy).toBeCalled();
       component.unmount();

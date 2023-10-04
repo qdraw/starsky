@@ -1,21 +1,25 @@
-import { globalHistory } from "@reach/router";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import ListImageNormalSelectContainer from "./list-image-view-select-container";
-
 describe("ListImageTest", () => {
   it("renders", () => {
     const fileIndexItem = {
       fileName: "test",
       status: IExifStatus.Ok
     } as IFileIndexItem;
-    render(<ListImageNormalSelectContainer item={fileIndexItem} />);
+    render(
+      <MemoryRouter>
+        <ListImageNormalSelectContainer item={fileIndexItem} />
+      </MemoryRouter>
+    );
   });
 
   describe("NonSelectMode", () => {
     beforeAll(() => {
-      globalHistory.navigate("/");
+      Router.navigate("/");
     });
 
     it("NonSelectMode - when click on Link, it should display a preloader", () => {
@@ -24,9 +28,9 @@ describe("ListImageTest", () => {
         status: IExifStatus.Ok
       } as IFileIndexItem;
       const component = render(
-        <ListImageNormalSelectContainer item={fileIndexItem}>
-          t
-        </ListImageNormalSelectContainer>
+        <MemoryRouter>
+          <ListImageNormalSelectContainer item={fileIndexItem} />
+        </MemoryRouter>
       );
 
       const anchor = component.container.querySelector(
@@ -52,7 +56,9 @@ describe("ListImageTest", () => {
         status: IExifStatus.Ok
       } as IFileIndexItem;
       const component = render(
-        <ListImageNormalSelectContainer item={fileIndexItem} />
+        <MemoryRouter>
+          <ListImageNormalSelectContainer item={fileIndexItem} />
+        </MemoryRouter>
       );
 
       const anchor = component.container.querySelector(
@@ -77,7 +83,7 @@ describe("ListImageTest", () => {
 
   describe("SelectMode", () => {
     beforeEach(() => {
-      globalHistory.navigate("/?select=");
+      Router.navigate("/?select=");
     });
 
     it("when click on button it add the selected file to the history", () => {
@@ -88,12 +94,12 @@ describe("ListImageTest", () => {
 
       const onSelectionCallback = jest.fn();
       const component = render(
-        <ListImageNormalSelectContainer
-          item={fileIndexItem}
-          onSelectionCallback={onSelectionCallback}
-        >
-          t
-        </ListImageNormalSelectContainer>
+        <MemoryRouter>
+          <ListImageNormalSelectContainer
+            item={fileIndexItem}
+            onSelectionCallback={onSelectionCallback}
+          />
+        </MemoryRouter>
       );
 
       const button = component.container.querySelector(
@@ -111,7 +117,7 @@ describe("ListImageTest", () => {
         })
       );
 
-      expect(globalHistory.location.search).toBe("?select=test");
+      expect(window.location.search).toBe("?select=test");
       expect(onSelectionCallback).toBeCalledTimes(0);
       component.unmount();
     });
@@ -125,12 +131,12 @@ describe("ListImageTest", () => {
 
       const onSelectionCallback = jest.fn();
       const component = render(
-        <ListImageNormalSelectContainer
-          item={fileIndexItem}
-          onSelectionCallback={onSelectionCallback}
-        >
-          t
-        </ListImageNormalSelectContainer>
+        <MemoryRouter>
+          <ListImageNormalSelectContainer
+            item={fileIndexItem}
+            onSelectionCallback={onSelectionCallback}
+          />
+        </MemoryRouter>
       );
 
       const button = component.container.querySelector(
@@ -150,7 +156,7 @@ describe("ListImageTest", () => {
       expect(onSelectionCallback).toBeCalled();
       expect(onSelectionCallback).toBeCalledWith("/test.jpg");
       // the update is done in the callback, not here
-      expect(globalHistory.location.search).toBe("?select=");
+      expect(window.location.search).toBe("?select=");
     });
 
     it("shift click it should not submit callback when input is undefined", () => {
@@ -161,12 +167,12 @@ describe("ListImageTest", () => {
       } as IFileIndexItem;
 
       const component = render(
-        <ListImageNormalSelectContainer
-          item={fileIndexItem}
-          onSelectionCallback={undefined as any}
-        >
-          t
-        </ListImageNormalSelectContainer>
+        <MemoryRouter>
+          <ListImageNormalSelectContainer
+            item={fileIndexItem}
+            onSelectionCallback={undefined as any}
+          />
+        </MemoryRouter>
       );
 
       const button = component.container.querySelector(
@@ -184,7 +190,7 @@ describe("ListImageTest", () => {
       );
 
       // should normal toggle instead of shift action
-      expect(globalHistory.location.search).toBe("?select=");
+      expect(window.location.search).toBe("?select=");
     });
   });
 });

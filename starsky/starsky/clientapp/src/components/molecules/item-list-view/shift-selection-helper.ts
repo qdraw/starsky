@@ -1,4 +1,4 @@
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { URLPath } from "../../../shared/url-path";
 

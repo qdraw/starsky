@@ -1,4 +1,3 @@
-import React from "react";
 import Notification, { NotificationType } from "./notification";
 
 export default {
@@ -8,7 +7,7 @@ export default {
 export const Default = () => {
   return (
     <Notification type={NotificationType.default}>
-      "There are critical errors in the following components:"
+      &quot;There are critical errors in the following components:&quot;
     </Notification>
   );
 };

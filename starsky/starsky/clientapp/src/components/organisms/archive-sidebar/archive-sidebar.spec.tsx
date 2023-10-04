@@ -1,10 +1,9 @@
-import { globalHistory } from "@reach/router";
 import { act, render, screen } from "@testing-library/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { PageType } from "../../../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
+import { Router } from "../../../router-app/router-app";
 import ArchiveSidebar from "./archive-sidebar";
-
 describe("ArchiveSidebar", () => {
   it("renders", () => {
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -23,9 +22,9 @@ describe("ArchiveSidebar", () => {
   describe("with mount", () => {
     beforeEach(() => {
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
-      jest.spyOn(React, "useLayoutEffect").mockImplementation(React.useEffect);
+      jest.spyOn(React, "useLayoutEffect").mockImplementation(useEffect);
 
-      globalHistory.navigate("/?sidebar=true");
+      Router.navigate("/?sidebar=true");
     });
 
     it("restore scroll after unmount", () => {

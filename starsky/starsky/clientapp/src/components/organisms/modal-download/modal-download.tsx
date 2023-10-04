@@ -35,7 +35,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     "Download selectie",
     "Download selection"
   );
-  const MessageOrginalFile = language.text(
+  const MessageOriginalFile = language.text(
     "Origineel bestand",
     "Original file"
   );
@@ -75,7 +75,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
 
     bodyParams.set(
       "f",
-      new URLPath().ArrayToCommaSeperatedString(props.select)
+      new URLPath().ArrayToCommaSeparatedString(props.select)
     );
     bodyParams.set("json", "true");
     bodyParams.set("thumbnail", isThumbnail.toString());
@@ -141,13 +141,13 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
                 false,
                 false
               )}
-              data-test="orginal"
+              data-test="original"
               download={new URLPath().FileNameBreadcrumb(props.select[0])}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn--info"
             >
-              {MessageOrginalFile}
+              {MessageOriginalFile}
             </a>
             {singleFileThumbnailStatus ? (
               <a
@@ -181,9 +181,9 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
                 postZip(false);
               }}
               className="btn btn--info"
-              data-test="orginal"
+              data-test="original"
             >
-              {MessageOrginalFile}
+              {MessageOriginalFile}
             </button>
 
             <button

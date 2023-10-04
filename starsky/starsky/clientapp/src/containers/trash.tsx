@@ -8,7 +8,7 @@ import {
   defaultStateFallback
 } from "../contexts/archive-context";
 import useGlobalSettings from "../hooks/use-global-settings";
-import useLocation from "../hooks/use-location";
+import useLocation from "../hooks/use-location/use-location";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { Language } from "../shared/language";
 import { URLPath } from "../shared/url-path";
@@ -36,6 +36,7 @@ function Trash(archive: IArchiveProps) {
   }, [history.location.search]);
 
   // to dynamic update the number of trashed items
+  // eslint-disable-next-line prefer-const
   let { state, dispatch } = React.useContext(ArchiveContext);
   state = defaultStateFallback(state);
 

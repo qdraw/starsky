@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useInterval from "../../../hooks/use-interval";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchGet from "../../../shared/fetch-get";
@@ -59,7 +59,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
   const [isLoading, setIsLoading] = useState(false);
 
   const history = useLocation();
-  let { dispatch } = React.useContext(ArchiveContext);
+  const { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
   const [collections, setCollections] = React.useState(
@@ -82,7 +82,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
     const parentFolder = props.parentFolder ?? "/";
     FetchGet(
       new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))
-    ).then((_) => {
+    ).then(() => {
       setTimeout(() => {
         const url = new UrlQuery().UrlIndexServerApi(
           new URLPath().StringToIUrl(history.location.search)
@@ -110,7 +110,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
 
     const bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
-    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then((_) => {
+    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then(() => {
       // do nothing with result
     });
   }
@@ -144,7 +144,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
     FetchPost(
       new UrlQuery().UrlThumbnailGeneration(),
       bodyParams.toString()
-    ).then((_) => {
+    ).then(() => {
       setTimeout(() => {
         setIsLoading(false);
         props.handleExit();

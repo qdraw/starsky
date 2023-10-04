@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { act, render, screen, waitFor } from "@testing-library/react";
 import L from "leaflet";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -115,7 +116,7 @@ describe("DetailViewGpx", () => {
       gpx.unmount();
     });
 
-    it("zoom in", async () => {
+    it("[gpx] zoom in", async () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
@@ -123,6 +124,7 @@ describe("DetailViewGpx", () => {
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchXml, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       // // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
@@ -176,7 +178,7 @@ describe("DetailViewGpx", () => {
       expect(spyGet).toBeCalledTimes(1);
     });
 
-    it("detail view gpx - zoom out 1", async () => {
+    it("[detail view gpx] - zoom out 1", async () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({
           statusCode: 200,
@@ -184,6 +186,7 @@ describe("DetailViewGpx", () => {
         } as IConnectionDefault);
       const spyGet = jest
         .spyOn(FetchXml, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
@@ -393,7 +396,7 @@ describe("DetailViewGpx", () => {
   const LeafletMock: any = jest.genMockFromModule("leaflet");
 
   class MapMock extends LeafletMock.Map {
-    constructor(id: any, options: any = {}) {
+    constructor(_id: any, options: any = {}) {
       super();
       Object.assign(this, L.Evented.prototype);
 
@@ -416,9 +419,11 @@ describe("DetailViewGpx", () => {
       return Math.max(0, Math.min(0, zoom));
     }
 
-    _resetView(center: any, zoom: any) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _resetView(_center: any, _zoom: any) {}
 
-    fitBounds(bounds: any, options: any) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    fitBounds(_bounds: any, _options: any) {}
 
     getBounds() {}
 
@@ -430,9 +435,11 @@ describe("DetailViewGpx", () => {
 
     getZoom() {}
 
-    setMaxBounds(bounds: any) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setMaxBounds(_bounds: any) {}
 
-    setView(center: any, zoom: any) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setView(_center: any, _zoom: any) {}
 
     setZoom(zoom: any) {
       return this.setView(this.getCenter(), zoom);

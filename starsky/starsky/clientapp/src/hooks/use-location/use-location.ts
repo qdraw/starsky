@@ -1,23 +1,20 @@
-import { globalHistory, HistoryLocation, NavigateFn } from "@reach/router";
 import { useEffect, useState } from "react";
-
-export interface IUseLocation {
-  location: HistoryLocation;
-  navigate: NavigateFn;
-}
+import { Router } from "../../router-app/router-app";
+import { IUseLocation } from "./interfaces/IUseLocation";
+import { NavigateFn } from "./shared/navigate-fn";
 
 const useLocation = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const initialState = {
-    location: globalHistory.location,
-    navigate: globalHistory.navigate
+  const initialState: IUseLocation = {
+    location: window.location,
+    navigate: NavigateFn
   };
 
   const [state, setState] = useState(initialState);
   useEffect(() => {
-    const removeListener = globalHistory.listen((params) => {
+    const removeListener = Router.subscribe((params) => {
       const { location } = params;
-      const newState = Object.assign({}, initialState, { location });
+      const newState = { ...initialState, ...location };
       setState(newState);
     });
     return () => {
@@ -25,7 +22,7 @@ const useLocation = () => {
     };
   }, [initialState]);
 
-  return state as IUseLocation;
+  return state;
 };
 
 export default useLocation;

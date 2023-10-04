@@ -8,7 +8,7 @@ import DetailViewSidebar from "../../components/organisms/detail-view-sidebar/de
 import { DetailViewContext } from "../../contexts/detailview-context";
 import useGestures from "../../hooks/use-gestures/use-gestures";
 import useKeyboardEvent from "../../hooks/use-keyboard/use-keyboard-event";
-import useLocation from "../../hooks/use-location";
+import useLocation from "../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../interfaces/IDetailView";
 import { ImageFormat } from "../../interfaces/IFileIndexItem";
 import DocumentTitle from "../../shared/document-title";
@@ -23,6 +23,7 @@ import { statusRemoved } from "./helpers/status-removed";
 const DetailView: React.FC<IDetailView> = () => {
   const history = useLocation();
 
+  // eslint-disable-next-line prefer-const
   let { state, dispatch } = React.useContext(DetailViewContext);
 
   // if there is no state
@@ -42,7 +43,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // boolean to get the details-side menu on or off
   const [isDetails, setDetails] = React.useState(
-    new URLPath().StringToIUrl(history.location.search).details
+    new URLPath().StringToIUrl(history?.location?.search)?.details
   );
   useEffect(() => {
     const details = new URLPath().StringToIUrl(history.location.search).details;

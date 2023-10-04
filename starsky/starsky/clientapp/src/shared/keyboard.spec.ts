@@ -17,7 +17,7 @@ describe("keyboard", () => {
     });
 
     it("should ignore form-control", () => {
-      let target = document.createElement("div");
+      const target = document.createElement("div");
       target.className = "form-control";
 
       const event = new KeyboardEvent("keydown", {
@@ -34,7 +34,7 @@ describe("keyboard", () => {
     });
 
     it("should ignore modal", () => {
-      let target = document.createElement("div");
+      const target = document.createElement("div");
       target.className = "modal";
 
       const event = new KeyboardEvent("keydown", {

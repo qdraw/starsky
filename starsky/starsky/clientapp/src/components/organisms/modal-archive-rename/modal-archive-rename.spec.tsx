@@ -1,4 +1,3 @@
-import { globalHistory } from "@reach/router";
 import {
   createEvent,
   fireEvent,
@@ -7,7 +6,7 @@ import {
   waitFor
 } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import * as useLocation from "../../../hooks/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
@@ -190,7 +189,7 @@ describe("ModalArchiveRename", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const locationObject = {
-        location: globalHistory.location,
+        location: window.location,
         navigate: jest.fn()
       };
 

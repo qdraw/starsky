@@ -1,7 +1,7 @@
-import React from "react";
+import { useState } from "react";
 import useFileList, { IFileList } from "../../../hooks/use-filelist";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { PageType } from "../../../interfaces/IDetailView";
 import {
@@ -26,7 +26,7 @@ interface IModalMoveFileProps {
 }
 
 const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
-  const [currentFolderPath, setCurrentFolderPath] = React.useState(
+  const [currentFolderPath, setCurrentFolderPath] = useState(
     props.parentDirectory
   );
 
@@ -42,7 +42,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
   // to show errors
   const useErrorHandler = (initialState: string | null) => initialState;
-  const [error, setError] = React.useState(useErrorHandler(null));
+  const [error, setError] = useState(useErrorHandler(null));
 
   /**
    * Move {props.selectedSubPath} to {currentFolderPath}

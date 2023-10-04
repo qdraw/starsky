@@ -161,6 +161,7 @@ describe("ArchiveContext", () => {
 
     const cacheSetObjectSpy = jest
       .spyOn(FileListCache.prototype, "CacheSetObject")
+      .mockReset()
       .mockImplementationOnce(() => {});
 
     // fullPath input

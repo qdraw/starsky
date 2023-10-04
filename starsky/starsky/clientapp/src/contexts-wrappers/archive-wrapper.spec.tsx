@@ -4,8 +4,8 @@ import * as Archive from "../containers/archive";
 import * as Login from "../containers/login";
 import * as Search from "../containers/search";
 import * as Trash from "../containers/trash";
-import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { mountReactHook } from "../hooks/___tests___/test-hook";
+import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { newIArchive } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
@@ -79,7 +79,7 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Unauthorized
       } as IArchiveProps;
-      const login = jest.spyOn(Login, "default").mockImplementationOnce(() => {
+      const login = jest.spyOn(Login, "Login").mockImplementationOnce(() => {
         return <></>;
       });
 
@@ -169,8 +169,10 @@ describe("ArchiveContextWrapper", () => {
      * @see: https://wildwolf.name/jest-how-to-mock-window-location-href/
      */
     beforeAll(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       delete window.location;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.location = {
         search: "/?f=/"

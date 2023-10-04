@@ -1,4 +1,3 @@
-import React from "react";
 import PreferencesPassword from "./preferences-password";
 
 export default {

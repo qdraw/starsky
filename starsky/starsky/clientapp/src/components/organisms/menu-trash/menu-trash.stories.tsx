@@ -1,4 +1,3 @@
-import React from "react";
 import MenuTrash from "./menu-trash";
 
 export default {

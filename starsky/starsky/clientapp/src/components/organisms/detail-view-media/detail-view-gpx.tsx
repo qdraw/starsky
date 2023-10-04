@@ -1,6 +1,6 @@
 import L from "leaflet";
 import React, { useEffect, useRef, useState } from "react";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { Coordinates } from "../../../shared/coordinates-position.types";
 import FetchXml from "../../../shared/fetch-xml";
@@ -8,8 +8,8 @@ import { Geo } from "../../../shared/geo";
 import { LeafletEmptyImageUrlGridLayer } from "../../../shared/leaflet-modify-empty-image-url-gridlayer";
 import { LeafletEmptyImageUrlTileLayer } from "../../../shared/leaflet-modify-empty-image-url-tilelayer";
 import {
-  tileLayerAttribution,
-  tileLayerLocation
+  TileLayerAttribution,
+  TileLayerLocation
 } from "../../../shared/tile-layer-location.const";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
@@ -53,8 +53,8 @@ const DetailViewGpx: React.FC = () => {
     // create map
     const map = L.map(mapReference.current, {
       layers: [
-        L.tileLayer(tileLayerLocation, {
-          attribution: tileLayerAttribution
+        L.tileLayer(TileLayerLocation, {
+          attribution: TileLayerAttribution
         })
       ]
     });
@@ -112,7 +112,7 @@ const DetailViewGpx: React.FC = () => {
     );
   }, [history.location.search]);
 
-  /** update only on intial load */
+  /** update only on initial load */
   useEffect(() => {
     setIsLoading(true);
     FetchXml(

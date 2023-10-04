@@ -50,7 +50,7 @@ describe("ModalDownload", () => {
 
     expect(useFetchSpy).toBeCalled();
     expect(screen.getByTestId("thumbnail")).toBeTruthy();
-    expect(screen.getByTestId("orginal")).toBeTruthy();
+    expect(screen.getByTestId("original")).toBeTruthy();
 
     // and clean afterwards
     act(() => {
@@ -131,10 +131,10 @@ describe("ModalDownload", () => {
     expect(useFetchSpy).toBeCalled();
 
     const btnTest = screen.queryByTestId("btn-test");
-    const orginal = screen.queryByTestId("orginal");
+    const original = screen.queryByTestId("original");
 
     expect(btnTest).toBeNull();
-    expect(orginal).not.toBeNull();
+    expect(original).not.toBeNull();
 
     // and clean afterwards
     act(() => {

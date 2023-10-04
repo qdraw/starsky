@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView, newDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -92,7 +92,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
   ) {
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
-    let fieldValue = event.currentTarget.textContent.trim();
+    const fieldValue = event.currentTarget.textContent.trim();
 
     setFileName(fieldValue);
     setButtonState(true);
@@ -113,7 +113,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
     }
   }
 
-  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+  async function pushRenameChange() {
     // Show icon with load ++ disable forms
     setFormEnabled(false);
     setIsLoading(true);
@@ -139,7 +139,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
 
     if (result.statusCode !== 200) {
       setError(MessageGeneralError);
-      // and renable
+      // and renewable
       setIsLoading(false);
       setFormEnabled(true);
       return;
@@ -151,7 +151,8 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
       history.location.search,
       filePathAfterChange
     );
-    await history.navigate(replacePath, { replace: true });
+
+    history.navigate(replacePath, { replace: true });
 
     // Close window
     props.handleExit();

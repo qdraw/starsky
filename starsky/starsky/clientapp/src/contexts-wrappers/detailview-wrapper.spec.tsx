@@ -1,8 +1,9 @@
 import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import * as DetailView from "../containers/detailview/detailview";
 import * as useDetailViewContext from "../contexts/detailview-context";
-import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { mountReactHook } from "../hooks/___tests___/test-hook";
+import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { IDetailView, newDetailView } from "../interfaces/IDetailView";
 import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import DetailViewWrapper, {
@@ -11,7 +12,11 @@ import DetailViewWrapper, {
 
 describe("DetailViewWrapper", () => {
   it("renders", () => {
-    render(<DetailViewWrapper {...newDetailView()} />);
+    render(
+      <MemoryRouter>
+        <DetailViewWrapper {...newDetailView()} />
+      </MemoryRouter>
+    );
   });
 
   describe("with mount", () => {
@@ -23,9 +28,9 @@ describe("DetailViewWrapper", () => {
           return <></>;
         });
 
-      const compontent = render(<DetailViewWrapper {...args} />);
+      const component = render(<DetailViewWrapper {...args} />);
       expect(detailView).toBeCalled();
-      compontent.unmount();
+      component.unmount();
     });
 
     it("check if dispatch is called", () => {
@@ -51,17 +56,17 @@ describe("DetailViewWrapper", () => {
           return <></>;
         });
 
-      const compontent = render(<DetailViewWrapper {...args} />);
+      const component = render(<DetailViewWrapper {...args} />);
 
       expect(contextValues.dispatch).toBeCalled();
       expect(detailView).toBeCalled();
 
-      compontent.unmount();
+      component.unmount();
     });
   });
 
   describe("no context", () => {
-    it("No context if used", () => {
+    it("[detail view] No context if used", () => {
       const contextValues = {
         state: null,
         dispatch: jest.fn()
@@ -69,13 +74,14 @@ describe("DetailViewWrapper", () => {
 
       jest
         .spyOn(useDetailViewContext, "useDetailViewContext")
+        .mockReset()
         .mockImplementationOnce(() => contextValues as any);
 
       const args = { ...newDetailView() } as IDetailView;
-      const compontent = render(<DetailViewWrapper {...args} />);
+      const component = render(<DetailViewWrapper {...args} />);
 
-      expect(compontent.container.innerHTML).toBe("");
-      compontent.unmount();
+      expect(component.container.innerHTML).toBe("");
+      component.unmount();
     });
   });
 
@@ -86,8 +92,10 @@ describe("DetailViewWrapper", () => {
      * @see: https://wildwolf.name/jest-how-to-mock-window-location-href/
      */
     beforeAll(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       delete window.location;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.location = {
         search: "/?f=/test.jpg"

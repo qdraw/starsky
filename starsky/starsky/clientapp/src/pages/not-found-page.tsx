@@ -1,11 +1,11 @@
-import { Link, RouteComponentProps } from "@reach/router";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
+import Link from "../components/atoms/link/link";
 import MenuDefault from "../components/organisms/menu-default/menu-default";
 import useGlobalSettings from "../hooks/use-global-settings";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url-query";
 
-const NotFoundPage: FunctionComponent<RouteComponentProps<any>> = () => {
+export const NotFoundPage: FunctionComponent = () => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -19,7 +19,7 @@ const NotFoundPage: FunctionComponent<RouteComponentProps<any>> = () => {
   return (
     <div>
       <MenuDefault isEnabled={true}></MenuDefault>
-      <div className="content">
+      <div data-test="not-found-page" className="content">
         <div className="content--header">
           <Link to={new UrlQuery().UrlHomePage()}>{MessageNotFound}</Link>
         </div>
@@ -32,5 +32,3 @@ const NotFoundPage: FunctionComponent<RouteComponentProps<any>> = () => {
     </div>
   );
 };
-
-export default NotFoundPage;

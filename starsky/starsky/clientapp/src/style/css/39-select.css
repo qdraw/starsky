@@ -29,9 +29,13 @@
 	  linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%); */
   background-repeat: no-repeat, repeat;
   /* arrow icon position (1em from the right, 50% vertical) , then gradient position*/
-  background-position: right 0.7em top 50%, 0 0;
+  background-position:
+    right 0.7em top 50%,
+    0 0;
   /* icon size, then gradient */
-  background-size: 0.65em auto, 100%;
+  background-size:
+    0.65em auto,
+    100%;
 }
 
 /* Hide arrow icon in IE browsers */
@@ -61,7 +65,9 @@
 *[dir="rtl"] .select,
 :root:lang(ar) .select,
 :root:lang(iw) .select {
-  background-position: left 0.7em top 50%, 0 0;
+  background-position:
+    left 0.7em top 50%,
+    0 0;
   padding: 0.6em 0.8em 0.5em 1.4em;
 }
 

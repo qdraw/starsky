@@ -9,3 +9,10 @@
 // source: https://github.com/microsoft/TypeScript-React-Starter/issues/12#issuecomment-385165319
 
 declare module "*.gif";
+declare module "*.jpg";
+declare module "*.svg";
+declare module "*.png";
+
+//  Property 'env' does not exist on type 'ImportMeta' in 3.0.0 #9539
+// https://github.com/vitejs/vite/issues/9539
+import "vite/client";

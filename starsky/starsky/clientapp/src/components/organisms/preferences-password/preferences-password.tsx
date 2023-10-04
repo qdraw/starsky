@@ -1,11 +1,11 @@
-import React from "react";
+import { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import FetchPost from "../../../shared/fetch-post";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import ButtonStyled from "../../atoms/button-styled/button-styled";
 
-const PreferencesPassword: React.FunctionComponent<any> = (_) => {
+const PreferencesPassword: React.FunctionComponent<any> = () => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageChangePassword = language.text(
@@ -43,17 +43,17 @@ const PreferencesPassword: React.FunctionComponent<any> = (_) => {
     "The new password does not meet the criteria"
   );
 
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
 
   const useErrorHandler = (initialState: string | null) => {
     return initialState;
   };
-  const [error, setError] = React.useState(useErrorHandler(null));
+  const [error, setError] = useState(useErrorHandler(null));
 
-  const [userCurrentPassword, setUserCurrentPassword] = React.useState("");
-  const [userChangedPassword, setUserChangedPassword] = React.useState("");
+  const [userCurrentPassword, setUserCurrentPassword] = useState("");
+  const [userChangedPassword, setUserChangedPassword] = useState("");
   const [userChangedConfirmPassword, setUserChangedConfirmPassword] =
-    React.useState("");
+    useState("");
 
   function validateChangePassword(): boolean {
     if (

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { createContext } from "react";
 import { newIArchive, SortType } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import {
@@ -13,9 +14,7 @@ import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
 import { sorter } from "./sorter";
 
-const ArchiveContext = React.createContext<IArchiveContext>(
-  {} as IArchiveContext
-);
+const ArchiveContext = createContext<IArchiveContext>({} as IArchiveContext);
 
 export type IArchiveContext = {
   state: State;
@@ -449,8 +448,8 @@ function updateCache(stateLocal: IArchiveProps): IArchiveProps {
 
 function ArchiveContextProvider({ children }: ReactNodeProps) {
   // [A]
-  let [state, dispatch] = React.useReducer(archiveReducer, initialState);
-  let value1 = React.useMemo(() => ({ state, dispatch }), [state, dispatch]);
+  const [state, dispatch] = React.useReducer(archiveReducer, initialState);
+  const value1 = React.useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   // [B]
   return (
@@ -458,7 +457,7 @@ function ArchiveContextProvider({ children }: ReactNodeProps) {
   );
 }
 
-let ArchiveContextConsumer = ArchiveContext.Consumer;
+const ArchiveContextConsumer = ArchiveContext.Consumer;
 
 // [C]
 export { ArchiveContext, ArchiveContextConsumer, ArchiveContextProvider };

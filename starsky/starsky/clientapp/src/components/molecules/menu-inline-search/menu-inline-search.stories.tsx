@@ -1,4 +1,3 @@
-import React from "react";
 import MenuInlineSearch from "./menu-inline-search";
 
 export default {

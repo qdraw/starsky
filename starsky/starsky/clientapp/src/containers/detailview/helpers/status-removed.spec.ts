@@ -1,4 +1,4 @@
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView, IRelativeObjects } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -38,7 +38,7 @@ describe("statusRemoved", () => {
         location: {
           search: ""
         } as Location
-      } as IUseLocation,
+      } as unknown as IUseLocation,
       jest.fn(),
       jest.fn
     );
@@ -49,6 +49,7 @@ describe("statusRemoved", () => {
   it("should call up", () => {
     const prevNextSpy = jest
       .spyOn(PrevNext.prototype, "next")
+      .mockReset()
       .mockImplementationOnce(() => {});
     const moveFolderUpSpy = jest
       .spyOn(moveFolderUp, "moveFolderUp")
@@ -66,7 +67,7 @@ describe("statusRemoved", () => {
         location: {
           search: ""
         } as Location
-      } as IUseLocation,
+      } as unknown as IUseLocation,
       jest.fn(),
       jest.fn
     );
@@ -77,9 +78,11 @@ describe("statusRemoved", () => {
   it("should not call up due delete", () => {
     const prevNextSpy = jest
       .spyOn(PrevNext.prototype, "next")
+      .mockReset()
       .mockImplementationOnce(() => {});
     const moveFolderUpSpy = jest
       .spyOn(moveFolderUp, "moveFolderUp")
+      .mockReset()
       .mockImplementationOnce(() => {});
 
     statusRemoved(
@@ -94,7 +97,7 @@ describe("statusRemoved", () => {
         location: {
           search: "!delete!"
         } as Location
-      } as IUseLocation,
+      } as unknown as IUseLocation,
       jest.fn(),
       jest.fn
     );
@@ -102,12 +105,14 @@ describe("statusRemoved", () => {
     expect(moveFolderUpSpy).toHaveBeenCalledTimes(0);
   });
 
-  it("should tigger none", () => {
+  it("should trigger none", () => {
     const prevNextSpy = jest
       .spyOn(PrevNext.prototype, "next")
+      .mockReset()
       .mockImplementationOnce(() => {});
     const moveFolderUpSpy = jest
       .spyOn(moveFolderUp, "moveFolderUp")
+      .mockReset()
       .mockImplementationOnce(() => {});
 
     statusRemoved(
@@ -122,7 +127,7 @@ describe("statusRemoved", () => {
         location: {
           search: ""
         } as Location
-      } as IUseLocation,
+      } as unknown as IUseLocation,
       jest.fn(),
       jest.fn
     );
@@ -133,9 +138,11 @@ describe("statusRemoved", () => {
   it("skip when undefined", () => {
     const prevNextSpy = jest
       .spyOn(PrevNext.prototype, "next")
+      .mockReset()
       .mockImplementationOnce(() => {});
     const moveFolderUpSpy = jest
       .spyOn(moveFolderUp, "moveFolderUp")
+      .mockReset()
       .mockImplementationOnce(() => {});
 
     statusRemoved(

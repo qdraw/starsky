@@ -35,12 +35,14 @@ export class FakeWebSocketService implements WebSocketService {
   }
 
   public send(
-    data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView
   ): void {
     // it should do nothing
   }
 
-  public onMessage(callback: (event: MessageEvent) => void): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public onMessage(_callback: (event: MessageEvent) => void): void {
     // it should do nothing
   }
 }

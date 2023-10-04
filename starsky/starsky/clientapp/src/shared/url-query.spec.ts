@@ -1,4 +1,3 @@
-import * as isDev from "./is-dev";
 import { UrlQuery } from "./url-query";
 
 describe("url-query", () => {
@@ -196,6 +195,17 @@ describe("url-query", () => {
     });
   });
 
+  describe("UrlIndexServerApiPath", () => {
+    it("returns the correct URL", () => {
+      const urlQuery = new UrlQuery();
+      urlQuery.prefix = "https://example.com";
+      const path = "example/path";
+      const expectedUrl = "https://example.com/api/index?f=example/path";
+      const result = urlQuery.UrlIndexServerApiPath(path);
+      expect(result).toBe(expectedUrl);
+    });
+  });
+
   describe("UrlThumbnailImageLargeOrExtraLarge", () => {
     it("should contain hash_test (large false)", () => {
       const test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
@@ -223,8 +233,10 @@ describe("url-query", () => {
      * @see: https://wildwolf.name/jest-how-to-mock-window-location-href/
      */
     beforeAll(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       delete window.location;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.location = {
         href: ""
@@ -248,25 +260,6 @@ describe("url-query", () => {
       window.location.host = "localhost:7382";
       const url = new UrlQuery().UrlRealtime();
       expect(url).toBe("ws://localhost:7382/starsky/realtime");
-      expect(url).toContain("realtime");
-    });
-
-    it("when not in Dev ignore port 3000 replacement", () => {
-      jest.spyOn(isDev, "default").mockImplementationOnce(() => false);
-
-      window.location.protocol = "http:";
-      window.location.host = "localhost:3000";
-      const url = new UrlQuery().UrlRealtime();
-      expect(url).toBe("ws://localhost:3000/starsky/realtime");
-      expect(url).toContain("realtime");
-    });
-    it("replace port 3000 with 4000 in dev context", () => {
-      jest.spyOn(isDev, "default").mockImplementationOnce(() => true);
-
-      window.location.protocol = "http:";
-      window.location.host = "localhost:3000";
-      const url = new UrlQuery().UrlRealtime();
-      expect(url).toBe("ws://localhost:4000/starsky/realtime");
       expect(url).toContain("realtime");
     });
   });

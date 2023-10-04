@@ -1,4 +1,3 @@
-import React from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IHealthEntry } from "../../../interfaces/IHealthEntry";

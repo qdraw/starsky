@@ -1,13 +1,15 @@
-/* eslint-disable testing-library/prefer-presence-queries */
-import { globalHistory } from "@reach/router";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
-import React from "react";
+import { useState } from "react";
 import { act } from "react-dom/test-utils";
+import { BrowserRouter } from "react-router-dom";
 import * as FileHashImage from "../../components/atoms/file-hash-image/file-hash-image";
+import { IFileHashImageProps } from "../../components/atoms/file-hash-image/file-hash-image";
+import * as Link from "../../components/atoms/link/link";
+import * as MenuDetailView from "../../components/organisms/menu-detail-view/menu-detail-view";
 import * as ContextDetailview from "../../contexts/detailview-context";
 import * as useFetch from "../../hooks/use-fetch";
 import * as useGestures from "../../hooks/use-gestures/use-gestures";
-import * as useLocation from "../../hooks/use-location";
+import * as useLocation from "../../hooks/use-location/use-location";
 import { newIConnectionDefault } from "../../interfaces/IConnectionDefault";
 import {
   IDetailView,
@@ -17,12 +19,45 @@ import {
 } from "../../interfaces/IDetailView";
 import { IExifStatus } from "../../interfaces/IExifStatus";
 import { IFileIndexItem, Orientation } from "../../interfaces/IFileIndexItem";
+import { Router } from "../../router-app/router-app";
 import { UpdateRelativeObject } from "../../shared/update-relative-object";
 import { UrlQuery } from "../../shared/url-query";
 import DetailView from "./detailview";
 
 describe("DetailView", () => {
+  const fileHashImageMock = (props: IFileHashImageProps) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [isError, setIsError] = useState(false);
+    return (
+      <div
+        data-test="pan-zoom-image"
+        className={isError ? "main--error" : undefined}
+      >
+        <img
+          src={
+            "http://localhost" +
+            new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
+              props.fileHash,
+              props.id,
+              true
+            )
+          }
+          onError={() => setIsError(true)}
+        />
+      </div>
+    );
+  };
+
+  beforeEach(() => {
+    jest
+      .spyOn(FileHashImage, "default")
+      .mockImplementationOnce((props) => fileHashImageMock(props));
+  });
+
   it("renders", () => {
+    jest
+      .spyOn(FileHashImage, "default")
+      .mockImplementationOnce((props) => fileHashImageMock(props));
     render(<DetailView {...newDetailView()} />);
   });
 
@@ -73,15 +108,16 @@ describe("DetailView", () => {
       };
 
       TestComponent = () => (
-        <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
-          <DetailView {...newDetailView()} />
-        </ContextDetailview.DetailViewContext.Provider>
+        <BrowserRouter>
+          <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
+            <DetailView {...newDetailView()} />
+          </ContextDetailview.DetailViewContext.Provider>
+        </BrowserRouter>
       );
 
       // Show extra information
-      globalHistory.navigate("/?details=true");
+      Router.navigate("/?details=true");
 
-      // eslint-disable-next-line testing-library/no-render-in-setup
       Component = render(<TestComponent />);
     });
 
@@ -95,14 +131,15 @@ describe("DetailView", () => {
     });
 
     it("test if image is loaded", () => {
-      // eslint-disable-next-line testing-library/prefer-screen-queries
       const imgContainer = Component.queryByTestId(
         "pan-zoom-image"
       ) as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
-      // eslint-disable-next-line testing-library/no-node-access
+
       const image = imgContainer?.querySelector("img") as HTMLImageElement;
       expect(image).toBeTruthy();
+
+      console.log(image.src);
 
       expect(image.src).toBe(
         "http://localhost" +
@@ -113,43 +150,39 @@ describe("DetailView", () => {
           )
       );
 
-      // eslint-disable-next-line testing-library/no-node-access
       const mainError = Component.container.querySelector(".main--error");
       expect(mainError).toBeFalsy();
     });
 
     it("test if image is failed", () => {
-      // eslint-disable-next-line testing-library/prefer-screen-queries
       const imgContainer = Component.queryByTestId(
         "pan-zoom-image"
       ) as HTMLDivElement;
       expect(imgContainer).toBeTruthy();
-      // eslint-disable-next-line testing-library/no-node-access
+
       const image = imgContainer?.querySelector("img") as HTMLImageElement;
       expect(image).toBeTruthy();
 
       fireEvent.error(image);
 
-      // eslint-disable-next-line testing-library/no-node-access
       const mainError = Component.container.querySelector(".main--error");
       expect(mainError).toBeTruthy();
     });
 
     it("check if Details exist", () => {
       expect(
-        /* eslint-disable */
         Component.queryByTestId("detailview-sidebar") as HTMLDivElement
         /* eslint-enable */
       ).toBeTruthy();
     });
   });
 
-  describe("Nexts/Prev clicks ++ Rotation check", () => {
+  describe("Next's/Prev clicks ++ Rotation check", () => {
     let TestComponent: () => JSX.Element;
 
     beforeAll(() => {
       act(() => {
-        globalHistory.navigate("/?details=true");
+        Router.navigate("/?details=true");
       });
     });
 
@@ -162,38 +195,59 @@ describe("DetailView", () => {
       };
 
       TestComponent = () => (
-        <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
-          <DetailView {...newDetailView()} />
-        </ContextDetailview.DetailViewContext.Provider>
+        <BrowserRouter>
+          <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
+            <DetailView {...newDetailView()} />
+          </ContextDetailview.DetailViewContext.Provider>
+        </BrowserRouter>
       );
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
-      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
-        return newIConnectionDefault();
-      });
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault());
     });
 
     it("Next Click (click)", () => {
+      jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
 
-      // use as ==> import * as useLocation from '../hooks/use-location';
+      const locationSpyData = {
+        location: {
+          ...Router.state.location,
+          href: "",
+          search: ""
+        },
+        navigate: navigateSpy
+      };
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockReset()
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
+
+      // use as ==> import * as useLocation from '../hooks/use-location/use-location';
       const locationSpy = jest
         .spyOn(useLocation, "default")
-        .mockImplementationOnce(() => {
-          return {
-            location: globalHistory.location,
-            navigate: navigateSpy
-          };
-        });
+        .mockReset()
+        .mockImplementationOnce(() => locationSpyData)
+        .mockImplementationOnce(() => locationSpyData)
+        .mockImplementationOnce(() => locationSpyData)
+        .mockImplementationOnce(() => locationSpyData)
+        .mockImplementationOnce(() => locationSpyData);
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
       const detailview = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
       const next = detailview.queryByTestId(
         "detailview-next"
       ) as HTMLDivElement;
+
       expect(next).toBeTruthy();
+
       act(() => {
         next.click();
       });
@@ -201,7 +255,7 @@ describe("DetailView", () => {
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?details=true&f=next", {
+      expect(navigateSpy).toBeCalledWith("/?f=next", {
         replace: true
       });
 
@@ -214,24 +268,32 @@ describe("DetailView", () => {
     it("Prev Click", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: globalHistory.location,
+        location: {
+          ...Router.state.location,
+          href: "",
+          search: ""
+        },
         navigate: navigateSpy
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
       const detailview = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
       const prev = detailview.queryByTestId(
         "detailview-prev"
       ) as HTMLDivElement;
+
       expect(prev).toBeTruthy();
+
       act(() => {
         prev.click();
       });
@@ -239,7 +301,7 @@ describe("DetailView", () => {
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", {
+      expect(navigateSpy).toBeCalledWith("/?f=prev", {
         replace: true
       });
 
@@ -250,12 +312,21 @@ describe("DetailView", () => {
 
     it("Prev Keyboard", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
       const locationObject = {
-        location: globalHistory.location,
+        location: {
+          ...Router.state.location,
+          href: "",
+          search: ""
+        },
         navigate: navigateSpy
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
@@ -267,7 +338,6 @@ describe("DetailView", () => {
           return Promise.resolve() as any;
         });
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
       const detailview = render(<TestComponent />);
 
       const event = new KeyboardEvent("keydown", {
@@ -284,7 +354,7 @@ describe("DetailView", () => {
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", {
+      expect(navigateSpy).toBeCalledWith("/?f=prev", {
         replace: true
       });
 
@@ -294,13 +364,17 @@ describe("DetailView", () => {
     });
 
     it("Next Keyboard", () => {
+      jest.spyOn(MenuDetailView, "default").mockImplementationOnce(() => <></>);
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
+
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: globalHistory.location,
+        location: { ...window.location, search: "" },
         navigate: navigateSpy
       };
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
@@ -308,12 +382,12 @@ describe("DetailView", () => {
 
       jest
         .spyOn(UpdateRelativeObject.prototype, "Update")
+        .mockReset()
         .mockImplementationOnce(() => {
           return Promise.resolve() as any;
         });
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
-      const compontent = render(<TestComponent />);
+      const component = render(<TestComponent />);
 
       const event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -329,24 +403,25 @@ describe("DetailView", () => {
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith("/?details=true&f=next", {
+      expect(navigateSpy).toBeCalledWith("/?f=next", {
         replace: true
       });
-      compontent.unmount();
+      component.unmount();
     });
 
     it("[SearchResult] Next", async () => {
       console.log("[SearchResult] Next");
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(() => <></>);
 
       // add search query to url
       act(() => {
-        globalHistory.navigate("/?t=test&p=0");
+        Router.navigate("/?t=test&p=0");
       });
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationFaker = () => {
         return {
-          location: globalHistory.location,
+          location: window.location,
           navigate: navigateSpy
         };
       };
@@ -368,15 +443,18 @@ describe("DetailView", () => {
 
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker);
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+      jest.spyOn(Link, "default").mockImplementationOnce(() => <></>);
+
       const detailview = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
       const prev = detailview.queryByTestId(
         "detailview-prev"
       ) as HTMLDivElement;
@@ -400,12 +478,13 @@ describe("DetailView", () => {
     it("Escape key Keyboard", () => {
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...globalHistory.location, search: "" },
+        location: { ...window.location, search: "" },
         navigate: navigateSpy
       };
 
       const locationSpy = jest
         .spyOn(useLocation, "default")
+        .mockReset()
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
@@ -415,7 +494,6 @@ describe("DetailView", () => {
           return Promise.resolve() as any;
         });
 
-      // eslint-disable-next-line testing-library/render-result-naming-convention
       const component = render(<TestComponent />);
 
       const event = new KeyboardEvent("keydown", {
@@ -440,12 +518,13 @@ describe("DetailView", () => {
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...globalHistory.location, search: "" },
+        location: { ...window.location, search: "" },
         navigate: navigateSpy
       };
 
       jest
         .spyOn(useLocation, "default")
+        .mockReset()
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject)
@@ -464,7 +543,8 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => {});
 
       const fakeElement = (
-        props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>
       ) => (
         <>
           <button
@@ -479,11 +559,13 @@ describe("DetailView", () => {
         </>
       );
 
-      jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+      jest
+        .spyOn(FileHashImage, "default")
+        .mockReset()
+        .mockImplementationOnce(fakeElement);
+
       const component = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
       (component.queryByTestId("fake-button") as HTMLButtonElement).click();
 
       expect(updateRelativeObjectSpy).toBeCalled();
@@ -496,7 +578,7 @@ describe("DetailView", () => {
 
       const navigateSpy = jest.fn().mockResolvedValueOnce("");
       const locationObject = {
-        location: { ...globalHistory.location, search: "" },
+        location: { ...window.location, search: "" },
         navigate: navigateSpy
       };
 
@@ -520,7 +602,8 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => {});
 
       const fakeElement = (
-        props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>
       ) => (
         <>
           <button
@@ -535,11 +618,13 @@ describe("DetailView", () => {
         </>
       );
 
-      jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
-      // eslint-disable-next-line testing-library/render-result-naming-convention
+      jest
+        .spyOn(FileHashImage, "default")
+        .mockReset()
+        .mockImplementationOnce(fakeElement);
+
       const component = render(<TestComponent />);
 
-      // eslint-disable-next-line testing-library/prefer-screen-queries
       (component.queryByTestId("fake-button") as HTMLButtonElement).click();
 
       expect(updateRelativeObjectSpy).toBeCalled();

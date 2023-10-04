@@ -1,4 +1,3 @@
-import React from "react";
 import HealthCheckForUpdates, {
   CheckForUpdatesLocalStorageName
 } from "./health-check-for-updates";

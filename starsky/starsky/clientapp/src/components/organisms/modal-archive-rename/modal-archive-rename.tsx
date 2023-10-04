@@ -1,7 +1,7 @@
-import React from "react";
+import { useState } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useLocation from "../../../hooks/use-location";
+import useLocation from "../../../hooks/use-location/use-location";
 import FetchPost from "../../../shared/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
@@ -40,17 +40,17 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
   const useErrorHandler = (initialState: string | null) => {
     return initialState;
   };
-  const [error, setError] = React.useState(useErrorHandler(null));
+  const [error, setError] = useState(useErrorHandler(null));
 
   // when you are waiting on the API
-  const [loading, setIsLoading] = React.useState(false);
+  const [loading, setIsLoading] = useState(false);
 
   // The Updated that is send to the api
-  const [folderName, setFolderName] = React.useState(
+  const [folderName, setFolderName] = useState(
     new FileExtensions().GetFileName(props.subPath)
   );
 
-  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  const [isFormEnabled, setFormEnabled] = useState(true);
 
   // to know where you are
   const history = useLocation();
@@ -66,7 +66,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
   ) {
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
-    let fieldValue = event.currentTarget.textContent.trim();
+    const fieldValue = event.currentTarget.textContent.trim();
 
     setFolderName(fieldValue);
 
@@ -92,7 +92,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
    * Send Change request to back-end services
    * @param event : change vent
    */
-  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+  async function pushRenameChange() {
     // Show icon with load ++ disable forms
     setFormEnabled(false);
     setIsLoading(true);
@@ -122,7 +122,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
       dispatchRename(props.subPath);
 
       setError(MessageGeneralError);
-      // and renable
+      // and renewable
       setIsLoading(false);
       setFormEnabled(true);
       return;
@@ -137,7 +137,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
       filePathAfterChange
     );
 
-    await history.navigate(replacePath, { replace: true });
+    history.navigate(replacePath, { replace: true });
 
     // Close window
     props.handleExit(filePathAfterChange);

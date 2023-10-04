@@ -1,5 +1,4 @@
-import { HistoryLocation } from "@reach/router";
-import { IUseLocation } from "../../../hooks/use-location";
+import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView, IRelativeObjects } from "../../../interfaces/IDetailView";
 import { UpdateRelativeObject } from "../../../shared/update-relative-object";
 import { PrevNext } from "./prev-next";
@@ -17,7 +16,7 @@ describe("statusRemoved", () => {
   });
 
   it("not called", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     history.navigate = jest.fn();
 
     new PrevNext(
@@ -33,7 +32,7 @@ describe("statusRemoved", () => {
   });
 
   it("not called 2", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
     history.navigate = () => Promise.resolve(navigate) as any;
 
@@ -68,7 +67,7 @@ describe("statusRemoved", () => {
   });
 
   it("called 3", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
     history.navigate = () => Promise.resolve(navigate) as any;
 
@@ -105,11 +104,13 @@ describe("statusRemoved", () => {
   });
 
   it("called 4", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
     history.navigate = () => Promise.resolve(navigate) as any;
 
     const setIsLoading = jest.fn();
+
+    jest.spyOn(UpdateRelativeObject.prototype, "Update").mockReset();
 
     const updateSpy = jest
       .spyOn(UpdateRelativeObject.prototype, "Update")
@@ -142,11 +143,13 @@ describe("statusRemoved", () => {
   });
 
   it("called 5", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
     history.navigate = () => Promise.resolve(navigate) as any;
 
     const setIsLoading = jest.fn();
+
+    jest.spyOn(UpdateRelativeObject.prototype, "Update").mockReset();
 
     const updateSpy = jest
       .spyOn(UpdateRelativeObject.prototype, "Update")
@@ -176,7 +179,7 @@ describe("statusRemoved", () => {
   });
 
   it("called 6", () => {
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
     history.navigate = () => Promise.resolve(navigate) as any;
 
@@ -210,12 +213,14 @@ describe("statusRemoved", () => {
   });
 
   it("navigatePrev same so ignore", () => {
+    console.log("navigatePrev same so ignore");
+
     const relative = {
       prevFilePath: "test",
       prevHash: "test"
     } as IRelativeObjects;
 
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
     history.navigate = () => Promise.resolve(navigate) as any;
 
@@ -235,7 +240,8 @@ describe("statusRemoved", () => {
     ).navigatePrev(relative);
 
     expect(navigate).toBeCalledTimes(0);
-    expect(setIsLoading).toBeCalledTimes(0);
+    expect(setIsLoading).toBeCalledTimes(1);
+    expect(setIsLoading).toBeCalledWith(false);
   });
 
   it("nextPrev same so ignore", () => {
@@ -244,7 +250,7 @@ describe("statusRemoved", () => {
       nextHash: "test"
     } as IRelativeObjects;
 
-    const history = { location: {} as HistoryLocation } as IUseLocation;
+    const history = { location: {} } as IUseLocation;
     const navigate = jest.fn();
     history.navigate = () => Promise.resolve(navigate) as any;
 
@@ -264,6 +270,7 @@ describe("statusRemoved", () => {
     ).navigateNext(relative);
 
     expect(navigate).toBeCalledTimes(0);
-    expect(setIsLoading).toBeCalledTimes(0);
+    expect(setIsLoading).toBeCalledTimes(1);
+    expect(setIsLoading).toBeCalledWith(false);
   });
 });

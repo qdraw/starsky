@@ -1,7 +1,6 @@
-import { globalHistory } from "@reach/router";
 import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import * as useLocation from "../../../hooks/use-location";
+import * as useLocation from "../../../hooks/use-location/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import {
@@ -15,7 +14,6 @@ import {
 } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch-post";
 import MenuOptionMoveToTrash from "./menu-option-move-to-trash";
-
 describe("MenuOptionMoveToTrash", () => {
   it("renders", () => {
     const test = {
@@ -203,7 +201,7 @@ describe("MenuOptionMoveToTrash", () => {
           statusCode: 200
         });
       const locationObject = {
-        location: globalHistory.location,
+        location: window.location,
         navigate: jest.fn()
       };
 
@@ -236,7 +234,7 @@ describe("MenuOptionMoveToTrash", () => {
       });
 
       expect(fetchPostSpy).toBeCalled();
-      // dont know why dispatch is not called
+      // don't know why dispatch is not called
 
       component.unmount();
     });

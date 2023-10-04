@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import HamburgerMenuToggle from "./hamburger-menu-toggle";
 
 export default {
@@ -6,7 +6,7 @@ export default {
 };
 
 export const Default = () => {
-  const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
+  const [hamburgerMenu, setHamburgerMenu] = useState(false);
   return (
     <div style={{ backgroundColor: "red" }}>
       <HamburgerMenuToggle

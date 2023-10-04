@@ -1,11 +1,11 @@
-import { IGeoLocationModel } from "../../../interfaces/IGeoLocationModel";
-import FetchGet from "../../../shared/fetch-get";
-import FetchPost from "../../../shared/fetch-post";
-import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
-import { ILatLong } from "./modal-geo";
+import { IGeoLocationModel } from "../../../../interfaces/IGeoLocationModel";
+import FetchGet from "../../../../shared/fetch-get";
+import FetchPost from "../../../../shared/fetch-post";
+import { URLPath } from "../../../../shared/url-path";
+import { UrlQuery } from "../../../../shared/url-query";
+import { ILatLong } from "../modal-geo";
 
-export async function updateGeoLocation(
+export async function UpdateGeoLocation(
   parentDirectory: string,
   selectedSubPath: string,
   location: ILatLong | null,
@@ -42,7 +42,9 @@ export async function updateGeoLocation(
       bodyParams.append("locationState", model.locationState);
     }
     console.log(reverseGeoCodeResult.statusCode);
-  } catch (error) {}
+  } catch (error) {
+    // do nothing
+  }
 
   console.log(bodyParams.toString());
 

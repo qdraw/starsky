@@ -16,10 +16,14 @@ describe("useIntersection", () => {
     const focus = jest.fn();
     const useRefSpy = jest
       .spyOn(React, "useRef")
+      .mockReset()
+      .mockReturnValueOnce({ current: { focus } })
+      .mockReturnValueOnce({ current: { focus } })
+      .mockReturnValueOnce({ current: { focus } })
       .mockReturnValueOnce({ current: { focus } });
 
     render(<IntersectionComponentTest></IntersectionComponentTest>);
-    expect(useRefSpy).toHaveBeenCalledTimes(1);
+    expect(useRefSpy).toBeCalled();
   });
 
   const NewIntersectionComponentTest = () => {

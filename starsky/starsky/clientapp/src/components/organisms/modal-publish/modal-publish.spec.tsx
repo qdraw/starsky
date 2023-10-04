@@ -416,6 +416,7 @@ describe("ModalPublish", () => {
 
     jest
       .spyOn(useFetch, "default")
+      .mockReset()
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault)
@@ -425,6 +426,7 @@ describe("ModalPublish", () => {
 
     const fetchGetSpy = jest
       .spyOn(FetchGet, "default")
+      .mockReset()
       .mockImplementationOnce(() => {
         return Promise.resolve({
           statusCode: 200,
@@ -447,7 +449,6 @@ describe("ModalPublish", () => {
     expect(tags).not.toBe(undefined);
 
     // update component + now press a key
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       tags.textContent = "a";
       const inputEvent = createEvent.input(tags, { key: "a" });
@@ -457,14 +458,13 @@ describe("ModalPublish", () => {
     expect(screen.getByTestId("modal-publish-warning-box")).toBeTruthy();
 
     // and now undo
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       tags.textContent = "";
       const inputEvent = createEvent.input(tags, { key: "" });
       await fireEvent(tags, inputEvent);
     });
 
-    // should only send get once. the second time should be avoid due sending emthy string
+    // should only send get once. the second time should be avoid due sending empty string
 
     expect(fetchGetSpy).toBeCalled();
     expect(fetchGetSpy).toBeCalledTimes(1);

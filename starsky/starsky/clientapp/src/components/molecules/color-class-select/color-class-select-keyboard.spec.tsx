@@ -21,7 +21,7 @@ describe("ColorClassSelectKeyboard", () => {
     );
   });
 
-  it("press keyboad and should fire http request", async () => {
+  it("press keyboard and should fire http request", async () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
@@ -71,7 +71,7 @@ describe("ColorClassSelectKeyboard", () => {
     fetchPostSpy.mockReset();
   });
 
-  it("press keyboad and should NOT fire http request", async () => {
+  it("press keyboard and should NOT fire http request", async () => {
     // should after press keyboard
     const component = render(
       <ColorClassSelectKeyboard
@@ -116,7 +116,7 @@ describe("ColorClassSelectKeyboard", () => {
   it("when error is it should able to close the warning box", async () => {
     const colorClassUpdateSingleSpy = jest
       .spyOn(ColorClassUpdateSingle, "ColorClassUpdateSingle")
-      .mockImplementationOnce((p1, p2, p3, p4, setIsError) => {
+      .mockImplementationOnce((_p1, _p2, _p3, _p4, setIsError) => {
         setIsError("true");
         return { Update: jest.fn() } as any;
       });
@@ -157,7 +157,7 @@ describe("ColorClassSelectKeyboard", () => {
     const colorClassUpdateSingleSpy = jest
       .spyOn(ColorClassUpdateSingle, "ColorClassUpdateSingle")
       .mockImplementationOnce(
-        (p1, p2, p3, p4, p5, p6, setCurrentColorClass) => {
+        (_p1, _p2, _p3, _p4, _p5, _p6, setCurrentColorClass) => {
           setCurrentColorClass(1);
           return { Update: jest.fn() } as any;
         }

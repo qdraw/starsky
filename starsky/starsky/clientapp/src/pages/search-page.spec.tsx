@@ -1,5 +1,4 @@
 import { render } from "@testing-library/react";
-import React from "react";
 import * as Preloader from "../components/atoms/preloader/preloader";
 import * as ApplicationException from "../components/organisms/application-exception/application-exception";
 import * as ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";
@@ -21,7 +20,7 @@ describe("SearchPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    const component = render(<SearchPage>t</SearchPage>);
+    const component = render(<SearchPage />);
     expect(contextSpy).toBeCalled();
     component.unmount();
   });
@@ -31,7 +30,7 @@ describe("SearchPage", () => {
       .spyOn(useSearchList, "default")
       .mockImplementationOnce(() => null as any);
 
-    const component = render(<SearchPage>t</SearchPage>);
+    const component = render(<SearchPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
@@ -40,9 +39,9 @@ describe("SearchPage", () => {
   it("Internal Error plain object", () => {
     jest
       .spyOn(useSearchList, "default")
-      .mockImplementationOnce(() => ({} as any));
+      .mockImplementationOnce(() => ({}) as any);
 
-    const component = render(<SearchPage>t</SearchPage>);
+    const component = render(<SearchPage />);
     expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
@@ -59,7 +58,7 @@ describe("SearchPage", () => {
       } as any;
     });
 
-    const component = render(<SearchPage>t</SearchPage>);
+    const component = render(<SearchPage />);
 
     expect(applicationExceptionSpy).toBeCalled();
 
@@ -80,7 +79,7 @@ describe("SearchPage", () => {
       return <></>;
     });
 
-    const component = render(<SearchPage>t</SearchPage>);
+    const component = render(<SearchPage />);
 
     expect(preloaderSpy).toBeCalled();
 

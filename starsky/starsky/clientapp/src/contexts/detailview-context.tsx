@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { createContext, useMemo } from "react";
 import {
   IDetailView,
   IRelativeObjects,
@@ -9,7 +9,7 @@ import { Orientation, newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 import { FileListCache } from "../shared/filelist-cache";
 
-const DetailViewContext = React.createContext<IDetailViewContext>(
+const DetailViewContext = createContext<IDetailViewContext>(
   {} as IDetailViewContext
 );
 
@@ -74,15 +74,14 @@ export function detailviewReducer(
           action.tags,
           ""
         );
-      // Need to update otherwise other events are not triggerd
+      // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "append":
       if (action.tags) state.fileIndexItem.tags += "," + action.tags;
-      // Need to update otherwise other events are not triggerd
+      // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "update":
-      /* eslint-disable-next-line no-redeclare */
-      let {
+      const {
         filePath,
         tags,
         description,
@@ -130,10 +129,10 @@ export function detailviewReducer(
       }
       if (locationState) state.fileIndexItem.locationState = locationState;
 
-      // Need to update otherwise other events are not triggerd
+      // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "reset":
-      // this is triggert a lot when loading a page
+      // this is triggered a lot when loading a page
       return action.payload;
   }
 }
@@ -156,9 +155,9 @@ function updateCache(stateLocal: IDetailView): IDetailView {
 
 function DetailViewContextProvider({ children }: ReactNodeProps) {
   // [A]
-  let [state, dispatch] = React.useReducer(detailviewReducer, initialState);
+  const [state, dispatch] = React.useReducer(detailviewReducer, initialState);
   // Use useMemo to memoize the value object
-  let value1 = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+  const value1 = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   // [B]
   return (
@@ -168,7 +167,7 @@ function DetailViewContextProvider({ children }: ReactNodeProps) {
   );
 }
 
-let DetailViewContextConsumer = DetailViewContext.Consumer;
+const DetailViewContextConsumer = DetailViewContext.Consumer;
 
 export {
   DetailViewContext,

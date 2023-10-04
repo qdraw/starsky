@@ -1,5 +1,4 @@
-import { globalHistory } from "@reach/router";
-import React from "react";
+import useLocation from "../../../hooks/use-location/use-location";
 import DetailViewGpx from "./detail-view-gpx";
 
 export default {
@@ -7,7 +6,9 @@ export default {
 };
 
 export const Default = () => {
-  globalHistory.navigate("/?f=/test.gpx");
+  const location = useLocation();
+
+  location.navigate("/?f=/test.gpx");
   return (
     <div className="detailview">
       <DetailViewGpx></DetailViewGpx>

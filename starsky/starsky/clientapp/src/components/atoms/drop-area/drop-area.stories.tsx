@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import ModalDropAreaFilesAdded from "../../molecules/modal-drop-area-files-added/modal-drop-area-files-added";
 import DropArea from "./drop-area";
@@ -8,14 +8,14 @@ export default {
 };
 
 export const Default = () => {
-  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(
+  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = useState(
     newIFileIndexItemArray()
   );
 
   return (
     <>
       <div>
-        Drag 'n drop file to show
+        Drag &apos;n drop file to show
         <br />
         <br />
       </div>
