@@ -46,6 +46,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR #1219, 1220, 1228, 1230, 1237, 1240) 
 - [x] (Changed) _Front-end_ Upgrade npm packages (PR 1241, 1239, 1252, 1244, 1246, 1247, 1250, 1251)
 - [x] (Changed) _Back-end_ Upgrade github yaml's (PR 1232, 1233, 1234, 1235)
+- [x] (Changed) _Desktop_ Upgrade Electron to 26.x (27.0 has removed support for Mac OS 10.13 and 10.14) (PR #1255)
 
 ## version 0.5.10 - 2023-07-27 {#v0.5.10}
 
