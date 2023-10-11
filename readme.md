@@ -89,17 +89,18 @@ _See `./pipelines/azure` for details_
 
 #### App on Windows and Mac OS
 
-Without running .NET dependency. Without .NET the app can't run
+The pipeline below is to test the Desktop build process. The .NET part isn't build in this pipeline, but it's needed to run the Desktop app.
 
-![StarskyApp Electron (Missing .NET dependency)](https://github.com/qdraw/starsky/workflows/StarskyApp%20Electron%20(Missing%20.NET%20dependency)/badge.svg)
+[![starskyDesktop Electron PR (Missing .NET dependency)](https://github.com/qdraw/starsky/actions/workflows/starskyapp-electron-pr-build-mac-win.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starskyapp-electron-pr-build-mac-win.yml)
 
-Included with .NET dependency 
+A full build including the .NET dependency 
 
 [![Create Desktop Release on tag for .Net Core and Electron](https://github.com/qdraw/starsky/actions/workflows/release-on-tag-netcore-desktop-electron.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/release-on-tag-netcore-desktop-electron.yml)
 
-_See `./.github/workflows` for details_
+_See [the documentation](https://docs.qdraw.nl/docs/developer-guide/github-actions/) for details_
 
 ### End2End tests on ubuntu github actions ci environment
+
 ![end2end on ubuntu-ci](https://github.com/qdraw/starsky/actions/workflows/end2end-ubuntu-ci.yml/badge.svg)
 
 _See `./starsky-tools/end2end` for details_
