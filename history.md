@@ -36,9 +36,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## List of versions
 
 ## version 0.5.12 _(Unreleased)_ - 2023-10-?? {#v0.5.12}
+
 - nothing yet
 
-## version 0.5.11 _(Unreleased)_ - 2023-10-?? {#v0.5.11}
+## version 0.5.11 - 2023-10-13 {#v0.5.11}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.413 - see #1256 - (Runtime: 6.0.21) (PR #1205)
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.414 - see #1256 - (Runtime: 6.0.22) (PR #1237)
