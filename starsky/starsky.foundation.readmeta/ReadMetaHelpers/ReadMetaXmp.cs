@@ -136,7 +136,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                      !string.IsNullOrEmpty(property.Value) && 
                      string.IsNullOrEmpty(property.Namespace) )
                 {
-                    StringBuilder tagsStringBuilder = new StringBuilder();
+                    var tagsStringBuilder = new StringBuilder();
                     tagsStringBuilder.Append(item.Tags);
                     tagsStringBuilder.Append(", ");
                     tagsStringBuilder.Append(property.Value);

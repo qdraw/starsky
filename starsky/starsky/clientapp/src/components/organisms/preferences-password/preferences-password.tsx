@@ -95,72 +95,67 @@ const PreferencesPassword: React.FunctionComponent<any> = () => {
   }
 
   return (
-    <>
-      <form
-        className="preferences preferences--password form-inline"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setError(null);
-          if (validateChangePassword()) {
-            await changeSecret();
-          }
-        }}
-      >
-        <div className="content--subheader">{MessageChangePassword}</div>
-        <div className="content--text">
-          <label htmlFor="password">{MessageCurrentPassword}</label>
-          <input
-            className="form-control"
-            type="password"
-            name="password"
-            data-test="preferences-password-input"
-            maxLength={80}
-            placeholder={MessageExamplePassword}
-            value={userCurrentPassword}
-            onChange={(e) => setUserCurrentPassword(e.target.value)}
-          />
+    <form
+      className="preferences preferences--password form-inline"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setError(null);
+        if (validateChangePassword()) {
+          await changeSecret();
+        }
+      }}
+    >
+      <div className="content--subheader">{MessageChangePassword}</div>
+      <div className="content--text">
+        <label htmlFor="password">{MessageCurrentPassword}</label>
+        <input
+          className="form-control"
+          type="password"
+          name="password"
+          data-test="preferences-password-input"
+          maxLength={80}
+          placeholder={MessageExamplePassword}
+          value={userCurrentPassword}
+          onChange={(e) => setUserCurrentPassword(e.target.value)}
+        />
 
-          <label htmlFor="changed-password">{MessageChangedPassword}</label>
-          <input
-            className="form-control"
-            type="password"
-            name="changed-password"
-            data-test="preferences-password-changed-input"
-            maxLength={80}
-            value={userChangedPassword}
-            onChange={(e) => setUserChangedPassword(e.target.value)}
-          />
+        <label htmlFor="changed-password">{MessageChangedPassword}</label>
+        <input
+          className="form-control"
+          type="password"
+          name="changed-password"
+          data-test="preferences-password-changed-input"
+          maxLength={80}
+          value={userChangedPassword}
+          onChange={(e) => setUserChangedPassword(e.target.value)}
+        />
 
-          <label htmlFor="password">{MessageChangedConfirmPassword}</label>
-          <input
-            className="form-control"
-            type="password"
-            name="changed-confirm-password"
-            data-test="preferences-password-changed-confirm-input"
-            maxLength={80}
-            value={userChangedConfirmPassword}
-            onChange={(e) => setUserChangedConfirmPassword(e.target.value)}
-          />
-          {error && (
-            <div
-              data-test="preferences-password-warning"
-              className="warning-box"
-            >
-              {error}
-            </div>
-          )}
+        <label htmlFor="password">{MessageChangedConfirmPassword}</label>
+        <input
+          className="form-control"
+          type="password"
+          name="changed-confirm-password"
+          data-test="preferences-password-changed-confirm-input"
+          maxLength={80}
+          value={userChangedConfirmPassword}
+          onChange={(e) => setUserChangedConfirmPassword(e.target.value)}
+        />
+        {error && (
+          <div data-test="preferences-password-warning" className="warning-box">
+            {error}
+          </div>
+        )}
 
-          <ButtonStyled
-            className="btn btn--default"
-            type="submit"
-            data-test="preferences-password-submit"
-            disabled={loading}
-          >
-            {loading ? "Loading..." : MessageChangePassword}
-          </ButtonStyled>
-        </div>
-      </form>
-    </>
+        <ButtonStyled
+          className="btn btn--default"
+          type="submit"
+          data-test="preferences-password-submit"
+          disabled={loading}
+        >
+          {loading ? "Loading..." : MessageChangePassword}
+        </ButtonStyled>
+      </div>
+    </form>
   );
 };
 

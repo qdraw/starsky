@@ -10,7 +10,7 @@ export interface ISwitchButtonProps {
   "data-test"?: string;
 }
 
-function SwitchButton(props: ISwitchButtonProps) {
+function SwitchButton(props: Readonly<ISwitchButtonProps>) {
   const [random, setRandom] = useState(0);
 
   useEffect(() => {

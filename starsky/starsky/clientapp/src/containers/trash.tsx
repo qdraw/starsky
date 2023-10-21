@@ -13,7 +13,7 @@ import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { Language } from "../shared/language";
 import { URLPath } from "../shared/url-path";
 
-function Trash(archive: IArchiveProps) {
+function Trash(archive: Readonly<IArchiveProps>) {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);

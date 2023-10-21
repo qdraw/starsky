@@ -39,7 +39,7 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
 
       const MessageLocation = language.text("locatie", "location");
 
-      const [isLocationOpen, setLocationOpen] = React.useState(
+      const [locationOpen, setLocationOpen] = React.useState(
         history.location.search?.includes("&modal=geo")
       );
 
@@ -80,7 +80,7 @@ const DetailViewInfoLocation: React.FunctionComponent<IDetailViewInfoLocationPro
       return (
         <>
           {/* loation when the image is created */}
-          {isLocationOpen ? (
+          {locationOpen ? (
             <ModalGeo
               latitude={latitude}
               longitude={longitude}
