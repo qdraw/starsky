@@ -12,7 +12,7 @@ import * as PanAndZoomImage from "./pan-and-zoom-image";
 
 describe("FileHashImage", () => {
   it("renders", () => {
-    render(<FileHashImage isError={false} fileHash={""} />);
+    render(<FileHashImage fileHash={""} />);
   });
 
   beforeEach(() => {
@@ -53,7 +53,6 @@ describe("FileHashImage", () => {
     // need to await here
     const component = await render(
       <FileHashImage
-        isError={false}
         fileHash="hash"
         orientation={Orientation.Horizontal}
       />
@@ -96,7 +95,6 @@ describe("FileHashImage", () => {
 
     const component = render(
       <FileHashImage
-        isError={false}
         fileHash="hash"
         orientation={Orientation.Horizontal}
       />
@@ -128,7 +126,6 @@ describe("FileHashImage", () => {
 
     const component = render(
       <FileHashImage
-        isError={false}
         fileHash="hash"
         orientation={Orientation.Horizontal}
       />
@@ -168,7 +165,6 @@ describe("FileHashImage", () => {
 
     const component = render(
       <FileHashImage
-        isError={false}
         fileHash="hash"
         orientation={Orientation.Horizontal}
         id={"fallbackPath"}
@@ -216,7 +212,6 @@ describe("FileHashImage", () => {
     const onWheelCallbackSpy = jest.fn();
     const component = render(
       <FileHashImage
-        isError={false}
         fileHash="hash"
         id="/test.jpg"
         orientation={Orientation.Horizontal}
@@ -260,7 +255,6 @@ describe("FileHashImage", () => {
 
     const component = render(
       <FileHashImage
-        isError={false}
         fileHash="hash"
         id="/test.jpg"
         orientation={Orientation.Horizontal}
@@ -310,7 +304,6 @@ describe("FileHashImage", () => {
 
     const component = render(
       <FileHashImage
-        isError={false}
         fileHash="hash"
         id="/test.jpg"
         orientation={Orientation.Horizontal}
