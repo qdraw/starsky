@@ -10,6 +10,10 @@ It is an open-source, component-based front end library responsible only for the
 In this project we use ReactJS to build the user interface of the application.
 The project is based on the Vite with Typescript template.
 
+## Client-side rendering
+
+React is only used as client-side rendering. For the server that has low CPU specs this performs better. This chosen to make the application easier and faster on low resourceful servers like a Raspberry Pi
+
 ## Vite
 
 Vite is a build tool and development server that is designed to enhance the development workflow for JavaScript applications. It offers fast, efficient, and near-instantaneous hot module replacement, making it an excellent choice for modern web development, especially in the context of Vue.js and React applications. Vite leverages native ES modules to improve build times and development speed, making it a popular choice among developers looking for a swift and productive development experience.
@@ -39,6 +43,8 @@ It is widely used for testing React applications but can be used for testing any
 In this project we use Jest to test the typescript code and the React components of the application.
 
 We currently don't use snapshot testing.
+
+> We aim to achieve a code line unit test coverage of more than 90%
 
 ## React Testing Library
 
