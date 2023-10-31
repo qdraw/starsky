@@ -7,11 +7,9 @@ import PanAndZoomImage from "./pan-and-zoom-image";
 
 export interface IFileHashImageProps {
   setError?: React.Dispatch<React.SetStateAction<boolean>>;
-  isError: boolean;
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   fileHash: string;
   orientation?: Orientation;
-  tags?: string;
   id?: string; // filepath to know when image is changed
   onWheelCallback?(z: number): void;
   onResetCallback?(): void;

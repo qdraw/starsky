@@ -2,10 +2,12 @@ import { memo } from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 
 interface IDetailViewInfoMakeModelApertureProps {
-  fileIndexItem: IFileIndexItem;
+  fileIndexItem: Readonly<IFileIndexItem>;
 }
 
-function ShowISOIfExistComponent(fileIndexItemInside: IFileIndexItem) {
+function ShowISOIfExistComponent(
+  fileIndexItemInside: Readonly<IFileIndexItem>
+) {
   return (
     <>
       {fileIndexItemInside.isoSpeed !== 0 ? (

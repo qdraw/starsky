@@ -15,7 +15,7 @@ export class UpdateRelativeObject {
   ): Promise<IRelativeObjects> {
     return new Promise((resolve, rejects) => {
       if (state.subPath === "/" || !isSearchQuery) {
-        rejects();
+        rejects(new Error("no subpath or query"));
         return;
       }
 
@@ -28,15 +28,15 @@ export class UpdateRelativeObject {
       )
         .then((result) => {
           if (result.statusCode !== 200) {
-            rejects();
+            rejects(new Error("status code not 200"));
             return;
           }
           setRelativeObjects(result.data);
           resolve(result.data);
         })
         .catch((err) => {
-          console.log(err);
-          rejects();
+          console.error(err);
+          rejects(err);
         });
     });
   }

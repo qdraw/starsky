@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +21,11 @@ namespace starsky.feature.health.UpdateCheck.Services
 	{
 		internal const string GithubApi = "https://api.github.com/repos/qdraw/starsky/releases";
 		
-		private readonly AppSettings _appSettings;
-		private readonly IMemoryCache _cache;
+		private readonly AppSettings? _appSettings;
+		private readonly IMemoryCache? _cache;
 		private readonly IHttpClientHelper _httpClientHelper;
 
-		public CheckForUpdates(IHttpClientHelper httpClientHelper, AppSettings appSettings, IMemoryCache cache)
+		public CheckForUpdates(IHttpClientHelper httpClientHelper, AppSettings? appSettings, IMemoryCache? cache)
 		{
 			_httpClientHelper = httpClientHelper;
 			_appSettings = appSettings;
@@ -47,31 +48,36 @@ namespace starsky.feature.health.UpdateCheck.Services
 				?  _appSettings.AppVersion : currentVersion;
 			
 			// The CLI programs uses no cache
-			if( _cache == null || _appSettings?.AddMemoryCache == false) 
+			if ( _cache == null || _appSettings?.AddMemoryCache == false )
+			{
 				return Parse(await QueryIsUpdateNeededAsync(),currentVersion);
+			}
 
-			if ( _cache.TryGetValue(QueryCheckForUpdatesCacheName, out var cacheResult) )
+			if (  _cache.TryGetValue(QueryCheckForUpdatesCacheName,
+				    out var cacheResult) )
+			{
 				return Parse(( List<ReleaseModel> ) cacheResult, currentVersion);
+			}
 
 			cacheResult = await QueryIsUpdateNeededAsync();
 
 			_cache.Set(QueryCheckForUpdatesCacheName, cacheResult, 
-			new TimeSpan(48,0,0));
+				new TimeSpan(48,0,0));
 
-			return Parse(( List<ReleaseModel> ) cacheResult,currentVersion);
+			return Parse(( List<ReleaseModel>? ) cacheResult,currentVersion);
 		}
 
-		internal async Task<List<ReleaseModel>> QueryIsUpdateNeededAsync()
+		internal async Task<List<ReleaseModel>?> QueryIsUpdateNeededAsync()
 		{
 			// argument check is done in QueryIsUpdateNeeded
 			var (key, value) = await _httpClientHelper.ReadString(GithubApi);
 			return !key ? new List<ReleaseModel>() : JsonSerializer.Deserialize<List<ReleaseModel>>(value, new JsonSerializerOptions());
 		}
-
-		internal static KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel> releaseModelList, string currentVersion )
+		
+		internal static KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel>? releaseModelList, string currentVersion )
 		{
-			var orderedReleaseModelList = releaseModelList.OrderByDescending(p => p.TagName);
-			var tagName = orderedReleaseModelList.FirstOrDefault(p => !p.Draft && !p.PreRelease)?.TagName;
+			var orderedReleaseModelList = releaseModelList?.OrderByDescending(p => p.TagName);
+			var tagName = orderedReleaseModelList?.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
 			if ( string.IsNullOrWhiteSpace(tagName) ||
 			     !tagName.StartsWith('v') )
 			{

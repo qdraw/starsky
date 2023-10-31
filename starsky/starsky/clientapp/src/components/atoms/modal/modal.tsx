@@ -66,33 +66,31 @@ export default function Modal({
 
   if (modal.current) {
     return ReactDOM.createPortal(
-      <>
+      <div
+        onClick={(event) => ifModalOpenHandleExit(event, handleExit)}
+        data-test={dataTest}
+        className={`modal-bg ${
+          isOpen ? ` ${ModalOpenClassName} ` + className : ""
+        }`}
+      >
         <div
-          onClick={(event) => ifModalOpenHandleExit(event, handleExit)}
-          data-test={dataTest}
-          className={`modal-bg ${
-            isOpen ? ` ${ModalOpenClassName} ` + className : ""
-          }`}
+          className={`modal-content ${isOpen ? " modal-content--show" : ""}`}
         >
-          <div
-            className={`modal-content ${isOpen ? " modal-content--show" : ""}`}
-          >
-            <div className="modal-close-bar">
-              <button
-                className={`modal-exit-button ${
-                  isOpen ? " modal-exit-button--showing" : ""
-                }`}
-                ref={exitButton}
-                data-test="modal-exit-button"
-                onClick={handleExit}
-              >
-                {MessageCloseDialog}
-              </button>
-            </div>
-            {children}
+          <div className="modal-close-bar">
+            <button
+              className={`modal-exit-button ${
+                isOpen ? " modal-exit-button--showing" : ""
+              }`}
+              ref={exitButton}
+              data-test="modal-exit-button"
+              onClick={handleExit}
+            >
+              {MessageCloseDialog}
+            </button>
           </div>
+          {children}
         </div>
-      </>,
+      </div>,
       modal.current
     );
   }

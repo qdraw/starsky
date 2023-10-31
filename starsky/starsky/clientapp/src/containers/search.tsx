@@ -10,7 +10,7 @@ import { Language } from "../shared/language";
 import { URLPath } from "../shared/url-path";
 import MenuMenuSearchContainer from "./menu-search-container/menu-search-container";
 
-function Search(archive: IArchiveProps) {
+function Search(archive: Readonly<IArchiveProps>) {
   // Content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);

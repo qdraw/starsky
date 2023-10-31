@@ -292,5 +292,74 @@ namespace starskytest.starsky.feature.health.Helpers
 			Assert.IsNotNull(results);
 			Assert.AreEqual(UpdateStatus.NoReleasesFound,results.Key);
 		}
+		
+		[TestMethod]
+		public void Parse_WithNullReleaseModelList_ReturnsNoReleasesFound()
+		{
+			// Arrange
+			const string currentVersion = "1.0.0"; // Provide a valid version
+
+			// Act
+			var result = CheckForUpdates.Parse(null, currentVersion);
+
+			// Assert
+			Assert.AreEqual(UpdateStatus.NoReleasesFound, result.Key);
+			Assert.AreEqual(string.Empty, result.Value);
+		}
+
+		[TestMethod]
+		public void Parse_WithNullOrderedReleaseModelList_ReturnsNoReleasesFound()
+		{
+			// Arrange
+			IEnumerable<ReleaseModel> releaseModelList = new List<ReleaseModel>(); // An empty list
+			const string currentVersion = "1.0.0"; // Provide a valid version
+
+			// Act
+			var result = CheckForUpdates.Parse(releaseModelList, currentVersion);
+
+			// Assert
+			Assert.AreEqual(UpdateStatus.NoReleasesFound, result.Key);
+			Assert.AreEqual(string.Empty, result.Value);
+		}
+
+		[TestMethod]
+		public void Parse_WithNullFirstReleaseModel_ReturnsNoReleasesFound()
+		{
+			// Arrange
+			IEnumerable<ReleaseModel> releaseModelList = new List<ReleaseModel>
+			{
+				// List with no valid releases (Draft and PreRelease)
+			};
+			const string currentVersion = "1.0.0"; // Provide a valid version
+
+			// Act
+			var result = CheckForUpdates.Parse(releaseModelList, currentVersion);
+
+			// Assert
+			Assert.AreEqual(UpdateStatus.NoReleasesFound, result.Key);
+			Assert.AreEqual(string.Empty, result.Value);
+		}
+		
+		
+		[TestMethod]
+		public void Parse_WithNullFirstReleaseModel_Returns_EmptyReleaseModel()
+		{
+			// Arrange
+			IEnumerable<ReleaseModel> releaseModelList = new List<ReleaseModel>
+			{
+				new ReleaseModel
+				{
+					TagName = null
+				}
+			};
+			const string currentVersion = "1.0.0"; // Provide a valid version
+
+			// Act
+			var result = CheckForUpdates.Parse(releaseModelList, currentVersion);
+
+			// Assert
+			Assert.AreEqual(UpdateStatus.NoReleasesFound, result.Key);
+			Assert.AreEqual(string.Empty, result.Value);
+		}
 	}
 }

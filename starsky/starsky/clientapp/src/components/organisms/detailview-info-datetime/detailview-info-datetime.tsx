@@ -23,7 +23,7 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
       "is at an unknown time"
     );
 
-    const [isModalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
+    const [modalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
 
     function handleExit(result: IFileIndexItem[] | null) {
       setModalDatetimeOpen(false);
@@ -44,7 +44,7 @@ const DetailViewInfoDateTime: React.FunctionComponent<IDetailViewInfoDateTimePro
     return (
       <>
         {/* dateTime when the image is created */}
-        {isModalDatetimeOpen ? (
+        {modalDatetimeOpen ? (
           <ModalDatetime
             subPath={fileIndexItem.filePath}
             dateTime={fileIndexItem.dateTime}

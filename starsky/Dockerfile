@@ -48,7 +48,7 @@ RUN rm /app/global.json
 
 RUN \
     if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-        echo $TARGETPLATFORM ; \
+        echo "$TARGETPLATFORM" ; \
         dotnet restore --runtime linux-x64 starsky.csproj ; \
     elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
         dotnet restore --runtime linux-arm64 starsky.csproj ; \
@@ -85,9 +85,9 @@ RUN \
         DEMO_SEED_CLI_PATH="/app/starskydemoseedcli/starskydemoseedcli.csproj" ;\
         DEPS_FOLDER="/app/dependencies" ;\
         TEMP_FOLDER="/app/temp" ;\
-        mkdir -p $DEPS_FOLDER ;\
-        mkdir -p $TEMP_FOLDER ;\
-        dotnet run --project $DEMO_SEED_CLI_PATH --configuration Release -- --dependencies $DEPS_FOLDER --tempfolder $TEMP_FOLDER -h -v ;\
+        mkdir -p "$DEPS_FOLDER" ;\
+        mkdir -p "$TEMP_FOLDER" ;\
+        dotnet run --project "$DEMO_SEED_CLI_PATH" --configuration Release -- --dependencies "$DEPS_FOLDER" --tempfolder "$TEMP_FOLDER" -h -v ;\
     fi
 
 # no alpine build since there is no support for multi-arch
@@ -101,7 +101,7 @@ WORKDIR /app
 RUN if [ "$TEST" = "true" ]; then \
         mkdir -p "/testresults" ;\
         if [ "$BUILDPLATFORM" = "$TARGETPLATFORM" ]; then \
-          echo $TEST $BUILDPLATFORM $TARGETPLATFORM ; \
+          echo "$TEST" "$BUILDPLATFORM" "$TARGETPLATFORM" ; \
           dotnet test -c release --results-directory /testresults --logger "trx;LogFileName=test_results.trx" --collect:"XPlat Code Coverage" --settings build.vstest.runsettings starskytest/starskytest.csproj ; \
         fi ;\
         touch "/testresults/test.enabled" ;\

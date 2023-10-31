@@ -426,7 +426,8 @@ namespace starsky.feature.search.ViewModels
 			return returnQueryBuilder.ToString();
 		}
 
-		private (string defaultQuery, StringBuilder returnQueryBuilder) ParseQuotedValues(string defaultQuery, StringBuilder returnQueryBuilder)
+		private (string defaultQuery, StringBuilder returnQueryBuilder) 
+			ParseQuotedValues(string defaultQuery, StringBuilder returnQueryBuilder)
 		{
 			// Get Quoted values
 			// (["'])(\\?.)*?\1
@@ -535,7 +536,7 @@ namespace starsky.feature.search.ViewModels
 			return model;
 		}
 
-		private static SearchViewModel PropertySearchStringType(
+		internal static SearchViewModel PropertySearchStringType(
 			SearchViewModel model,
 			PropertyInfo property, string searchForQuery,
 			SearchForOptionType searchType)
@@ -546,15 +547,15 @@ namespace starsky.feature.search.ViewModels
 					model.FileIndexItems = model.FileIndexItems!.Where(
 						p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						     && ! // not
-							     p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
-								     .ToString()!.ToLowerInvariant().Contains(searchForQuery)  
+							     p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
+								     .ToString()?.ToLowerInvariant().Contains(searchForQuery)  == true
 					).ToList();
 					break;
 				default:
-					model.FileIndexItems = model.FileIndexItems!
+					model.FileIndexItems = model.FileIndexItems?
 						.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
-						            && p.GetType().GetProperty(property.Name)!.GetValue(p, null)!
-							            .ToString()!.ToLowerInvariant().Contains(searchForQuery)  
+						            && p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
+							            .ToString()?.ToLowerInvariant().Contains(searchForQuery) == true  
 						).ToList();
 					break;
 			}
@@ -562,11 +563,21 @@ namespace starsky.feature.search.ViewModels
 			return model;
 		}
 
-		private static SearchViewModel PropertySearchBoolType(
-			SearchViewModel model,
-			PropertyInfo property, bool boolIsValue)
+		internal static SearchViewModel PropertySearchBoolType(
+			SearchViewModel? model,
+			PropertyInfo? property, bool boolIsValue)
 		{
-			model.FileIndexItems = model.FileIndexItems!
+			if ( model == null )
+			{
+				return new SearchViewModel();
+			}
+			
+			if ( property == null)
+			{
+				return model;
+			}
+			
+			model.FileIndexItems = model.FileIndexItems?
 				.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 				            && (bool?) p.GetType().GetProperty(property.Name)?.GetValue(p, null)  == boolIsValue
 				).ToList();
@@ -653,12 +664,14 @@ namespace starsky.feature.search.ViewModels
 				return PropertySearchStringType(model, property, searchForQuery, searchType);
 			}
 
-			if ( property.PropertyType == typeof(bool) && bool.TryParse(searchForQuery, out var boolIsValue))
+			if ( (property.PropertyType == typeof(bool) || property.PropertyType == typeof(bool?)) && 
+			     bool.TryParse(searchForQuery, out var boolIsValue))
 			{
 				return PropertySearchBoolType(model, property, boolIsValue);
 			}
 		    
-			if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) && Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
+			if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) && 
+			     Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
 				    searchForQuery.ToLowerInvariant(), out var castImageFormat) )
 			{
 				return PropertySearchImageFormatType(model, property, castImageFormat, searchType);				

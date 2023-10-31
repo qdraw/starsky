@@ -199,9 +199,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
         ) : null}
 
         {isProcessing === ProcessingState.server ? (
-          <>
-            <div className="preloader preloader--inside"></div>
-          </>
+          <div className="preloader preloader--inside"></div>
         ) : null}
 
         {isProcessing === ProcessingState.fail

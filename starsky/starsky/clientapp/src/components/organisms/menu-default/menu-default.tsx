@@ -11,21 +11,19 @@ const MenuDefault: React.FunctionComponent<IMenuDefaultProps> = () => {
   const [hamburgerMenu, setHamburgerMenu] = useState(false);
 
   return (
-    <>
-      <header className={"header header--main"}>
-        <div className="wrapper">
-          <HamburgerMenuToggle
-            select={false}
-            hamburgerMenu={hamburgerMenu}
-            setHamburgerMenu={setHamburgerMenu}
-          />
+    <header className={"header header--main"}>
+      <div className="wrapper">
+        <HamburgerMenuToggle
+          select={false}
+          hamburgerMenu={hamburgerMenu}
+          setHamburgerMenu={setHamburgerMenu}
+        />
 
-          <NavContainer hamburgerMenu={hamburgerMenu}>
-            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
-          </NavContainer>
-        </div>
-      </header>
-    </>
+        <NavContainer hamburgerMenu={hamburgerMenu}>
+          <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
+        </NavContainer>
+      </div>
+    </header>
   );
 };
 

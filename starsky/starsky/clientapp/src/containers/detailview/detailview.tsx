@@ -245,7 +245,6 @@ const DetailView: React.FC<IDetailView> = () => {
             <FileHashImage
               setError={setError}
               id={state.fileIndexItem.filePath}
-              isError={isError}
               setIsLoading={setIsLoading}
               fileHash={state.fileIndexItem.fileHash}
               orientation={state.fileIndexItem.orientation}

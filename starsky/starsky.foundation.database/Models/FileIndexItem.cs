@@ -481,7 +481,8 @@ namespace starsky.foundation.database.Models
 			var fileIndexPropList = new List<string>();
 			// only for types String in FileIndexItem()
 
-			foreach (var propertyInfo in new FileIndexItem().GetType().GetProperties())
+			var allProperties = new FileIndexItem().GetType().GetProperties();
+			foreach (var propertyInfo in allProperties)
 			{
 				if ((
 					propertyInfo.PropertyType == typeof(bool) || 
