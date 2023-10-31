@@ -339,5 +339,27 @@ namespace starskytest.starsky.feature.health.Helpers
 			Assert.AreEqual(UpdateStatus.NoReleasesFound, result.Key);
 			Assert.AreEqual(string.Empty, result.Value);
 		}
+		
+		
+		[TestMethod]
+		public void Parse_WithNullFirstReleaseModel_Returns_EmptyReleaseModel()
+		{
+			// Arrange
+			IEnumerable<ReleaseModel> releaseModelList = new List<ReleaseModel>
+			{
+				new ReleaseModel
+				{
+					TagName = null
+				}
+			};
+			const string currentVersion = "1.0.0"; // Provide a valid version
+
+			// Act
+			var result = CheckForUpdates.Parse(releaseModelList, currentVersion);
+
+			// Assert
+			Assert.AreEqual(UpdateStatus.NoReleasesFound, result.Key);
+			Assert.AreEqual(string.Empty, result.Value);
+		}
 	}
 }
