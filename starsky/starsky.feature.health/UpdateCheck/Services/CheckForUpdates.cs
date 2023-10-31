@@ -73,11 +73,11 @@ namespace starsky.feature.health.UpdateCheck.Services
 			var (key, value) = await _httpClientHelper.ReadString(GithubApi);
 			return !key ? new List<ReleaseModel>() : JsonSerializer.Deserialize<List<ReleaseModel>>(value, new JsonSerializerOptions());
 		}
-
+		
 		internal static KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel>? releaseModelList, string currentVersion )
 		{
 			var orderedReleaseModelList = releaseModelList?.OrderByDescending(p => p.TagName);
-			var tagName = orderedReleaseModelList?.FirstOrDefault(p => !p.Draft && !p.PreRelease)?.TagName;
+			var tagName = orderedReleaseModelList?.FirstOrDefault(p => p is { Draft: false, PreRelease: false })?.TagName;
 			if ( string.IsNullOrWhiteSpace(tagName) ||
 			     !tagName.StartsWith('v') )
 			{
