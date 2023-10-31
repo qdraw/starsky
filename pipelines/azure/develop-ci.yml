@@ -66,6 +66,8 @@ stages:
     - checkout: self
       # fetchDepth: 1 - disable for sonarqube
 
+    - template: /pipelines/azure/steps/use_jdk_powershell.yml
+
     - template: /pipelines/azure/steps/use_dotnet_version.yml
 
     - template: /pipelines/azure/steps/build_clientapp.yml
