@@ -297,11 +297,10 @@ namespace starskytest.starsky.feature.health.Helpers
 		public void Parse_WithNullReleaseModelList_ReturnsNoReleasesFound()
 		{
 			// Arrange
-			IEnumerable<ReleaseModel> releaseModelList = null;
-			string currentVersion = "1.0.0"; // Provide a valid version
+			const string currentVersion = "1.0.0"; // Provide a valid version
 
 			// Act
-			var result = CheckForUpdates.Parse(releaseModelList, currentVersion);
+			var result = CheckForUpdates.Parse(null, currentVersion);
 
 			// Assert
 			Assert.AreEqual(UpdateStatus.NoReleasesFound, result.Key);
@@ -313,7 +312,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		{
 			// Arrange
 			IEnumerable<ReleaseModel> releaseModelList = new List<ReleaseModel>(); // An empty list
-			string currentVersion = "1.0.0"; // Provide a valid version
+			const string currentVersion = "1.0.0"; // Provide a valid version
 
 			// Act
 			var result = CheckForUpdates.Parse(releaseModelList, currentVersion);
@@ -331,7 +330,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			{
 				// List with no valid releases (Draft and PreRelease)
 			};
-			string currentVersion = "1.0.0"; // Provide a valid version
+			const string currentVersion = "1.0.0"; // Provide a valid version
 
 			// Act
 			var result = CheckForUpdates.Parse(releaseModelList, currentVersion);
