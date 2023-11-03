@@ -68,6 +68,9 @@ export default function Modal({
     return ReactDOM.createPortal(
       <div
         onClick={(event) => ifModalOpenHandleExit(event, handleExit)}
+        onKeyDown={(event) => {
+          event.key === "Enter" && handleExit();
+        }}
         data-test={dataTest}
         className={`modal-bg ${
           isOpen ? ` ${ModalOpenClassName} ` + className : ""

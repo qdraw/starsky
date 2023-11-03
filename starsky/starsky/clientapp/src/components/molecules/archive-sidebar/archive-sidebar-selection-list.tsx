@@ -12,6 +12,7 @@ interface IDetailViewSidebarSelectionListProps {
 }
 
 const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSelectionListProps> =
+  // eslint-disable-next-line react/display-name
   memo((props) => {
     // content
     const settings = useGlobalSettings();
@@ -92,11 +93,15 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
                   item // item is filename
                 ) => (
                   <li key={item}>
-                    <span
+                    <button
+                      onKeyDown={(event) => {
+                        event.key === "Enter" && toggleSelection(item);
+                      }}
                       onClick={() => toggleSelection(item)}
                       className="close"
+                      title={item}
                     />
-                    {item}
+                    <span>{item}</span>
                   </li>
                 )
               )

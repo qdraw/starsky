@@ -52,10 +52,7 @@ describe("FileHashImage", () => {
 
     // need to await here
     const component = await render(
-      <FileHashImage
-        fileHash="hash"
-        orientation={Orientation.Horizontal}
-      />
+      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} />
     );
     expect(detectRotationSpy).toBeCalled();
 
@@ -94,10 +91,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const component = render(
-      <FileHashImage
-        fileHash="hash"
-        orientation={Orientation.Horizontal}
-      />
+      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} />
     );
 
     // need to await here
@@ -125,10 +119,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     const component = render(
-      <FileHashImage
-        fileHash="hash"
-        orientation={Orientation.Horizontal}
-      />
+      <FileHashImage fileHash="hash" orientation={Orientation.Horizontal} />
     );
 
     // need to await here
