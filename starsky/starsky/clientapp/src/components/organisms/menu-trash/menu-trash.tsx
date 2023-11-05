@@ -15,6 +15,7 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
+import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalForceDelete from "../modal-force-delete/modal-force-delete";
 import NavContainer from "../nav-container/nav-container";
 
@@ -137,32 +138,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          {select && select.length === 0 ? (
-            <button
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              onKeyDown={(event) => {
-                event.key === "Enter" && removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {MessageNoneSelected}
-            </button>
-          ) : null}
-          {select && select.length >= 1 ? (
-            <button
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              onKeyDown={(event) => {
-                event.key === "Enter" && removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {select.length} {MessageSelectPresentPerfect}
-            </button>
-          ) : null}
+          <MenuSelectCount
+            select={select}
+            removeSidebarSelection={removeSidebarSelection}
+          />
 
           {!select && state.fileIndexItems.length >= 1 ? (
             <div

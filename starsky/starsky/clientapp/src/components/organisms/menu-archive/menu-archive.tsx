@@ -22,6 +22,7 @@ import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder-to-trash/menu-option-move-folder-to-trash";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
+import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalDropAreaFilesAdded from "../../molecules/modal-drop-area-files-added/modal-drop-area-files-added";
 import ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
@@ -224,34 +225,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          {select && select.length === 0 ? (
-            <button
-              data-test="selected-0"
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              onKeyDown={(event) => {
-                event.key === "Enter" && removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {MessageNoneSelected}
-            </button>
-          ) : null}
-          {select && select.length >= 1 ? (
-            <button
-              data-test={`selected-${select.length}`}
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              onKeyDown={(event) => {
-                event.key === "Enter" && removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {select.length} {MessageSelectPresentPerfect}
-            </button>
-          ) : null}
+          <MenuSelectCount
+            select={select}
+            removeSidebarSelection={removeSidebarSelection}
+          />
+
           {!select ? (
             <div
               className="item item--select"

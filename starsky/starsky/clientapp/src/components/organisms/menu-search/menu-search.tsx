@@ -18,6 +18,7 @@ import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
+import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
@@ -39,11 +40,6 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   const language = new Language(settings.language);
 
   // Content
-  const MessageNoneSelected = language.text(
-    "Niets geselecteerd",
-    "Nothing selected"
-  );
-  const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
   const MessageSelectAction = language.text("Selecteer", "Select");
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
@@ -121,36 +117,12 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          {select && select.length === 0 ? (
-            <button
-              data-test="selected-0"
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              onKeyDown={(event) => {
-                event.key === "Enter" && removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {MessageNoneSelected}
-            </button>
-          ) : null}
-          {select && select.length >= 1 ? (
-            <button
-              data-test={`selected-${select.length}`}
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              onKeyDown={(event) => {
-                event.key === "Enter" && removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {select.length} {MessageSelectPresentPerfect}
-            </button>
-          ) : null}
+          <MenuSelectCount
+            select={select}
+            removeSidebarSelection={removeSidebarSelection}
+          />
 
-          {/* te select button with checkbox*/}
+          {/* the select button with checkbox*/}
           {!select ? (
             <div
               className={
