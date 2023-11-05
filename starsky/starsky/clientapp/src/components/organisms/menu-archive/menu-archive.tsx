@@ -33,6 +33,7 @@ import NavContainer from "../nav-container/nav-container";
 
 interface IMenuArchiveProps {}
 
+// eslint-disable-next-line react/display-name
 const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -229,6 +230,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               onClick={() => {
                 removeSidebarSelection();
               }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
+              }}
               className="item item--first item--close"
             >
               {MessageNoneSelected}
@@ -239,6 +243,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               data-test={`selected-${select.length}`}
               onClick={() => {
                 removeSidebarSelection();
+              }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
               }}
               className="item item--first item--close"
             >
@@ -251,6 +258,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               data-test="menu-item-select"
               onClick={() => {
                 removeSidebarSelection();
+              }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
               }}
             >
               {MessageSelectAction}
@@ -272,14 +282,23 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               <li
                 className={!isReadOnly ? "menu-option" : "menu-option disabled"}
                 data-test="mkdir"
+                tabIndex={0}
                 onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}
+                onKeyDown={(event) => {
+                  event.key === "Enter" && setModalMkdirOpen(!isModalMkdirOpen);
+                }}
               >
                 {MessageMkdir}
               </li>
               <li
                 className="menu-option"
                 data-test="display-options"
+                tabIndex={0}
                 onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}
+                onKeyDown={(event) => {
+                  event.key === "Enter" &&
+                    setDisplayOptionsOpen(!isModalMkdirOpen);
+                }}
               >
                 {MessageDisplayOptions}
               </li>
@@ -323,6 +342,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                   className="menu-option"
                   data-test="undo-selection"
                   onClick={() => undoSelection()}
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    event.key === "Enter" && undoSelection();
+                  }}
                 >
                   {MessageUndoSelection}
                 </li>
@@ -332,6 +355,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                   className="menu-option"
                   data-test="select-all"
                   onClick={() => allSelection()}
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    event.key === "Enter" && allSelection();
+                  }}
                 >
                   {MessageSelectAll}
                 </li>
@@ -392,6 +419,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             className="item item--continue"
             onClick={() => {
               toggleLabels();
+            }}
+            onKeyDown={(event) => {
+              event.key === "Enter" && toggleLabels();
             }}
           >
             {MessageSelectFurther}

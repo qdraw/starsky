@@ -22,11 +22,15 @@ export const Default = () => {
     <>
       <MoreMenu enableMoreMenu={true} setEnableMoreMenu={() => {}}>
         <MenuOptionMoveToTrash
-          setSelect={() => {}}
+          setSelect={() => {
+            alert("done");
+          }}
           select={["test.jpg"]}
           isReadOnly={false}
           state={test}
-          dispatch={() => {}}
+          dispatch={() => {
+            alert("done");
+          }}
         />
       </MoreMenu>
     </>

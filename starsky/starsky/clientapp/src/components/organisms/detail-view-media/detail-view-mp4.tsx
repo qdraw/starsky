@@ -24,6 +24,7 @@ function GetVideoClass(isPaused: boolean, isStarted: boolean): string {
   }
 }
 
+// eslint-disable-next-line react/display-name
 const DetailViewMp4: React.FunctionComponent = memo(() => {
   // content
   const settings = useGlobalSettings();
@@ -232,6 +233,10 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
         <figure
           data-test="video"
           className={GetVideoClass(isPaused, isStarted)}
+          onKeyDown={(event) => {
+            event.key === "Enter" && playPause();
+            event.key === "Enter" && timeUpdate();
+          }}
           onClick={() => {
             playPause();
             timeUpdate();
@@ -249,6 +254,9 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
             <button
               className={isPaused ? "play" : "pause"}
               onClick={playPause}
+              onKeyDown={(event) => {
+                event.key === "Enter" && playPause();
+              }}
               type="button"
             >
               <span className="icon"></span>

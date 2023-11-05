@@ -25,6 +25,7 @@ interface IMenuOptionMoveToTrashProps {
  * Used from Archive and Search
  */
 const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> =
+  // eslint-disable-next-line react/display-name
   memo(({ state, dispatch, select, setSelect, isReadOnly }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
@@ -98,7 +99,11 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
         {select.length >= 1 ? (
           <li
             data-test="trash"
+            tabIndex={0}
             className={!isReadOnly ? "menu-option" : "menu-option disabled"}
+            onKeyDown={(event) => {
+              event.key === "Enter" && moveToTrashSelection();
+            }}
             onClick={() => moveToTrashSelection()}
           >
             {MessageMoveToTrash}

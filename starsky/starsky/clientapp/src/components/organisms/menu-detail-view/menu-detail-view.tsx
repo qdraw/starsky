@@ -424,6 +424,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             onClick={() => {
               toggleLabels();
             }}
+            onKeyDown={(event) => {
+              event.key === "Enter" && toggleLabels();
+            }}
           >
             Labels
           </button>
@@ -439,6 +442,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               }
               data-test="export"
               onClick={() => setModalExportOpen(!isModalExportOpen)}
+              onKeyDown={(event) => {
+                event.key === "Enter" && setModalExportOpen(!isModalExportOpen);
+              }}
             >
               Download
             </li>
@@ -457,6 +463,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="move"
               onClick={() => setModalMoveFile(!isModalMoveFile)}
+              onKeyDown={(event) => {
+                event.key === "Enter" && setModalMoveFile(!isModalMoveFile);
+              }}
             >
               {MessageMove}
             </li>
@@ -465,6 +474,10 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="rename"
               onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
+              onKeyDown={(event) => {
+                event.key === "Enter" &&
+                  setModalRenameFileOpen(!isModalRenameFileOpen);
+              }}
             >
               {MessageRenameFileName}
             </li>
@@ -473,6 +486,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="trash"
               onClick={TrashFile}
+              onKeyDown={(event) => {
+                event.key === "Enter" && TrashFile();
+              }}
             >
               {!isMarkedAsDeleted
                 ? MessageMoveToTrash
@@ -514,6 +530,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             className="item item--close"
             onClick={() => {
               toggleLabels();
+            }}
+            onKeyDown={(event) => {
+              event.key === "Enter" && toggleLabels();
             }}
           >
             {MessageCloseDetailScreenDialog}

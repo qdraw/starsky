@@ -127,6 +127,9 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               onClick={() => {
                 removeSidebarSelection();
               }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
+              }}
               className="item item--first item--close"
             >
               {MessageNoneSelected}
@@ -137,6 +140,9 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               data-test={`selected-${select.length}`}
               onClick={() => {
                 removeSidebarSelection();
+              }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
               }}
               className="item item--first item--close"
             >
@@ -155,6 +161,9 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               onClick={() => {
                 removeSidebarSelection();
               }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
+              }}
             >
               {MessageSelectAction}
             </div>
@@ -162,7 +171,13 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
 
           {/* when selected */}
           {select ? (
-            <div className={"item item--labels"} onClick={() => toggleLabels()}>
+            <div
+              className={"item item--labels"}
+              onClick={() => toggleLabels()}
+              onKeyDown={(event) => {
+                event.key === "Enter" && toggleLabels();
+              }}
+            >
               Labels
             </div>
           ) : null}
@@ -185,6 +200,9 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
                 tabIndex={0}
                 className="menu-option"
                 onClick={() => allSelection()}
+                onKeyDown={(event) => {
+                  event.key === "Enter" && allSelection();
+                }}
               >
                 {MessageSelectAll}
               </li>
@@ -202,6 +220,10 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
                   data-test="undo-selection"
                   className="menu-option"
                   onClick={() => undoSelection()}
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    event.key === "Enter" && undoSelection();
+                  }}
                 >
                   {MessageUndoSelection}
                 </li>
@@ -210,7 +232,11 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
                 <li
                   className="menu-option"
                   data-test="select-all"
+                  tabIndex={0}
                   onClick={() => allSelection()}
+                  onKeyDown={(event) => {
+                    event.key === "Enter" && allSelection();
+                  }}
                 >
                   {MessageSelectAll}
                 </li>
@@ -252,6 +278,10 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
             onClick={() => {
               toggleLabels();
             }}
+            onKeyDown={(event) => {
+              event.key === "Enter" && toggleLabels();
+            }}
+            tabIndex={0}
           >
             {MessageSelectFurther}
           </div>
