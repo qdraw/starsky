@@ -142,6 +142,9 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               onClick={() => {
                 removeSidebarSelection();
               }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
+              }}
               className="item item--first item--close"
             >
               {MessageNoneSelected}
@@ -151,6 +154,9 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
             <button
               onClick={() => {
                 removeSidebarSelection();
+              }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
               }}
               className="item item--first item--close"
             >
@@ -164,6 +170,9 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               className="item item--select"
               onClick={() => {
                 removeSidebarSelection();
+              }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
               }}
             >
               {MessageSelectAction}
@@ -212,6 +221,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
                   data-test="undo-selection"
                   className="menu-option"
                   onClick={() => undoSelection()}
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    event.key === "Enter" && undoSelection();
+                  }}
                 >
                   {MessageUndoSelection}
                 </li>
@@ -221,6 +234,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
                   className="menu-option"
                   data-test="select-all"
                   onClick={() => allSelection()}
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    event.key === "Enter" && allSelection();
+                  }}
                 >
                   {MessageSelectAll}
                 </li>
@@ -229,6 +246,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
                 className="menu-option"
                 data-test="restore-from-trash"
                 onClick={() => undoTrash()}
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  event.key === "Enter" && undoTrash();
+                }}
               >
                 {MessageRestoreFromTrash}
               </li>
@@ -236,6 +257,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
                 className="menu-option"
                 data-test="delete"
                 onClick={() => setModalDeleteOpen(true)}
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  event.key === "Enter" && setModalDeleteOpen(true);
+                }}
               >
                 {MessageDeleteImmediately}
               </li>
