@@ -269,6 +269,18 @@ const DetailView: React.FC<IDetailView> = () => {
                   setIsLoading
                 ).next()
               }
+              tabIndex={0}
+              onKeyDown={(event) => {
+                event.key === "Enter" &&
+                  new PrevNext(
+                    relativeObjects,
+                    state,
+                    isSearchQuery,
+                    history,
+                    setRelativeObjects,
+                    setIsLoading
+                  ).next();
+              }}
               data-test="detailview-next"
               className="nextprev nextprev--next"
             >
@@ -290,6 +302,18 @@ const DetailView: React.FC<IDetailView> = () => {
                   setIsLoading
                 ).prev()
               }
+              tabIndex={0}
+              onKeyDown={(event) => {
+                event.key === "Enter" &&
+                  new PrevNext(
+                    relativeObjects,
+                    state,
+                    isSearchQuery,
+                    history,
+                    setRelativeObjects,
+                    setIsLoading
+                  ).next();
+              }}
               data-test="detailview-prev"
               className="nextprev nextprev--prev"
             >
