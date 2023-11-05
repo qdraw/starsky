@@ -33,11 +33,6 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
   // Content
   const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
-  const MessageNoneSelected = language.text(
-    "Niets geselecteerd",
-    "Nothing selected"
-  );
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
   const MessageRestoreFromTrash = language.text(

@@ -41,11 +41,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   // Content
   const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
-  const MessageNoneSelected = language.text(
-    "Niets geselecteerd",
-    "Nothing selected"
-  );
   const MessageMkdir = language.text("Map maken", "Create folder");
   const MessageRenameDir = language.text("Naam wijzigen", "Rename");
   const MessageDisplayOptions = language.text(
