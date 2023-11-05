@@ -139,9 +139,13 @@
     "en": "Nothing selected",
     "nl": "Niets geselecteerd"
   },
-  "temp": {
-    "en": "",
-    "nl": ""
+  "MessageUndoSelection": {
+    "en": "Undo selection",
+    "nl": "Undo selectie"
+  },
+  "MessageSelectAll": {
+    "en": "Select all",
+    "nl": "Alles selecteren"
   },
   "temp1": {
     "en": "",

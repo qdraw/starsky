@@ -15,6 +15,8 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
+import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
+import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
 import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalForceDelete from "../modal-force-delete/modal-force-delete";
 import NavContainer from "../nav-container/nav-container";
@@ -34,7 +36,6 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
   // Content
   const MessageSelectAction = language.text("Selecteer", "Select");
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
-  const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
   const MessageRestoreFromTrash = language.text(
     "Zet terug uit prullenmand",
     "Restore from Trash"
@@ -190,32 +191,18 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               setEnableMoreMenu={setEnableMoreMenu}
               enableMoreMenu={enableMoreMenu}
             >
-              {select.length === state.fileIndexItems.length ? (
-                <li
-                  data-test="undo-selection"
-                  className="menu-option"
-                  onClick={() => undoSelection()}
-                  tabIndex={0}
-                  onKeyDown={(event) => {
-                    event.key === "Enter" && undoSelection();
-                  }}
-                >
-                  {MessageUndoSelection}
-                </li>
-              ) : null}
-              {select.length !== state.fileIndexItems.length ? (
-                <li
-                  className="menu-option"
-                  data-test="select-all"
-                  onClick={() => allSelection()}
-                  tabIndex={0}
-                  onKeyDown={(event) => {
-                    event.key === "Enter" && allSelection();
-                  }}
-                >
-                  {MessageSelectAll}
-                </li>
-              ) : null}
+              <MenuOptionSelectionUndo
+                select={select}
+                state={state}
+                undoSelection={undoSelection}
+              />
+
+              <MenuOptionSelectionAll
+                select={select}
+                state={state}
+                allSelection={allSelection}
+              />
+
               <li
                 className="menu-option"
                 data-test="restore-from-trash"

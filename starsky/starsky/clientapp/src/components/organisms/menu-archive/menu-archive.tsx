@@ -22,6 +22,8 @@ import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder-to-trash/menu-option-move-folder-to-trash";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
+import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
+import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
 import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalDropAreaFilesAdded from "../../molecules/modal-drop-area-files-added/modal-drop-area-files-added";
 import ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
@@ -52,8 +54,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     "Verder selecteren",
     "Select further"
   );
-  const MessageSelectAll = language.text("Alles selecteren", "Select all");
-  const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
@@ -310,32 +310,18 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               setEnableMoreMenu={setEnableMoreMenu}
               enableMoreMenu={enableMoreMenu}
             >
-              {select.length === state.fileIndexItems.length ? (
-                <li
-                  className="menu-option"
-                  data-test="undo-selection"
-                  onClick={() => undoSelection()}
-                  tabIndex={0}
-                  onKeyDown={(event) => {
-                    event.key === "Enter" && undoSelection();
-                  }}
-                >
-                  {MessageUndoSelection}
-                </li>
-              ) : null}
-              {select.length !== state.fileIndexItems.length ? (
-                <li
-                  className="menu-option"
-                  data-test="select-all"
-                  onClick={() => allSelection()}
-                  tabIndex={0}
-                  onKeyDown={(event) => {
-                    event.key === "Enter" && allSelection();
-                  }}
-                >
-                  {MessageSelectAll}
-                </li>
-              ) : null}
+              <MenuOptionSelectionUndo
+                select={select}
+                state={state}
+                undoSelection={undoSelection}
+              />
+
+              <MenuOptionSelectionAll
+                select={select}
+                state={state}
+                allSelection={allSelection}
+              />
+
               {select.length >= 1 ? (
                 <>
                   <MenuOption
