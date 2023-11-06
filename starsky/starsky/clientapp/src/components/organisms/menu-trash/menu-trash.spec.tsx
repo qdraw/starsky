@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../../../hooks/use-fetch";
@@ -87,7 +87,7 @@ describe("MenuTrash", () => {
       component.unmount();
     });
 
-    it("select toggle", () => {
+    it("select toggle click", () => {
       jest.spyOn(React, "useContext").mockImplementationOnce(() => {
         return contextValues;
       });
@@ -111,6 +111,37 @@ describe("MenuTrash", () => {
       expect(menuTrashItemSelect).toBeTruthy();
 
       menuTrashItemSelect.click();
+
+      expect(Router.state.location.search).toBe("?select=");
+      component.unmount();
+    });
+
+    it("select toggle keyDown", () => {
+      jest.spyOn(React, "useContext").mockImplementationOnce(() => {
+        return contextValues;
+      });
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      });
+
+      act(() => {
+        Router.navigate("/");
+      });
+
+      const component = render(
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+      );
+
+      const menuTrashItemSelect = screen.queryByTestId(
+        "menu-trash-item-select"
+      ) as HTMLDivElement;
+      expect(menuTrashItemSelect).toBeTruthy();
+
+      fireEvent.keyDown(menuTrashItemSelect, {
+        key: "Enter"
+      });
 
       expect(Router.state.location.search).toBe("?select=");
       component.unmount();

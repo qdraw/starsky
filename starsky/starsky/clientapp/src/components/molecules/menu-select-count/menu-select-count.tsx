@@ -34,6 +34,7 @@ export const MenuSelectCount: React.FunctionComponent<
           {MessageNoneSelected}
         </button>
       ) : null}
+
       {select && select.length >= 1 ? (
         <button
           data-test={`selected-${select.length}`}
