@@ -5,7 +5,7 @@ import { Language } from "../../../shared/language";
 
 export interface IMenuOptionUndoSelectionProps {
   select: string[];
-  state: IArchiveProps;
+  state?: IArchiveProps;
   allSelection: () => void;
 }
 
@@ -18,7 +18,7 @@ export const MenuOptionSelectionAll: React.FunctionComponent<
 
   return (
     <>
-      {select.length !== state.fileIndexItems.length ? (
+      {select.length !== state?.fileIndexItems?.length ? (
         <li
           className="menu-option"
           data-test="select-all"
