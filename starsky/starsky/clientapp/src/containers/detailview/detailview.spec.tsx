@@ -1,4 +1,8 @@
-import { fireEvent, render, RenderResult } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  RenderResult
+} from "@testing-library/react";
 import { useState } from "react";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
@@ -139,8 +143,6 @@ describe("DetailView", () => {
       const image = imgContainer?.querySelector("img") as HTMLImageElement;
       expect(image).toBeTruthy();
 
-      console.log(image.src);
-
       expect(image.src).toBe(
         "http://localhost" +
           new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
@@ -194,6 +196,7 @@ describe("DetailView", () => {
         state: defaultState
       };
 
+      // eslint-disable-next-line react/display-name
       TestComponent = () => (
         <BrowserRouter>
           <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
@@ -513,6 +516,7 @@ describe("DetailView", () => {
 
       component.unmount();
     });
+
     it("should update when swipe left", () => {
       console.log("- - - -");
 

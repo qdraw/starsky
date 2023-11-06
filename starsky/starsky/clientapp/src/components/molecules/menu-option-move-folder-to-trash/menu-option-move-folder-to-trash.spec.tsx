@@ -41,6 +41,48 @@ describe("MenuOptionMoveFolderToTrash", () => {
     expect(screen.getByTestId("modal-move-folder-to-trash")).toBeTruthy();
   });
 
+  it("opens the modal when the menu option is keyDowned", () => {
+    jest
+      .spyOn(ModalMoveFolderToTrash, "default")
+      .mockImplementationOnce(() => (
+        <div data-test="modal-move-folder-to-trash"></div>
+      ));
+
+    render(
+      <MenuOptionMoveFolderToTrash
+        subPath="path/to/folder"
+        isReadOnly={false}
+        dispatch={jest.fn()}
+      />
+    );
+
+    const menuOption = screen.getByTestId("move-folder-to-trash");
+    fireEvent.keyDown(menuOption, { key: "Enter" });
+
+    expect(screen.getByTestId("modal-move-folder-to-trash")).toBeTruthy();
+  });
+
+  it("not opens the modal when the menu option is keyDowned but wrong key so ignored", () => {
+    jest
+      .spyOn(ModalMoveFolderToTrash, "default")
+      .mockImplementationOnce(() => (
+        <div data-test="modal-move-folder-to-trash"></div>
+      ));
+
+    render(
+      <MenuOptionMoveFolderToTrash
+        subPath="path/to/folder"
+        isReadOnly={false}
+        dispatch={jest.fn()}
+      />
+    );
+
+    const menuOption = screen.getByTestId("move-folder-to-trash");
+    fireEvent.keyDown(menuOption, { key: "Tab" });
+
+    expect(screen.queryByTestId("modal-move-folder-to-trash")).toBeFalsy();
+  });
+
   it("opens the modal when the menu option is clicked 1", () => {
     console.log("----------");
 
