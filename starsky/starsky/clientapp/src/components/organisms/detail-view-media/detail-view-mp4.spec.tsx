@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  screen
+} from "@testing-library/react";
 import React from "react";
 import { Root, createRoot } from "react-dom/client";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -36,6 +42,40 @@ describe("DetailViewMp4", () => {
       component.unmount();
     });
 
+    it("keyDown Tab ignore", () => {
+      const component = render(<DetailViewMp4></DetailViewMp4>);
+
+      const playSpy = jest
+        .spyOn(HTMLMediaElement.prototype, "play")
+        .mockReset()
+        .mockImplementationOnce(() => Promise.resolve());
+
+      const figure = screen.queryByTestId("video") as HTMLElement;
+      const inputEvent = createEvent.keyDown(figure, { key: "Tab" });
+      fireEvent(figure, inputEvent);
+
+      expect(playSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
+    it("keyDown Enter video resolve", () => {
+      const component = render(<DetailViewMp4></DetailViewMp4>);
+
+      const playSpy = jest
+        .spyOn(HTMLMediaElement.prototype, "play")
+        .mockReset()
+        .mockImplementationOnce(() => Promise.resolve());
+
+      const figure = screen.queryByTestId("video") as HTMLElement;
+      const inputEvent = createEvent.keyDown(figure, { key: "Enter" });
+      fireEvent(figure, inputEvent);
+
+      expect(playSpy).toBeCalledTimes(1);
+
+      component.unmount();
+    });
+
     it("click to play video rejected", async () => {
       const component = render(<DetailViewMp4></DetailViewMp4>);
 
@@ -56,6 +96,7 @@ describe("DetailViewMp4", () => {
         await component.unmount();
       });
     });
+
     it("click to play video and timeupdate", () => {
       const component = render(<DetailViewMp4></DetailViewMp4>);
 
@@ -75,6 +116,54 @@ describe("DetailViewMp4", () => {
       );
 
       expect(playSpy).toBeCalled();
+
+      component.unmount();
+    });
+
+    it("keyDown Enter to play video and timeupdate", () => {
+      const component = render(<DetailViewMp4></DetailViewMp4>);
+
+      const playSpy = jest
+        .spyOn(HTMLMediaElement.prototype, "play")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve();
+        });
+
+      expect(screen.queryByTestId("video-time")?.textContent).toBe("");
+
+      const figure = screen.queryByTestId("video") as HTMLElement;
+      const inputEvent = createEvent.keyDown(figure, { key: "Enter" });
+      fireEvent(figure, inputEvent);
+
+      expect(screen.queryByTestId("video-time")?.textContent).toBe(
+        "0:00 / 0:00"
+      );
+
+      expect(playSpy).toBeCalled();
+
+      component.unmount();
+    });
+
+    it("keyDown Tab ignored", () => {
+      const component = render(<DetailViewMp4></DetailViewMp4>);
+
+      const playSpy = jest
+        .spyOn(HTMLMediaElement.prototype, "play")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve();
+        });
+
+      expect(screen.queryByTestId("video-time")?.textContent).toBe("");
+
+      const figure = screen.queryByTestId("video") as HTMLElement;
+      const inputEvent = createEvent.keyDown(figure, { key: "Tab" });
+      fireEvent(figure, inputEvent);
+
+      expect(screen.queryByTestId("video-time")?.textContent).toBe("");
+
+      expect(playSpy).toBeCalledTimes(0);
 
       component.unmount();
     });
