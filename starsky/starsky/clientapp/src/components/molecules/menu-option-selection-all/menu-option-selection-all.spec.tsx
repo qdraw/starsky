@@ -5,7 +5,7 @@ describe("MenuOptionSelectionAll", () => {
   it("renders", () => {
     render(
       <MenuOptionSelectionAll
-        select={[]}
+        select={["test"]}
         state={{} as any}
         allSelection={() => {}}
       />
@@ -15,7 +15,7 @@ describe("MenuOptionSelectionAll", () => {
   it("renders 2", () => {
     render(
       <MenuOptionSelectionAll
-        select={[]}
+        select={["test"]}
         state={
           {
             fileIndexItems: []
@@ -30,7 +30,7 @@ describe("MenuOptionSelectionAll", () => {
     const allSelection = jest.fn();
     const component = render(
       <MenuOptionSelectionAll
-        select={[]}
+        select={["test"]}
         state={
           {
             fileIndexItems: []
@@ -39,7 +39,6 @@ describe("MenuOptionSelectionAll", () => {
         allSelection={allSelection}
       />
     );
-    console.log(component.container.innerHTML);
 
     const allItem = component.queryByTestId("select-all") as HTMLElement;
     expect(allItem).toBeTruthy();
@@ -55,7 +54,7 @@ describe("MenuOptionSelectionAll", () => {
     const allSelection = jest.fn();
     const component = render(
       <MenuOptionSelectionAll
-        select={[]}
+        select={["test"]}
         state={
           {
             fileIndexItems: []
@@ -65,10 +64,9 @@ describe("MenuOptionSelectionAll", () => {
       />
     );
 
-    fireEvent.keyDown(
-      component.queryByTestId("undo-selection") as HTMLElement,
-      { key: "Enter" }
-    );
+    fireEvent.keyDown(component.queryByTestId("select-all") as HTMLElement, {
+      key: "Enter"
+    });
 
     expect(allSelection).toBeCalledTimes(1);
   });
