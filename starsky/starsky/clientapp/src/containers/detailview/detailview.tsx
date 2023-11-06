@@ -271,6 +271,8 @@ const DetailView: React.FC<IDetailView> = () => {
               }
               tabIndex={0}
               onKeyDown={(event) => {
+                console.log(event.key);
+
                 event.key === "Enter" &&
                   new PrevNext(
                     relativeObjects,
