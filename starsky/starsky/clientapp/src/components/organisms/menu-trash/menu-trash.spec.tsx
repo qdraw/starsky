@@ -116,7 +116,7 @@ describe("MenuTrash", () => {
       component.unmount();
     });
 
-    it("select toggle keyDown", () => {
+    it("select toggle keyDown enter continue", () => {
       jest.spyOn(React, "useContext").mockImplementationOnce(() => {
         return contextValues;
       });
@@ -144,6 +144,38 @@ describe("MenuTrash", () => {
       });
 
       expect(Router.state.location.search).toBe("?select=");
+      component.unmount();
+    });
+
+    it("select toggle keyDown tab skip", () => {
+      jest.spyOn(React, "useContext").mockImplementationOnce(() => {
+        return contextValues;
+      });
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      });
+
+      act(() => {
+        Router.navigate("/");
+      });
+
+      const component = render(
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+      );
+
+      const menuTrashItemSelect = screen.queryByTestId(
+        "menu-trash-item-select"
+      ) as HTMLDivElement;
+      expect(menuTrashItemSelect).toBeTruthy();
+
+      fireEvent.keyDown(menuTrashItemSelect, {
+        key: "Tab"
+      });
+
+      expect(Router.state.location.search).toBe("");
+
       component.unmount();
     });
 
