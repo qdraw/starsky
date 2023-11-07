@@ -1041,9 +1041,9 @@ describe("MenuArchive", () => {
           return <></>;
         });
 
-      jest.spyOn(React, "useContext").mockImplementationOnce(() => {
-        return contextValues;
-      });
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues);
 
       const component = render(<MenuArchive />);
 
