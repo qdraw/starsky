@@ -24,6 +24,7 @@ function GetVideoClass(isPaused: boolean, isStarted: boolean): string {
   }
 }
 
+// eslint-disable-next-line react/display-name
 const DetailViewMp4: React.FunctionComponent = memo(() => {
   // content
   const settings = useGlobalSettings();
@@ -46,7 +47,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   const { state } = React.useContext(DetailViewContext);
 
   /** update to make useEffect simpler te read */
-  const [downloadApi, setDownloadPhotoApi] = useState(
+  const [downloadPhotoApi, setDownloadPhotoApi] = useState(
     new UrlQuery().UrlDownloadPhotoApi(
       new URLPath().encodeURI(
         new URLPath().getFilePath(history.location.search)
@@ -101,8 +102,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   const scrubberRef = useRef<HTMLSpanElement>(null);
   const timeRef = useRef<HTMLSpanElement>(null);
 
-  const [isPaused, setPaused] = useState(true);
-  const [isStarted, setStarted] = useState(false);
+  const [paused, setPaused] = useState(true);
+  const [started, setStarted] = useState(false);
 
   const videoRefCurrent = videoRef.current;
   useEffect(() => {
@@ -135,7 +136,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
     setStarted(true);
 
-    if (isPaused) {
+    if (paused) {
       const promise = videoRef.current.play();
 
       promise?.catch(() => {
@@ -231,7 +232,11 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
       {!isError ? (
         <figure
           data-test="video"
-          className={GetVideoClass(isPaused, isStarted)}
+          className={GetVideoClass(paused, started)}
+          onKeyDown={(event) => {
+            event.key === "Enter" && playPause();
+            event.key === "Enter" && timeUpdate();
+          }}
           onClick={() => {
             playPause();
             timeUpdate();
@@ -243,16 +248,19 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
             controls={false}
             preload="metadata"
           >
-            <source src={downloadApi} type="video/mp4" />
+            <source src={downloadPhotoApi} type="video/mp4" />
           </video>
           <div className="controls">
             <button
-              className={isPaused ? "play" : "pause"}
+              className={paused ? "play" : "pause"}
               onClick={playPause}
+              onKeyDown={(event) => {
+                event.key === "Enter" && playPause();
+              }}
               type="button"
             >
               <span className="icon"></span>
-              {isPaused ? "Play" : "Pause"}
+              {paused ? "Play" : "Pause"}
             </button>
             <span ref={timeRef} data-test="video-time" className="time"></span>
             <div className="progress">

@@ -53,6 +53,7 @@ namespace starsky.foundation.http.Streaming
         }
 
         [SuppressMessage("Usage", "S125:Remove this commented out code")]
+        [SuppressMessage("Usage", "S2589:contentDisposition null")]
         public static async Task<List<string>> StreamFile(string? contentType, Stream requestBody, AppSettings appSettings, 
 	        ISelectorStorage selectorStorage, string? headerFileName = null)
         {

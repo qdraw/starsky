@@ -328,6 +328,64 @@ describe("MenuDetailView", () => {
       });
     });
 
+    it("export keyDown [menu] Tab so ignore", () => {
+      const exportModal = jest
+        .spyOn(ModalExport, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const exportButton = component.queryByTestId("export") as HTMLElement;
+      expect(exportButton).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(exportButton, { key: "Tab" });
+      });
+
+      expect(exportModal).toBeCalledTimes(0);
+
+      // to avoid polling afterwards
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("export keyDown [menu] Enter so continue", () => {
+      const exportModal = jest
+        .spyOn(ModalExport, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const exportButton = component.queryByTestId("export") as HTMLElement;
+      expect(exportButton).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(exportButton, { key: "Enter" });
+      });
+
+      expect(exportModal).toBeCalledTimes(1);
+
+      // to avoid polling afterwards
+      act(() => {
+        component.unmount();
+      });
+    });
+
     it("labels click .item--labels [menu]", () => {
       const component = render(
         <MemoryRouter>
@@ -339,6 +397,62 @@ describe("MenuDetailView", () => {
 
       act(() => {
         labels?.click();
+      });
+
+      const urlObject = new URLPath().StringToIUrl(window.location.search);
+
+      expect(urlObject.details).toBeTruthy();
+
+      // don't keep any menus open
+      act(() => {
+        component.unmount();
+        // reset afterwards
+        Router.navigate("/");
+      });
+    });
+
+    it("labels keyDown .item--labels [menu] Tab so ignore", () => {
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const labels = component.queryByTestId(
+        "menu-detail-view-labels"
+      ) as HTMLElement;
+      expect(labels).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(labels, { key: "Tab" });
+      });
+
+      const urlObject = new URLPath().StringToIUrl(window.location.search);
+
+      expect(urlObject.details).toBeFalsy();
+
+      // don't keep any menus open
+      act(() => {
+        component.unmount();
+        // reset afterwards
+        Router.navigate("/");
+      });
+    });
+
+    it("labels keyDown .item--labels [menu] Enter", () => {
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const labels = component.queryByTestId(
+        "menu-detail-view-labels"
+      ) as HTMLElement;
+      expect(labels).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(labels, { key: "Enter" });
       });
 
       const urlObject = new URLPath().StringToIUrl(window.location.search);
@@ -427,6 +541,66 @@ describe("MenuDetailView", () => {
       });
     });
 
+    it("[menu detail] move keyDown tab so ignore", () => {
+      const moveModal = jest
+        .spyOn(ModalMoveFile, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const move = component.queryByTestId("move") as HTMLElement;
+      expect(move).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(move, { key: "Tab" });
+      });
+
+      expect(moveModal).toBeCalledTimes(0);
+
+      // reset afterwards
+      act(() => {
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("[menu detail] move keyDown enter", () => {
+      const moveModal = jest
+        .spyOn(ModalMoveFile, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const move = component.queryByTestId("move") as HTMLElement;
+      expect(move).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(move, { key: "Enter" });
+      });
+
+      expect(moveModal).toBeCalledTimes(1);
+
+      // reset afterwards
+      act(() => {
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
     it("rename click", () => {
       const renameModal = jest
         .spyOn(ModalDetailviewRenameFile, "default")
@@ -454,13 +628,132 @@ describe("MenuDetailView", () => {
       });
     });
 
-    it("trash click to trash", () => {
+    it("rename keyDown tab so ignore", () => {
+      const renameModal = jest
+        .spyOn(ModalDetailviewRenameFile, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const rename = component.queryByTestId("rename") as HTMLElement;
+      expect(rename).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(rename, { key: "Tab" });
+      });
+
+      expect(renameModal).toBeCalledTimes(0);
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("rename keyDown enter so continue", () => {
+      const renameModal = jest
+        .spyOn(ModalDetailviewRenameFile, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const rename = component.queryByTestId("rename") as HTMLElement;
+      expect(rename).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(rename, { key: "Enter" });
+      });
+
+      expect(renameModal).toBeCalled();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("trash keyDown to trash so tab so skip", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       const spy = jest
         .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const trash = component.queryByTestId("trash") as HTMLElement;
+      expect(trash).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(trash, { key: "Tab" });
+      });
+
+      expect(spy).toBeCalledTimes(0);
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("trash keyDown to trash enter continue", () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const spy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const trash = component.queryByTestId("trash") as HTMLElement;
+      expect(trash).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(trash, { key: "Enter" });
+      });
+
+      expect(spy).toBeCalledTimes(1);
+      expect(spy).toBeCalledWith(
+        new UrlQuery().UrlMoveToTrashApi(),
+        "f=%2Ftest%2Fimage.jpg"
+      );
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("trash keyDown to trash", () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const spy = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(
@@ -574,6 +867,117 @@ describe("MenuDetailView", () => {
       act(() => {
         component.unmount();
         jest.useRealTimers();
+      });
+    });
+
+    it("press click menu-detail-view-close-details button", () => {
+      Router.navigate("/?details=true");
+
+      const updateState = {
+        ...state,
+        fileIndexItem: {
+          ...state.fileIndexItem
+        }
+      };
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      expect(Router.state.location.search).toBe("?details=true");
+
+      const closeButton = component.queryByTestId(
+        "menu-detail-view-close-details"
+      ) as HTMLElement;
+      expect(closeButton).toBeTruthy();
+
+      closeButton?.click();
+
+      // act(() => {
+      //   fireEvent.keyDown(closeButton, { key: "Enter" });
+      // });
+
+      expect(Router.state.location.search).toBe("?details=false");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
+      });
+    });
+
+    it("press keyDown enter menu-detail-view-close-details button", () => {
+      Router.navigate("/?details=true");
+
+      const updateState = {
+        ...state,
+        fileIndexItem: {
+          ...state.fileIndexItem
+        }
+      };
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      expect(Router.state.location.search).toBe("?details=true");
+
+      const closeButton = component.queryByTestId(
+        "menu-detail-view-close-details"
+      ) as HTMLElement;
+      expect(closeButton).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(closeButton, { key: "Enter" });
+      });
+
+      expect(Router.state.location.search).toBe("?details=false");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
+      });
+    });
+
+    it("press keyDown tab skip menu-detail-view-close-details button so skips", () => {
+      Router.navigate("/?details=true");
+
+      const updateState = {
+        ...state,
+        fileIndexItem: {
+          ...state.fileIndexItem
+        }
+      };
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      expect(Router.state.location.search).toBe("?details=true");
+
+      const closeButton = component.queryByTestId(
+        "menu-detail-view-close-details"
+      ) as HTMLElement;
+      expect(closeButton).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(closeButton, { key: "Tab" });
+      });
+
+      // keep the same
+      expect(Router.state.location.search).toBe("?details=true");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
       });
     });
   });

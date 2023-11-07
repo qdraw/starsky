@@ -76,7 +76,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   } as ISidebarUpdate);
 
   // Add/Hide disabled state
-  const [isInputEnabled, setInputEnabled] = useState(false);
+  const [inputEnabled, setInputEnabled] = useState(false);
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
@@ -217,7 +217,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         contentEditable={!state.isReadOnly && select.length !== 0}
       ></FormControl>
 
-      {isInputEnabled && select.length !== 0 ? (
+      {inputEnabled && select.length !== 0 ? (
         <button
           className="btn btn--info"
           data-test="overwrite"
@@ -230,7 +230,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
           {MessageOverwriteName}
         </button>
       )}
-      {isInputEnabled && select.length !== 0 ? (
+      {inputEnabled && select.length !== 0 ? (
         <button
           data-test="add"
           className="btn btn--default"

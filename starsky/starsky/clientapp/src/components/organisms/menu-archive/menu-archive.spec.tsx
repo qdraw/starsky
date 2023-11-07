@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
@@ -14,6 +14,7 @@ import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as DropArea from "../../atoms/drop-area/drop-area";
 import * as Link from "../../atoms/link/link";
+import * as MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import * as ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import * as ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
 import * as ModalArchiveSynchronizeManually from "../modal-archive-synchronize-manually/modal-archive-synchronize-manually";
@@ -57,7 +58,67 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
+    it("click on select button and change url", () => {
+      Router.navigate("/");
+
+      const component = render(<MenuArchive />);
+
+      const selectButton = screen.getByTestId("menu-item-select");
+      expect(Router.state.location.search).toBe("");
+
+      expect(selectButton).toBeTruthy();
+
+      selectButton?.click();
+
+      expect(Router.state.location.search).toBe("?select=");
+
+      // and clean
+      component.unmount();
+    });
+
+    it("keyDown Tab on select button but skip", () => {
+      Router.navigate("/");
+
+      const component = render(<MenuArchive />);
+
+      const selectButton = screen.getByTestId("menu-item-select");
+      expect(Router.state.location.search).toBe("");
+
+      expect(selectButton).toBeTruthy();
+
+      fireEvent.keyDown(selectButton, {
+        key: "Tab"
+      });
+
+      expect(Router.state.location.search).toBe("");
+
+      // and clean
+      component.unmount();
+    });
+
+    it("keyDown Enter on select button and change url", () => {
+      Router.navigate("/");
+
+      const component = render(<MenuArchive />);
+
+      const selectButton = screen.getByTestId("menu-item-select");
+      expect(Router.state.location.search).toBe("");
+
+      expect(selectButton).toBeTruthy();
+
+      fireEvent.keyDown(selectButton, {
+        key: "Enter"
+      });
+
+      expect(Router.state.location.search).toBe("?select=");
+
+      // and clean
+      component.unmount();
+    });
+
     it("[menu archive] check if on click the hamburger opens", () => {
+      Router.navigate("/");
+
       const component = render(<MenuArchive />);
 
       const hamburger = component.getByTestId("hamburger");
@@ -174,6 +235,93 @@ describe("MenuArchive", () => {
       await mkdir?.click();
 
       expect(mkdirModalSpy).toBeCalled();
+
+      component.unmount();
+    });
+
+    it("[archive] menu keyDown tab mkdir so skip", async () => {
+      jest.spyOn(React, "useContext").mockReset();
+
+      Router.navigate("/");
+
+      const state = {
+        subPath: "/",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const contextValues = { state, dispatch: jest.fn() };
+
+      const mkdirModalSpy = jest
+        .spyOn(ModalArchiveMkdir, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      const component = render(<MenuArchive>t</MenuArchive>);
+
+      const mkdir = screen.getByTestId("mkdir");
+
+      // need async
+      await fireEvent.keyDown(mkdir, {
+        key: "Tab"
+      });
+
+      expect(mkdirModalSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
+    it("[archive] menu keyDown enter mkdir", async () => {
+      jest.spyOn(React, "useContext").mockReset();
+
+      Router.navigate("/");
+
+      const state = {
+        subPath: "/",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const contextValues = { state, dispatch: jest.fn() };
+
+      const mkdirModalSpy = jest
+        .spyOn(ModalArchiveMkdir, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      const component = render(<MenuArchive>t</MenuArchive>);
+
+      const mkdir = screen.getByTestId("mkdir");
+
+      // need async
+      await fireEvent.keyDown(mkdir, {
+        key: "Enter"
+      });
+
+      expect(mkdirModalSpy).toBeCalledTimes(1);
 
       component.unmount();
     });
@@ -332,6 +480,110 @@ describe("MenuArchive", () => {
       });
 
       expect(renameModalSpy).toBeCalled();
+
+      component.unmount();
+
+      Router.navigate("/");
+    });
+
+    it("[archive] display options keyDown (default menu)", () => {
+      jest
+        .spyOn(Link, "default")
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>);
+
+      Router.navigate("/?f=/test");
+
+      const state = {
+        subPath: "/test",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const contextValues = { state, dispatch: jest.fn() };
+
+      const renameModalSpy = jest
+        .spyOn(ModalDisplayOptions, "default")
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      jest
+        .spyOn(React, "useContext")
+        .mockReset()
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      const component = render(<MenuArchive />);
+
+      const displayOptions = screen.getByTestId("display-options");
+      expect(displayOptions).not.toBeNull();
+
+      act(() => {
+        fireEvent.keyDown(displayOptions, { key: "Enter" });
+      });
+
+      expect(renameModalSpy).toBeCalled();
+
+      component.unmount();
+
+      Router.navigate("/");
+    });
+
+    it("[archive] display options keyDown tab so ignore (default menu)", () => {
+      jest
+        .spyOn(Link, "default")
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>);
+
+      Router.navigate("/?f=/test");
+
+      const state = {
+        subPath: "/test",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const contextValues = { state, dispatch: jest.fn() };
+
+      const renameModalSpy = jest
+        .spyOn(ModalDisplayOptions, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      jest
+        .spyOn(React, "useContext")
+        .mockReset()
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      const component = render(<MenuArchive />);
+
+      const displayOptions = screen.getByTestId("display-options");
+      expect(displayOptions).not.toBeNull();
+
+      act(() => {
+        // should ignore
+        fireEvent.keyDown(displayOptions, { key: "Tab" });
+      });
+
+      expect(renameModalSpy).toBeCalledTimes(0);
 
       component.unmount();
 
@@ -825,6 +1077,52 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
+    it("[archive] menu click publish", () => {
+      Router.navigate("/?select=test1.jpg");
+
+      const state = {
+        subPath: "/",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const contextValues = { state, dispatch: jest.fn() };
+
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
+
+      jest
+        .spyOn(React, "useContext")
+        .mockReset()
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      const component = render(<MenuArchive />);
+
+      expect(Router.state.location.search).toBe("?select=test1.jpg");
+
+      const selectFurther = screen.queryByTestId("select-further");
+      expect(selectFurther).not.toBeNull();
+
+      act(() => {
+        selectFurther?.click();
+      });
+
+      expect(Router.state.location.search).toBe(
+        "?select=test1.jpg&sidebar=true"
+      );
+
+      component.unmount();
+    });
+
     it("readonly - menu click mkdir", () => {
       jest.spyOn(React, "useContext").mockReset();
 
@@ -853,12 +1151,8 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        });
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
       const component = render(<MenuArchive />);
 
@@ -894,13 +1188,46 @@ describe("MenuArchive", () => {
           return <></>;
         });
 
-      jest.spyOn(React, "useContext").mockImplementationOnce(() => {
-        return contextValues;
-      });
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues);
 
       const component = render(<MenuArchive />);
 
       expect(dropAreaSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
+    it("NavContainer MenuSearchBar callback does change state [MenuArchive]", () => {
+      jest.spyOn(MenuSearchBar, "default").mockImplementationOnce((prop) => {
+        if (prop.callback) {
+          prop.callback("test");
+        }
+        return <>test</>;
+      });
+      const state = {
+        subPath: "/",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const contextValues = { state, dispatch: jest.fn() };
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      const component = render(<MenuArchive />);
+
+      const navOpen = screen.queryByTestId("nav-open") as HTMLDivElement;
+
+      expect(navOpen).toBeTruthy();
 
       component.unmount();
     });

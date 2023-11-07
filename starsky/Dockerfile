@@ -60,7 +60,7 @@ RUN \
 
 RUN \
     if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-        echo $TARGETPLATFORM ; \
+        echo "$TARGETPLATFORM" ; \
         dotnet publish -c release -o out --runtime linux-x64 --self-contained false --no-restore ; \
     elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
         dotnet publish -c release -o out --runtime linux-arm64 --self-contained false --no-restore ; \

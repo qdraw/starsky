@@ -18,6 +18,10 @@ import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
+import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
+import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
+import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
+import { MenuSelectFurther } from "../../molecules/menu-select-further/menu-select-further";
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
@@ -39,18 +43,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   const language = new Language(settings.language);
 
   // Content
-  const MessageNoneSelected = language.text(
-    "Niets geselecteerd",
-    "Nothing selected"
-  );
-  const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
   const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageSelectAll = language.text("Alles selecteren", "Select all");
-  const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
-  const MessageSelectFurther = language.text(
-    "Verder selecteren",
-    "Select further"
-  );
 
   // Selection
   const history = useLocation();
@@ -121,30 +114,12 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          {select && select.length === 0 ? (
-            <button
-              data-test="selected-0"
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {MessageNoneSelected}
-            </button>
-          ) : null}
-          {select && select.length >= 1 ? (
-            <button
-              data-test={`selected-${select.length}`}
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {select.length} {MessageSelectPresentPerfect}
-            </button>
-          ) : null}
+          <MenuSelectCount
+            select={select}
+            removeSidebarSelection={removeSidebarSelection}
+          />
 
-          {/* te select button with checkbox*/}
+          {/* the select button with checkbox*/}
           {!select ? (
             <div
               className={
@@ -155,6 +130,9 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               onClick={() => {
                 removeSidebarSelection();
               }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
+              }}
             >
               {MessageSelectAction}
             </div>
@@ -162,7 +140,13 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
 
           {/* when selected */}
           {select ? (
-            <div className={"item item--labels"} onClick={() => toggleLabels()}>
+            <div
+              className={"item item--labels"}
+              onClick={() => toggleLabels()}
+              onKeyDown={(event) => {
+                event.key === "Enter" && toggleLabels();
+              }}
+            >
               Labels
             </div>
           ) : null}
@@ -181,13 +165,11 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               setEnableMoreMenu={setEnableMoreMenu}
               enableMoreMenu={enableMoreMenu}
             >
-              <li
-                tabIndex={0}
-                className="menu-option"
-                onClick={() => allSelection()}
-              >
-                {MessageSelectAll}
-              </li>
+              <MenuOptionSelectionAll
+                select={select}
+                state={state}
+                allSelection={allSelection}
+              />
             </MoreMenu>
           ) : null}
 
@@ -197,24 +179,18 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               setEnableMoreMenu={setEnableMoreMenu}
               enableMoreMenu={enableMoreMenu}
             >
-              {select.length === state.fileIndexItems.length ? (
-                <li
-                  data-test="undo-selection"
-                  className="menu-option"
-                  onClick={() => undoSelection()}
-                >
-                  {MessageUndoSelection}
-                </li>
-              ) : null}
-              {select.length !== state.fileIndexItems.length ? (
-                <li
-                  className="menu-option"
-                  data-test="select-all"
-                  onClick={() => allSelection()}
-                >
-                  {MessageSelectAll}
-                </li>
-              ) : null}
+              <MenuOptionSelectionUndo
+                select={select}
+                state={state}
+                undoSelection={undoSelection}
+              />
+
+              <MenuOptionSelectionAll
+                select={select}
+                state={state}
+                allSelection={allSelection}
+              />
+
               <MenuOption
                 isReadOnly={false}
                 testName="export"
@@ -245,20 +221,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
         </div>
       </header>
 
-      {select ? (
-        <div className="header header--sidebar header--border-left">
-          <div
-            className="item item--continue"
-            onClick={() => {
-              toggleLabels();
-            }}
-          >
-            {MessageSelectFurther}
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
+      <MenuSelectFurther select={select} toggleLabels={toggleLabels} />
     </>
   );
 };

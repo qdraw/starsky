@@ -95,7 +95,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
   const history = useLocation();
 
-  const [isDetails, setDetails] = React.useState(
+  const [details, setDetails] = React.useState(
     new URLPath().StringToIUrl(history.location.search).details
   );
   useEffect(() => {
@@ -127,7 +127,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
   function toggleLabels() {
     const urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.details = !isDetails;
+    urlObject.details = !details;
     setDetails(urlObject.details);
     setRecentEdited(false); // disable to avoid animation
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
@@ -384,7 +384,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
         setModalPublishOpen={setModalPublishOpen}
       />
 
-      <header className={GetHeaderClass(isDetails, isMarkedAsDeleted)}>
+      <header className={GetHeaderClass(details, isMarkedAsDeleted)}>
         <div className="wrapper">
           {/* in directory state aka no search */}
           {!isSearchQuery ? (
@@ -424,6 +424,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             onClick={() => {
               toggleLabels();
             }}
+            onKeyDown={(event) => {
+              event.key === "Enter" && toggleLabels();
+            }}
           >
             Labels
           </button>
@@ -439,10 +442,13 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               }
               data-test="export"
               onClick={() => setModalExportOpen(!isModalExportOpen)}
+              onKeyDown={(event) => {
+                event.key === "Enter" && setModalExportOpen(!isModalExportOpen);
+              }}
             >
               Download
             </li>
-            {!isDetails ? (
+            {!details ? (
               <li
                 tabIndex={0}
                 className="menu-option"
@@ -457,6 +463,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="move"
               onClick={() => setModalMoveFile(!isModalMoveFile)}
+              onKeyDown={(event) => {
+                event.key === "Enter" && setModalMoveFile(!isModalMoveFile);
+              }}
             >
               {MessageMove}
             </li>
@@ -465,6 +474,10 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="rename"
               onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
+              onKeyDown={(event) => {
+                event.key === "Enter" &&
+                  setModalRenameFileOpen(!isModalRenameFileOpen);
+              }}
             >
               {MessageRenameFileName}
             </li>
@@ -473,6 +486,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="trash"
               onClick={TrashFile}
+              onKeyDown={(event) => {
+                event.key === "Enter" && TrashFile();
+              }}
             >
               {!isMarkedAsDeleted
                 ? MessageMoveToTrash
@@ -508,12 +524,16 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
         </div>
       </header>
 
-      {isDetails ? (
+      {details ? (
         <div className="header header--sidebar">
           <div
             className="item item--close"
+            data-test="menu-detail-view-close-details"
             onClick={() => {
               toggleLabels();
+            }}
+            onKeyDown={(event) => {
+              event.key === "Enter" && toggleLabels();
             }}
           >
             {MessageCloseDetailScreenDialog}

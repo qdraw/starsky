@@ -1,4 +1,9 @@
-import { render, RenderResult, screen } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  RenderResult,
+  screen
+} from "@testing-library/react";
 import Modal from "./modal";
 
 describe("Modal", () => {
@@ -26,11 +31,33 @@ describe("Modal", () => {
       };
     }
 
-    it("modal-exit-button", () => {
+    it("modal-exit-button click", () => {
       const { handleExit, element } = renderModal();
 
       screen.queryAllByTestId("modal-exit-button")[0].click();
       expect(handleExit).toBeCalled();
+      element.unmount();
+    });
+
+    it("modal-exit-button keyDown tab ignores", () => {
+      const { handleExit, element } = renderModal();
+
+      const menuOption = screen.queryAllByTestId("modal-exit-button")[0];
+
+      fireEvent.keyDown(menuOption, { key: "Tab" });
+
+      expect(handleExit).toBeCalledTimes(0);
+      element.unmount();
+    });
+
+    it("modal-exit-button keyDown enter", () => {
+      const { handleExit, element } = renderModal();
+
+      const menuOption = screen.queryAllByTestId("modal-exit-button")[0];
+
+      fireEvent.keyDown(menuOption, { key: "Enter" });
+
+      expect(handleExit).toBeCalledTimes(1);
       element.unmount();
     });
 

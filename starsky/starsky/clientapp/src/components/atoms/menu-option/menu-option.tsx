@@ -11,6 +11,7 @@ interface IMenuOptionProps {
   setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// eslint-disable-next-line react/display-name
 const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
   ({
     localization,
@@ -24,6 +25,17 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
     const language = new Language(settings.language);
     const Message = language.key(localization);
 
+    function onClickHandler() {
+      if (isReadOnly) {
+        return;
+      }
+      // close menu
+      if (setEnableMoreMenu) {
+        setEnableMoreMenu(false);
+      }
+      set(!isSet);
+    }
+
     return (
       <>
         {
@@ -31,14 +43,9 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
             tabIndex={0}
             data-test={testName}
             className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-            onClick={() => {
-              if (!isReadOnly) {
-                // close menu
-                if (setEnableMoreMenu) {
-                  setEnableMoreMenu(false);
-                }
-                set(!isSet);
-              }
+            onClick={onClickHandler}
+            onKeyDown={(event) => {
+              event.key === "Enter" && onClickHandler();
             }}
           >
             {Message}

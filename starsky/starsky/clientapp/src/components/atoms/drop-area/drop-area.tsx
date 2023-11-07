@@ -34,7 +34,7 @@ const containsFiles = (event: DragEvent) => {
  * @param props Endpoints, settings to enable drag 'n drop, add extra classes
  */
 const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
-  const [dragActive, setDrag] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const [dragTarget, setDragTarget] = useState(
     document.createElement("span") as Element
   );
@@ -65,7 +65,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
    */
   const onDrop = (event: DragEvent) => {
     event.preventDefault();
-    setDrag(false);
+    setDragActive(false);
 
     if (!event.dataTransfer) return;
 
@@ -89,7 +89,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const onDragEnter = (event: DragEvent) => {
     event.preventDefault();
     if (!event.target || !containsFiles(event)) return;
-    setDrag(true);
+    setDragActive(true);
     setDragTarget(event.target as Element);
     setDropEffect(event);
   };
@@ -103,7 +103,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     event.preventDefault();
     if (!containsFiles(event) || (event.target as Element) !== dragTarget)
       return;
-    setDrag(false);
+    setDragActive(false);
   };
 
   /**
@@ -113,7 +113,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
     if (!containsFiles(event)) return;
-    setDrag(true);
+    setDragActive(true);
     setDropEffect(event);
   };
 

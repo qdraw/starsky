@@ -22,9 +22,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
 
   const [src, setSrc] = useState(props.fileHash);
 
-  const [alwaysLoadImage] = useState(
-    localStorage.getItem("alwaysLoadImage") === "true"
-  );
+  const alwaysLoadImage = localStorage.getItem("alwaysLoadImage") === "true";
 
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +43,8 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
 
   // to stop loading images after a url change
   const history = useLocation();
-  const [historyLocation] = useState(history.location.search);
+  const historyLocation = history.location.search;
+
   useEffect(() => {
     // use ?f only to support details
     // need to refresh

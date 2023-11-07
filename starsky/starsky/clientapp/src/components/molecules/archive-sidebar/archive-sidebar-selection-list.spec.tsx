@@ -1,4 +1,10 @@
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  screen
+} from "@testing-library/react";
 import {
   IFileIndexItem,
   newIFileIndexItemArray
@@ -58,6 +64,58 @@ describe("archive-sidebar-selection-list", () => {
       });
 
       expect(spy).toBeCalledTimes(1);
+
+      spy.mockClear();
+
+      component.unmount();
+    });
+
+    it("toggleSelection keyboard keyDown it hits", () => {
+      const component = render(
+        <ArchiveSidebarSelectionList fileIndexItems={items} />
+      );
+
+      const spy = jest.spyOn(URLPath.prototype, "toggleSelection");
+
+      const selectionList = screen.queryByTestId(
+        "sidebar-selection-list"
+      ) as HTMLElement;
+      const element = selectionList.children[0].querySelector(
+        ".close"
+      ) as HTMLElement;
+
+      act(() => {
+        const inputEvent = createEvent.keyDown(element, { key: "Enter" });
+        fireEvent(element, inputEvent);
+      });
+
+      expect(spy).toBeCalledTimes(1);
+
+      spy.mockClear();
+
+      component.unmount();
+    });
+
+    it("toggleSelection keyboard keyDown it ignores", () => {
+      const component = render(
+        <ArchiveSidebarSelectionList fileIndexItems={items} />
+      );
+
+      const spy = jest.spyOn(URLPath.prototype, "toggleSelection");
+
+      const selectionList = screen.queryByTestId(
+        "sidebar-selection-list"
+      ) as HTMLElement;
+      const element = selectionList.children[0].querySelector(
+        ".close"
+      ) as HTMLElement;
+
+      act(() => {
+        const inputEvent = createEvent.keyDown(element, { key: "Tab" });
+        fireEvent(element, inputEvent);
+      });
+
+      expect(spy).toBeCalledTimes(0);
 
       spy.mockClear();
 

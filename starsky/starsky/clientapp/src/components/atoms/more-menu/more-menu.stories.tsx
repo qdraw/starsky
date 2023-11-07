@@ -5,7 +5,15 @@ export default {
 };
 
 export const Default = () => {
-  return <MoreMenu setEnableMoreMenu={() => {}}>test</MoreMenu>;
+  return (
+    <MoreMenu
+      setEnableMoreMenu={() => {
+        alert("test");
+      }}
+    >
+      test
+    </MoreMenu>
+  );
 };
 
 Default.story = {

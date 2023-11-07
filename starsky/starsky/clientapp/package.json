@@ -168,7 +168,7 @@
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/ban-types": "warn",
       "no-case-declarations": "warn",
-      "react/display-name": "warn",
+      "react/display-name": "off",
       "react/prop-types": "warn",
       "@typescript-eslint/no-loss-of-precision": "warn",
       "react/react-in-jsx-scope": "off"

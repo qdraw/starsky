@@ -15,6 +15,9 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
+import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
+import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
+import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalForceDelete from "../modal-force-delete/modal-force-delete";
 import NavContainer from "../nav-container/nav-container";
 
@@ -32,13 +35,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
   // Content
   const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
-  const MessageNoneSelected = language.text(
-    "Niets geselecteerd",
-    "Nothing selected"
-  );
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
-  const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
   const MessageRestoreFromTrash = language.text(
     "Zet terug uit prullenmand",
     "Restore from Trash"
@@ -137,26 +134,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
             setHamburgerMenu={setHamburgerMenu}
           />
 
-          {select && select.length === 0 ? (
-            <button
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {MessageNoneSelected}
-            </button>
-          ) : null}
-          {select && select.length >= 1 ? (
-            <button
-              onClick={() => {
-                removeSidebarSelection();
-              }}
-              className="item item--first item--close"
-            >
-              {select.length} {MessageSelectPresentPerfect}
-            </button>
-          ) : null}
+          <MenuSelectCount
+            select={select}
+            removeSidebarSelection={removeSidebarSelection}
+          />
 
           {!select && state.fileIndexItems.length >= 1 ? (
             <div
@@ -164,6 +145,9 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               className="item item--select"
               onClick={() => {
                 removeSidebarSelection();
+              }}
+              onKeyDown={(event) => {
+                event.key === "Enter" && removeSidebarSelection();
               }}
             >
               {MessageSelectAction}
@@ -207,28 +191,26 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               setEnableMoreMenu={setEnableMoreMenu}
               enableMoreMenu={enableMoreMenu}
             >
-              {select.length === state.fileIndexItems.length ? (
-                <li
-                  data-test="undo-selection"
-                  className="menu-option"
-                  onClick={() => undoSelection()}
-                >
-                  {MessageUndoSelection}
-                </li>
-              ) : null}
-              {select.length !== state.fileIndexItems.length ? (
-                <li
-                  className="menu-option"
-                  data-test="select-all"
-                  onClick={() => allSelection()}
-                >
-                  {MessageSelectAll}
-                </li>
-              ) : null}
+              <MenuOptionSelectionUndo
+                select={select}
+                state={state}
+                undoSelection={undoSelection}
+              />
+
+              <MenuOptionSelectionAll
+                select={select}
+                state={state}
+                allSelection={allSelection}
+              />
+
               <li
                 className="menu-option"
                 data-test="restore-from-trash"
                 onClick={() => undoTrash()}
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  event.key === "Enter" && undoTrash();
+                }}
               >
                 {MessageRestoreFromTrash}
               </li>
@@ -236,6 +218,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
                 className="menu-option"
                 data-test="delete"
                 onClick={() => setModalDeleteOpen(true)}
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  event.key === "Enter" && setModalDeleteOpen(true);
+                }}
               >
                 {MessageDeleteImmediately}
               </li>

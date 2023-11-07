@@ -12,27 +12,27 @@ interface IMenuOptionMoveToTrashProps {
 
 const MenuOptionMoveFolderToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> =
   memo(({ isReadOnly, subPath, setEnableMoreMenu }) => {
-    const [isModalMoveFolderToTrashOpen, setModalMoveFolderToTrashOpen] =
+    const [modalMoveFolderToTrashOpen, setModalMoveFolderToTrashOpen] =
       useState(false);
 
     return (
       <>
         {/* Modal move folder to trash */}
-        {isModalMoveFolderToTrashOpen ? (
+        {modalMoveFolderToTrashOpen ? (
           <ModalMoveFolderToTrash
             handleExit={() => {
-              setModalMoveFolderToTrashOpen(!isModalMoveFolderToTrashOpen);
+              setModalMoveFolderToTrashOpen(!modalMoveFolderToTrashOpen);
             }}
             subPath={subPath}
             setIsLoading={() => {}}
-            isOpen={isModalMoveFolderToTrashOpen}
+            isOpen={modalMoveFolderToTrashOpen}
           />
         ) : null}
 
         <MenuOption
           isReadOnly={isReadOnly}
           testName="move-folder-to-trash"
-          isSet={isModalMoveFolderToTrashOpen}
+          isSet={modalMoveFolderToTrashOpen}
           set={setModalMoveFolderToTrashOpen}
           setEnableMoreMenu={setEnableMoreMenu}
           localization={localization.MessageMoveCurrentFolderToTrash}

@@ -31,7 +31,7 @@ export type PositionObject = {
  * @param param0:  IPanAndZoomImage
  */
 const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
-  const [isPanning, setPanning] = useState(false);
+  const [panning, setPanning] = useState(false);
   const [image, setImage] = useState({ width: 0, height: 0 } as ImageObject);
 
   const defaultPosition = {
@@ -66,12 +66,12 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
     };
     // for performance reasons the classes is kept in a function
     const mouseMove = (event: MouseEvent) => {
-      new OnMoveMouseTouchAction(isPanning, setPosition, position).mousemove(
+      new OnMoveMouseTouchAction(panning, setPosition, position).mousemove(
         event
       );
     };
     const touchMove = (event: TouchEvent) => {
-      new OnMoveMouseTouchAction(isPanning, setPosition, position).touchMove(
+      new OnMoveMouseTouchAction(panning, setPosition, position).touchMove(
         event
       );
     };
@@ -121,7 +121,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
 
   let className = "pan-zoom-image-container";
   if (position.z !== 1) {
-    className = !isPanning
+    className = !panning
       ? "pan-zoom-image-container grab"
       : "pan-zoom-image-container is-panning";
   }

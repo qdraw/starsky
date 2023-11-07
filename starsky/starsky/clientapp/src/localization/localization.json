@@ -127,7 +127,31 @@
     "en": "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'",
     "nl": "Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'"
   },
-  "temp": {
+  "MessageSelectPresentPerfect": {
+    "en": "selected",
+    "nl": "geselecteerd"
+  },
+  "MessageSelectAction": {
+    "en": "Selecteer",
+    "nl": "Select"
+  },
+  "MessageNoneSelected": {
+    "en": "Nothing selected",
+    "nl": "Niets geselecteerd"
+  },
+  "MessageUndoSelection": {
+    "en": "Undo selection",
+    "nl": "Undo selectie"
+  },
+  "MessageSelectAll": {
+    "en": "Select all",
+    "nl": "Alles selecteren"
+  },
+  "MessageSelectFurther": {
+    "en": "Select further",
+    "nl": "Verder selecteren"
+  },
+  "temp1": {
     "en": "",
     "nl": ""
   }
