@@ -17,7 +17,9 @@ import { URLPath } from "../shared/url-path";
  * Used for search and list of files
  * @param detailview Detailview content
  */
-export default function DetailViewContextWrapper(detailview: IDetailView) {
+export default function DetailViewContextWrapper(
+  detailview: Readonly<IDetailView>
+) {
   return (
     <DetailViewContextProvider>
       <DetailViewWrapper {...detailview} />
@@ -25,7 +27,7 @@ export default function DetailViewContextWrapper(detailview: IDetailView) {
   );
 }
 
-function DetailViewWrapper(detailViewProp: IDetailView) {
+function DetailViewWrapper(detailViewProp: Readonly<IDetailView>) {
   const { state, dispatch } = useDetailViewContext();
 
   // Gets the content of the props and inject into the state

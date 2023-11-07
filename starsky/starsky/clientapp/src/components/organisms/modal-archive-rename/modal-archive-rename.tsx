@@ -43,14 +43,14 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
   const [error, setError] = useState(useErrorHandler(null));
 
   // when you are waiting on the API
-  const [loading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // The Updated that is send to the api
   const [folderName, setFolderName] = useState(
     new FileExtensions().GetFileName(props.subPath)
   );
 
-  const [isFormEnabled, setFormEnabled] = useState(true);
+  const [isFormEnabled, setIsFormEnabled] = useState(true);
 
   // to know where you are
   const history = useLocation();
@@ -94,7 +94,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
    */
   async function pushRenameChange() {
     // Show icon with load ++ disable forms
-    setFormEnabled(false);
+    setIsFormEnabled(false);
     setIsLoading(true);
 
     // subPath style including parent folder
@@ -124,7 +124,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
       setError(MessageGeneralError);
       // and renewable
       setIsLoading(false);
-      setFormEnabled(true);
+      setIsFormEnabled(true);
       return;
     }
 
@@ -175,13 +175,13 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
             disabled={
               new FileExtensions().GetFileName(props.subPath) === folderName ||
               !!error ||
-              loading
+              isLoading
             }
             data-test="modal-archive-rename-btn-default"
             className="btn btn--default"
             onClick={pushRenameChange}
           >
-            {loading ? "Loading..." : MessageRenameFolder}
+            {isLoading ? "Loading..." : MessageRenameFolder}
           </button>
         </div>
       </div>

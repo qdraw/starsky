@@ -446,7 +446,7 @@ function updateCache(stateLocal: IArchiveProps): IArchiveProps {
   return stateLocal;
 }
 
-function ArchiveContextProvider({ children }: ReactNodeProps) {
+function ArchiveContextProvider({ children }: Readonly<ReactNodeProps>) {
   // [A]
   const [state, dispatch] = React.useReducer(archiveReducer, initialState);
   const value1 = React.useMemo(() => ({ state, dispatch }), [state, dispatch]);

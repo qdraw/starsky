@@ -53,14 +53,6 @@
   }
 }
 
-/* .colorclass.colorclass--filter .sort:hover {
-  background-color: #90a4ae;
-}
-
-.colorclass.colorclass--filter .sort:hover .icon {
-  background-color: white;
-} */
-
 .colorclass.colorclass--filter .sort .icon {
   mask-image: url("../images/baseline-sort-24px.svg");
   mask-size: 24px 24px;
@@ -186,7 +178,6 @@
 /* Orange */
 .colorclass > .btn.colorclass--3.active {
   background-color: #ffb74d;
-  /* background-color: #FFE0B2; */
 }
 
 .colorclass > .btn.colorclass--3 {
@@ -196,7 +187,6 @@
 /* yellow */
 .colorclass > .btn.colorclass--4.active {
   background-color: #ffeb3b;
-  /* background-color: #FFF59D; */
 }
 
 .colorclass > .btn.colorclass--4 {
@@ -230,7 +220,6 @@
 
 /* grey = 8*/
 .colorclass > .btn.colorclass--8.active {
-  /* background-color: #455A64; */
   background-color: #546e7a;
 }
 .colorclass > .btn.colorclass--8 {

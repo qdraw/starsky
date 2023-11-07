@@ -11,7 +11,6 @@ import SwitchButton from "../../atoms/switch-button/switch-button";
 interface IModalDisplayOptionsProps {
   isOpen: boolean;
   handleExit: Function;
-  parentFolder?: string;
 }
 
 const ModalDisplayOptions: React.FunctionComponent<
@@ -81,12 +80,12 @@ const ModalDisplayOptions: React.FunctionComponent<
     setIsAlwaysLoadImage(!isAlwaysLoadImage);
   }
 
-  const [isUseSockets, setUseSockets] = React.useState(
+  const [isUseSockets, setIsUseSockets] = React.useState(
     localStorage.getItem("use-sockets") === "false"
   );
 
   function toggleSockets() {
-    setUseSockets(!isUseSockets);
+    setIsUseSockets(!isUseSockets);
     if (isUseSockets) {
       localStorage.removeItem("use-sockets");
       return;

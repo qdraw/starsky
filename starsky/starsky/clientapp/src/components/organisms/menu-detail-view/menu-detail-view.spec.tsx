@@ -474,15 +474,69 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      //       const item = component.find('[data-test="labels"]');
       const labels = component.queryByTestId("labels");
       expect(labels).toBeTruthy();
-      labels?.click();
+
+      act(() => {
+        labels?.click();
+      });
 
       const urlObject = new URLPath().StringToIUrl(
         Router.state.location.search
       );
       expect(urlObject.details).toBeTruthy();
+
+      // reset afterwards
+      act(() => {
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("labels keyDown enter (in MoreMenu)", () => {
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const labels = component.queryByTestId("labels") as HTMLElement;
+      expect(labels).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(labels, { key: "Enter" });
+      });
+
+      const urlObject = new URLPath().StringToIUrl(
+        Router.state.location.search
+      );
+      expect(urlObject.details).toBeTruthy();
+
+      // reset afterwards
+      act(() => {
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("labels keyDown tab so skip (in MoreMenu)", () => {
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={state} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      const labels = component.queryByTestId("labels") as HTMLElement;
+      expect(labels).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(labels, { key: "Tab" });
+      });
+
+      const urlObject = new URLPath().StringToIUrl(
+        Router.state.location.search
+      );
+      expect(urlObject.details).toBeFalsy();
 
       // reset afterwards
       act(() => {
@@ -502,6 +556,7 @@ describe("MenuDetailView", () => {
 
       const goToParentFolder = component.queryByTestId("go-to-parent-folder");
       expect(goToParentFolder).toBeTruthy();
+
       goToParentFolder?.click();
 
       expect(Router.state.location.search).toBe("?f=/test");
@@ -870,6 +925,90 @@ describe("MenuDetailView", () => {
       });
     });
 
+    it("rotate keyDown tab so skip", () => {
+      jest.useFakeTimers();
+      jest.spyOn(global, "setTimeout");
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const spyPost = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView
+            state={{
+              ...state,
+              fileIndexItem: {
+                ...state.fileIndexItem,
+                collectionPaths: [".jpg", "t.arw"]
+              },
+              collections: true
+            }}
+            dispatch={jest.fn()}
+          />
+        </MemoryRouter>
+      );
+
+      const rotate = component.queryByTestId("rotate") as HTMLElement;
+
+      act(() => {
+        fireEvent.keyDown(rotate, { key: "Tab" });
+      });
+
+      expect(rotate).toBeTruthy();
+
+      expect(spyPost).toBeCalledTimes(0);
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("rotate keyDown enter", () => {
+      jest.useFakeTimers();
+      jest.spyOn(global, "setTimeout");
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const spyPost = jest
+        .spyOn(FetchPost, "default")
+        .mockReset()
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView
+            state={{
+              ...state,
+              fileIndexItem: {
+                ...state.fileIndexItem,
+                collectionPaths: [".jpg", "t.arw"]
+              },
+              collections: true
+            }}
+            dispatch={jest.fn()}
+          />
+        </MemoryRouter>
+      );
+
+      const rotate = component.queryByTestId("rotate") as HTMLElement;
+
+      act(() => {
+        fireEvent.keyDown(rotate, { key: "Enter" });
+      });
+
+      expect(rotate).toBeTruthy();
+
+      expect(spyPost).toBeCalledTimes(1);
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
     it("press click menu-detail-view-close-details button", () => {
       Router.navigate("/?details=true");
 
@@ -894,10 +1033,6 @@ describe("MenuDetailView", () => {
       expect(closeButton).toBeTruthy();
 
       closeButton?.click();
-
-      // act(() => {
-      //   fireEvent.keyDown(closeButton, { key: "Enter" });
-      // });
 
       expect(Router.state.location.search).toBe("?details=false");
 

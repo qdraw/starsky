@@ -70,7 +70,9 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     "Profile setting: {publishProfileNames} contains filepath errors"
   );
 
-  const [isProcessing, setProcessing] = React.useState(ProcessingState.default);
+  const [isProcessing, setIsProcessing] = React.useState(
+    ProcessingState.default
+  );
   const [createZipKey, setCreateZipKey] = React.useState("");
   const [itemName, setItemName] = React.useState("");
   const [existItemName, setExistItemName] = React.useState(false);
@@ -80,7 +82,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     setExistItemName(false);
 
     if (!props.select) {
-      setProcessing(ProcessingState.fail);
+      setIsProcessing(ProcessingState.fail);
       return;
     }
 
@@ -93,7 +95,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     bodyParams.set("publishProfileName", publishProfileName);
     bodyParams.set("force", "true");
 
-    setProcessing(ProcessingState.server);
+    setIsProcessing(ProcessingState.server);
 
     const zipKeyResult = await FetchPost(
       new UrlQuery().UrlPublishCreate(),
@@ -101,11 +103,11 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     );
 
     if (zipKeyResult.statusCode !== 200 || !zipKeyResult.data) {
-      setProcessing(ProcessingState.fail);
+      setIsProcessing(ProcessingState.fail);
       return;
     }
     setCreateZipKey(zipKeyResult.data);
-    await ExportIntervalUpdate(zipKeyResult.data, setProcessing);
+    await ExportIntervalUpdate(zipKeyResult.data, setIsProcessing);
   }
 
   const allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), "get")
@@ -119,7 +121,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
   useInterval(async () => {
     if (isProcessing !== ProcessingState.server) return;
-    await ExportIntervalUpdate(createZipKey, setProcessing);
+    await ExportIntervalUpdate(createZipKey, setIsProcessing);
   }, 9000);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
@@ -225,7 +227,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
           <>
             {MessageGenericExportFail} <br />
             <button
-              onClick={() => setProcessing(ProcessingState.default)}
+              onClick={() => setIsProcessing(ProcessingState.default)}
               className="btn btn--info"
               data-test="publish-retry-export-fail"
             >

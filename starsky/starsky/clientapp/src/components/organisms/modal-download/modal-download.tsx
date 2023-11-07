@@ -57,12 +57,14 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     "One moment please"
   );
 
-  const [isProcessing, setProcessing] = React.useState(ProcessingState.default);
+  const [isProcessing, setIsProcessing] = React.useState(
+    ProcessingState.default
+  );
   const [createZipKey, setCreateZipKey] = React.useState("");
 
   async function postZip(isThumbnail: boolean) {
     if (!props.select) {
-      setProcessing(ProcessingState.fail);
+      setIsProcessing(ProcessingState.fail);
       return;
     }
     /*
@@ -80,7 +82,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     bodyParams.set("json", "true");
     bodyParams.set("thumbnail", isThumbnail.toString());
     bodyParams.set("collections", props.collections.toString());
-    setProcessing(ProcessingState.server);
+    setIsProcessing(ProcessingState.server);
 
     const zipKeyResult = await FetchPost(
       new UrlQuery().UrlExportPostZipApi(),
@@ -88,16 +90,16 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     );
 
     if (zipKeyResult.statusCode !== 200 || !zipKeyResult.data) {
-      setProcessing(ProcessingState.fail);
+      setIsProcessing(ProcessingState.fail);
       return;
     }
     setCreateZipKey(zipKeyResult.data);
-    await ExportIntervalUpdate(zipKeyResult.data, setProcessing);
+    await ExportIntervalUpdate(zipKeyResult.data, setIsProcessing);
   }
 
   useInterval(async () => {
     if (isProcessing !== ProcessingState.server) return;
-    await ExportIntervalUpdate(createZipKey, setProcessing);
+    await ExportIntervalUpdate(createZipKey, setIsProcessing);
   }, 3000);
 
   const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] =

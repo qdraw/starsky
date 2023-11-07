@@ -31,6 +31,7 @@ import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-det
 import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
+import { GoToParentFolder } from "./shared/go-to-parent-folder";
 
 export interface MenuDetailViewProps {
   state: IDetailView;
@@ -88,10 +89,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     "Rotatie naar rechts",
     "Rotation to the right"
   );
-  const MessageGoToParentFolder = language.text(
-    "Ga naar bovenliggende map",
-    "Go to parent folder"
-  );
 
   const history = useLocation();
 
@@ -112,56 +109,56 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   }, [history.location.search]);
 
   /* show marker with 'Saved' */
-  const [isRecentEdited, setRecentEdited] = React.useState(
+  const [isRecentEdited, setIsRecentEdited] = React.useState(
     IsEditedNow(state?.fileIndexItem?.lastEdited)
   );
   useEffect(() => {
     if (!state?.fileIndexItem?.lastEdited) return;
     const isEditedNow = IsEditedNow(state.fileIndexItem.lastEdited);
     if (!isEditedNow) {
-      setRecentEdited(false);
+      setIsRecentEdited(false);
       return;
     }
-    setRecentEdited(isEditedNow);
+    setIsRecentEdited(isEditedNow);
   }, [state?.fileIndexItem?.lastEdited]);
 
   function toggleLabels() {
     const urlObject = new URLPath().StringToIUrl(history.location.search);
     urlObject.details = !details;
     setDetails(urlObject.details);
-    setRecentEdited(false); // disable to avoid animation
+    setIsRecentEdited(false); // disable to avoid animation
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(
+  const [isMarkedAsDeleted, setIsMarkedAsDeleted] = React.useState(
     state?.fileIndexItem?.status === IExifStatus.Deleted
   );
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
 
   /* only update when the state is changed */
   useEffect(() => {
-    setMarkedAsDeleted(state.fileIndexItem.status === IExifStatus.Deleted);
+    setIsMarkedAsDeleted(state.fileIndexItem.status === IExifStatus.Deleted);
   }, [state.fileIndexItem.status, history.location.search]);
 
-  const [isSourceMissing, setSourceMissing] = React.useState(
+  const [isSourceMissing, setIsSourceMissing] = React.useState(
     state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing
   );
 
   useEffect(() => {
-    setSourceMissing(
+    setIsSourceMissing(
       state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing
     );
-    setReadOnly(
+    setIsReadOnly(
       state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing
     );
   }, [state.fileIndexItem.status, history.location.search]);
 
   /* only update when the state is changed */
-  const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
+  const [isReadOnly, setIsReadOnly] = React.useState(state.isReadOnly);
   useEffect(() => {
     if (state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing)
       return;
-    setReadOnly(state.isReadOnly);
+    setIsReadOnly(state.isReadOnly);
   }, [state.isReadOnly, state.fileIndexItem.status]);
 
   // preloading icon
@@ -320,33 +317,11 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     TrashFile();
   });
 
-  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
-  const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
-  const [isModalMoveFile, setModalMoveFile] = React.useState(false);
-  const [isModalPublishOpen, setModalPublishOpen] = useState(false);
-
-  const goToParentFolderJSX: React.JSX.Element | null = isSearchQuery ? (
-    <li
-      className="menu-option"
-      data-test="go-to-parent-folder"
-      onClick={() =>
-        history.navigate(
-          new UrlQuery().updateFilePathHash(
-            history.location.search,
-            state.fileIndexItem.parentDirectory,
-            true
-          ),
-          {
-            state: {
-              filePath: state.fileIndexItem.filePath
-            } as INavigateState
-          }
-        )
-      }
-    >
-      {MessageGoToParentFolder}
-    </li>
-  ) : null;
+  const [isModalExportOpen, setIsModalExportOpen] = React.useState(false);
+  const [isModalRenameFileOpen, setIsModalRenameFileOpen] =
+    React.useState(false);
+  const [isModalMoveFile, setIsModalMoveFile] = React.useState(false);
+  const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);
 
   return (
     <>
@@ -356,7 +331,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       {isModalExportOpen && state && !isSourceMissing ? (
         <ModalDownload
           collections={false}
-          handleExit={() => setModalExportOpen(!isModalExportOpen)}
+          handleExit={() => setIsModalExportOpen(!isModalExportOpen)}
           select={[state.subPath]}
           isOpen={isModalExportOpen}
         />
@@ -364,7 +339,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       {isModalRenameFileOpen && state && !isReadOnly ? (
         <ModalDetailviewRenameFile
           state={state}
-          handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
+          handleExit={() => setIsModalRenameFileOpen(!isModalRenameFileOpen)}
           isOpen={isModalRenameFileOpen}
         />
       ) : null}
@@ -372,7 +347,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
         <ModalMoveFile
           selectedSubPath={state.fileIndexItem.filePath}
           parentDirectory={state.fileIndexItem.parentDirectory}
-          handleExit={() => setModalMoveFile(!isModalMoveFile)}
+          handleExit={() => setIsModalMoveFile(!isModalMoveFile)}
           isOpen={isModalMoveFile}
         />
       ) : null}
@@ -381,7 +356,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
         select={[state.fileIndexItem.fileName]}
         stateFileIndexItems={[state.fileIndexItem]}
         isModalPublishOpen={isModalPublishOpen}
-        setModalPublishOpen={setModalPublishOpen}
+        setModalPublishOpen={setIsModalPublishOpen}
       />
 
       <header className={GetHeaderClass(details, isMarkedAsDeleted)}>
@@ -434,16 +409,21 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             setEnableMoreMenu={setEnableMoreMenu}
             enableMoreMenu={enableMoreMenu}
           >
-            {goToParentFolderJSX}
+            <GoToParentFolder
+              isSearchQuery={isSearchQuery}
+              history={history}
+              state={state}
+            />
             <li
               tabIndex={0}
               className={
                 !isSourceMissing ? "menu-option" : "menu-option disabled"
               }
               data-test="export"
-              onClick={() => setModalExportOpen(!isModalExportOpen)}
+              onClick={() => setIsModalExportOpen(!isModalExportOpen)}
               onKeyDown={(event) => {
-                event.key === "Enter" && setModalExportOpen(!isModalExportOpen);
+                event.key === "Enter" &&
+                  setIsModalExportOpen(!isModalExportOpen);
               }}
             >
               Download
@@ -454,6 +434,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
                 className="menu-option"
                 data-test="labels"
                 onClick={toggleLabels}
+                onKeyDown={(event) => {
+                  event.key === "Enter" && toggleLabels();
+                }}
               >
                 Labels
               </li>
@@ -462,9 +445,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               tabIndex={0}
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="move"
-              onClick={() => setModalMoveFile(!isModalMoveFile)}
+              onClick={() => setIsModalMoveFile(!isModalMoveFile)}
               onKeyDown={(event) => {
-                event.key === "Enter" && setModalMoveFile(!isModalMoveFile);
+                event.key === "Enter" && setIsModalMoveFile(!isModalMoveFile);
               }}
             >
               {MessageMove}
@@ -473,10 +456,10 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               tabIndex={0}
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="rename"
-              onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
+              onClick={() => setIsModalRenameFileOpen(!isModalRenameFileOpen)}
               onKeyDown={(event) => {
                 event.key === "Enter" &&
-                  setModalRenameFileOpen(!isModalRenameFileOpen);
+                  setIsModalRenameFileOpen(!isModalRenameFileOpen);
               }}
             >
               {MessageRenameFileName}
@@ -510,6 +493,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="rotate"
               onClick={rotateImage90}
+              onKeyDown={(event) => {
+                event.key === "Enter" && rotateImage90();
+              }}
             >
               {MessageRotateToRight}
             </li>
@@ -517,7 +503,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               isReadOnly={false}
               testName="publish"
               isSet={isModalPublishOpen}
-              set={setModalPublishOpen}
+              set={setIsModalPublishOpen}
               localization={localization.MessagePublish}
             />
           </MoreMenu>

@@ -35,7 +35,6 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
   // Content
   const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageSelectAll = language.text("Alles selecteren", "Select all");
   const MessageRestoreFromTrash = language.text(
     "Zet terug uit prullenmand",
     "Restore from Trash"
@@ -105,7 +104,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     );
   }
 
-  const [isModalDeleteOpen, setModalDeleteOpen] = React.useState(false);
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = React.useState(false);
 
   return (
     <>
@@ -118,7 +117,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
           select={select}
           dispatch={dispatch}
           setIsLoading={setIsLoading}
-          handleExit={() => setModalDeleteOpen(!isModalDeleteOpen)}
+          handleExit={() => setIsModalDeleteOpen(!isModalDeleteOpen)}
         />
       ) : null}
 
@@ -175,13 +174,11 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               setEnableMoreMenu={setEnableMoreMenu}
               enableMoreMenu={enableMoreMenu}
             >
-              <li
-                className="menu-option"
-                data-test="select-all"
-                onClick={() => allSelection()}
-              >
-                {MessageSelectAll}
-              </li>
+              <MenuOptionSelectionAll
+                select={select}
+                state={state}
+                allSelection={allSelection}
+              />
             </MoreMenu>
           ) : null}
 
@@ -217,10 +214,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               <li
                 className="menu-option"
                 data-test="delete"
-                onClick={() => setModalDeleteOpen(true)}
+                onClick={() => setIsModalDeleteOpen(true)}
                 tabIndex={0}
                 onKeyDown={(event) => {
-                  event.key === "Enter" && setModalDeleteOpen(true);
+                  event.key === "Enter" && setIsModalDeleteOpen(true);
                 }}
               >
                 {MessageDeleteImmediately}

@@ -23,7 +23,9 @@ import { URLPath } from "../shared/url-path";
  * Used for search and list of files
  * @param archive the archive props
  */
-export default function ArchiveContextWrapper(archive: IArchiveProps) {
+export default function ArchiveContextWrapper(
+  archive: Readonly<IArchiveProps>
+) {
   return (
     <ArchiveContextProvider>
       <ArchiveWrapper {...archive} />
@@ -31,7 +33,7 @@ export default function ArchiveContextWrapper(archive: IArchiveProps) {
   );
 }
 
-function ArchiveWrapper(archive: IArchiveProps) {
+function ArchiveWrapper(archive: Readonly<IArchiveProps>) {
   const { state, dispatch } = React.useContext(ArchiveContext);
 
   /**

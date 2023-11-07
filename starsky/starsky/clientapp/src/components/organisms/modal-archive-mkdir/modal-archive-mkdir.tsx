@@ -51,7 +51,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
   const [error, setError] = useState(useErrorHandler(null));
 
   // when you are waiting on the API
-  const [loading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // The directory name to submit
   const [directoryName, setDirectoryName] = useState("");
@@ -59,7 +59,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
   // allow summit
   const [buttonState, setButtonState] = useState(false);
 
-  const [isFormEnabled, setFormEnabled] = useState(true);
+  const [isFormEnabled, setIsFormEnabled] = useState(true);
 
   function handleUpdateChange(
     event:
@@ -88,7 +88,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
 
   async function pushRenameChange() {
     // Show icon with load ++ disable forms
-    setFormEnabled(false);
+    setIsFormEnabled(false);
     setIsLoading(true);
 
     const newDirectorySubPath = `${state.subPath}/${directoryName}`;
@@ -110,7 +110,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
       );
       // and renewable
       setIsLoading(false);
-      setFormEnabled(true);
+      setIsFormEnabled(true);
       return;
     }
 
@@ -160,12 +160,12 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
           )}
 
           <button
-            disabled={!isFormEnabled || loading || !buttonState}
+            disabled={!isFormEnabled || isLoading || !buttonState}
             className="btn btn--default"
             data-test="modal-archive-mkdir-btn-default"
             onClick={pushRenameChange}
           >
-            {loading ? "Loading..." : MessageFeatureName}
+            {isLoading ? "Loading..." : MessageFeatureName}
           </button>
         </div>
       </div>

@@ -131,10 +131,10 @@ const AccountRegister: FunctionComponent = () => {
   const [displaySignInInstead, setDisplaySignInInstead] = React.useState(true);
 
   // readonly mode
-  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  const [isFormEnabled, setIsFormEnabled] = React.useState(true);
   useEffect(() => {
     FetchGet(new UrlQuery().UrlAccountRegisterStatus()).then((response) => {
-      setFormEnabled(response.statusCode !== 403);
+      setIsFormEnabled(response.statusCode !== 403);
       if (response.statusCode === 403) {
         setError(MessageRegistrationTurnedOff);
       }

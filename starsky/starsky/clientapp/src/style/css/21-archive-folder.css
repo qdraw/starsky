@@ -142,49 +142,41 @@ between 1 and 2 items
 /* geen/kleurloos */
 .list-image-box > .box-content.colorclass--0 .caption {
   border-top: #90a4ae solid 12px;
-  /* background-color: #CFD8DC; */
 }
 
 /* pink */
 .list-image-box > .box-content.colorclass--1 .caption {
   border-top: #f06292 solid 12px;
-  /* background-color: #F48FB1; */
 }
 
 /* red */
 .list-image-box > .box-content.colorclass--2 .caption {
   border-top: #ef5350 solid 12px;
-  /* background-color: #E57373; */
 }
 
 /* Orange */
 .list-image-box > .box-content.colorclass--3 .caption {
   border-top: #ffb74d solid 12px;
-  /* background-color: #FFE0B2; */
 }
 
 /* yellow */
 .list-image-box > .box-content.colorclass--4 .caption {
   border-top: #ffeb3b solid 12px;
-  /* background-color: #FFF59D; */
 }
 
 /* green */
 .list-image-box > .box-content.colorclass--5 .caption {
   border-top: #66bb6a solid 12px;
-  /* background-color: #C8E6C9; */
 }
 
 /* azure */
 .list-image-box > .box-content.colorclass--6 .caption {
   border-top: #26c6da solid 12px;
-  /* background-color: #B2EBF2; */
 }
 
 /* blue */
 .list-image-box > .box-content.colorclass--7 .caption {
   border-top: #5c6bc0 solid 12px;
-  /* background-color: #BBDEFB; */
 }
 
 /* grey = 8*/

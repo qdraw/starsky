@@ -54,7 +54,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
   const history = useLocation();
 
   // For the display
-  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  const [isFormEnabled, setIsFormEnabled] = React.useState(true);
   useEffect(() => {
     if (!state.fileIndexItem.status) return;
     switch (state.fileIndexItem.status) {
@@ -62,10 +62,10 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
       case IExifStatus.ReadOnly:
       case IExifStatus.ServerError:
       case IExifStatus.NotFoundSourceMissing:
-        setFormEnabled(false);
+        setIsFormEnabled(false);
         break;
       default:
-        setFormEnabled(true);
+        setIsFormEnabled(true);
         break;
     }
   }, [state.fileIndexItem.status]);
@@ -77,7 +77,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
   const [error, setError] = React.useState(useErrorHandler(null));
 
   // when you are waiting on the API
-  const [loading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   // The Updated that is send to the api
   const [fileName, setFileName] = React.useState(state.fileIndexItem.fileName);
@@ -115,7 +115,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
 
   async function pushRenameChange() {
     // Show icon with load ++ disable forms
-    setFormEnabled(false);
+    setIsFormEnabled(false);
     setIsLoading(true);
 
     const filePathAfterChange = state.fileIndexItem.filePath.replace(
@@ -141,7 +141,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
       setError(MessageGeneralError);
       // and renewable
       setIsLoading(false);
-      setFormEnabled(true);
+      setIsFormEnabled(true);
       return;
     }
 
@@ -190,14 +190,14 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
             disabled={
               state.fileIndexItem.fileName === fileName ||
               !isFormEnabled ||
-              loading ||
+              isLoading ||
               !buttonState
             }
             data-test="modal-detailview-rename-file-btn-default"
             className="btn btn--default"
             onClick={pushRenameChange}
           >
-            {loading ? "Loading..." : MessageRenameFileName}
+            {isLoading ? "Loading..." : MessageRenameFileName}
           </button>
         </div>
       </div>

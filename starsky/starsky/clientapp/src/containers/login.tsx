@@ -72,13 +72,13 @@ export const Login: React.FC<ILoginProps> = () => {
   const MessageCreateAccount = language.text("Account maken", "Create account");
 
   // We don't want to login twice
-  const [isLogin, setLogin] = React.useState(true);
+  const [isLogin, setIsLogin] = React.useState(true);
 
   const accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
 
   useEffect(() => {
     if (!accountStatus) return;
-    setLogin(accountStatus.statusCode === 401);
+    setIsLogin(accountStatus.statusCode === 401);
     new DocumentTitle().SetDocumentTitlePrefix(
       accountStatus.statusCode === 401 ? MessageLogin : MessageLogout
     );
@@ -155,75 +155,73 @@ export const Login: React.FC<ILoginProps> = () => {
       ) : null}
 
       {isLogin ? (
-        <>
-          <div className="content" data-test="login-content">
-            <div className="content--header">{MessageLogin}</div>
-            <form
-              className="content--login-form form-inline form-nav"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setError(null);
-                const loginValidation = validateLoginForm(
-                  userEmail,
-                  userPassword
+        <div className="content" data-test="login-content">
+          <div className="content--header">{MessageLogin}</div>
+          <form
+            className="content--login-form form-inline form-nav"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setError(null);
+              const loginValidation = validateLoginForm(
+                userEmail,
+                userPassword
+              );
+              if (!loginValidation) {
+                setError(
+                  loginValidation === null
+                    ? MessageWrongFormatEmailAddress
+                    : MessageNoUsernamePassword
                 );
-                if (!loginValidation) {
-                  setError(
-                    loginValidation === null
-                      ? MessageWrongFormatEmailAddress
-                      : MessageNoUsernamePassword
-                  );
-                  return;
-                }
-                authHandler();
-              }}
-            >
-              <label htmlFor="email">{MessageUsername}</label>
-              <input
-                className="form-control"
-                autoComplete="off"
-                type="email"
-                data-test="email"
-                name="email"
-                maxLength={80}
-                value={userEmail}
-                placeholder={MessageExampleUsername}
-                onChange={(e) => setUserEmail(e.target.value)}
-              />
-              <label htmlFor="password">{MessagePassword}</label>
-              <input
-                className="form-control"
-                type="password"
-                data-test="password"
-                name="password"
-                maxLength={80}
-                value={userPassword}
-                placeholder={MessageExamplePassword}
-                onChange={(e) => setUserPassword(e.target.value)}
-              />
-              {error && (
-                <div data-test="login-error" className="content--error-true">
-                  {error}
-                </div>
-              )}
+                return;
+              }
+              authHandler();
+            }}
+          >
+            <label htmlFor="email">{MessageUsername}</label>
+            <input
+              className="form-control"
+              autoComplete="off"
+              type="email"
+              data-test="email"
+              name="email"
+              maxLength={80}
+              value={userEmail}
+              placeholder={MessageExampleUsername}
+              onChange={(e) => setUserEmail(e.target.value)}
+            />
+            <label htmlFor="password">{MessagePassword}</label>
+            <input
+              className="form-control"
+              type="password"
+              data-test="password"
+              name="password"
+              maxLength={80}
+              value={userPassword}
+              placeholder={MessageExamplePassword}
+              onChange={(e) => setUserPassword(e.target.value)}
+            />
+            {error && (
+              <div data-test="login-error" className="content--error-true">
+                {error}
+              </div>
+            )}
 
-              <ButtonStyled
-                className="btn btn--default"
-                type="submit"
-                data-test="login-submit"
-                disabled={loading}
-              >
-                {loading ? "Loading..." : MessageLogin}
-              </ButtonStyled>
-              <a
-                className="alternative"
-                href={new UrlQuery().UrlAccountRegisterPage()}
-              >
-                {MessageCreateAccount}
-              </a>
-            </form>
-          </div>
-        </>
+            <ButtonStyled
+              className="btn btn--default"
+              type="submit"
+              data-test="login-submit"
+              disabled={loading}
+            >
+              {loading ? "Loading..." : MessageLogin}
+            </ButtonStyled>
+            <a
+              className="alternative"
+              href={new UrlQuery().UrlAccountRegisterPage()}
+            >
+              {MessageCreateAccount}
+            </a>
+          </form>
+        </div>
       ) : null}
       {!isLogin && accountStatus.data && accountStatus.statusCode <= 400 ? (
         <>

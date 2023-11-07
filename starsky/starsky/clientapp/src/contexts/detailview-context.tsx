@@ -153,7 +153,7 @@ function updateCache(stateLocal: IDetailView): IDetailView {
   return stateLocal;
 }
 
-function DetailViewContextProvider({ children }: ReactNodeProps) {
+function DetailViewContextProvider({ children }: Readonly<ReactNodeProps>) {
   // [A]
   const [state, dispatch] = React.useReducer(detailviewReducer, initialState);
   // Use useMemo to memoize the value object

@@ -151,6 +151,10 @@
     "en": "Select further",
     "nl": "Verder selecteren"
   },
+  "MessageGoToParentFolder": {
+    "en": "Go to parent folder",
+    "nl": "Ga naar bovenliggende map"
+  },
   "temp1": {
     "en": "",
     "nl": ""

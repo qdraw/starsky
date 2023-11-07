@@ -11,6 +11,7 @@ namespace starsky.foundation.native.Trash.Helpers;
 /// </summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("Usage", "S101: Rename struct 'SHFILEOPSTRUCT' to match pascal case naming rules, consider using 'Shfileopstruct'.")]
+[SuppressMessage("Usage", "S1075: Refactor your code not to use hardcoded absolute paths or URIs.")]
 public static class WindowsShellTrashBindingHelper
 {
 	/// <summary>
