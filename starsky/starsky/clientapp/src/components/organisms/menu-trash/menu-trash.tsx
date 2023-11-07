@@ -35,7 +35,6 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
   // Content
   const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageSelectAll = language.text("Alles selecteren", "Select all");
   const MessageRestoreFromTrash = language.text(
     "Zet terug uit prullenmand",
     "Restore from Trash"
@@ -175,13 +174,11 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               setEnableMoreMenu={setEnableMoreMenu}
               enableMoreMenu={enableMoreMenu}
             >
-              <li
-                className="menu-option"
-                data-test="select-all"
-                onClick={() => allSelection()}
-              >
-                {MessageSelectAll}
-              </li>
+              <MenuOptionSelectionAll
+                select={select}
+                state={state}
+                allSelection={allSelection}
+              />
             </MoreMenu>
           ) : null}
 

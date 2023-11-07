@@ -491,6 +491,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="rotate"
               onClick={rotateImage90}
+              onKeyDown={(event) => {
+                event.key === "Enter" && rotateImage90();
+              }}
             >
               {MessageRotateToRight}
             </li>

@@ -322,12 +322,12 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 undoSelection={undoSelection}
               />
 
+              {/* onClick={() => allSelection()} */}
               <MenuOptionSelectionAll
                 select={select}
                 state={state}
                 allSelection={allSelection}
               />
-
               {select.length >= 1 ? (
                 <>
                   <MenuOption
