@@ -432,6 +432,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
                 className="menu-option"
                 data-test="labels"
                 onClick={toggleLabels}
+                onKeyDown={(event) => {
+                  event.key === "Enter" && toggleLabels();
+                }}
               >
                 Labels
               </li>
