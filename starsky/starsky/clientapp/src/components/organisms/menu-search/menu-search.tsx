@@ -44,7 +44,6 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
 
   // Content
   const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageSelectAll = language.text("Alles selecteren", "Select all");
 
   // Selection
   const history = useLocation();
@@ -166,16 +165,11 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               setEnableMoreMenu={setEnableMoreMenu}
               enableMoreMenu={enableMoreMenu}
             >
-              <li
-                tabIndex={0}
-                className="menu-option"
-                onClick={() => allSelection()}
-                onKeyDown={(event) => {
-                  event.key === "Enter" && allSelection();
-                }}
-              >
-                {MessageSelectAll}
-              </li>
+              <MenuOptionSelectionAll
+                select={select}
+                state={state}
+                allSelection={allSelection}
+              />
             </MoreMenu>
           ) : null}
 
