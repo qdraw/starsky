@@ -237,7 +237,14 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           ) : null}
 
           {select ? (
-            <div className="item item--labels" onClick={() => toggleLabels()}>
+            <div
+              className="item item--labels"
+              data-test="menu-archive-labels"
+              onKeyDown={(event) => {
+                event.key === "Enter" && toggleLabels();
+              }}
+              onClick={() => toggleLabels()}
+            >
               Labels
             </div>
           ) : null}

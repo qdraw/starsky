@@ -268,6 +268,9 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
               <progress
                 ref={progressRef}
                 onClick={updateProgressByClick}
+                onKeyDown={() => {
+                  // nothing here
+                }}
                 className="progress"
                 value="0"
               >
