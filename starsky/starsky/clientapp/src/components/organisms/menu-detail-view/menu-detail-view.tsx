@@ -528,7 +528,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
         <div className="header header--sidebar">
           <div
             className="item item--close"
-            data-test="menu-detail-view-labels"
+            data-test="menu-detail-view-close-details"
             onClick={() => {
               toggleLabels();
             }}

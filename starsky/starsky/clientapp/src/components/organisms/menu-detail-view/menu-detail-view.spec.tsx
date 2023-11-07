@@ -869,6 +869,117 @@ describe("MenuDetailView", () => {
         jest.useRealTimers();
       });
     });
+
+    it("press click menu-detail-view-close-details button", () => {
+      Router.navigate("/?details=true");
+
+      const updateState = {
+        ...state,
+        fileIndexItem: {
+          ...state.fileIndexItem
+        }
+      };
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      expect(Router.state.location.search).toBe("?details=true");
+
+      const closeButton = component.queryByTestId(
+        "menu-detail-view-close-details"
+      ) as HTMLElement;
+      expect(closeButton).toBeTruthy();
+
+      closeButton?.click();
+
+      // act(() => {
+      //   fireEvent.keyDown(closeButton, { key: "Enter" });
+      // });
+
+      expect(Router.state.location.search).toBe("?details=false");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
+      });
+    });
+
+    it("press keyDown enter menu-detail-view-close-details button", () => {
+      Router.navigate("/?details=true");
+
+      const updateState = {
+        ...state,
+        fileIndexItem: {
+          ...state.fileIndexItem
+        }
+      };
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      expect(Router.state.location.search).toBe("?details=true");
+
+      const closeButton = component.queryByTestId(
+        "menu-detail-view-close-details"
+      ) as HTMLElement;
+      expect(closeButton).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(closeButton, { key: "Enter" });
+      });
+
+      expect(Router.state.location.search).toBe("?details=false");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
+      });
+    });
+
+    it("press keyDown tab skip menu-detail-view-close-details button so skips", () => {
+      Router.navigate("/?details=true");
+
+      const updateState = {
+        ...state,
+        fileIndexItem: {
+          ...state.fileIndexItem
+        }
+      };
+
+      const component = render(
+        <MemoryRouter>
+          <MenuDetailView state={updateState} dispatch={jest.fn()} />
+        </MemoryRouter>
+      );
+
+      expect(Router.state.location.search).toBe("?details=true");
+
+      const closeButton = component.queryByTestId(
+        "menu-detail-view-close-details"
+      ) as HTMLElement;
+      expect(closeButton).toBeTruthy();
+
+      act(() => {
+        fireEvent.keyDown(closeButton, { key: "Tab" });
+      });
+
+      // keep the same
+      expect(Router.state.location.search).toBe("?details=true");
+
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        Router.navigate("/");
+      });
+    });
   });
 
   describe("file is marked as deleted", () => {
