@@ -147,6 +147,10 @@
     "en": "Select all",
     "nl": "Alles selecteren"
   },
+  "MessageSelectFurther": {
+    "en": "Select further",
+    "nl": "Verder selecteren"
+  },
   "temp1": {
     "en": "",
     "nl": ""

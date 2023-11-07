@@ -25,6 +25,7 @@ import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/men
 import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
 import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
 import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
+import { MenuSelectFurther } from "../../molecules/menu-select-further/menu-select-further";
 import ModalDropAreaFilesAdded from "../../molecules/modal-drop-area-files-added/modal-drop-area-files-added";
 import ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
@@ -48,11 +49,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const MessageDisplayOptions = language.text(
     "Weergave opties",
     "Display options"
-  );
-
-  const MessageSelectFurther = language.text(
-    "Verder selecteren",
-    "Select further"
   );
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
@@ -372,24 +368,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         </div>
       </header>
 
-      {select ? (
-        <div className="header header--sidebar header--border-left">
-          <div
-            className="item item--continue"
-            data-test="select-further"
-            onClick={() => {
-              toggleLabels();
-            }}
-            onKeyDown={(event) => {
-              event.key === "Enter" && toggleLabels();
-            }}
-          >
-            {MessageSelectFurther}
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
+      <MenuSelectFurther select={select} toggleLabels={toggleLabels} />
     </>
   );
 });

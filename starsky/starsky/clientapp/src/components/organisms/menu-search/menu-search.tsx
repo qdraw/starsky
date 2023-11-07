@@ -21,6 +21,7 @@ import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/men
 import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-all/menu-option-selection-all";
 import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
 import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
+import { MenuSelectFurther } from "../../molecules/menu-select-further/menu-select-further";
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
@@ -44,10 +45,6 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   // Content
   const MessageSelectAction = language.text("Selecteer", "Select");
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
-  const MessageSelectFurther = language.text(
-    "Verder selecteren",
-    "Select further"
-  );
 
   // Selection
   const history = useLocation();
@@ -230,24 +227,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
         </div>
       </header>
 
-      {select ? (
-        <div className="header header--sidebar header--border-left">
-          <div
-            className="item item--continue"
-            onClick={() => {
-              toggleLabels();
-            }}
-            onKeyDown={(event) => {
-              event.key === "Enter" && toggleLabels();
-            }}
-            tabIndex={0}
-          >
-            {MessageSelectFurther}
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
+      <MenuSelectFurther select={select} toggleLabels={toggleLabels} />
     </>
   );
 };
