@@ -42,7 +42,7 @@ const DetailView: React.FC<IDetailView> = () => {
   }, [state.relativeObjects]);
 
   // boolean to get the details-side menu on or off
-  const [isDetails, setDetails] = React.useState(
+  const [details, setDetails] = React.useState(
     new URLPath().StringToIUrl(history?.location?.search)?.details
   );
   useEffect(() => {
@@ -121,7 +121,7 @@ const DetailView: React.FC<IDetailView> = () => {
   // toggle details side menu
   function toggleLabels() {
     const urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.details = !isDetails;
+    urlObject.details = !details;
     setDetails(urlObject.details);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
@@ -196,7 +196,7 @@ const DetailView: React.FC<IDetailView> = () => {
   return (
     <>
       <MenuDetailViewContainer />
-      <div className={isDetails ? "detailview detailview--edit" : "detailview"}>
+      <div className={details ? "detailview detailview--edit" : "detailview"}>
         {isLoading ? (
           <Preloader
             parent={state.fileIndexItem.parentDirectory}
@@ -217,7 +217,7 @@ const DetailView: React.FC<IDetailView> = () => {
           }}
         />
 
-        {isDetails && state.fileIndexItem.status ? (
+        {details && state.fileIndexItem.status ? (
           <DetailViewSidebar
             state={state}
             dispatch={dispatch}

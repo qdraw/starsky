@@ -51,20 +51,20 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
         collectionsCount: props.itemsCount ? props.itemsCount : 0
       };
     }
-    const [colorClassUsage, setIsColorClassUsage] = useState(
+    const [colorClassUsage, setColorClassUsage] = useState(
       props.colorClassUsage
     );
 
     useEffect(() => {
-      setIsColorClassUsage(state.colorClassUsage);
+      setColorClassUsage(state.colorClassUsage);
       // it should not update when the prop are changing
     }, [state.colorClassUsage]);
 
-    const [colorClassActiveList, setIsColorClassActiveList] = useState(
+    const [colorClassActiveList, setColorClassActiveList] = useState(
       props.colorClassActiveList
     );
     useEffect(() => {
-      setIsColorClassActiveList(state.colorClassActiveList);
+      setColorClassActiveList(state.colorClassActiveList);
       // it should not update when the prop are changing
     }, [state.colorClassActiveList]);
 

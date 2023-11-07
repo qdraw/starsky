@@ -95,7 +95,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
   const history = useLocation();
 
-  const [isDetails, setDetails] = React.useState(
+  const [details, setDetails] = React.useState(
     new URLPath().StringToIUrl(history.location.search).details
   );
   useEffect(() => {
@@ -127,7 +127,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
   function toggleLabels() {
     const urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.details = !isDetails;
+    urlObject.details = !details;
     setDetails(urlObject.details);
     setRecentEdited(false); // disable to avoid animation
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
@@ -384,7 +384,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
         setModalPublishOpen={setModalPublishOpen}
       />
 
-      <header className={GetHeaderClass(isDetails, isMarkedAsDeleted)}>
+      <header className={GetHeaderClass(details, isMarkedAsDeleted)}>
         <div className="wrapper">
           {/* in directory state aka no search */}
           {!isSearchQuery ? (
@@ -448,7 +448,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             >
               Download
             </li>
-            {!isDetails ? (
+            {!details ? (
               <li
                 tabIndex={0}
                 className="menu-option"
@@ -524,7 +524,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
         </div>
       </header>
 
-      {isDetails ? (
+      {details ? (
         <div className="header header--sidebar">
           <div
             className="item item--close"

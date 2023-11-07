@@ -52,7 +52,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
     }
 
     const preloader = <Preloader isOverlay={true} isWhite={false} />;
-    const [isPreloaderState, setPreloaderState] = React.useState(false);
+    const [preloaderState, setPreloaderState] = React.useState(false);
 
     function preloaderStateOnClick(event: React.MouseEvent) {
       // Command (mac) or ctrl click means open new window
@@ -105,7 +105,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
         data-filepath={item.filePath}
       >
         {/* for slow connections show preloader icon */}
-        {isPreloaderState ? preloader : null}
+        {preloaderState ? preloader : null}
         {/* the a href to the child page */}
         <Link
           onClick={preloaderStateOnClick}

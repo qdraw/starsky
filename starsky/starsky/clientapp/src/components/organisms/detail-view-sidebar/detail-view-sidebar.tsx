@@ -114,7 +114,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
       setCollections(collectionsList);
     }
     // For the display
-    const [isFormEnabled, setFormEnabled] = React.useState(true);
+    const [formEnabled, setFormEnabled] = React.useState(true);
     useEffect(() => {
       if (!fileIndexItem.status) return;
       switch (fileIndexItem.status) {
@@ -226,7 +226,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
             data-test="detailview-sidebar-tags"
             maxlength={1024}
             reference={tagsReference}
-            contentEditable={isFormEnabled}
+            contentEditable={formEnabled}
           >
             {fileIndexItem.tags}
           </FormControl>
@@ -242,7 +242,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
             maxlength={1024}
             name="description"
             reference={descriptionReference}
-            contentEditable={isFormEnabled}
+            contentEditable={formEnabled}
           >
             {fileIndexItem.description}
           </FormControl>
@@ -252,7 +252,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
             name="title"
             maxlength={1024}
             reference={titleReference}
-            contentEditable={isFormEnabled}
+            contentEditable={formEnabled}
           >
             {fileIndexItem.title}
           </FormControl>
@@ -281,7 +281,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
             }}
             filePath={fileIndexItem.filePath}
             currentColorClass={fileIndexItem.colorClass}
-            isEnabled={isFormEnabled}
+            isEnabled={formEnabled}
           />
         </div>
         {fileIndexItem.latitude ||
@@ -298,7 +298,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
         <div className="content--text">
           <DetailViewInfoDateTime
             fileIndexItem={fileIndexItem}
-            isFormEnabled={isFormEnabled}
+            isFormEnabled={formEnabled}
             setFileIndexItem={setFileIndexItem}
             dispatch={dispatch}
           />
@@ -342,7 +342,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
 
           <DetailViewInfoLocation
             fileIndexItem={fileIndexItem}
-            isFormEnabled={isFormEnabled}
+            isFormEnabled={formEnabled}
             {...fileIndexItem}
             dispatch={dispatch}
             setFileIndexItem={setFileIndexItem}

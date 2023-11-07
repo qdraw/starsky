@@ -64,7 +64,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   const [update, setUpdate] = React.useState({} as ISidebarUpdate);
 
   // Add/Hide disabled state
-  const [isInputEnabled, setInputEnabled] = React.useState(false);
+  const [inputEnabled, setInputEnabled] = React.useState(false);
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
@@ -258,7 +258,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         &nbsp;
       </FormControl>
 
-      {isInputEnabled && select.length !== 0 ? (
+      {inputEnabled && select.length !== 0 ? (
         <button
           className="btn btn--default"
           data-test="replace-button"

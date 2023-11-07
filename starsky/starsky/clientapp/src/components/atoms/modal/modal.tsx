@@ -42,13 +42,13 @@ export default function Modal({
   const language = new Language(settings.language);
   const MessageCloseDialog = language.text("Sluiten", "Close");
 
-  const [hasUpdated, forceUpdate] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(false);
 
   const exitButton = useRef<HTMLButtonElement>(null);
   const modal = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    return modalInsertPortalDiv(modal, hasUpdated, forceUpdate, id);
+    return modalInsertPortalDiv(modal, forceUpdate, setForceUpdate, id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

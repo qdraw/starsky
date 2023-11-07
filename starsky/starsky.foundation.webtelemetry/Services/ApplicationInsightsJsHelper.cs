@@ -93,7 +93,7 @@ namespace starsky.foundation.webtelemetry.Services
 
 		internal string? GetCurrentUserId()
 		{
-			if (_httpContext == null || _httpContext?.HttpContext?.User.Identity?.IsAuthenticated == false)
+			if (_httpContext?.HttpContext?.User.Identity?.IsAuthenticated == false)
 			{
 				return string.Empty;
 			}

@@ -71,7 +71,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   useHotKeys({ key: "a", ctrlKeyOrMetaKey: true }, allSelection, []);
 
   /* only update when the state is changed */
-  const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
+  const [readOnly, setReadOnly] = React.useState(state.isReadOnly);
   useEffect(() => {
     setReadOnly(state.isReadOnly);
   }, [state.isReadOnly]);
@@ -107,7 +107,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   );
 
   const UploadMenuItem = () => {
-    if (isReadOnly)
+    if (readOnly)
       return (
         <li data-test="upload" className="menu-option disabled">
           Upload
@@ -169,7 +169,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       ) : null}
 
       {/* Modal new directory */}
-      {isModalMkdirOpen && !isReadOnly ? (
+      {isModalMkdirOpen && !readOnly ? (
         <ModalArchiveMkdir
           state={state}
           dispatch={dispatch}
@@ -178,7 +178,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         />
       ) : null}
 
-      {isModalRenameFolder && !isReadOnly && state.subPath !== "/" ? (
+      {isModalRenameFolder && !readOnly && state.subPath !== "/" ? (
         <ModalArchiveRename
           subPath={state.subPath}
           dispatch={dispatch}
@@ -249,7 +249,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               enableMoreMenu={enableMoreMenu}
             >
               <li
-                className={!isReadOnly ? "menu-option" : "menu-option disabled"}
+                className={!readOnly ? "menu-option" : "menu-option disabled"}
                 data-test="mkdir"
                 tabIndex={0}
                 onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}
@@ -281,7 +281,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               {state ? <UploadMenuItem /> : null}
               <li
                 className={
-                  !isReadOnly && state.subPath !== "/"
+                  !readOnly && state.subPath !== "/"
                     ? "menu-option"
                     : "menu-option disabled"
                 }
@@ -292,7 +292,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               </li>
 
               <MenuOptionMoveFolderToTrash
-                isReadOnly={isReadOnly || state.subPath === "/"}
+                isReadOnly={readOnly || state.subPath === "/"}
                 subPath={state.subPath}
                 dispatch={dispatch}
                 setEnableMoreMenu={setEnableMoreMenu}
@@ -339,7 +339,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                     dispatch={dispatch}
                     select={select}
                     setSelect={setSelect}
-                    isReadOnly={isReadOnly}
+                    isReadOnly={readOnly}
                   />
                 </>
               ) : null}
