@@ -58,7 +58,67 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
+    it("click on select button and change url", () => {
+      Router.navigate("/");
+
+      const component = render(<MenuArchive />);
+
+      const selectButton = screen.getByTestId("menu-item-select");
+      expect(Router.state.location.search).toBe("");
+
+      expect(selectButton).toBeTruthy();
+
+      selectButton?.click();
+
+      expect(Router.state.location.search).toBe("?select=");
+
+      // and clean
+      component.unmount();
+    });
+
+    it("keyDown Tab on select button but skip", () => {
+      Router.navigate("/");
+
+      const component = render(<MenuArchive />);
+
+      const selectButton = screen.getByTestId("menu-item-select");
+      expect(Router.state.location.search).toBe("");
+
+      expect(selectButton).toBeTruthy();
+
+      fireEvent.keyDown(selectButton, {
+        key: "Tab"
+      });
+
+      expect(Router.state.location.search).toBe("");
+
+      // and clean
+      component.unmount();
+    });
+
+    it("keyDown Enter on select button and change url", () => {
+      Router.navigate("/");
+
+      const component = render(<MenuArchive />);
+
+      const selectButton = screen.getByTestId("menu-item-select");
+      expect(Router.state.location.search).toBe("");
+
+      expect(selectButton).toBeTruthy();
+
+      fireEvent.keyDown(selectButton, {
+        key: "Enter"
+      });
+
+      expect(Router.state.location.search).toBe("?select=");
+
+      // and clean
+      component.unmount();
+    });
+
     it("[menu archive] check if on click the hamburger opens", () => {
+      Router.navigate("/");
+
       const component = render(<MenuArchive />);
 
       const hamburger = component.getByTestId("hamburger");
@@ -175,6 +235,93 @@ describe("MenuArchive", () => {
       await mkdir?.click();
 
       expect(mkdirModalSpy).toBeCalled();
+
+      component.unmount();
+    });
+
+    it("[archive] menu keyDown tab mkdir so skip", async () => {
+      jest.spyOn(React, "useContext").mockReset();
+
+      Router.navigate("/");
+
+      const state = {
+        subPath: "/",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const contextValues = { state, dispatch: jest.fn() };
+
+      const mkdirModalSpy = jest
+        .spyOn(ModalArchiveMkdir, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      const component = render(<MenuArchive>t</MenuArchive>);
+
+      const mkdir = screen.getByTestId("mkdir");
+
+      // need async
+      await fireEvent.keyDown(mkdir, {
+        key: "Tab"
+      });
+
+      expect(mkdirModalSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
+    it("[archive] menu keyDown enter mkdir", async () => {
+      jest.spyOn(React, "useContext").mockReset();
+
+      Router.navigate("/");
+
+      const state = {
+        subPath: "/",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const contextValues = { state, dispatch: jest.fn() };
+
+      const mkdirModalSpy = jest
+        .spyOn(ModalArchiveMkdir, "default")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return <></>;
+        });
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      const component = render(<MenuArchive>t</MenuArchive>);
+
+      const mkdir = screen.getByTestId("mkdir");
+
+      // need async
+      await fireEvent.keyDown(mkdir, {
+        key: "Enter"
+      });
+
+      expect(mkdirModalSpy).toBeCalledTimes(1);
 
       component.unmount();
     });
