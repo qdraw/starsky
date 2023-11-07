@@ -85,8 +85,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const toggleLabels = () => new Sidebar(setSidebar, history).toggleSidebar();
 
-  const [isModalExportOpen, setModalExportOpen] = useState(false);
-  const [isModalPublishOpen, setModalPublishOpen] = useState(false);
+  const [isModalExportOpen, setIsModalExportOpen] = useState(false);
+  const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);
 
   // Selection
   const [select, setSelect] = React.useState(
@@ -96,11 +96,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 
-  const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
-  const [isSynchronizeManuallyOpen, setSynchronizeManuallyOpen] =
+  const [isDisplayOptionsOpen, setIsDisplayOptionsOpen] = React.useState(false);
+  const [isSynchronizeManuallyOpen, setIsSynchronizeManuallyOpen] =
     React.useState(false);
-  const [isModalMkdirOpen, setModalMkdirOpen] = React.useState(false);
-  const [isModalRenameFolder, setModalRenameFolder] = React.useState(false);
+  const [isModalMkdirOpen, setIsModalMkdirOpen] = React.useState(false);
+  const [isModalRenameFolder, setIsModalRenameFolder] = React.useState(false);
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(
     newIFileIndexItemArray()
   );
@@ -134,7 +134,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {/* Modal download */}
       {isModalExportOpen ? (
         <ModalDownload
-          handleExit={() => setModalExportOpen(!isModalExportOpen)}
+          handleExit={() => setIsModalExportOpen(!isModalExportOpen)}
           select={new URLPath().MergeSelectParent(
             select,
             new URLPath().StringToIUrl(history.location.search).f
@@ -150,8 +150,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {/* Modal Display options */}
       {isDisplayOptionsOpen ? (
         <ModalDisplayOptions
-          parentFolder={new URLPath().StringToIUrl(history.location.search).f}
-          handleExit={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}
+          handleExit={() => setIsDisplayOptionsOpen(!isDisplayOptionsOpen)}
           isOpen={isDisplayOptionsOpen}
         />
       ) : null}
@@ -161,7 +160,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         <ModalArchiveSynchronizeManually
           parentFolder={new URLPath().StringToIUrl(history.location.search).f}
           handleExit={() =>
-            setSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)
+            setIsSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)
           }
           isOpen={isSynchronizeManuallyOpen}
         />
@@ -172,7 +171,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         <ModalArchiveMkdir
           state={state}
           dispatch={dispatch}
-          handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)}
+          handleExit={() => setIsModalMkdirOpen(!isModalMkdirOpen)}
           isOpen={isModalMkdirOpen}
         />
       ) : null}
@@ -182,7 +181,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           subPath={state.subPath}
           dispatch={dispatch}
           handleExit={() => {
-            setModalRenameFolder(!isModalRenameFolder);
+            setIsModalRenameFolder(!isModalRenameFolder);
           }}
           isOpen={isModalRenameFolder}
         />
@@ -203,7 +202,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         select={select}
         stateFileIndexItems={state.fileIndexItems}
         isModalPublishOpen={isModalPublishOpen}
-        setModalPublishOpen={setModalPublishOpen}
+        setModalPublishOpen={setIsModalPublishOpen}
       />
 
       {/* Menu */}
@@ -258,9 +257,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 className={!readOnly ? "menu-option" : "menu-option disabled"}
                 data-test="mkdir"
                 tabIndex={0}
-                onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}
+                onClick={() => setIsModalMkdirOpen(!isModalMkdirOpen)}
                 onKeyDown={(event) => {
-                  event.key === "Enter" && setModalMkdirOpen(!isModalMkdirOpen);
+                  event.key === "Enter" &&
+                    setIsModalMkdirOpen(!isModalMkdirOpen);
                 }}
               >
                 {MessageMkdir}
@@ -269,10 +269,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 className="menu-option"
                 data-test="display-options"
                 tabIndex={0}
-                onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}
+                onClick={() => setIsDisplayOptionsOpen(!isDisplayOptionsOpen)}
                 onKeyDown={(event) => {
                   event.key === "Enter" &&
-                    setDisplayOptionsOpen(!isDisplayOptionsOpen);
+                    setIsDisplayOptionsOpen(!isDisplayOptionsOpen);
                 }}
               >
                 {MessageDisplayOptions}
@@ -281,7 +281,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 isReadOnly={false}
                 testName="synchronize-manually"
                 isSet={isSynchronizeManuallyOpen}
-                set={setSynchronizeManuallyOpen}
+                set={setIsSynchronizeManuallyOpen}
                 localization={localization.MessageSynchronizeManually}
               />
               {state ? <UploadMenuItem /> : null}
@@ -292,10 +292,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                     : "menu-option disabled"
                 }
                 data-test="rename"
-                onClick={() => setModalRenameFolder(!isModalRenameFolder)}
+                onClick={() => setIsModalRenameFolder(!isModalRenameFolder)}
                 onKeyDown={(event) => {
                   event.key === "Enter" &&
-                    setModalRenameFolder(!isModalRenameFolder);
+                    setIsModalRenameFolder(!isModalRenameFolder);
                 }}
               >
                 {MessageRenameDir}
@@ -334,14 +334,14 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                     isReadOnly={false}
                     testName="export"
                     isSet={isModalExportOpen}
-                    set={setModalExportOpen}
+                    set={setIsModalExportOpen}
                     localization={localization.MessageDownload}
                   />
                   <MenuOption
                     isReadOnly={false}
                     testName="publish"
                     isSet={isModalPublishOpen}
-                    set={setModalPublishOpen}
+                    set={setIsModalPublishOpen}
                     localization={localization.MessagePublish}
                   />
                   <MenuOptionMoveToTrash
@@ -356,10 +356,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               <li
                 className="menu-option"
                 data-test="display-options"
-                onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}
+                onClick={() => setIsDisplayOptionsOpen(!isDisplayOptionsOpen)}
                 onKeyDown={(event) => {
                   event.key === "Enter" &&
-                    setDisplayOptionsOpen(!isDisplayOptionsOpen);
+                    setIsDisplayOptionsOpen(!isDisplayOptionsOpen);
                 }}
               >
                 {MessageDisplayOptions}
@@ -369,7 +369,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 isReadOnly={false}
                 testName="synchronize-manually"
                 isSet={isSynchronizeManuallyOpen}
-                set={setSynchronizeManuallyOpen}
+                set={setIsSynchronizeManuallyOpen}
                 localization={localization.MessageSynchronizeManually}
               />
               {state ? <UploadMenuItem /> : null}

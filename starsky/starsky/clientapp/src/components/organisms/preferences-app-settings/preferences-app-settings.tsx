@@ -39,7 +39,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
     "get"
   );
 
-  const [enabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
 
   useEffect(() => {
     function permissions(): boolean {
@@ -59,7 +59,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
   const appSettings = useFetch(new UrlQuery().UrlApiAppSettings(), "get")
     ?.data as IAppSettings | null;
 
-  const [verbose, setIsVerbose] = useState(appSettings?.verbose);
+  const [isVerbose, setIsVerbose] = useState(appSettings?.verbose);
   const [storageFolder, setStorageFolder] = useState(
     appSettings?.storageFolder
   );
@@ -80,8 +80,8 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
         <h4>Verbose logging</h4>
 
         <SwitchButton
-          isEnabled={enabled}
-          isOn={!verbose}
+          isEnabled={isEnabled}
+          isOn={!isVerbose}
           onToggle={(toggle, name) => {
             ChangeSetting((!toggle).toString(), name);
             setIsVerbose(!toggle);
@@ -103,7 +103,7 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = () => {
             setStorageFolderNotFound(resultStatusCode === 404);
           }}
           contentEditable={
-            enabled && appSettings?.storageFolderAllowEdit === true
+            isEnabled && appSettings?.storageFolderAllowEdit === true
           }
         >
           {storageFolder}

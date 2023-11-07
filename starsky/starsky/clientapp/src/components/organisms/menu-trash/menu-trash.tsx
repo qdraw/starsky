@@ -104,7 +104,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     );
   }
 
-  const [isModalDeleteOpen, setModalDeleteOpen] = React.useState(false);
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = React.useState(false);
 
   return (
     <>
@@ -117,7 +117,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
           select={select}
           dispatch={dispatch}
           setIsLoading={setIsLoading}
-          handleExit={() => setModalDeleteOpen(!isModalDeleteOpen)}
+          handleExit={() => setIsModalDeleteOpen(!isModalDeleteOpen)}
         />
       ) : null}
 
@@ -214,10 +214,10 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               <li
                 className="menu-option"
                 data-test="delete"
-                onClick={() => setModalDeleteOpen(true)}
+                onClick={() => setIsModalDeleteOpen(true)}
                 tabIndex={0}
                 onKeyDown={(event) => {
-                  event.key === "Enter" && setModalDeleteOpen(true);
+                  event.key === "Enter" && setIsModalDeleteOpen(true);
                 }}
               >
                 {MessageDeleteImmediately}

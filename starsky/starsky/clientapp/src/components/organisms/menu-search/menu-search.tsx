@@ -76,16 +76,16 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
   const toggleLabels = () => new Sidebar(setSidebar, history).toggleSidebar();
 
   // download modal
-  const [isModalExportOpen, setModalExportOpen] = useState(false);
+  const [isModalExportOpen, setIsModalExportOpen] = useState(false);
   // publish modal
-  const [isModalPublishOpen, setModalPublishOpen] = useState(false);
+  const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);
 
   return (
     <>
       {/* Modal download */}
       {isModalExportOpen ? (
         <ModalDownload
-          handleExit={() => setModalExportOpen(!isModalExportOpen)}
+          handleExit={() => setIsModalExportOpen(!isModalExportOpen)}
           select={
             select
               ? new URLPath().MergeSelectFileIndexItem(
@@ -103,7 +103,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
         select={select}
         stateFileIndexItems={state.fileIndexItems}
         isModalPublishOpen={isModalPublishOpen}
-        setModalPublishOpen={setModalPublishOpen}
+        setModalPublishOpen={setIsModalPublishOpen}
       />
 
       <header className={GetArchiveSearchMenuHeaderClass(sidebar, select)}>
@@ -195,14 +195,14 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
                 isReadOnly={false}
                 testName="export"
                 isSet={isModalExportOpen}
-                set={setModalExportOpen}
+                set={setIsModalExportOpen}
                 localization={localization.MessageDownload}
               />
               <MenuOption
                 isReadOnly={false}
                 testName="publish"
                 isSet={isModalPublishOpen}
-                set={setModalPublishOpen}
+                set={setIsModalPublishOpen}
                 localization={localization.MessagePublish}
               />
               <MenuOptionMoveToTrash

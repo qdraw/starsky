@@ -13,7 +13,6 @@ describe("ModalDisplayOptions", () => {
     render(
       <ModalDisplayOptions
         isOpen={true}
-        parentFolder="/"
         handleExit={() => {}}
       ></ModalDisplayOptions>
     );
@@ -24,11 +23,7 @@ describe("ModalDisplayOptions", () => {
       let modal: RenderResult;
       beforeEach(() => {
         modal = render(
-          <ModalDisplayOptions
-            parentFolder={"/"}
-            isOpen={true}
-            handleExit={() => {}}
-          />
+          <ModalDisplayOptions isOpen={true} handleExit={() => {}} />
         );
       });
 
@@ -59,11 +54,7 @@ describe("ModalDisplayOptions", () => {
       beforeEach(() => {
         jest.useFakeTimers();
         modal = render(
-          <ModalDisplayOptions
-            parentFolder={"/"}
-            isOpen={true}
-            handleExit={() => {}}
-          />
+          <ModalDisplayOptions isOpen={true} handleExit={() => {}} />
         );
       });
 
@@ -168,11 +159,7 @@ describe("ModalDisplayOptions", () => {
       const handleExitSpy = jest.fn();
 
       const component = render(
-        <ModalDisplayOptions
-          parentFolder="/"
-          isOpen={true}
-          handleExit={handleExitSpy}
-        />
+        <ModalDisplayOptions isOpen={true} handleExit={handleExitSpy} />
       );
 
       expect(handleExitSpy).toBeCalled();

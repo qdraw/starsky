@@ -137,10 +137,10 @@ const DetailView: React.FC<IDetailView> = () => {
   );
 
   // Reset Error after changing page
-  const [isError, setError] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
   useEffect(() => {
-    setError(false);
-    setUseGestures(true);
+    setIsError(false);
+    setIsUseGestures(true);
   }, [state.subPath]);
 
   // // When item is removed
@@ -160,7 +160,7 @@ const DetailView: React.FC<IDetailView> = () => {
   const [isLoading, setIsLoading] = React.useState(true);
 
   const mainRef = useRef<HTMLDivElement>(null);
-  const [isUseGestures, setUseGestures] = React.useState(true);
+  const [isUseGestures, setIsUseGestures] = React.useState(true);
 
   useGestures(mainRef, {
     onSwipeLeft: () => {
@@ -243,16 +243,16 @@ const DetailView: React.FC<IDetailView> = () => {
         >
           {!isError && state.fileIndexItem.fileHash ? (
             <FileHashImage
-              setError={setError}
+              setError={setIsError}
               id={state.fileIndexItem.filePath}
               setIsLoading={setIsLoading}
               fileHash={state.fileIndexItem.fileHash}
               orientation={state.fileIndexItem.orientation}
               onWheelCallback={() => {
-                if (isUseGestures) setUseGestures(false);
+                if (isUseGestures) setIsUseGestures(false);
               }}
               onResetCallback={() => {
-                setUseGestures(true);
+                setIsUseGestures(true);
               }}
             />
           ) : null}

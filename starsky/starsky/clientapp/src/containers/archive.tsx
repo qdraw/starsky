@@ -9,7 +9,7 @@ import useLocation from "../hooks/use-location/use-location";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { URLPath } from "../shared/url-path";
 
-function Archive(archive: IArchiveProps) {
+function Archive(archive: Readonly<IArchiveProps>) {
   const history = useLocation();
 
   const [iconList] = React.useState(
