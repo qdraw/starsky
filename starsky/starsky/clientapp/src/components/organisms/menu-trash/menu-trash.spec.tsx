@@ -342,18 +342,10 @@ describe("MenuTrash", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        })
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        })
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        })
-        .mockImplementationOnce(() => {
-          return newIConnectionDefault();
-        });
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
@@ -377,6 +369,57 @@ describe("MenuTrash", () => {
       // // need to await here
       await act(async () => {
         await item?.click();
+      });
+
+      expect(Router.state.location.search).toBe("?select=");
+
+      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toBeCalledWith(
+        new UrlQuery().UrlReplaceApi(),
+        "fieldName=tags&search=%21delete%21&f=%2Fundefined%2Ftest1.jpg"
+      );
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("more restore-from-trash keyboardDown", async () => {
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
+
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(newIConnectionDefault());
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        Router.navigate("/?select=test1.jpg");
+      });
+
+      const component = render(
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+      );
+
+      const item = screen.queryByTestId("restore-from-trash") as HTMLElement;
+
+      // // need to await here
+      await act(async () => {
+        fireEvent.keyDown(item, {
+          key: "Enter"
+        });
       });
 
       expect(Router.state.location.search).toBe("?select=");

@@ -43,6 +43,21 @@ describe("MenuOptionSelectionAll", () => {
     expect(removeSidebarSelection).toBeCalledTimes(1);
   });
 
+  it("selected-0 click continue", () => {
+    const removeSidebarSelection = jest.fn();
+    const component = render(
+      <MenuSelectCount
+        select={[]}
+        removeSidebarSelection={removeSidebarSelection}
+      />
+    );
+
+    const item = component.queryByTestId("selected-0") as HTMLElement;
+    item.click();
+
+    expect(removeSidebarSelection).toBeCalledTimes(1);
+  });
+
   it("selected-1 keyDown tab skipped", () => {
     const removeSidebarSelection = jest.fn();
     const component = render(

@@ -70,4 +70,24 @@ describe("MenuOptionSelectionAll", () => {
 
     expect(allSelection).toBeCalledTimes(1);
   });
+
+  it("click continue", () => {
+    const allSelection = jest.fn();
+    const component = render(
+      <MenuOptionSelectionAll
+        select={["test"]}
+        state={
+          {
+            fileIndexItems: []
+          } as any
+        }
+        allSelection={allSelection}
+      />
+    );
+
+    const item = component.queryByTestId("select-all") as HTMLElement;
+    item.click();
+
+    expect(allSelection).toBeCalledTimes(1);
+  });
 });
