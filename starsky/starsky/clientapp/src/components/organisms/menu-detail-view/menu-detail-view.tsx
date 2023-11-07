@@ -31,6 +31,7 @@ import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-det
 import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
+import { GoToParentFolder } from "./shared/go-to-parent-folder";
 
 export interface MenuDetailViewProps {
   state: IDetailView;
@@ -87,10 +88,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   const MessageRotateToRight = language.text(
     "Rotatie naar rechts",
     "Rotation to the right"
-  );
-  const MessageGoToParentFolder = language.text(
-    "Ga naar bovenliggende map",
-    "Go to parent folder"
   );
 
   const history = useLocation();
@@ -325,29 +322,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   const [isModalMoveFile, setModalMoveFile] = React.useState(false);
   const [isModalPublishOpen, setModalPublishOpen] = useState(false);
 
-  const goToParentFolderJSX: React.JSX.Element | null = isSearchQuery ? (
-    <li
-      className="menu-option"
-      data-test="go-to-parent-folder"
-      onClick={() =>
-        history.navigate(
-          new UrlQuery().updateFilePathHash(
-            history.location.search,
-            state.fileIndexItem.parentDirectory,
-            true
-          ),
-          {
-            state: {
-              filePath: state.fileIndexItem.filePath
-            } as INavigateState
-          }
-        )
-      }
-    >
-      {MessageGoToParentFolder}
-    </li>
-  ) : null;
-
   return (
     <>
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
@@ -434,7 +408,11 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             setEnableMoreMenu={setEnableMoreMenu}
             enableMoreMenu={enableMoreMenu}
           >
-            {goToParentFolderJSX}
+            <GoToParentFolder
+              isSearchQuery={isSearchQuery}
+              history={history}
+              state={state}
+            />
             <li
               tabIndex={0}
               className={

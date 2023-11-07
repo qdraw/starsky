@@ -37,7 +37,6 @@ import NavContainer from "../nav-container/nav-container";
 
 interface IMenuArchiveProps {}
 
-// eslint-disable-next-line react/display-name
 const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -273,7 +272,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}
                 onKeyDown={(event) => {
                   event.key === "Enter" &&
-                    setDisplayOptionsOpen(!isModalMkdirOpen);
+                    setDisplayOptionsOpen(!isDisplayOptionsOpen);
                 }}
               >
                 {MessageDisplayOptions}
@@ -294,6 +293,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 }
                 data-test="rename"
                 onClick={() => setModalRenameFolder(!isModalRenameFolder)}
+                onKeyDown={(event) => {
+                  event.key === "Enter" &&
+                    setModalRenameFolder(!isModalRenameFolder);
+                }}
               >
                 {MessageRenameDir}
               </li>
@@ -354,6 +357,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 className="menu-option"
                 data-test="display-options"
                 onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}
+                onKeyDown={(event) => {
+                  event.key === "Enter" &&
+                    setDisplayOptionsOpen(!isDisplayOptionsOpen);
+                }}
               >
                 {MessageDisplayOptions}
               </li>
