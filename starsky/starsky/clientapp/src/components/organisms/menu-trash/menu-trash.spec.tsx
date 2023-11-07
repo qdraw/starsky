@@ -13,6 +13,7 @@ import { Router } from "../../../router-app/router-app";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Modal from "../../atoms/modal/modal";
+import * as MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import * as NavContainer from "../nav-container/nav-container";
 import MenuTrash from "./menu-trash";
 
@@ -576,6 +577,25 @@ describe("MenuTrash", () => {
       );
 
       jest.spyOn(React, "useContext").mockRestore();
+      component.unmount();
+    });
+
+    it("NavContainer MenuSearchBar callback does change state [MenuTrash]", () => {
+      jest.spyOn(MenuSearchBar, "default").mockImplementationOnce((prop) => {
+        if (prop.callback) {
+          prop.callback("test");
+        }
+        return <>test</>;
+      });
+
+      const component = render(
+        <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
+      );
+
+      const navOpen = screen.queryByTestId("nav-open") as HTMLDivElement;
+
+      expect(navOpen).toBeTruthy();
+
       component.unmount();
     });
   });

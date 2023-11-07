@@ -14,6 +14,7 @@ import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as DropArea from "../../atoms/drop-area/drop-area";
 import * as Link from "../../atoms/link/link";
+import * as MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import * as ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import * as ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
 import * as ModalArchiveSynchronizeManually from "../modal-archive-synchronize-manually/modal-archive-synchronize-manually";
@@ -1003,12 +1004,8 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        });
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
       const component = render(<MenuArchive />);
 
@@ -1051,6 +1048,39 @@ describe("MenuArchive", () => {
       const component = render(<MenuArchive />);
 
       expect(dropAreaSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
+    it("NavContainer MenuSearchBar callback does change state [MenuArchive]", () => {
+      jest.spyOn(MenuSearchBar, "default").mockImplementationOnce((prop) => {
+        if (prop.callback) {
+          prop.callback("test");
+        }
+        return <>test</>;
+      });
+      const state = {
+        subPath: "/",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const contextValues = { state, dispatch: jest.fn() };
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      const component = render(<MenuArchive />);
+
+      const navOpen = screen.queryByTestId("nav-open") as HTMLDivElement;
+
+      expect(navOpen).toBeTruthy();
 
       component.unmount();
     });
