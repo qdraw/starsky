@@ -35,7 +35,7 @@ describe("GoToParentFolder", () => {
     });
   });
 
-  it("should render when isSearchQuery is true and keyDown", () => {
+  it("should render when isSearchQuery is true and keyDown enter", () => {
     // Mock the history object
     const history = {
       navigate: jest.fn(),
@@ -66,6 +66,37 @@ describe("GoToParentFolder", () => {
     expect(history.navigate).toHaveBeenCalledWith(expect.any(String), {
       state: { filePath: "filePath" }
     });
+  });
+
+  it("should render when isSearchQuery is true and keyDown tab so skip", () => {
+    // Mock the history object
+    const history = {
+      navigate: jest.fn(),
+      location: {
+        search: "someSearchQuery"
+      }
+    };
+
+    const state = {
+      fileIndexItem: {
+        parentDirectory: "parentDir",
+        filePath: "filePath"
+      }
+    } as any; // Define your state object as per your interface
+
+    const { getByTestId } = render(
+      <GoToParentFolder
+        isSearchQuery={true}
+        history={history as any}
+        state={state as any}
+      />
+    );
+
+    const parentFolderLink = getByTestId("go-to-parent-folder");
+
+    fireEvent.keyDown(parentFolderLink, { key: "Tab" });
+
+    expect(history.navigate).toHaveBeenCalledTimes(0);
   });
 
   it("should not render when isSearchQuery is false", () => {
