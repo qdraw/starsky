@@ -301,6 +301,90 @@ describe("MenuTrash", () => {
       });
     });
 
+    it("more keyDown delete tab so skip", () => {
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      });
+
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+
+      const modalSpy = jest
+        .spyOn(Modal, "default")
+        .mockReset()
+        .mockImplementationOnce(({ children }) => {
+          return <>{children}</>;
+        });
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        Router.navigate("/?select=test1.jpg");
+      });
+
+      const component = render(
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+      );
+
+      const item = screen.queryByTestId("delete") as HTMLElement;
+
+      act(() => {
+        fireEvent.keyDown(item, { key: "Tab" });
+      });
+
+      expect(modalSpy).toBeCalledTimes(0);
+
+      expect(window.location.search).toBe("?select=test1.jpg");
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("more keyDown delete enter", () => {
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      });
+
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+
+      const modalSpy = jest
+        .spyOn(Modal, "default")
+        .mockReset()
+        .mockImplementationOnce(({ children }) => {
+          return <>{children}</>;
+        });
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        Router.navigate("/?select=test1.jpg");
+      });
+
+      const component = render(
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+      );
+
+      const item = screen.queryByTestId("delete") as HTMLElement;
+
+      act(() => {
+        fireEvent.keyDown(item, { key: "Enter" });
+      });
+
+      expect(modalSpy).toBeCalledTimes(1);
+
+      expect(window.location.search).toBe("?select=test1.jpg");
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        Router.navigate("/");
+        component.unmount();
+      });
+    });
+
     it("more force delete, expect modal 2", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
@@ -311,14 +395,15 @@ describe("MenuTrash", () => {
 
       const modalSpy = jest
         .spyOn(Modal, "default")
+        .mockReset()
         .mockImplementationOnce(({ children }) => {
           return <span id="test">{children}</span>;
         });
+      Router.navigate("/?select=test1.jpg");
 
       const component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
-      Router.navigate("/?select=test1.jpg");
 
       const item = screen.queryByTestId("delete");
 
