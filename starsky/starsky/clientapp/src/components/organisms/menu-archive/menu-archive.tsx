@@ -376,6 +376,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         <div className="header header--sidebar header--border-left">
           <div
             className="item item--continue"
+            data-test="select-further"
             onClick={() => {
               toggleLabels();
             }}
