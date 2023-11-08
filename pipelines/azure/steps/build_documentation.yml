@@ -30,7 +30,7 @@ steps:
       targetType: "inline"
       workingDirectory: documentation
       script: |
-        npm ci --no-audit --no-fund --prefer-offline --force
+        npm install --no-audit --no-fund --prefer-offline --force
 
   - task: PowerShell@2
     displayName: "[doc..] npm run build"
