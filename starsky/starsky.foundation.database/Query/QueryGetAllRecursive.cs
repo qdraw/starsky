@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -53,13 +54,26 @@ namespace starsky.foundation.database.Query
 			{
 				return await LocalQuery(_context);
 			}
-			catch (ObjectDisposedException)
+			catch ( ObjectDisposedException )
 			{
-				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+				return await LocalQuery(new InjectServiceScope(_scopeFactory)
+					.Context());
 			}
 			catch ( InvalidOperationException )
 			{
-				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+				return await LocalQuery(new InjectServiceScope(_scopeFactory)
+					.Context());
+			}
+			catch ( MySqlException exception)
+			{
+				// https://github.com/qdraw/starsky/issues/1243
+				if ( exception.Message.Contains("Timeout") )
+				{
+					return await LocalQuery(new InjectServiceScope(_scopeFactory)
+						.Context());
+				}
+
+				throw;
 			}
 		}
 	}

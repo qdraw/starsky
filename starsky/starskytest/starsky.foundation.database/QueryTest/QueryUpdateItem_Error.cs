@@ -31,7 +31,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	{
 		private IServiceScopeFactory? _serviceScopeFactory;
 
-		private IServiceScopeFactory CreateNewScopeSqliteException()
+		private static IServiceScopeFactory CreateNewScopeSqliteException()
 		{
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryTest)));

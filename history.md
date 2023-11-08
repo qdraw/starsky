@@ -40,6 +40,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.416 (Runtime: 6.0.24) (PR #1266)
 - [x] (Changed) _Front-end_ improve accessibility and code smells (PR #1271, #1274)
 - [x] (Changed) _Docs_  Update framework to v3 (PR #1276)
+- [x] (Fixed) _Back-end_ Thumbnail CLI MySQL bug (PR #1277, issue #1248)
+- [x] (Fixed) _Back-end_ Command Timeout bug (PR #1277, issue #1243)
+- [x] (Fixed) _Back-end_ SQLite Error 5 database is locked bug (PR #1277, issue #1225)
+- [x] (Fixed) _Back-end_ MySql timeouts bug (PR #1277, issue #1186)
+- [x] (Fixed) _Back-end_ Thumbnail CLI null reference bug  (PR #1277, issue #1176)
 
 ## version 0.5.11 - 2023-10-13 {#v0.5.11}
 

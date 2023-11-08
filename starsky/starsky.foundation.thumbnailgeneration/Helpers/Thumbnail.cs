@@ -75,13 +75,16 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				async singleSubPath =>
 				{
 					var hashResult =  await new FileHash(_iStorage).GetHashCodeAsync(singleSubPath);
+					if ( !hashResult.Value ) return null;
+
 					return await CreateThumbAsync(singleSubPath, hashResult.Key);
 				}, _appSettings.MaxDegreesOfParallelismThumbnail);
 			
 			var results = new List<GenerationResultModel>();
+			
 			foreach ( var resultChunk in resultChunkList )
 			{
-				results.AddRange(resultChunk);
+				results.AddRange(resultChunk ?? new List<GenerationResultModel>());
 			}
 
 			return results;

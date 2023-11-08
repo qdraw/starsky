@@ -107,10 +107,11 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			await dbContext.SaveChangesAsync();
 		}
-		catch ( MySqlException exception )
+		catch ( Exception exception )
 		{
 			// Skip if Duplicate entry
 			// MySqlConnector.MySqlException (0x80004005): Duplicate entry for key 'PRIMARY'
+			// https://github.com/qdraw/starsky/issues/1248
 			if ( !exception.Message.Contains("Duplicate") )
 			{
 				throw;
