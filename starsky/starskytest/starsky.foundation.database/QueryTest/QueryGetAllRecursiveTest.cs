@@ -1,12 +1,11 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +22,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public sealed class QueryGetAllRecursiveTest
 	{
-		private readonly IMemoryCache _memoryCache;
+		private readonly IMemoryCache? _memoryCache;
 		private readonly IQuery _query;
 				
 		private IServiceScopeFactory CreateNewScope()
@@ -117,7 +116,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				_error = error;
 			}
 
-			public DbSet<FileIndexItem> IndexItems { get; set; }
+			public DbSet<FileIndexItem> IndexItems { get; set; } = null!;
 
 			public override DbSet<FileIndexItem> FileIndex
 			{
@@ -126,10 +125,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 					IsCalledMySqlSaveDbExceptionContext = true;
 					throw CreateMySqlException(_error);
 				}
-				set
-				{
-					IndexItems = value;
-				}
+				set => IndexItems = value;
 			}
 		}
 
