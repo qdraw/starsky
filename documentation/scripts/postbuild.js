@@ -64,6 +64,14 @@ fs.writeFileSync(versionTextPath, hash)
 // robots txt generator
 const documentationDirectory = path.join(__dirname, ".."); // /git/starsky/documentation - without docs
 
+function readFile(rootPath, from) {
+	const filename = path.join(rootPath, from);
+	if (fs.existsSync(filename) === false) {
+		return null;
+	}
+	return fs.readFileSync(filename, { encoding: "utf8" });
+}
+
 function replaceRobotsTxt() {
 	let robots = readFile(documentationDirectory, path.join("static", "robots.template"));
 	console.log(robots.length >= 1 ? "robots.template contains content" : "robots.template is empty");

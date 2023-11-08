@@ -50,14 +50,6 @@ function writeFile(to, content) {
   fs.writeFileSync(filename, content);
 }
 
-function readFile(rootPath, from) {
-  const filename = path.join(rootPath, from);
-  if (fs.existsSync(filename) === false) {
-    return null;
-  }
-  return fs.readFileSync(filename, { encoding: "utf8" });
-}
-
 copyFileSync("history.md", "advanced-options/history.md");
 copyFileSync("starsky/telemetry.md", "advanced-options/starsky/telemetry.md");
 
