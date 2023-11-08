@@ -228,7 +228,9 @@ copyFileSync(
 );
 
 function replaceRobotsTxt() {
-  let robots = readFile(documenationDirectory, path.join("static", "robots"));
+  let robots = readFile(documenationDirectory, path.join("static", "robots.template"));
+  console.log(robots.length >= 1 ? "robots.template contains content" : "robots.template is empty");
+
   robots = robots.replace(/\{date\}/g, new Date().toLocaleDateString('en-UK', { year: 'numeric', month: 'long', day: 'numeric' }));
   
   if (process.env.DOCS_URL) {
@@ -242,6 +244,7 @@ function replaceRobotsTxt() {
   fs.mkdirSync( path.join(documenationDirectory, "build"), { recursive: true });
   const filename = path.join(documenationDirectory, "build", "robots.txt");
   fs.writeFileSync(filename, robots);
+  console.log("robots.txt generated");
 }
 
 
