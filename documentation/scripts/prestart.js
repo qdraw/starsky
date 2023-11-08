@@ -244,7 +244,7 @@ function replaceRobotsTxt() {
   fs.mkdirSync( path.join(documenationDirectory, "build"), { recursive: true });
   const filename = path.join(documenationDirectory, "build", "robots.txt");
   fs.writeFileSync(filename, robots);
-  console.log("robots.txt generated");
+  console.log(`${filename} generated`);
 }
 
 
