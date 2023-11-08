@@ -162,6 +162,11 @@ namespace starsky.foundation.storage.Services
 			if ( !_iStorage.ExistFile(fullFilePath) ) return string.Empty;
 			using ( var stream = _iStorage.ReadStream(fullFilePath, MaxReadSize) ) 
 			{
+				if ( stream == Stream.Null )
+				{
+					return string.Empty;
+				}
+				
 				return await CalculateHashAsync(stream);
 			}
 		}

@@ -153,6 +153,19 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/");
 			Assert.AreEqual(true,isCreated[0].Success);
 		}
+		
+		[TestMethod]
+		public async Task CreateThumbTest_NullFail()
+		{
+			var storage = new FakeIStorage(new List<string>{"/test"}, 
+				new List<string>{"/test/test.jpg"}, 
+				new List<byte[]>{ null });
+			
+			var isCreated = await new Thumbnail(storage, 
+				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/test/test.jpg");
+			
+			Assert.AreEqual(0,isCreated.Count);
+		}
 
 		[TestMethod]
 		public async Task ResizeThumbnailToStream__HostDependency__JPEG_Test()
