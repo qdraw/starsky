@@ -16,7 +16,7 @@ Before reporting a bug, whould you please the following things:
 - [ ] Check the logs for messages like *disk full*, *disk quota exceeded*, *no space left on device*, *read-only file system*, *error creating path*, *wrong permissions*, *no route to host*, *connection failed*, and *killed*:
     - [ ] If a service has been "killed" or otherwise automatically terminated, this points to a [memory problem](docker.md#adding-swap) (add swap and/or memory; remove or increase usage limits)
     - [ ] In case the logs show "disk full", "quota exceeded", or "no space left" errors, either [the disk containing the *storage* folder is full](docker.md#disk-space) (add storage) or a disk usage limit is configured (remove or increase it)
-    - [ ] Errors such as "read-only file system", "error creating path", or "wrong permissions" indicate a [filesystem permission problem](docker.md#file-permissions)
+    - [ ] Errors such as "read-only file system", "error creating path", or "wrong permissions" indicate a [filesystem permission problem](docker.md)
     - [ ] It may help to [add the `:z` mount flag to volumes](https://docs.docker.com/storage/bind-mounts/#configure-the-selinux-label) when using SELinux (RedHat/Fedora)
     - [ ] Log messages that contain "no route to host" indicate a [problem with the database](mariadb.md) or Docker network configuration (follow our [examples](../docker/docker-compose.md))
 - [ ] Make sure you are using the correct protocol (default is `http`), port (default is `4823`), and host (default is `localhost`):
@@ -29,7 +29,7 @@ Before reporting a bug, whould you please the following things:
 - [ ] Go through the [checklist for fatal server errors](#fatal-server-errors)
 
 Should MariaDB get stuck in a restart loop and Starsky can't connect to it, this indicates a [memory](docker.md#adding-swap),
-[filesystem](docker.md#file-permissions), or other [permission issue](docker.md#kernel-security):
+[filesystem](docker.md), or other [permission issue](docker.md#kernel-security):
 
 ```
 mariadb: mysqld: ready for connections.
@@ -90,7 +90,7 @@ Fatal errors are often caused by one of the following conditions:
 - [ ] You have accidentally [mounted the wrong folders](../docker/docker-compose.md#volumes) (update config and restart)
 - [ ] There is disk space left, but a usage or the [inode limit](https://serverfault.com/questions/104986/what-is-the-maximum-number-of-files-a-file-system-can-contain) has been reached (change it)
 - [ ] You are using a [filesystem or network drive with a file size limit](https://thegeekpage.com/fix-the-file-size-exceeds-the-limit-allowed-and-cannot-be-saved/) (change settings or storage)
-- [ ] The *storage* folder [is not writable or mounted read-only](docker.md#file-permissions) (change [permissions](docker.md#file-permissions))
+- [ ] The *storage* folder [is not writable or mounted read-only](docker.md) (change [permissions](docker.md))
 - [ ] [Symbolic links](https://en.wikipedia.org/wiki/Symbolic_link) were mounted or used within a *storage* folder (replace with actual paths)
 - [ ] The [server is low on memory](../readme.mdx#system-requirements) (add memory)
 - [ ] You didn't [configure at least 4 GB of swap space](docker.md#adding-swap) (add swap)
@@ -110,7 +110,7 @@ We recommend checking your [Docker Logs](docker.md#viewing-logs) for messages li
 
 - [ ] If a service has been "killed" or otherwise automatically terminated, this points to a [memory problem](docker.md#adding-swap) (add swap and/or memory; remove or increase usage limits)
 - [ ] In case the logs show "disk full", "quota exceeded", or "no space left" errors, either [the disk containing the *storage* folder is full](docker.md#disk-space) (add storage) or a disk usage limit is configured (remove or increase it)
-- [ ] Errors such as "read-only file system", "error creating path", or "wrong permissions" indicate a [filesystem permission problem](docker.md#file-permissions) 
+- [ ] Errors such as "read-only file system", "error creating path", or "wrong permissions" indicate a [filesystem permission problem](docker.md) 
 - [ ] Log messages that contain "no route to host" indicate a [problem with the database](mariadb.md) or network configuration (follow our [examples](../docker/docker-compose.md))
 
 *Start a full rescan if necessary, for example, if it looks like [thumbnails](index.md#broken-thumbnails) or [pictures are missing](index.md#missing-pictures).*
@@ -136,7 +136,7 @@ If you have indexed your library and some images or videos are missing, first [c
 In case the application logs don't contain anything helpful:
 
 - [ ] The files exceed the [size limit in megabyte or the resolution limit in megapixels](../config-options.md#storage)
-- [ ] The files have [bad filesystem permissions or the wrong owner](docker.md#file-permissions), so they cannot be opened
+- [ ] The files have [bad filesystem permissions or the wrong owner](docker.md), so they cannot be opened
 - [ ] The file type is generally unsupported
 - [ ] The file type is generally supported, but a specific feature or codec is missing
 - [ ] The indexer has skipped the files because they are exact duplicates
@@ -144,7 +144,7 @@ In case the application logs don't contain anything helpful:
 - [ ] They are hidden because image could not be read:
     - [ ] The file is broken, e.g. because of *short Huffman data* (try to fix it)
     - [ ] [Your (virtual) server disk is full](docker.md#disk-space) (add storage)
-    - [ ] [The *storage* folder is not writable](docker.md#file-permissions) (change [permissions](docker.md#file-permissions))
+    - [ ] [The *storage* folder is not writable](docker.md) (change [permissions](docker.md))
     - [ ] A disk usage or the [inode limit](https://serverfault.com/questions/104986/what-is-the-maximum-number-of-files-a-file-system-can-contain) has been reached (remove or increase it)
 - [ ] Multiple files were [stacked](../../features/stacks.md) based on their metadata or file names
 - [ ] You try to index a shared drive on a remote server, but the server is offline
@@ -178,7 +178,7 @@ In case the application logs don't contain anything helpful:
 - [ ] You browse non-JPEG files in *Library > Originals* which have an icon but no preview
 - [ ] [Your (virtual) server disk is full](docker.md#disk-space) (add storage)
 - [ ] A disk usage or the [inode limit](https://serverfault.com/questions/104986/what-is-the-maximum-number-of-files-a-file-system-can-contain) has been reached (remove or increase it)
-- [ ] The *storage* folder [is not writable or mounted read-only](docker.md#file-permissions) (change [permissions](docker.md#file-permissions))
+- [ ] The *storage* folder [is not writable or mounted read-only](docker.md) (change [permissions](docker.md))
 - [ ] Files were deleted manually, for example to free up disk space
 - [ ] Files can't be opened, e.g. because the file system permissions have been changed
 - [ ] Files are stored on an unreliable device such as a USB flash drive or a shared network folder
@@ -195,7 +195,7 @@ We also recommend checking your [Docker Logs](docker.md#viewing-logs) for messag
 - [ ] If a service has been "killed" or otherwise automatically terminated, this points to a
 memory problem
 - [ ] In case the logs show "disk full", "quota exceeded", or "no space left" errors, either [the disk containing the *storage* folder is full](docker.md#disk-space) (add storage) or a disk usage limit is configured (remove or increase it)
-- [ ] Errors such as "read-only file system", "error creating path", or "wrong permissions" indicate a [filesystem permission problem](docker.md#file-permissions)
+- [ ] Errors such as "read-only file system", "error creating path", or "wrong permissions" indicate a [filesystem permission problem](docker.md)
 
 *Depending on the cause of the problem, you may need to perform a full rescan once the issue is resolved.*
 
@@ -208,7 +208,7 @@ If videos do not play and/or you only see a white/black area when you open a vid
 - [ ] An ad blocker or other plugins block requests (disable them or add an exception)
 - [ ] [Your (virtual) server disk is full](docker.md#disk-space) (add storage)
 - [ ] A disk usage or the [inode limit](https://serverfault.com/questions/104986/what-is-the-maximum-number-of-files-a-file-system-can-contain) has been reached (remove or increase it)
-- [ ] The *storage* folder [is not writable or mounted read-only](docker.md#file-permissions) (change [permissions](docker.md#file-permissions))
+- [ ] The *storage* folder [is not writable or mounted read-only](docker.md) (change [permissions](docker.md))
 - [ ] Files are stored on an unreliable device such as a USB flash drive or a shared network folder (check if the files are accessible)
 - [ ] Your browser cannot communicate properly with the server, e.g. because a [Reverse Proxy](../proxies/nginx.md), VPN, or CDN is configured incorrectly (check its configuration and try without)
 - [ ] There are other network problems caused by a proxy, firewall, or unstable connection (try a direct connection)
