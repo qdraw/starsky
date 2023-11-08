@@ -15,6 +15,12 @@ jobs:
       with:
         ref: master
 
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        check-latest: true
+
     - name: 'Update docusaurus'
       id: clientapp_create_docusaurus_update
       working-directory: ./starsky-tools/build-tools
