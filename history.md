@@ -500,7 +500,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Change) _Back-end_ Add Meta Thumbnail (150px) to get faster archive and search pages (PR #380)
 - [x] (Change) _Back-end_ Use 2000 px image in overlay (Publish) when available (PR #380)
 - [x] (Change) _Back-end_ Start /api/thumbnail-generation in different thread instead of que (PR #380)
-- [x] (Added) _Back-end_ Add API "/api/thumbnail/list-sizes/{HashHere}" to check if the multiple sizes are there (PR #414)
+- [x] (Added) _Back-end_ Add API "/api/thumbnail/list-sizes/\{HashHere\}" to check if the multiple sizes are there (PR #414)
 - [x] (Change) _Back-end_ Update thumbnail starsky-tools to use list-sizes API (PR #414)
 - [x] (Change) _Back-end_ Add support for multiple sizes for the Thumbnail cleaner (PR #419)
 - [x] (Fixed) _Back-end_ Set fallback image of ToBase64DataUriList when generation failed, instead of exception (PR #418)
@@ -586,7 +586,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
 - [x] (Fixed) _Front-end_ Displaying files in realtime works now _issue #275_
 - [x] (Fixed) _Front-end_ Archive when added tag/description is cleared is still send _issue #279_
-- [x] (Changed) _Back-end_ "/api/thumbnail/{f}" status 409 is changed to status 210
+- [x] (Changed) _Back-end_ "/api/thumbnail/\{f\}" status 409 is changed to status 210
 - [x] (Added) _Front-end_ Zoom in detailView _issue #242_
 - [x] (Fixed) _Back-end_ Delete large number of files gives exception _issue #281_
 - [x] (Added) _Front-end_ Keyboard accelerator Command / Ctrl A _issue #247_
@@ -724,7 +724,7 @@ _New Feature: In this release websockets are used (note: when using reverse conf
 - [x] (Breaking change) _Back-end_ rename api from "/api/removeCache" to "/api/remove-cache"
 - [x] (Breaking change) _Back-end_ rename api from "/api/downloadPhoto" to "/api/download-photo"
 - [x] (Breaking change) _Back-end_ rename api from "/api/export/createZip" to "/api/export/create-zip"
-- [x] (Breaking change) _Back-end_ rename api from "/export/zip/{f}.zip" to "/api/export/zip/{f}.zip"
+- [x] (Breaking change) _Back-end_ rename api from "/export/zip/\{f\}.zip" to "/api/export/zip/\{f\}.zip"
 - [x] (Breaking change) _Back-end_ rename api from "/redirect/SubpathRelative" to "/redirect/sub-path-relative"
 - [x] (Breaking change) _Back-end_ rename api from "/api/search/relativeObjects" to "/api/search/relative-objects"
 - [x] (Breaking change) _Back-end_ rename api from "/api/search/removeCache" to "/api/search/remove-cache"
@@ -1092,7 +1092,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x] (bugfix) _Front-end_ _Archive_ _iOS_ After press 'Select' and return the scrollstate keeps on the same position (fixed)
 - [x] (bugfix) _Front-end_ When going from Archive to Detailview and back the scrollstate is still the same (fixed)
 - [x] (feature) _Front-end_ Dark theme style added
-- [x] (bugfix) _Front-end_ _Chrom{e,ium}_ the location after loging in now updated (fixed)
+- [x] (bugfix) _Front-end_ _Chrom(e,ium)_ the location after loging in now updated (fixed)
 - [x] (bugfix) _CORS_ Add AllowCredentials policy for production
 - [x] (feature) _Front-end_ Next/Prev back in Detailview is now also support when searching
 - [x] (change) _Front-end_ Remove V1 from main menu

@@ -26,7 +26,7 @@ There is a list of required settings. First the `appsettings.json` is loaded and
 The command line arguments are shortcuts to set an in-app environment variable.
 
 ### The order of reading settings
-You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
+You could use machine specific configuration files: appsettings.machinename.json _(and replace machinename with your computer name in lowercase)_
 1.  You can use `appsettings.json` inside the application folder to set base settings.
     The order of this files is used to get the values from the appsettings
     -    `/bin/Debug/net6.0/appsettings.patch.json`
@@ -130,53 +130,53 @@ __All text (not number or date) driven search queries use a contain search__
 
 #### Search operators documentation
 
-| Search options       | example                            | description                   |
-|----------------------|------------------------------------|-------------------------------|
-| __-tags__            | test                               | default option                |
-| -tags                | -tags="testtag"                    |                               |
-| -tags                | -test apple                        | Ignore the keyword test       |
-| -tags                | -Tags-"test"                       | Ignore the keyword test       |
-| -tags                | apple banana                       | search for apple or banana    |
-| __-title__           | -title="example"                   |                               |
-| __-filepath__        | -filepath="/path"                  | -inurl is the same            |
-| __-filename__        | -filename="file.jpg"               |                               |
-| __-filehash__        | -filehash=3DB75N7JJ6FDOPZY4YHGX4TL |                               |
-| __-parentdirectory__ | -parentdirectory="/2019"           |                               |
-| __-description__     | -description="search"              |                               |
-| __-imageformat__     | -ImageFormat="jpg"                 | include `jpeg`                |
-| -imageformat         | -ImageFormat="tiff"                | including `dng`               |
-| -imageformat         | -ImageFormat="bmp"                 |                               |
-| -imageformat         | -ImageFormat="gif"                 |                               |
-| -imageformat         | -ImageFormat="png"                 |                               |
-| -imageformat         | -ImageFormat="xmp"                 |                               |
-| -imageformat         | -ImageFormat="gpx"                 |                               |
-| __-datetime__        | -datetime=1                        | search for yesterday          |
-| -datetime            | -datetime>12 -datetime<2           | between 2 and 12 days ago     |
-| -datetime            | -datetime=2020-01-01               | between 00:00:00 and 23:59:59 |
-| -datetime            | -datetime=2020-01-01T14:35:29      | on this exact time            |
-| __-addtodatabase__   | -addtodatabase=1                   | search for yesterday          |
-| -addtodatabase       | -addtodatabase>12 -addtodatabase<2 | between 2 and 12 days ago     |
-| -addtodatabase       | -addtodatabase=2020-01-01          | between 00:00:00 and 23:59:59 |
-| -addtodatabase       | -addtodatabase=2020-01-01T14:35:29 | on this exact time            |
-| __-lastedited__      | -lastedited=1                      | search for yesterday          |
-| -lastedited          | -lastedited>12 -lastedited<2       | between 2 and 12 days ago     |
-| -lastedited          | -lastedited=2020-01-01             | between 00:00:00 and 23:59:59 |
-| -lastedited          | -lastedited=2020-01-01T14:35:29    | on this exact time            |
-| __-isdirectory__     | -isdirectory=true                  | search for folders            |
-| -isdirectory         | -isdirectory=false                 | search for items              |
-| __-make__            | -make=Apple                        | brand name of the camera      |
-| __-model__           | -model="iPhone SE"                 | search for camera model       |
-| __-colorclass__      | -colorclass=1                      | search for colorClass         |
-| -colorclass          | -colorclass=0                      | No Color / None               |
-| -colorclass          | -colorclass=1                      | Purple / Winner               |
-| -colorclass          | -colorclass=2                      | Red / WinnerAlt               |
-| -colorclass          | -colorclass=3                      | Orange / Superior             |
-| -colorclass          | -colorclass=4                      | Yellow / SuperiorAlt          |
-| -colorclass          | -colorclass=5                      | Green / Typical               |
-| -colorclass          | -colorclass=6                      | Azure / TypicalAlt            |
-| -colorclass          | -colorclass=7                      | Blue / Extras                 |
-| -colorclass          | -colorclass=8                      | Grey / No name                |
-| __software__         | -software:"photoshop"              | Last edited this app          |
+| Search options       | example                              | description                   |
+|----------------------|--------------------------------------|-------------------------------|
+| __-tags__            | test                                 | default option                |
+| -tags                | -tags="testtag"                      |                               |
+| -tags                | -test apple                          | Ignore the keyword test       |
+| -tags                | -Tags-"test"                         | Ignore the keyword test       |
+| -tags                | apple banana                         | search for apple or banana    |
+| __-title__           | -title="example"                     |                               |
+| __-filepath__        | -filepath="/path"                    | -inurl is the same            |
+| __-filename__        | -filename="file.jpg"                 |                               |
+| __-filehash__        | -filehash=3DB75N7JJ6FDOPZY4YHGX4TL   |                               |
+| __-parentdirectory__ | -parentdirectory="/2019"             |                               |
+| __-description__     | -description="search"                |                               |
+| __-imageformat__     | -ImageFormat="jpg"                   | include `jpeg`                |
+| -imageformat         | -ImageFormat="tiff"                  | including `dng`               |
+| -imageformat         | -ImageFormat="bmp"                   |                               |
+| -imageformat         | -ImageFormat="gif"                   |                               |
+| -imageformat         | -ImageFormat="png"                   |                               |
+| -imageformat         | -ImageFormat="xmp"                   |                               |
+| -imageformat         | -ImageFormat="gpx"                   |                               |
+| __-datetime__        | -datetime=1                          | search for yesterday          |
+| -datetime            | -datetime\>12 -datetime\<2           | between 2 and 12 days ago     |
+| -datetime            | -datetime=2020-01-01                 | between 00:00:00 and 23:59:59 |
+| -datetime            | -datetime=2020-01-01T14:35:29        | on this exact time            |
+| __-addtodatabase__   | -addtodatabase=1                     | search for yesterday          |
+| -addtodatabase       | -addtodatabase\>12 -addtodatabase\<2 | between 2 and 12 days ago     |
+| -addtodatabase       | -addtodatabase=2020-01-01            | between 00:00:00 and 23:59:59 |
+| -addtodatabase       | -addtodatabase=2020-01-01T14:35:29   | on this exact time            |
+| __-lastedited__      | -lastedited=1                        | search for yesterday          |
+| -lastedited          | -lastedited\>12 -lastedited\<2       | between 2 and 12 days ago     |
+| -lastedited          | -lastedited=2020-01-01               | between 00:00:00 and 23:59:59 |
+| -lastedited          | -lastedited=2020-01-01T14:35:29      | on this exact time            |
+| __-isdirectory__     | -isdirectory=true                    | search for folders            |
+| -isdirectory         | -isdirectory=false                   | search for items              |
+| __-make__            | -make=Apple                          | brand name of the camera      |
+| __-model__           | -model="iPhone SE"                   | search for camera model       |
+| __-colorclass__      | -colorclass=1                        | search for colorClass         |
+| -colorclass          | -colorclass=0                        | No Color / None               |
+| -colorclass          | -colorclass=1                        | Purple / Winner               |
+| -colorclass          | -colorclass=2                        | Red / WinnerAlt               |
+| -colorclass          | -colorclass=3                        | Orange / Superior             |
+| -colorclass          | -colorclass=4                        | Yellow / SuperiorAlt          |
+| -colorclass          | -colorclass=5                        | Green / Typical               |
+| -colorclass          | -colorclass=6                        | Azure / TypicalAlt            |
+| -colorclass          | -colorclass=7                        | Blue / Extras                 |
+| -colorclass          | -colorclass=8                        | Grey / No name                |
+| __software__         | -software:"photoshop"                | Last edited this app          |
 
 ### Rest API documentation
 Starsky has a Json restful API. There is a Swagger documentation available at `/swagger/index.html` 
