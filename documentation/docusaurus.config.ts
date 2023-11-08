@@ -73,6 +73,7 @@ const config: Config = {
         theme: {
           customCss: './src/css/custom.css',
         },
+        ...gtag,
       } satisfies Preset.Options,
     ],
   ],
