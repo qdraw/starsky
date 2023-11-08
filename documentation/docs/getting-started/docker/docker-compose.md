@@ -122,7 +122,7 @@ Enabling [public mode](../config-options.md) will disable authentication.
     It can be helpful to [keep Docker running in the foreground while debugging](../troubleshooting/docker.md#viewing-logs) so that log messages are displayed directly. To do this, omit the `-d` parameter when restarting.
     Should the server already be running, or you see no errors, you may have started it
     on a different host and/or port. There could also be an [issue with your browser,
-    ad blocker, or firewall settings](../troubleshooting/index.md#connection-fails).
+    [ad blocker, or firewall settings](../troubleshooting/index.md).
 
 
 The server port and other [config options](../config-options.md) can be changed in `docker-compose.yml` at any time.
@@ -138,7 +138,7 @@ docker compose up -d
 Our [First Steps 👣](../first-steps.md) tutorial guides you through the user interface and settings to ensure your library is indexed according to your individual preferences.
 
 > **Note**<br />
-    Ensure [there is enough disk space available](../troubleshooting/docker.md#disk-space) for creating thumbnails and [verify filesystem permissions](../troubleshooting/docker.md#file-permissions)
+    Ensure [there is enough disk space available](../troubleshooting/docker.md#disk-space) for creating thumbnails and [verify filesystem permissions](../troubleshooting/docker.md)
     before starting to index: Files in the *originals* folder must be readable, while the *storage* folder
     including all subdirectories must be readable and writeable.
 

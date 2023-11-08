@@ -42,7 +42,7 @@ This document is auto generated
 | __/api/export/create-zip__                        | POST  | Export source files to an zip archive                                           |
 | _Parameters: f (subPath to files), collections (enable files with the same name (before the extension)), thumbnail                        _ |
 | _ (export thumbnails)                                                                                                                     _ |
-| __/api/export/zip/{f}.zip__                       | GET   | Get the exported zip, but first call 'createZip'use for example this url: /ex...|
+| __/api/export/zip/\{f\}.zip__                     | GET   | Get the exported zip, but first call 'createZip'use for example this url: /ex...|
 | __/api/geo/status__                               | GET   | Get Geo sync status                                                             |
 | __/api/geo/sync__                                 | POST  | Reverse lookup for Geo Information and/or add Geo location based on a GPX fil...|
 | __/api/geo-reverse-lookup__                       | GET   | Reverse geo lookup                                                              |
@@ -97,12 +97,12 @@ This document is auto generated
 | __/api/suggest/inflate__                          | GET   | To fill the cache with the data (only if cache is not already filled)           |
 | __/api/synchronize__                              | POST  | Faster API to Check if directory is changed (not recursive)                     |
 | __/api/synchronize__                              | GET   | Faster API to Check if directory is changed (not recursive)                     |
-| __/api/thumbnail/small/{f}__                      | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on whats there))|
-| __/api/thumbnail/list-sizes/{f}__                 | GET   | Get overview of what exists by name                                             |
-| __/api/thumbnail/{f}__                            | GET   | Get thumbnail with fallback to original source image.Return source image when...|
+| __/api/thumbnail/small/\{f\}__                    | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on whats there))|
+| __/api/thumbnail/list-sizes/\{f\}__               | GET   | Get overview of what exists by name                                             |
+| __/api/thumbnail/\{f\}__                          | GET   | Get thumbnail with fallback to original source image.Return source image when...|
 | _Parameters: f (one single fileHash (NOT path)), filePath (fallback FilePath), isSingleItem (true = load original),                       _ |
 | _ json (text as output), extraLarge (give preference to extraLarge over large image)                                                      _ |
-| __/api/thumbnail/zoom/{f}@{z}__                   | GET   | Get zoomed in image by fileHash.At the moment this is the source image          |
+| __/api/thumbnail/zoom/\{f\}@\{z\}__               | GET   | Get zoomed in image by fileHash.At the moment this is the source image          |
 | __/api/thumbnail-generation__                     | POST  | Create thumbnails for a folder in the background                                |
 | __/api/trash/detect-to-use-system-trash__         | GET   | Is the system trash supported                                                   |
 | __/api/trash/move-to-trash__                      | POST  | (beta) Move a file to the trash                                                 |

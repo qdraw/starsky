@@ -4,9 +4,9 @@
 
 The HTTP protocol supports a set of security headers to control certain aspects of (browser) behaviour. Below is a summary of the most important security headers and their suggested/required value. 
 
-There are sites like <https://securityheaders.io/> and <https://internet.nl/> where you can scan your site to see how well it scores. More details on scanning/monitoring below.
+There are sites like https://securityheaders.io/ and https://internet.nl/ where you can scan your site to see how well it scores. More details on scanning/monitoring below.
 
-The links in the table below also provide examples on how to set these headers in popular webservers like Apache and nginx .
+The links in the table below also provide examples on how to set these headers in popular web servers like Apache and nginx .
 
 This page is inspired by the [OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/#configuration-proposal) and their [Configuration Proposal](https://owasp.org/www-project-secure-headers/#configuration-proposal). We will make more of those mandatory for iO over time, so please up to speed with the below headers.
 
@@ -36,15 +36,15 @@ Please make sure headers are not set multiple times, as this can lead to unpredi
 
 Sites:
 
-- <https://securityheaders.com/>
-- <https://internet.nl/>
-- <https://dev.ssllabs.com/ssltest/analyze.html>
-- <https://chrome.google.com/webstore/detail/security-header-extension/nggplilppojikmgpmlecpcikpoiffinp>
+- https://securityheaders.com/
+- https://internet.nl/
+- https://dev.ssllabs.com/ssltest/analyze.html
+- https://chrome.google.com/webstore/detail/security-header-extension/nggplilppojikmgpmlecpcikpoiffinp
 
 Scripts:
 
-- <https://github.com/santoru/shcheck>
+- https://github.com/santoru/shcheck
 
 For the Content-Security-Policy (CSP) it is a lot more complicated to check. You can use these to check the CSP:
 
-- <https://csp-evaluator.withgoogle.com/>
+- https://csp-evaluator.withgoogle.com/

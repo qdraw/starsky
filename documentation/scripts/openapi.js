@@ -36,13 +36,16 @@ function parseSwagger() {
         continue;
       }
 
-      const pathContent = `__${path}__`
+      let pathContent = `__${path}__`
+      // for mdx markdown 
+      pathContent = pathContent.replace(/{/ig, "\\{").replace(/}/ig, "\\}");
+
       const rightPathSpace = ' '.repeat(pathLen - pathContent.length)
       const rightOperationSpace = ' '.repeat(operationLen - operation.length)
 
       let summary = "Missing summary"
       if (pathObject.operations[operation].summary) {
-        summary = pathObject.operations[operation].summary.replace(/(\n|\r\n)/ig,"") ;
+        summary = pathObject.operations[operation].summary.replace(/(\n|\r\n)/ig,"");
       }
 
       const trimmedSummary = trimString(summary, summaryLen);

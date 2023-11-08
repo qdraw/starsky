@@ -6,7 +6,6 @@ const { parseAndWrite } = require("./openapi");
 
 const parentDirectory = path.join(__dirname, "..", "..");
 const docsDirectory = path.join(__dirname, "..", "docs"); // /git/starsky/documentation/docs
-const documenationDirectory = path.join(__dirname, ".."); // /git/starsky/documentation - without docs
 
 function copyFileSync(input, to) {
   const inputPath = path.join(parentDirectory, input);
@@ -49,14 +48,6 @@ function touchSync(to) {
 function writeFile(to, content) {
   const filename = path.join(docsDirectory, to);
   fs.writeFileSync(filename, content);
-}
-
-function readFile(rootPath, from) {
-  const filename = path.join(rootPath, from);
-  if (fs.existsSync(filename) === false) {
-    return null;
-  }
-  return fs.readFileSync(filename, { encoding: "utf8" });
 }
 
 copyFileSync("history.md", "advanced-options/history.md");
@@ -227,24 +218,6 @@ copyFileSync(
 	"developer-guide/contributing/HACKING.md"
 );
 
-function replaceRobotsTxt() {
-  let robots = readFile(documenationDirectory, path.join("static", "robots"));
-  robots = robots.replace(/\{date\}/g, new Date().toLocaleDateString('en-UK', { year: 'numeric', month: 'long', day: 'numeric' }));
-  
-  if (process.env.DOCS_URL) {
-    robots = robots.replace(/\{domain\}/g, process.env.DOCS_URL);  
-  }
-  else {
-    console.error("env: DOCS_URL is not set, so skipping robots.txt");
-    return;
-  }
 
-  fs.mkdirSync( path.join(documenationDirectory, "build"), { recursive: true });
-  const filename = path.join(documenationDirectory, "build", "robots.txt");
-  fs.writeFileSync(filename, robots);
-}
-
-
-replaceRobotsTxt();
 
 parseAndWrite();

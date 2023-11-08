@@ -60,3 +60,36 @@ const versionTextPath = path.join(__dirname, "..", "build", "version.txt");
 console.log(versionTextPath + " -> " + hash);
 
 fs.writeFileSync(versionTextPath, hash)
+
+// robots txt generator
+const documentationDirectory = path.join(__dirname, ".."); // /git/starsky/documentation - without docs
+
+function readFile(rootPath, from) {
+	const filename = path.join(rootPath, from);
+	if (fs.existsSync(filename) === false) {
+		return null;
+	}
+	return fs.readFileSync(filename, { encoding: "utf8" });
+}
+
+function replaceRobotsTxt() {
+	let robots = readFile(documentationDirectory, path.join("static", "robots.template"));
+	console.log(robots.length >= 1 ? "robots.template contains content" : "robots.template is empty");
+
+	robots = robots.replace(/\{date\}/g, new Date().toLocaleDateString('en-UK', { year: 'numeric', month: 'long', day: 'numeric' }));
+
+	if (process.env.DOCS_URL) {
+		robots = robots.replace(/\{domain\}/g, process.env.DOCS_URL);  
+	}
+	else {
+		console.error("env: DOCS_URL is not set, so skipping robots.txt");
+		return;
+	}
+
+	fs.mkdirSync( path.join(documentationDirectory, "build"), { recursive: true });
+	const filename = path.join(documentationDirectory, "build", "robots.txt");
+	fs.writeFileSync(filename, robots);
+	console.log(`${filename} generated`);
+}
+
+replaceRobotsTxt();

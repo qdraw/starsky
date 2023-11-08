@@ -66,7 +66,7 @@ _Or using bash (on Linux and Mac OS)_
 
 4.  Check configuration `starsky/starsky/appsettings.json`
 
-> > Tip: You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
+> > Tip: You could use machine specific configuration files: appsettings.machinename.json _(and replace machinename with your computer name in lowercase)_
 
 5.  Run
 
