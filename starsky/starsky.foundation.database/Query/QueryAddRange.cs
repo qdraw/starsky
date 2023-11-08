@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
@@ -31,6 +32,12 @@ namespace starsky.foundation.database.Query
 				{
 					context.Attach(item).State = EntityState.Detached;
 				}
+			}
+			
+			async Task<bool> LocalRemoveDefaultQuery()
+			{
+				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(),fileIndexItemList);
+				return true;
 			}
 
 			try
@@ -64,6 +71,12 @@ namespace starsky.foundation.database.Query
 					new InjectServiceScope(_scopeFactory).Context(),
 					fileIndexItemList);
 			}
+			catch ( Microsoft.Data.Sqlite.SqliteException )
+			{
+				// Files that are locked
+				await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+					TimeSpan.FromSeconds(2), 4);
+			}
 
 			fileIndexItemList = FormatOk(fileIndexItemList,
 				FileIndexItem.ExifStatus.NotFoundNotInIndex);
@@ -75,5 +88,6 @@ namespace starsky.foundation.database.Query
 
 			return fileIndexItemList;
 		}
+
 	}
 }
