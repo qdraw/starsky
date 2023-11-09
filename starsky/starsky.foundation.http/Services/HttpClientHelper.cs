@@ -63,6 +63,11 @@ namespace starsky.foundation.http.Services
 			"api.github.com"
 		};
 
+		/// <summary>
+		/// Get String of webPage - does check with domain whitelist
+		/// </summary>
+		/// <param name="sourceHttpUrl">webUrl</param>
+		/// <returns>bool: success or fail and string content of result</returns>
 		public async Task<KeyValuePair<bool,string>> ReadString(string sourceHttpUrl)
 		{
 			Uri sourceUri = new Uri(sourceHttpUrl);
