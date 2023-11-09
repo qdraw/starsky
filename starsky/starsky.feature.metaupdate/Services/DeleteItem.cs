@@ -30,7 +30,7 @@ namespace starsky.feature.metaupdate.Services
 			_statusCodeHelper = new StatusCodesHelper(appSettings);
 		}
 		
-		public async Task<List<FileIndexItem>> DeleteAsync(string filePath, bool includeCollections)
+		public async Task<List<FileIndexItem>> DeleteAsync(string filePath, bool collections)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(filePath);
 			var fileIndexResultsList = new List<FileIndexItem>();
@@ -38,7 +38,7 @@ namespace starsky.feature.metaupdate.Services
 
 			foreach (var subPath in inputFilePaths)
 			{
-				var detailView = _query.SingleItem(subPath, null, includeCollections, false);
+				var detailView = _query.SingleItem(subPath, null, collections, false);
 
 				if (detailView?.FileIndexItem?.FilePath == null)
 				{
@@ -66,7 +66,7 @@ namespace starsky.feature.metaupdate.Services
 					continue;
 				}
 
-				collectionAndInsideDirectoryList.AddRange(DetailView.GetCollectionSubPathList(detailView.FileIndexItem, includeCollections, subPath));
+				collectionAndInsideDirectoryList.AddRange(DetailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath));
 
 				// For deleting content of an entire directory
 				if ( detailView.FileIndexItem.IsDirectory != true ) continue;
