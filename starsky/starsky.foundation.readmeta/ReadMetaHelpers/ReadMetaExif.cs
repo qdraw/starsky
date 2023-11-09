@@ -494,8 +494,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
 
             var objectName = iptcDirectory?.Tags.FirstOrDefault(
-	            p => p.DirectoryName == "IPTC"
-	                 && p.Name == "Object Name")?.Description;
+	            p => p.Name == "Object Name")?.Description;
             
             if ( ! string.IsNullOrEmpty(objectName) )
             {
