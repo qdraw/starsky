@@ -786,7 +786,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return (int) altitude;
         }
 
-        private static double GetXmpGeoAlt(List<Directory> allExifItems)
+        internal static double GetXmpGeoAlt(List<Directory> allExifItems)
         {
 	        var altitudeRef = true;
 	        var altitude = 0d;
