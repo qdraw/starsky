@@ -46,12 +46,14 @@ namespace starsky.feature.metaupdate.Services
 					continue;
 				}
 
+				// Status should be deleted before you can delete the item
 				if (_iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
 					HandleNotFoundSourceMissingStatus(detailView.FileIndexItem, fileIndexResultsList);
 					continue;
 				}
 
+				// Dir is readonly / don't delete
 				if (_statusCodeHelper.IsReadOnlyStatus(detailView) == FileIndexItem.ExifStatus.ReadOnly)
 				{
 					HandleReadOnlyStatus(detailView.FileIndexItem, fileIndexResultsList);
@@ -66,8 +68,10 @@ namespace starsky.feature.metaupdate.Services
 
 				collectionAndInsideDirectoryList.AddRange(DetailView.GetCollectionSubPathList(detailView.FileIndexItem, includeCollections, subPath));
 
-				if (detailView.FileIndexItem.IsDirectory == false) continue;
+				// For deleting content of an entire directory
+				if ( detailView.FileIndexItem.IsDirectory != true ) continue;
 
+				// when deleting a folder the collections setting does nothing
 				collectionAndInsideDirectoryList.AddRange((await _query.GetAllFilesAsync(detailView.FileIndexItem.FilePath)).Select(itemInDirectory => itemInDirectory.FilePath));
 			}
 
@@ -78,21 +82,28 @@ namespace starsky.feature.metaupdate.Services
 
 		private async Task HandleCollectionDeletion(List<string> collectionAndInsideDirectoryList, List<FileIndexItem> fileIndexResultsList)
 		{
+			// collectionAndInsideDirectoryList should not have duplicate items
 			foreach (var collectionSubPath in new HashSet<string>(collectionAndInsideDirectoryList))
 			{
 				var detailViewItem = _query.SingleItem(collectionSubPath, null, false, false);
 
+				// null only happens when some other process also delete this item
 				if (detailViewItem == null) continue;
 
+				// return a Ok, which means the file is deleted
 				detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				
+				// remove thumbnail from disk
 				_thumbnailStorage.FileDelete(detailViewItem.FileIndexItem.FileHash);
 				fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
 
+				// remove item from db
 				await _query.RemoveItemAsync(detailViewItem.FileIndexItem);
 				RemoveXmpSideCarFile(detailViewItem);
 				RemoveJsonSideCarFile(detailViewItem);
 				RemoveFileOrFolderFromDisk(detailViewItem);
 
+				// the child directories are still stored in the database
 				if (detailViewItem.FileIndexItem.IsDirectory != true) continue;
 
 				foreach (var item in (await _query.GetAllRecursiveAsync(collectionSubPath)).Where(p => p.IsDirectory == true))
