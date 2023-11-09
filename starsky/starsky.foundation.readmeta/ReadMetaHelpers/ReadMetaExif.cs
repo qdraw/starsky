@@ -961,9 +961,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	            return GetXmpData(xmpDirectory, xmpPropertyPath);
             }
             
-            var locationCity = iptcDirectoryDirectory?.Tags.FirstOrDefault(
-                p => p.DirectoryName == "IPTC" 
-                     && p.Name == iptcName)?.Description;
+            var locationCity = iptcDirectoryDirectory?.Tags
+	            .FirstOrDefault(p => p.Name == iptcName)?.Description;
             return locationCity;
         }
 
@@ -1001,13 +1000,14 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		{
 	        var exifItem = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 
+	        // "Exif SubIFD"
 		    var apertureString = exifItem?.Tags.FirstOrDefault(p => 
-			    p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
+			    p.Name == "Aperture Value")?.Description;
 
 		    if (string.IsNullOrEmpty(apertureString))
 		    {
 			    apertureString = exifItem?.Tags.FirstOrDefault(p => 
-				    p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number")?.Description;
+				    p.Name == "F-Number")?.Description;
 		    }
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
@@ -1037,13 +1037,15 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    {
 		    var exifItem = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 
+		    // Exif SubIFD
 		    var shutterSpeedString = exifItem?.Tags.FirstOrDefault(p => 
-			    p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
+			    p.Name == "Shutter Speed Value")?.Description;
 
 		    if (string.IsNullOrEmpty(shutterSpeedString))
 		    {
+			    // Exif SubIFD
 			    shutterSpeedString = exifItem?.Tags.FirstOrDefault(p => 
-				    p.DirectoryName == "Exif SubIFD" && p.Name == "Exposure Time")?.Description;
+				    p.Name == "Exposure Time")?.Description;
 		    }
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ExposureTime,1/20
@@ -1069,24 +1071,25 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    {
 		    var subIfdItem = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 
-		    
+		    // Exif SubIFD
 		    var isoSpeedString = subIfdItem?.Tags.FirstOrDefault(p => 
-			    p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;
+			    p.Name == "ISO Speed Ratings")?.Description;
 
 		    if ( string.IsNullOrEmpty(isoSpeedString) )
 		    {
 			    var canonMakerNoteDirectory = allExifItems.OfType<CanonMakernoteDirectory>().FirstOrDefault();
 
+			    // Canon Makernote
 			    isoSpeedString = canonMakerNoteDirectory?.Tags.FirstOrDefault(p => 
-				    p.DirectoryName == "Canon Makernote" && p.Name == "Iso")?.Description;
+				    p.Name == "Iso")?.Description;
 			    if ( isoSpeedString == "Auto" )
 			    {
 				    // src: https://github.com/exiftool/exiftool/blob/
 				    // 6b994069d52302062b9d7a462dc27082c4196d95/lib/Image/ExifTool/Canon.pm#L8882
 				    var autoIso = canonMakerNoteDirectory.Tags.FirstOrDefault(p => 
-					    p.DirectoryName == "Canon Makernote" && p.Name == "Auto ISO")?.Description;
+					    p.Name == "Auto ISO")?.Description;
 				    var baseIso = canonMakerNoteDirectory.Tags.FirstOrDefault(p => 
-					    p.DirectoryName == "Canon Makernote" && p.Name == "Base ISO")?.Description;
+					    p.Name == "Base ISO")?.Description;
 				    if ( !string.IsNullOrEmpty(autoIso) && !string.IsNullOrEmpty(baseIso) )
 				    {
 					    int.TryParse(autoIso, NumberStyles.Number, 
@@ -1111,6 +1114,5 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    int.TryParse(isoSpeedString, NumberStyles.Number, CultureInfo.InvariantCulture, out var isoSpeed);
 		    return isoSpeed;
 	    }
-		
 	}
 }
