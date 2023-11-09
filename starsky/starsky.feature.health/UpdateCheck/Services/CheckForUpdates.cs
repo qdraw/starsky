@@ -48,7 +48,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 				?  _appSettings.AppVersion : currentVersion;
 			
 			// The CLI programs uses no cache
-			if ( _cache == null || _appSettings?.AddMemoryCache == false )
+			if ( _cache == null || _appSettings?.AddMemoryCache != true )
 			{
 				return Parse(await QueryIsUpdateNeededAsync(),currentVersion);
 			}
