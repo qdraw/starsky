@@ -140,6 +140,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 			SetArrayBasedItemsApertureShutterSpeedIso(allExifItems, item);
             SetArrayBasedItemsLocationPlaces(allExifItems, item);
+            SetArrayBasedItemsOrientation(allExifItems, item);
             SetArrayBasedItemsLens(allExifItems, item);
             SetArrayBasedItemsMakeModel(allExifItems, item);
             SetArrayBasedItemsSoftwareStabilization(allExifItems, item);
@@ -147,8 +148,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return item;
         }
 
+        /// <summary>
+        /// Combination setter Orientation
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
         private static void SetArrayBasedItemsOrientation(
-	        List<Directory> allExifItems, FileIndexItem item)
+	        IEnumerable<Directory> allExifItems, FileIndexItem item)
         {
 	        // Orientation of image
 	        var orientation = GetOrientationFromExifItem(allExifItems);
@@ -158,6 +164,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
         }
 
+        /// <summary>
+        /// Combination setter Aperture Shutter SpeedIso
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
         private static void SetArrayBasedItemsApertureShutterSpeedIso(List<Directory> allExifItems, FileIndexItem item)
         {
 	        //    [Exif SubIFD] Aperture Value = f/2.2
@@ -182,6 +193,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
         }
 
+        /// <summary>
+        /// Combination setter Location Places
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
         private static void SetArrayBasedItemsLocationPlaces(
 	        List<Directory> allExifItems, FileIndexItem item)
         {
@@ -209,6 +225,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
         }
 
+        /// <summary>
+        /// Combination setter Focal Length and lens model
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
         private static void SetArrayBasedItemsLens(
 	        List<Directory> allExifItems, FileIndexItem item)
         {
@@ -226,6 +247,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
         }
 
+        /// <summary>
+        /// Combination setter for Make and Model
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
         private static void SetArrayBasedItemsMakeModel(
 	        List<Directory> allExifItems, FileIndexItem item)
         {
@@ -248,8 +274,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        item.SetMakeModel(sonyLensModel,2);
 	        }
         }
-        
 
+        /// <summary>
+        /// Combination setter Software Stabilization
+        /// </summary>
+        /// <param name="allExifItems">list of meta data</param>
+        /// <param name="item">single item</param>
         private void SetArrayBasedItemsSoftwareStabilization(List<Directory> allExifItems, FileIndexItem item)
         {
 	        item.Software = GetSoftware(allExifItems);
@@ -303,7 +333,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return countryCodeXmp;
         }
 
-        private static string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)
+        private static string GetSonyMakeLensModel(IEnumerable<Directory> allExifItems, string lensModel)
         {
 	        // only if there is nothing yet
 	        if ( !string.IsNullOrEmpty(lensModel) ) return string.Empty;
