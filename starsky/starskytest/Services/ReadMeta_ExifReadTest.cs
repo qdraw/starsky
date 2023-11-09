@@ -41,7 +41,6 @@ namespace starskytest.Services
 	{
 
 		[TestMethod]
-		[ExcludeFromCoverage]
 		public void ExifRead_GetObjectNameNull()
 		{
 			var t = ReadMetaExif.GetObjectName(new MockDirectory(null));
@@ -49,7 +48,6 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		[ExcludeFromCoverage]
 		public void ExifRead_GetObjectNameTest()
 		{
 			var dir = new IptcDirectory();
@@ -69,7 +67,6 @@ namespace starskytest.Services
 		}
 		 
 		[TestMethod]
-		[ExcludeFromCoverage]
 		public void ExifRead_GetExifKeywordsSingleTest()
 		{
 			var dir = new IptcDirectory();
@@ -80,7 +77,6 @@ namespace starskytest.Services
 		}
 		 
 		[TestMethod]
-		[ExcludeFromCoverage]
 		public void ExifRead_GetExifKeywordsMultipleTest()
 		{
 			var dir = new IptcDirectory();
@@ -90,7 +86,6 @@ namespace starskytest.Services
 		}
 		 
 		[TestMethod]
-		[ExcludeFromCoverage]
 		public void ExifRead_GetExifDateTimeTest()
 		{
 			var container = new List<Directory>();
@@ -107,10 +102,8 @@ namespace starskytest.Services
 			
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
-		
-				 
+
 		[TestMethod]
-		[ExcludeFromCoverage]
 		public void ExifRead_GetExifDateTimeTest_TagDateTimeOriginal()
 		{
 			var container = new List<Directory>();
@@ -125,7 +118,6 @@ namespace starskytest.Services
 		}
 		
 		[TestMethod]
-		[ExcludeFromCoverage]
 		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_SetUtc()
 		{
 			var orgCulture =
@@ -150,10 +142,8 @@ namespace starskytest.Services
 			
 			CultureInfo.CurrentCulture = new CultureInfo(orgCulture);
 		}
-		
 				
 		[TestMethod]
-		[ExcludeFromCoverage]
 		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_BrandOnly()
 		{
 			var orgCulture =
@@ -323,7 +313,6 @@ namespace starskytest.Services
 			Assert.AreEqual( "SLT-A58", item.Model);
 			Assert.AreEqual( "24-105mm F3.5-4.5", item.LensModel);
 			Assert.AreEqual( ImageStabilisationType.Unknown, item.ImageStabilisation);
-
 		}
 		
 		[TestMethod]
@@ -347,7 +336,6 @@ namespace starskytest.Services
 			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
 			Assert.AreEqual( ImageStabilisationType.Off, item.ImageStabilisation);
 		}
-		
 				
 		[TestMethod]
 		public void LocationCountryCode()
@@ -359,10 +347,6 @@ namespace starskytest.Services
 			var item = new ReadMetaExif(fakeStorage,new AppSettings{Verbose = true}, new FakeIWebLogger()).ReadExifFromFile("/test.jpg");
 			Assert.AreEqual( "NLD", item.LocationCountryCode);
 		}
-				
-		
-		
-
 						
 		[TestMethod]
 		public void LocationCountryCode_ListDir()
@@ -719,7 +703,7 @@ namespace starskytest.Services
 			dir3.Set(ExifDirectoryBase.TagOrientation, 1);
 			// "Top, left side (Horizontal / normal)", -- 1
 
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory>{dir3});
 			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
 		}
 		
@@ -730,7 +714,7 @@ namespace starskytest.Services
 			var dir3 = new ExifIfd0Directory();
 			dir3.Set(ExifDirectoryBase.TagOrientation, 2);
 
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory>{dir3});
 			// 2 = unsuppored yet
 			// "Top, right side (Mirror horizontal)",
 			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
@@ -742,7 +726,7 @@ namespace starskytest.Services
 			var dir3 = new ExifIfd0Directory();
 			dir3.Set(ExifDirectoryBase.TagOrientation, 3);
 			// "Bottom, right side (Rotate 180)"
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory>{dir3});
 			Assert.AreEqual(FileIndexItem.Rotation.Rotate180,rotation);
 		}
 		
@@ -752,7 +736,7 @@ namespace starskytest.Services
 			var dir3 = new ExifIfd0Directory();
 			dir3.Set(ExifDirectoryBase.TagOrientation, 4);
 
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory>{dir3});
 			// Bottom, left side (Mirror vertical)
 			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
 		}
@@ -764,7 +748,7 @@ namespace starskytest.Services
 			dir3.Set(ExifDirectoryBase.TagOrientation, 5);
 			// "Left side, top (Mirror horizontal and rotate 270 CW)",
 			
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory>{dir3});
 			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
 		}
 				
@@ -775,7 +759,7 @@ namespace starskytest.Services
 			dir3.Set(ExifDirectoryBase.TagOrientation, 6);
 			// "Right side, top (Rotate 90 CW)", --6
 			
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory>{dir3});
 			Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw,rotation);
 		}
 		
@@ -786,7 +770,7 @@ namespace starskytest.Services
 			dir3.Set(ExifDirectoryBase.TagOrientation, 7);
 			// "Right side, bottom (Mirror horizontal and rotate 90 CW)", --7
 			
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory>{dir3});
 			Assert.AreEqual(FileIndexItem.Rotation.Horizontal,rotation);
 		}
 		
@@ -797,7 +781,7 @@ namespace starskytest.Services
 			dir3.Set(ExifDirectoryBase.TagOrientation, 8);
 			// "Left side, bottom (Rotate 270 CW)") --8
 			
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(dir3);
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(new List<Directory>{dir3});
 			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw,rotation);
 		}
 		

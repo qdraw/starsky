@@ -80,7 +80,7 @@ namespace starsky.foundation.thumbnailmeta.Services
 				}
 			}
 
-			var rotation = ReadMetaExif.GetOrientationFromExifItem(allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault());
+			var rotation = ReadMetaExif.GetOrientationFromExifItem(allExifItems);
 					
 			var heightParseResult = int.TryParse(heightPixels?.Replace(
 				" pixels",string.Empty), out var height);
