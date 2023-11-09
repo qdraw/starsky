@@ -95,6 +95,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             item.Latitude = GetGeoLocationLatitude(allExifItems);
             item.Longitude = GetGeoLocationLongitude(allExifItems);
             item.LocationAltitude = GetGeoLocationAltitude(allExifItems);
+            
             item.SetImageWidth(GetImageWidthHeight(allExifItems,true));
             item.SetImageHeight(GetImageWidthHeight(allExifItems,false));
 
@@ -191,49 +192,64 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		            item.SetMakeModel(lensModel,2);
 	            }
 	            
-	            // [Exif SubIFD] Focal Length = 200 mm
-	            var focalLength = GetFocalLength(exifItem);
-	            if (Math.Abs(focalLength) > 0.00001) 
-	            {
-		            item.FocalLength = focalLength;
-	            }
-
 
             }
-            
-            var make = GetMakeModel(allExifItems,true);
-            if (make != string.Empty) // string.Empty = is not the right tag or empty tag
-            {
-	            item.SetMakeModel(make,0);
-            }
-	            
-            var model = GetMakeModel(allExifItems,false);
-            if (model != string.Empty) // string.Empty = is not the right tag or empty tag
-            {
-	            item.SetMakeModel(model,1);
-            }
-            
 
-            item.Software = GetSoftware(allExifItems);
-            
-            // last & out of the loop
-            var sonyLensModel = GetSonyMakeLensModel(allExifItems, item.LensModel);
-            if ( !string.IsNullOrEmpty(sonyLensModel) )
-            {
-	            item.SetMakeModel(sonyLensModel,2);
-            }
-            
-            item.ImageStabilisation = GetImageStabilisation(allExifItems);
-            item.LocationCountryCode = GetLocationCountryCode(allExifItems);
-
-            // DateTime of image
-            var dateTime = GetExifDateTime(allExifItems, new CameraMakeModel(item.Make, item.Model));
-            if ( dateTime != null )
-            {
-	            item.DateTime = (DateTime)dateTime;
-            }
+            SetArrayBasedItemsLens(allExifItems, item);
+            SetArrayBasedItemsMakeModel(allExifItems, item);
+            SetArrayBasedItemsSoftwareStabilization(allExifItems, item);
 
             return item;
+        }
+
+        private static void SetArrayBasedItemsLens(
+	        List<Directory> allExifItems, FileIndexItem item)
+        {
+	        // [Exif SubIFD] Focal Length = 200 mm
+	        var focalLength = GetFocalLength(allExifItems);
+	        if (Math.Abs(focalLength) > 0.00001) 
+	        {
+		        item.FocalLength = focalLength;
+	        }
+        }
+
+        private static void SetArrayBasedItemsMakeModel(
+	        List<Directory> allExifItems, FileIndexItem item)
+        {
+	        var make = GetMakeModel(allExifItems,true);
+	        if (make != string.Empty) // string.Empty = is not the right tag or empty tag
+	        {
+		        item.SetMakeModel(make,0);
+	        }
+	            
+	        var model = GetMakeModel(allExifItems,false);
+	        if (model != string.Empty) // string.Empty = is not the right tag or empty tag
+	        {
+		        item.SetMakeModel(model,1);
+	        }
+	        
+	        // last & out of the loop
+	        var sonyLensModel = GetSonyMakeLensModel(allExifItems, item.LensModel);
+	        if ( !string.IsNullOrEmpty(sonyLensModel) )
+	        {
+		        item.SetMakeModel(sonyLensModel,2);
+	        }
+        }
+        
+
+        private void SetArrayBasedItemsSoftwareStabilization(List<Directory> allExifItems, FileIndexItem item)
+        {
+	        item.Software = GetSoftware(allExifItems);
+            
+	        item.ImageStabilisation = GetImageStabilisation(allExifItems);
+	        item.LocationCountryCode = GetLocationCountryCode(allExifItems);
+
+	        // DateTime of image
+	        var dateTime = GetExifDateTime(allExifItems, new CameraMakeModel(item.Make, item.Model));
+	        if ( dateTime != null )
+	        {
+		        item.DateTime = (DateTime)dateTime;
+	        }
         }
         
         /// <summary>
@@ -903,14 +919,15 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// [Exif SubIFD] Focal Length
         /// </summary>
         /// <returns></returns>
-        private static double GetFocalLength(Directory exifItem)
+        private static double GetFocalLength(List<Directory> allExifItems)
         {
-	        var focalLengthString = exifItem.Tags.FirstOrDefault(
-		        p => p.DirectoryName == "Exif SubIFD" 
-		             && p.Name == "Focal Length")?.Description;
-	        
+	        var exifSubIfdDirectory = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+	        var focalLengthString = exifSubIfdDirectory?.GetDescription(ExifDirectoryBase.TagFocalLength);
+
+	        var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+
 	        // XMP,http://ns.adobe.com/exif/1.0/,exif:FocalLength,11/1
-	        var focalLengthXmp = GetXmpData(exifItem, "exif:FocalLength");
+	        var focalLengthXmp = GetXmpData(xmpDirectory, "exif:FocalLength");
 	        if (string.IsNullOrEmpty(focalLengthString) && !string.IsNullOrEmpty(focalLengthXmp))
 	        {
 		        return Math.Round(MathFraction.Fraction(focalLengthXmp), 5);
