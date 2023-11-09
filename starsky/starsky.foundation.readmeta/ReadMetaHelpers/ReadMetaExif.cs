@@ -105,39 +105,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        {
 		        item.ImageFormat = imageFormat;
 	        }
-            
-            foreach (var exifItem in allExifItems)
-            {
-                //  exifItem.Tags
-                var tags = GetExifKeywords(exifItem);
-                if(!string.IsNullOrEmpty(tags)) // null = is not the right tag or empty tag
-                {
-                    item.Tags = tags;
-                }
-                // Colour Class => ratings
-                var colorClassString = GetColorClassString(exifItem);
-                if(!string.IsNullOrEmpty(colorClassString)) // null = is not the right tag or empty tag
-                {
-                    item.ColorClass = ColorClassParser.GetColorClass(colorClassString);
-                }
-                
-                // [IPTC] Caption/Abstract
-                var caption = GetCaptionAbstract(exifItem);
-                if(!string.IsNullOrEmpty(caption)) // null = is not the right tag or empty tag
-                {
-                    item.Description = caption;
-                }    
-                
-                // [IPTC] Object Name = Title
-                var title = GetObjectName(exifItem);
-                if(!string.IsNullOrEmpty(title)) // null = is not the right tag or empty tag
-                {
-                     item.Title = title;
-                }
-                
-
-            }
-
+	        
+            SetArrayBasedItemsTagsDescriptionTitle(allExifItems, item);
 			SetArrayBasedItemsApertureShutterSpeedIso(allExifItems, item);
             SetArrayBasedItemsLocationPlaces(allExifItems, item);
             SetArrayBasedItemsOrientation(allExifItems, item);
@@ -147,6 +116,43 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
             return item;
         }
+        
+        /// <summary>
+        /// Combination setter Tags Description Title ColorClass
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
+        private static void SetArrayBasedItemsTagsDescriptionTitle(
+	        List<Directory> allExifItems, FileIndexItem item)
+        {
+	        //  exifItem.Tags
+	        var tags = GetExifKeywords(allExifItems);
+	        if(!string.IsNullOrEmpty(tags)) // null = is not the right tag or empty tag
+	        {
+		        item.Tags = tags;
+	        }
+	        // Colour Class => ratings
+	        var colorClassString = GetColorClassString(allExifItems);
+	        if(!string.IsNullOrEmpty(colorClassString)) // null = is not the right tag or empty tag
+	        {
+		        item.ColorClass = ColorClassParser.GetColorClass(colorClassString);
+	        }
+                
+	        // [IPTC] Caption/Abstract
+	        var caption = GetCaptionAbstract(allExifItems);
+	        if(!string.IsNullOrEmpty(caption)) // null = is not the right tag or empty tag
+	        {
+		        item.Description = caption;
+	        }    
+                
+	        // [IPTC] Object Name = Title
+	        var title = GetObjectName(allExifItems);
+	        if(!string.IsNullOrEmpty(title)) // null = is not the right tag or empty tag
+	        {
+		        item.Title = title;
+	        }
+        }
+        
 
         /// <summary>
         /// Combination setter Orientation
@@ -452,7 +458,6 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                 }
             }
         }
-	    
 
 	    /// <summary>
 	    /// Read "dc:subject" values from XMP
@@ -484,54 +489,59 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			    where property.Path == propertyPath select property.Value ).FirstOrDefault();
 	    }
 
-        public static string GetObjectName (Directory exifItem)
+        public static string GetObjectName (List<Directory> allExifItems)
         {
-            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Object Name");
+	        var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+
+            var objectName = iptcDirectory?.Tags.FirstOrDefault(
+	            p => p.DirectoryName == "IPTC"
+	                 && p.Name == "Object Name")?.Description;
             
-            // Xmp readings
-            if ( tCounts == 0 ) return GetXmpData(exifItem, "dc:title[1]");
-            
-            var caption = exifItem.Tags.FirstOrDefault(
-                p => p.DirectoryName == "IPTC" 
-                     && p.Name == "Object Name")?.Description;
-            return caption;
-        }
-
-        
-        public static string GetCaptionAbstract(Directory exifItem)
-        {
-            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Caption/Abstract");
-
-            // Xmp readings
-            if ( tCounts == 0 ) return GetXmpData(exifItem, "dc:description[1]");
-
-            var caption = exifItem.Tags.FirstOrDefault(
-	            p => p.DirectoryName == "IPTC" 
-	                 && p.Name == "Caption/Abstract")?.Description;
-            return caption;
-        }
-        
-        public static string GetExifKeywords(Directory exifItem)
-        {
-            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
-            
-            if ( tCounts == 0 ) return GetXmpDataSubject(exifItem);
-
-            var tags = exifItem.Tags.FirstOrDefault(
-                p => p.DirectoryName == "IPTC" 
-                     && p.Name == "Keywords")?.Description;
-            if (!string.IsNullOrWhiteSpace(tags))
+            if ( ! string.IsNullOrEmpty(objectName) )
             {
-                tags = tags.Replace(";", ", ");
+	            return objectName;
+            }
+            
+            // Xmp readings
+            var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+            return GetXmpData(xmpDirectory, "dc:title[1]");
+        }
+        
+        public static string GetCaptionAbstract(List<Directory> allExifItems)
+        {
+	        var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+            var caption = iptcDirectory?.GetDescription(IptcDirectory.TagCaption);
+
+            if ( !string.IsNullOrEmpty(caption) ) return caption;
+            
+            var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+            return GetXmpData(xmpDirectory, "dc:description[1]");
+        }
+        
+        public static string GetExifKeywords(List<Directory> allExifItems)
+        {
+	        var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+	        var keyWords = iptcDirectory?.GetDescription(IptcDirectory.TagKeywords);
+
+            if ( string.IsNullOrEmpty(keyWords) )
+            {
+	            var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+	            return GetXmpDataSubject(xmpDirectory);
+            }
+            
+            if (!string.IsNullOrWhiteSpace(keyWords))
+            {
+	            keyWords = keyWords.Replace(";", ", ");
             }
 
-            return tags;
+            return keyWords;
         }
 
-        private static string GetColorClassString(Directory exifItem)
-        {
+        private static string GetColorClassString(List<Directory> allExifItems)
+		{
+	        var exifItem = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
 	        var colorClassSting = string.Empty;
-            var ratingCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
+            var ratingCounts = exifItem?.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
             if (ratingCounts >= 1)
             {
                 var prefsTag = exifItem.Tags.FirstOrDefault(p => 
@@ -551,7 +561,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             }
             
             // Xmp readings
-            colorClassSting = GetXmpData(exifItem, "photomechanic:ColorClass");
+            var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+            colorClassSting = GetXmpData(xmpDirectory, "photomechanic:ColorClass");
             return colorClassSting;
         }
 
@@ -911,7 +922,6 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
         private static int GetImageSizeInsideLoop( Directory exifItem, string dirName, string typeName)
         {
-	        
 	        var ratingCountsJpeg =
 		        exifItem.Tags.Count(p => p.DirectoryName == dirName 
 		                                 && p.Name.Contains(typeName) && p.Description != "0");

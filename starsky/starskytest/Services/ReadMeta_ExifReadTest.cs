@@ -43,7 +43,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ExifRead_GetObjectNameNull()
 		{
-			var t = ReadMetaExif.GetObjectName(new MockDirectory(null));
+			var t = ReadMetaExif.GetObjectName(new List<Directory>{new MockDirectory(null)});
 			Assert.AreEqual( string.Empty,t);
 		}
 
@@ -52,7 +52,7 @@ namespace starskytest.Services
 		{
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagObjectName, "test" );
-			var t = ReadMetaExif.GetObjectName(dir);
+			var t = ReadMetaExif.GetObjectName(new List<Directory>{dir});
 			Assert.AreEqual("test",t);
 		}
 
@@ -62,7 +62,7 @@ namespace starskytest.Services
 		{
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagCaption, "test123");
-			var t = ReadMetaExif.GetCaptionAbstract(dir);
+			var t = ReadMetaExif.GetCaptionAbstract(new List<Directory>{dir});
 			Assert.AreEqual("test123", t);
 		}
 		 
@@ -71,7 +71,7 @@ namespace starskytest.Services
 		{
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagKeywords, "test123");
-			var t = ReadMetaExif.GetExifKeywords(dir);
+			var t = ReadMetaExif.GetExifKeywords(new List<Directory>{dir});
 
 			Assert.AreEqual("test123", t);
 		}
@@ -81,7 +81,7 @@ namespace starskytest.Services
 		{
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagKeywords, "test123;test12");
-			var t = ReadMetaExif.GetExifKeywords(dir);
+			var t = ReadMetaExif.GetExifKeywords(new List<Directory>{dir});
 			Assert.AreEqual("test123, test12",t); //with space
 		}
 		 
