@@ -32,12 +32,12 @@ namespace starsky.foundation.database.Helpers
 				var propertyA = propertiesA[i];
 				var propertyB = propertiesB.FirstOrDefault(p => p.Name == propertyA.Name);
 
-				if (propertyB == null || !propertyA.CanRead || !propertyB.CanRead)
+				if (PropertyCanRead(propertyA, propertyB))
 					continue;
 
 				Type propertyType = propertyA.PropertyType;
 				var oldValue = propertyA.GetValue(sourceIndexItem, null);
-				var newValue = propertyB.GetValue(updateObject, null);
+				var newValue = propertyB!.GetValue(updateObject, null);
 
 				if (propertyType == typeof(string))
 				{
@@ -94,6 +94,12 @@ namespace starsky.foundation.database.Helpers
 			differenceList.Remove(nameof(FileIndexItem.LastChanged).ToLowerInvariant());
 
 			return differenceList;
+		}
+
+		private static bool PropertyCanRead(PropertyInfo propertyA, PropertyInfo? propertyB)
+		{
+			return propertyB == null || !propertyA.CanRead ||
+			       !propertyB.CanRead;
 		}
 
 		/// <summary>
