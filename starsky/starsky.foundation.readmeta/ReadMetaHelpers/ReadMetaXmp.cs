@@ -227,92 +227,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                 
             foreach (var property in xmp.Properties)
             {
-
-                // Path=exif:GPSLatitude Namespace=http://ns.adobe.com/exif/1.0/ Value=52,20.708N
-                var gpsLatitude = GetContentNameSpace(property, "exif:GPSLatitude");
-                if (gpsLatitude != null)
-                {
-                    item.Latitude = GpsPreParseAndConvertDegreeAngleToDouble(gpsLatitude);
-                }
-
-                // Path=exif:GPSLongitude Namespace=http://ns.adobe.com/exif/1.0/ Value=5,55.840E
-                var gpsLongitude = GetContentNameSpace(property, "exif:GPSLongitude");
-                if (gpsLongitude != null)
-                {
-                    item.Longitude = GpsPreParseAndConvertDegreeAngleToDouble(gpsLongitude);
-                }
-
-	            // Option 1 (Datetime)
-	            // Path=exif:DateTimeOriginal Namespace=http://ns.adobe.com/exif/1.0/ Value=2018-07-18T19:44:27
-	            var dateTimeOriginal = GetContentNameSpace(property, "exif:DateTimeOriginal");
-	            if ( dateTimeOriginal != null )
-	            {
-		            DateTime.TryParseExact(dateTimeOriginal,
-			            "yyyy-MM-dd\\THH:mm:ss",
-			            CultureInfo.InvariantCulture,
-			            DateTimeStyles.None,
-			            out var dateTime);
-		            if ( dateTime.Year >= 3 ) item.DateTime = dateTime;
-	            }
-
-	            // Option 2 (Datetime)
-	            // Path=xmp:CreateDate Namespace=http://ns.adobe.com/xap/1.0/ Value=2019-03-02T11:29:18+01:00
-	            // Path=xmp:CreateDate Namespace=http://ns.adobe.com/xap/1.0/ Value=2019-03-02T11:29:18
-	            var createDate = GetContentNameSpace(property, "xmp:CreateDate");
-	            if (createDate != null)
-	            {
-		            DateTime.TryParseExact(createDate,
-			            "yyyy-MM-dd\\THH:mm:sszzz",
-			            CultureInfo.InvariantCulture,
-			            DateTimeStyles.None,
-			            out var dateTime);
-		            
-		            // The other option
-		            if ( dateTime.Year <= 3 )
-		            {
-			            DateTime.TryParseExact(createDate,
-				            "yyyy-MM-dd\\THH:mm:ss",
-				            CultureInfo.InvariantCulture,
-				            DateTimeStyles.None,
-				            out dateTime);
-		            }
-		            // and use this value
-		            item.DateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
-	            }
-                
-                //   Path=photomechanic:ColorClass Namespace=http://ns.camerabits.com/photomechanic/1.0/ Value=1
-                var colorClass = GetContentNameSpace(property, "photomechanic:ColorClass");
-                if (colorClass != null)
-                {
-                    item.ColorClass = ColorClassParser.GetColorClass(colorClass);
-                }
-                
-                // Path=tiff:Orientation Namespace=http://ns.adobe.com/tiff/1.0/ Value=6
-                var rotation = GetContentNameSpace(property, "tiff:Orientation");
-                if (rotation != null)
-                {
-                    item.SetAbsoluteOrientation(rotation);
-                }
-                
-                //  Path=tiff:ImageLength Namespace=http://ns.adobe.com/tiff/1.0/ Value=13656
-                var height = GetContentNameSpace(property, "tiff:ImageLength");
-                if (height != null) item.SetImageHeight(height);
-
-                //  Path=tiff:ImageWidth Namespace=http://ns.adobe.com/tiff/1.0/ Value=15504
-                var width = GetContentNameSpace(property, "tiff:ImageWidth");
-                if (width != null) item.SetImageWidth(width);
-                
-                // Path=photoshop:City Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Epe
-                var locationCity = GetContentNameSpace(property, "photoshop:City");
-                if (locationCity != null) item.LocationCity = locationCity;
-
-                // Path=photoshop:State Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Gelderland
-                var locationState = GetContentNameSpace(property, "photoshop:State");
-                if (locationState != null) item.LocationState = locationState;
-                
-                // Path=photoshop:Country Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Nederland
-                var locationCountry = GetContentNameSpace(property, "photoshop:Country");
-                if (locationCountry != null) item.LocationCountry = locationCountry;
+	            SetCombinedLatLong(property, item);
+	            SetCombinedDateTime(property,item);
+	            SetCombinedColorClass(property,item);
+	            SetCombinedOrientation(property,item);
+                SetCombinedImageHeightWidth(property,item);
+                SetCombinedCityStateCountry(property,item);
 	            
 	            // exif:ExposureTime http://ns.adobe.com/exif/1.0/
 	            var shutterSpeed = GetContentNameSpace(property, "exif:ExposureTime");
@@ -342,5 +262,112 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        
             return item;
         }
+
+	    private static void SetCombinedOrientation(IXmpPropertyInfo property, FileIndexItem item)
+	    {
+		    // Path=tiff:Orientation Namespace=http://ns.adobe.com/tiff/1.0/ Value=6
+		    var rotation = GetContentNameSpace(property, "tiff:Orientation");
+		    if (rotation != null)
+		    {
+			    item.SetAbsoluteOrientation(rotation);
+		    }
+	    }
+
+	    private static void SetCombinedColorClass(IXmpPropertyInfo property, FileIndexItem item)
+	    {
+		    //   Path=photomechanic:ColorClass Namespace=http://ns.camerabits.com/photomechanic/1.0/ Value=1
+		    var colorClass = GetContentNameSpace(property, "photomechanic:ColorClass");
+		    if (colorClass != null)
+		    {
+			    item.ColorClass = ColorClassParser.GetColorClass(colorClass);
+		    }
+	    }
+
+	    private static void SetCombinedImageHeightWidth(IXmpPropertyInfo property, FileIndexItem item)
+	    {
+		    //  Path=tiff:ImageLength Namespace=http://ns.adobe.com/tiff/1.0/ Value=13656
+		    var height = GetContentNameSpace(property, "tiff:ImageLength");
+		    if (height != null) item.SetImageHeight(height);
+
+		    //  Path=tiff:ImageWidth Namespace=http://ns.adobe.com/tiff/1.0/ Value=15504
+		    var width = GetContentNameSpace(property, "tiff:ImageWidth");
+		    if (width != null) item.SetImageWidth(width);
+	    }
+
+	    private static void SetCombinedLatLong(
+		    IXmpPropertyInfo property, FileIndexItem item)
+	    {
+		    // Path=exif:GPSLatitude Namespace=http://ns.adobe.com/exif/1.0/ Value=52,20.708N
+		    var gpsLatitude = GetContentNameSpace(property, "exif:GPSLatitude");
+		    if (gpsLatitude != null)
+		    {
+			    item.Latitude = GpsPreParseAndConvertDegreeAngleToDouble(gpsLatitude);
+		    }
+
+		    // Path=exif:GPSLongitude Namespace=http://ns.adobe.com/exif/1.0/ Value=5,55.840E
+		    var gpsLongitude = GetContentNameSpace(property, "exif:GPSLongitude");
+		    if (gpsLongitude != null)
+		    {
+			    item.Longitude = GpsPreParseAndConvertDegreeAngleToDouble(gpsLongitude);
+		    }
+	    }
+
+	    private static void SetCombinedDateTime(
+		    IXmpPropertyInfo property, FileIndexItem item)
+	    {
+		    // Option 1 (Datetime)
+		    // Path=exif:DateTimeOriginal Namespace=http://ns.adobe.com/exif/1.0/ Value=2018-07-18T19:44:27
+		    var dateTimeOriginal = GetContentNameSpace(property, "exif:DateTimeOriginal");
+		    if ( dateTimeOriginal != null )
+		    {
+			    DateTime.TryParseExact(dateTimeOriginal,
+				    "yyyy-MM-dd\\THH:mm:ss",
+				    CultureInfo.InvariantCulture,
+				    DateTimeStyles.None,
+				    out var dateTime);
+			    if ( dateTime.Year >= 3 ) item.DateTime = dateTime;
+		    }
+
+		    // Option 2 (Datetime)
+		    // Path=xmp:CreateDate Namespace=http://ns.adobe.com/xap/1.0/ Value=2019-03-02T11:29:18+01:00
+		    // Path=xmp:CreateDate Namespace=http://ns.adobe.com/xap/1.0/ Value=2019-03-02T11:29:18
+		    var createDate = GetContentNameSpace(property, "xmp:CreateDate");
+		    if (createDate != null)
+		    {
+			    DateTime.TryParseExact(createDate,
+				    "yyyy-MM-dd\\THH:mm:sszzz",
+				    CultureInfo.InvariantCulture,
+				    DateTimeStyles.None,
+				    out var dateTime);
+		            
+			    // The other option
+			    if ( dateTime.Year <= 3 )
+			    {
+				    DateTime.TryParseExact(createDate,
+					    "yyyy-MM-dd\\THH:mm:ss",
+					    CultureInfo.InvariantCulture,
+					    DateTimeStyles.None,
+					    out dateTime);
+			    }
+			    // and use this value
+			    item.DateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
+		    }
+	    }
+
+	    private static void SetCombinedCityStateCountry(
+		    IXmpPropertyInfo property, FileIndexItem item)
+	    {
+		    // Path=photoshop:City Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Epe
+		    var locationCity = GetContentNameSpace(property, "photoshop:City");
+		    if (locationCity != null) item.LocationCity = locationCity;
+
+		    // Path=photoshop:State Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Gelderland
+		    var locationState = GetContentNameSpace(property, "photoshop:State");
+		    if (locationState != null) item.LocationState = locationState;
+                
+		    // Path=photoshop:Country Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Nederland
+		    var locationCountry = GetContentNameSpace(property, "photoshop:Country");
+		    if (locationCountry != null) item.LocationCountry = locationCountry;
+	    }
 	}
 }
