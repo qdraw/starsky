@@ -114,41 +114,16 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         [SuppressMessage("Usage", "S125:Remove this commented out code")]
         private static FileIndexItem GetDataNullNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
         {
-	        
             foreach (var property in xmp.Properties)
             {
-                
-                //   Path=dc:description Namespace=http://purl.org/dc/elements/1.1/ Value=
-                //   Path=dc:description[1] Namespace= Value=caption
-                //   Path=dc:description[1]/xml:lang Namespace=http...
-                var description = GetNullNameSpace(property, "dc:description[1]");
-                if (description != null) item.Description = description;
-                
-                // Path=dc:subject Namespace=http://purl.org/dc/elements/1.1/ Value=
-                // Path=dc:subject[1] Namespace= Value=keyword
-                var tags = GetNullNameSpace(property, "dc:subject[1]");
-                if (tags != null) item.Tags = tags;
-                
-                // Path=dc:subject[2] Namespace= Value=keyword2
-                if ( !string.IsNullOrEmpty(property.Path) && 
-                     property.Path.Contains("dc:subject[") && 
-                     property.Path != "dc:subject[1]" && 
-                     !string.IsNullOrEmpty(property.Value) && 
-                     string.IsNullOrEmpty(property.Namespace) )
-                {
-                    var tagsStringBuilder = new StringBuilder();
-                    tagsStringBuilder.Append(item.Tags);
-                    tagsStringBuilder.Append(", ");
-                    tagsStringBuilder.Append(property.Value);
-                    item.Tags = tagsStringBuilder.ToString();
-                }
+	            // dc:description[1] and dc:subject 
+	            SetCombinedDescriptionSubject(property, item);
                 
                 // Path=dc:title Namespace=http://purl.org/dc/elements/1.1/ Value=
                 // Path=dc:title[1] Namespace= Value=The object name
                 //    Path=dc:title[1]/xml:lang Namespace=http://www.w3...
                 var title = GetNullNameSpace(property, "dc:title[1]");
                 if (title != null) item.Title = title;
-	            
 	            
 	            // Path=exif:ISOSpeedRatings Namespace=http://ns.adobe.com/exif/1.0/ Value=
 	            // Path=exif:ISOSpeedRatings[1] Namespace= Value=25
@@ -175,6 +150,34 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             }
 
             return item;
+        }
+
+        private static void SetCombinedDescriptionSubject(IXmpPropertyInfo property, FileIndexItem item)
+        {
+	        //   Path=dc:description Namespace=http://purl.org/dc/elements/1.1/ Value=
+	        //   Path=dc:description[1] Namespace= Value=caption
+	        //   Path=dc:description[1]/xml:lang Namespace=http...
+	        var description = GetNullNameSpace(property, "dc:description[1]");
+	        if (description != null) item.Description = description;
+                
+	        // Path=dc:subject Namespace=http://purl.org/dc/elements/1.1/ Value=
+	        // Path=dc:subject[1] Namespace= Value=keyword
+	        var tags = GetNullNameSpace(property, "dc:subject[1]");
+	        if (tags != null) item.Tags = tags;
+                
+	        // Path=dc:subject[2] Namespace= Value=keyword2
+	        if ( !string.IsNullOrEmpty(property.Path) && 
+	             property.Path.Contains("dc:subject[") && 
+	             property.Path != "dc:subject[1]" && 
+	             !string.IsNullOrEmpty(property.Value) && 
+	             string.IsNullOrEmpty(property.Namespace) )
+	        {
+		        var tagsStringBuilder = new StringBuilder();
+		        tagsStringBuilder.Append(item.Tags);
+		        tagsStringBuilder.Append(", ");
+		        tagsStringBuilder.Append(property.Value);
+		        item.Tags = tagsStringBuilder.ToString();
+	        }
         }
 
         private static void GpsAltitudeRef(IXmpMeta xmp, FileIndexItem item)
