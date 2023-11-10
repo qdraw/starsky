@@ -8,14 +8,11 @@ import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import localization from "../../../localization/localization.json";
-import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
 import { GetArchiveSearchMenuHeaderClass } from "../../../shared/menu/get-archive-search-menu-header-class";
 import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
 import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
-import DropArea from "../../atoms/drop-area/drop-area";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
@@ -34,6 +31,7 @@ import ModalDisplayOptions from "../modal-display-options/modal-display-options"
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
+import { UploadMenuItem } from "./shared/upload-menu-item";
 
 interface IMenuArchiveProps {}
 
@@ -104,30 +102,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(
     newIFileIndexItemArray()
   );
-
-  const UploadMenuItem = () => {
-    if (readOnly)
-      return (
-        <li data-test="upload" className="menu-option disabled">
-          Upload
-        </li>
-      );
-    return (
-      <li className="menu-option menu-option--input">
-        <DropArea
-          callback={(add) => {
-            new FileListCache().CacheCleanEverything();
-            setDropAreaUploadFilesList(add);
-            dispatch({ type: "add", add });
-          }}
-          endpoint={new UrlQuery().UrlUploadApi()}
-          folderPath={state.subPath}
-          enableInputButton={true}
-          enableDragAndDrop={true}
-        />
-      </li>
-    );
-  };
 
   return (
     <>
@@ -284,7 +258,14 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 set={setIsSynchronizeManuallyOpen}
                 localization={localization.MessageSynchronizeManually}
               />
-              {state ? <UploadMenuItem /> : null}
+              {state ? (
+                <UploadMenuItem
+                  readOnly={readOnly}
+                  setDropAreaUploadFilesList={setDropAreaUploadFilesList}
+                  dispatch={dispatch}
+                  state={state}
+                />
+              ) : null}
               <li
                 className={
                   !readOnly && state.subPath !== "/"
@@ -372,7 +353,14 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 set={setIsSynchronizeManuallyOpen}
                 localization={localization.MessageSynchronizeManually}
               />
-              {state ? <UploadMenuItem /> : null}
+              {state ? (
+                <UploadMenuItem
+                  readOnly={readOnly}
+                  setDropAreaUploadFilesList={setDropAreaUploadFilesList}
+                  dispatch={dispatch}
+                  state={state}
+                />
+              ) : null}
             </MoreMenu>
           ) : null}
 
