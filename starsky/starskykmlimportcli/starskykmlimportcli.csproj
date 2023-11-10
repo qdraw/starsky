@@ -4,6 +4,8 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{5a4dd5d2-6051-4965-b771-40ea8e2f4b72}</ProjectGuid>
         <Nullable>enable</Nullable>
         <RootNamespace>starskykmlimport</RootNamespace>
     </PropertyGroup>
