@@ -91,6 +91,58 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   /**
    * To search and replace
    */
+  function prepareBodyParams(selectPaths: string) {
+    const bodyParams = new URLSearchParams();
+    bodyParams.append("f", selectPaths);
+    bodyParams.append(
+      "collections",
+      state.pageType !== PageType.Search
+        ? (
+            new URLPath().StringToIUrl(history.location.search).collections !==
+            false
+          ).toString()
+        : "false"
+    );
+    return bodyParams;
+  }
+
+  function handleFetchPostResponse(anyData: any) {
+    const result = new CastToInterface().InfoFileIndexArray(anyData.data);
+    result.forEach((element) => {
+      if (element.status === IExifStatus.ReadOnly)
+        setIsError(MessageErrorReadOnly);
+      if (element.status === IExifStatus.NotFoundSourceMissing)
+        setIsError(MessageErrorNotFoundSourceMissing);
+      if (
+        element.status === IExifStatus.Ok ||
+        element.status === IExifStatus.Deleted
+      ) {
+        dispatch({
+          type: "update",
+          ...element,
+          select: [element.fileName]
+        });
+      }
+    });
+
+    // loading + update button
+    setIsLoading(false);
+    setInputEnabled(true);
+    // undo error message when success
+    if (isError === MessageErrorGenericFail) {
+      setIsError("");
+    }
+
+    ClearSearchCache(history.location.search);
+  }
+
+  function handleFetchPostError() {
+    setIsError(MessageErrorGenericFail);
+    // loading + update button
+    setIsLoading(false);
+    setInputEnabled(true);
+  }
+
   function pushSearchAndReplace() {
     // loading + update button
     setIsLoading(true);
@@ -109,17 +161,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
     if (selectPaths.length === 0) return;
 
-    const bodyParams = new URLSearchParams();
-    bodyParams.append("f", selectPaths);
-    bodyParams.append(
-      "collections",
-      state.pageType !== PageType.Search
-        ? (
-            new URLPath().StringToIUrl(history.location.search).collections !==
-            false
-          ).toString()
-        : "false"
-    );
+    const bodyParams = prepareBodyParams(selectPaths);
 
     for (const key of Object.entries(update)) {
       const fieldName = key[0];
@@ -140,48 +182,12 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         bodyParams.set("replace", replaceValue);
 
         FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString())
-          .then((anyData) => {
-            const result = new CastToInterface().InfoFileIndexArray(
-              anyData.data
-            );
-            result.forEach((element) => {
-              if (element.status === IExifStatus.ReadOnly)
-                setIsError(MessageErrorReadOnly);
-              if (element.status === IExifStatus.NotFoundSourceMissing)
-                setIsError(MessageErrorNotFoundSourceMissing);
-              if (
-                element.status === IExifStatus.Ok ||
-                element.status === IExifStatus.Deleted
-              ) {
-                dispatch({
-                  type: "update",
-                  ...element,
-                  select: [element.fileName]
-                });
-              }
-            });
-
-            // loading + update button
-            setIsLoading(false);
-            setInputEnabled(true);
-            // undo error message when success
-            if (isError === MessageErrorGenericFail) {
-              setIsError("");
-            }
-
-            ClearSearchCache(history.location.search);
-          })
-          .catch(() => {
-            setIsError(MessageErrorGenericFail);
-            // loading + update button
-            setIsLoading(false);
-            setInputEnabled(true);
-          });
+          .then(handleFetchPostResponse)
+          .catch(handleFetchPostError);
       }
     }
   }
 
-  // noinspection HtmlUnknownAttribute
   return (
     <>
       {isError !== "" ? (

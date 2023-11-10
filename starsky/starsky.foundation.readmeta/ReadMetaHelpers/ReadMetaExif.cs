@@ -95,6 +95,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             item.Latitude = GetGeoLocationLatitude(allExifItems);
             item.Longitude = GetGeoLocationLongitude(allExifItems);
             item.LocationAltitude = GetGeoLocationAltitude(allExifItems);
+            
             item.SetImageWidth(GetImageWidthHeight(allExifItems,true));
             item.SetImageHeight(GetImageWidthHeight(allExifItems,false));
 
@@ -104,136 +105,200 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        {
 		        item.ImageFormat = imageFormat;
 	        }
-            
-            foreach (var exifItem in allExifItems)
-            {
-                //  exifItem.Tags
-                var tags = GetExifKeywords(exifItem);
-                if(!string.IsNullOrEmpty(tags)) // null = is not the right tag or empty tag
-                {
-                    item.Tags = tags;
-                }
-                // Colour Class => ratings
-                var colorClassString = GetColorClassString(exifItem);
-                if(!string.IsNullOrEmpty(colorClassString)) // null = is not the right tag or empty tag
-                {
-                    item.ColorClass = ColorClassParser.GetColorClass(colorClassString);
-                }
-                
-                // [IPTC] Caption/Abstract
-                var caption = GetCaptionAbstract(exifItem);
-                if(!string.IsNullOrEmpty(caption)) // null = is not the right tag or empty tag
-                {
-                    item.Description = caption;
-                }    
-                
-                // [IPTC] Object Name = Title
-                var title = GetObjectName(exifItem);
-                if(!string.IsNullOrEmpty(title)) // null = is not the right tag or empty tag
-                {
-                     item.Title = title;
-                }
-                
-                // Orientation of image
-                var orientation = GetOrientationFromExifItem(exifItem);
-                if (orientation != FileIndexItem.Rotation.DoNotChange)
-                {
-                    item.Orientation = orientation;
-                }
-
-                //    [IPTC] City = Diepenveen
-                var locationCity = GetLocationPlaces(exifItem, "City","photoshop:City");
-                if(!string.IsNullOrEmpty(locationCity)) // null = is not the right tag or empty tag
-                {
-                    item.LocationCity = locationCity;
-                }
-                
-                //    [IPTC] Province/State = Overijssel
-                var locationState = GetLocationPlaces(exifItem, 
-	                "Province/State","photoshop:State");
-                if(!string.IsNullOrEmpty(locationState)) // null = is not the right tag or empty tag
-                {
-                    item.LocationState = locationState;
-                }
-                
-                //    [IPTC] Country/Primary Location Name = Nederland
-                var locationCountry = GetLocationPlaces(exifItem, 
-	                "Country/Primary Location Name","photoshop:Country");
-                if(!string.IsNullOrEmpty(locationCountry)) // null = is not the right tag or empty tag
-                {
-                    item.LocationCountry = locationCountry;
-                }
-	            
-	            //    [Exif SubIFD] Aperture Value = f/2.2
-	            var aperture = GetAperture(exifItem);
-	            if(Math.Abs(aperture) > 0) // 0f = is not the right tag or empty tag
-	            {
-		            item.Aperture = aperture;
-	            }
-	            
-	            // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
-	            var shutterSpeed = GetShutterSpeedValue(exifItem);
-	            if(shutterSpeed != string.Empty) // string.Empty = is not the right tag or empty tag
-	            {
-		            item.ShutterSpeed = shutterSpeed;
-	            }
-	            
-	            // [Exif SubIFD] ISO Speed Ratings = 25
-	            var isoSpeed = GetIsoSpeedValue(exifItem);
-	            if(isoSpeed != 0) // 0 = is not the right tag or empty tag
-	            {
-		            item.SetIsoSpeed(isoSpeed);
-	            }
-
-	            var lensModel = GetMakeLensModel(exifItem);
-	            if (lensModel != string.Empty)
-	            {
-		            item.SetMakeModel(lensModel,2);
-	            }
-	            
-	            // [Exif SubIFD] Focal Length = 200 mm
-	            var focalLength = GetFocalLength(exifItem);
-	            if (Math.Abs(focalLength) > 0.00001) 
-	            {
-		            item.FocalLength = focalLength;
-	            }
-
-
-            }
-            
-            var make = GetMakeModel(allExifItems,true);
-            if (make != string.Empty) // string.Empty = is not the right tag or empty tag
-            {
-	            item.SetMakeModel(make,0);
-            }
-	            
-            var model = GetMakeModel(allExifItems,false);
-            if (model != string.Empty) // string.Empty = is not the right tag or empty tag
-            {
-	            item.SetMakeModel(model,1);
-            }
-            
-
-            item.Software = GetSoftware(allExifItems);
-            
-            // last & out of the loop
-            var sonyLensModel = GetSonyMakeLensModel(allExifItems, item.LensModel);
-            if ( !string.IsNullOrEmpty(sonyLensModel) )
-            {
-	            item.SetMakeModel(sonyLensModel,2);
-            }
-            
-            item.ImageStabilisation = GetImageStabilisation(allExifItems);
-            item.LocationCountryCode = GetLocationCountryCode(allExifItems);
-
-            // DateTime of image
-            var dateTime = GetExifDateTime(allExifItems, new CameraMakeModel(item.Make, item.Model));
-            if ( dateTime != null )
-            {
-	            item.DateTime = (DateTime)dateTime;
-            }
+	        
+            SetArrayBasedItemsTagsDescriptionTitle(allExifItems, item);
+			SetArrayBasedItemsApertureShutterSpeedIso(allExifItems, item);
+            SetArrayBasedItemsLocationPlaces(allExifItems, item);
+            SetArrayBasedItemsOrientation(allExifItems, item);
+            SetArrayBasedItemsLens(allExifItems, item);
+            SetArrayBasedItemsMakeModel(allExifItems, item);
+            SetArrayBasedItemsSoftwareStabilization(allExifItems, item);
 
             return item;
+        }
+        
+        /// <summary>
+        /// Combination setter Tags Description Title ColorClass
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
+        private static void SetArrayBasedItemsTagsDescriptionTitle(
+	        List<Directory> allExifItems, FileIndexItem item)
+        {
+	        //  exifItem.Tags
+	        var tags = GetExifKeywords(allExifItems);
+	        if(!string.IsNullOrEmpty(tags)) // null = is not the right tag or empty tag
+	        {
+		        item.Tags = tags;
+	        }
+	        // Colour Class => ratings
+	        var colorClassString = GetColorClassString(allExifItems);
+	        if(!string.IsNullOrEmpty(colorClassString)) // null = is not the right tag or empty tag
+	        {
+		        item.ColorClass = ColorClassParser.GetColorClass(colorClassString);
+	        }
+                
+	        // [IPTC] Caption/Abstract
+	        var caption = GetCaptionAbstract(allExifItems);
+	        if(!string.IsNullOrEmpty(caption)) // null = is not the right tag or empty tag
+	        {
+		        item.Description = caption;
+	        }    
+                
+	        // [IPTC] Object Name = Title
+	        var title = GetObjectName(allExifItems);
+	        if(!string.IsNullOrEmpty(title)) // null = is not the right tag or empty tag
+	        {
+		        item.Title = title;
+	        }
+        }
+        
+
+        /// <summary>
+        /// Combination setter Orientation
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
+        private static void SetArrayBasedItemsOrientation(
+	        IEnumerable<Directory> allExifItems, FileIndexItem item)
+        {
+	        // Orientation of image
+	        var orientation = GetOrientationFromExifItem(allExifItems);
+	        if (orientation != FileIndexItem.Rotation.DoNotChange)
+	        {
+		        item.Orientation = orientation;
+	        }
+        }
+
+        /// <summary>
+        /// Combination setter Aperture Shutter SpeedIso
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
+        private static void SetArrayBasedItemsApertureShutterSpeedIso(List<Directory> allExifItems, FileIndexItem item)
+        {
+	        //    [Exif SubIFD] Aperture Value = f/2.2
+	        var aperture = GetAperture(allExifItems);
+	        if(Math.Abs(aperture) > 0) // 0f = is not the right tag or empty tag
+	        {
+		        item.Aperture = aperture;
+	        }
+	            
+	        // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
+	        var shutterSpeed = GetShutterSpeedValue(allExifItems);
+	        if(shutterSpeed != string.Empty) // string.Empty = is not the right tag or empty tag
+	        {
+		        item.ShutterSpeed = shutterSpeed;
+	        }
+	            
+	        // [Exif SubIFD] ISO Speed Ratings = 25
+	        var isoSpeed = GetIsoSpeedValue(allExifItems);
+	        if(isoSpeed != 0) // 0 = is not the right tag or empty tag
+	        {
+		        item.SetIsoSpeed(isoSpeed);
+	        }
+        }
+
+        /// <summary>
+        /// Combination setter Location Places
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
+        private static void SetArrayBasedItemsLocationPlaces(
+	        List<Directory> allExifItems, FileIndexItem item)
+        {
+	        //    [IPTC] City = Diepenveen
+	        var locationCity = GetLocationPlaces(allExifItems, "City","photoshop:City");
+	        if(!string.IsNullOrEmpty(locationCity)) // null = is not the right tag or empty tag
+	        {
+		        item.LocationCity = locationCity;
+	        }
+                
+	        //    [IPTC] Province/State = Overijssel
+	        var locationState = GetLocationPlaces(allExifItems, 
+		        "Province/State","photoshop:State");
+	        if(!string.IsNullOrEmpty(locationState)) // null = is not the right tag or empty tag
+	        {
+		        item.LocationState = locationState;
+	        }
+                
+	        //    [IPTC] Country/Primary Location Name = Nederland
+	        var locationCountry = GetLocationPlaces(allExifItems, 
+		        "Country/Primary Location Name","photoshop:Country");
+	        if(!string.IsNullOrEmpty(locationCountry)) // null = is not the right tag or empty tag
+	        {
+		        item.LocationCountry = locationCountry;
+	        }
+        }
+
+        /// <summary>
+        /// Combination setter Focal Length and lens model
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
+        private static void SetArrayBasedItemsLens(
+	        List<Directory> allExifItems, FileIndexItem item)
+        {
+	        // [Exif SubIFD] Focal Length = 200 mm
+	        var focalLength = GetFocalLength(allExifItems);
+	        if (Math.Abs(focalLength) > 0.00001) 
+	        {
+		        item.FocalLength = focalLength;
+	        }
+	        
+	        var lensModel = GetMakeLensModel(allExifItems);
+	        if (lensModel != string.Empty)
+	        {
+		        item.SetMakeModel(lensModel,2);
+	        }
+        }
+
+        /// <summary>
+        /// Combination setter for Make and Model
+        /// </summary>
+        /// <param name="allExifItems">list of items</param>
+        /// <param name="item">output item</param>
+        private static void SetArrayBasedItemsMakeModel(
+	        List<Directory> allExifItems, FileIndexItem item)
+        {
+	        var make = GetMakeModel(allExifItems,true);
+	        if (make != string.Empty) // string.Empty = is not the right tag or empty tag
+	        {
+		        item.SetMakeModel(make,0);
+	        }
+	            
+	        var model = GetMakeModel(allExifItems,false);
+	        if (model != string.Empty) // string.Empty = is not the right tag or empty tag
+	        {
+		        item.SetMakeModel(model,1);
+	        }
+	        
+	        // last & out of the loop
+	        var sonyLensModel = GetSonyMakeLensModel(allExifItems, item.LensModel);
+	        if ( !string.IsNullOrEmpty(sonyLensModel) )
+	        {
+		        item.SetMakeModel(sonyLensModel,2);
+	        }
+        }
+
+        /// <summary>
+        /// Combination setter Software Stabilization
+        /// </summary>
+        /// <param name="allExifItems">list of meta data</param>
+        /// <param name="item">single item</param>
+        private void SetArrayBasedItemsSoftwareStabilization(List<Directory> allExifItems, FileIndexItem item)
+        {
+	        item.Software = GetSoftware(allExifItems);
+            
+	        item.ImageStabilisation = GetImageStabilisation(allExifItems);
+	        item.LocationCountryCode = GetLocationCountryCode(allExifItems);
+
+	        // DateTime of image
+	        var dateTime = GetExifDateTime(allExifItems, new CameraMakeModel(item.Make, item.Model));
+	        if ( dateTime != null )
+	        {
+		        item.DateTime = (DateTime)dateTime;
+	        }
         }
         
         /// <summary>
@@ -273,10 +338,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        
 	        return countryCodeXmp;
         }
-        
-        
 
-        private static string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)
+        private static string GetSonyMakeLensModel(IEnumerable<Directory> allExifItems, string lensModel)
         {
 	        // only if there is nothing yet
 	        if ( !string.IsNullOrEmpty(lensModel) ) return string.Empty;
@@ -303,10 +366,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			return ExtensionRolesHelper.ImageFormat.unknown;
 		}
 
-		public static FileIndexItem.Rotation GetOrientationFromExifItem(Directory exifItem)
+		public static FileIndexItem.Rotation GetOrientationFromExifItem(IEnumerable<Directory> allExifItems)
 		{
-
-			var caption = exifItem.Tags
+			var exifItem = allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault();
+			
+			var caption = exifItem?.Tags
 				.FirstOrDefault(p => p.Type == ExifDirectoryBase.TagOrientation)
 				?.Description;
             if (caption == null) return FileIndexItem.Rotation.DoNotChange;
@@ -326,14 +390,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             }
         }
 
-		private static string GetSoftware(List<Directory> allExifItems)
+		private static string GetSoftware(IEnumerable<Directory> allExifItems)
 		{
 			// [Exif IFD0] Software = 10.3.2
 			var exifIfd0Directory = allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault();
 			var tagSoftware = exifIfd0Directory?.GetDescription(ExifDirectoryBase.TagSoftware);
 			return tagSoftware;
 		}
-
 
 	    private static string GetMakeModel(List<Directory> allExifItems, bool isMake)
 	    {
@@ -360,13 +423,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <summary>
 	    /// [Exif SubIFD] Lens Model = E 18-200mm F3.5-6.3 OSS LE
 	    /// </summary>
-	    /// <param name="exifItem"></param>
+	    /// <param name="allExifItems"></param>
 	    /// <returns></returns>
-	    private static string GetMakeLensModel(Directory exifItem)
+	    private static string GetMakeLensModel(IEnumerable<Directory> allExifItems)
 	    {
-		    var lensModel = exifItem.Tags.FirstOrDefault(
-			    p => p.DirectoryName == "Exif SubIFD"
-			         && p.Name == "Lens Model")?.Description;
+		    var exifIfd0Directory = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+		    var lensModel = exifIfd0Directory?.GetDescription(ExifDirectoryBase.TagLensModel);
 
 		    return lensModel == "----" ? string.Empty : lensModel;
 	    }
@@ -396,7 +458,6 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                 }
             }
         }
-	    
 
 	    /// <summary>
 	    /// Read "dc:subject" values from XMP
@@ -428,54 +489,58 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			    where property.Path == propertyPath select property.Value ).FirstOrDefault();
 	    }
 
-        public static string GetObjectName (Directory exifItem)
+        public static string GetObjectName (List<Directory> allExifItems)
         {
-            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Object Name");
+	        var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+
+            var objectName = iptcDirectory?.Tags.FirstOrDefault(
+	            p => p.Name == "Object Name")?.Description;
             
-            // Xmp readings
-            if ( tCounts == 0 ) return GetXmpData(exifItem, "dc:title[1]");
-            
-            var caption = exifItem.Tags.FirstOrDefault(
-                p => p.DirectoryName == "IPTC" 
-                     && p.Name == "Object Name")?.Description;
-            return caption;
-        }
-
-        
-        public static string GetCaptionAbstract(Directory exifItem)
-        {
-            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Caption/Abstract");
-
-            // Xmp readings
-            if ( tCounts == 0 ) return GetXmpData(exifItem, "dc:description[1]");
-
-            var caption = exifItem.Tags.FirstOrDefault(
-	            p => p.DirectoryName == "IPTC" 
-	                 && p.Name == "Caption/Abstract")?.Description;
-            return caption;
-        }
-        
-        public static string GetExifKeywords(Directory exifItem)
-        {
-            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
-            
-            if ( tCounts == 0 ) return GetXmpDataSubject(exifItem);
-
-            var tags = exifItem.Tags.FirstOrDefault(
-                p => p.DirectoryName == "IPTC" 
-                     && p.Name == "Keywords")?.Description;
-            if (!string.IsNullOrWhiteSpace(tags))
+            if ( ! string.IsNullOrEmpty(objectName) )
             {
-                tags = tags.Replace(";", ", ");
+	            return objectName;
+            }
+            
+            // Xmp readings
+            var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+            return GetXmpData(xmpDirectory, "dc:title[1]");
+        }
+        
+        public static string GetCaptionAbstract(List<Directory> allExifItems)
+        {
+	        var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+            var caption = iptcDirectory?.GetDescription(IptcDirectory.TagCaption);
+
+            if ( !string.IsNullOrEmpty(caption) ) return caption;
+            
+            var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+            return GetXmpData(xmpDirectory, "dc:description[1]");
+        }
+        
+        public static string GetExifKeywords(List<Directory> allExifItems)
+        {
+	        var iptcDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+	        var keyWords = iptcDirectory?.GetDescription(IptcDirectory.TagKeywords);
+
+            if ( string.IsNullOrEmpty(keyWords) )
+            {
+	            var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+	            return GetXmpDataSubject(xmpDirectory);
+            }
+            
+            if (!string.IsNullOrWhiteSpace(keyWords))
+            {
+	            keyWords = keyWords.Replace(";", ", ");
             }
 
-            return tags;
+            return keyWords;
         }
 
-        private static string GetColorClassString(Directory exifItem)
-        {
+        private static string GetColorClassString(List<Directory> allExifItems)
+		{
+	        var exifItem = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
 	        var colorClassSting = string.Empty;
-            var ratingCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
+            var ratingCounts = exifItem?.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
             if (ratingCounts >= 1)
             {
                 var prefsTag = exifItem.Tags.FirstOrDefault(p => 
@@ -495,7 +560,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             }
             
             // Xmp readings
-            colorClassSting = GetXmpData(exifItem, "photomechanic:ColorClass");
+            var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+            colorClassSting = GetXmpData(xmpDirectory, "photomechanic:ColorClass");
             return colorClassSting;
         }
 
@@ -720,7 +786,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return (int) altitude;
         }
 
-        private static double GetXmpGeoAlt(List<Directory> allExifItems)
+        internal static double GetXmpGeoAlt(List<Directory> allExifItems)
         {
 	        var altitudeRef = true;
 	        var altitude = 0d;
@@ -855,7 +921,6 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
         private static int GetImageSizeInsideLoop( Directory exifItem, string dirName, string typeName)
         {
-	        
 	        var ratingCountsJpeg =
 		        exifItem.Tags.Count(p => p.DirectoryName == dirName 
 		                                 && p.Name.Contains(typeName) && p.Description != "0");
@@ -881,21 +946,23 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         ///    [IPTC] Province/State = Overijssel
         ///    [IPTC] Country/Primary Location Name = Nederland
         /// </summary>
-        /// <param name="exifItem"></param>
+        /// <param name="allExifItems"></param>
         /// <param name="iptcName">City, State or Country</param>
         /// <param name="xmpPropertyPath">photoshop:State</param>
         /// <returns></returns>
-        private static string GetLocationPlaces(Directory exifItem, string iptcName, string xmpPropertyPath)
+        private static string GetLocationPlaces(List<Directory> allExifItems, string iptcName, string xmpPropertyPath)
         {
-            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == iptcName);
+	        var iptcDirectoryDirectory = allExifItems.OfType<IptcDirectory>().FirstOrDefault();
+	        
+            var tCounts = iptcDirectoryDirectory?.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == iptcName);
             if ( tCounts < 1 )
             {
-	            return GetXmpData(exifItem, xmpPropertyPath);
+	            var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+	            return GetXmpData(xmpDirectory, xmpPropertyPath);
             }
             
-            var locationCity = exifItem.Tags.FirstOrDefault(
-                p => p.DirectoryName == "IPTC" 
-                     && p.Name == iptcName)?.Description;
+            var locationCity = iptcDirectoryDirectory?.Tags
+	            .FirstOrDefault(p => p.Name == iptcName)?.Description;
             return locationCity;
         }
 
@@ -903,14 +970,15 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// [Exif SubIFD] Focal Length
         /// </summary>
         /// <returns></returns>
-        private static double GetFocalLength(Directory exifItem)
+        private static double GetFocalLength(List<Directory> allExifItems)
         {
-	        var focalLengthString = exifItem.Tags.FirstOrDefault(
-		        p => p.DirectoryName == "Exif SubIFD" 
-		             && p.Name == "Focal Length")?.Description;
-	        
+	        var exifSubIfdDirectory = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+	        var focalLengthString = exifSubIfdDirectory?.GetDescription(ExifDirectoryBase.TagFocalLength);
+
+	        var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+
 	        // XMP,http://ns.adobe.com/exif/1.0/,exif:FocalLength,11/1
-	        var focalLengthXmp = GetXmpData(exifItem, "exif:FocalLength");
+	        var focalLengthXmp = GetXmpData(xmpDirectory, "exif:FocalLength");
 	        if (string.IsNullOrEmpty(focalLengthString) && !string.IsNullOrEmpty(focalLengthXmp))
 	        {
 		        return Math.Round(MathFraction.Fraction(focalLengthXmp), 5);
@@ -928,19 +996,24 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         }
 
 
-        private static double GetAperture(Directory exifItem)
-	    {
-		    var apertureString = exifItem.Tags.FirstOrDefault(p => 
-			    p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
+        private static double GetAperture(List<Directory> allExifItems)
+		{
+	        var exifItem = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+
+	        // "Exif SubIFD"
+		    var apertureString = exifItem?.Tags.FirstOrDefault(p => 
+			    p.Name == "Aperture Value")?.Description;
 
 		    if (string.IsNullOrEmpty(apertureString))
 		    {
-			    apertureString = exifItem.Tags.FirstOrDefault(p => 
-				    p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number")?.Description;
+			    apertureString = exifItem?.Tags.FirstOrDefault(p => 
+				    p.Name == "F-Number")?.Description;
 		    }
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
-		    var fNumberXmp = GetXmpData(exifItem, "exif:FNumber");
+		    var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+		    var fNumberXmp = GetXmpData(xmpDirectory, "exif:FNumber");
+
 		    if (string.IsNullOrEmpty(apertureString) && !string.IsNullOrEmpty(fNumberXmp))
 		    {
 			    return MathFraction.Fraction(fNumberXmp);
@@ -958,21 +1031,27 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <summary>
 	    /// [Exif SubIFD] Shutter Speed Value = 1/2403 sec
 	    /// </summary>
-	    /// <param name="exifItem">item to look in</param>
+	    /// <param name="allExifItems">item to look in</param>
 	    /// <returns>value</returns>
-	    private static string GetShutterSpeedValue(Directory exifItem)
+	    private static string GetShutterSpeedValue(List<Directory> allExifItems)
 	    {
-		    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => 
-			    p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
+		    var exifItem = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+
+		    // Exif SubIFD
+		    var shutterSpeedString = exifItem?.Tags.FirstOrDefault(p => 
+			    p.Name == "Shutter Speed Value")?.Description;
 
 		    if (string.IsNullOrEmpty(shutterSpeedString))
 		    {
-			    shutterSpeedString = exifItem.Tags.FirstOrDefault(p => 
-				    p.DirectoryName == "Exif SubIFD" && p.Name == "Exposure Time")?.Description;
+			    // Exif SubIFD
+			    shutterSpeedString = exifItem?.Tags.FirstOrDefault(p => 
+				    p.Name == "Exposure Time")?.Description;
 		    }
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ExposureTime,1/20
-		    var exposureTimeXmp = GetXmpData(exifItem, "exif:ExposureTime");
+		    var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+
+		    var exposureTimeXmp = GetXmpData(xmpDirectory, "exif:ExposureTime");
 		    if (string.IsNullOrEmpty(shutterSpeedString) && 
 		        !string.IsNullOrEmpty(exposureTimeXmp) && exposureTimeXmp.Length <= 20)
 		    {
@@ -988,23 +1067,29 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    return shutterSpeedString;
 	    }
 
-	    private static int GetIsoSpeedValue(Directory exifItem)
+	    internal static int GetIsoSpeedValue(List<Directory> allExifItems)
 	    {
-		    var isoSpeedString = exifItem.Tags.FirstOrDefault(p => 
-			    p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;
+		    var subIfdItem = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+
+		    // Exif SubIFD
+		    var isoSpeedString = subIfdItem?.Tags.FirstOrDefault(p => 
+			    p.Name == "ISO Speed Ratings")?.Description;
 
 		    if ( string.IsNullOrEmpty(isoSpeedString) )
 		    {
-			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => 
-				    p.DirectoryName == "Canon Makernote" && p.Name == "Iso")?.Description;
+			    var canonMakerNoteDirectory = allExifItems.OfType<CanonMakernoteDirectory>().FirstOrDefault();
+
+			    // Canon Makernote
+			    isoSpeedString = canonMakerNoteDirectory?.Tags.FirstOrDefault(p => 
+				    p.Name == "Iso")?.Description;
 			    if ( isoSpeedString == "Auto" )
 			    {
 				    // src: https://github.com/exiftool/exiftool/blob/
 				    // 6b994069d52302062b9d7a462dc27082c4196d95/lib/Image/ExifTool/Canon.pm#L8882
-				    var autoIso = exifItem.Tags.FirstOrDefault(p => 
-					    p.DirectoryName == "Canon Makernote" && p.Name == "Auto ISO")?.Description;
-				    var baseIso = exifItem.Tags.FirstOrDefault(p => 
-					    p.DirectoryName == "Canon Makernote" && p.Name == "Base ISO")?.Description;
+				    var autoIso = canonMakerNoteDirectory.Tags.FirstOrDefault(p => 
+					    p.Name == "Auto ISO")?.Description;
+				    var baseIso = canonMakerNoteDirectory.Tags.FirstOrDefault(p => 
+					    p.Name == "Base ISO")?.Description;
 				    if ( !string.IsNullOrEmpty(autoIso) && !string.IsNullOrEmpty(baseIso) )
 				    {
 					    int.TryParse(autoIso, NumberStyles.Number, 
@@ -1019,7 +1104,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ISOSpeedRatings,
 		    // XMP,,exif:ISOSpeedRatings[1],101
 		    // XMP,,exif:ISOSpeedRatings[2],101
-		    var isoSpeedXmp = GetXmpData(exifItem, "exif:ISOSpeedRatings[1]");
+		    var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
+		    var isoSpeedXmp = GetXmpData(xmpDirectory, "exif:ISOSpeedRatings[1]");
 		    if (string.IsNullOrEmpty(isoSpeedString) && !string.IsNullOrEmpty(isoSpeedXmp))
 		    {
 			    isoSpeedString = isoSpeedXmp;
@@ -1028,6 +1114,5 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    int.TryParse(isoSpeedString, NumberStyles.Number, CultureInfo.InvariantCulture, out var isoSpeed);
 		    return isoSpeed;
 	    }
-		
 	}
 }
