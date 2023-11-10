@@ -1067,7 +1067,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		    return shutterSpeedString;
 	    }
 
-	    private static int GetIsoSpeedValue(List<Directory> allExifItems)
+	    internal static int GetIsoSpeedValue(List<Directory> allExifItems)
 	    {
 		    var subIfdItem = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 
