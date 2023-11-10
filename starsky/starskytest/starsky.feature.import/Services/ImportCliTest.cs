@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.import.Services;
-using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -13,13 +12,6 @@ namespace starskytest.starsky.feature.import.Services
 	[TestClass]
 	public sealed class ImportCliTest
 	{
-		private readonly HttpClientHelper _httpClientHelper;
-
-		public ImportCliTest()
-		{
-			_httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), null, new FakeIWebLogger());
-		}
-
 		[TestMethod]
 		public async Task ImporterCli_CheckIfExifToolIsCalled()
 		{
@@ -71,7 +63,7 @@ namespace starskytest.starsky.feature.import.Services
 				new AppSettings(), fakeConsole, new FakeExifToolDownload()).Importer(
 				new List<string>{"-p", "/test", "--output" , "csv"}.ToArray());
 			
-			Assert.IsFalse(fakeConsole.WrittenLines.FirstOrDefault().Contains("Done Importing"));
+			Assert.IsFalse(fakeConsole.WrittenLines.FirstOrDefault()?.Contains("Done Importing"));
 			Assert.AreEqual("Id;Status;SourceFullFilePath;SubPath;FileHash",fakeConsole.WrittenLines.FirstOrDefault() );
 			Assert.AreEqual("0;FileError;~/temp/test;;FAKE",fakeConsole.WrittenLines[1] );
 			Assert.AreEqual("0;FileError;~/temp/test;;FAKE",fakeConsole.WrittenLines[2] );
@@ -92,7 +84,7 @@ namespace starskytest.starsky.feature.import.Services
 			// verbose is entered here 
 			await cli.Importer(new List<string>{"-p", "/test", "-v", "true"}.ToArray());
 			
-			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault().Contains("Failed: 2"));
+			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault()?.Contains("Failed: 2"));
 		}
 		
 		[TestMethod]
@@ -106,7 +98,7 @@ namespace starskytest.starsky.feature.import.Services
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
 					new AppSettings{Verbose = false}, fakeConsole, new FakeExifToolDownload())
 				.Importer(new List<string>{"-p", "/test"}.ToArray());
-			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault().Contains("Failed"));
+			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault()?.Contains("Failed"));
 		}
         		
 	}

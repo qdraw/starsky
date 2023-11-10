@@ -230,7 +230,8 @@ public class CleanDemoDataServiceTest
 		var appSettings = new AppSettings();
 		var fakeIHttpClientHelper =
 			new FakeIHttpProvider(new Dictionary<string, HttpContent>());
-		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger, 
+			new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 		var storage = new FakeIStorage();
 		
 		var result = await CleanDemoDataService.DownloadAsync(appSettings, httpClientHelper, storage, storage, _logger);
@@ -256,7 +257,8 @@ public class CleanDemoDataServiceTest
 			{"https://qdraw.nl/1000/20211117_091926_dsc00514_e_kl1k.jpg",new StringContent("test")}
 		});
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger, 
+			new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 		
 		var result = await CleanDemoDataService.DownloadAsync(appSettings, httpClientHelper, _storage, _storage, _logger);
 		
@@ -284,7 +286,8 @@ public class CleanDemoDataServiceTest
 			{"https://qdraw.nl/1000/20211117_091926_dsc00514_e_kl1k.jpg",new StringContent("test")}
 		});
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger, 
+			new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 		
 		var result = await CleanDemoDataService.DownloadAsync(appSettings, httpClientHelper, _storage, _storage, _logger);
 		

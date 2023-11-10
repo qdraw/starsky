@@ -214,7 +214,6 @@ namespace starsky.foundation.storage.Storage
 		/// Returns a list of directories // Get list of child folders
 		/// </summary>
 		/// <param name="path">subPath in dir</param>
-		/// <param name="orderByAlphabet">order by alphabet or last edited</param>
 		/// <returns>list of paths</returns>
 		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
 		{
@@ -260,9 +259,6 @@ namespace starsky.foundation.storage.Storage
 
 			return new RetryStream().Retry(LocalGet);
 		}
-
-
-		
 		
 		/// <summary>
 		/// Write fileStream to disk

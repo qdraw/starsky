@@ -62,7 +62,8 @@ namespace starskytest.starsky.feature.health.Helpers
 			{
 				{CheckForUpdates.GithubApi, new StringContent(replace)},
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			
 			var results = await new CheckForUpdates(httpClientHelper, 
 				new AppSettings(),null).QueryIsUpdateNeededAsync();
@@ -79,7 +80,8 @@ namespace starskytest.starsky.feature.health.Helpers
 		public async Task QueryIsUpdateNeeded_NotFound()
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>());
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			
 			var results = await new CheckForUpdates(httpClientHelper, 
 				new AppSettings(),null).QueryIsUpdateNeededAsync();
@@ -204,7 +206,8 @@ namespace starskytest.starsky.feature.health.Helpers
 			{
 				{CheckForUpdates.GithubApi, new StringContent(replace)},
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			await new CheckForUpdates(httpClientHelper, 
 				new AppSettings(),memoryCache).IsUpdateNeeded();
@@ -267,7 +270,8 @@ namespace starskytest.starsky.feature.health.Helpers
 			{
 				{CheckForUpdates.GithubApi, new StringContent(replace)},
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 	        
 			var results = await new CheckForUpdates(httpClientHelper, 
 				new AppSettings{AddMemoryCache = false},memoryCache).IsUpdateNeeded();
@@ -284,7 +288,8 @@ namespace starskytest.starsky.feature.health.Helpers
 			{
 				{CheckForUpdates.GithubApi, new StringContent(replace)},
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 	        
 			var results = await new CheckForUpdates(httpClientHelper, 
 				new AppSettings{AddMemoryCache = true},null).IsUpdateNeeded();

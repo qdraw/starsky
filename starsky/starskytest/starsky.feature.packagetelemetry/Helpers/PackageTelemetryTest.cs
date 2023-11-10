@@ -38,7 +38,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 		{
 			var httpProvider = new FakeIHttpProvider();
 			var appSettings = new AppSettings();
-			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 
 			var systemData = packageTelemetry.GetSystemData();
@@ -63,7 +64,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 		public void GetSystemDataTestDocker()
 		{
 			var httpProvider = new FakeIHttpProvider();
-			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 
 			var sourceValue = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
@@ -87,7 +89,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 		public void GetSystemDataTestDocker_NonLinux_soFalse()
 		{
 			var httpProvider = new FakeIHttpProvider();
-			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 
 			var sourceValue = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
@@ -112,7 +115,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 		public void GetSystemDataTestDocker_WebSiteName()
 		{
 			var httpProvider = new FakeIHttpProvider();
-			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, new AppSettings(), new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 
 			var sourceValue = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
@@ -170,6 +174,7 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 
 		private class PropValueTestClass
 		{
+			// ReSharper disable once UnusedAutoPropertyAccessor.Local
 			public string Test { get; set; }
 		}
 	
@@ -179,14 +184,14 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 			var result = PackageTelemetry.GetPropValue(new PropValueTestClass{Test = "1"}, "Test");
 			Assert.AreEqual("1",result);
 		}
-
 	
 		[TestMethod]
 		public void AddAppSettingsData()
 		{
 			var httpProvider = new FakeIHttpProvider();
 			var appSettings = new AppSettings();
-			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 			var result = packageTelemetry.AddAppSettingsData(new List<KeyValuePair<string, string>>());
 
@@ -198,7 +203,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 		{
 			var httpProvider = new FakeIHttpProvider();
 			var appSettings = new AppSettings{EnablePackageTelemetry = false};
-			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsNull(result);
@@ -213,7 +219,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 				{"https://" + PackageTelemetry.PackageTelemetryUrl,new StringContent(string.Empty)}
 			});
 			var appSettings = new AppSettings{EnablePackageTelemetry = true};
-			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsTrue(result);
@@ -228,7 +235,8 @@ namespace starskytest.starsky.feature.packagetelemetry.Helpers
 				{"https://" + PackageTelemetry.PackageTelemetryUrl,new StringContent(string.Empty)}
 			});
 			var appSettings = new AppSettings{EnablePackageTelemetry = true, EnablePackageTelemetryDebug = true};
-			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, null!, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var packageTelemetry = new PackageTelemetry(httpClientHelper, appSettings, new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService());
 			var result = await packageTelemetry.PackageTelemetrySend();
 			Assert.IsNull(result);

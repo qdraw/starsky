@@ -639,7 +639,6 @@ namespace starsky.foundation.platform.Models
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		[PackageTelemetry]
 		public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
-		
 
 		/// <summary>
 		/// Value for AccountRolesDefaultByEmailRegisterOverwrite
@@ -775,8 +774,6 @@ namespace starsky.foundation.platform.Models
 		/// Private storage for EnablePackageTelemetry
 		/// </summary>
 		private bool? EnablePackageTelemetryPrivate { get; set; }
-
-		
 		
 		/// <summary>
 		/// Disable logout buttons in UI
@@ -784,7 +781,6 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		[PackageTelemetry]
 		public bool? UseLocalDesktopUi { get; set; } = false;
-		
 		
 		/// <summary>
 		/// Helps us improve the software
@@ -839,7 +835,15 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		[PackageTelemetry]
 		public bool? UseSystemTrash { get; set; }
-		
+
+		/// <summary>
+		/// Security whitelist to allow GET requests from other domains than the default list
+		/// use env variable: app__AllowedHttpsDomains__0 - value
+		/// Always use a domain name only, no paths and exclude https://
+		/// http is not supported due security reasons
+		/// </summary>
+		public List<string> AllowedHttpsDomains { get; set; } =
+			new List<string>();
 
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------

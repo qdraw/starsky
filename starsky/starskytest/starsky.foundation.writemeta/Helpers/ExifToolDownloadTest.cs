@@ -84,7 +84,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			// Happy flow
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
@@ -101,7 +102,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{"https://qdraw.nl/special/mirror/exiftool/checksums.txt", new StringContent(ExampleCheckSum)},
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			// Main source is down, but mirror is up
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
@@ -116,7 +118,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			// Main & Mirror source are down
 			var fakeIHttpProvider = new FakeIHttpProvider();
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			// Main & Mirror source are down
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
@@ -134,7 +137,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)},
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"exiftool.org"}});
 
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, 
 				new FakeIWebLogger() ).DownloadExifTool(_appSettings.IsWindows);
@@ -196,7 +200,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)},
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var appSettings = await CreateTempFolderWithExifTool();
 			
 			Console.WriteLine(appSettings.DependenciesFolder);
@@ -229,7 +234,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)},
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			await CreateTempFolderWithExifTool("starsky-tmp-dependencies-4835793");
 			
 			// make NOT executable 644 
@@ -243,15 +249,13 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			RemoveTempFolderWithExifTool("starsky-tmp-dependencies-4835793");
 
 			Assert.IsTrue(result);
-
-
-			
 		}
 		
 		[TestMethod]
 		public async Task DownloadExifTool_Windows()
 		{
-			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, 
 				new FakeIWebLogger() ).DownloadExifTool(true);
@@ -262,7 +266,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		[TestMethod]
 		public async Task DownloadExifTool_Skip_AddSwaggerExportExitAfter()
 		{
-			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var appSettings = new AppSettings
 			{
@@ -279,7 +284,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		[TestMethod]
 		public async Task DownloadExifTool_Skip_ExiftoolSkipDownloadOnStartup()
 		{
-			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var appSettings = new AppSettings
 			{
@@ -294,7 +300,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		[TestMethod]
 		public async Task DownloadExifTool_Unix()
 		{
-			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			Directory.Delete(_appSettings.DependenciesFolder,true);
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
 				.DownloadExifTool(false);
@@ -317,7 +324,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
 				Path.Combine(appSettings.DependenciesFolder, "exiftool-windows", "exiftool.exe"));
 			
-			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var logger = new FakeIWebLogger();
 			
 			var result = await new ExifToolDownload(httpClientHelper,appSettings,logger).DownloadExifTool(true);
@@ -342,7 +350,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			
 			var appSettings = await CreateTempFolderWithExifTool("test32");
 			appSettings.Verbose = true;
-			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var logger = new FakeIWebLogger();
 			var result = await new ExifToolDownload(httpClientHelper,appSettings,logger).DownloadExifTool(false,3);
 			
@@ -364,7 +373,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)}
 			});
 
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).StartDownloadForWindows();
 			Assert.IsTrue(result);
 			
@@ -375,7 +385,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)}
 			});
-			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings, new FakeIWebLogger() ).StartDownloadForWindows();
 			Assert.IsTrue(result2);
 			
@@ -391,7 +402,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 			});
 
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger()).
 				StartDownloadForWindows();
 		}
@@ -405,7 +417,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 			});
 
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			await new ExifToolDownload(httpClientHelper, _appSettings, new FakeIWebLogger()).
 				StartDownloadForUnix();
 		}
@@ -421,7 +434,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			_appSettings.Verbose = true;
 
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).StartDownloadForUnix();
 			Assert.IsTrue(result);
 			
@@ -432,7 +446,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)}
 			});
-			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings, new FakeIWebLogger() ).StartDownloadForUnix();
 			Assert.IsTrue(result2);
 
@@ -472,7 +487,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL")}
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).StartDownloadForUnix();
 			Assert.IsFalse(result);
 		}
@@ -488,7 +504,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 					"https://exiftool.org/exiftool-11.99.zip", new StringContent("FAIL")
 				}
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).StartDownloadForWindows();
 			Assert.IsFalse(result);
 		}
@@ -501,7 +518,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://qdraw.nl/special/mirror/exiftool/exiftool-11.99.zip", new StringContent("FAIL")},
 				{"https://qdraw.nl/special/mirror/exiftool/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL")}
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			try
 			{
@@ -528,7 +546,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://qdraw.nl/special/mirror/exiftool/exiftool-11.99.zip", new StringContent("FAIL")},
 				{"https://qdraw.nl/special/mirror/exiftool/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL")}
 			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			try
 			{
@@ -559,7 +578,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				"MD5 (exiftool-12.40.zip) = fc834fd43d79da19fcb6461fb791b275\n" +
 				"MD5 (ExifTool-12.40.dmg) = b30e391a4b53564de60a72f4347cade4\n";
 			
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
 				new FakeIWebLogger(), new FakeIStorage());
@@ -581,7 +601,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				"MD5 (exiftool-12.40.zip) = fc834fd43d79da19fcb6461fb791b275\n" +
 				"MD5 (ExifTool-12.40.dmg) = b30e391a4b53564de60a72f4347cade4\n";
 			
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var exifToolDownload = new ExifToolDownload(httpClientHelper, new AppSettings(),
 				new FakeIWebLogger(), new FakeIStorage());
