@@ -45,6 +45,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ SQLite Error 5 database is locked bug (PR #1277, issue #1225)
 - [x] (Fixed) _Back-end_ MySql timeouts bug (PR #1277, issue #1186)
 - [x] (Fixed) _Back-end_ Thumbnail CLI null reference bug  (PR #1277, issue #1176)
+- [x] (Fixed) _Back-end_ Fix code smells and add tests (PR #1278)
 
 ## version 0.5.11 - 2023-10-13 {#v0.5.11}
 
