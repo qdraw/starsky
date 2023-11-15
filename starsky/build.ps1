@@ -68,6 +68,13 @@ function Test-Switch-Nvm-Path
     }   
 }
 
+function Restart-Nvm-Path  
+{ 
+    if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
+        write-host "Please restart the current powershell window and run the ./build.ps1 again"
+        exit 1
+    }
+}
 
 function Add-NuGetSource {
     param (
@@ -88,7 +95,6 @@ function Add-NuGetSource {
         Write-Host "NuGet source '$sourceName' already exists."
     }
 }
-
 
 write-host "ci: " $env:CI "tfbuild: "  $env:TF_BUILD  " install check: " $env:FORCE_INSTALL_CHECK
 
@@ -135,8 +141,7 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
 
     write-host "next: check right version of nodejs"
 
-    
-    if (($null -ne (Get-Command "choco" -ErrorAction SilentlyContinue)) -and ($null -ne (Get-Command "nvm" -ErrorAction SilentlyContinue)) ) {
+    if (($null -ne (Get-Command "choco" -ErrorAction SilentlyContinue)) -and ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) ) {
         # https://chocolatey.org/install
         write-host "choco exists"
 
@@ -150,6 +155,7 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
 
         Invoke-Expression -Command "choco install nvm -y"
 
+        Restart-Nvm-Path
          
         Test-Switch-Nvm-Path
 
@@ -157,13 +163,14 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
     
     if ($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) {
 
-        if(-not (Test-Administrator))
-        {
-            Write-Error "hit Winget - This script must be executed as Administrator.";
-            exit 1;
-        }
-
         if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
+
+            if(-not (Test-Administrator))
+            {
+                Write-Error "hit Winget - This script must be executed as Administrator.";
+                exit 1;
+            }
+
             write-host "update package list winget"
             Invoke-Expression -Command "winget source update --verbose-logs"
 
@@ -181,10 +188,7 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
             write-host "install of nvm done"
         }
 
-        if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
-            write-host "Please restart the current powershell window and run the ./build.ps1 again"
-            exit 1
-        }
+        Restart-Nvm-Path
 
         Test-Switch-Nvm-Path
         
@@ -214,7 +218,7 @@ else {
     }
     
     Add-NuGetSource -dotnetPath "$DotNetDirectory\dotnet.exe" -sourceUrl "https://api.nuget.org/v3/index.json" -sourceName "nuget.org"
-
+    
     # Install by channel or version
     $DotNetDirectory = "$TempDirectory\dotnet-win"
     if (!(Test-Path variable:DotNetVersion)) {
