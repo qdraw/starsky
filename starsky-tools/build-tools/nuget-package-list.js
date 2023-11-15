@@ -50,9 +50,15 @@ async function checkCsProjFile(filePathList) {
 		"Updated Nuget Packages List -> " +
 			join(starskySolutionFolder, "nuget-packages-list.json")
 	);
+	
+	// https://stackoverflow.com/a/70567308
+	const result = JSON.stringify(Array.from(packageReferenceSet), null, 2).replace(/^(\s*).*\\n.*$/gm, (line, indent) =>
+		line.replace(/\\n/g, "\n" + indent)
+	);
+	
 	await writeFile(
 		join(starskySolutionFolder, "nuget-packages-list.json"),
-		JSON.stringify(Array.from(packageReferenceSet), null, 2)
+		result
 	);
 }
 

@@ -37,6 +37,72 @@ function ExecSafe([scriptblock] $cmd) {
     if ($LASTEXITCODE) { exit $LASTEXITCODE }
 }
 
+function Test-Administrator  
+{  
+    [OutputType([bool])]
+    param()
+    process {
+        [Security.Principal.WindowsPrincipal]$user = [Security.Principal.WindowsIdentity]::GetCurrent();
+        return $user.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator);
+    }
+}
+
+function Test-Switch-Nvm-Path  
+{ 
+    if (Test-Path -Path $nvmRcFile) {
+        $nvmVersion = Get-Content $nvmRcFile
+
+        $nvmCurrentCommand = "nvm current";
+        if ($nvmVersion -ne (Invoke-Expression -Command $nvmCurrentCommand)) {
+            write-host "next switch to "$nvmVersion
+            write-host "There might be an admin window"
+
+            $nvmInstallVersionCommand = "nvm install "+$nvmVersion
+            Invoke-Expression -Command $nvmInstallVersionCommand
+            $nvmSwitchVersionCommand = "nvm use "+$nvmVersion
+            Invoke-Expression -Command $nvmSwitchVersionCommand
+        }
+        else {
+            write-host "already the right version " $nvmVersion
+        }
+    }   
+}
+
+function Restart-Command-Not-In-Path  
+{ 
+    param (
+        [string]$command
+    )
+    
+    if ($null -eq (Get-Command $command -ErrorAction SilentlyContinue)) {
+        write-host ""
+        write-host "Please restart the current powershell window and run the ./build.ps1 again"
+        write-host "Set-Location -Path \"$PSScriptRoot\"; .\build.ps1"
+        write-host ""
+        exit 1
+    }
+}
+
+function Add-NuGetSource {
+    param (
+        [string]$dotnetPath,
+        [string]$sourceUrl,
+        [string]$sourceName
+    )
+
+    # Run the command to list NuGet sources and check if the target source is already added
+    $result = & $dotnetPath nuget list source | Select-String -Pattern $sourceUrl
+
+    # If the target source is not found, add it
+    if (-not $result) {
+        Write-Host "Adding NuGet source '$sourceName' with URL '$sourceUrl'..."
+        & $dotnetPath nuget add source --name $sourceName $sourceUrl
+        Write-Host "NuGet source added successfully."
+    } else {
+        Write-Host "NuGet source '$sourceName' already exists."
+    }
+}
+
 write-host "ci: " $env:CI "tfbuild: "  $env:TF_BUILD  " install check: " $env:FORCE_INSTALL_CHECK
 
 #$env:CI = 'true'
@@ -57,7 +123,29 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
     }
     else {
         write-host "wrong version is installed"
-        if ($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) {
+        
+        if ($null -ne (Get-Command "choco" -ErrorAction SilentlyContinue)) {
+            write-host "next: install via choco"
+            
+            $firstCharOfVersion = $shouldBeNetVersion.SubString(0,1)
+            $showCommand = 'choco install dotnet-' + $firstCharOfVersion + '.0-sdk --version ' + $shouldBeNetVersion + ' -y --no-progress' 
+            # to uninstall choco uninstall dotnet-6.0-sdk
+            write-host "next run: " $showCommand
+            
+            $resultInstall = Invoke-Expression -Command $showCommand -ErrorAction SilentlyContinue
+            if ($LASTEXITCODE -eq 0) {
+                write-host "version found" 
+            }
+            else {
+                write-host "version not found so skip"
+                Write-host $resultInstall
+            }
+
+            Restart-Command-Not-In-Path -Command "dotnet"
+        }
+
+        if (($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) -and (-not (Get-Command "choco" -ErrorAction SilentlyContinue))) {
+        
             write-host "next: install via winget"
 
             # just to get by those messages
@@ -82,37 +170,59 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
 
     write-host "next: check right version of nodejs"
 
-    if ($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) {
+    if (($null -ne (Get-Command "choco" -ErrorAction SilentlyContinue)) -and ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) ) {
+        # https://chocolatey.org/install
+        write-host "choco exists"
+
+        if(-not (Test-Administrator))
+        {
+            Write-Error "hit Winget - This script must be executed as Administrator.";
+            exit 1;
+        }
+
+        write-host "next install node version manager - choco exists"
+
+        Invoke-Expression -Command "choco install nvm -y"
+
+        Restart-Command-Not-In-Path -Command "nvm"
+         
+        Test-Switch-Nvm-Path
+
+    }
+    
+    if (($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) -and (-not (Get-Command "choco" -ErrorAction SilentlyContinue))) {
+
         if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
+
+            if(-not (Test-Administrator))
+            {
+                Write-Error "hit Winget - This script must be executed as Administrator.";
+                exit 1;
+            }
+
+            write-host "update package list winget"
+            Invoke-Expression -Command "winget source update --verbose-logs"
+
             write-host "next install node version manager - winget exists"
             write-host "you will asked for password"
-            Invoke-Expression -Command "winget install CoreyButler.NVMforWindows --disable-interactivity"
+
+            try {
+               Invoke-Expression -Command "winget install -e --id CoreyButler.NVMforWindows --disable-interactivity"
+            } catch {
+                write-host $_
+                write-host "try other way"
+                Invoke-Expression -Command "winget install -e --id CoreyButler.NVMforWindows"
+            }
+
             write-host "install of nvm done"
         }
 
-        if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
-            write-host "Please restart the current powershell window and run the ./build.ps1 again"
-            exit 1
-        }
+        Restart-Command-Not-In-Path -Command "nvm"
 
-        if (Test-Path -Path $nvmRcFile) {
-            $nvmVersion = Get-Content $nvmRcFile
-
-            $nvmCurrentCommand = "nvm current";
-            if ($nvmVersion -ne (Invoke-Expression -Command $nvmCurrentCommand)) {
-                write-host "next switch to "$nvmVersion
-                write-host "There might be an admin window"
-
-                $nvmInstallVersionCommand = "nvm install "+$nvmVersion
-                Invoke-Expression -Command $nvmInstallVersionCommand
-                $nvmSwitchVersionCommand = "nvm use "+$nvmVersion
-                Invoke-Expression -Command $nvmSwitchVersionCommand
-            }
-            else {
-                write-host "already the right version " $nvmVersion
-            }
-        }           
+        Test-Switch-Nvm-Path
+        
     }
+
 }
 
 # If dotnet CLI is installed globally and it matches requested version, use for execution
@@ -135,9 +245,12 @@ else {
             $DotNetVersion = $DotNetGlobal.sdk.version
         }
     }
-
+    
     # Install by channel or version
     $DotNetDirectory = "$TempDirectory\dotnet-win"
+
+    Add-NuGetSource -dotnetPath "$DotNetDirectory\dotnet.exe" -sourceUrl "https://api.nuget.org/v3/index.json" -sourceName "nuget.org"
+
     if (!(Test-Path variable:DotNetVersion)) {
         ExecSafe { & powershell $DotNetInstallFile -InstallDir $DotNetDirectory -Channel $DotNetChannel -NoPath }
     } else {
