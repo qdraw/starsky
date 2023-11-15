@@ -49,13 +49,24 @@ _When using powershell:_
     .\build.ps1
 ```
 
-### When you see 'build.ps1 cannot be loaded because running scripts is disabled on this system.' 
+### When you see 'build.ps1 cannot be loaded because running scripts is disabled on this system.'
 For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
 Run the following command to enable scripts:
+
+Make sure you run the script as Administrator
 
 ```powershell
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 ```
+
+you see something like this:
+
+```
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "N"):
+```
+
+Press to continue: A
+
 
 
 _Or using bash (on Linux and Mac OS)_

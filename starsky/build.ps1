@@ -37,6 +37,38 @@ function ExecSafe([scriptblock] $cmd) {
     if ($LASTEXITCODE) { exit $LASTEXITCODE }
 }
 
+function Test-Administrator  
+{  
+    [OutputType([bool])]
+    param()
+    process {
+        [Security.Principal.WindowsPrincipal]$user = [Security.Principal.WindowsIdentity]::GetCurrent();
+        return $user.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator);
+    }
+}
+
+function Test-Switch-Nvm-Path  
+{ 
+    if (Test-Path -Path $nvmRcFile) {
+        $nvmVersion = Get-Content $nvmRcFile
+
+        $nvmCurrentCommand = "nvm current";
+        if ($nvmVersion -ne (Invoke-Expression -Command $nvmCurrentCommand)) {
+            write-host "next switch to "$nvmVersion
+            write-host "There might be an admin window"
+
+            $nvmInstallVersionCommand = "nvm install "+$nvmVersion
+            Invoke-Expression -Command $nvmInstallVersionCommand
+            $nvmSwitchVersionCommand = "nvm use "+$nvmVersion
+            Invoke-Expression -Command $nvmSwitchVersionCommand
+        }
+        else {
+            write-host "already the right version " $nvmVersion
+        }
+    }   
+}
+
+
 write-host "ci: " $env:CI "tfbuild: "  $env:TF_BUILD  " install check: " $env:FORCE_INSTALL_CHECK
 
 #$env:CI = 'true'
@@ -82,11 +114,49 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
 
     write-host "next: check right version of nodejs"
 
+    
+    if (($null -ne (Get-Command "choco" -ErrorAction SilentlyContinue)) -and ($null -ne (Get-Command "nvm" -ErrorAction SilentlyContinue)) ) {
+        # https://chocolatey.org/install
+        write-host "choco exists"
+
+        if(-not (Test-Administrator))
+        {
+            Write-Error "hit Winget - This script must be executed as Administrator.";
+            exit 1;
+        }
+
+        write-host "next install node version manager - choco exists"
+
+        Invoke-Expression -Command "choco install nvm -y"
+
+         
+        Test-Switch-Nvm-Path
+
+    }
+    
     if ($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) {
+
+        if(-not (Test-Administrator))
+        {
+            Write-Error "hit Winget - This script must be executed as Administrator.";
+            exit 1;
+        }
+
         if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
+            write-host "update package list winget"
+            Invoke-Expression -Command "winget source update --verbose-logs"
+
             write-host "next install node version manager - winget exists"
             write-host "you will asked for password"
-            Invoke-Expression -Command "winget install CoreyButler.NVMforWindows --disable-interactivity"
+
+            try {
+               Invoke-Expression -Command "winget install -e --id CoreyButler.NVMforWindows --disable-interactivity"
+            } catch {
+                write-host $_
+                write-host "try other way"
+                Invoke-Expression -Command "winget install -e --id CoreyButler.NVMforWindows"
+            }
+
             write-host "install of nvm done"
         }
 
@@ -95,24 +165,10 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
             exit 1
         }
 
-        if (Test-Path -Path $nvmRcFile) {
-            $nvmVersion = Get-Content $nvmRcFile
-
-            $nvmCurrentCommand = "nvm current";
-            if ($nvmVersion -ne (Invoke-Expression -Command $nvmCurrentCommand)) {
-                write-host "next switch to "$nvmVersion
-                write-host "There might be an admin window"
-
-                $nvmInstallVersionCommand = "nvm install "+$nvmVersion
-                Invoke-Expression -Command $nvmInstallVersionCommand
-                $nvmSwitchVersionCommand = "nvm use "+$nvmVersion
-                Invoke-Expression -Command $nvmSwitchVersionCommand
-            }
-            else {
-                write-host "already the right version " $nvmVersion
-            }
-        }           
+        Test-Switch-Nvm-Path
+        
     }
+
 }
 
 # If dotnet CLI is installed globally and it matches requested version, use for execution
