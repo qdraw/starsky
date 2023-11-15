@@ -49,7 +49,9 @@ _When using powershell:_
     .\build.ps1
 ```
 
-### When you see 'build.ps1 cannot be loaded because running scripts is disabled on this system.'
+__Scroll down for bash__
+
+### Known Windows issue: When you see 'build.ps1 cannot be loaded because running scripts is disabled on this system.'
 For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
 Run the following command to enable scripts:
 
@@ -67,6 +69,13 @@ you see something like this:
 
 Press to continue: A
 
+### Known Windows issue: Testhost require firewall 
+
+Do you want to allow public and private networks to access this app: testhost
+
+Windows Firewall has blocked some features of testhost on public and private networks
+
+**You need to give permission to run the unit tests**
 
 
 _Or using bash (on Linux and Mac OS)_
