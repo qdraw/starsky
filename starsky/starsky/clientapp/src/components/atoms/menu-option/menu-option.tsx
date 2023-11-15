@@ -11,7 +11,6 @@ interface IMenuOptionProps {
   setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// eslint-disable-next-line react/display-name
 const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
   ({
     localization,

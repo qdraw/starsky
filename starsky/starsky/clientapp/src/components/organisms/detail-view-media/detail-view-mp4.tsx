@@ -24,7 +24,6 @@ function GetVideoClass(isPaused: boolean, isStarted: boolean): string {
   }
 }
 
-// eslint-disable-next-line react/display-name
 const DetailViewMp4: React.FunctionComponent = memo(() => {
   // content
   const settings = useGlobalSettings();
