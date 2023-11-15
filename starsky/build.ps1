@@ -69,6 +69,27 @@ function Test-Switch-Nvm-Path
 }
 
 
+function Add-NuGetSource {
+    param (
+        [string]$dotnetPath,
+        [string]$sourceUrl,
+        [string]$sourceName
+    )
+
+    # Run the command to list NuGet sources and check if the target source is already added
+    $result = & $dotnetPath nuget list source | Select-String -Pattern $sourceUrl
+
+    # If the target source is not found, add it
+    if (-not $result) {
+        Write-Host "Adding NuGet source '$sourceName' with URL '$sourceUrl'..."
+        & $dotnetPath nuget add source --name $sourceName $sourceUrl
+        Write-Host "NuGet source added successfully."
+    } else {
+        Write-Host "NuGet source '$sourceName' already exists."
+    }
+}
+
+
 write-host "ci: " $env:CI "tfbuild: "  $env:TF_BUILD  " install check: " $env:FORCE_INSTALL_CHECK
 
 #$env:CI = 'true'
@@ -191,6 +212,8 @@ else {
             $DotNetVersion = $DotNetGlobal.sdk.version
         }
     }
+    
+    Add-NuGetSource -dotnetPath "$DotNetDirectory\dotnet.exe" -sourceUrl "https://api.nuget.org/v3/index.json" -sourceName "nuget.org"
 
     # Install by channel or version
     $DotNetDirectory = "$TempDirectory\dotnet-win"
