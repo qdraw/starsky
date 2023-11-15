@@ -68,10 +68,17 @@ function Test-Switch-Nvm-Path
     }   
 }
 
-function Restart-Nvm-Path  
+function Restart-Command-Not-In-Path  
 { 
-    if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
+    param (
+        [string]$command
+    )
+    
+    if ($null -eq (Get-Command $command -ErrorAction SilentlyContinue)) {
+        write-host ""
         write-host "Please restart the current powershell window and run the ./build.ps1 again"
+        write-host "Set-Location -Path \"$PSScriptRoot\"; .\build.ps1"
+        write-host ""
         exit 1
     }
 }
@@ -116,7 +123,29 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
     }
     else {
         write-host "wrong version is installed"
-        if ($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) {
+        
+        if ($null -ne (Get-Command "choco" -ErrorAction SilentlyContinue)) {
+            write-host "next: install via choco"
+            
+            $firstCharOfVersion = $shouldBeNetVersion.SubString(0,1)
+            $showCommand = 'choco install dotnet-' + $firstCharOfVersion + '.0-sdk --version ' + $shouldBeNetVersion + ' -y --no-progress' 
+            # to uninstall choco uninstall dotnet-6.0-sdk
+            write-host "next run: " $showCommand
+            
+            $resultInstall = Invoke-Expression -Command $showCommand -ErrorAction SilentlyContinue
+            if ($LASTEXITCODE -eq 0) {
+                write-host "version found" 
+            }
+            else {
+                write-host "version not found so skip"
+                Write-host $resultInstall
+            }
+
+            Restart-Command-Not-In-Path -Command "dotnet"
+        }
+
+        if (($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) -and (-not (Get-Command "choco" -ErrorAction SilentlyContinue))) {
+        
             write-host "next: install via winget"
 
             # just to get by those messages
@@ -155,13 +184,13 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
 
         Invoke-Expression -Command "choco install nvm -y"
 
-        Restart-Nvm-Path
+        Restart-Command-Not-In-Path -Command "nvm"
          
         Test-Switch-Nvm-Path
 
     }
     
-    if ($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) {
+    if (($null -ne (Get-Command "winget" -ErrorAction SilentlyContinue)) -and (-not (Get-Command "choco" -ErrorAction SilentlyContinue))) {
 
         if ($null -eq (Get-Command "nvm" -ErrorAction SilentlyContinue)) {
 
@@ -188,7 +217,7 @@ if (( ($env:CI -ne $true) -and ($env:TF_BUILD -ne $true)) -or ($env:FORCE_INSTAL
             write-host "install of nvm done"
         }
 
-        Restart-Nvm-Path
+        Restart-Command-Not-In-Path -Command "nvm"
 
         Test-Switch-Nvm-Path
         

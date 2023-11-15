@@ -161,7 +161,17 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			
 			if ( hostFileSystemStorage.ExistFolder(outputPath) )
 			{
-				hostFileSystemStorage.FolderDelete(outputPath);
+				try
+				{
+					hostFileSystemStorage.FileDelete(appSettings.ExifToolPath);
+					hostFileSystemStorage.FolderDelete(outputPath);
+				}
+				catch ( UnauthorizedAccessException e )
+				{
+					Console.WriteLine("UnauthorizedAccessException");
+					Console.WriteLine(outputPath);
+					Console.WriteLine(e);
+				}
 			}
 			
 			Assert.IsFalse(renameThumbnailAsync.Key);
