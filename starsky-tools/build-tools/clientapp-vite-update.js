@@ -309,7 +309,7 @@ if (process.env.DEBUG !== "true") {
 	}
 }
 
-// run linter
+// run linter (and fix issues)
 console.log("next: run linter");
 const lintSpawn = spawnSync("npm", ["run", "lint:fix"], {
 	cwd: clientAppFolderPath,
@@ -317,5 +317,22 @@ const lintSpawn = spawnSync("npm", ["run", "lint:fix"], {
 	encoding: "utf-8",
 });
 console.log(lintSpawn.stdout);
+
+console.log("next: build project");
+const buildSpawn = spawnSync("npm", ["run", "build"], {
+	cwd: clientAppFolderPath,
+	env: process.env,
+	encoding: "utf-8",
+});
+console.log(buildSpawn.stdout);
+
+
+console.log("next: test project");
+const testSpawn = spawnSync("npm", ["run", "test:ci"], {
+	cwd: clientAppFolderPath,
+	env: process.env,
+	encoding: "utf-8",
+});
+console.log(testSpawn.stdout);
 
 console.log("done");
