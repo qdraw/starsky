@@ -37,11 +37,11 @@ deleteFolderRecursive = function (path) {
 	}
 };
 
-const createReactTempFolder = path.join(__dirname, "create-react-tmp-folder");
+const createReactTempFolder = path.join(__dirname, "vite-tmp-folder");
 const myAppName = "my-app";
 const createReactMyAppFolder = path.join(
 	__dirname,
-	"create-react-tmp-folder",
+	"vite-tmp-folder",
 	myAppName
 );
 
@@ -67,12 +67,14 @@ function getNpxCreateCreateApp() {
 	console.log("--createReactTempFolder");
 	console.log(createReactTempFolder);
 
+	// npm create -y vite@latest my-app -- --template react-ts
 	console.log(
-		`running --> npx create-react-app ${myAppName} --template typescript`
+		` npm create -y vite@latest ${myAppName} -- --template react-ts`
 	);
+
 	const updateSpawn = spawnSync(
-		"npx",
-		["create-react-app", myAppName, "--template", "typescript"],
+		"npm",
+		["create", "-y", "vite@latest" , myAppName, ,"--", "--template", "react-ts"],
 		{
 			cwd: createReactTempFolder,
 			env: process.env,
@@ -80,9 +82,26 @@ function getNpxCreateCreateApp() {
 		}
 	);
 
-	console.log("-result of npx");
+	console.log("-result of npm create");
 	console.log(updateSpawn.stdout);
 	console.log(updateSpawn.stout ? updateSpawn.stout : "");
+
+	// run npm install in my-app folder
+	const createReactTempFolderMyApp = path.join(createReactTempFolder, myAppName);
+	const npmInstallMyAppSpawn = spawnSync(
+		"npm",
+		["install"],
+		{
+			cwd: createReactTempFolderMyApp,
+			env: process.env,
+			encoding: "utf-8",
+		}
+	);
+
+	console.log("-result of npm install in my-app folder");
+	console.log(npmInstallMyAppSpawn.stdout);
+	console.log(npmInstallMyAppSpawn.stout ? npmInstallMyAppSpawn.stout : "");
+
 }
 
 if (process.env.DEBUG !== "true") {
@@ -178,10 +197,7 @@ function npmUnInstall(packageName) {
 	console.log(uninstall.stout ? updateSpawn.stout : "");
 }
 
-// web-vitals is not needed
-npmUnInstall("web-vitals");
-// install later again (newer version)
-npmUnInstall("@testing-library/user-event");
+// npmUnInstall can be done here
 
 // update packages in clientapp package json
 console.log("next: overwrite package json file");
@@ -233,39 +249,42 @@ function npmInstall(packageName, force, dev) {
 	}
 }
 
-console.log("next un-install");
-npmUnInstall("web-vitals");
-npmUnInstall("@types/node");
+// uninstall not needed at the moment
 
 console.log("next install");
-npmInstall("abortcontroller-polyfill", false, false);
-npmInstall("@reach/router", true, false);
-npmInstall("intersection-observer", false, false);
-npmInstall("@types/reach__router", false, false);
-npmInstall("abortcontroller-polyfill", false, false);
-npmInstall("leaflet", false, false);
-npmInstall("@types/storybook__react", false, false);
-npmInstall("@storybook/react", true, true);
-npmInstall("eslint-config-prettier", false), false;
-npmInstall("eslint-plugin-prettier", false, false);
-npmInstall("prettier", false, false);
-npmInstall("eslint-plugin-prettier", false, false);
-npmInstall("@types/node", false, false);
-npmInstall("concurrently", false, true);
-npmInstall("@testing-library/user-event", false, false);
+// npmInstall: name, force, dev
 
-// # for storybook
-npmInstall("@storybook/addon-essentials", false, true);
-npmInstall("@storybook/addon-interactions", false, true);
-npmInstall("@storybook/addon-links", false, true);
-npmInstall("@storybook/blocks", false, true);
-npmInstall("@storybook/node-logger", false, true);
-npmInstall("prop-types", false, true);
-npmInstall("storybook", false, true);
-
-npmInstall("@storybook/preset-create-react-app", false, true);
-
-npmInstall("webpack", false, true);
+npmInstall('leaflet', false, false);
+npmInstall('core-js', false, false);
+npmInstall('react-router-dom', false, false);
+npmInstall('prettier', false, true);
+npmInstall('ts-jest', false, true);
+npmInstall('ts-node', false, true);
+npmInstall('jest', false, true);
+npmInstall('jest-environment-jsdom', false, true);
+npmInstall('identity-obj-proxy', false, true);
+npmInstall('isomorphic-fetch', false, true);
+npmInstall('eslint-plugin-react', false, true);
+npmInstall('eslint-config-prettier', false, true);
+npmInstall('eslint-plugin-prettier', false, true);
+npmInstall('eslint-plugin-jest-react', false, true);
+npmInstall('eslint-plugin-storybook', false, true);
+npmInstall('eslint-plugin-testing-library', false, true);
+npmInstall('@types/leaflet', false, true);
+npmInstall('@types/node', false, true);
+npmInstall('@types/jest', false, true);
+npmInstall('storybook', false, true);
+npmInstall('@storybook/addon-essentials', false, true);
+npmInstall('@storybook/addon-interactions', false, true);
+npmInstall('@storybook/addon-links', false, true);
+npmInstall('@storybook/blocks', false, true);
+npmInstall('@storybook/builder-vite', false, true);
+npmInstall('@storybook/react', false, true);
+npmInstall('@storybook/react-vite', false, true);
+npmInstall('@storybook/testing-library', false, true);
+npmInstall('@testing-library/jest-dom', false, true);
+npmInstall('@testing-library/react', false, true);
+npmInstall('@testing-library/user-event', false, true);
 
 console.log("npm install result:");
 const npmInstallSpawnResult = spawnSync(
