@@ -47,6 +47,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ Thumbnail CLI null reference bug  (PR #1277, issue #1176)
 - [x] (Fixed) _Back-end_ Fix code smells and add tests (PR #1278)
 - [x] (Fixed) _Back-end_ Fix builds for Windows (PR #1284)
+- [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.417 (Runtime: 6.0.25) (PR #1283)
 
 ## version 0.5.11 - 2023-10-13 {#v0.5.11}
 
