@@ -1,4 +1,4 @@
-name: auto clientapp create react app upgrade
+name: Auto Client App create Vite upgrade
 
 on:
   workflow_dispatch:
@@ -18,13 +18,13 @@ jobs:
     - name: Setup Node.js environment
       uses: actions/setup-node@v4
       with:
-        node-version: 16
+        node-version: 18
         check-latest: true
   
     - name: 'Update clientapp'
-      id: clientapp_create_react_app_update
+      id: clientapp_vite_app_update
       working-directory: ./starsky-tools/build-tools
-      run: npm run clientapp-create-react-app-update
+      run: npm run clientapp-vite-app-update
       
     - shell: bash
       working-directory: ./starsky
@@ -52,21 +52,21 @@ jobs:
         signoff: false
         add-paths: |
           *
-        branch: feature/auto_clientapp_create_react_app_update
+        branch: feature/auto_clientapp_vite_app_update
         delete-branch: true
-        title: 'Client App - Create React App - Upgrade dependencies'
+        title: 'Client App - Vite - Upgrade dependencies'
         body: |
-          ## Upgrade Client App to the lastest version
+          ## Upgrade Client App to the latest version
           - todo: test!         
         labels: |
           dependencies
         draft: false
         
-    - name: Merge current branch into -> auto_clientapp_create_react_app_update
+    - name: Merge current branch into -> auto_clientapp_vite_app_update
       uses: everlytic/branch-merge@1.1.5
       if: github.event_name == 'workflow_dispatch' && steps.files_changed.outputs.CHANGED == 'true'
       with:
         github_token: ${{ secrets.WORKFLOW_GITHUB }}
         source_ref: 'master'
-        target_branch: feature/auto_clientapp_create_react_app_update
+        target_branch: feature/auto_clientapp_vite_app_update
         commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'
