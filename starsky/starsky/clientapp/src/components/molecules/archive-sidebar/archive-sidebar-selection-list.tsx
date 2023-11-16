@@ -12,7 +12,6 @@ interface IDetailViewSidebarSelectionListProps {
 }
 
 const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSelectionListProps> =
-  // eslint-disable-next-line react/display-name
   memo((props) => {
     // content
     const settings = useGlobalSettings();

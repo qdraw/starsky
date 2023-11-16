@@ -25,7 +25,6 @@ interface IMenuOptionMoveToTrashProps {
  * Used from Archive and Search
  */
 const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> =
-  // eslint-disable-next-line react/display-name
   memo(({ state, dispatch, select, setSelect, isReadOnly }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
