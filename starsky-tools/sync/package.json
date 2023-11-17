@@ -1,6 +1,6 @@
 {
   "name": "starsky-tools",
-  "version": "0.5.10",
+  "version": "0.5.12",
   "description": "",
   "main": "index.js",
   "scripts": {
