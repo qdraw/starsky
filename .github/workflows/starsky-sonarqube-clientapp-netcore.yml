@@ -46,7 +46,7 @@ jobs:
           dotnet-version: 6.0.417
         
       - name: Use Java 17   
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
