@@ -35,9 +35,9 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.5.13 _(Unreleased)_ - 2023-11-?? {#v0.5.13}
+## version 0.5.13 _(Unreleased)_ - 2023-12-?? {#v0.5.13}
 
-- nothing yet
+- [x] (Fixed) _Front-end_ Accessibility focus for prev next in detailView (PR #1291)
 
 ## version 0.5.12 - 2023-11-17 {#v0.5.12}
 
