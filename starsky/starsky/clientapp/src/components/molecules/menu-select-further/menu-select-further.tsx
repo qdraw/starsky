@@ -21,6 +21,8 @@ export const MenuSelectFurther: React.FunctionComponent<
           <div
             className="item item--continue"
             data-test="select-further"
+            tabIndex={0}
+            role="button"
             onClick={() => {
               toggleLabels();
             }}

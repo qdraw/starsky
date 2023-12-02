@@ -38,16 +38,16 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
     return (
       <>
         {
-          <li
-            tabIndex={0}
-            data-test={testName}
-            className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-            onClick={onClickHandler}
-            onKeyDown={(event) => {
-              event.key === "Enter" && onClickHandler();
-            }}
-          >
-            {Message}
+          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"}>
+            <button
+              data-test={testName}
+              onClick={onClickHandler}
+              onKeyDown={(event) => {
+                event.key === "Enter" && onClickHandler();
+              }}
+            >
+              {Message}
+            </button>
           </li>
         }
       </>

@@ -247,6 +247,10 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
             controls={false}
             preload="metadata"
           >
+            <track
+              kind="captions"
+              src={downloadPhotoApi.replace("mp4", "srt")}
+            />
             <source src={downloadPhotoApi} type="video/mp4" />
           </video>
           <div className="controls">
@@ -267,9 +271,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
               <progress
                 ref={progressRef}
                 onClick={updateProgressByClick}
-                onKeyDown={() => {
-                  // nothing here
-                }}
+                role="presentation"
                 className="progress"
                 value="0"
               >

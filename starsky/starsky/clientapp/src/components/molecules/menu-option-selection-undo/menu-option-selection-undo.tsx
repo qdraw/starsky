@@ -22,6 +22,7 @@ export const MenuOptionSelectionUndo: React.FunctionComponent<
         <li
           data-test="undo-selection"
           className="menu-option"
+          role="button"
           onClick={() => undoSelection()}
           tabIndex={0}
           onKeyDown={(event) => {

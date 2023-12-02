@@ -66,6 +66,16 @@
   justify-content: center;
 }
 
+.menu-context .menu-options .menu-option > button {
+  height: 50px;
+  cursor: pointer;
+  background-color: transparent;
+  display: inline-block;
+  left: -15px;
+  padding-left:15px;
+  position: relative;
+}
+
 .menu-context .menu-options .menu-option:nth-child(even) {
   background-color: #eceff1;
 }
@@ -76,6 +86,7 @@
   }
 }
 
+.menu-context .menu-options .menu-option > button:hover,
 .menu-context .menu-options .menu-option:hover {
   background: #b0bec5;
 }

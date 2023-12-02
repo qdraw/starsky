@@ -47,6 +47,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
       <div
         onChange={offMoreMenu}
         onClick={() => setEnableMoreMenu(false)}
+        role="button"
         onKeyDown={(event) => {
           event.key === "Enter" && setEnableMoreMenu(false);
         }}

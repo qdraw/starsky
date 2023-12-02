@@ -22,6 +22,7 @@ export const MenuOptionSelectionAll: React.FunctionComponent<
         <li
           className="menu-option"
           data-test="select-all"
+          role="button"
           onClick={() => allSelection()}
           tabIndex={0}
           onKeyDown={(event) => {

@@ -270,6 +270,7 @@ const DetailView: React.FC<IDetailView> = () => {
                 ).next()
               }
               tabIndex={0}
+              role="button"
               onKeyDown={(event) => {
                 console.log(event.key);
 
@@ -304,6 +305,7 @@ const DetailView: React.FC<IDetailView> = () => {
                   setIsLoading
                 ).prev()
               }
+              role="button"
               tabIndex={0}
               onKeyDown={(event) => {
                 event.key === "Enter" &&

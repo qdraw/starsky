@@ -197,6 +197,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             <div
               className="item item--select"
               data-test="menu-item-select"
+              role="button"
               onClick={() => {
                 removeSidebarSelection();
               }}
@@ -212,6 +213,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             <div
               className="item item--labels"
               data-test="menu-archive-labels"
+              role="button"
               onKeyDown={(event) => {
                 event.key === "Enter" && toggleLabels();
               }}
@@ -231,6 +233,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 className={!readOnly ? "menu-option" : "menu-option disabled"}
                 data-test="mkdir"
                 tabIndex={0}
+                role="button"
                 onClick={() => setIsModalMkdirOpen(!isModalMkdirOpen)}
                 onKeyDown={(event) => {
                   event.key === "Enter" &&
@@ -242,6 +245,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               <li
                 className="menu-option"
                 data-test="display-options"
+                role="button"
                 tabIndex={0}
                 onClick={() => setIsDisplayOptionsOpen(!isDisplayOptionsOpen)}
                 onKeyDown={(event) => {
@@ -273,6 +277,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                     : "menu-option disabled"
                 }
                 data-test="rename"
+                role="button"
+                tabIndex={0}
                 onClick={() => setIsModalRenameFolder(!isModalRenameFolder)}
                 onKeyDown={(event) => {
                   event.key === "Enter" &&
@@ -337,6 +343,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               <li
                 className="menu-option"
                 data-test="display-options"
+                role="button"
+                tabIndex={0}
                 onClick={() => setIsDisplayOptionsOpen(!isDisplayOptionsOpen)}
                 onKeyDown={(event) => {
                   event.key === "Enter" &&

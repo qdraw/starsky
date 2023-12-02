@@ -99,6 +99,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
           <li
             data-test="trash"
             tabIndex={0}
+            role="button"
             className={!isReadOnly ? "menu-option" : "menu-option disabled"}
             onKeyDown={(event) => {
               event.key === "Enter" && moveToTrashSelection();

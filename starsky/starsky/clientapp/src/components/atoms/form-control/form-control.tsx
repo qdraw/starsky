@@ -62,6 +62,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({
 
       <div
         data-test={props["data-test"] ? props["data-test"] : "form-control"}
+        role="button"
         onBlur={
           new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur
         }

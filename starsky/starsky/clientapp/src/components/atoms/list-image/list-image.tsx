@@ -114,6 +114,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
         <img
           src={src}
           alt={alt}
+          role="presentation"
           data-test="list-image-img"
           onLoad={() => {
             setError(false);
