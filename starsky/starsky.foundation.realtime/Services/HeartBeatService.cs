@@ -30,7 +30,12 @@ namespace starsky.foundation.realtime.Services
 			_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
 			_heartbeatTask = HeartbeatAsync(_cancellationTokenSource.Token);
-
+			
+			if ( _heartbeatTask.IsCompleted )
+			{
+				_cancellationTokenSource.Dispose();
+			}
+			
 			return _heartbeatTask.IsCompleted ? _heartbeatTask : Task.CompletedTask;
 		}
 
