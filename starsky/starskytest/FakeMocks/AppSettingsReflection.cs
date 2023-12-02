@@ -11,12 +11,9 @@ namespace starskytest.FakeMocks
 			foreach ( var property in type.GetProperties(BindingFlags.Public 
 				| BindingFlags.Instance | BindingFlags.DeclaredOnly)) {
 				var getMethod = property.GetGetMethod(false);
-				if (getMethod.GetBaseDefinition() == getMethod) {
-					if ( methodGetName == getMethod.Name )
-					{
-						property.SetValue(inputObject, value, null);
-					}
-				}
+				if ( getMethod?.GetBaseDefinition() != getMethod ) continue;
+				if ( methodGetName != getMethod?.Name ) continue;
+				property.SetValue(inputObject, value, null);
 			}
 		}
 	}

@@ -106,7 +106,8 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void AppSettingsProviderTest_SQLite_ExpectException()
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
-			var datasource = _appSettings.SqLiteFullPath(string.Empty, null);
+			// should give exception
+			_appSettings.SqLiteFullPath(string.Empty, null);
 		}
 
 		[TestMethod]
