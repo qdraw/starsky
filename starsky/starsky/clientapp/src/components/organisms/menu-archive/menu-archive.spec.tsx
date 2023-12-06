@@ -1296,10 +1296,15 @@ describe("MenuArchive", () => {
       const trash = screen.queryByTestId("trash");
       expect(trash).not.toBeNull();
 
-      trash?.click();
+      console.log(trash?.innerHTML);
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      // need to await
+      await act(async () => {
+        await trash?.click();
+      });
+
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlMoveToTrashApi(),
         "f=%2Fundefined%2Ftest1.jpg&Tags=%21delete%21&append=true&Colorclass=8&collections=true"
       );

@@ -2,43 +2,60 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import MenuOption from "./menu-option";
 
 describe("MenuOption component", () => {
-  it("should not trigger setEnableMoreMenu when isReadOnly is true", () => {
-    const setMock = jest.fn();
-    const setEnableMoreMenuMock = jest.fn();
+  it("renders correctly with default props", () => {
     render(
       <MenuOption
-        localization={{ nl: "Nederlands", en: "English" }}
-        isSet={false}
-        set={setMock}
-        testName="test"
-        isReadOnly={true}
-        setEnableMoreMenu={setEnableMoreMenuMock}
+        localization={{ nl: "Dutch", en: "English" }}
+        onClickKeydown={() => {}}
+        testName="test-menu-option"
+        isReadOnly={false}
       />
     );
 
-    fireEvent.click(screen.getByTestId("test"));
-
-    expect(setMock).toHaveBeenCalledTimes(0);
-    expect(setEnableMoreMenuMock).not.toHaveBeenCalled();
+    expect(screen.getByTestId("test-menu-option")).toBeTruthy();
+    expect(screen.getByTestId("test-menu-option").innerHTML).toBe("English");
   });
 
-  it("should trigger setEnableMoreMenu when isReadOnly is false", () => {
-    const setMock = jest.fn();
-    const setEnableMoreMenuMock = jest.fn();
+  it("renders correctly with custom props", () => {
     render(
       <MenuOption
-        localization={{ nl: "Nederlands", en: "English" }}
-        isSet={false}
-        set={setMock}
-        testName="test"
+        localization={{ nl: "Dutch", en: "English" }}
+        onClickKeydown={() => {}}
+        testName="test-menu-option1"
         isReadOnly={false}
-        setEnableMoreMenu={setEnableMoreMenuMock}
       />
     );
 
-    fireEvent.click(screen.getByTestId("test"));
+    expect(screen.getByTestId("test-menu-option1")).toBeTruthy();
+  });
 
-    expect(setMock).toHaveBeenCalledTimes(1);
-    expect(setEnableMoreMenuMock).toHaveBeenCalled();
+  it("calls onClickKeydown when button is clicked", () => {
+    const onClickKeydownMock = jest.fn();
+    render(
+      <MenuOption
+        isReadOnly={false}
+        localization={{ nl: "Dutch", en: "English" }}
+        onClickKeydown={onClickKeydownMock}
+        testName="test-menu-option"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button"));
+    expect(onClickKeydownMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onClickKeydown when Enter key is pressed", () => {
+    const onClickKeydownMock = jest.fn();
+    render(
+      <MenuOption
+        isReadOnly={false}
+        localization={{ nl: "Dutch", en: "English" }}
+        onClickKeydown={onClickKeydownMock}
+        testName="test-menu-option"
+      />
+    );
+
+    fireEvent.keyDown(screen.getByRole("button"), { key: "Enter" });
+    expect(onClickKeydownMock).toHaveBeenCalledTimes(1);
   });
 });

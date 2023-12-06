@@ -23,7 +23,7 @@ import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import Link from "../../atoms/link/link";
-import MenuOption from "../../atoms/menu-option/menu-option";
+import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import IsSearchQueryMenuSearchItem from "../../molecules/is-search-query-menu-search-item/is-search-query-menu-search-item";
@@ -49,7 +49,9 @@ function GetHeaderClass(
       return "header header--main header--edit";
     }
   } else {
-    return isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main";
+    return isMarkedAsDeleted
+      ? "header header--main header--deleted"
+      : "header header--main";
   }
 }
 
@@ -495,7 +497,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             >
               {MessageRotateToRight}
             </li>
-            <MenuOption
+            <MenuOptionModal
               isReadOnly={false}
               testName="publish"
               isSet={isModalPublishOpen}

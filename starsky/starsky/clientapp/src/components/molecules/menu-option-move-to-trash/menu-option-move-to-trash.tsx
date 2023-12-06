@@ -89,11 +89,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
           <MenuOption
             isReadOnly={isReadOnly}
             testName={"trash"}
-            isSet={false}
-            set={(value) => {
-              console.log(value);
-              moveToTrashSelection();
-            }}
+            onClickKeydown={moveToTrashSelection}
             localization={localization.MessageMoveToTrash}
           />
         ) : null}

@@ -2,18 +2,38 @@ import React, { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
 
-interface IMenuOptionProps {
+interface IMenuOptionModalProps {
   isReadOnly: boolean;
   testName: string;
-  onClickKeydown: () => void;
+  isSet: boolean;
+  set: React.Dispatch<React.SetStateAction<boolean>>;
   localization: { nl: string; en: string };
+  setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
-  ({ localization, onClickKeydown, testName, isReadOnly = true }) => {
+const MenuOptionModal: React.FunctionComponent<IMenuOptionModalProps> = memo(
+  ({
+    localization,
+    isSet,
+    set,
+    testName,
+    isReadOnly = true,
+    setEnableMoreMenu = undefined
+  }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
     const Message = language.key(localization);
+
+    function onClickHandler() {
+      if (isReadOnly) {
+        return;
+      }
+      // close menu
+      if (setEnableMoreMenu) {
+        setEnableMoreMenu(false);
+      }
+      set(!isSet);
+    }
 
     return (
       <>
@@ -21,9 +41,9 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
           <li className={!isReadOnly ? "menu-option" : "menu-option disabled"}>
             <button
               data-test={testName}
-              onClick={onClickKeydown}
+              onClick={onClickHandler}
               onKeyDown={(event) => {
-                event.key === "Enter" && onClickKeydown();
+                event.key === "Enter" && onClickHandler();
               }}
             >
               {Message}
@@ -35,4 +55,4 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
   }
 );
 
-export default MenuOption;
+export default MenuOptionModal;

@@ -14,7 +14,7 @@ import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
 import { URLPath } from "../../../shared/url-path";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
-import MenuOption from "../../atoms/menu-option/menu-option";
+import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
@@ -191,14 +191,14 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
                 allSelection={allSelection}
               />
 
-              <MenuOption
+              <MenuOptionModal
                 isReadOnly={false}
                 testName="export"
                 isSet={isModalExportOpen}
                 set={setIsModalExportOpen}
                 localization={localization.MessageDownload}
               />
-              <MenuOption
+              <MenuOptionModal
                 isReadOnly={false}
                 testName="publish"
                 isSet={isModalPublishOpen}

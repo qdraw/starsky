@@ -1,19 +1,21 @@
-import MenuOption from "./menu-option";
+import MenuOptionModal from "./menu-option-modal.tsx";
 
 export default {
-  title: "components/atoms/menu-option"
+  title: "components/atoms/menu-option-modal"
 };
 
 export const Default = () => {
   return (
     <div className="menu-context">
       <ul className="menu-options">
-        <MenuOption
+        <MenuOptionModal
           localization={{ nl: "Nederlands", en: "English" }}
+          isSet={false}
+          set={() => {}}
           testName="test"
           isReadOnly={false}
-          onClickKeydown={() => {
-            alert("hi");
+          setEnableMoreMenu={(value) => {
+            alert(value);
           }}
         />
       </ul>
