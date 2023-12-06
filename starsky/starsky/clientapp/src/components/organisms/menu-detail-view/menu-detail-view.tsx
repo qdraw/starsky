@@ -49,11 +49,7 @@ function GetHeaderClass(
       return "header header--main header--edit";
     }
   } else {
-    if (isMarkedAsDeleted) {
-      return "header header--main header--deleted";
-    } else {
-      return "header header--main";
-    }
+    return isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main";
   }
 }
 

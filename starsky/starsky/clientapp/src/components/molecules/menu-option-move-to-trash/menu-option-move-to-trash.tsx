@@ -52,6 +52,9 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       if (selectParams.length === 0) return;
 
       const bodyParams = new URLSearchParams();
+      // noinspection PointlessBooleanExpressionJS
+      const collections = new URLPath().StringToIUrl(history.location.search).collections !==
+        false;
 
       bodyParams.append("f", selectParams);
       bodyParams.set("Tags", "!delete!");
@@ -59,10 +62,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       bodyParams.set("Colorclass", "8");
       bodyParams.set(
         "collections",
-        (
-          new URLPath().StringToIUrl(history.location.search).collections !==
-          false
-        ).toString()
+        collections.toString()
       );
 
       const resultDo = await FetchPost(

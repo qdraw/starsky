@@ -196,8 +196,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     );
   }
 
-  function updateProgressByClick(event: React.MouseEvent) {
-    if (!videoRef.current || !event.target) return;
+  function updateProgressByClick(event?: React.MouseEvent) {
+    if (!videoRef.current || !event?.target) return;
     const mousePosition = getMousePosition(event);
 
     const result = isNaN(mousePosition)
@@ -271,9 +271,11 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
               <progress
                 ref={progressRef}
                 onClick={updateProgressByClick}
-                role="presentation"
                 className="progress"
                 value="0"
+                onKeyDown={(event) => {
+                  event.key === "Enter" && updateProgressByClick();
+                }}
               >
                 <span id="progress-bar"></span>
               </progress>

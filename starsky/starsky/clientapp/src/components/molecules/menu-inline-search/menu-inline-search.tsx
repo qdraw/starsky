@@ -102,7 +102,6 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
       <div
         className={!formFocus ? "blur" : ""}
         onFocus={() => setFormFocus(true)}
-        role="presentation"
       >
         <ul>
           <li className="menu-item menu-item--half-extra">

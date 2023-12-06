@@ -68,7 +68,6 @@ export default function Modal({
     return ReactDOM.createPortal(
       <div
         onClick={(event) => ifModalOpenHandleExit(event, handleExit)}
-        role="presentation"
         onKeyDown={(event) => {
           event.key === "Enter" && handleExit();
         }}
