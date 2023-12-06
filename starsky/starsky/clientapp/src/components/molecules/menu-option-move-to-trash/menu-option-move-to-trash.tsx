@@ -90,8 +90,9 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
             isReadOnly={isReadOnly}
             testName={"trash"}
             isSet={false}
-            set={async () => {
-              await moveToTrashSelection();
+            set={(value) => {
+              console.log(value);
+              moveToTrashSelection();
             }}
             localization={localization.MessageMoveToTrash}
           />
