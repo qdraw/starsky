@@ -254,7 +254,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               ) : null}
 
               <MenuOptionModal
-                isReadOnly={!readOnly && state.subPath !== "/"}
+                isReadOnly={readOnly || state.subPath === "/"}
                 isSet={isModalRenameFolder}
                 set={() => setIsModalRenameFolder(!isModalRenameFolder)}
                 localization={localization.MessageRenameDir}
