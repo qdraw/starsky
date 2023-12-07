@@ -40,7 +40,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const language = new Language(settings.language);
 
   // Content
-  const MessageSelectAction = language.text("Selecteer", "Select");
+  const MessageSelectAction = language.key(localization.MessageSelectAction);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
@@ -75,7 +75,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
 
-  const toggleLabels = () => new Sidebar(setSidebar, history).toggleSidebar();
+  const toggleLabels = (state: boolean) =>
+    new Sidebar(setSidebar, history).toggleSidebar(state);
 
   const [isModalExportOpen, setIsModalExportOpen] = useState(false);
   const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);

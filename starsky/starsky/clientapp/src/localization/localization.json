@@ -132,8 +132,8 @@
     "nl": "geselecteerd"
   },
   "MessageSelectAction": {
-    "en": "Selecteer",
-    "nl": "Select"
+    "en": "Select",
+    "nl": "Selecteer"
   },
   "MessageNoneSelected": {
     "en": "Nothing selected",

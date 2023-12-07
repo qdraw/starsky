@@ -258,7 +258,7 @@ const DetailView: React.FC<IDetailView> = () => {
           ) : null}
 
           {relativeObjects.nextFilePath ? (
-            <div
+            <button
               onClick={() =>
                 new PrevNext(
                   relativeObjects,
@@ -269,11 +269,7 @@ const DetailView: React.FC<IDetailView> = () => {
                   setIsLoading
                 ).next()
               }
-              tabIndex={0}
-              role="button"
               onKeyDown={(event) => {
-                console.log(event.key);
-
                 event.key === "Enter" &&
                   new PrevNext(
                     relativeObjects,
@@ -288,13 +284,13 @@ const DetailView: React.FC<IDetailView> = () => {
               className="nextprev nextprev--next"
             >
               <div className="icon" />
-            </div>
+            </button>
           ) : (
             ""
           )}
 
           {relativeObjects.prevFilePath ? (
-            <div
+            <button
               onClick={() =>
                 new PrevNext(
                   relativeObjects,
@@ -305,8 +301,6 @@ const DetailView: React.FC<IDetailView> = () => {
                   setIsLoading
                 ).prev()
               }
-              role="button"
-              tabIndex={0}
               onKeyDown={(event) => {
                 event.key === "Enter" &&
                   new PrevNext(
@@ -322,7 +316,7 @@ const DetailView: React.FC<IDetailView> = () => {
               className="nextprev nextprev--prev"
             >
               <div className="icon" />
-            </div>
+            </button>
           ) : (
             <div className="nextprev nextprev" />
           )}
