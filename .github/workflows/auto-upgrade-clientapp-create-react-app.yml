@@ -24,7 +24,7 @@ jobs:
     - name: 'Update clientapp'
       id: clientapp_vite_app_update
       working-directory: ./starsky-tools/build-tools
-      run: npm run clientapp-vite-app-update
+      run: npm run clientapp-vite-update
       
     - shell: bash
       working-directory: ./starsky
