@@ -155,8 +155,21 @@
     "en": "Go to parent folder",
     "nl": "Ga naar bovenliggende map"
   },
+  "MessageMkdir": {
+    "en": "Create folder",
+    "nl": "Map maken"
+  },
+  "MessageDisplayOptions": {
+    "en": "Display options",
+    "nl": "Weergave opties"
+  },
+  "MessageRenameDir": {
+    "en": "Rename",
+    "nl": "Naam wijzigen"
+  },
   "temp1": {
     "en": "",
     "nl": ""
   }
+  
 }

@@ -1,7 +1,6 @@
-import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
-import { Language } from "../../../shared/language";
+import MenuOption from "../../atoms/menu-option/menu-option";
 
 export interface IMenuOptionSelectionUndoProps {
   select: string[];
@@ -12,25 +11,15 @@ export interface IMenuOptionSelectionUndoProps {
 export const MenuOptionSelectionUndo: React.FunctionComponent<
   IMenuOptionSelectionUndoProps
 > = ({ select, state, undoSelection }) => {
-  const settings = useGlobalSettings();
-  const language = new Language(settings.language);
-  const MessageUndoSelection = language.key(localization.MessageUndoSelection);
-
   return (
     <>
       {select.length === state?.fileIndexItems?.length ? (
-        <li
-          data-test="undo-selection"
-          className="menu-option"
-          role="button"
-          onClick={() => undoSelection()}
-          tabIndex={0}
-          onKeyDown={(event) => {
-            event.key === "Enter" && undoSelection();
-          }}
-        >
-          {MessageUndoSelection}
-        </li>
+        <MenuOption
+          isReadOnly={false}
+          localization={localization.MessageUndoSelection}
+          onClickKeydown={() => undoSelection()}
+          testName="undo-selection"
+        />
       ) : null}
     </>
   );

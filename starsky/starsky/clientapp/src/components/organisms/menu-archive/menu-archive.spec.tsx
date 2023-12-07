@@ -313,7 +313,7 @@ describe("MenuArchive", () => {
     it("[archive] menu click mkdir", async () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      Router.navigate("/");
+      await Router.navigate("/");
 
       const state = {
         subPath: "/",

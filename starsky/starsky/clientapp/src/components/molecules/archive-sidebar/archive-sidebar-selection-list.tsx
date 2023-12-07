@@ -60,7 +60,6 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
             <button
               data-test="select-all"
               className="btn btn--default"
-              role="button"
               onClick={() => allSelection()}
             >
               {MessageAllName}

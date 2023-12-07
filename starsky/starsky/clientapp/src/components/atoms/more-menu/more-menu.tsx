@@ -44,10 +44,9 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
       >
         <span>{MessageMore}</span>
       </button>
-      <div
+      <button
         onChange={offMoreMenu}
         onClick={() => setEnableMoreMenu(false)}
-        role="button"
         onKeyDown={(event) => {
           event.key === "Enter" && setEnableMoreMenu(false);
         }}
@@ -59,7 +58,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
         <ul data-test="menu-options" className="menu-options">
           {children}
         </ul>
-      </div>
+      </button>
     </>
   );
 };
