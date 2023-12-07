@@ -75,7 +75,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
 
-  const toggleLabels = (state: boolean) =>
+  const toggleLabels = (state?: boolean) =>
     new Sidebar(setSidebar, history).toggleSidebar(state);
 
   const [isModalExportOpen, setIsModalExportOpen] = useState(false);

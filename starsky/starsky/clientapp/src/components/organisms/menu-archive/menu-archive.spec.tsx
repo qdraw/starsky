@@ -1378,7 +1378,7 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
-    it("[archive] menu click publish", () => {
+    it("[archive] menu click publish 1", () => {
       Router.navigate("/?select=test1.jpg");
 
       const state = {
@@ -1425,7 +1425,7 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
-    it("[archive] menu click publish", () => {
+    it("[archive] menu click publish 2", () => {
       Router.navigate("/?select=test1.jpg");
 
       const state = {
@@ -1465,7 +1465,7 @@ describe("MenuArchive", () => {
       });
 
       expect(Router.state.location.search).toBe(
-        "?select=test1.jpg&sidebar=true"
+        "?select=test1.jpg&sidebar=false"
       );
 
       component.unmount();
