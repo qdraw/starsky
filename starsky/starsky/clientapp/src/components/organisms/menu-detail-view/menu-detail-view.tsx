@@ -24,6 +24,7 @@ import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import Link from "../../atoms/link/link";
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
+import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import IsSearchQueryMenuSearchItem from "../../molecules/is-search-query-menu-search-item/is-search-query-menu-search-item";
@@ -77,7 +78,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   const MessageRestoreFromTrash = language.key(
     localization.MessageRestoreFromTrash
   );
-  const MessageMove = language.key(localization.MessageMove);
 
   const MessageRenameFileName = language.text(
     "Bestandsnaam wijzigen",
@@ -315,7 +315,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     TrashFile();
   });
 
-  const [isModalExportOpen, setIsModalExportOpen] = React.useState(false);
+  const [isModalDownloadOpen, setIsModalDownloadOpen] = React.useState(false);
   const [isModalRenameFileOpen, setIsModalRenameFileOpen] =
     React.useState(false);
   const [isModalMoveFile, setIsModalMoveFile] = React.useState(false);
@@ -326,12 +326,12 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
 
       {/* allowed in readonly to download */}
-      {isModalExportOpen && state && !isSourceMissing ? (
+      {isModalDownloadOpen && state && !isSourceMissing ? (
         <ModalDownload
           collections={false}
-          handleExit={() => setIsModalExportOpen(!isModalExportOpen)}
+          handleExit={() => setIsModalDownloadOpen(!isModalDownloadOpen)}
           select={[state.subPath]}
-          isOpen={isModalExportOpen}
+          isOpen={isModalDownloadOpen}
         />
       ) : null}
       {isModalRenameFileOpen && state && !isReadOnly ? (
@@ -412,44 +412,30 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               history={history}
               state={state}
             />
-            <li
-              tabIndex={0}
-              className={
-                !isSourceMissing ? "menu-option" : "menu-option disabled"
-              }
-              data-test="export"
-              onClick={() => setIsModalExportOpen(!isModalExportOpen)}
-              onKeyDown={(event) => {
-                event.key === "Enter" &&
-                  setIsModalExportOpen(!isModalExportOpen);
-              }}
-            >
-              Download
-            </li>
+            <MenuOptionModal
+              // Export or Download
+              isReadOnly={isSourceMissing}
+              isSet={isModalDownloadOpen}
+              set={() => setIsModalDownloadOpen(!isModalDownloadOpen)}
+              localization={localization.MessageDownload}
+              testName="download"
+            />
             {!details ? (
-              <li
-                tabIndex={0}
-                className="menu-option"
-                data-test="labels"
-                onClick={toggleLabels}
-                onKeyDown={(event) => {
-                  event.key === "Enter" && toggleLabels();
-                }}
-              >
-                Labels
-              </li>
+              <MenuOption
+                isReadOnly={false}
+                onClickKeydown={toggleLabels}
+                testName="labels"
+                localization={localization.MessageLabels}
+              />
             ) : null}
-            <li
-              tabIndex={0}
-              className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-              data-test="move"
-              onClick={() => setIsModalMoveFile(!isModalMoveFile)}
-              onKeyDown={(event) => {
-                event.key === "Enter" && setIsModalMoveFile(!isModalMoveFile);
-              }}
-            >
-              {MessageMove}
-            </li>
+            <MenuOptionModal
+              isReadOnly={isReadOnly}
+              isSet={isModalMoveFile}
+              set={() => setIsModalMoveFile(!isModalMoveFile)}
+              localization={localization.MessageMove}
+              testName="move"
+            />
+
             <li
               tabIndex={0}
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}

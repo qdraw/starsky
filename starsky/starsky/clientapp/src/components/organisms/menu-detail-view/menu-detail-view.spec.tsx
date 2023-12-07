@@ -313,7 +313,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const exportButton = component.queryByTestId("export");
+      const exportButton = component.queryByTestId("download");
       expect(exportButton).toBeTruthy();
 
       act(() => {
@@ -342,7 +342,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const exportButton = component.queryByTestId("export") as HTMLElement;
+      const exportButton = component.queryByTestId("download") as HTMLElement;
       expect(exportButton).toBeTruthy();
 
       act(() => {
@@ -371,7 +371,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const exportButton = component.queryByTestId("export") as HTMLElement;
+      const exportButton = component.queryByTestId("download") as HTMLElement;
       expect(exportButton).toBeTruthy();
 
       act(() => {
@@ -587,7 +587,7 @@ describe("MenuDetailView", () => {
         move?.click();
       });
 
-      expect(moveModal).toBeCalled();
+      expect(moveModal).toHaveBeenCalled();
 
       // reset afterwards
       act(() => {
@@ -1282,8 +1282,9 @@ describe("MenuDetailView", () => {
           </MemoryRouter>
         );
 
-        const item = component.queryByTestId("export") as HTMLDivElement;
-        expect(item.className).toBe("menu-option disabled");
+        const item = component.queryByTestId("download") as HTMLDivElement;
+
+        expect(item.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved", () => {
