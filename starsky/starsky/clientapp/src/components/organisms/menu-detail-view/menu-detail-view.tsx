@@ -5,16 +5,11 @@ import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import {
-  IFileIndexItem,
-  Orientation
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import localization from "../../../localization/localization.json";
-import { CastToInterface } from "../../../shared/cast-to-interface";
 import { Comma } from "../../../shared/comma";
 import { IsEditedNow } from "../../../shared/date";
-import FetchGet from "../../../shared/fetch-get";
 import FetchPost from "../../../shared/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Keyboard } from "../../../shared/keyboard";
@@ -33,6 +28,7 @@ import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import { GoToParentFolder } from "./shared/go-to-parent-folder";
+import MenuOptionRotateImage90 from "../../molecules/menu-option-rotate-image-90/menu-option-rotate-image-90.tsx";
 
 export interface MenuDetailViewProps {
   state: IDetailView;
@@ -235,71 +231,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     new FileListCache().CacheCleanEverything();
   }
 
-  /**
-   * Checks if the hash is changes and update Context:  orientation + fileHash
-   */
-  async function requestNewFileHash(): Promise<boolean | null> {
-    const resultGet = await FetchGet(
-      new UrlQuery().UrlIndexServerApi({ f: state.subPath })
-    );
-    if (!resultGet) return null;
-    if (resultGet.statusCode !== 200) {
-      console.error(resultGet);
-      setIsLoading(false);
-      return null;
-    }
-    const media = new CastToInterface().MediaDetailView(resultGet.data).data;
-    const orientation = media?.fileIndexItem?.orientation
-      ? media.fileIndexItem.orientation
-      : Orientation.Horizontal;
-
-    // the hash changes if you rotate an image
-    if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash)
-      return false;
-
-    dispatch({
-      type: "update",
-      orientation,
-      fileHash: media.fileIndexItem.fileHash,
-      filePath: media.fileIndexItem.filePath
-    });
-    setIsLoading(false);
-    return true;
-  }
-
-  /**
-   * Update the rotation status
-   */
-  async function rotateImage90() {
-    if (isMarkedAsDeleted || isReadOnly) return;
-    setIsLoading(true);
-
-    const bodyParams = newBodyParams();
-    bodyParams.set("rotateClock", "1");
-    const resultPost = await FetchPost(
-      new UrlQuery().UrlUpdateApi(),
-      bodyParams.toString()
-    );
-    if (resultPost.statusCode !== 200) {
-      console.error(resultPost);
-      return;
-    }
-
-    // there is an async backend event triggered, sometimes there is an que
-    setTimeout(() => {
-      requestNewFileHash().then((result) => {
-        if (result === false) {
-          setTimeout(() => {
-            requestNewFileHash().then(() => {
-              // when it didn't change after two tries
-              setIsLoading(false);
-            });
-          }, 7000);
-        }
-      });
-    }, 3000);
-  }
-
   useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     event.preventDefault();
@@ -459,12 +390,13 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               ) : null}
             </MenuOption>
 
-            <MenuOption
+            <MenuOptionRotateImage90
+              setIsLoading={setIsLoading}
+              state={state}
+              dispatch={dispatch}
+              isMarkedAsDeleted={isMarkedAsDeleted}
               isReadOnly={isReadOnly}
-              onClickKeydown={rotateImage90}
-              localization={localization.MessageRotateToRight}
-              testName="rotate"
-            />
+            ></MenuOptionRotateImage90>
 
             <MenuOptionModal
               isReadOnly={false}
