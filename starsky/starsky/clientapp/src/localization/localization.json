@@ -171,6 +171,14 @@
     "en": "Labels",
     "nl": "Labels"
   },
+  "MessageRenameFileName": {
+    "en": "Rename file name",
+    "nl": "Bestandsnaam wijzigen"
+  },
+  "MessageRotateToRight": {
+    "en": "Rotation to the right",
+    "nl": "Rotatie naar rechts"
+  },
   "temp1": {
     "en": "",
     "nl": ""

@@ -3,6 +3,7 @@
   "scripts": {
     "preinstall": "cd starsky && cd clientapp && npm ci",
     "start" : "cd starsky && cd clientapp && npm run start",
+    "build" : "cd starsky && cd clientapp && npm run build",
     "test" : "cd starsky && cd clientapp && npm run test",
     "test:ci" : "cd starsky && cd clientapp && npm run test:ci",
     "storybook" : "cd starsky && cd clientapp && npm run storybook",

@@ -798,8 +798,8 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(trash, { key: "Enter" });
       });
 
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().UrlMoveToTrashApi(),
         "f=%2Ftest%2Fimage.jpg"
       );
@@ -829,9 +829,9 @@ describe("MenuDetailView", () => {
       expect(trash).toBeTruthy();
       trash?.click();
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().UrlMoveToTrashApi(),
         "f=%2Ftest%2Fimage.jpg"
       );
@@ -1096,7 +1096,7 @@ describe("MenuDetailView", () => {
       expect(trash).toBeTruthy();
       trash?.click();
 
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().UrlReplaceApi(),
         "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21"
       );
@@ -1280,7 +1280,7 @@ describe("MenuDetailView", () => {
         );
 
         const item = component.queryByTestId("rename") as HTMLDivElement;
-        expect(item.className).toBe("menu-option disabled");
+        expect(item.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved to trash", () => {
@@ -1306,7 +1306,7 @@ describe("MenuDetailView", () => {
         );
 
         const item = component.queryByTestId("trash") as HTMLDivElement;
-        expect(item.className).toBe("menu-option disabled");
+        expect(item?.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be rotated", () => {
@@ -1331,7 +1331,7 @@ describe("MenuDetailView", () => {
         );
 
         const item = component.queryByTestId("rotate") as HTMLDivElement;
-        expect(item.className).toBe("menu-option disabled");
+        expect(item.parentElement?.className).toBe("menu-option disabled");
       });
     });
   });

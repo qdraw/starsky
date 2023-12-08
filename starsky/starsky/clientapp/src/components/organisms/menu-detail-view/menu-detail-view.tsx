@@ -79,15 +79,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     localization.MessageRestoreFromTrash
   );
 
-  const MessageRenameFileName = language.text(
-    "Bestandsnaam wijzigen",
-    "Rename file name"
-  );
-  const MessageRotateToRight = language.text(
-    "Rotatie naar rechts",
-    "Rotation to the right"
-  );
-
   const history = useLocation();
 
   const [details, setDetails] = React.useState(
@@ -391,6 +382,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             history={history}
           />
 
+          {/* not more menu */}
           <button
             className="item item--labels"
             data-test="menu-detail-view-labels"
@@ -403,6 +395,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           >
             Labels
           </button>
+
           <MoreMenu
             setEnableMoreMenu={setEnableMoreMenu}
             enableMoreMenu={enableMoreMenu}
@@ -436,26 +429,19 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               testName="move"
             />
 
-            <li
-              tabIndex={0}
-              className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-              data-test="rename"
-              onClick={() => setIsModalRenameFileOpen(!isModalRenameFileOpen)}
-              onKeyDown={(event) => {
-                event.key === "Enter" &&
-                  setIsModalRenameFileOpen(!isModalRenameFileOpen);
-              }}
-            >
-              {MessageRenameFileName}
-            </li>
-            <li
-              tabIndex={0}
-              className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-              data-test="trash"
-              onClick={TrashFile}
-              onKeyDown={(event) => {
-                event.key === "Enter" && TrashFile();
-              }}
+            <MenuOptionModal
+              isReadOnly={isReadOnly}
+              isSet={isModalRenameFileOpen}
+              set={() => setIsModalRenameFileOpen(!isModalRenameFileOpen)}
+              localization={localization.MessageRenameFileName}
+              testName="rename"
+            />
+
+            <MenuOptionModal
+              isReadOnly={isReadOnly}
+              isSet={isModalRenameFileOpen}
+              set={() => setIsModalRenameFileOpen(!isModalRenameFileOpen)}
+              testName="trash"
             >
               {!isMarkedAsDeleted
                 ? MessageMoveToTrash
@@ -465,24 +451,22 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               state.fileIndexItem.collectionPaths &&
               state.fileIndexItem.collectionPaths?.length >= 2 ? (
                 <em data-test="trash-including">
+                  <br />
                   {MessageIncludingColonWord}
                   {new Comma().CommaSpaceLastDot(
                     state.fileIndexItem.collectionPaths
                   )}
                 </em>
               ) : null}
-            </li>
-            <li
-              tabIndex={0}
-              className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-              data-test="rotate"
-              onClick={rotateImage90}
-              onKeyDown={(event) => {
-                event.key === "Enter" && rotateImage90();
-              }}
-            >
-              {MessageRotateToRight}
-            </li>
+            </MenuOptionModal>
+
+            <MenuOption
+              isReadOnly={isReadOnly}
+              onClickKeydown={rotateImage90}
+              localization={localization.MessageRotateToRight}
+              testName="rotate"
+            />
+
             <MenuOptionModal
               isReadOnly={false}
               testName="publish"
@@ -496,7 +480,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
       {details ? (
         <div className="header header--sidebar">
-          <div
+          <button
             className="item item--close"
             data-test="menu-detail-view-close-details"
             onClick={() => {
@@ -512,7 +496,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
                 {MessageSaved}
               </div>
             ) : null}
-          </div>
+          </button>
         </div>
       ) : (
         ""

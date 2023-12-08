@@ -7,8 +7,9 @@ interface IMenuOptionModalProps {
   testName: string;
   isSet: boolean;
   set: React.Dispatch<React.SetStateAction<boolean>>;
-  localization: { nl: string; en: string };
+  localization?: { nl: string; en: string };
   setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
+  children?: React.ReactNode;
 }
 
 const MenuOptionModal: React.FunctionComponent<IMenuOptionModalProps> = memo(
@@ -18,11 +19,13 @@ const MenuOptionModal: React.FunctionComponent<IMenuOptionModalProps> = memo(
     set,
     testName,
     isReadOnly = true,
-    setEnableMoreMenu = undefined
+    setEnableMoreMenu = undefined,
+    children = undefined
   }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const Message = language.key(localization);
+
+    const Message = !localization ? "" : language.key(localization);
 
     function onClickHandler() {
       if (isReadOnly) {
@@ -47,6 +50,7 @@ const MenuOptionModal: React.FunctionComponent<IMenuOptionModalProps> = memo(
               }}
             >
               {Message}
+              {children}
             </button>
           </li>
         }
