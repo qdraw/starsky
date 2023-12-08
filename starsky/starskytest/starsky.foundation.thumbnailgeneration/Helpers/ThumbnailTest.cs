@@ -27,7 +27,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 		}
 
 		[TestMethod]
@@ -61,7 +61,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var thumbnailService =  new Thumbnail(storage, storage, 
 				new FakeIWebLogger(), new AppSettings());
@@ -80,7 +80,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 
 			var fileHash = "test_hash";
 			
@@ -102,7 +102,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 
 			var fileHash = "test_hash";
 			// include xtra large
@@ -123,7 +123,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var hash = (await new FileHash(storage).GetHashCodeAsync(_fakeIStorageImageSubPath)).Key;
 			await storage.WriteStreamAsync(
@@ -147,7 +147,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var isCreated = await new Thumbnail(storage, 
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/");
@@ -252,7 +252,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge) }, 
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 
 			var result = new Thumbnail(
 				storage, storage, 
@@ -266,7 +266,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> (), 
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 
 			var result = new Thumbnail(storage, 
 				storage, new FakeIWebLogger(), new AppSettings()).RemoveCorruptImage("test", ThumbnailSize.Large);
@@ -288,7 +288,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"/test.jpg"}, 
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 			
 			var result = await new Thumbnail(storage, 
 				storage, new FakeIWebLogger(), new AppSettings())

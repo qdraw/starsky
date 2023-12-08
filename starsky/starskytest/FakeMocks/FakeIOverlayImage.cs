@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.Services;
@@ -47,7 +48,7 @@ namespace starskytest.FakeMocks
 				return true;
 			}
 			
-			return await _storage.WriteStreamAsync(new MemoryStream(FakeCreateAn.CreateAnImageNoExif.Bytes),
+			return await _storage.WriteStreamAsync(new MemoryStream(FakeCreateAn.CreateAnImageNoExif.Bytes.ToArray()),
 				outputFullFilePath);
 		}
 	}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Services;
@@ -21,7 +22,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public OverlayImageTest()
 		{
 			_storage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes});
+				new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			_selectorStorage = new FakeSelectorStorage(_storage);
 		}
 		

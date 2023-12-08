@@ -26,7 +26,7 @@ namespace starskytest.Middleware
 	[TestClass]
 	public sealed class BasicAuthenticationMiddlewareTest
 	{
-		private IUserManager _userManager;
+		private readonly IUserManager _userManager;
 		private readonly IServiceProvider _serviceProvider;
 		private readonly Task _onNextResult = Task.FromResult(0);
 		private readonly RequestDelegate _onNext;
@@ -92,22 +92,7 @@ namespace starskytest.Middleware
 			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
             
 			httpContext.RequestServices = _serviceProvider;
- 
-			var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
-
-			var controller =
-				new AccountController(_userManager, new AppSettings(), new FakeAntiforgery(), new FakeSelectorStorage())
-				{
-					ControllerContext = {HttpContext = httpContext}
-				};
-
-			// Make new account; 
-			var newAccount = new RegisterViewModel
-			{
-				Password = "test",
-				ConfirmPassword = "test",
-				Email = "test"
-			};
+			
 			// Arange > new account
 
 			await iUserManager.SignUpAsync("test", "email", "test", "test");

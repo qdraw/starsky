@@ -50,7 +50,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg", "_exampleHash",
 					"/test_default.jpg"},
-				new List<byte[]>{CreateAnImageNoExif.Bytes});
+				new List<byte[]>{CreateAnImageNoExif.Bytes.ToArray()});
 			
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
 		}
@@ -237,7 +237,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				"/test.gpx", new List<string>{"Tags"}
 			}};
 
-			await _iStorageFake.WriteStreamAsync(new MemoryStream(CreateAnGpx.Bytes), "/test.gpx");
+			await _iStorageFake.WriteStreamAsync(new MemoryStream(CreateAnGpx.Bytes.ToArray()), "/test.gpx");
 			var updateItem = new FileIndexItem("/test.gpx")
 			{
 				Tags = "test",
@@ -291,7 +291,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			{
 				"/test.jpg", new List<string>{"orientation"}
 			}};
-			await _iStorageFake.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes), "/test.jpg");
+			await _iStorageFake.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()), "/test.jpg");
 			var updateItem = new FileIndexItem("/test.jpg")
 			{
 				Orientation = FileIndexItem.Rotation.Horizontal,

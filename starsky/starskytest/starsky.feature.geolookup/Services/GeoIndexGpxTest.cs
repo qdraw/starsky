@@ -103,7 +103,8 @@ namespace starskytest.starskyGeoCore.Services
                 
 			});
 
-			var fakeIStorage = new FakeIStorage(new List<string>{"/"},new List<string>{_metaFilesDirectory[0].FilePath}, new List<byte[]>{CreateAnGpx.Bytes} );
+			var fakeIStorage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{_metaFilesDirectory[0].FilePath}, new List<byte[]>{CreateAnGpx.Bytes.ToArray()} );
                
 			var returnFileIndexItems = new GeoIndexGpx(_appSettings,
 				fakeIStorage, new FakeIWebLogger()).LoopFolder(exampleFiles);

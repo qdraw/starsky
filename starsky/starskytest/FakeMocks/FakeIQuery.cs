@@ -118,7 +118,7 @@ namespace starskytest.FakeMocks
 				return null;
 			}
 
-			var fileIndexItem = _content.FirstOrDefault(p => p.FilePath == singleItemDbPath);
+			var fileIndexItem = _content.Find(p => p.FilePath == singleItemDbPath);
 			if ( fileIndexItem == null ) return null;
 			fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 			fileIndexItem.CollectionPaths = new List<string>{singleItemDbPath};
@@ -143,19 +143,19 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem? GetObjectByFilePath(string filePath)
 		{
-			return _content.FirstOrDefault(p => p.FilePath == filePath);
+			return _content.Find(p => p.FilePath == filePath);
 		}
 
 		public async Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
 		{
 			try
 			{
-				return _content.FirstOrDefault(p => p.FilePath == filePath);
+				return _content.Find(p => p.FilePath == filePath);
 			}
 			catch (InvalidOperationException)
 			{
 				await Task.Delay(new Random().Next(1, 5));
-				return _content.FirstOrDefault(p => p.FilePath == filePath);
+				return _content.Find(p => p.FilePath == filePath);
 			}
 		}
 
@@ -305,15 +305,15 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
-		public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
+		public async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 		{
-			_content.Add(updateStatusContent);
+			_content.Add(fileIndexItem);
 			await Task.Delay(new Random().Next(1, 5));
 			if ( _content.FirstOrDefault(p => 
-				p.FilePath == updateStatusContent.FilePath) != null ) return updateStatusContent;
+				p.FilePath == fileIndexItem.FilePath) != null ) return fileIndexItem;
 			
-			_content.Add(updateStatusContent);
-			return updateStatusContent;
+			_content.Add(fileIndexItem);
+			return fileIndexItem;
 		}
 
 		public async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)

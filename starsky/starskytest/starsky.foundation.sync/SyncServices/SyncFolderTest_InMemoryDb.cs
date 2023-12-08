@@ -64,9 +64,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>
 				{
-					CreateAnImage.Bytes,
-					CreateAnImageColorClass.Bytes,
-					CreateAnImageNoExif.Bytes,
+					CreateAnImage.Bytes.ToArray(),
+					CreateAnImageColorClass.Bytes.ToArray(),
+					CreateAnImageNoExif.Bytes.ToArray(),
 				});
 			
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),

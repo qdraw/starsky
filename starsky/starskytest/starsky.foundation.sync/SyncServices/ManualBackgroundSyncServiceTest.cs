@@ -94,8 +94,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 						new List<string>{"/test2__1234.jpg","/test3__1234.jpg"}, 
 						new List<byte[]>
 						{
-							FakeCreateAn.CreateAnImageNoExif.Bytes, 
-							FakeCreateAn.CreateAnImageNoExif.Bytes
+							FakeCreateAn.CreateAnImageNoExif.Bytes.ToArray(), 
+							FakeCreateAn.CreateAnImageNoExif.Bytes.ToArray()
 						}));
 			
 			await new ManualBackgroundSyncService(

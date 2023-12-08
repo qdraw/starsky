@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
@@ -153,8 +154,7 @@ namespace starskytest.FakeCreateAn
 			"ICAgICA8L3Rya3B0PgogICAgICAgIDwvdHJrc2VnPgogICAgPC90cms+CjwvZ3B4" +
 			"Pg==";
 	    
-		public static readonly byte[] Bytes = Base64Helper.TryParse(Base64GpxString);
-
+		public static readonly ImmutableArray<byte> Bytes = Base64Helper.TryParse(Base64GpxString).ToImmutableArray();
 	    
 		public CreateAnGpx()
 		{

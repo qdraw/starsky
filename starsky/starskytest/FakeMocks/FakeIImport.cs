@@ -43,10 +43,10 @@ namespace starskytest.FakeMocks
 			return new List<string>{inputFullPathList};
 		}
 
-		public Task<List<ImportIndexItem>> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)
+		public Task<List<ImportIndexItem>> Preflight(List<string> fullFilePathsList, ImportSettingsModel importSettings)
 		{
 			var results = new List<ImportIndexItem>();
-			foreach ( var inputFileFullPath in inputFileFullPaths )
+			foreach ( var inputFileFullPath in fullFilePathsList )
 			{
 				// if the item fails
 				var importIndexFileError = new ImportIndexItem {

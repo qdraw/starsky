@@ -34,12 +34,9 @@ namespace starskytest.Controllers
 	public sealed class DiskControllerTest
 	{
 		private readonly IQuery _query;
-		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly ApplicationDbContext _context;
-		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private IStorage _iStorage;
 
@@ -90,17 +87,9 @@ namespace starskytest.Controllers
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
-
-			// inject fake exiftool
-			_exifTool = new FakeExifTool(new FakeIStorage(),_appSettings );
-
-			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
+			
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_query = new Query(_context, new AppSettings(), _scopeFactory, new FakeIWebLogger(), memoryCache);
-
-			// get the background helper
-			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
-			
 		}
 
 		private async Task<FileIndexItem> InsertSearchData()
@@ -307,7 +296,7 @@ namespace starskytest.Controllers
 			
 			await controller.Mkdir("/test_dir");
 			
-			var value = socket.FakeSendToAllAsync.FirstOrDefault(p =>
+			var value = socket.FakeSendToAllAsync.Find(p =>
 				!p.StartsWith("[system]"));
 			
 			Assert.IsNotNull(value);

@@ -29,7 +29,7 @@ public class CheckForStatusNotOkHelperTest
 	{
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 			
 		var item = new CheckForStatusNotOkHelper(storage)
 			.CheckForStatusNotOk("/test.jpg").FirstOrDefault();
@@ -41,7 +41,7 @@ public class CheckForStatusNotOkHelperTest
 	{
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.43758" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var item = new CheckForStatusNotOkHelper(storage).CheckForStatusNotOk("/test.43758").FirstOrDefault();
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item?.Status);
@@ -52,7 +52,7 @@ public class CheckForStatusNotOkHelperTest
 	{
 		var storage = new FakeIStorage(new List<string> { "/" },
 			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var item = new CheckForStatusNotOkHelper(storage).CheckForStatusNotOk("/not-found.jpg").FirstOrDefault();
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, item?.Status);

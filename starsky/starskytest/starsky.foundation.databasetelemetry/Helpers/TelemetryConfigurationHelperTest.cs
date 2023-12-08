@@ -7,6 +7,7 @@ using starsky.foundation.databasetelemetry.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starskytest.FakeMocks;
 using starskytest.Helpers;
+using starskytest.starsky.foundation.webtelemetry.Helpers;
 
 namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 {

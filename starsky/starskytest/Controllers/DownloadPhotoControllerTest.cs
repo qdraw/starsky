@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,7 @@ namespace starskytest.Controllers
 			var inputSubPaths = new List<string>{"/test.jpg","/test.xmp", "/corrupt.jpg"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes,
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray(),
 						FakeCreateAn.CreateAnXmp.Bytes, Array.Empty<byte>()});
 			return storage;
 		}
@@ -239,7 +240,6 @@ namespace starskytest.Controllers
 			var fileIndexItem = await InsertSearchData();
 			
 			// so the item does not exist on disk
-			var storage = ArrangeStorage();
 			var selectorStorage = new FakeSelectorStorage();
 			
 			// Act
@@ -257,7 +257,7 @@ namespace starskytest.Controllers
 			var fileIndexItem = await InsertSearchData();
 			var storage =
 				new FakeIStorage(null, new List<string>{"/test.jpg"}, 
-					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 

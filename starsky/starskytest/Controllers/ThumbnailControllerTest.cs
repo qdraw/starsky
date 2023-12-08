@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -68,7 +69,7 @@ namespace starskytest.Controllers
 			var inputSubPaths = new List<string>{"/test.jpg","/test2.jpg", "/test.dng"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{CreateAnImage.Bytes,CreateAnImage.Bytes,CreateAnImage.Bytes});
+					new List<byte[]>{CreateAnImage.Bytes.ToArray(),CreateAnImage.Bytes.ToArray(),CreateAnImage.Bytes.ToArray()});
 			return storage;
 		}
 		

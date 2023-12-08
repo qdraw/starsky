@@ -7,7 +7,7 @@ namespace starskytest.starsky.foundation.platform.Helpers;
 [TestClass]
 public class EnumHelperTest
 {
-    public enum TestEnum
+    public enum TestValue
     {
         [Display(Name = "Test One")]
         Value1,
@@ -25,7 +25,7 @@ public class EnumHelperTest
     public void Test_GetDisplayName_ReturnsDisplayName_ForEnumWithDisplayName()
     {
         // Arrange
-        var enumValue = TestEnum.Value1;
+        var enumValue = TestValue.Value1;
 
         // Act
         var result = EnumHelper.GetDisplayName(enumValue);
@@ -38,7 +38,7 @@ public class EnumHelperTest
     public void Test_GetDisplayName_ReturnsEnumValue_ForEnumWithoutDisplayName()
     {
         // Arrange
-        var enumValue = TestEnum.Value3;
+        var enumValue = TestValue.Value3;
 
         // Act
         var result = EnumHelper.GetDisplayName(enumValue);
@@ -51,7 +51,7 @@ public class EnumHelperTest
     public void Test_GetDisplayName_ReturnsEmptyString_ForEnumWithNullDisplayName()
     {
         // Arrange
-        var enumValue = TestEnum.Value4;
+        var enumValue = TestValue.Value4;
 
         // Act
         var result = EnumHelper.GetDisplayName(enumValue);
@@ -64,7 +64,7 @@ public class EnumHelperTest
     public void Test_GetDisplayName_ReturnsEmptyString_ForNullEnum()
     {
         // Arrange
-        TestEnum? enumValue = null;
+        TestValue? enumValue = null;
 
         // Act
         var result = EnumHelper.GetDisplayName(enumValue);
@@ -77,7 +77,7 @@ public class EnumHelperTest
     public void Test_GetDisplayName_ReturnsDisplayName_ForNullableEnumWithDisplayName()
     {
         // Arrange
-        TestEnum? enumValue = TestEnum.Value1;
+        TestValue? enumValue = TestValue.Value1;
 
         // Act
         var result = EnumHelper.GetDisplayName(enumValue);
@@ -90,7 +90,7 @@ public class EnumHelperTest
     public void Test_GetDisplayName_ReturnsEnumValue_ForNullableEnumWithoutDisplayName()
     {
         // Arrange
-        TestEnum? enumValue = TestEnum.Value3;
+        TestValue? enumValue = TestValue.Value3;
 
         // Act
         var result = EnumHelper.GetDisplayName(enumValue);
@@ -103,7 +103,7 @@ public class EnumHelperTest
     public void Test_GetDisplayName_ReturnsEmptyString_ForNullableEnumWithNullDisplayName()
     {
         // Arrange
-        TestEnum? enumValue = TestEnum.Value4;
+        TestValue? enumValue = TestValue.Value4;
 
         // Act
         var result = EnumHelper.GetDisplayName(enumValue);
@@ -111,17 +111,5 @@ public class EnumHelperTest
         // Assert
         Assert.AreEqual(null, result);
     }
-
-    [TestMethod]
-    public void Test_GetDisplayName_ReturnsEmptyString_ForNullableEnumNull()
-    {
-        // Arrange
-        TestEnum? enumValue = null;
-
-        // Act
-        var result = EnumHelper.GetDisplayName(enumValue);
-
-        // Assert
-        Assert.AreEqual(null, result);
-    }
+    
 }

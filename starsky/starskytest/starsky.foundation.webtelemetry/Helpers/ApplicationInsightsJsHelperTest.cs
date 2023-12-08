@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -20,15 +17,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
-using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Services;
-using starskycore.Helpers;
 using starskytest.FakeMocks;
 
-namespace starskytest.Helpers
+namespace starskytest.starsky.foundation.webtelemetry.Helpers
 {
 
 	
@@ -57,6 +51,11 @@ namespace starskytest.Helpers
 		{
 			GC.SuppressFinalize(this);
 		}
+		
+		protected virtual void Dispose(bool disposing)
+		{
+			Dispose();
+		}
 	}
 	
 	public class MockJavaScriptSnippet : JavaScriptSnippet
@@ -70,9 +69,8 @@ namespace starskytest.Helpers
 	[TestClass]
 	public sealed class ApplicationInsightsJsHelperTest
 	{
-		private ServiceProvider _serviceProvider;
-		private TelemetryClient _telemetryClient;
-		private TelemetryConfiguration _telemetryConfiguration;
+		private readonly ServiceProvider _serviceProvider;
+		private readonly TelemetryConfiguration _telemetryConfiguration;
 
 		public ApplicationInsightsJsHelperTest()
 		{
@@ -98,7 +96,6 @@ namespace starskytest.Helpers
 			};
 			_telemetryConfiguration.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
 			
-			_telemetryClient = new TelemetryClient(_telemetryConfiguration);
 			services
 				.AddAuthentication(sharedOptions =>
 				{

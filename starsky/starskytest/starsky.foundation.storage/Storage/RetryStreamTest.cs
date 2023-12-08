@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
@@ -16,7 +17,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			{
 				i++;
 				if ( i != 3 ) throw new IOException();
-				return new MemoryStream(CreateAnImageNoExif.Bytes);
+				return new MemoryStream(CreateAnImageNoExif.Bytes.ToArray());
 			}
 
 			var stream = new RetryStream(0).Retry(LocalGet);

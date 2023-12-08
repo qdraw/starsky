@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -48,7 +49,7 @@ public class ExifToolServiceTest
 		var storage = new FakeIStorage(new List<string>{"/"}, 
 			new List<string>{"/image.jpg"}, new List<byte[]>
 			{
-				CreateAnImage.Bytes
+				CreateAnImage.Bytes.ToArray()
 			});
 		
 		var service = new ExifToolService(new FakeSelectorStorage(storage), new AppSettings

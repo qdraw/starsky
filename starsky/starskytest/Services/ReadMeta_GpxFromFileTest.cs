@@ -29,7 +29,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile()
 		{
-			var gpxBytes = CreateAnGpx.Bytes;
+			var gpxBytes = CreateAnGpx.Bytes.ToArray();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 
 			var returnItem =
@@ -54,7 +54,7 @@ namespace starskytest.Services
 		public void
 			ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile_Utc_UseLocalFalse()
 		{
-			var gpxBytes = CreateAnGpx.Bytes;
+			var gpxBytes = CreateAnGpx.Bytes.ToArray();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 
 			var returnItem = new ReadMetaGpx(new FakeIWebLogger())
@@ -91,7 +91,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ReadGpxFromFileTest_TestFileName()
 		{
-			var gpxBytes = CreateAnGpx.Bytes;
+			var gpxBytes = CreateAnGpx.Bytes.ToArray();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 
 			var returnItem =
@@ -104,7 +104,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ReadGpxFromFileTest_ReadFile()
 		{
-			var gpxBytes = CreateAnGpx.Bytes;
+			var gpxBytes = CreateAnGpx.Bytes.ToArray();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 			var returnItem =
 				new ReadMetaGpx(new FakeIWebLogger()).ReadGpxFile(stream);

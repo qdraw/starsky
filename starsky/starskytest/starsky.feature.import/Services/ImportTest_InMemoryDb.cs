@@ -61,7 +61,7 @@ namespace starskytest.starsky.feature.import.Services
 			_iStorageFake = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg","/color_class_winner.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes, CreateAnImageColorClass.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()}
 			);
 			
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
@@ -73,7 +73,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.gpx"},
-				new List<byte[]>{CreateAnGpx.Bytes});
+				new List<byte[]>{CreateAnGpx.Bytes.ToArray()});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), _appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, _appSettings),_query,_console, new FakeIMetaExifThumbnailService(),  new FakeIWebLogger(),new FakeIThumbnailQuery(), new FakeMemoryCache());

@@ -150,7 +150,7 @@ namespace starskytest.Controllers
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{_createAnImage.DbPath},new List<byte[]>{CreateAnImage.Bytes});
+				new List<string>{_createAnImage.DbPath},new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
@@ -453,7 +453,7 @@ namespace starskytest.Controllers
 			var fakeStorage = new FakeIStorage(new List<string>(), 
 				new List<string> { f }, new List<byte[]>
 				{
-					CreateAnImageNoExif.Bytes
+					CreateAnImageNoExif.Bytes.ToArray()
 				});
 			
 			var fakeExportService =

@@ -164,7 +164,7 @@ public class DatabaseThumbnailGenerationServiceTest
 			new FakeIThumbnailService(new FakeSelectorStorage(new FakeIStorage(new List<string>(), new List<string>
 			{
 				"/test.jpg"
-			}, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}))),
+			}, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()}))),
 			thumbnailQuery,
 			bgTaskQueue,
 			new UpdateStatusGeneratedThumbnailService(thumbnailQuery)

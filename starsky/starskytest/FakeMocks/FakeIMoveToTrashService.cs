@@ -24,7 +24,7 @@ public class FakeIMoveToTrashService : IMoveToTrashService
 		foreach (var inputFilePath in inputFilePaths)
 		{
 			var exifStatus = FileIndexItems
-				        .FirstOrDefault(p => p.FilePath == inputFilePath)
+				        .Find(p => p.FilePath == inputFilePath)
 				        ?.Status ??
 			        FileIndexItem.ExifStatus.NotFoundSourceMissing;
 			result.Add(new FileIndexItem{FilePath = inputFilePath, Status = exifStatus});

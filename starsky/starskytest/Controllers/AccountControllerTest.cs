@@ -553,7 +553,6 @@ namespace starskytest.Controllers
 				Password = "test"
 			};
             
-			// Make new account; 
 			var newAccount = new RegisterViewModel
 			{
 				Password = "test",

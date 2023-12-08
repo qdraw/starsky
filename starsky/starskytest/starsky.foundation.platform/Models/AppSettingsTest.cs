@@ -433,8 +433,8 @@ namespace starskytest.starsky.foundation.platform.Models
 		[TestMethod]
 		public void EnablePackageTelemetry_False()
 		{
-			var appSettings = new AppSettings {EnablePackageTelemetry = true};
-			Assert.IsTrue(appSettings.EnablePackageTelemetry);
+			var appSettings = new AppSettings {EnablePackageTelemetry = false};
+			Assert.IsFalse(appSettings.EnablePackageTelemetry);
 		}
 		
 #if(DEBUG)
