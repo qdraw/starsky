@@ -2,6 +2,43 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import MenuOptionModal from "./menu-option-modal.tsx";
 
 describe("MenuOption component", () => {
+  it("expect content", () => {
+    const setMock = jest.fn();
+    const setEnableMoreMenuMock = jest.fn();
+    render(
+      <MenuOptionModal
+        localization={{ nl: "Content", en: "Content" }}
+        isSet={false}
+        set={setMock}
+        testName="test"
+        isReadOnly={true}
+        setEnableMoreMenu={setEnableMoreMenuMock}
+      />
+    );
+
+    expect(screen.getByTestId("test")).toBeTruthy();
+    expect(screen.getByTestId("test").innerHTML).toBe("Content");
+  });
+
+  it("expect child no localisation field", () => {
+    const setMock = jest.fn();
+    const setEnableMoreMenuMock = jest.fn();
+    render(
+      <MenuOptionModal
+        isSet={false}
+        set={setMock}
+        testName="test"
+        isReadOnly={true}
+        setEnableMoreMenu={setEnableMoreMenuMock}
+      >
+        <div>Content</div>
+      </MenuOptionModal>
+    );
+
+    expect(screen.getByTestId("test")).toBeTruthy();
+    expect(screen.getByTestId("test").innerHTML).toBe("<div>Content</div>");
+  });
+
   it("should not trigger setEnableMoreMenu when isReadOnly is true", () => {
     const setMock = jest.fn();
     const setEnableMoreMenuMock = jest.fn();
@@ -35,6 +72,29 @@ describe("MenuOption component", () => {
         setEnableMoreMenu={setEnableMoreMenuMock}
       />
     );
+    expect(screen.getByTestId("test")).toBeTruthy();
+
+    fireEvent.click(screen.getByTestId("test"));
+
+    expect(setMock).toHaveBeenCalledTimes(1);
+    expect(setEnableMoreMenuMock).toHaveBeenCalled();
+  });
+
+  it("missing localisation field", () => {
+    const setMock = jest.fn();
+    const setEnableMoreMenuMock = jest.fn();
+    render(
+      <MenuOptionModal
+        isSet={false}
+        set={setMock}
+        testName="test"
+        isReadOnly={false}
+        setEnableMoreMenu={setEnableMoreMenuMock}
+      />
+    );
+
+    expect(screen.getByTestId("test")).toBeTruthy();
+    expect(screen.getByTestId("test").innerHTML).toBe("");
 
     fireEvent.click(screen.getByTestId("test"));
 

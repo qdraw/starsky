@@ -2,6 +2,31 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import MenuOption from "./menu-option";
 
 describe("MenuOption component", () => {
+  it("expect content", () => {
+    render(
+      <MenuOption
+        localization={{ nl: "Content", en: "Content" }}
+        onClickKeydown={() => {}}
+        testName="test"
+        isReadOnly={false}
+      />
+    );
+
+    expect(screen.getByTestId("test")).toBeTruthy();
+    expect(screen.getByTestId("test").innerHTML).toBe("Content");
+  });
+
+  it("expect child no localisation field", () => {
+    render(
+      <MenuOption onClickKeydown={() => {}} testName="test" isReadOnly={false}>
+        <div>Content</div>
+      </MenuOption>
+    );
+
+    expect(screen.getByTestId("test")).toBeTruthy();
+    expect(screen.getByTestId("test").innerHTML).toBe("<div>Content</div>");
+  });
+
   it("renders correctly with default props", () => {
     render(
       <MenuOption
