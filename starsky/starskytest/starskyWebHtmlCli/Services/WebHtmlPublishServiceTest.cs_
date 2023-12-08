@@ -63,7 +63,7 @@ namespace starskytest.starskyWebHtmlCli.Services
             }};
             
 	        var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
-		        new List<string>{"/test.jpg","FILEHASH"},new List<byte[]>{CreateAnImage.Bytes, CreateAnImage.Bytes,});
+		        new List<string>{"/test.jpg","FILEHASH"},new List<byte[]>{CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes,});
 	        var selectorStorage = new FakeSelectorStorage(fakeStorage);
 	        
 	        var template = "<html></html>";

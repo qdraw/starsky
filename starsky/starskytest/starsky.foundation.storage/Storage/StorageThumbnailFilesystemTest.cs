@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
@@ -126,7 +127,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var createNewImage = new CreateAnImage();
 
-			_thumbnailStorage.WriteStream(new MemoryStream(CreateAnImage.Bytes),
+			_thumbnailStorage.WriteStream(new MemoryStream(CreateAnImage.Bytes.ToArray()),
 				"StorageThumbnailFilesystemTest_WriteStream");
 
 			var readStream =_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStream");
@@ -141,7 +142,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var createNewImage = new CreateAnImage();
 
-			await _thumbnailStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes),
+			await _thumbnailStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()),
 				"StorageThumbnailFilesystemTest_WriteStreamAsync");
 
 			var readStream =_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStreamAsync");

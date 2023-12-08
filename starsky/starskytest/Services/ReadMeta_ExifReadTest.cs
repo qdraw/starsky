@@ -286,7 +286,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ExifRead_ReadExifFromFileTest()
 		{
-			var newImage = CreateAnImage.Bytes;
+			var newImage = CreateAnImage.Bytes.ToArray();
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 		     
@@ -318,7 +318,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ImageStabilisationOn()
 		{
-			var newImage = CreateAnImageA6600.Bytes;
+			var newImage = CreateAnImageA6600.Bytes.ToArray();
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 			 
@@ -329,7 +329,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ImageStabilisationOff()
 		{
-			var newImage = CreateAnImageA58Tamron.Bytes;
+			var newImage = CreateAnImageA58Tamron.Bytes.ToArray();
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 			 
@@ -340,7 +340,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void LocationCountryCode()
 		{
-			var newImage = CreateAnImageA6600.Bytes;
+			var newImage = CreateAnImageA6600.Bytes.ToArray();
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 			 
@@ -378,7 +378,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void LensModelTamRon()
 		{
-			var newImage = CreateAnImageA58Tamron.Bytes;
+			var newImage = CreateAnImageA58Tamron.Bytes.ToArray();
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 			 
@@ -389,7 +389,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ExifRead_ReadExifFromFileTest_DeletedTag()
 		{
-			var newImage = CreateAnImageStatusDeleted.Bytes;
+			var newImage = CreateAnImageStatusDeleted.Bytes.ToArray();
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 		     
@@ -400,7 +400,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ExifRead_ReadExif_FromPngInFileXMP_FileTest()
 		{
-			var newImage = CreateAnPng.Bytes;
+			var newImage = CreateAnPng.Bytes.ToArray();
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.png"},new List<byte[]>{newImage});
 		     
@@ -610,7 +610,7 @@ namespace starskytest.Services
 			var currentCultureThreeLetterIsoLanguageName = CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
 			CultureInfo.CurrentCulture = new CultureInfo("NL-nl");
 			
-			var newImage = CreateAnQuickTimeMp4.BytesWithLocation;
+			var newImage = CreateAnQuickTimeMp4.BytesWithLocation.ToArray();
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
 
@@ -632,7 +632,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_WithLocation_FileTest()
 		{
-			var newImage = CreateAnQuickTimeMp4.BytesWithLocation;
+			var newImage = CreateAnQuickTimeMp4.BytesWithLocation.ToArray();
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
 

@@ -5,16 +5,11 @@ import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import {
-  IFileIndexItem,
-  Orientation
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import localization from "../../../localization/localization.json";
-import { CastToInterface } from "../../../shared/cast-to-interface";
 import { Comma } from "../../../shared/comma";
 import { IsEditedNow } from "../../../shared/date";
-import FetchGet from "../../../shared/fetch-get";
 import FetchPost from "../../../shared/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Keyboard } from "../../../shared/keyboard";
@@ -23,6 +18,7 @@ import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import Link from "../../atoms/link/link";
+import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
@@ -32,6 +28,7 @@ import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import { GoToParentFolder } from "./shared/go-to-parent-folder";
+import MenuOptionRotateImage90 from "../../molecules/menu-option-rotate-image-90/menu-option-rotate-image-90.tsx";
 
 export interface MenuDetailViewProps {
   state: IDetailView;
@@ -49,11 +46,9 @@ function GetHeaderClass(
       return "header header--main header--edit";
     }
   } else {
-    if (isMarkedAsDeleted) {
-      return "header header--main header--deleted";
-    } else {
-      return "header header--main";
-    }
+    return isMarkedAsDeleted
+      ? "header header--main header--deleted"
+      : "header header--main";
   }
 }
 
@@ -78,16 +73,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   );
   const MessageRestoreFromTrash = language.key(
     localization.MessageRestoreFromTrash
-  );
-  const MessageMove = language.key(localization.MessageMove);
-
-  const MessageRenameFileName = language.text(
-    "Bestandsnaam wijzigen",
-    "Rename file name"
-  );
-  const MessageRotateToRight = language.text(
-    "Rotatie naar rechts",
-    "Rotation to the right"
   );
 
   const history = useLocation();
@@ -246,78 +231,13 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     new FileListCache().CacheCleanEverything();
   }
 
-  /**
-   * Checks if the hash is changes and update Context:  orientation + fileHash
-   */
-  async function requestNewFileHash(): Promise<boolean | null> {
-    const resultGet = await FetchGet(
-      new UrlQuery().UrlIndexServerApi({ f: state.subPath })
-    );
-    if (!resultGet) return null;
-    if (resultGet.statusCode !== 200) {
-      console.error(resultGet);
-      setIsLoading(false);
-      return null;
-    }
-    const media = new CastToInterface().MediaDetailView(resultGet.data).data;
-    const orientation = media?.fileIndexItem?.orientation
-      ? media.fileIndexItem.orientation
-      : Orientation.Horizontal;
-
-    // the hash changes if you rotate an image
-    if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash)
-      return false;
-
-    dispatch({
-      type: "update",
-      orientation,
-      fileHash: media.fileIndexItem.fileHash,
-      filePath: media.fileIndexItem.filePath
-    });
-    setIsLoading(false);
-    return true;
-  }
-
-  /**
-   * Update the rotation status
-   */
-  async function rotateImage90() {
-    if (isMarkedAsDeleted || isReadOnly) return;
-    setIsLoading(true);
-
-    const bodyParams = newBodyParams();
-    bodyParams.set("rotateClock", "1");
-    const resultPost = await FetchPost(
-      new UrlQuery().UrlUpdateApi(),
-      bodyParams.toString()
-    );
-    if (resultPost.statusCode !== 200) {
-      console.error(resultPost);
-      return;
-    }
-
-    // there is an async backend event triggered, sometimes there is an que
-    setTimeout(() => {
-      requestNewFileHash().then((result) => {
-        if (result === false) {
-          setTimeout(() => {
-            requestNewFileHash().then(() => {
-              // when it didn't change after two tries
-              setIsLoading(false);
-            });
-          }, 7000);
-        }
-      });
-    }, 3000);
-  }
-
   useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     event.preventDefault();
     TrashFile();
   });
 
-  const [isModalExportOpen, setIsModalExportOpen] = React.useState(false);
+  const [isModalDownloadOpen, setIsModalDownloadOpen] = React.useState(false);
   const [isModalRenameFileOpen, setIsModalRenameFileOpen] =
     React.useState(false);
   const [isModalMoveFile, setIsModalMoveFile] = React.useState(false);
@@ -328,12 +248,12 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
       {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
 
       {/* allowed in readonly to download */}
-      {isModalExportOpen && state && !isSourceMissing ? (
+      {isModalDownloadOpen && state && !isSourceMissing ? (
         <ModalDownload
           collections={false}
-          handleExit={() => setIsModalExportOpen(!isModalExportOpen)}
+          handleExit={() => setIsModalDownloadOpen(!isModalDownloadOpen)}
           select={[state.subPath]}
-          isOpen={isModalExportOpen}
+          isOpen={isModalDownloadOpen}
         />
       ) : null}
       {isModalRenameFileOpen && state && !isReadOnly ? (
@@ -393,6 +313,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             history={history}
           />
 
+          {/* not more menu */}
           <button
             className="item item--labels"
             data-test="menu-detail-view-labels"
@@ -405,6 +326,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           >
             Labels
           </button>
+
           <MoreMenu
             setEnableMoreMenu={setEnableMoreMenu}
             enableMoreMenu={enableMoreMenu}
@@ -414,64 +336,42 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               history={history}
               state={state}
             />
-            <li
-              tabIndex={0}
-              className={
-                !isSourceMissing ? "menu-option" : "menu-option disabled"
-              }
-              data-test="export"
-              onClick={() => setIsModalExportOpen(!isModalExportOpen)}
-              onKeyDown={(event) => {
-                event.key === "Enter" &&
-                  setIsModalExportOpen(!isModalExportOpen);
-              }}
-            >
-              Download
-            </li>
+            <MenuOptionModal
+              // Export or Download
+              isReadOnly={isSourceMissing}
+              isSet={isModalDownloadOpen}
+              set={() => setIsModalDownloadOpen(!isModalDownloadOpen)}
+              localization={localization.MessageDownload}
+              testName="download"
+            />
             {!details ? (
-              <li
-                tabIndex={0}
-                className="menu-option"
-                data-test="labels"
-                onClick={toggleLabels}
-                onKeyDown={(event) => {
-                  event.key === "Enter" && toggleLabels();
-                }}
-              >
-                Labels
-              </li>
+              <MenuOption
+                isReadOnly={false}
+                onClickKeydown={toggleLabels}
+                testName="labels"
+                localization={localization.MessageLabels}
+              />
             ) : null}
-            <li
-              tabIndex={0}
-              className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-              data-test="move"
-              onClick={() => setIsModalMoveFile(!isModalMoveFile)}
-              onKeyDown={(event) => {
-                event.key === "Enter" && setIsModalMoveFile(!isModalMoveFile);
-              }}
-            >
-              {MessageMove}
-            </li>
-            <li
-              tabIndex={0}
-              className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-              data-test="rename"
-              onClick={() => setIsModalRenameFileOpen(!isModalRenameFileOpen)}
-              onKeyDown={(event) => {
-                event.key === "Enter" &&
-                  setIsModalRenameFileOpen(!isModalRenameFileOpen);
-              }}
-            >
-              {MessageRenameFileName}
-            </li>
-            <li
-              tabIndex={0}
-              className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-              data-test="trash"
-              onClick={TrashFile}
-              onKeyDown={(event) => {
-                event.key === "Enter" && TrashFile();
-              }}
+            <MenuOptionModal
+              isReadOnly={isReadOnly}
+              isSet={isModalMoveFile}
+              set={() => setIsModalMoveFile(!isModalMoveFile)}
+              localization={localization.MessageMove}
+              testName="move"
+            />
+
+            <MenuOptionModal
+              isReadOnly={isReadOnly}
+              isSet={isModalRenameFileOpen}
+              set={() => setIsModalRenameFileOpen(!isModalRenameFileOpen)}
+              localization={localization.MessageRenameFileName}
+              testName="rename"
+            />
+
+            <MenuOption
+              isReadOnly={isReadOnly}
+              onClickKeydown={TrashFile}
+              testName="trash"
             >
               {!isMarkedAsDeleted
                 ? MessageMoveToTrash
@@ -481,25 +381,24 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               state.fileIndexItem.collectionPaths &&
               state.fileIndexItem.collectionPaths?.length >= 2 ? (
                 <em data-test="trash-including">
+                  <br />
                   {MessageIncludingColonWord}
                   {new Comma().CommaSpaceLastDot(
                     state.fileIndexItem.collectionPaths
                   )}
                 </em>
               ) : null}
-            </li>
-            <li
-              tabIndex={0}
-              className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-              data-test="rotate"
-              onClick={rotateImage90}
-              onKeyDown={(event) => {
-                event.key === "Enter" && rotateImage90();
-              }}
-            >
-              {MessageRotateToRight}
-            </li>
-            <MenuOption
+            </MenuOption>
+
+            <MenuOptionRotateImage90
+              setIsLoading={setIsLoading}
+              state={state}
+              dispatch={dispatch}
+              isMarkedAsDeleted={isMarkedAsDeleted}
+              isReadOnly={isReadOnly}
+            ></MenuOptionRotateImage90>
+
+            <MenuOptionModal
               isReadOnly={false}
               testName="publish"
               isSet={isModalPublishOpen}
@@ -512,7 +411,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
       {details ? (
         <div className="header header--sidebar">
-          <div
+          <button
             className="item item--close"
             data-test="menu-detail-view-close-details"
             onClick={() => {
@@ -528,7 +427,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
                 {MessageSaved}
               </div>
             ) : null}
-          </div>
+          </button>
         </div>
       ) : (
         ""

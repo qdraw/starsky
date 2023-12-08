@@ -137,7 +137,7 @@ public class ReadMetaExifTest
     public void GetIsoSpeedValue_FromXmp_ReturnsIsoSpeed()
     {
         // Arrange
-        var xmpStream = new MemoryStream(CreateAnImageA6600.Bytes);
+        var xmpStream = new MemoryStream(CreateAnImageA6600.Bytes.ToArray());
 
         var allExifItems = ImageMetadataReader.ReadMetadata(xmpStream).ToList();
 

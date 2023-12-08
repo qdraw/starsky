@@ -17,7 +17,7 @@
     "test:ci:debug": "jest --ci --coverage",
     "preview": "vite preview",
     "tsc": "tsc",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 6006 --disable-telemetry",
     "build-storybook": "storybook build",
     "update:install": "npx  --yes npm-check-updates -u && npm install"
   },

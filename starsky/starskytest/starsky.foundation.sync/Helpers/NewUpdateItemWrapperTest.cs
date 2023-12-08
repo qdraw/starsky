@@ -34,7 +34,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery();
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/sub/test8495.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
 
@@ -61,7 +61,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery();
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/sub/test8495.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
 
@@ -89,7 +89,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery();
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/sub/test8495.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
 
@@ -126,7 +126,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>{item});
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
 
@@ -152,7 +152,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>{item});
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var dbParentResultBefore = await fakeQuery.GetObjectByFilePathAsync("/");
 		Assert.IsNull(dbParentResultBefore);

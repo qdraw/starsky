@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
@@ -90,6 +91,7 @@ namespace starskytest.FakeCreateAn
 			"QAAAAFAAAAUQAAAAEAAAADAAAAAQAAACQAAAAFAAAAC" +
 			"gAAAAHgYX43AAAAAElFTkSuQmCC";
 			
-		public static readonly byte[] Bytes = Base64Helper.TryParse(Base64pngString);
+		public static readonly ImmutableArray<byte> Bytes = Base64Helper.TryParse(Base64pngString).ToImmutableArray();
+
 	}
 }

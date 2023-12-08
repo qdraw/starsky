@@ -4,7 +4,7 @@ import { Language } from "../../../shared/language";
 
 export interface IMenuSelectFurtherProps {
   select?: string[];
-  toggleLabels: () => void;
+  toggleLabels: (state: boolean) => void;
 }
 
 export const MenuSelectFurther: React.FunctionComponent<
@@ -18,18 +18,20 @@ export const MenuSelectFurther: React.FunctionComponent<
     <>
       {select ? (
         <div className="header header--sidebar header--border-left">
-          <div
+          <button
             className="item item--continue"
             data-test="select-further"
             onClick={() => {
-              toggleLabels();
+              toggleLabels(false);
             }}
             onKeyDown={(event) => {
-              event.key === "Enter" && toggleLabels();
+              if (event.key === "Enter") {
+                toggleLabels(false);
+              }
             }}
           >
             {MessageSelectFurther}
-          </div>
+          </button>
         </div>
       ) : (
         ""

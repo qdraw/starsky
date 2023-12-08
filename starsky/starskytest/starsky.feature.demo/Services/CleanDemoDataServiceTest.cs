@@ -31,7 +31,7 @@ public class CleanDemoDataServiceTest
 	private readonly IServiceScopeFactory _serviceScopeFactory;
 	private readonly AppSettings _appSettings;
 	private readonly FakeIHttpProvider _fakeProvider;
-	private FakeIWebSocketConnectionsService _fakeIWebSocketConnectionsService;
+	private readonly FakeIWebSocketConnectionsService _fakeIWebSocketConnectionsService;
 	private readonly FakeIWebLogger _logger;
 	private readonly IStorage _storage;
 
@@ -77,6 +77,8 @@ public class CleanDemoDataServiceTest
 		});
 			
 		Assert.IsTrue(!_logger.TrackedExceptions.Any());
+		
+		source.Dispose();
 	}
 	
 	[TestMethod]

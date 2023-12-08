@@ -1,17 +1,16 @@
 import React, { memo } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
-import useGlobalSettings from "../../../hooks/use-global-settings";
 import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import localization from "../../../localization/localization.json";
 import FetchPost from "../../../shared/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
-import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { Select } from "../../../shared/select";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
+import MenuOption from "../../atoms/menu-option/menu-option.tsx";
 
 interface IMenuOptionMoveToTrashProps {
   select: string[];
@@ -26,13 +25,8 @@ interface IMenuOptionMoveToTrashProps {
  */
 const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> =
   memo(({ state, dispatch, select, setSelect, isReadOnly }) => {
-    const settings = useGlobalSettings();
-    const language = new Language(settings.language);
-
     const undoSelection = () =>
       new Select(select, setSelect, state, history).undoSelection();
-
-    const MessageMoveToTrash = language.key(localization.MessageMoveToTrash);
 
     const history = useLocation();
 
@@ -52,18 +46,16 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       if (selectParams.length === 0) return;
 
       const bodyParams = new URLSearchParams();
+      // noinspection PointlessBooleanExpressionJS
+      const collections =
+        new URLPath().StringToIUrl(history.location.search).collections !==
+        false;
 
       bodyParams.append("f", selectParams);
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
       bodyParams.set("Colorclass", "8");
-      bodyParams.set(
-        "collections",
-        (
-          new URLPath().StringToIUrl(history.location.search).collections !==
-          false
-        ).toString()
-      );
+      bodyParams.set("collections", collections.toString());
 
       const resultDo = await FetchPost(
         new UrlQuery().UrlMoveToTrashApi(),
@@ -90,23 +82,20 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
      * When pressing delete its moved to the trash
      */
     useHotKeys({ key: "Delete" }, () => {
-      moveToTrashSelection();
+      moveToTrashSelection().then(() => {
+        // do nothing
+      });
     });
 
     return (
       <>
         {select.length >= 1 ? (
-          <li
-            data-test="trash"
-            tabIndex={0}
-            className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-            onKeyDown={(event) => {
-              event.key === "Enter" && moveToTrashSelection();
-            }}
-            onClick={() => moveToTrashSelection()}
-          >
-            {MessageMoveToTrash}
-          </li>
+          <MenuOption
+            isReadOnly={isReadOnly}
+            testName={"trash"}
+            onClickKeydown={moveToTrashSelection}
+            localization={localization.MessageMoveToTrash}
+          />
         ) : null}
       </>
     );

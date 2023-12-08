@@ -26,7 +26,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(), new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/test.jpg", "/test.dng"}, 
-						new []{CreateAnImage.Bytes, CreateAnImage.Bytes}))
+						new []{CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray()}))
 				,new FakeIWebLogger());
 			
 			var result = await metaPreflight.PreflightAsync(
@@ -51,7 +51,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(), new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/test.jpg", "/test.dng"}, 
-						new []{CreateAnImage.Bytes, CreateAnImage.Bytes}))
+						new []{CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray()}))
 				,new FakeIWebLogger());
 			
 			var result = await metaPreflight.PreflightAsync(
@@ -73,7 +73,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(), new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/test.jpg"}, 
-						new []{CreateAnImage.Bytes, CreateAnImage.Bytes}))
+						new []{CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray()}))
 				,new FakeIWebLogger());
 			
 			var result = await metaPreflight.PreflightAsync(
@@ -97,7 +97,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(), new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/test.jpg"}, 
-						new []{CreateAnImage.Bytes, CreateAnImage.Bytes}))
+						new []{CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray()}))
 				,new FakeIWebLogger());
 			
 			var result = await metaPreflight.PreflightAsync(
@@ -282,7 +282,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings{ ReadOnlyFolders = new List<string>{"readonly"}}, new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/readonly/test.jpg"}, 
-						new []{CreateAnImage.Bytes, })),new FakeIWebLogger());
+						new []{CreateAnImage.Bytes.ToArray(), })),new FakeIWebLogger());
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/readonly/test.jpg"), 
@@ -303,7 +303,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(), new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/deleted.jpg"}, 
-						new []{CreateAnImage.Bytes, })),new FakeIWebLogger());
+						new []{CreateAnImage.Bytes.ToArray(), })),new FakeIWebLogger());
 			
 			var result = await metaPreflight.PreflightAsync(
 				new FileIndexItem("/deleted.jpg"), 

@@ -494,7 +494,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void Gpx_CreateAnGpx()
 		{
-			var result = ExtensionRolesHelper.GetImageFormat(CreateAnGpx.Bytes);
+			var result = ExtensionRolesHelper.GetImageFormat(CreateAnGpx.Bytes.ToArray());
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx,result);
 		}
 

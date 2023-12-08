@@ -47,6 +47,9 @@
     color: #fff;
     box-shadow: 0 2px 6px 0px #b0bec5;
   }
+  .menu-context .menu-options button {
+    color: white;
+  }
 }
 
 .header--edit > .wrapper > .item.item--more > .menu-context .menu-options {
@@ -54,7 +57,6 @@
 }
 
 .menu-context .menu-options .menu-option {
-  padding-left: 15px;
   line-height: 18px;
   text-align: left;
   height: 50px;
@@ -64,6 +66,15 @@
   flex-wrap: wrap;
   flex-direction: column;
   justify-content: center;
+}
+
+.menu-context .menu-options .menu-option > button {
+  height: 50px;
+  padding-left: 12px;
+  cursor: pointer;
+  background-color: transparent;
+  display: inline-block;
+  position: relative;
 }
 
 .menu-context .menu-options .menu-option:nth-child(even) {
@@ -76,16 +87,20 @@
   }
 }
 
+.menu-context .menu-options .menu-option > button:hover,
 .menu-context .menu-options .menu-option:hover {
   background: #b0bec5;
 }
 
+.menu-context .menu-options .menu-option > input:focus,
+.menu-context .menu-options .menu-option button:focus,
 .menu-context .menu-options .menu-option:focus {
   border: 3px solid #283593;
   padding-left: 13px;
 }
 
 @media (prefers-color-scheme: dark) {
+  .menu-context .menu-options .menu-option button:hover,
   .menu-context .menu-options .menu-option:hover {
     background-color: #546e7a;
   }
@@ -104,15 +119,21 @@
 
 .menu-context .menu-options .menu-option .droparea-file-input + label {
   width: 100%;
-  padding-left: 15px;
+  padding-left: 12px;
   /* placed last */
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.menu-context .menu-options .menu-option .droparea-file-input:focus + label,
 .menu-context .menu-options .menu-option .droparea-file-input + label:hover {
   background: #b0bec5;
+}
+
+.menu-context .menu-options .menu-option .droparea-file-input:focus + label {
+    background: transparent;
+    border: 3px solid #283593;
+    padding:15px;
+    border-radius: 0px;
 }
 
 @media (prefers-color-scheme: dark) {

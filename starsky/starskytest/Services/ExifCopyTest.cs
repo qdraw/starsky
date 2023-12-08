@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -28,7 +29,7 @@ namespace starskytest.Services
 			var inputSubPaths = new List<string>{"/test.jpg"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 	        
 			var fakeReadMeta = new ReadMeta(storage, _appSettings, null, new FakeIWebLogger());
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
@@ -44,7 +45,7 @@ namespace starskytest.Services
 			var inputSubPaths = new List<string>{"/test.dng"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 
 			var fakeReadMeta = new ReadMeta(storage, _appSettings, 
 				null, new FakeIWebLogger());
@@ -62,7 +63,7 @@ namespace starskytest.Services
 			var inputSubPaths = new List<string>{"/test.dng"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 
 			var fakeReadMeta = new ReadMeta(storage, _appSettings,
 				null, new FakeIWebLogger());
@@ -83,7 +84,7 @@ namespace starskytest.Services
 			
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			
 			var readMeta = new ReadMeta(storage, _appSettings,
 				null, new FakeIWebLogger());

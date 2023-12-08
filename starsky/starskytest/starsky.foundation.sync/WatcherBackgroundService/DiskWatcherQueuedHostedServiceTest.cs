@@ -41,6 +41,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			});
 			
 			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Queued Hosted Service"));
+			source.Dispose();
 		}
 		
 		[TestMethod]
@@ -63,6 +64,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			await service.StopAsync(token);
 			
 			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("is stopping"));
+			source.Dispose();
 		}
 	}
 }

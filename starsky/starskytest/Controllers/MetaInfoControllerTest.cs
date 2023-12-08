@@ -28,8 +28,8 @@ namespace starskytest.Controllers
 				new AppSettings{ ReadOnlyFolders = new List<string>{"readonly"}}, 
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string>{"/test.jpg","/readonly/image.jpg"}, new List<byte[]>{ 
-						CreateAnImage.Bytes, 
-						CreateAnImage.Bytes})),null, new FakeIWebLogger());
+						CreateAnImage.Bytes.ToArray(), 
+						CreateAnImage.Bytes.ToArray()})),null, new FakeIWebLogger());
 			
 		}
 		

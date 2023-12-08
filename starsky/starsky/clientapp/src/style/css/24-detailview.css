@@ -98,6 +98,7 @@
   height: 100%;
   transition: background-image 1s;
   pointer-events: none;
+  background-color: transparent;
 }
 
 .detailview .main .nextprev.nextprev--next,

@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -39,6 +40,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 		/// </summary>
 		/// <param name="currentVersion">defaults to _appSettings</param>
 		/// <returns></returns>
+		[SuppressMessage("Usage", "S2589:cache & appSettings null")]
 		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded(string currentVersion = "")
 		{
 			if (_appSettings == null || _appSettings.CheckForUpdates == false ) 

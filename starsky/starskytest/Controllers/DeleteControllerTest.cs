@@ -36,13 +36,9 @@ namespace starskytest.Controllers
 	{
 		
 		private readonly IQuery _query;
-		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly ApplicationDbContext _context;
-		private readonly IReadMeta _readmeta;
-		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly IStorage _iStorage;
 
 		public DeleteControllerTest()
@@ -92,19 +88,8 @@ namespace starskytest.Controllers
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
-           
-			// inject fake exiftool
-			_exifTool = new FakeExifTool(_iStorage,_appSettings);
-            
-			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
-			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-
-            
-			// get the background helper
-			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
-	        
+			
 			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
-
 		}
         
 		private async Task<FileIndexItem> InsertSearchData(bool delete = false)

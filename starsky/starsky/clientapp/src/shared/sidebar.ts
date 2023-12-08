@@ -20,9 +20,13 @@ export class Sidebar {
   /**
    * Toggle the labels button
    */
-  public toggleSidebar() {
+  public toggleSidebar(state?: boolean) {
     const urlObject = new URLPath().StringToIUrl(this.history.location.search);
-    urlObject.sidebar = !urlObject.sidebar;
+    if (state === undefined) {
+      urlObject.sidebar = !urlObject.sidebar;
+    } else {
+      urlObject.sidebar = state;
+    }
 
     this.setSidebar(urlObject.details);
     this.history.navigate(new URLPath().IUrlToString(urlObject), {

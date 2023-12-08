@@ -14,7 +14,7 @@ import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
 import { URLPath } from "../../../shared/url-path";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
-import MenuOption from "../../atoms/menu-option/menu-option";
+import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveFolderToTrash from "../../molecules/menu-option-move-folder-to-trash/menu-option-move-folder-to-trash";
@@ -40,13 +40,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const language = new Language(settings.language);
 
   // Content
-  const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageMkdir = language.text("Map maken", "Create folder");
-  const MessageRenameDir = language.text("Naam wijzigen", "Rename");
-  const MessageDisplayOptions = language.text(
-    "Weergave opties",
-    "Display options"
-  );
+  const MessageSelectAction = language.key(localization.MessageSelectAction);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [enableMoreMenu, setEnableMoreMenu] = React.useState(false);
@@ -81,7 +75,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
   }, [history.location.search]);
 
-  const toggleLabels = () => new Sidebar(setSidebar, history).toggleSidebar();
+  const toggleLabels = (state?: boolean) =>
+    new Sidebar(setSidebar, history).toggleSidebar(state);
 
   const [isModalExportOpen, setIsModalExportOpen] = useState(false);
   const [isModalPublishOpen, setIsModalPublishOpen] = useState(false);
@@ -194,7 +189,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           />
 
           {!select ? (
-            <div
+            <button
               className="item item--select"
               data-test="menu-item-select"
               onClick={() => {
@@ -205,11 +200,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               }}
             >
               {MessageSelectAction}
-            </div>
+            </button>
           ) : null}
 
           {select ? (
-            <div
+            <button
               className="item item--labels"
               data-test="menu-archive-labels"
               onKeyDown={(event) => {
@@ -218,7 +213,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               onClick={() => toggleLabels()}
             >
               Labels
-            </div>
+            </button>
           ) : null}
 
           {/* default more menu */}
@@ -227,31 +222,23 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               setEnableMoreMenu={setEnableMoreMenu}
               enableMoreMenu={enableMoreMenu}
             >
-              <li
-                className={!readOnly ? "menu-option" : "menu-option disabled"}
-                data-test="mkdir"
-                tabIndex={0}
-                onClick={() => setIsModalMkdirOpen(!isModalMkdirOpen)}
-                onKeyDown={(event) => {
-                  event.key === "Enter" &&
-                    setIsModalMkdirOpen(!isModalMkdirOpen);
-                }}
-              >
-                {MessageMkdir}
-              </li>
-              <li
-                className="menu-option"
-                data-test="display-options"
-                tabIndex={0}
-                onClick={() => setIsDisplayOptionsOpen(!isDisplayOptionsOpen)}
-                onKeyDown={(event) => {
-                  event.key === "Enter" &&
-                    setIsDisplayOptionsOpen(!isDisplayOptionsOpen);
-                }}
-              >
-                {MessageDisplayOptions}
-              </li>
-              <MenuOption
+              <MenuOptionModal
+                isReadOnly={readOnly}
+                isSet={isModalMkdirOpen}
+                set={() => setIsModalMkdirOpen(!isModalMkdirOpen)}
+                localization={localization.MessageMkdir}
+                testName="mkdir"
+              />
+
+              <MenuOptionModal
+                isReadOnly={false}
+                isSet={isDisplayOptionsOpen}
+                set={() => setIsDisplayOptionsOpen(!isDisplayOptionsOpen)}
+                localization={localization.MessageDisplayOptions}
+                testName="display-options"
+              />
+
+              <MenuOptionModal
                 isReadOnly={false}
                 testName="synchronize-manually"
                 isSet={isSynchronizeManuallyOpen}
@@ -266,21 +253,14 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                   state={state}
                 />
               ) : null}
-              <li
-                className={
-                  !readOnly && state.subPath !== "/"
-                    ? "menu-option"
-                    : "menu-option disabled"
-                }
-                data-test="rename"
-                onClick={() => setIsModalRenameFolder(!isModalRenameFolder)}
-                onKeyDown={(event) => {
-                  event.key === "Enter" &&
-                    setIsModalRenameFolder(!isModalRenameFolder);
-                }}
-              >
-                {MessageRenameDir}
-              </li>
+
+              <MenuOptionModal
+                isReadOnly={readOnly || state.subPath === "/"}
+                isSet={isModalRenameFolder}
+                set={() => setIsModalRenameFolder(!isModalRenameFolder)}
+                localization={localization.MessageRenameDir}
+                testName="rename"
+              />
 
               <MenuOptionMoveFolderToTrash
                 isReadOnly={readOnly || state.subPath === "/"}
@@ -311,14 +291,14 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               />
               {select.length >= 1 ? (
                 <>
-                  <MenuOption
+                  <MenuOptionModal
                     isReadOnly={false}
                     testName="export"
                     isSet={isModalExportOpen}
                     set={setIsModalExportOpen}
                     localization={localization.MessageDownload}
                   />
-                  <MenuOption
+                  <MenuOptionModal
                     isReadOnly={false}
                     testName="publish"
                     isSet={isModalPublishOpen}
@@ -334,18 +314,14 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                   />
                 </>
               ) : null}
-              <li
-                className="menu-option"
-                data-test="display-options"
-                onClick={() => setIsDisplayOptionsOpen(!isDisplayOptionsOpen)}
-                onKeyDown={(event) => {
-                  event.key === "Enter" &&
-                    setIsDisplayOptionsOpen(!isDisplayOptionsOpen);
-                }}
-              >
-                {MessageDisplayOptions}
-              </li>
-              <MenuOption
+              <MenuOptionModal
+                isReadOnly={false}
+                isSet={isDisplayOptionsOpen}
+                set={() => setIsDisplayOptionsOpen(!isDisplayOptionsOpen)}
+                localization={localization.MessageDisplayOptions}
+                testName="display-options"
+              />
+              <MenuOptionModal
                 setEnableMoreMenu={setEnableMoreMenu}
                 isReadOnly={false}
                 testName="synchronize-manually"

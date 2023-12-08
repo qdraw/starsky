@@ -35,7 +35,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
 				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
@@ -56,7 +56,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
 				.WriteTagsAndRenameThumbnailAsync("/test.jpg",null,
@@ -100,7 +100,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 
 			var fakeLogger = new FakeIWebLogger();
 			var renameThumbnailAsync = await new ExifToolHostStorageService(
@@ -114,7 +114,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			}
 			
 			Assert.IsFalse(renameThumbnailAsync.Key);
-			Assert.IsTrue(fakeLogger.TrackedExceptions.Any(p => p.Item2.Contains("Fake Exiftool detected")));
+			Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p => p.Item2.Contains("Fake Exiftool detected")));
 		}
 		
 		[TestMethod]
@@ -137,7 +137,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			}
 			hostFileSystemStorage.CreateDirectory(outputPath);
 
-			var result = Zipper.ExtractZip(CreateAnExifToolWindows.Bytes);
+			var result = Zipper.ExtractZip(CreateAnExifToolWindows.Bytes.ToArray());
 			var (_,item) = result.FirstOrDefault(p => p.Key.Contains("exiftool"));
 			
 			await hostFileSystemStorage.WriteStreamAsync(new MemoryStream(item), 
@@ -150,7 +150,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var fakeLogger = new FakeIWebLogger();
 			var renameThumbnailAsync = await new ExifToolHostStorageService(
@@ -175,7 +175,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			}
 			
 			Assert.IsFalse(renameThumbnailAsync.Key);
-			Assert.IsTrue(fakeLogger.TrackedExceptions.Any(p => p.Item2.Contains("Fake Exiftool detected")));
+			Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p => p.Item2.Contains("Fake Exiftool detected")));
 		}
 		
 		[TestMethod]
@@ -189,7 +189,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
 				.WriteTagsThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");

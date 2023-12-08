@@ -89,7 +89,7 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 				File.Delete(path);
 			}
 
-			using var archive = ZipFile.OpenRead(result);
+			var archive = ZipFile.OpenRead(result);
 			Assert.AreEqual(filePaths.Count, archive.Entries.Count);
 
 			for (var i = 0; i < filePaths.Count; i++)

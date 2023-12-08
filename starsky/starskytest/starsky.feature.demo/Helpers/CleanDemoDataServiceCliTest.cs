@@ -24,8 +24,6 @@ public class CleanDemoDataServiceCliTest
 {
 	private readonly IServiceScopeFactory _serviceScopeFactory;
 	private readonly AppSettings _appSettings;
-	private readonly FakeIHttpProvider _fakeProvider;
-	private FakeIWebSocketConnectionsService _fakeIWebSocketConnectionsService;
 	private readonly FakeIWebLogger _logger;
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly IConsole _console;
@@ -46,8 +44,6 @@ public class CleanDemoDataServiceCliTest
 		var serviceProvider = services.BuildServiceProvider();
 		_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		_appSettings = serviceProvider.GetRequiredService<AppSettings>();
-		_fakeProvider = serviceProvider.GetRequiredService<IHttpProvider>() as FakeIHttpProvider;
-		_fakeIWebSocketConnectionsService = serviceProvider.GetRequiredService<IWebSocketConnectionsService>() as FakeIWebSocketConnectionsService;
 		_logger = serviceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
 		_selectorStorage =
 			serviceProvider.GetRequiredService<ISelectorStorage>();
@@ -100,7 +96,7 @@ public class CleanDemoDataServiceCliTest
 		await service.SeedCli(new string[]{"-h"});
 
 		var fakeConsoleWrapper = _console as FakeConsoleWrapper;
-		var isTrue = fakeConsoleWrapper?.WrittenLines.FirstOrDefault(p => p.Contains("--help")) != null;
+		var isTrue = fakeConsoleWrapper?.WrittenLines.Find(p => p.Contains("--help")) != null;
 		Assert.IsTrue(isTrue);
 	}
 	

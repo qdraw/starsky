@@ -9,8 +9,8 @@ namespace starskytest.FakeMocks;
 public class FakeIMetaUpdateStatusThumbnailService : IMetaUpdateStatusThumbnailService
 {
 	[SuppressMessage("Performance", "CA1822:Mark members as static")]
-	public Task UpdateStatusThumbnail(List<(bool, bool, string, string?)> statusList)
-	{
+	public Task UpdateStatusThumbnail(List<(bool, bool, string, string?)> statusResultsWithSubPaths)
+	{ 
 		return Task.CompletedTask;
 	}
 }

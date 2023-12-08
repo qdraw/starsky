@@ -16,13 +16,13 @@ public class FakeISettingsService : ISettingsService
 	
 	public Task<SettingsItem?> GetSetting(SettingsType key)
 	{
-		var result =  Items.FirstOrDefault(p => p.Key == Enum.GetName(key));
+		var result =  Items.Find(p => p.Key == Enum.GetName(key));
 		return Task.FromResult(result);
 	}
 
 	public Task<T?> GetSetting<T>(SettingsType key)
 	{
-		var result =  Items.FirstOrDefault(p => p.Key == Enum.GetName(key));
+		var result =  Items.Find(p => p.Key == Enum.GetName(key));
 		var result2 =   SettingsService.CastSetting<T>(result);
 		return Task.FromResult(result2);
 	}

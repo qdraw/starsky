@@ -63,7 +63,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg"},
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 
 			var appSettings = new AppSettings();
 			var geoWrite = new FakeIGeoLocationWrite();
@@ -89,7 +89,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg"},
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 
 			var appSettings = new AppSettings{Verbose = true};
 			var geoWrite = new FakeIGeoLocationWrite();
@@ -110,7 +110,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg"},
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 			var hash =( await new FileHash(storage).GetHashCodeAsync("/test.jpg")).Key;
 			storage.FileCopy("/test.jpg",$"/{hash}.jpg");
 
@@ -132,7 +132,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg","1"},
-				new List<byte[]> {CreateAnImage.Bytes,CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray(),CreateAnImage.Bytes.ToArray()});
 			var hash =( await new FileHash(storage).GetHashCodeAsync("/test.jpg")).Key;
 			storage.FileCopy("/test.jpg",$"/{hash}.jpg");
 
@@ -159,7 +159,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg","1"},
-				new List<byte[]> {CreateAnImage.Bytes,CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray(),CreateAnImage.Bytes.ToArray()});
 			var hash =( await new FileHash(storage).GetHashCodeAsync("/test.jpg")).Key;
 			storage.FileCopy("/test.jpg",$"/{hash}.jpg");
 

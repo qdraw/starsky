@@ -201,7 +201,8 @@ describe("MenuDetailView", () => {
         fileName: "image.jpg",
         lastEdited: new Date(1970, 1, 1).toISOString(),
         parentDirectory: "/test"
-      }
+      },
+      isReadOnly: false
     } as IDetailView;
 
     it("as search Result button exist", () => {
@@ -313,7 +314,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const exportButton = component.queryByTestId("export");
+      const exportButton = component.queryByTestId("download");
       expect(exportButton).toBeTruthy();
 
       act(() => {
@@ -342,7 +343,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const exportButton = component.queryByTestId("export") as HTMLElement;
+      const exportButton = component.queryByTestId("download") as HTMLElement;
       expect(exportButton).toBeTruthy();
 
       act(() => {
@@ -371,7 +372,7 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
-      const exportButton = component.queryByTestId("export") as HTMLElement;
+      const exportButton = component.queryByTestId("download") as HTMLElement;
       expect(exportButton).toBeTruthy();
 
       act(() => {
@@ -567,7 +568,7 @@ describe("MenuDetailView", () => {
       });
     });
 
-    it("[menu detail] move click", () => {
+    it("[menu detail] move click", async () => {
       const moveModal = jest
         .spyOn(ModalMoveFile, "default")
         .mockImplementationOnce(() => {
@@ -583,11 +584,16 @@ describe("MenuDetailView", () => {
       const move = component.queryByTestId("move");
       expect(move).toBeTruthy();
 
+      // need await
       act(() => {
         move?.click();
       });
 
-      expect(moveModal).toBeCalled();
+      console.log(move?.innerHTML);
+
+      console.log(component.container.innerHTML);
+
+      expect(moveModal).toHaveBeenCalledTimes(1);
 
       // reset afterwards
       act(() => {
@@ -640,6 +646,8 @@ describe("MenuDetailView", () => {
         </MemoryRouter>
       );
 
+      console.log("[menu detail] move keyDown enter");
+
       const move = component.queryByTestId("move") as HTMLElement;
       expect(move).toBeTruthy();
 
@@ -647,7 +655,7 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(move, { key: "Enter" });
       });
 
-      expect(moveModal).toBeCalledTimes(1);
+      expect(moveModal).toHaveBeenCalledTimes(1);
 
       // reset afterwards
       act(() => {
@@ -775,6 +783,7 @@ describe("MenuDetailView", () => {
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       const spy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(
@@ -790,8 +799,8 @@ describe("MenuDetailView", () => {
         fireEvent.keyDown(trash, { key: "Enter" });
       });
 
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().UrlMoveToTrashApi(),
         "f=%2Ftest%2Fimage.jpg"
       );
@@ -804,6 +813,7 @@ describe("MenuDetailView", () => {
     it("trash keyDown to trash", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
+
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       const spy = jest
@@ -821,9 +831,9 @@ describe("MenuDetailView", () => {
       expect(trash).toBeTruthy();
       trash?.click();
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().UrlMoveToTrashApi(),
         "f=%2Ftest%2Fimage.jpg"
       );
@@ -858,70 +868,6 @@ describe("MenuDetailView", () => {
 
       act(() => {
         component.unmount();
-      });
-    });
-
-    it("rotate click", async () => {
-      jest.useFakeTimers();
-      const setTimeoutSpy = jest.spyOn(global, "setTimeout");
-
-      const mockIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      const spyPost = jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault);
-
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> =
-        Promise.resolve({
-          statusCode: 200,
-          data: {
-            subPath: "/test/image.jpg",
-            pageType: PageType.DetailView,
-            fileIndexItem: {
-              fileHash: "needed",
-              status: IExifStatus.Ok,
-              filePath: "/test/image.jpg",
-              fileName: "image.jpg"
-            }
-          } as IDetailView
-        } as IConnectionDefault);
-      const spyGet = jest
-        .spyOn(FetchGet, "default")
-        .mockImplementationOnce(() => mockGetIConnectionDefault);
-
-      const component = render(
-        <MemoryRouter>
-          <MenuDetailView state={state} dispatch={jest.fn()} />
-        </MemoryRouter>
-      );
-
-      const item = component.queryByTestId("rotate");
-
-      // need to await this click 2 times
-      await act(async () => {
-        await item?.click();
-      });
-
-      expect(spyPost).toBeCalled();
-      expect(spyPost).toBeCalledWith(
-        new UrlQuery().UrlUpdateApi(),
-        "f=%2Ftest%2Fimage.jpg&rotateClock=1"
-      );
-
-      act(() => {
-        jest.advanceTimersByTime(3000);
-      });
-
-      expect(setTimeoutSpy).toBeCalled();
-      expect(spyGet).toBeCalled();
-      expect(spyGet).toBeCalledWith(
-        new UrlQuery().UrlIndexServerApi({ f: "/test/image.jpg" })
-      );
-
-      // cleanup afterwards
-      act(() => {
-        component.unmount();
-        jest.useRealTimers();
       });
     });
 
@@ -1146,13 +1092,14 @@ describe("MenuDetailView", () => {
 
       const spy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const trash = component.queryByTestId("trash");
       expect(trash).toBeTruthy();
       trash?.click();
 
-      expect(spy).toBeCalledWith(
+      expect(spy).toHaveBeenCalledWith(
         new UrlQuery().UrlReplaceApi(),
         "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21"
       );
@@ -1282,8 +1229,9 @@ describe("MenuDetailView", () => {
           </MemoryRouter>
         );
 
-        const item = component.queryByTestId("export") as HTMLDivElement;
-        expect(item.className).toBe("menu-option disabled");
+        const item = component.queryByTestId("download") as HTMLDivElement;
+
+        expect(item.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved", () => {
@@ -1309,7 +1257,7 @@ describe("MenuDetailView", () => {
         );
 
         const item = component.queryByTestId("move") as HTMLDivElement;
-        expect(item.className).toBe("menu-option disabled");
+        expect(item.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be renamed", () => {
@@ -1335,7 +1283,7 @@ describe("MenuDetailView", () => {
         );
 
         const item = component.queryByTestId("rename") as HTMLDivElement;
-        expect(item.className).toBe("menu-option disabled");
+        expect(item.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved to trash", () => {
@@ -1361,7 +1309,7 @@ describe("MenuDetailView", () => {
         );
 
         const item = component.queryByTestId("trash") as HTMLDivElement;
-        expect(item.className).toBe("menu-option disabled");
+        expect(item?.parentElement?.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be rotated", () => {
@@ -1386,7 +1334,94 @@ describe("MenuDetailView", () => {
         );
 
         const item = component.queryByTestId("rotate") as HTMLDivElement;
-        expect(item.className).toBe("menu-option disabled");
+        expect(item.parentElement?.className).toBe("menu-option disabled");
+      });
+    });
+  });
+
+  describe("rotate", () => {
+    const state = {
+      subPath: "/test/image.jpg",
+      fileIndexItem: {
+        status: IExifStatus.Ok,
+        fileHash: "000",
+        filePath: "/test/image.jpg",
+        fileName: "image.jpg",
+        lastEdited: new Date(1970, 1, 1).toISOString(),
+        parentDirectory: "/test"
+      }
+    } as IDetailView;
+
+    it("rotate click", async () => {
+      jest.useFakeTimers();
+      jest.spyOn(React, "useContext").mockReset();
+
+      const setTimeoutSpy = jest.spyOn(global, "setTimeout");
+      const contextValues = { state, dispatch: jest.fn() };
+
+      jest
+        .spyOn(Link, "default")
+        .mockImplementationOnce(() => <></>)
+        .mockImplementationOnce(() => <></>);
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues);
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      const spyPost = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
+          statusCode: 200,
+          data: {
+            subPath: "/test/image.jpg",
+            pageType: PageType.DetailView,
+            fileIndexItem: {
+              fileHash: "needed",
+              status: IExifStatus.Ok,
+              filePath: "/test/image.jpg",
+              fileName: "image.jpg"
+            }
+          } as IDetailView
+        } as IConnectionDefault);
+      const spyGet = jest
+        .spyOn(FetchGet, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+      const component = render(
+        <MenuDetailView state={state} dispatch={jest.fn()} />
+      );
+
+      const item = component.queryByTestId("rotate");
+
+      // need to await this click 2 times
+      await act(async () => {
+        await item?.click();
+      });
+
+      expect(spyPost).toHaveBeenCalled();
+      expect(spyPost).toHaveBeenCalledWith(
+        new UrlQuery().UrlUpdateApi(),
+        "f=%2Ftest%2Fimage.jpg&rotateClock=1"
+      );
+
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
+
+      expect(setTimeoutSpy).toHaveBeenCalled();
+      expect(spyGet).toHaveBeenCalled();
+      expect(spyGet).toHaveBeenCalledWith(
+        new UrlQuery().UrlIndexServerApi({ f: "/test/image.jpg" })
+      );
+
+      // cleanup afterwards
+      act(() => {
+        component.unmount();
       });
     });
   });

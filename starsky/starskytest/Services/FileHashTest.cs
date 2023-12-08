@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Services;
@@ -28,7 +29,7 @@ namespace starskytest.Services
 			var iStorageFake = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()}
 			);
 			var fileHashCode = new FileHash(iStorageFake).GetHashCode("/test.jpg",0);
 	        

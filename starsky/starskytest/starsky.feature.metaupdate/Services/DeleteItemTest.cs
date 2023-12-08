@@ -38,7 +38,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public async Task Delete_ReadOnly_Ignored()
 		{
 			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/readonly/test.jpg"}, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}));
+				new List<string>{"/readonly/test.jpg"}, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()}));
 
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/readonly/test.jpg")});
@@ -53,7 +53,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public async Task Delete_StatusNotDeleted_Ignored()
 		{
 			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.jpg"}, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}));
+				new List<string>{"/test.jpg"}, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()}));
 
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test.jpg")});
@@ -69,7 +69,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg"},
-				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var fakeQuery =
@@ -91,7 +91,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/", "/dir"},
 				new List<string> {"/dir/test.jpg"},
-				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var fakeQuery =
@@ -123,7 +123,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg","/.starsky.test.jpg.json"},
-				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var fakeQuery =
@@ -143,7 +143,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.dng","/test.xmp"},
-				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var fakeQuery =
@@ -163,7 +163,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/test","/"},
 				new List<string> (),
-				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var fakeQuery =
@@ -192,7 +192,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new List<string> {"/test/child_folder/i.jpg"},
 				new List<byte[]>
 				{
-					FakeCreateAn.CreateAnImage.Bytes
+					FakeCreateAn.CreateAnImage.Bytes.ToArray()
 				});
 			var selectorStorage = new FakeSelectorStorage(storage);
 
@@ -220,8 +220,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/test","/"},
 				new List<string> {"/test/image.jpg", "/test/image.dng"},
-				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes,
-					FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes.ToArray(),
+					FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 			var fakeQuery =
@@ -246,8 +246,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/test","/"},
 				new List<string> {"/test/image.jpg", "/test/image.dng"},
-				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes,
-					FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes.ToArray(),
+					FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 			var fakeQuery =

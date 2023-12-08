@@ -21,7 +21,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 		public async Task ThumbnailGenerationTest_CheckIfGenerated()
 		{
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"},
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 			
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ManualThumbnailGenerationService( new FakeIQuery(
@@ -41,7 +41,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 		public async Task ThumbnailGenerationTest_CheckIfGenerated_Socket_Success()
 		{
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"},
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 			
 			var socket = new FakeIWebSocketConnectionsService();
 			var selectorStorage = new FakeSelectorStorage(storage);

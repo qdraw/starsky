@@ -61,7 +61,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string> {"/test.jpg"}, new List<byte[]>
 					{
-						FakeCreateAn.CreateAnImage.Bytes
+						FakeCreateAn.CreateAnImage.Bytes.ToArray()
 					})),null, new FakeIWebLogger());
 			var test = metaInfo.GetInfo(new List<string>{"/test.jpg"}, false);
 			
@@ -76,7 +76,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string> {"/test.jpg"}, new List<byte[]>
 					{
-						FakeCreateAn.CreateAnImage.Bytes
+						FakeCreateAn.CreateAnImage.Bytes.ToArray()
 					}, new List<DateTime>{new DateTime(2000,01,01)})),null, new FakeIWebLogger());
 			var test = metaInfo.GetInfo(new List<string>{"/test.jpg"}, false);
 

@@ -1,10 +1,11 @@
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
-	public class CreateAnQuickTimeMp4
+	public static class CreateAnQuickTimeMp4
 	{
 		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		private static readonly string Base64QuickTimeMp4String =
@@ -542,6 +543,7 @@ namespace starskytest.FakeCreateAn
 			"AwAAABlkYXRhAAAAAQAAAABpUGhvbmUgU0UAAAAcAAAABAAAABRkYXRhAAAAAQAAAAAxMy40AAAAMAAA" +
 			"AAUAAAAoZGF0YQAAAAEAAAAAMjAyMC0wNC0wNFQxMTowNDo0NiswMjAw";
 		
-		public static readonly byte[] BytesWithLocation = Base64Helper.TryParse(Base64QuickTimeMp4StringWithLocation);
+		public static readonly ImmutableArray<byte> BytesWithLocation = Base64Helper.TryParse(Base64QuickTimeMp4StringWithLocation).ToImmutableArray();
+
 	}
 }

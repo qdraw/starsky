@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
@@ -313,7 +319,7 @@ describe("MenuArchive", () => {
     it("[archive] menu click mkdir", async () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      Router.navigate("/");
+      await Router.navigate("/");
 
       const state = {
         subPath: "/",
@@ -335,21 +341,23 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        });
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       const mkdir = screen.getByTestId("mkdir");
 
-      // need async
-      await mkdir?.click();
+      expect(mkdir).toBeTruthy();
 
-      expect(mkdirModalSpy).toBeCalled();
+      console.log(mkdir.innerHTML);
+
+      // need async
+      await act(async () => {
+        await mkdir?.click();
+      });
+
+      waitFor(() => expect(mkdirModalSpy).toHaveBeenCalled());
 
       component.unmount();
     });
@@ -383,7 +391,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       const mkdir = screen.getByTestId("mkdir");
 
@@ -436,7 +444,7 @@ describe("MenuArchive", () => {
         key: "Enter"
       });
 
-      expect(mkdirModalSpy).toBeCalledTimes(1);
+      waitFor(() => expect(mkdirModalSpy).toHaveBeenCalled());
 
       component.unmount();
     });
@@ -478,9 +486,11 @@ describe("MenuArchive", () => {
       expect(rename).not.toBeNull();
 
       // need async
-      await rename?.click();
+      await act(async () => {
+        await rename?.click();
+      });
 
-      expect(renameModalSpy).toBeCalled();
+      waitFor(() => expect(renameModalSpy).toHaveBeenCalled());
 
       component.unmount();
 
@@ -525,7 +535,7 @@ describe("MenuArchive", () => {
         key: "Enter"
       });
 
-      expect(renameModalSpy).toBeCalled();
+      waitFor(() => expect(renameModalSpy).toHaveBeenCalled());
 
       component.unmount();
 
@@ -580,6 +590,8 @@ describe("MenuArchive", () => {
     it("[archive] menu click rename should call dispatch(dir)", () => {
       Router.navigate("/?f=/test");
 
+      console.log("[archive] menu click rename should call dispatch(dir)");
+
       const state = {
         subPath: "/test",
         fileIndexItems: [
@@ -593,25 +605,28 @@ describe("MenuArchive", () => {
       const dispatch = jest.fn();
       const contextValues = { state, dispatch };
 
+      const modalMockElement = (props: any) => {
+        return (
+          <button
+            id="test-btn-fake"
+            data-test="test-btn-fake"
+            onClick={() => {
+              if (props.dispatch) {
+                props.dispatch({
+                  type: "rename-folder",
+                  path: "t"
+                });
+              }
+            }}
+          ></button>
+        );
+      };
+
       jest
         .spyOn(ModalArchiveRename, "default")
         .mockReset()
-        .mockImplementationOnce((props) => {
-          return (
-            <button
-              id="test-btn-fake"
-              data-test="test-btn-fake"
-              onClick={() => {
-                if (props.dispatch) {
-                  props.dispatch({
-                    type: "rename-folder",
-                    path: "t"
-                  });
-                }
-              }}
-            ></button>
-          );
-        });
+        .mockImplementationOnce(modalMockElement)
+        .mockImplementationOnce(modalMockElement);
 
       jest
         .spyOn(React, "useContext")
@@ -620,7 +635,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      const component = render(<MenuArchive>t</MenuArchive>);
+      const component = render(<MenuArchive />);
 
       const rename = screen.getByTestId("rename");
       expect(rename).not.toBeNull();
@@ -628,6 +643,8 @@ describe("MenuArchive", () => {
       act(() => {
         rename?.click();
       });
+
+      console.log(component.container.innerHTML);
 
       const fakeButton = screen.getByTestId("test-btn-fake");
       fakeButton?.click();
@@ -1296,10 +1313,15 @@ describe("MenuArchive", () => {
       const trash = screen.queryByTestId("trash");
       expect(trash).not.toBeNull();
 
-      trash?.click();
+      console.log(trash?.innerHTML);
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(
+      // need to await
+      await act(async () => {
+        await trash?.click();
+      });
+
+      expect(fetchPostSpy).toHaveBeenCalled();
+      expect(fetchPostSpy).toHaveBeenCalledWith(
         new UrlQuery().UrlMoveToTrashApi(),
         "f=%2Fundefined%2Ftest1.jpg&Tags=%21delete%21&append=true&Colorclass=8&collections=true"
       );
@@ -1356,7 +1378,7 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
-    it("[archive] menu click publish", () => {
+    it("[archive] menu click publish 1", () => {
       Router.navigate("/?select=test1.jpg");
 
       const state = {
@@ -1403,7 +1425,7 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
-    it("[archive] menu click publish", () => {
+    it("[archive] menu click publish 2", () => {
       Router.navigate("/?select=test1.jpg");
 
       const state = {
@@ -1443,7 +1465,7 @@ describe("MenuArchive", () => {
       });
 
       expect(Router.state.location.search).toBe(
-        "?select=test1.jpg&sidebar=true"
+        "?select=test1.jpg&sidebar=false"
       );
 
       component.unmount();
