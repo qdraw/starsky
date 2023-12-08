@@ -783,6 +783,7 @@ describe("MenuDetailView", () => {
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       const spy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(
@@ -812,6 +813,7 @@ describe("MenuDetailView", () => {
     it("trash keyDown to trash", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
+
       const mockIConnectionDefault: Promise<IConnectionDefault> =
         Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       const spy = jest
@@ -1090,6 +1092,7 @@ describe("MenuDetailView", () => {
 
       const spy = jest
         .spyOn(FetchPost, "default")
+        .mockReset()
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const trash = component.queryByTestId("trash");

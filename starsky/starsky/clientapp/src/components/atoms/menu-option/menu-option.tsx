@@ -6,14 +6,21 @@ interface IMenuOptionProps {
   isReadOnly: boolean;
   testName: string;
   onClickKeydown: () => void;
-  localization: { nl: string; en: string };
+  localization?: { nl: string; en: string };
+  children?: React.ReactNode;
 }
 
 const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
-  ({ localization, onClickKeydown, testName, isReadOnly = true }) => {
+  ({
+    localization,
+    onClickKeydown,
+    testName,
+    isReadOnly = true,
+    children = undefined
+  }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const Message = language.key(localization);
+    const Message = !localization ? "" : language.key(localization);
 
     return (
       <>
@@ -27,6 +34,7 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
               }}
             >
               {Message}
+              {children}
             </button>
           </li>
         }

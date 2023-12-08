@@ -437,10 +437,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               testName="rename"
             />
 
-            <MenuOptionModal
+            <MenuOption
               isReadOnly={isReadOnly}
-              isSet={isModalRenameFileOpen}
-              set={() => setIsModalRenameFileOpen(!isModalRenameFileOpen)}
+              onClickKeydown={TrashFile}
               testName="trash"
             >
               {!isMarkedAsDeleted
@@ -458,7 +457,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
                   )}
                 </em>
               ) : null}
-            </MenuOptionModal>
+            </MenuOption>
 
             <MenuOption
               isReadOnly={isReadOnly}
