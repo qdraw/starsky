@@ -158,6 +158,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
             transform: `translate(${position.x}px, ${position.y}px) scale(${position.z})`
           }}
         >
+          {/* NOSONAR(S6847) */}
           <img
             className={`pan-zoom-image--image image--default ${props.translateRotation}`}
             alt="image"
