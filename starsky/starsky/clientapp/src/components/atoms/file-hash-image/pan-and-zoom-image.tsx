@@ -56,7 +56,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLButtonElement>(null);
 
   // only needed to re-render when the component is mounted
 
@@ -128,7 +128,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
 
   return (
     <>
-      <div
+      <button
         className={className}
         data-test="pan-zoom-image"
         ref={containerRef}
@@ -179,7 +179,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
             }}
           />
         </div>
-      </div>
+      </button>
       <div className="gpx-controls">
         <div className="gpx-controls--button">
           <button

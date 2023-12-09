@@ -11,7 +11,8 @@ import { UrlQuery } from "../../../shared/url-query";
 import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageViewSelectContainer from "../list-image-view-select-container/list-image-view-select-container";
-import { ShiftSelectionHelper } from "./shift-selection-helper";
+import { ShiftSelectionHelper } from "./shared/shift-selection-helper";
+import { WarningBoxNoPhotosFilter } from "./shared/warning-box-no-photos-filter";
 
 interface ItemListProps {
   fileIndexItems: Array<IFileIndexItem>;
@@ -36,9 +37,6 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   );
   const MessageNewUserNoPhotosInFolder = language.key(
     localization.MessageNewUserNoPhotosInFolder
-  );
-  const MessageItemsOutsideFilter = language.key(
-    localization.MessageItemsOutsideFilter
   );
 
   useEffect(() => {
@@ -77,22 +75,12 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
 
   return (
     <div className={props.iconList ? "folder" : "folder-flat"} ref={folderRef}>
-      {props.pageType !== PageType.Loading &&
-      props.subPath !== "/" &&
-      items.length === 0 ? (
-        props.colorClassUsage.length >= 1 ? (
-          <div className="warning-box warning-box--left">
-            {MessageItemsOutsideFilter}
-          </div>
-        ) : (
-          <div
-            className="warning-box"
-            data-test="list-view-no-photos-in-folder"
-          >
-            {MessageNoPhotosInFolder}
-          </div>
-        )
-      ) : null}
+      <WarningBoxNoPhotosFilter
+        pageType={props.pageType}
+        subPath={props.subPath}
+        items={items}
+        colorClassUsage={props.colorClassUsage}
+      />
 
       {props.pageType !== PageType.Loading &&
       items.length === 0 &&

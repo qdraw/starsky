@@ -1,7 +1,7 @@
 import {
   newIFileIndexItem,
   newIFileIndexItemArray
-} from "../../../interfaces/IFileIndexItem";
+} from "../../../../interfaces/IFileIndexItem";
 import { ShiftSelectionHelper } from "./shift-selection-helper";
 describe("ShiftSelectionHelper", () => {
   it("items undefined", () => {
