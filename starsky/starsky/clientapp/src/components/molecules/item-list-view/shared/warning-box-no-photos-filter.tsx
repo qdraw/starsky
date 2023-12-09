@@ -24,27 +24,33 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
       localization.MessageItemsOutsideFilter
     );
 
-    return (
-      <>
-        {pageType !== PageType.Loading &&
-        subPath !== "/" &&
-        items.length === 0 ? (
-          colorClassUsage.length >= 1 ? (
-            <div
-              className="warning-box warning-box--left"
-              data-test="list-view-message-items-outside-filter"
-            >
-              {MessageItemsOutsideFilter}
-            </div>
-          ) : (
-            <div
-              className="warning-box"
-              data-test="list-view-no-photos-in-folder"
-            >
-              {MessageNoPhotosInFolder}
-            </div>
-          )
-        ) : null}
-      </>
-    );
+    let warningBox = null;
+
+    if (
+      pageType !== PageType.Loading &&
+      subPath !== "/" &&
+      items.length === 0
+    ) {
+      if (colorClassUsage.length >= 1) {
+        warningBox = (
+          <div
+            className="warning-box warning-box--left"
+            data-test="list-view-message-items-outside-filter"
+          >
+            {MessageItemsOutsideFilter}
+          </div>
+        );
+      } else {
+        warningBox = (
+          <div
+            className="warning-box"
+            data-test="list-view-no-photos-in-folder"
+          >
+            {MessageNoPhotosInFolder}
+          </div>
+        );
+      }
+    }
+
+    return <>{warningBox}</>;
   });
