@@ -60,6 +60,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({
         <div className="warning-box">{MessageFieldMaxLength}</div>
       ) : null}
 
+      {/* NOSONAR(S6847) */}
       <div
         data-test={props["data-test"] ? props["data-test"] : "form-control"}
         onBlur={

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using starsky.foundation.platform.Helpers;
 
 namespace starskytest.FakeCreateAn.CreateAnZipFile12
@@ -15,7 +16,7 @@ namespace starskytest.FakeCreateAn.CreateAnZipFile12
 			+ "BOgDAABQSwECHgMKAAAAAACWiotWaAC3vhAAAAAQAAAACQAYAAAAAAABAAAApIFTAAAAZmlsZTIudHh0" 
 			+ "VVQFAAPsljVkdXgLAAEE6AMAAAToAwAAUEsFBgAAAAACAAIAngAAAKYAAAAAAA==";
 
-		public static readonly byte[] Bytes = Base64Helper.TryParse(Base64CreateAnZipFile12String);
+		public static readonly ImmutableArray<byte> Bytes = Base64Helper.TryParse(Base64CreateAnZipFile12String).ToImmutableArray();
 		
 		public static readonly Dictionary<string, string> Content = new Dictionary<string, string>
 		{

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.storage.ArchiveFormats;
@@ -26,7 +27,7 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 			var zipped = CreateAnZipFile12.Bytes;
 
 			// Act
-			var result = Zipper.ExtractZip(zipped);
+			var result = Zipper.ExtractZip(zipped.ToArray());
 
 			// Assert
 			Assert.IsNotNull(result);
