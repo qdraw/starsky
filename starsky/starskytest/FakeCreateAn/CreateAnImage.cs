@@ -10,12 +10,11 @@ namespace starskytest.FakeCreateAn
 	public class CreateAnImage
 	{
 		private const string FileNamePrivate = "0000000000aaaaa__exifreadingtest00.jpg";
-
-		// There is an unit test for using directory thumbnails that uses the first image;
-		// starskytest.SyncServiceTest.SyncServiceFirstItemDirectoryTest
-
+		
 		/// <summary>
 		/// The filename *.jpg
+		/// There is an unit test for using directory thumbnails that uses the first image;
+		/// starskytest.SyncServiceTest.SyncServiceFirstItemDirectoryTest
 		/// </summary>
 		[SuppressMessage("Performance", "CA1822:Mark members as static")]
 		[SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]

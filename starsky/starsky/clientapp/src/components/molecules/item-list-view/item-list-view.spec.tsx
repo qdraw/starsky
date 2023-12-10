@@ -11,7 +11,7 @@ import { Router } from "../../../router-app/router-app";
 import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import * as ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ItemListView from "./item-list-view";
-import * as ShiftSelectionHelper from "./shift-selection-helper";
+import * as ShiftSelectionHelper from "./shared/shift-selection-helper";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {

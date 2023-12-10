@@ -152,8 +152,6 @@ namespace starskytest.Controllers
 			// in a normal session the State is cleared after 1 request
 			controller.ModelState.Clear();
 
-            
-			// Make new account; 
 			var newAccount = new RegisterViewModel
 			{
 				Password = "test",
@@ -170,7 +168,7 @@ namespace starskytest.Controllers
 			// Test login
 			Assert.AreEqual(true,httpContext.User.Identity?.IsAuthenticated);
             
-			// The logout is mocked so this will not actual log it out;
+			// The logout is mocked so this will not actual log it out
 			// controller.Logout() not crashing is good enough;
 			controller.Logout();
             

@@ -26,7 +26,6 @@ namespace starskytest.Middleware
 	[TestClass]
 	public sealed class BasicAuthenticationMiddlewareTest
 	{
-		private readonly IUserManager _userManager;
 		private readonly IServiceProvider _serviceProvider;
 		private readonly Task _onNextResult = Task.FromResult(0);
 		private readonly RequestDelegate _onNext;
@@ -69,14 +68,6 @@ namespace starskytest.Middleware
 				Interlocked.Increment(ref _requestId);
 				return _onNextResult;
 			};
-            
-			// InMemory
-			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase("123456789");
-			var options = builder.Options;
-			var context2 = new ApplicationDbContext(options);
-			_userManager = new UserManager(context2,new AppSettings(), new FakeIWebLogger());
-            
 		}
 
 		[TestMethod]
@@ -87,7 +78,7 @@ namespace starskytest.Middleware
 			var iUserManager = _serviceProvider.GetRequiredService<IUserManager>();
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             
-			var userId = "TestUserA";
+			const string userId = "TestUserA";
 			var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
             

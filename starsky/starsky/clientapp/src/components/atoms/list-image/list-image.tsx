@@ -111,7 +111,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       data-test="list-image-img-parent-div"
     >
       {intersected ? (
-        <img
+        <img /* NOSONAR(S6847) */
           src={src}
           alt={alt}
           data-test="list-image-img"

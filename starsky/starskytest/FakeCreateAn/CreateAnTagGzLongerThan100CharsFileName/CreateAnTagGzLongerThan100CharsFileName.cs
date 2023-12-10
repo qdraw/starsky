@@ -22,7 +22,7 @@ namespace starskytest.FakeCreateAn.CreateAnTagGzLongerThan100CharsFileName
 
 		private static byte[] StreamToBytes(string path)
 		{
-			using var input = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(path);
+			var input = new StorageHostFullPathFilesystem(new FakeIWebLogger()).ReadStream(path);
 			using var ms = new MemoryStream();
 			input.CopyTo(ms);
 			input.Dispose();

@@ -241,7 +241,7 @@ public class DatabaseThumbnailGenerationServiceTest
 		);
 
 		var result = (await databaseThumbnailGenerationService.FilterAndWorkThumbnailGeneration(
-			new DateTime(2000,01,01),  
+			new DateTime(2000,01,01,01,01,01, kind: DateTimeKind.Local),  
 			new List<ThumbnailItem>
 			{
 				new ThumbnailItem("23478928939438234",null,null,null,null)
@@ -275,7 +275,7 @@ public class DatabaseThumbnailGenerationServiceTest
 		);
 		
 		var result = (await databaseThumbnailGenerationService.FilterAndWorkThumbnailGeneration(
-			new DateTime(3000,01,01), 
+			new DateTime(3000,01,01,01,01,01, kind: DateTimeKind.Local), 
 			new List<ThumbnailItem>
 			{
 				new ThumbnailItem("2437998234",null,null,null,null)

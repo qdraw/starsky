@@ -4,14 +4,14 @@ export class OnWheelMouseAction {
   private image: ImageObject;
   private setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
   public position: PositionObject;
-  private containerRef: React.RefObject<HTMLDivElement>;
+  private containerRef: React.RefObject<HTMLButtonElement>;
   private onWheelCallback: (z: number) => void;
 
   constructor(
     image: ImageObject,
     setPosition: React.Dispatch<React.SetStateAction<PositionObject>>,
     position: PositionObject,
-    containerRef: React.RefObject<HTMLDivElement>,
+    containerRef: React.RefObject<HTMLButtonElement>,
     onWheelCallback: (z: number) => void
   ) {
     this.image = image;
@@ -24,7 +24,7 @@ export class OnWheelMouseAction {
     this.onWheel = this.onWheel.bind(this);
   }
 
-  public onWheel(e: React.WheelEvent<HTMLDivElement>) {
+  public onWheel(e: React.WheelEvent<HTMLButtonElement>) {
     if (!e.deltaY) return;
     this.zoom(e.deltaY, e.clientX);
   }

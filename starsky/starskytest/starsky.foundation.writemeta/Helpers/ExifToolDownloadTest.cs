@@ -132,7 +132,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes.ToArray())},
-				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes.ToArray())},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 
@@ -194,7 +194,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes.ToArray())},
-				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes.ToArray())},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 			var appSettings = await CreateTempFolderWithExifTool();
@@ -227,7 +227,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes.ToArray())},
-				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes.ToArray())},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 			await CreateTempFolderWithExifTool("starsky-tmp-dependencies-4835793");
@@ -416,7 +416,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
-				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)}
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes.ToArray())}
 			});
 
 			_appSettings.Verbose = true;
@@ -430,7 +430,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var fakeIHttpProvider2 = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
 				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
-				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)}
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes.ToArray())}
 			});
 			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory, new FakeIWebLogger());
 			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings, new FakeIWebLogger() ).StartDownloadForUnix();
@@ -444,7 +444,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/exiftool.exe"},
-				new List<byte[]> {CreateAnExifToolTarGz.Bytes});
+				new List<byte[]> {CreateAnExifToolTarGz.Bytes.ToArray()});
 			
 			var result2 = new ExifToolDownload(null,_appSettings, new FakeIWebLogger(), fakeIStorage)
 				.CheckSha1("/exiftool.exe", new List<string>{CreateAnExifToolTarGz.Sha1});
@@ -456,7 +456,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/exiftool.exe"},
-				new List<byte[]> {CreateAnExifToolTarGz.Bytes});
+				new List<byte[]> {CreateAnExifToolTarGz.Bytes.ToArray()});
 			
 			var result2 = new ExifToolDownload(null,_appSettings, new FakeIWebLogger(), fakeIStorage)
 				.CheckSha1("/exiftool.exe", new List<string>{"random_value"});

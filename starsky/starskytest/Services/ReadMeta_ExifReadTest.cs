@@ -441,7 +441,7 @@ namespace starskytest.Services
 			
 			var newImage = CreateAnQuickTimeMp4.Bytes;
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
-				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
+				new List<string> {"/test.mp4"}, new List<byte[]> {newImage.ToArray()});
 
 			var item = new ReadMetaExif(fakeStorage, new AppSettings{VideoUseLocalTime = new List<CameraMakeModel>
 			{
@@ -463,7 +463,7 @@ namespace starskytest.Services
 			
 			var newImage = CreateAnQuickTimeMp4.Bytes;
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
-				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
+				new List<string> {"/test.mp4"}, new List<byte[]> {newImage.ToArray()});
 
 			var item = new ReadMetaExif(fakeStorage, new AppSettings{VideoUseLocalTime = new List<CameraMakeModel>
 			{

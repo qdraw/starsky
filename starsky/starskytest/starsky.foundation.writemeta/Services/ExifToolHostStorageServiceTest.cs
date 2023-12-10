@@ -73,7 +73,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			}
 
 			var hostFileSystemStorage = new StorageHostFullPathFilesystem();
-			var memoryStream = new MemoryStream(CreateAnExifToolTarGz.Bytes);
+			var memoryStream = new MemoryStream(CreateAnExifToolTarGz.Bytes.ToArray());
 			var outputPath =
 				Path.Combine(_createAnImage.BasePath, "tmp-3426782387");
 			if ( hostFileSystemStorage.ExistFolder(outputPath) )
