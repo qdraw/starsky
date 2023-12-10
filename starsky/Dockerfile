@@ -111,9 +111,14 @@ RUN if [ "$TEST" = "true" ]; then \
     fi
     
 # build runtime image (multiarch)
-# docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:3.1
+# docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:6.0
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS release
 WORKDIR /app
+
+# for debugging
+RUN apt-get update
+RUN apt-get install -y curl
+RUN apt-get clean
 
 # Create a group and user
 RUN groupadd --gid 1000 app \
