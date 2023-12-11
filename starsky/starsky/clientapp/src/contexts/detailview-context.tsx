@@ -63,6 +63,80 @@ export type IDetailViewContext = {
   state: IDetailView;
   dispatch: React.Dispatch<DetailViewAction>;
 };
+
+function updateReducer(
+  action: {
+    type: "update";
+    filePath: string;
+    tags?: string | undefined;
+    colorclass?: number | undefined;
+    description?: string | undefined;
+    title?: string | undefined;
+    fileHash?: string | undefined;
+    locationState?: string | undefined;
+    status?: IExifStatus;
+    orientation?: Orientation;
+    lastEdited?: string;
+    dateTime?: string;
+    latitude?: number;
+    longitude?: number;
+    locationCountry?: string;
+    locationCountryCode?: string;
+    locationCity?: string;
+  },
+  state: IDetailView
+) {
+  const {
+    filePath,
+    tags,
+    description,
+    title,
+    status,
+    colorclass,
+    fileHash,
+    orientation,
+    lastEdited,
+    dateTime,
+    latitude,
+    longitude,
+    locationCity,
+    locationCountry,
+    locationCountryCode,
+    locationState
+  } = action;
+
+  if (filePath !== state.fileIndexItem.filePath) {
+    console.log(
+      `Error: filePath is not the same ${filePath} != ${state.fileIndexItem.filePath}`
+    );
+    return state;
+  }
+
+  if (tags !== undefined) state.fileIndexItem.tags = tags;
+  if (description !== undefined) state.fileIndexItem.description = description;
+  if (title !== undefined) state.fileIndexItem.title = title;
+  if (colorclass !== undefined && colorclass !== -1)
+    state.fileIndexItem.colorClass = colorclass;
+  if (status) state.fileIndexItem.status = status;
+  if (fileHash) state.fileIndexItem.fileHash = fileHash;
+  if (orientation) state.fileIndexItem.orientation = orientation;
+  if (lastEdited) state.fileIndexItem.lastEdited = lastEdited;
+  if (dateTime) state.fileIndexItem.dateTime = dateTime;
+  if (latitude) state.fileIndexItem.latitude = latitude;
+  if (longitude) state.fileIndexItem.longitude = longitude;
+  if (locationCity) state.fileIndexItem.locationCity = locationCity;
+  if (locationCountry) {
+    state.fileIndexItem.locationCountry = locationCountry;
+  }
+  if (locationCountryCode) {
+    state.fileIndexItem.locationCountryCode = locationCountryCode;
+  }
+  if (locationState) state.fileIndexItem.locationState = locationState;
+
+  // Need to update otherwise other events are not triggered
+  return updateCache({ ...state, lastUpdated: new Date() });
+}
+
 export function detailviewReducer(
   state: IDetailView,
   action: DetailViewAction
@@ -81,56 +155,7 @@ export function detailviewReducer(
       // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "update":
-      const {
-        filePath,
-        tags,
-        description,
-        title,
-        status,
-        colorclass,
-        fileHash,
-        orientation,
-        lastEdited,
-        dateTime,
-        latitude,
-        longitude,
-        locationCity,
-        locationCountry,
-        locationCountryCode,
-        locationState
-      } = action;
-
-      if (filePath !== state.fileIndexItem.filePath) {
-        console.log(
-          `Error: filePath is not the same ${filePath} != ${state.fileIndexItem.filePath}`
-        );
-        return state;
-      }
-
-      if (tags !== undefined) state.fileIndexItem.tags = tags;
-      if (description !== undefined)
-        state.fileIndexItem.description = description;
-      if (title !== undefined) state.fileIndexItem.title = title;
-      if (colorclass !== undefined && colorclass !== -1)
-        state.fileIndexItem.colorClass = colorclass;
-      if (status) state.fileIndexItem.status = status;
-      if (fileHash) state.fileIndexItem.fileHash = fileHash;
-      if (orientation) state.fileIndexItem.orientation = orientation;
-      if (lastEdited) state.fileIndexItem.lastEdited = lastEdited;
-      if (dateTime) state.fileIndexItem.dateTime = dateTime;
-      if (latitude) state.fileIndexItem.latitude = latitude;
-      if (longitude) state.fileIndexItem.longitude = longitude;
-      if (locationCity) state.fileIndexItem.locationCity = locationCity;
-      if (locationCountry) {
-        state.fileIndexItem.locationCountry = locationCountry;
-      }
-      if (locationCountryCode) {
-        state.fileIndexItem.locationCountryCode = locationCountryCode;
-      }
-      if (locationState) state.fileIndexItem.locationState = locationState;
-
-      // Need to update otherwise other events are not triggered
-      return updateCache({ ...state, lastUpdated: new Date() });
+      return updateReducer(action, state);
     case "reset":
       // this is triggered a lot when loading a page
       return action.payload;

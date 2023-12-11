@@ -107,6 +107,34 @@ function updateArchiveReducerTagsDescriptionTitleSet(
   if (update.title) state.fileIndexItems[index].title = update.title;
 }
 
+function updateArchiveReducerHelper(
+  action: {
+    type: "update";
+    tags?: string | undefined;
+    colorclass?: number | undefined;
+    description?: string | undefined;
+    title?: string | undefined;
+    append?: boolean | undefined;
+    select: string[];
+    fileHash?: string | undefined;
+  },
+  state: IArchiveProps
+) {
+  const { select, tags, description, title, append, colorclass, fileHash } =
+    action;
+  const update = {
+    select,
+    tags,
+    description,
+    title,
+    append,
+    colorclass,
+    fileHash
+  };
+
+  return updateArchiveReducer(state, update);
+}
+
 function updateArchiveReducer(
   state: IArchiveProps,
   update: IUpdateArchiveReducer
@@ -252,6 +280,58 @@ function filterDeletedItems(
   return fileIndexItems;
 }
 
+function removeReducer(
+  action: {
+    type: "remove";
+    toRemoveFileList: string[];
+  },
+  state: IArchiveProps
+) {
+  // files == subpath style not only the name (/dir/file.jpg)
+  const { toRemoveFileList } = action;
+
+  let deletedFilesCount = 0;
+  const afterFileIndexItems: IFileIndexItem[] = [];
+
+  state.fileIndexItems.forEach((item) => {
+    if (toRemoveFileList.indexOf(item.filePath) === -1) {
+      afterFileIndexItems.push(item);
+    } else {
+      deletedFilesCount++;
+    }
+  });
+
+  // to update the total results
+  const collectionsCount = state.collectionsCount - deletedFilesCount;
+
+  const newState = {
+    ...state,
+    fileIndexItems: afterFileIndexItems,
+    collectionsCount,
+    lastUpdated: new Date()
+  };
+
+  // when you remove the last item of the directory
+  if (newState.fileIndexItems.length === 0) {
+    newState.colorClassUsage = [];
+  }
+  return updateCache(newState);
+}
+
+function forceResetReducer(action: {
+  type: "force-reset";
+  payload: IArchiveProps;
+}) {
+  // also update the cache
+  const forceResetUpdated = {
+    ...action.payload,
+    fileIndexItems: sorter(
+      new ArrayHelper().UniqueResults(action.payload.fileIndexItems, "filePath")
+    )
+  };
+  return updateCache(forceResetUpdated);
+}
+
 export function archiveReducer(state: State, action: ArchiveAction): State {
   switch (action.type) {
     case "remove-folder":
@@ -263,62 +343,13 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         fileIndexItems: []
       });
     case "remove":
-      // files == subpath style not only the name (/dir/file.jpg)
-      const { toRemoveFileList } = action;
-
-      let deletedFilesCount = 0;
-      const afterFileIndexItems: IFileIndexItem[] = [];
-
-      state.fileIndexItems.forEach((item) => {
-        if (toRemoveFileList.indexOf(item.filePath) === -1) {
-          afterFileIndexItems.push(item);
-        } else {
-          deletedFilesCount++;
-        }
-      });
-
-      // to update the total results
-      const collectionsCount = state.collectionsCount - deletedFilesCount;
-
-      const newState = {
-        ...state,
-        fileIndexItems: afterFileIndexItems,
-        collectionsCount,
-        lastUpdated: new Date()
-      };
-
-      // when you remove the last item of the directory
-      if (newState.fileIndexItems.length === 0) {
-        newState.colorClassUsage = [];
-      }
-      return updateCache(newState);
+      return removeReducer(action, state);
     case "update":
-      const { select, tags, description, title, append, colorclass, fileHash } =
-        action;
-      const update = {
-        select,
-        tags,
-        description,
-        title,
-        append,
-        colorclass,
-        fileHash
-      };
-      return updateArchiveReducer(state, update);
+      return updateArchiveReducerHelper(action, state);
     case "set":
       return setArchiveReducer(action.payload);
     case "force-reset":
-      // also update the cache
-      const forceResetUpdated = {
-        ...action.payload,
-        fileIndexItems: sorter(
-          new ArrayHelper().UniqueResults(
-            action.payload.fileIndexItems,
-            "filePath"
-          )
-        )
-      };
-      return updateCache(forceResetUpdated);
+      return forceResetReducer(action);
     case "rename-folder":
       return updateCache({ ...state, subPath: action.path });
     case "add":

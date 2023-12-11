@@ -160,7 +160,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
                   : "btn colorclass colorclass--" + item
               }
             >
-              <label />
+              <span className="label" />
               <span>{colorContent[item]}</span>{" "}
             </Link>
           ) : (

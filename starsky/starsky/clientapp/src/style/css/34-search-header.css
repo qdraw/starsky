@@ -78,7 +78,3 @@
   background-color: #607d8b;
 }
 
-/* this is the search bar, and in dark mode the color is different */
-.search-header .menu-item:first-child {
-  background-color: transparent;
-}
