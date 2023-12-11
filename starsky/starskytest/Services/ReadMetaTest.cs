@@ -232,7 +232,7 @@ namespace starskytest.Services
 				new List<string> { "/test.dng", "/test.xmp" }, new List<byte[]>
 				{
 					CreateAnImage.Bytes.ToArray(),
-					CreateAnXmp.Bytes
+					CreateAnXmp.Bytes.ToArray()
 				});
 			var readMeta = new ReadMeta(storage, new AppSettings(), null!, new FakeIWebLogger());
 	    

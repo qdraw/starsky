@@ -56,7 +56,7 @@ public class FakeIUserManger : IUserManager
 	public Task<ValidateResult> ValidateAsync(string credentialTypeCode, string identifier, string secret)
 	{
 		var validateResult = new ValidateResult();
-		var result = _userOverviewModel.Users.FirstOrDefault(p => p.Credentials?.FirstOrDefault()?.Identifier == identifier);
+		var result = _userOverviewModel.Users.Find(p => p.Credentials?.FirstOrDefault()?.Identifier == identifier);
 		if ( result?.Credentials?.FirstOrDefault()?.Secret == secret )
 		{
 			validateResult.Success = true;

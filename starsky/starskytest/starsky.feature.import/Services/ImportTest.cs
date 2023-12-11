@@ -441,7 +441,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.dng","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query,_console, 
@@ -468,7 +468,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.dng","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query,
@@ -499,7 +499,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.dng","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), 
 				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),query,
@@ -986,7 +986,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.dng","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			var appSettings = new AppSettings();
 			var importService = new Import(new FakeSelectorStorage(storage), 
 				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
@@ -1005,7 +1005,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			var appSettings = new AppSettings();
 			var importService = new Import(new FakeSelectorStorage(storage), 
 				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
@@ -1024,7 +1024,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 
 			var logger = new FakeIWebLogger();
 			var appSettings = new AppSettings();
@@ -1044,7 +1044,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 
 			var logger = new FakeIWebLogger();
 			var appSettings = new AppSettings{Verbose = true};
@@ -1069,7 +1069,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes}, new List<DateTime>{DateTime.Now,DateTime.Now});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()}, new List<DateTime>{DateTime.Now,DateTime.Now});
 			var appSettings = new AppSettings{Verbose = true};
 			var logger = new FakeIWebLogger();
 
@@ -1093,7 +1093,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes}, new List<DateTime>{DateTime.Now,DateTime.Now});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()}, new List<DateTime>{DateTime.Now,DateTime.Now});
 			var appSettings = new AppSettings{Verbose = true};
 			var logger = new FakeIWebLogger();
 
@@ -1153,7 +1153,7 @@ namespace starskytest.starsky.feature.import.Services
 
 			Assert.AreEqual(DefaultPath(),readOnlyFileSystems[0].Item1);
 			var testItem = importIndexItems.FirstOrDefault(p =>
-					p.SourceFullFilePath == "/test.jpg");
+				p.SourceFullFilePath == "/test.jpg");
 			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
 
 		}
@@ -1198,7 +1198,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes}, new List<DateTime>{DateTime.Now,DateTime.Now});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()}, new List<DateTime>{DateTime.Now,DateTime.Now});
 			var appSettings = new AppSettings{Verbose = true};
 			var logger = new FakeIWebLogger();
 
