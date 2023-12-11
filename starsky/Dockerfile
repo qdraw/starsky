@@ -114,11 +114,16 @@ RUN if [ "$TEST" = "true" ]; then \
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:6.0
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS release
 WORKDIR /app
+ARG TOOLS=false
 
-# for debugging
-RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get clean
+# # for debugging
+RUN if [ "$TOOLS" = "true" ]; then \
+    apt-get update ;\
+    apt-get install --no-install-recommends -y curl ;\
+    apt-get clean ;\
+else \
+    echo "no tools for debug" ;\
+fi
 
 # Create a group and user
 RUN groupadd --gid 1000 app \

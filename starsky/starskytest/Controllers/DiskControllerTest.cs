@@ -89,7 +89,7 @@ namespace starskytest.Controllers
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 			
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			_query = new Query(_context, new AppSettings(), _scopeFactory, new FakeIWebLogger(), memoryCache);
+			_query = new Query(_context, _appSettings, _scopeFactory, new FakeIWebLogger(), memoryCache);
 		}
 
 		private async Task<FileIndexItem> InsertSearchData()
