@@ -382,13 +382,13 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.AreEqual(ThumbnailNameHelper.AllThumbnailSizes.Length,
 				thumbnailService.InputsRotate.Count);
 			
-			Assert.IsTrue(thumbnailService.InputsRotate.Any(p => p.Item3 == 
+			Assert.IsTrue(thumbnailService.InputsRotate.Exists(p => p.Item3 == 
 				ThumbnailNameHelper.GetSize(ThumbnailSize.Small)));
-			Assert.IsTrue(thumbnailService.InputsRotate.Any(p => p.Item3 == 
+			Assert.IsTrue(thumbnailService.InputsRotate.Exists(p => p.Item3 == 
 				ThumbnailNameHelper.GetSize(ThumbnailSize.TinyMeta)));
-			Assert.IsTrue(thumbnailService.InputsRotate.Any(p => p.Item3 == 
+			Assert.IsTrue(thumbnailService.InputsRotate.Exists(p => p.Item3 == 
 				ThumbnailNameHelper.GetSize(ThumbnailSize.Large)));
-			Assert.IsTrue(thumbnailService.InputsRotate.Any(p => p.Item3 == 
+			Assert.IsTrue(thumbnailService.InputsRotate.Exists(p => p.Item3 == 
 				ThumbnailNameHelper.GetSize(ThumbnailSize.ExtraLarge)));
 		}
 	}

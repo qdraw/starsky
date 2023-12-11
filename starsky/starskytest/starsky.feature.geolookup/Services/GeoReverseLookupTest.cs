@@ -48,7 +48,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			};
 
 						
-			// create a temp folder;
+			// create a temp folder
 			if ( !new StorageHostFullPathFilesystem().ExistFolder(_appSettings.DependenciesFolder) )
 			{
 				new StorageHostFullPathFilesystem().CreateDirectory(_appSettings

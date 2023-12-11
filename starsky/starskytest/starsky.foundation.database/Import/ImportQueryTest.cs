@@ -18,18 +18,12 @@ namespace starskytest.starsky.foundation.database.Import
 	[TestClass]
 	public sealed class ImportQueryTest
 	{
-		private readonly IMemoryCache _memoryCache;
 		private readonly ImportQuery _importQuery;
 		private readonly ApplicationDbContext _dbContext;
 		private readonly IServiceScopeFactory _serviceScope;
 
 		public ImportQueryTest()
 		{
-			var provider = new ServiceCollection()
-				.AddMemoryCache()
-				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
-            
 			_serviceScope = CreateNewScope();
 			var scope = _serviceScope.CreateScope();
 			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -130,7 +124,7 @@ namespace starskytest.starsky.foundation.database.Import
 
 			if ( !historyResult.Any() ) throw new ArgumentNullException("should not be 0");
 			
-			Assert.IsTrue(historyResult.Any(p => p.FileHash == "TEST8"));
+			Assert.IsTrue(historyResult.Exists(p => p.FileHash == "TEST8"));
 		}
 		
 		[TestMethod]

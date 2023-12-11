@@ -127,7 +127,7 @@ namespace starskytest.starsky.feature.import.Services
 				_console, new FakeIMetaExifThumbnailService(), 
 				new FakeIWebLogger(),new FakeIThumbnailQuery());
 			
-			var result = await importService.Importer(new List<string> {"/test.jpg"},
+			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel{
 					Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext"
 				});

@@ -314,9 +314,9 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(ImportStatus.Ok, importIndexItems[2].Status);
 
 			// "/layer0.jpg","/test/layer1.jpg", "/test/test/layer2.jpg" (order is random)
-			Assert.IsTrue(importIndexItems.Any(p => p.SourceFullFilePath == "/layer0.jpg"));
-			Assert.IsTrue(importIndexItems.Any(p => p.SourceFullFilePath == "/test/layer1.jpg"));
-			Assert.IsTrue(importIndexItems.Any(p => p.SourceFullFilePath == "/test/test/layer2.jpg"));
+			Assert.IsTrue(importIndexItems.Exists(p => p.SourceFullFilePath == "/layer0.jpg"));
+			Assert.IsTrue(importIndexItems.Exists(p => p.SourceFullFilePath == "/test/layer1.jpg"));
+			Assert.IsTrue(importIndexItems.Exists(p => p.SourceFullFilePath == "/test/test/layer2.jpg"));
 		}
 		
 		[TestMethod]
@@ -1152,7 +1152,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(2,readOnlyFileSystems.Count);
 
 			Assert.AreEqual(DefaultPath(),readOnlyFileSystems[0].Item1);
-			var testItem = importIndexItems.FirstOrDefault(p =>
+			var testItem = importIndexItems.Find(p =>
 				p.SourceFullFilePath == "/test.jpg");
 			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
 
@@ -1186,7 +1186,7 @@ namespace starskytest.starsky.feature.import.Services
 
 			Assert.AreEqual(1,readOnlyFileSystems.Count);
 			Assert.AreEqual(DefaultPath()+ Path.Combine("test","test"),readOnlyFileSystems[0].Item1);
-			var testItem = importIndexItems.FirstOrDefault(p =>
+			var testItem = importIndexItems.Find(p =>
 				p.SourceFullFilePath == "/test/test/test.jpg");
 			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
 
@@ -1218,7 +1218,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(1,readOnlyFileSystems.Count);
 
 			Assert.AreEqual(DefaultPath(),readOnlyFileSystems[0].Item1);
-			var testItem = importIndexItems.FirstOrDefault(p =>
+			var testItem = importIndexItems.Find(p =>
 				p.SourceFullFilePath == "/not-found.jpg");
 			Assert.AreEqual(ImportStatus.Default,testItem?.Status);
 		}

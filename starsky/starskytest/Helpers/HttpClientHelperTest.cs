@@ -27,7 +27,6 @@ namespace starskytest.Helpers
 			services.AddSingleton<IStorage, FakeIStorage>();
 			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 			var serviceProvider = services.BuildServiceProvider();
-			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
 			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
@@ -145,7 +144,6 @@ namespace starskytest.Helpers
 			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 
 			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 
@@ -253,8 +251,8 @@ namespace starskytest.Helpers
 			await httpClientHelper
 				.PostString("https://qdraw.nl/test", new StringContent(string.Empty),false);
 			
-			Assert.IsFalse(fakeLogger.TrackedInformation.Any(p => p.Item2.Contains("PostString")));
-			Assert.IsFalse(fakeLogger.TrackedInformation.Any(p => p.Item2.Contains("HttpClientHelper")));
+			Assert.IsFalse(fakeLogger.TrackedInformation.Exists(p => p.Item2.Contains("PostString")));
+			Assert.IsFalse(fakeLogger.TrackedInformation.Exists(p => p.Item2.Contains("HttpClientHelper")));
 		}
 		
 		[TestMethod]

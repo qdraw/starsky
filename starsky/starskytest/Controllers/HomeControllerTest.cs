@@ -305,6 +305,7 @@ namespace starskytest.Controllers
 		{
 			// Arrange
 			int p = 0;
+			// difference is trash vs import
 			_controller.Request.Path = "/trash";
 
 			// Act

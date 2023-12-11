@@ -13,12 +13,6 @@ namespace starskytest.starsky.feature.import.Services
 	[TestClass]
 	public sealed class ImportCliTest
 	{
-		private readonly HttpClientHelper _httpClientHelper;
-
-		public ImportCliTest()
-		{
-			_httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), null, new FakeIWebLogger());
-		}
 
 		[TestMethod]
 		public async Task ImporterCli_CheckIfExifToolIsCalled()

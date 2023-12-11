@@ -54,7 +54,8 @@ namespace starskytest.Controllers
 		{
 			var (parsed, parsedDateTime) = NotificationController.ParseDate("2020-04-11T17:55:35.922319Z");
 			Assert.IsTrue(parsed);
-			var expected = new DateTime(2020, 4, 11, 17, 55, 35, 922).ToString(CultureInfo.InvariantCulture);
+			var expected = new DateTime(2020, 4, 11, 17, 
+				55, 35, 922, kind: DateTimeKind.Local).ToString(CultureInfo.InvariantCulture);
 			Assert.AreEqual(expected,parsedDateTime.ToString(CultureInfo.InvariantCulture));
 		}
 		

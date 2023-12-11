@@ -47,7 +47,7 @@ namespace starskytest.starsky.feature.syncbackground.Services
 			Assert.IsNotNull(setting);
 			Assert.AreEqual(DateTime.UtcNow.Day, setting.ToUniversalTime().Day);
 			Assert.AreEqual(DateTime.UtcNow.Hour, setting.ToUniversalTime().Hour);
-			Assert.IsTrue((synchronize as FakeISynchronize)!.Inputs.Any(p => p.Item1 == "/"));
+			Assert.IsTrue((synchronize as FakeISynchronize)!.Inputs.Exists(p => p.Item1 == "/"));
 		}
 	}
 }

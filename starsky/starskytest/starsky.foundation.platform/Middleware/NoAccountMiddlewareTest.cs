@@ -93,7 +93,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			await middleware.Invoke(httpContext);
 
 			var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
-			Assert.IsTrue(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountMiddleware.Identifier)));
+			Assert.IsTrue(userManager?.Users.Exists(p => p.Credentials!.Any(p => p.Identifier == NoAccountMiddleware.Identifier)));
 			
 			Assert.IsTrue(invoked);
 		}
@@ -125,7 +125,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			await middleware.Invoke(httpContext);
 
 			var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
-			Assert.IsTrue(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountMiddleware.Identifier)));
+			Assert.IsTrue(userManager?.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountMiddleware.Identifier)));
 			
 			Assert.IsTrue(invoked);
 		}
