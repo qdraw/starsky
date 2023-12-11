@@ -113,7 +113,7 @@ namespace starskytest.FakeMocks
 			bool enableCollections = true, bool hideDeleted = true, 
 			SortType? sort = SortType.FileName)
 		{
-			if ( _content.All(p => p.FilePath != singleItemDbPath) )
+			if ( _content.TrueForAll(p => p.FilePath != singleItemDbPath) )
 			{
 				return null;
 			}
@@ -234,7 +234,7 @@ namespace starskytest.FakeMocks
 		public bool RemoveCacheParentItem(string directoryName)
 		{
 			if ( _fakeCachedContent == null ) return false;
-			var item = _fakeCachedContent.FirstOrDefault(p =>
+			var item = _fakeCachedContent.Find(p =>
 				p.ParentDirectory == directoryName);
 			if ( item == null ) return false;
 			_fakeCachedContent.Remove(item);
