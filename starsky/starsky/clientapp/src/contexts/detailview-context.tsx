@@ -68,12 +68,11 @@ function updateReducer(
   action: {
     type: "update";
     filePath: string;
-    tags?: string | undefined;
-    colorclass?: number | undefined;
-    description?: string | undefined;
-    title?: string | undefined;
-    fileHash?: string | undefined;
-    locationState?: string | undefined;
+    tags?: string;
+    colorclass?: number;
+    description?: string;
+    title?: string;
+    fileHash?: string;
     status?: IExifStatus;
     orientation?: Orientation;
     lastEdited?: string;
@@ -83,6 +82,7 @@ function updateReducer(
     locationCountry?: string;
     locationCountryCode?: string;
     locationCity?: string;
+    locationState?: string;
   },
   state: IDetailView
 ) {
@@ -122,6 +122,29 @@ function updateReducer(
   if (orientation) state.fileIndexItem.orientation = orientation;
   if (lastEdited) state.fileIndexItem.lastEdited = lastEdited;
   if (dateTime) state.fileIndexItem.dateTime = dateTime;
+  updateReducerSetLocationTypes(
+    state,
+    latitude,
+    longitude,
+    locationCity,
+    locationState,
+    locationCountry,
+    locationCountryCode
+  );
+
+  // Need to update otherwise other events are not triggered
+  return updateCache({ ...state, lastUpdated: new Date() });
+}
+
+function updateReducerSetLocationTypes(
+  state: IDetailView,
+  latitude?: number,
+  longitude?: number,
+  locationCity?: string,
+  locationState?: string,
+  locationCountry?: string,
+  locationCountryCode?: string
+) {
   if (latitude) state.fileIndexItem.latitude = latitude;
   if (longitude) state.fileIndexItem.longitude = longitude;
   if (locationCity) state.fileIndexItem.locationCity = locationCity;
@@ -132,9 +155,6 @@ function updateReducer(
     state.fileIndexItem.locationCountryCode = locationCountryCode;
   }
   if (locationState) state.fileIndexItem.locationState = locationState;
-
-  // Need to update otherwise other events are not triggered
-  return updateCache({ ...state, lastUpdated: new Date() });
 }
 
 export function detailviewReducer(

@@ -110,13 +110,13 @@ function updateArchiveReducerTagsDescriptionTitleSet(
 function updateArchiveReducerHelper(
   action: {
     type: "update";
-    tags?: string | undefined;
-    colorclass?: number | undefined;
-    description?: string | undefined;
-    title?: string | undefined;
-    append?: boolean | undefined;
+    tags?: string;
+    colorclass?: number;
+    description?: string;
+    title?: string;
+    append?: boolean;
     select: string[];
-    fileHash?: string | undefined;
+    fileHash?: string;
   },
   state: IArchiveProps
 ) {
