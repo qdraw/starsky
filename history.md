@@ -37,7 +37,12 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.5.13 _(Unreleased)_ - 2023-12-?? {#v0.5.13}
 
-- [x] (Fixed) _Front-end_ Accessibility focus for prev next in detailView (PR #1291)
+- [x] (Changed) _Front-end_ Accessibility focus for prev next in detailView (PR #1291)
+- [x] (Changed) _Front-end_ Move from div to button Accessibility (PR #1294)
+- [x] (Changed) _Front-end_ Front-end version updates (PR #1295, #1296, #1297, #1298, #1299, #1300, #1301, #1303)
+- [x] (Changed) _Front-end_ Code style style issues (PR #1304, #1307)
+- [x] (Fixed) _Front-end_ long file names in multi select (Issue #1305 PR #1307)
+- [x] (Fixed) _Back-end_ Replace tags / info etc. with OkAndSame status (Issue #1175 PR #1308)
 
 ## version 0.5.12 - 2023-11-17 {#v0.5.12}
 
