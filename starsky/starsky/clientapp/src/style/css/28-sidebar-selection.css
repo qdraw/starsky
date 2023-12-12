@@ -15,8 +15,9 @@
 
 .sidebar-selection li span {
   line-height: 36px;
-  display: inline-block;
+  display: inline;
   vertical-align: middle;
+  word-break: break-all;
 }
 
 .sidebar-selection li:nth-child(2n) {
