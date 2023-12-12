@@ -83,14 +83,14 @@ namespace starskytest.FakeMocks
 			return _outputSubPathFolders.Contains(path);
 		}
 
-		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "")
+		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
 		{
-			if ( ExistFile(subPath) )
+			if ( ExistFile(path) )
 			{
 				return FolderOrFileModel.FolderOrFileTypeList.File;
 			}
 
-			if ( ExistFolder(subPath) )
+			if ( ExistFolder(path) )
 			{
 				return FolderOrFileModel.FolderOrFileTypeList.Folder;
 			}
@@ -98,14 +98,20 @@ namespace starskytest.FakeMocks
 			return FolderOrFileModel.FolderOrFileTypeList.Deleted;
 		}
 
-		public void FolderMove(string inputSubPath, string toSubPath)
+		/// <summary>
+		/// Mock of Move folder
+		/// </summary>
+		/// <param name="fromPath">subPath from location</param>
+		/// <param name="toPath">to SubPath location</param>
+		/// <exception cref="ArgumentException">not existing</exception>
+		public void FolderMove(string fromPath, string toPath)
 		{
-			var indexOfFolders = _outputSubPathFolders.IndexOf(inputSubPath);
+			var indexOfFolders = _outputSubPathFolders.IndexOf(fromPath);
 			if ( indexOfFolders == -1 )
 			{
-				throw new ArgumentException($"inputSubPath:{inputSubPath} - toSubPath:{toSubPath} indexOfFolders---1");
+				throw new ArgumentException($"inputSubPath:{fromPath} - toSubPath:{toPath} indexOfFolders---1");
 			}
-			_outputSubPathFolders[indexOfFolders] = toSubPath;
+			_outputSubPathFolders[indexOfFolders] = toPath;
 		}
 
 		public void FileMove(string inputSubPath, string toSubPath)
