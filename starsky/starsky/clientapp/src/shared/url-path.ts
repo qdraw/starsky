@@ -8,6 +8,12 @@ export class URLPath {
     return filePath.split("/")[filePath.split("/").length - 1];
   }
 
+  private parsePagination(key: [string, string], urlObject: IUrl) {
+    const pagination = Number(key[1]);
+    if (isNaN(pagination)) return;
+    urlObject.p = pagination;
+  }
+
   public StringToIUrl(locationHash: string): IUrl {
     const hash = this.RemovePrefixUrl(locationHash);
     const params = new URLSearchParams(hash).entries();
@@ -39,10 +45,7 @@ export class URLPath {
           urlObject.t = key[1];
           break;
         case "p": // used for search pagination
-          // eslint-disable-next-line no-case-declarations
-          const pagination = Number(key[1]);
-          if (isNaN(pagination)) continue;
-          urlObject.p = pagination;
+          this.parsePagination(key, urlObject);
           break;
         case "select".toLowerCase():
           urlObject.select = this.getStringArrayFromCommaSeparatedString(

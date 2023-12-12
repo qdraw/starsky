@@ -40,7 +40,6 @@ namespace starskytest.Controllers
 	public sealed class MetaReplaceControllerTest
 	{
 		private readonly IQuery _query;
-		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
@@ -99,9 +98,6 @@ namespace starskytest.Controllers
 			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 	        
 			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
-
-			// inject fake exifTool
-			_exifTool = new FakeExifTool(_iStorage,_appSettings);
 		}
         
 		private async Task InsertSearchData(bool delete = false)

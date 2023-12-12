@@ -7,6 +7,7 @@
     opacity: 0;
 }
 
+.switch-field .label,
 .switch-field label {
   border: 1px solid rgba(0, 0, 0, 0.2);
   display: inline-block;
@@ -23,17 +24,19 @@
 
 /* switches opposite colors */
 @media (prefers-color-scheme: dark) {
+  .switch-field .label,
   .switch-field label {
     background-color: #263238;
     color: #fff;
   }
 }
 
-
+.switch-field .label:hover
 .switch-field label:hover {
 	cursor: pointer;
 }
 
+.switch-field input:checked + .label,
 .switch-field input:checked + label {
   background-color: #263238;
 	color: #fff;
@@ -43,6 +46,7 @@
 /* white is selected instead of black */
 /* switches opposite colors */
 @media (prefers-color-scheme: dark) {
+  .switch-field input:checked + .label,
   .switch-field input:checked + label {
     background-color: #fff;
     color: #263238;
@@ -50,19 +54,23 @@
 }
 
 
+.switch-field.disabled input:checked + .label,
 .switch-field.disabled input:checked + label{
   background-color: #ECEFF1;
   color: #263238;
 }
 
+.switch-field.disabled .label,
 .switch-field.disabled label {
   cursor: not-allowed;
 }
 
+.switch-field .label:first-of-type,
 .switch-field label:first-of-type {
   border-radius: 16px 0 0 16px;
 }
 
+.switch-field .label:last-of-type,
 .switch-field label:last-of-type {
   border-radius: 0 16px 16px 0;
 }

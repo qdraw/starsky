@@ -64,7 +64,7 @@ namespace starskytest.Controllers
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray(),
-						FakeCreateAn.CreateAnXmp.Bytes, Array.Empty<byte>()});
+						FakeCreateAn.CreateAnXmp.Bytes.ToArray(), Array.Empty<byte>()});
 			return storage;
 		}
 

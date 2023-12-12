@@ -17,11 +17,9 @@ namespace starskytest.Controllers
 	public sealed class MetaInfoControllerTest
 	{
 		private readonly IMetaInfo _metaInfo;
-		private readonly FakeIStorage _iStorage;
 
 		public MetaInfoControllerTest()
 		{
-			_iStorage = new FakeIStorage();
 			_metaInfo = new MetaInfo(new FakeIQuery(
 					new List<FileIndexItem>{new FileIndexItem("/test.jpg"), new FileIndexItem("/readonly/image.jpg"),
 						new FileIndexItem("/source_missing.jpg")}), 

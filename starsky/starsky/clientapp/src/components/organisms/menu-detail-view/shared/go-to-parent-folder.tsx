@@ -1,10 +1,9 @@
-import useGlobalSettings from "../../../../hooks/use-global-settings";
 import { IUseLocation } from "../../../../hooks/use-location/interfaces/IUseLocation";
 import { IDetailView } from "../../../../interfaces/IDetailView";
 import { INavigateState } from "../../../../interfaces/INavigateState";
 import localization from "../../../../localization/localization.json";
-import { Language } from "../../../../shared/language";
 import { UrlQuery } from "../../../../shared/url-query";
+import MenuOption from "../../../atoms/menu-option/menu-option";
 
 export interface IGoToParentFolderProps {
   isSearchQuery: boolean;
@@ -15,12 +14,6 @@ export interface IGoToParentFolderProps {
 export const GoToParentFolder: React.FunctionComponent<
   IGoToParentFolderProps
 > = ({ isSearchQuery, history, state }) => {
-  const settings = useGlobalSettings();
-  const language = new Language(settings.language);
-  const MessageGoToParentFolder = language.key(
-    localization.MessageGoToParentFolder
-  );
-
   function navigateToParentFolder() {
     history.navigate(
       new UrlQuery().updateFilePathHash(
@@ -39,16 +32,12 @@ export const GoToParentFolder: React.FunctionComponent<
   return (
     <>
       {isSearchQuery ? (
-        <li
-          className="menu-option"
-          data-test="go-to-parent-folder"
-          onClick={() => navigateToParentFolder()}
-          onKeyDown={(event) => {
-            event.key === "Enter" && navigateToParentFolder();
-          }}
-        >
-          {MessageGoToParentFolder}
-        </li>
+        <MenuOption
+          isReadOnly={false}
+          onClickKeydown={() => navigateToParentFolder()}
+          testName="go-to-parent-folder"
+          localization={localization.MessageGoToParentFolder}
+        />
       ) : null}
     </>
   );

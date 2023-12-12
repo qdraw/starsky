@@ -136,7 +136,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
 			},logger).OpenConnection();
 			
-			Assert.IsTrue(logger.TrackedExceptions.Any(x=>x.Item2.Contains("MySqlException")));
+			Assert.IsTrue(logger.TrackedExceptions.Exists(x=>x.Item2.Contains("MySqlException")));
 		}
 	
 		[TestMethod]

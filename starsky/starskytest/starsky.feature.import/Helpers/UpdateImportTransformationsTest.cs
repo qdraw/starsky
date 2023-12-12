@@ -23,7 +23,7 @@ namespace starskytest.starsky.feature.import.Helpers
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			var appSettings = new AppSettings();
 			
 			var updateImportTransformations = new UpdateImportTransformations(new FakeIWebLogger(),
@@ -50,7 +50,7 @@ namespace starskytest.starsky.feature.import.Helpers
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			var appSettings = new AppSettings();
 			
 			var updateImportTransformations = new UpdateImportTransformations(new FakeIWebLogger(),
@@ -78,7 +78,7 @@ namespace starskytest.starsky.feature.import.Helpers
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			var appSettings = new AppSettings();
 			
 			var updateImportTransformations = new UpdateImportTransformations(new FakeIWebLogger(),

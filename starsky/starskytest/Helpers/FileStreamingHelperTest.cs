@@ -66,7 +66,6 @@ namespace starskytest.Helpers
 			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 			httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
 
-			var ms = new MemoryStream();
 			await FileStreamingHelper.StreamFile(httpContext.Request,_appSettings, new FakeSelectorStorage(new FakeIStorage()));
 		}
         
@@ -77,7 +76,7 @@ namespace starskytest.Helpers
 			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 			httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
 			httpContext.Request.ContentType = "multipart/form-data";
-			var ms = new MemoryStream();
+
 			await FileStreamingHelper.StreamFile(httpContext.Request,_appSettings,new FakeSelectorStorage(new FakeIStorage()));
 		}
 

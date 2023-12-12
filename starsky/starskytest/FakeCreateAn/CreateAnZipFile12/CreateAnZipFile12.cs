@@ -18,11 +18,12 @@ namespace starskytest.FakeCreateAn.CreateAnZipFile12
 
 		public static readonly ImmutableArray<byte> Bytes = Base64Helper.TryParse(Base64CreateAnZipFile12String).ToImmutableArray();
 		
-		public static readonly Dictionary<string, string> Content = new Dictionary<string, string>
+		public static readonly ImmutableDictionary<string, string> Content =
+			new Dictionary<string, string>
 		{
 			{ "file1.txt", "This is file 1.\n" },
 			{ "file2.txt", "This is file 2.\n" }
-		};
+		}.ToImmutableDictionary();
 	}
 }
 

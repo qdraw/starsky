@@ -59,6 +59,10 @@
   box-shadow: none;
 }
 
+.header .menu-inline-search button {
+  width: 100%;
+}
+
 .header .menu-item {
   list-style: none;
   font-size: 16px;

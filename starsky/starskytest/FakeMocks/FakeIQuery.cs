@@ -243,7 +243,7 @@ namespace starskytest.FakeMocks
 
 		public string? GetSubPathByHash(string fileHash)
 		{
-			return _content.FirstOrDefault(p => p.FileHash == fileHash)?.FilePath;
+			return _content.Find(p => p.FileHash == fileHash)?.FilePath;
 		}
 
 		public Task<string?> GetSubPathByHashAsync(string fileHash)
@@ -309,7 +309,7 @@ namespace starskytest.FakeMocks
 		{
 			_content.Add(fileIndexItem);
 			await Task.Delay(new Random().Next(1, 5));
-			if ( _content.FirstOrDefault(p => 
+			if ( _content.Find(p => 
 				p.FilePath == fileIndexItem.FilePath) != null ) return fileIndexItem;
 			
 			_content.Add(fileIndexItem);
@@ -327,7 +327,7 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
 		{
-			var item = _content.FirstOrDefault(p =>
+			var item = _content.Find(p =>
 				p.FilePath == updateStatusContent.FilePath);
 			if ( item == null ) return updateStatusContent;
 			var index = _content.IndexOf(item);
@@ -348,12 +348,7 @@ namespace starskytest.FakeMocks
 			}
 			return Task.FromResult(updateStatusContentList);
 		}
-
-		public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
-		{
-			throw new NotImplementedException();
-		}
-
+		
 		public RelativeObjects GetNextPrevInFolder(string currentFolder)
 		{
 			return new RelativeObjects();
@@ -401,7 +396,7 @@ namespace starskytest.FakeMocks
 			var toAddList = new List<FileIndexItem>();
 			
 			var indexItems = _content
-				.Where(p => pathListShouldExist.Any(f => f == p.FilePath)).ToList();
+				.Where(p => pathListShouldExist.Exists(f => f == p.FilePath)).ToList();
 
 			// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 			foreach ( var pathShouldExist in pathListShouldExist )

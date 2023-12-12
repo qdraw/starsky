@@ -68,6 +68,12 @@ namespace starskytest.FakeMocks
 		{
 			GC.SuppressFinalize(this);
 			IsDisposed = true;
+			Dispose(true);
+		}
+		
+		protected virtual void Dispose(bool disposing)
+		{
+			IsDisposed = true;
 		}
 	}
 }

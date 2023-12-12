@@ -7,7 +7,7 @@ namespace starskytest.FakeMocks
 {
 	public class FakeReadMeta : IReadMeta
 	{
-		public FileIndexItem ReadExifAndXmpFromFile(string path)
+		public FileIndexItem ReadExifAndXmpFromFile(string subPath)
 		{
 			return new FileIndexItem
 			{
@@ -16,7 +16,7 @@ namespace starskytest.FakeMocks
 			};
 		}
 
-		public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathArray, 
+		public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList, 
 			List<string> fileHashes = null)
 		{
 			var createAnImage = new CreateAnImage();

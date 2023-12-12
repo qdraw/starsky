@@ -593,7 +593,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{filePathRaw, filePathXmp}, new List<byte[]>{
 					CreateAnImageNoExif.Bytes.ToArray(),
-					CreateAnXmp.Bytes}, new List<DateTime>{lastEdited, lastEdited});
+					CreateAnXmp.Bytes.ToArray()}, new List<DateTime>{lastEdited, lastEdited});
 			
 			var (fileHashRaw, _) = await new FileHash(storage).GetHashCodeAsync(filePathRaw);
 
@@ -642,7 +642,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{filePathRaw, filePathXmp}, new List<byte[]>{
 					CreateAnImageNoExif.Bytes.ToArray(),
-					CreateAnXmp.Bytes}, new List<DateTime>{lastEdited, lastEdited});
+					CreateAnXmp.Bytes.ToArray()}, new List<DateTime>{lastEdited, lastEdited});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync(filePathRaw);
 
@@ -781,7 +781,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new List<string>{"/test.dng", "/test.xmp"}, 
 				new List<byte[]>{
 					CreateAnImageNoExif.Bytes.ToArray(),
-					CreateAnXmp.Bytes
+					CreateAnXmp.Bytes.ToArray()
 				});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.dng");

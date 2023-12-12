@@ -382,7 +382,7 @@ namespace starskytest.Controllers
 		{
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
-			httpContext.Request.Body = new MemoryStream(CreateAnXmp.Bytes);
+			httpContext.Request.Body = new MemoryStream(CreateAnXmp.Bytes.ToArray());
 	        
 			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
 			return new ControllerContext(actionContext);

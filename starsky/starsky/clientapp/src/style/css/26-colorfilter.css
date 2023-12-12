@@ -96,7 +96,7 @@
   height: 35px;
 }
 
-.colorclass > div.colorclass label,
+.colorclass > .btn.colorclass .label,
 .colorclass > .btn.colorclass label {
   height: 20px;
   width: 20px;
@@ -109,7 +109,7 @@
   cursor: pointer;
 }
 
-.colorclass > div.colorclass.active label:before,
+.colorclass > .btn.colorclass.active .label:before,
 .colorclass > .btn.colorclass.active label:before {
   content: "";
   display: inline-block;
@@ -131,10 +131,12 @@
   cursor: not-allowed;
 }
 
+.colorclass.colorclass--disabled > .btn.colorclass .label,
 .colorclass.colorclass--disabled > .btn.colorclass label {
   cursor: not-allowed;
 }
 
+.colorclass--select > .btn.colorclass.active .label:before,
 .colorclass--select > .btn.colorclass.active label:before {
   content: "";
   border: 0px;

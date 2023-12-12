@@ -29,14 +29,10 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class GeoControllerTest
 	{
-		private readonly IQuery _query;
-		private readonly IExifTool _exifTool;
-		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
-		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
-		private IMemoryCache _memoryCache;
+		private readonly IMemoryCache _memoryCache;
 
 		public GeoControllerTest()
 		{
@@ -47,10 +43,6 @@ namespace starskytest.Controllers
 
 			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
-			var options = builderDb.Options;
-			var context = new ApplicationDbContext(options);
-			_query = new Query(context, new AppSettings(), null, 
-				new FakeIWebLogger(), _memoryCache);
 			
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
@@ -85,12 +77,7 @@ namespace starskytest.Controllers
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
-			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
-
-			// inject fake exiftool
-			_exifTool = new FakeExifTool(new FakeIStorage(),_appSettings );
-
-			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
+			
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 			// get the background helper
