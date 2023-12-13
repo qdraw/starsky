@@ -1,6 +1,6 @@
 {
   "name": "starsky",
-  "version": "0.5.12",
+  "version": "0.5.13",
   "author": "Dion",
   "description": "Starsky",
   "main": "./dist/main.bundle.js",
