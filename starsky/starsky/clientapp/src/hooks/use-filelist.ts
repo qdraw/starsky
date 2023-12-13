@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
 import {
   IDetailView,
@@ -21,7 +21,7 @@ export interface IFileList {
     abortController: AbortController,
     setPageTypeHelper: (responseObject: any) => void,
     resetPageTypeBeforeLoading: boolean,
-    setPageType: (value: React.SetStateAction<PageType>) => void
+    setPageType: (value: SetStateAction<PageType>) => void
   ) => Promise<void>;
 }
 
@@ -31,7 +31,7 @@ export const fetchContentUseFileList = async (
   abortController: AbortController,
   setPageTypeHelper: (responseObject: any) => void,
   resetPageTypeBeforeLoading: boolean,
-  setPageType: (value: React.SetStateAction<PageType>) => void
+  setPageType: (value: SetStateAction<PageType>) => void
 ): Promise<void> => {
   try {
     // force start with a loading icon
@@ -66,7 +66,7 @@ export const fetchContentUseFileList = async (
   }
 };
 
-const fetchUseFileListContentCache = async (
+export const fetchUseFileListContentCache = async (
   locationLocal: string,
   locationSearch: string,
   abortController: AbortController,
@@ -124,14 +124,12 @@ const useFileList = (
     setPageType(responseObject.pageType);
     switch (responseObject.pageType) {
       case PageType.Archive:
-        const archiveMedia = new CastToInterface().MediaArchive(responseObject);
-        setArchive(archiveMedia.data);
+        setArchive(new CastToInterface().MediaArchive(responseObject).data);
         break;
       case PageType.DetailView:
-        const detailViewMedia = new CastToInterface().MediaDetailView(
-          responseObject
+        setDetailView(
+          new CastToInterface().MediaDetailView(responseObject).data
         );
-        setDetailView(detailViewMedia.data);
         break;
       default:
         break;
@@ -147,7 +145,9 @@ const useFileList = (
       setPageTypeHelper,
       resetPageTypeBeforeLoading,
       setPageType
-    );
+    ).then(() => {
+      // do nothing
+    });
 
     return () => {
       abortController.abort();

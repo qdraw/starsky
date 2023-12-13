@@ -1,6 +1,6 @@
 import { act } from "react-dom/test-utils";
-import { newIArchive } from "../interfaces/IArchive";
-import { PageType } from "../interfaces/IDetailView";
+import { IArchive, newIArchive } from "../interfaces/IArchive";
+import { IRelativeObjects, PageType } from "../interfaces/IDetailView";
 import {
   newIFileIndexItem,
   newIFileIndexItemArray
@@ -11,6 +11,8 @@ import useFileList, {
   IFileList,
   fetchContentUseFileList
 } from "./use-filelist";
+import * as fetchUseFileListContentCache from "./use-filelist";
+import { render } from "@testing-library/react";
 
 describe("UseFileList", () => {
   describe("Archive", () => {
@@ -74,6 +76,57 @@ describe("UseFileList", () => {
 
       expect(hook).toBeCalledTimes(0);
       expect(hook2).toBeCalledTimes(1);
+    });
+
+    const TestComponent = () => {
+      useFileList("mockLocationSearch", true);
+
+      // You can use the result object to interact with the state or render UI components
+
+      return null;
+    };
+
+    xit("should call setArchive when pageType is Archive", async () => {
+      // Mock fetchUseFileListContentCache to resolve immediately
+      const fetchSpy = jest
+        .spyOn(fetchUseFileListContentCache, "fetchUseFileListContentCache")
+        .mockResolvedValue();
+
+      // Render the component
+      let result: any;
+      await act(async () => {
+        result = render(<TestComponent />);
+      });
+
+      // Trigger the setPageTypeHelper with a response object having pageType: Archive
+      const responseObject = {
+        pageType: "Archive",
+        data: {
+          fileIndexItems: [],
+          pageType: "Archive",
+          subPath: "/test",
+          breadcrumb: [],
+          colorClassUsage: [],
+          collections: true,
+          lastEdited: "",
+          lastEditedUtc: "",
+          parentDirectory: "",
+          relativeObjects: {} as IRelativeObjects,
+          colorClassActiveList: [],
+          collectionsCount: 0,
+          isReadOnly: false,
+          dateCache: Date.now()
+        } as IArchive
+      };
+      await act(async () => {
+        result.current.setPageTypeHelper(responseObject);
+      });
+
+      // Assert that setArchive has been called with the expected data
+      expect(result.current).toBe(responseObject.data as unknown as IArchive);
+
+      // Clean up the spies
+      fetchSpy.mockRestore();
     });
 
     it("with detailview content 200", async () => {
@@ -179,6 +232,7 @@ describe("UseFileList", () => {
       const { hook } = mounter();
       const cacheGetSpy = jest
         .spyOn(FileListCache.prototype, "CacheGet")
+        .mockReset()
         .mockImplementationOnce(() => {
           return { ...newIArchive(), dateCache: Date.now() };
         });
@@ -195,12 +249,14 @@ describe("UseFileList", () => {
     });
 
     it("check cache first and then query", async () => {
-      const { hook } = mounter();
       const cacheSetSpy = jest
         .spyOn(FileListCache.prototype, "CacheGet")
+        .mockReset()
         .mockImplementationOnce(() => {
           return null;
         });
+
+      const { hook } = mounter();
 
       setFetchSpy(200, PageType.Archive);
 
