@@ -279,6 +279,15 @@ describe("UseFileList", () => {
       expect(pageHelper).toBeFalsy();
     });
 
+    it("setPageTypeHelper - pageType DifferentType false", () => {
+      const { hook } = mounter("/test.jpg");
+
+      const pageHelper = hook.setPageTypeHelper({
+        pageType: "DifferentType"
+      });
+      expect(pageHelper).toBeFalsy();
+    });
+
     it("setPageTypeHelper - pageType Archive", () => {
       const useStateMock = jest.fn();
       jest.spyOn(React, "useState").mockImplementationOnce(() => {
