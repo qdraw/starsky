@@ -58,7 +58,11 @@ export const WarningBoxNoPhotosFilter: React.FunctionComponent<IWarningBoxNoPhot
     }
 
     // only on the home page there is a link to the preferences page
-    if (pageType !== PageType.Loading && subPath === "/") {
+    if (
+      pageType !== PageType.Loading &&
+      subPath === "/" &&
+      items.length === 0
+    ) {
       warningBox = (
         <a
           className="warning-box"
