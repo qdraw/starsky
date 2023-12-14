@@ -140,7 +140,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
 
           {/* when selected */}
           {select ? (
-            <div
+            <button
               className={"item item--labels"}
               onClick={() => toggleLabels()}
               onKeyDown={(event) => {
@@ -148,7 +148,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               }}
             >
               Labels
-            </div>
+            </button>
           ) : null}
 
           {/* More menu - When in normal state */}
