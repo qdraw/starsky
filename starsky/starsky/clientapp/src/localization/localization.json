@@ -179,13 +179,12 @@
     "en": "Rotation to the right",
     "nl": "Rotatie naar rechts"
   },
-  "MessageItemsOutsideFilter111": {
-    "en": "",
-    "nl": ""
+  "MessageDeleteImmediately": {
+    "en": "Delete immediately",
+    "nl": "Verwijder onmiddellijk"
   },
   "temp1": {
     "en": "",
     "nl": ""
   }
-  
 }

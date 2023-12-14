@@ -1,13 +1,9 @@
 import React, { memo, useEffect } from "react";
-import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
-import localization from "../../../localization/localization.json";
-import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
-import { UrlQuery } from "../../../shared/url-query";
 import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageViewSelectContainer from "../list-image-view-select-container/list-image-view-select-container";
@@ -28,16 +24,6 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   // feature that saves the scroll height
   const history = useLocation();
   const folderRef = React.useRef<HTMLDivElement>(null);
-
-  // Content
-  const settings = useGlobalSettings();
-  const language = new Language(settings.language);
-  const MessageNoPhotosInFolder = language.key(
-    localization.MessageNoPhotosInFolder
-  );
-  const MessageNewUserNoPhotosInFolder = language.key(
-    localization.MessageNewUserNoPhotosInFolder
-  );
 
   useEffect(() => {
     const navigationState = history.location.state as INavigateState;
@@ -81,14 +67,6 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
         items={items}
         colorClassUsage={props.colorClassUsage}
       />
-
-      {props.pageType !== PageType.Loading &&
-      items.length === 0 &&
-      props.subPath === "/" ? (
-        <a className="warning-box" href={new UrlQuery().UrlPreferencesPage()}>
-          {MessageNewUserNoPhotosInFolder} {MessageNoPhotosInFolder}
-        </a>
-      ) : null}
 
       {items.map((item) => (
         <ListImageViewSelectContainer

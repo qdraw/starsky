@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
 import {
   IDetailView,
@@ -19,10 +19,11 @@ export interface IFileList {
     locationLocal: string,
     locationSearch: string,
     abortController: AbortController,
-    setPageTypeHelper: (responseObject: any) => void,
+    setPageTypeHelper: (responseObject: any) => boolean,
     resetPageTypeBeforeLoading: boolean,
-    setPageType: (value: React.SetStateAction<PageType>) => void
+    setPageType: (value: SetStateAction<PageType>) => void
   ) => Promise<void>;
+  setPageTypeHelper: (responseObject: any) => boolean;
 }
 
 export const fetchContentUseFileList = async (
@@ -31,7 +32,7 @@ export const fetchContentUseFileList = async (
   abortController: AbortController,
   setPageTypeHelper: (responseObject: any) => void,
   resetPageTypeBeforeLoading: boolean,
-  setPageType: (value: React.SetStateAction<PageType>) => void
+  setPageType: (value: SetStateAction<PageType>) => void
 ): Promise<void> => {
   try {
     // force start with a loading icon
@@ -66,13 +67,13 @@ export const fetchContentUseFileList = async (
   }
 };
 
-const fetchUseFileListContentCache = async (
+export const fetchUseFileListContentCache = async (
   locationLocal: string,
   locationSearch: string,
   abortController: AbortController,
-  setPageTypeHelper: (responseObject: any) => void,
+  setPageTypeHelper: (responseObject: any) => boolean,
   resetPageTypeBeforeLoading: boolean,
-  setPageType: (value: React.SetStateAction<PageType>) => void
+  setPageType: (value: SetStateAction<PageType>) => void
 ): Promise<void> => {
   const content = new FileListCache().CacheGet(locationSearch);
   if (content) {
@@ -110,32 +111,32 @@ const useFileList = (
   const [parent, setParent] = useState("/");
   const location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
-  const setPageTypeHelper = (responseObject: any) => {
+  const setPageTypeHelper = (responseObject: any): boolean => {
     setParent(new URLPath().getParent(locationSearch));
 
     if (
       !responseObject?.pageType ||
       responseObject?.pageType === PageType.NotFound ||
       responseObject?.pageType === PageType.ApplicationException
-    )
-      return;
+    ) {
+      return false;
+    }
 
     responseObject.sort = new URLPath().StringToIUrl(locationSearch).sort;
     setPageType(responseObject.pageType);
     switch (responseObject.pageType) {
       case PageType.Archive:
-        const archiveMedia = new CastToInterface().MediaArchive(responseObject);
-        setArchive(archiveMedia.data);
-        break;
+        setArchive(new CastToInterface().MediaArchive(responseObject).data);
+        return true;
       case PageType.DetailView:
-        const detailViewMedia = new CastToInterface().MediaDetailView(
-          responseObject
+        setDetailView(
+          new CastToInterface().MediaDetailView(responseObject).data
         );
-        setDetailView(detailViewMedia.data);
-        break;
+        return true;
       default:
         break;
     }
+    return false;
   };
 
   useEffect(() => {
@@ -147,7 +148,9 @@ const useFileList = (
       setPageTypeHelper,
       resetPageTypeBeforeLoading,
       setPageType
-    );
+    ).then(() => {
+      // do nothing
+    });
 
     return () => {
       abortController.abort();
@@ -162,7 +165,8 @@ const useFileList = (
     detailView,
     pageType,
     parent,
-    fetchUseFileListContentCache
+    fetchUseFileListContentCache,
+    setPageTypeHelper
   };
 };
 

@@ -130,10 +130,10 @@
 }
 
 .menu-context .menu-options .menu-option .droparea-file-input:focus + label {
-    background: transparent;
-    border: 3px solid #283593;
-    padding:15px;
-    border-radius: 0px;
+  background: transparent;
+  border: 3px solid #283593;
+  padding: 15px;
+  border-radius: 0px;
 }
 
 @media (prefers-color-scheme: dark) {

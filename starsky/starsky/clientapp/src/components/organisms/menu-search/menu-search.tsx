@@ -121,7 +121,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
 
           {/* the select button with checkbox*/}
           {!select ? (
-            <div
+            <button
               className={
                 state.fileIndexItems.length >= 1
                   ? "item item--select"
@@ -135,7 +135,7 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               }}
             >
               {MessageSelectAction}
-            </div>
+            </button>
           ) : null}
 
           {/* when selected */}
