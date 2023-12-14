@@ -19,10 +19,11 @@ export interface IFileList {
     locationLocal: string,
     locationSearch: string,
     abortController: AbortController,
-    setPageTypeHelper: (responseObject: any) => void,
+    setPageTypeHelper: (responseObject: any) => boolean,
     resetPageTypeBeforeLoading: boolean,
     setPageType: (value: SetStateAction<PageType>) => void
   ) => Promise<void>;
+  setPageTypeHelper: (responseObject: any) => boolean;
 }
 
 export const fetchContentUseFileList = async (
@@ -70,9 +71,9 @@ export const fetchUseFileListContentCache = async (
   locationLocal: string,
   locationSearch: string,
   abortController: AbortController,
-  setPageTypeHelper: (responseObject: any) => void,
+  setPageTypeHelper: (responseObject: any) => boolean,
   resetPageTypeBeforeLoading: boolean,
-  setPageType: (value: React.SetStateAction<PageType>) => void
+  setPageType: (value: SetStateAction<PageType>) => void
 ): Promise<void> => {
   const content = new FileListCache().CacheGet(locationSearch);
   if (content) {
@@ -110,30 +111,32 @@ const useFileList = (
   const [parent, setParent] = useState("/");
   const location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
-  const setPageTypeHelper = (responseObject: any) => {
+  const setPageTypeHelper = (responseObject: any): boolean => {
     setParent(new URLPath().getParent(locationSearch));
 
     if (
       !responseObject?.pageType ||
       responseObject?.pageType === PageType.NotFound ||
       responseObject?.pageType === PageType.ApplicationException
-    )
-      return;
+    ) {
+      return false;
+    }
 
     responseObject.sort = new URLPath().StringToIUrl(locationSearch).sort;
     setPageType(responseObject.pageType);
     switch (responseObject.pageType) {
       case PageType.Archive:
         setArchive(new CastToInterface().MediaArchive(responseObject).data);
-        break;
+        return true;
       case PageType.DetailView:
         setDetailView(
           new CastToInterface().MediaDetailView(responseObject).data
         );
-        break;
+        return true;
       default:
         break;
     }
+    return false;
   };
 
   useEffect(() => {
@@ -162,7 +165,8 @@ const useFileList = (
     detailView,
     pageType,
     parent,
-    fetchUseFileListContentCache
+    fetchUseFileListContentCache,
+    setPageTypeHelper
   };
 };
 
