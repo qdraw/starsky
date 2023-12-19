@@ -19,7 +19,7 @@ namespace helpers
 		/// <summary>
 		/// @see: https://www.nuget.org/packages/dotnet-sonarscanner
 		/// </summary>
-		public const string SonarQubePackageVersion = "5.13.0";
+		public const string SonarQubePackageVersion = "6.0.0";
 		public const string GitCommand = "git";
 		public const string DefaultBranchName = "master";
 
@@ -162,7 +162,7 @@ namespace helpers
 			var sonarArguments = new StringBuilder()
 				.Append($"sonarscanner ")
 				.Append($"begin ")
-				/* .Append($"/d:sonar.verbose=true ") */
+				// .Append($"/d:sonar.verbose=true ") 
 				.Append($"/d:sonar.host.url={url} ")
 				.Append($"/k:{key} ")
 				.Append($"/n:Starsky ")
