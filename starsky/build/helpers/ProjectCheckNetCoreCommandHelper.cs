@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using static SimpleExec.Command;
-using static Build;
+using static build.Build;
 
 namespace helpers
 {

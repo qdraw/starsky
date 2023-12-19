@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -52,7 +53,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 			var result = await service.WriteAndCropFile("test", new OffsetModel
 					{
 						Count = CreateAnImage.Bytes.Length,
-						Data =  CreateAnImage.Bytes,
+						Data =  CreateAnImage.Bytes.ToArray(),
 						Index = 0
 					}, 6, 6,
 				FileIndexItem.Rotation.Horizontal);
@@ -64,9 +65,6 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 		[TestMethod]
 		public void RotateEnumToDegrees_Horizontal()
 		{
-			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
-				new FakeIWebLogger(), new AppSettings());
-
 			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Horizontal);
 			Assert.AreEqual(0,result,0.00001);
 		}
@@ -74,9 +72,6 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 		[TestMethod]
 		public void RotateEnumToDegrees_Default()
 		{
-			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
-				new FakeIWebLogger(), new AppSettings());
-
 			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.DoNotChange);
 			Assert.AreEqual(0,result,0.00001);
 		}
@@ -84,9 +79,6 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 		[TestMethod]
 		public void RotateEnumToDegrees_180()
 		{
-			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
-				new FakeIWebLogger(), new AppSettings());
-
 			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate180);
 			Assert.AreEqual(180,result,0.00001);
 		}
@@ -94,9 +86,6 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 		[TestMethod]
 		public void RotateEnumToDegrees_90()
 		{
-			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
-				new FakeIWebLogger(), new AppSettings());
-
 			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate90Cw);
 			Assert.AreEqual(90,result,0.00001);
 		}
@@ -104,9 +93,6 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 		[TestMethod]
 		public void RotateEnumToDegrees_270()
 		{
-			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
-				new FakeIWebLogger(), new AppSettings());
-
 			var result = WriteMetaThumbnailService.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate270Cw);
 			Assert.AreEqual(270,result,0.00001);
 		}

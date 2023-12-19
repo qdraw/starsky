@@ -1,6 +1,6 @@
-import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocation";
-import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import { URLPath } from "../../../shared/url-path";
+import { IUseLocation } from "../../../../hooks/use-location/interfaces/IUseLocation";
+import { IFileIndexItem } from "../../../../interfaces/IFileIndexItem";
+import { URLPath } from "../../../../shared/url-path";
 
 /**
  * Find the value that is the closest

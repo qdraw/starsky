@@ -35,7 +35,19 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.5.12 _(Unreleased)_ - 2023-10-?? {#v0.5.12}
+## version 0.5.14 _(Unreleased)_ - 2023-12-?? {#v0.5.14}
+- nothing yet
+
+## version 0.5.13 - 2023-12-13 {#v0.5.13}
+
+- [x] (Changed) _Front-end_ Accessibility focus for prev next in detailView (PR #1291)
+- [x] (Changed) _Front-end_ Move from div to button Accessibility (PR #1294)
+- [x] (Changed) _Front-end_ Front-end version updates (PR #1295, #1296, #1297, #1298, #1299, #1300, #1301, #1303)
+- [x] (Changed) _Front-end_ Code style style issues (PR #1304, #1307)
+- [x] (Fixed) _Front-end_ long file names in multi select (Issue #1305 PR #1307)
+- [x] (Fixed) _Back-end_ Replace tags / info etc. with OkAndSame status (Issue #1175 PR #1308)
+
+## version 0.5.12 - 2023-11-17 {#v0.5.12}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.416 (Runtime: 6.0.24) (PR #1266)
 - [x] (Changed) _Front-end_ improve accessibility and code smells (PR #1271, #1274)
@@ -46,6 +58,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Fixed) _Back-end_ MySql timeouts bug (PR #1277, issue #1186)
 - [x] (Fixed) _Back-end_ Thumbnail CLI null reference bug  (PR #1277, issue #1176)
 - [x] (Fixed) _Back-end_ Fix code smells and add tests (PR #1278)
+- [x] (Fixed) _Back-end_ Fix builds for Windows (PR #1284)
+- [x] (Changed) _Back-end_ Upgrade to .NET 6 - SDK 6.0.417 (Runtime: 6.0.25) (PR #1283)
 
 ## version 0.5.11 - 2023-10-13 {#v0.5.11}
 

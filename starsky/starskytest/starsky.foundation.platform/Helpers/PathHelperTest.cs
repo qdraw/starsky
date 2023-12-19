@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
@@ -31,10 +32,10 @@ public class PathHelperTests
 		// Act and Assert
 		var test =
 			PlainTextFileHelper.StreamToString(
-				new MemoryStream(CreateAnImage.Bytes));
+				new MemoryStream(CreateAnImage.Bytes.ToArray()));
 		var test2 =
 			PlainTextFileHelper.StreamToString(
-				new MemoryStream(CreateAnImageA6600.Bytes));
+				new MemoryStream(CreateAnImageA6600.Bytes.ToArray()));
 		PathHelper.GetFileName(test + test2,100);
 	}
 	

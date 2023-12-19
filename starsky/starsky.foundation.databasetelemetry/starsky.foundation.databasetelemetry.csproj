@@ -5,14 +5,14 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{0697d621-f50c-430b-9a41-9a9992d63a2b}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.5.10</Version>
+        <Version>0.5.13</Version>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
-      <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.21.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.24" />
+      <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
+      <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.22.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.25" />
     </ItemGroup>
 
     <ItemGroup>

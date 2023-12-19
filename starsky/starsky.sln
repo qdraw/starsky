@@ -121,13 +121,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build-tools", "Build-tools"
 	ProjectSection(SolutionItems) = preProject
 		..\starsky-tools\build-tools\app-version-update.js = ..\starsky-tools\build-tools\app-version-update.js
 		..\starsky-tools\build-tools\dotnet-sdk-version-update.js = ..\starsky-tools\build-tools\dotnet-sdk-version-update.js
-		..\starsky-tools\build-tools\clientapp-create-react-app-update.js = ..\starsky-tools\build-tools\clientapp-create-react-app-update.js
 		..\starsky-tools\build-tools\documentation-create-docusaurus-update.js = ..\starsky-tools\build-tools\documentation-create-docusaurus-update.js
 		..\starsky-tools\build-tools\project-guid.js = ..\starsky-tools\build-tools\project-guid.js
 		..\starsky-tools\build-tools\release-version-check.js = ..\starsky-tools\build-tools\release-version-check.js
 		..\starsky-tools\build-tools\readme.md = ..\starsky-tools\build-tools\readme.md
 		..\starsky-tools\build-tools\nuget-package-list.js = ..\starsky-tools\build-tools\nuget-package-list.js
 		..\starsky-tools\build-tools\app-version-test.js = ..\starsky-tools\build-tools\app-version-test.js
+		..\starsky-tools\build-tools\clientapp-vite-update.js = ..\starsky-tools\build-tools\clientapp-vite-update.js
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.packagetelemetry", "starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj", "{7AB42607-88DF-427C-823B-033A224A73A6}"

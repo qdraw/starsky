@@ -470,7 +470,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 					ApplicationType = AppSettings.StarskyAppType.Sync, Verbose = true},console)
 				.NeedHelpShowDialog();
 			
-			Assert.IsTrue(console.WrittenLines.Any(p => p.Contains("ApplicationInsightsDatabaseTracking")));
+			Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains("ApplicationInsightsDatabaseTracking")));
 		}
 		
 				
@@ -482,7 +482,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 					ApplicationType = AppSettings.StarskyAppType.Sync, Verbose = true},console)
 				.NeedHelpShowDialog();
 			
-			Assert.IsFalse(console.WrittenLines.Any(p => p.Contains("ApplicationInsightsDatabaseTracking")));
+			Assert.IsFalse(console.WrittenLines.Exists(p => p.Contains("ApplicationInsightsDatabaseTracking")));
 		}
 
 		[TestMethod]

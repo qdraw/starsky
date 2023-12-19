@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
@@ -9,12 +10,11 @@ namespace starskytest.FakeCreateAn
 	public class CreateAnImage
 	{
 		private const string FileNamePrivate = "0000000000aaaaa__exifreadingtest00.jpg";
-
-		// There is an unit test for using directory thumbnails that uses the first image;
-		// starskytest.SyncServiceTest.SyncServiceFirstItemDirectoryTest
-
+		
 		/// <summary>
 		/// The filename *.jpg
+		/// There is an unit test for using directory thumbnails that uses the first image;
+		/// starskytest.SyncServiceTest.SyncServiceFirstItemDirectoryTest
 		/// </summary>
 		[SuppressMessage("Performance", "CA1822:Mark members as static")]
 		[SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
@@ -251,7 +251,7 @@ namespace starskytest.FakeCreateAn
 			"/9oACAECAQE/AFjo8qCcW3vkV//EABkRAQACAwAAAAAAAAAAAAAAAAEAAhESIf/a" +
 			"AAgBAwEBPwDaxwXE/9k=";
 
-		public static readonly byte[] Bytes = Base64Helper.TryParse(Base64JpgString);
+		public static readonly ImmutableArray<byte> Bytes = Base64Helper.TryParse(Base64JpgString).ToImmutableArray();
 
 		/// <summary>
 		/// Use abstractions instead of a System.IO dependency

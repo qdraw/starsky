@@ -64,7 +64,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<string>{"/test.jpg"}, 
 					new List<byte[]>
 					{
-						CreateAnImage.Bytes
+						CreateAnImage.Bytes.ToArray()
 					})), new FakeIWebLogger(),
 				new FakeISyncAddThumbnailTable(), null,new FakeMemoryCache());
 			
@@ -85,7 +85,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<string>{"/test.jpg"}, 
 					new List<byte[]>
 					{
-						CreateAnImage.Bytes
+						CreateAnImage.Bytes.ToArray()
 					})), new FakeIWebLogger(),
 				new FakeISyncAddThumbnailTable(), null, new FakeMemoryCache());
 
@@ -101,7 +101,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<string>{"/test.jpg"}, 
 					new List<byte[]>
 					{
-						CreateAnImage.Bytes
+						CreateAnImage.Bytes.ToArray()
 					})), new FakeIWebLogger(), new FakeISyncAddThumbnailTable(), null,
 				new FakeMemoryCache());
 
@@ -117,8 +117,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<string>{"/test.jpg","/test2.jpg"}, 
 					new List<byte[]>
 					{
-						CreateAnImage.Bytes,
-						CreateAnImage.Bytes
+						CreateAnImage.Bytes.ToArray(),
+						CreateAnImage.Bytes.ToArray()
 					})), new FakeIWebLogger(), 
 				new FakeISyncAddThumbnailTable(), null,new FakeMemoryCache());
 

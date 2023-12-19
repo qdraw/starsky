@@ -6,6 +6,9 @@ using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.ProjectModel;
 
+// ReSharper disable once CheckNamespace
+namespace build;
+
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
 	"S3887:Use an immutable collection or reduce the " +
 	"accessibility of the non-private readonly field", 

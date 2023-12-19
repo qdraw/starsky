@@ -18,7 +18,6 @@ namespace starskytest.starsky.feature.realtime.Services
 	public sealed class CleanUpConnectionBackgroundServiceTest
 	{
 		private readonly IRealtimeConnectionsService _realtimeConnectionsService;
-		private readonly FakeIWebLogger _console;
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 
 		public CleanUpConnectionBackgroundServiceTest()
@@ -33,8 +32,6 @@ namespace starskytest.starsky.feature.realtime.Services
 			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_realtimeConnectionsService = serviceProvider.GetRequiredService<IRealtimeConnectionsService>();
 			
-			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
-			_console = webLogger as FakeIWebLogger;
 		}
 	
 		[TestMethod]

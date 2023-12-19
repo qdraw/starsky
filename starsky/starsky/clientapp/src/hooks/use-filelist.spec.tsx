@@ -1,6 +1,10 @@
 import { act } from "react-dom/test-utils";
-import { newIArchive } from "../interfaces/IArchive";
-import { PageType } from "../interfaces/IDetailView";
+import { IArchive, newIArchive } from "../interfaces/IArchive";
+import {
+  IDetailView,
+  IRelativeObjects,
+  PageType
+} from "../interfaces/IDetailView";
 import {
   newIFileIndexItem,
   newIFileIndexItemArray
@@ -11,10 +15,11 @@ import useFileList, {
   IFileList,
   fetchContentUseFileList
 } from "./use-filelist";
+import React from "react";
 
 describe("UseFileList", () => {
   describe("Archive", () => {
-    let fetchSpy: jest.SpyInstance<any>;
+    let fetchSpy: jest.SpyInstance;
 
     function setFetchSpy(statusCode: number, pageType: PageType) {
       const mockSuccessResponse = {
@@ -36,8 +41,9 @@ describe("UseFileList", () => {
       });
     }
 
-    function mounter() {
-      const setupComponent = mountReactHook(useFileList, ["/default/", "1"]); // Mount a Component with our hook
+    function mounter(path: string = "/default/") {
+      const setupComponent = mountReactHook(useFileList, [path, "1"]);
+      // Mount a Component with our hook
       const hook = setupComponent.componentHook as IFileList;
       return {
         hook,
@@ -65,18 +71,18 @@ describe("UseFileList", () => {
         );
       });
 
-      expect(fetchSpy).toBeCalled();
-      expect(fetchSpy).toBeCalledWith("test", {
+      expect(fetchSpy).toHaveBeenCalled();
+      expect(fetchSpy).toHaveBeenCalledWith("test", {
         credentials: "include",
         method: "get",
         signal: controller.signal
       });
 
-      expect(hook).toBeCalledTimes(0);
-      expect(hook2).toBeCalledTimes(1);
+      expect(hook).toHaveBeenCalledTimes(0);
+      expect(hook2).toHaveBeenCalledTimes(1);
     });
 
-    it("with detailview content 200", async () => {
+    it("with detailView content 200", async () => {
       const hook = jest.fn();
       const hook2 = jest.fn();
 
@@ -96,15 +102,15 @@ describe("UseFileList", () => {
         );
       });
 
-      expect(fetchSpy).toBeCalled();
-      expect(fetchSpy).toBeCalledWith("test", {
+      expect(fetchSpy).toHaveBeenCalled();
+      expect(fetchSpy).toHaveBeenCalledWith("test", {
         credentials: "include",
         method: "get",
         signal: controller.signal
       });
 
-      expect(hook).toBeCalledTimes(0);
-      expect(hook2).toBeCalledTimes(1);
+      expect(hook).toHaveBeenCalledTimes(0);
+      expect(hook2).toHaveBeenCalledTimes(1);
     });
 
     it("with archive content 404", async () => {
@@ -126,7 +132,7 @@ describe("UseFileList", () => {
         );
       });
 
-      expect(hook).toBeCalledWith(PageType.NotFound);
+      expect(hook).toHaveBeenCalledWith(PageType.NotFound);
     });
 
     it("with archive content 401", async () => {
@@ -148,7 +154,7 @@ describe("UseFileList", () => {
         );
       });
 
-      expect(hook).toBeCalledWith(PageType.Unauthorized);
+      expect(hook).toHaveBeenCalledWith(PageType.Unauthorized);
     });
 
     it("with archive content 500", async () => {
@@ -171,14 +177,15 @@ describe("UseFileList", () => {
         );
       });
 
-      expect(hook).toBeCalledTimes(1);
-      expect(hook2).toBeCalledTimes(0);
+      expect(hook).toHaveBeenCalledTimes(1);
+      expect(hook2).toHaveBeenCalledTimes(0);
     });
 
     it("get from cache", async () => {
       const { hook } = mounter();
       const cacheGetSpy = jest
         .spyOn(FileListCache.prototype, "CacheGet")
+        .mockReset()
         .mockImplementationOnce(() => {
           return { ...newIArchive(), dateCache: Date.now() };
         });
@@ -191,16 +198,18 @@ describe("UseFileList", () => {
         false,
         jest.fn()
       );
-      expect(cacheGetSpy).toBeCalled();
+      expect(cacheGetSpy).toHaveBeenCalled();
     });
 
     it("check cache first and then query", async () => {
-      const { hook } = mounter();
       const cacheSetSpy = jest
         .spyOn(FileListCache.prototype, "CacheGet")
+        .mockReset()
         .mockImplementationOnce(() => {
           return null;
         });
+
+      const { hook } = mounter();
 
       setFetchSpy(200, PageType.Archive);
 
@@ -213,8 +222,8 @@ describe("UseFileList", () => {
         jest.fn()
       );
 
-      expect(cacheSetSpy).toBeCalled();
-      expect(fetchSpy).toBeCalled();
+      expect(cacheSetSpy).toHaveBeenCalled();
+      expect(fetchSpy).toHaveBeenCalled();
     });
 
     it("[use file list] with connection rejected", async () => {
@@ -244,7 +253,124 @@ describe("UseFileList", () => {
         );
       });
 
-      expect(setPageTypeFn).toBeCalledWith(PageType.ApplicationException);
+      expect(setPageTypeFn).toHaveBeenCalledWith(PageType.ApplicationException);
+    });
+
+    it("setPageTypeHelper - undefined false", () => {
+      const { hook } = mounter("/test.jpg");
+
+      const pageHelper = hook.setPageTypeHelper(undefined);
+      expect(pageHelper).toBeFalsy();
+    });
+
+    it("setPageTypeHelper - pageType not found false", () => {
+      const { hook } = mounter("/test.jpg");
+
+      const pageHelper = hook.setPageTypeHelper({ pageType: "NotFound" });
+      expect(pageHelper).toBeFalsy();
+    });
+
+    it("setPageTypeHelper - pageType ApplicationException false", () => {
+      const { hook } = mounter("/test.jpg");
+
+      const pageHelper = hook.setPageTypeHelper({
+        pageType: "ApplicationException"
+      });
+      expect(pageHelper).toBeFalsy();
+    });
+
+    it("setPageTypeHelper - pageType DifferentType false", () => {
+      const { hook } = mounter("/test.jpg");
+
+      const pageHelper = hook.setPageTypeHelper({
+        pageType: "DifferentType"
+      });
+      expect(pageHelper).toBeFalsy();
+    });
+
+    it("setPageTypeHelper - pageType Archive", () => {
+      const useStateMock = jest.fn();
+      jest.spyOn(React, "useState").mockImplementationOnce(() => {
+        return [true, useStateMock];
+      });
+
+      const { hook } = mounter("/test.jpg");
+
+      const pageHelper = hook.setPageTypeHelper({
+        pageType: "Archive",
+        data: {
+          fileIndexItems: [],
+          pageType: "Archive",
+          subPath: "/test",
+          breadcrumb: [],
+          colorClassUsage: [],
+          collections: true,
+          lastEdited: "",
+          lastEditedUtc: "",
+          parentDirectory: "",
+          relativeObjects: {} as IRelativeObjects,
+          colorClassActiveList: [],
+          collectionsCount: 0,
+          isReadOnly: false,
+          dateCache: Date.now()
+        } as IArchive
+      });
+
+      expect(pageHelper).toBeTruthy();
+      expect(useStateMock).toHaveBeenCalled();
+      expect(useStateMock).toHaveBeenCalledWith({
+        data: {
+          breadcrumb: [],
+          collections: true,
+          collectionsCount: 0,
+          colorClassActiveList: [],
+          colorClassUsage: [],
+          dateCache: expect.any(Number),
+          fileIndexItems: [],
+          isReadOnly: false,
+          lastEdited: "",
+          lastEditedUtc: "",
+          pageType: "Archive",
+          parentDirectory: "",
+          relativeObjects: {},
+          subPath: "/test"
+        },
+        pageType: "Archive",
+        sort: undefined
+      });
+    });
+
+    it("setPageTypeHelper - pageType DetailView", () => {
+      const useStateMock = jest.fn();
+      jest
+        .spyOn(React, "useState")
+        .mockImplementationOnce(() => {
+          return [true, jest.fn()];
+        })
+        .mockImplementationOnce(() => {
+          return [true, useStateMock];
+        });
+
+      const { hook } = mounter("/test.jpg");
+
+      const pageHelper = hook.setPageTypeHelper({
+        pageType: "DetailView",
+        data: {
+          pageType: PageType.DetailView,
+          subPath: "/test.jpg"
+        } as IDetailView
+      });
+
+      expect(pageHelper).toBeTruthy();
+      expect(useStateMock).toHaveBeenCalled();
+      expect(useStateMock).toHaveBeenCalledWith({
+        data: {
+          pageType: "DetailView",
+          subPath: "/test.jpg"
+        },
+        pageType: "DetailView",
+        sort: undefined
+      });
     });
   });
 });
@@ -270,14 +396,14 @@ describe("UseFileList error", () => {
     );
 
     // fetchSpy
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith("test", {
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
       credentials: "include",
       method: "get",
       signal: controller.signal
     });
 
-    expect(setDataSpy).toBeCalledTimes(0);
+    expect(setDataSpy).toHaveBeenCalledTimes(0);
   });
 
   it("generic error", async () => {
@@ -298,13 +424,13 @@ describe("UseFileList error", () => {
       false,
       setDataSpy
     );
-    expect(fetchSpy).toBeCalled();
-    expect(fetchSpy).toBeCalledWith("test", {
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith("test", {
       credentials: "include",
       method: "get",
       signal: controller.signal
     });
 
-    expect(setDataSpy).toBeCalled();
+    expect(setDataSpy).toHaveBeenCalled();
   });
 });

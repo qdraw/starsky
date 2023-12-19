@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -72,7 +73,7 @@ namespace starskytest.Controllers
 
 			_iStorage = new FakeIStorage(new List<string>{"/","/test"}, 
 				new List<string>{createAnImage.DbPath}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var selectorStorage = new FakeSelectorStorage(_iStorage);
 
@@ -84,7 +85,6 @@ namespace starskytest.Controllers
 			var builder = new ConfigurationBuilder();
 			// Add random config to dependency injection
 			// build config
-			var configuration = builder.Build();
 			// inject config as object to a service
 
 			// Add Background services
@@ -105,7 +105,7 @@ namespace starskytest.Controllers
 		private static ControllerContext RequestWithFile(byte[] bytes = null)
 		{
 			// ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
-			if ( bytes == null ) bytes = CreateAnImage.Bytes;
+			if ( bytes == null ) bytes = CreateAnImage.Bytes.ToArray();
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
 			httpContext.Request.Body = new MemoryStream(bytes);
@@ -168,7 +168,7 @@ namespace starskytest.Controllers
 				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
 			{
-				ControllerContext = RequestWithFile(CreateAnImageColorClass.Bytes),
+				ControllerContext = RequestWithFile(CreateAnImageColorClass.Bytes.ToArray()),
 			};
 
 			var toPlaceSubPath = "/color-class01.jpg";
@@ -382,7 +382,7 @@ namespace starskytest.Controllers
 		{
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
-			httpContext.Request.Body = new MemoryStream(CreateAnXmp.Bytes);
+			httpContext.Request.Body = new MemoryStream(CreateAnXmp.Bytes.ToArray());
 	        
 			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
 			return new ControllerContext(actionContext);

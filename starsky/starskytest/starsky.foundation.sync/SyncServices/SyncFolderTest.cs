@@ -73,10 +73,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>
 				{
-					CreateAnImage.Bytes,
-					CreateAnImageColorClass.Bytes,
-					CreateAnImageNoExif.Bytes,
-					CreateAnImage.Bytes
+					CreateAnImage.Bytes.ToArray(),
+					CreateAnImageColorClass.Bytes.ToArray(),
+					CreateAnImageNoExif.Bytes.ToArray(),
+					CreateAnImage.Bytes.ToArray()
 				});
 		}
 		
@@ -117,7 +117,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				{
 					"/test/test/test.jpg"
 				},
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
@@ -146,7 +146,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				{
 					"/test/test/test.jpg"
 				},
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
@@ -174,7 +174,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				{
 					"/test/test/test.jpg"
 				},
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			
@@ -196,7 +196,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var storage = GetStorage();
-			await storage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes),
+			await storage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()),
 				subPath);
 			
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
@@ -224,7 +224,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>
 				{
-					CreateAnImage.Bytes,
+					CreateAnImage.Bytes.ToArray()
 				});
 			
 			// yes this is duplicate!
@@ -262,7 +262,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>
 				{
-					CreateAnImage.Bytes,
+					CreateAnImage.Bytes.ToArray(),
 				}, new List<DateTime>{new DateTime(2000,01,01,01,01,01)});
 			
 			await _query.AddItemAsync(new FileIndexItem("/same_test/test.jpg")
@@ -310,7 +310,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>
 				{
-					CreateAnImage.Bytes,
+					CreateAnImage.Bytes.ToArray(),
 				}, new List<DateTime>{new DateTime(3000,01,01,01,01,01)});
 			
 			await _query.AddItemAsync(new FileIndexItem("/same_test/test.jpg")
@@ -575,9 +575,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>
 				{
-					CreateAnImage.Bytes,
-					CreateAnImageColorClass.Bytes,
-					CreateAnImageNoExif.Bytes,
+					CreateAnImage.Bytes.ToArray(),
+					CreateAnImageColorClass.Bytes.ToArray(),
+					CreateAnImageNoExif.Bytes.ToArray(),
 				});
 			
 			var appSettings = new AppSettings{

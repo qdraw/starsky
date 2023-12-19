@@ -24,9 +24,9 @@ export interface IHotkeysKeyboardEvent {
       [deps]
     );
     ```
- * @param regex - the or statement
+ * @param predefined - the or statement
  * @param callback - function that is called
- * @param _dependencies - deps array 
+ * @param _dependencies - deps array
  */
 function useHotKeys(
   predefined: IHotkeysKeyboardEvent = { key: "" },

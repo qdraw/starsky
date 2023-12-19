@@ -357,6 +357,8 @@ starsky-tools/docs/*/*.jpg
 starsky-tools/docs/*/*/*.jpg
 starsky-tools/docs/*/*/*/*.jpg
 
+starsky-tools/build-tools/vite-tmp-folder/*
+
 **/osx-x64/*
 **/osx-arm64/*
 **/linux-arm/*

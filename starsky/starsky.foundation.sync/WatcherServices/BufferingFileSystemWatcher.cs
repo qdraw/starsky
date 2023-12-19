@@ -255,6 +255,7 @@ namespace starsky.foundation.sync.WatcherServices
         internal void StopRaisingBufferedEvents(object _ = null, EventArgs __ = null)
         {
             _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
             _fileSystemEventBuffer = new BlockingCollection<FileSystemEventArgs>(EventQueueCapacity);
         }
 
@@ -421,6 +422,7 @@ namespace starsky.foundation.sync.WatcherServices
             if (disposing)
             {
                 _cancellationTokenSource?.Cancel();
+                _cancellationTokenSource?.Dispose();
                 _containedFsw?.Dispose();
             }
             base.Dispose(disposing);

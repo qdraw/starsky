@@ -41,7 +41,7 @@ namespace starskytest.starsky.feature.import.Services
 			_iStorageFake = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg","/color_class_winner.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes, CreateAnImageColorClass.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()}
 			);
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
 			
@@ -49,9 +49,9 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"/", "/test", "/test/test"},
 				new List<string>{"/layer0.jpg","/test/layer1.jpg", "/test/test/layer2.jpg"},
 				new List<byte[]>{
-					CreateAnImage.Bytes,
-					CreateAnImage.Bytes, 
-					CreateAnImage.Bytes}
+					CreateAnImage.Bytes.ToArray(),
+					CreateAnImage.Bytes.ToArray(), 
+					CreateAnImage.Bytes.ToArray()}
 			);
 			
 			_console = new FakeConsoleWrapper(new List<string>());
@@ -148,7 +148,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/2020-04-27 11:07:00.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes}
+				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes.ToArray()}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings), null!, _console, 
@@ -196,7 +196,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.unknown"},
-				new List<byte[]>{CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()}
 			);
 			
 			var importService = new Import(new FakeSelectorStorage(storage), 
@@ -314,9 +314,9 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(ImportStatus.Ok, importIndexItems[2].Status);
 
 			// "/layer0.jpg","/test/layer1.jpg", "/test/test/layer2.jpg" (order is random)
-			Assert.IsTrue(importIndexItems.Any(p => p.SourceFullFilePath == "/layer0.jpg"));
-			Assert.IsTrue(importIndexItems.Any(p => p.SourceFullFilePath == "/test/layer1.jpg"));
-			Assert.IsTrue(importIndexItems.Any(p => p.SourceFullFilePath == "/test/test/layer2.jpg"));
+			Assert.IsTrue(importIndexItems.Exists(p => p.SourceFullFilePath == "/layer0.jpg"));
+			Assert.IsTrue(importIndexItems.Exists(p => p.SourceFullFilePath == "/test/layer1.jpg"));
+			Assert.IsTrue(importIndexItems.Exists(p => p.SourceFullFilePath == "/test/test/layer2.jpg"));
 		}
 		
 		[TestMethod]
@@ -403,7 +403,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query,_console, 
@@ -441,7 +441,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.dng","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query,_console, 
@@ -452,7 +452,7 @@ namespace starskytest.starsky.feature.import.Services
 			var result = await importService.Importer(new List<string> {"/test.dng"},
 				new ImportSettingsModel());
 			
-			Assert.AreEqual(expectedFilePath, result[0].FileIndexItem.FilePath);
+			Assert.AreEqual(expectedFilePath, result[0]?.FileIndexItem?.FilePath);
 			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault()?.Status);
 			// Apple is read from XMP
 			Assert.AreEqual("Apple",result[0].FileIndexItem.Make);
@@ -468,7 +468,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.dng","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query,
@@ -478,10 +478,10 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 			
 			Assert.AreEqual(1, result.Count);
-			Assert.AreEqual(1, result[0].FileIndexItem.SidecarExtensionsList.Count);
+			Assert.AreEqual(1, result[0]?.FileIndexItem?.SidecarExtensionsList.Count);
 
-			var sidecarExtList = result[0].FileIndexItem.SidecarExtensionsList.ToList();
-			Assert.AreEqual("xmp",sidecarExtList[0]);
+			var sidecarExtList = result[0]?.FileIndexItem?.SidecarExtensionsList.ToList();
+			Assert.AreEqual("xmp",sidecarExtList?[0]);
 		}
 		
 		[TestMethod]
@@ -499,7 +499,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.dng","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), 
 				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),query,
@@ -530,7 +530,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.dng"},
-				new List<byte[]>{CreateAnPng.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray()});
 
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query,
@@ -558,12 +558,12 @@ namespace starskytest.starsky.feature.import.Services
 			var storage =new FakeIStorage();
 			// write source file
 			await storage.WriteStreamAsync(
-				new MemoryStream(CreateAnImage.Bytes), "/test.jpg"
+				new MemoryStream(CreateAnImage.Bytes.ToArray()), "/test.jpg"
 			);
 			// write  /2018/04/2018_04_22/20180422_161454_test.jpg
 			var path = GetExpectedFilePath(storage, appSettings, "/test.jpg");
 			await storage.WriteStreamAsync(
-				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), path
+				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes.ToArray()), path
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
 				new FakeIImportQuery(),
@@ -587,7 +587,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/", "/2018", "/2018/04","/2018/04/2018_04_22"}, 
 				new List<string>{"/test.jpg","/2018/04/2018_04_22/20180422_161454_test.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes, Array.Empty<byte>()}); // instead of new byte[0]
+				new List<byte[]>{CreateAnImage.Bytes.ToArray(), Array.Empty<byte>()}); // instead of new byte[0]
 
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
 				new FakeIImportQuery(),
@@ -649,7 +649,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query, _console,
@@ -672,7 +672,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query, _console,
@@ -693,7 +693,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query, _console,
@@ -717,7 +717,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()}
 			);
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,importQuery,
@@ -743,10 +743,10 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()}
 			);
 			
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings,null,
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings,null!,
 				new FakeExifTool(storage, appSettings),null!, _console,
 				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),  new FakeIThumbnailQuery(), new FakeMemoryCache());
 
@@ -807,7 +807,7 @@ namespace starskytest.starsky.feature.import.Services
 			var directoriesContent = importService.ParentFoldersDictionary(duplicatesExampleList);
 			var result = importService.CheckForDuplicateNaming(duplicatesExampleList,directoriesContent);
 
-			var fileIndexItemFilePathList = result.Select(x => x.FileIndexItem.FilePath).ToList();
+			var fileIndexItemFilePathList = result.Select(x => x.FileIndexItem?.FilePath).ToList();
 			Assert.AreEqual(4,fileIndexItemFilePathList.Count);
 			Assert.AreEqual("/0001/00010101_000000_d_1.png", fileIndexItemFilePathList[0]);
 			Assert.AreEqual("/0001/00010101_000000_d_3.png", fileIndexItemFilePathList[1]);
@@ -885,7 +885,7 @@ namespace starskytest.starsky.feature.import.Services
 				new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
 				new FakeIQuery(), _console,new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),  new FakeIThumbnailQuery(), new FakeMemoryCache());
 
-			var result = await importService.CreateMataThumbnail(null,
+			var result = await importService.CreateMataThumbnail(null!,
 				new ImportSettingsModel());
 			Assert.IsFalse(result.FirstOrDefault().Item1);
 		}
@@ -986,7 +986,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.dng","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			var appSettings = new AppSettings();
 			var importService = new Import(new FakeSelectorStorage(storage), 
 				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
@@ -1005,7 +1005,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 			var appSettings = new AppSettings();
 			var importService = new Import(new FakeSelectorStorage(storage), 
 				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),new FakeIQuery(),
@@ -1024,7 +1024,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 
 			var logger = new FakeIWebLogger();
 			var appSettings = new AppSettings();
@@ -1044,7 +1044,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()});
 
 			var logger = new FakeIWebLogger();
 			var appSettings = new AppSettings{Verbose = true};
@@ -1069,7 +1069,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes}, new List<DateTime>{DateTime.Now,DateTime.Now});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()}, new List<DateTime>{DateTime.Now,DateTime.Now});
 			var appSettings = new AppSettings{Verbose = true};
 			var logger = new FakeIWebLogger();
 
@@ -1093,7 +1093,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes}, new List<DateTime>{DateTime.Now,DateTime.Now});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()}, new List<DateTime>{DateTime.Now,DateTime.Now});
 			var appSettings = new AppSettings{Verbose = true};
 			var logger = new FakeIWebLogger();
 
@@ -1152,8 +1152,8 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(2,readOnlyFileSystems.Count);
 
 			Assert.AreEqual(DefaultPath(),readOnlyFileSystems[0].Item1);
-			var testItem = importIndexItems.FirstOrDefault(p =>
-					p.SourceFullFilePath == "/test.jpg");
+			var testItem = importIndexItems.Find(p =>
+				p.SourceFullFilePath == "/test.jpg");
 			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
 
 		}
@@ -1186,7 +1186,7 @@ namespace starskytest.starsky.feature.import.Services
 
 			Assert.AreEqual(1,readOnlyFileSystems.Count);
 			Assert.AreEqual(DefaultPath()+ Path.Combine("test","test"),readOnlyFileSystems[0].Item1);
-			var testItem = importIndexItems.FirstOrDefault(p =>
+			var testItem = importIndexItems.Find(p =>
 				p.SourceFullFilePath == "/test/test/test.jpg");
 			Assert.AreEqual(ImportStatus.ReadOnlyFileSystem,testItem?.Status);
 
@@ -1198,7 +1198,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes}, new List<DateTime>{DateTime.Now,DateTime.Now});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(),CreateAnXmp.Bytes.ToArray()}, new List<DateTime>{DateTime.Now,DateTime.Now});
 			var appSettings = new AppSettings{Verbose = true};
 			var logger = new FakeIWebLogger();
 
@@ -1218,7 +1218,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(1,readOnlyFileSystems.Count);
 
 			Assert.AreEqual(DefaultPath(),readOnlyFileSystems[0].Item1);
-			var testItem = importIndexItems.FirstOrDefault(p =>
+			var testItem = importIndexItems.Find(p =>
 				p.SourceFullFilePath == "/not-found.jpg");
 			Assert.AreEqual(ImportStatus.Default,testItem?.Status);
 		}

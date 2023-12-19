@@ -37,7 +37,7 @@ to compile the application for development
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2. Get the `dotnet` 6.0.416 SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download or https://versionsof.net/
+2. Get the `dotnet` 6.0.417 SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download or https://versionsof.net/
 3. Get a recent version of nodejs (18.x or newer)
 
 4. Make a build of all the projects and run the tests
@@ -49,13 +49,33 @@ _When using powershell:_
     .\build.ps1
 ```
 
-### When you see 'build.ps1 cannot be loaded because running scripts is disabled on this system.' 
+__Scroll down for bash__
+
+### Known Windows issue: When you see 'build.ps1 cannot be loaded because running scripts is disabled on this system.'
 For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
 Run the following command to enable scripts:
+
+Make sure you run the script as Administrator
 
 ```powershell
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 ```
+
+you see something like this:
+
+```
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "N"):
+```
+
+Press to continue: A
+
+### Known Windows issue: Testhost require firewall 
+
+Do you want to allow public and private networks to access this app: testhost
+
+Windows Firewall has blocked some features of testhost on public and private networks
+
+**You need to give permission to run the unit tests**
 
 
 _Or using bash (on Linux and Mac OS)_

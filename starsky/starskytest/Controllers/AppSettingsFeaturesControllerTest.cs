@@ -21,7 +21,7 @@ public class AppSettingsFeaturesControllerTest
 			fakeIMoveToTrashService, new AppSettings());
 		
 		// Act
-		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;;
+		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
 		var json = result?.Value as EnvFeaturesViewModel;
 		Assert.IsNotNull(json);
 		

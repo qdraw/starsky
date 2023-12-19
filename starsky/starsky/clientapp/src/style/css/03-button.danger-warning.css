@@ -1,0 +1,23 @@
+/* not loaded at the moment */
+
+.btn-danger {
+  color: #fff;
+  background-color: #bf360c;
+  border-color: #b71c1c;
+}
+.btn-warning {
+  color: #212529;
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+
+.btn-info {
+  color: #007bff;
+  background-color: #ebebeb;
+}
+.btn-secondary {
+  text-decoration: none;
+  color: #fff;
+  background-color: #5a6268;
+  border-color: #545b62;
+}

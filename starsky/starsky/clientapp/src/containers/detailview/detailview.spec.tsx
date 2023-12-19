@@ -170,7 +170,6 @@ describe("DetailView", () => {
     it("check if Details exist", () => {
       expect(
         Component.queryByTestId("detailview-sidebar") as HTMLDivElement
-        /* eslint-enable */
       ).toBeTruthy();
     });
   });
@@ -192,7 +191,6 @@ describe("DetailView", () => {
         state: defaultState
       };
 
-      // eslint-disable-next-line react/display-name
       TestComponent = () => (
         <BrowserRouter>
           <ContextDetailview.DetailViewContext.Provider value={contextProvider}>

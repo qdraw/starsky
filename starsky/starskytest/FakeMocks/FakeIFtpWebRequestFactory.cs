@@ -46,8 +46,14 @@ namespace starskytest.FakeMocks
 		public void Dispose()
 		{
 			GC.SuppressFinalize(this);
-			// done
+			Dispose(true);
 		}
+		
+		protected virtual void Dispose(bool disposing)
+		{
+			// do nothing
+		}
+		
 
 		public Stream GetResponseStream()
 		{

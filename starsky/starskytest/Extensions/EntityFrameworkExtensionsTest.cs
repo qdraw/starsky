@@ -83,40 +83,42 @@ namespace starskytest.Extensions
 			Assert.AreEqual(false, result2);
 		}
 		
-		private static MySqlException CreateMySqlException(string message)
-		{
-			var info = new SerializationInfo(typeof(Exception),
-				new FormatterConverter());
-			info.AddValue("Number", 1);
-			info.AddValue("SqlState", "SqlState");
-			info.AddValue("Message", message);
-			info.AddValue("InnerException", new Exception());
-			info.AddValue("HelpURL", "");
-			info.AddValue("StackTraceString", "");
-			info.AddValue("RemoteStackTraceString", "");
-			info.AddValue("RemoteStackIndex", 1);
-			info.AddValue("HResult", 1);
-			info.AddValue("Source", "");
-			info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
-					
-			// private MySqlException(SerializationInfo info, StreamingContext context)
-			var ctor =
-				typeof(MySqlException).GetConstructors(BindingFlags.Instance |
-					BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
-			var instance =
-				( MySqlException ) ctor?.Invoke(new object[]
-				{
-					info,
-					new StreamingContext(StreamingContextStates.All)
-				});
-			return instance;
-		}
 		
 		private class AppDbMySqlException : ApplicationDbContext
 		{
 			public AppDbMySqlException(DbContextOptions options) : base(options)
 			{
 			}
+			
+			private static MySqlException CreateMySqlException(string message)
+			{
+				var info = new SerializationInfo(typeof(Exception),
+					new FormatterConverter());
+				info.AddValue("Number", 1);
+				info.AddValue("SqlState", "SqlState");
+				info.AddValue("Message", message);
+				info.AddValue("InnerException", new Exception());
+				info.AddValue("HelpURL", "");
+				info.AddValue("StackTraceString", "");
+				info.AddValue("RemoteStackTraceString", "");
+				info.AddValue("RemoteStackIndex", 1);
+				info.AddValue("HResult", 1);
+				info.AddValue("Source", "");
+				info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
+					
+				// private MySqlException(SerializationInfo info, StreamingContext context)
+				var ctor =
+					typeof(MySqlException).GetConstructors(BindingFlags.Instance |
+						BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
+				var instance =
+					( MySqlException ) ctor?.Invoke(new object[]
+					{
+						info,
+						new StreamingContext(StreamingContextStates.All)
+					});
+				return instance;
+			}
+			
 			public override DatabaseFacade Database => throw CreateMySqlException("Database is not available");
 		}
 		

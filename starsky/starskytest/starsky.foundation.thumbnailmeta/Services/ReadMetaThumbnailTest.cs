@@ -25,7 +25,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 			_iStorageFake = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/no_thumbnail.jpg", "/poppy.jpg", ThumbnailNameHelper.Combine("test",ThumbnailSize.TinyMeta)},
-				new List<byte[]>{CreateAnImage.Bytes, new CreateAnImageWithThumbnail().Bytes, CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray(), new CreateAnImageWithThumbnail().Bytes, CreateAnImage.Bytes.ToArray()}
 				);
 			
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/no_thumbnail.jpg").Key;

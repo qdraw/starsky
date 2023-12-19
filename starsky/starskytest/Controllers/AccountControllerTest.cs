@@ -152,8 +152,6 @@ namespace starskytest.Controllers
 			// in a normal session the State is cleared after 1 request
 			controller.ModelState.Clear();
 
-            
-			// Make new account; 
 			var newAccount = new RegisterViewModel
 			{
 				Password = "test",
@@ -170,8 +168,7 @@ namespace starskytest.Controllers
 			// Test login
 			Assert.AreEqual(true,httpContext.User.Identity?.IsAuthenticated);
             
-			// The logout is mocked so this will not actual log it out;
-			// controller.Logout() not crashing is good enough;
+			// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
 			controller.Logout();
             
 			// And clean afterwards
@@ -553,7 +550,6 @@ namespace starskytest.Controllers
 				Password = "test"
 			};
             
-			// Make new account; 
 			var newAccount = new RegisterViewModel
 			{
 				Password = "test",
@@ -571,8 +567,8 @@ namespace starskytest.Controllers
 			Assert.IsNotNull(httpContext);
 			Assert.AreEqual(true,httpContext.User.Identity?.IsAuthenticated);
             
-			// The logout is mocked so this will not actual log it out;
-			// controller.Logout() not crashing is good enough;
+			// The logout is mocked so this will not actual log it out
+			// controller.Logout() not crashing is good enough
 			controller.LogoutJson();
             
 
@@ -592,8 +588,7 @@ namespace starskytest.Controllers
 			// Test login
 			Assert.AreEqual(true,httpContext.User.Identity?.IsAuthenticated);
             
-			// The logout is mocked so this will not actual log it out;
-			// controller.Logout() not crashing is good enough;
+			// The logout is mocked so this will not actual log it out and controller.Logout() not crashing is good enough
 			controller.LogoutJson();
 
 			// Clean afterwards            

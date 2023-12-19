@@ -128,7 +128,11 @@ namespace starsky.feature.metaupdate.Services
 			string fieldName, string search, string replace)
 		{
 			foreach ( var fileIndexItem in fileIndexResultsList.Where( 
-				         p => p.Status is FileIndexItem.ExifStatus.Ok or FileIndexItem.ExifStatus.Deleted) )
+				         p => p.Status 
+					         is FileIndexItem.ExifStatus.Ok 
+					         or FileIndexItem.ExifStatus.OkAndSame 
+					         or FileIndexItem.ExifStatus.Deleted 
+					         or FileIndexItem.ExifStatus.DeletedAndSame) )
 			{
 				var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 				var replacedToObject = new object();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
@@ -34,7 +35,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.png","/test.jpg"},
-				new List<byte[]>{CreateAnPng.Bytes, new CreateAnImageWithThumbnail().Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(), new CreateAnImageWithThumbnail().Bytes});
 			
 			var (allExifItems,  _) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
 				new FakeIWebLogger()).ReadExifMetaDirectories("/test.png");
@@ -57,7 +58,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.png","/test.jpg"},
-				new List<byte[]>{CreateAnPng.Bytes, new CreateAnImageWithThumbnail().Bytes});
+				new List<byte[]>{CreateAnPng.Bytes.ToArray(), new CreateAnImageWithThumbnail().Bytes});
 
 			var (allExifItems,  thumbnailDirectory) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
 				new FakeIWebLogger()).ReadExifMetaDirectories("/test.jpg");

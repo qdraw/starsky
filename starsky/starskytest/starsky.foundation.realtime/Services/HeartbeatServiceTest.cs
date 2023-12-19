@@ -24,6 +24,7 @@ namespace starskytest.starsky.foundation.realtime.Services
 			Assert.IsTrue(connectionService.FakeSendToAllAsync.LastOrDefault()?.Contains("dateTime"));
 
 			source.Cancel();
+			source.Dispose();
 		}
 		
 		[TestMethod]
@@ -39,6 +40,7 @@ namespace starskytest.starsky.foundation.realtime.Services
 			await service.StartAsync(token);
 			
 			Assert.AreEqual(0,connectionService.FakeSendToAllAsync.Count);
+			source.Dispose();
 		}
 		
 		[TestMethod]
@@ -54,6 +56,8 @@ namespace starskytest.starsky.foundation.realtime.Services
 			await service.StopAsync(token);
 
 			Assert.IsTrue(connectionService.FakeSendToAllAsync.LastOrDefault()?.Contains("dateTime"));
+			source.Dispose();
+
 		}
 	}
 }

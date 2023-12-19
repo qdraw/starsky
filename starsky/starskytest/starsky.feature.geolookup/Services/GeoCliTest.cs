@@ -35,37 +35,25 @@ namespace starskytest.starsky.feature.geolookup.Services
 		[TestMethod]
 		public async Task GeoCliInput_Notfound()
 		{
-			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
-			{
-			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
-				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
-
 			var console = new FakeConsoleWrapper();
 			var geoCli = new GeoCli(new FakeIGeoReverseLookup(), new FakeIGeoLocationWrite(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>{})), new AppSettings(),
 				console, new FakeIGeoFileDownload(), new FakeExifToolDownload(), new FakeIWebLogger());
 			await geoCli.CommandLineAsync(new List<string> {"-p",}.ToArray());
 
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("not found"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("not found"));
 		}
 		
 		[TestMethod]
 		public async Task GeoCliInput_RelativeUrl_HappyFlow()
 		{
-			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
-			{
-			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
-				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
-
 			var relativeParentFolder = new AppSettings().DatabasePathToFilePath(
 				new StructureService(new FakeIStorage(), new AppSettings().Structure)
 					.ParseSubfolders(0),false);
 			
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg"},
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 
 			var appSettings = new AppSettings();
 			var geoWrite = new FakeIGeoLocationWrite();
@@ -84,15 +72,9 @@ namespace starskytest.starsky.feature.geolookup.Services
 		[TestMethod]
 		public async Task GeoCliInput_AbsolutePath_HappyFlow()
 		{
-			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
-			{
-			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
-				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
-
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg"},
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 
 			var appSettings = new AppSettings{Verbose = true};
 			var geoWrite = new FakeIGeoLocationWrite();
@@ -113,7 +95,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg"},
-				new List<byte[]> {CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray()});
 			var hash =( await new FileHash(storage).GetHashCodeAsync("/test.jpg")).Key;
 			storage.FileCopy("/test.jpg",$"/{hash}.jpg");
 
@@ -135,7 +117,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg","1"},
-				new List<byte[]> {CreateAnImage.Bytes,CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray(),CreateAnImage.Bytes.ToArray()});
 			var hash =( await new FileHash(storage).GetHashCodeAsync("/test.jpg")).Key;
 			storage.FileCopy("/test.jpg",$"/{hash}.jpg");
 
@@ -162,7 +144,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg","1"},
-				new List<byte[]> {CreateAnImage.Bytes,CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes.ToArray(),CreateAnImage.Bytes.ToArray()});
 			var hash =( await new FileHash(storage).GetHashCodeAsync("/test.jpg")).Key;
 			storage.FileCopy("/test.jpg",$"/{hash}.jpg");
 

@@ -48,7 +48,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string> {"/test.xmp"}, new List<byte[]>
 					{
-						FakeCreateAn.CreateAnXmp.Bytes
+						FakeCreateAn.CreateAnXmp.Bytes.ToArray()
 					})),null, new FakeIWebLogger());
 			var test = metaInfo.GetInfo(new List<string>{"/test.xmp"}, false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test.FirstOrDefault()?.Status);
@@ -61,7 +61,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string> {"/test.jpg"}, new List<byte[]>
 					{
-						FakeCreateAn.CreateAnImage.Bytes
+						FakeCreateAn.CreateAnImage.Bytes.ToArray()
 					})),null, new FakeIWebLogger());
 			var test = metaInfo.GetInfo(new List<string>{"/test.jpg"}, false);
 			
@@ -76,7 +76,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string> {"/test.jpg"}, new List<byte[]>
 					{
-						FakeCreateAn.CreateAnImage.Bytes
+						FakeCreateAn.CreateAnImage.Bytes.ToArray()
 					}, new List<DateTime>{new DateTime(2000,01,01)})),null, new FakeIWebLogger());
 			var test = metaInfo.GetInfo(new List<string>{"/test.jpg"}, false);
 

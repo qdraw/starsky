@@ -11,6 +11,12 @@ namespace starskytest.FakeMocks
 		public void Dispose()
 		{
 			GC.SuppressFinalize(this);
+			Dispose(true);
+		}
+		
+		protected virtual void Dispose(bool disposing)
+		{
+			// do nothing
 		}
 
 		public object Key { get; }

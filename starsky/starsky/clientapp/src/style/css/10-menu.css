@@ -59,6 +59,10 @@
   box-shadow: none;
 }
 
+.header .menu-inline-search button {
+  width: 100%;
+}
+
 .header .menu-item {
   list-style: none;
   font-size: 16px;
@@ -208,6 +212,10 @@
   cursor: pointer;
 }
 
+.header .item.item--continue:focus {
+  box-shadow: inset 0px 0px 0px 3px #283593;
+}
+
 .header > .wrapper > .item.disabled {
   color: #90a4ae;
   cursor: not-allowed;
@@ -306,6 +314,7 @@
 .header--sidebar .item.item--close {
   color: #000;
   margin-left: 5px;
+  padding-right: 5px;
 }
 
 .header--sidebar .item.item--close .autosave {

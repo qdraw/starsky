@@ -20,6 +20,9 @@ import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-u
 import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalForceDelete from "../modal-force-delete/modal-force-delete";
 import NavContainer from "../nav-container/nav-container";
+import MenuOption from "../../atoms/menu-option/menu-option.tsx";
+import localization from "../../../localization/localization.json";
+import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal.tsx";
 
 export interface IMenuTrashProps {
   state: IArchiveProps;
@@ -35,14 +38,6 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
   // Content
   const MessageSelectAction = language.text("Selecteer", "Select");
-  const MessageRestoreFromTrash = language.text(
-    "Zet terug uit prullenmand",
-    "Restore from Trash"
-  );
-  const MessageDeleteImmediately = language.text(
-    "Verwijder onmiddellijk",
-    "Delete immediately"
-  );
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -139,7 +134,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
           />
 
           {!select && state.fileIndexItems.length >= 1 ? (
-            <div
+            <button
               data-test="menu-trash-item-select"
               className="item item--select"
               onClick={() => {
@@ -150,7 +145,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
               }}
             >
               {MessageSelectAction}
-            </div>
+            </button>
           ) : null}
 
           {/* there are no items in the trash */}
@@ -200,28 +195,20 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
                 allSelection={allSelection}
               />
 
-              <li
-                className="menu-option"
-                data-test="restore-from-trash"
-                onClick={() => undoTrash()}
-                tabIndex={0}
-                onKeyDown={(event) => {
-                  event.key === "Enter" && undoTrash();
-                }}
-              >
-                {MessageRestoreFromTrash}
-              </li>
-              <li
-                className="menu-option"
-                data-test="delete"
-                onClick={() => setIsModalDeleteOpen(true)}
-                tabIndex={0}
-                onKeyDown={(event) => {
-                  event.key === "Enter" && setIsModalDeleteOpen(true);
-                }}
-              >
-                {MessageDeleteImmediately}
-              </li>
+              <MenuOption
+                isReadOnly={false}
+                testName="restore-from-trash"
+                onClickKeydown={() => undoTrash()}
+                localization={localization.MessageRestoreFromTrash}
+              />
+
+              <MenuOptionModal
+                isReadOnly={false}
+                testName="delete"
+                set={setIsModalDeleteOpen}
+                isSet={isModalDeleteOpen}
+                localization={localization.MessageDeleteImmediately}
+              />
             </MoreMenu>
           ) : null}
 

@@ -6,16 +6,18 @@ export default {
 
 export const Default = () => {
   return (
-    <MenuOption
-      localization={{ nl: "Nederlands", en: "English" }}
-      isSet={false}
-      set={() => {}}
-      testName="test"
-      isReadOnly={false}
-      setEnableMoreMenu={(value) => {
-        alert(value);
-      }}
-    />
+    <div className="menu-context">
+      <ul className="menu-options">
+        <MenuOption
+          localization={{ nl: "Nederlands", en: "English" }}
+          testName="test"
+          isReadOnly={false}
+          onClickKeydown={() => {
+            alert("hi");
+          }}
+        />
+      </ul>
+    </div>
   );
 };
 

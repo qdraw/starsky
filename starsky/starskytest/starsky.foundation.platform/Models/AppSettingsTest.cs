@@ -106,7 +106,8 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void AppSettingsProviderTest_SQLite_ExpectException()
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
-			var datasource = _appSettings.SqLiteFullPath(string.Empty, null);
+			// should give exception
+			_appSettings.SqLiteFullPath(string.Empty, null);
 		}
 
 		[TestMethod]
@@ -432,8 +433,8 @@ namespace starskytest.starsky.foundation.platform.Models
 		[TestMethod]
 		public void EnablePackageTelemetry_False()
 		{
-			var appSettings = new AppSettings {EnablePackageTelemetry = true};
-			Assert.IsTrue(appSettings.EnablePackageTelemetry);
+			var appSettings = new AppSettings {EnablePackageTelemetry = false};
+			Assert.IsFalse(appSettings.EnablePackageTelemetry);
 		}
 		
 #if(DEBUG)

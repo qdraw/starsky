@@ -4,20 +4,17 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
-using starskycore.Helpers;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.starskyGeoCore.Services
+namespace starskytest.starsky.feature.geolookup.Services
 {
 	[TestClass]
 	public sealed class GeoIndexGpxTest
 	{
 		private readonly AppSettings _appSettings;
-		private readonly ReadMeta _readMeta;
 		private readonly List<FileIndexItem> _metaFilesDirectory;
 
 		public GeoIndexGpxTest()
@@ -28,9 +25,6 @@ namespace starskytest.starskyGeoCore.Services
 				StorageFolder = createAnGpx.BasePath,
 				CameraTimeZone = "Europe/Minsk"
 			};
-			var fakeIStorage = new FakeIStorage();
-			_readMeta = new ReadMeta(fakeIStorage,_appSettings, 
-				null, new FakeIWebLogger());
 
 			_metaFilesDirectory = new List<FileIndexItem>
 			{
@@ -46,18 +40,20 @@ namespace starskytest.starskyGeoCore.Services
 		public void GeoIndexGpx_ConvertTimeZone_EuropeAmsterdam()
 		{
 			var fakeIStorage = new FakeIStorage();
-			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/Amsterdam"}, fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(new DateTime(2020, 04, 15,
-				17, 0, 0, 0));
-			Assert.AreEqual(new DateTime(2020, 04, 15, 15, 0, 0, 0), result);
+			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/Amsterdam"}, 
+				fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(new DateTime(2020, 04, 15,
+				17, 0, 0, 0, kind: DateTimeKind.Unspecified));
+			Assert.AreEqual(new DateTime(2020, 04, 15, 15, 0, 0, 0, kind: DateTimeKind.Local), result);
 		}
         
 		[TestMethod]
 		public void GeoIndexGpx_ConvertTimeZone_EuropeLondon()
 		{
 			var fakeIStorage = new FakeIStorage();
-			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(new DateTime(2020, 01, 15,
-				17, 0, 0, 0));
-			Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0), result);
+			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, 
+				fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(new DateTime(2020, 01, 15,
+				17, 0, 0, 0, kind: DateTimeKind.Unspecified));
+			Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0, kind: DateTimeKind.Local), result);
 		}
         
 		[TestMethod]
@@ -65,7 +61,7 @@ namespace starskytest.starskyGeoCore.Services
 		{
 			var fakeIStorage = new FakeIStorage();
 			var inputDateTime = new DateTime(2020, 01, 15,
-				17, 0, 0, 0);
+				17, 0, 0, 0, kind: DateTimeKind.Unspecified);
 			inputDateTime = DateTime.SpecifyKind(inputDateTime, DateTimeKind.Utc);
 			var result =new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(inputDateTime);
 			Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0), result);
@@ -77,7 +73,7 @@ namespace starskytest.starskyGeoCore.Services
 		{
 			var fakeIStorage = new FakeIStorage();
 			var inputDateTime = new DateTime(2020, 01, 15,
-				17, 0, 0, 0);
+				17, 0, 0, 0, kind: DateTimeKind.Local);
 			inputDateTime = DateTime.SpecifyKind(inputDateTime, DateTimeKind.Local);
 			new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, 
 				fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(inputDateTime);
@@ -103,13 +99,14 @@ namespace starskytest.starskyGeoCore.Services
                 
 			});
 
-			var fakeIStorage = new FakeIStorage(new List<string>{"/"},new List<string>{_metaFilesDirectory[0].FilePath}, new List<byte[]>{CreateAnGpx.Bytes} );
+			var fakeIStorage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{_metaFilesDirectory[0].FilePath}, new List<byte[]>{CreateAnGpx.Bytes.ToArray()} );
                
 			var returnFileIndexItems = new GeoIndexGpx(_appSettings,
 				fakeIStorage, new FakeIWebLogger()).LoopFolder(exampleFiles);
             
-			Assert.AreEqual(null,returnFileIndexItems.FirstOrDefault(p => p.FileName == "NotInRange.jpg"));
-			Assert.AreEqual("01.jpg",returnFileIndexItems.FirstOrDefault(p => p.FileName == "01.jpg")?.FileName);
+			Assert.AreEqual(null,returnFileIndexItems.Find(p => p.FileName == "NotInRange.jpg"));
+			Assert.AreEqual("01.jpg",returnFileIndexItems.Find(p => p.FileName == "01.jpg")?.FileName);
 
 
 		}

@@ -27,9 +27,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg","/color_class_test.jpg", "/status_deleted.jpg"},
 				new List<byte[]>{
-					CreateAnImageNoExif.Bytes, 
-					CreateAnImageColorClass.Bytes,
-					CreateAnImageStatusDeleted.Bytes
+					CreateAnImageNoExif.Bytes.ToArray(), 
+					CreateAnImageColorClass.Bytes.ToArray(),
+					CreateAnImageStatusDeleted.Bytes.ToArray()
 				}, new List<DateTime>
 				{
 					_lastEditedDateTime,
@@ -109,7 +109,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					"/level/deep"
 				},
 				new List<string>{"/level/deep/test.jpg"},
-				new List<byte[]>{CreateAnImageNoExif.Bytes});
+				new List<byte[]>{CreateAnImageNoExif.Bytes.ToArray()});
 			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
@@ -450,8 +450,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			// It should update the Sidecar field when a sidecar file is add to the directory
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
-					CreateAnImage.Bytes,
-					CreateAnXmp.Bytes}, new List<DateTime>{lastEdited,lastEdited});
+					CreateAnImage.Bytes.ToArray(),
+					CreateAnXmp.Bytes.ToArray()}, new List<DateTime>{lastEdited,lastEdited});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.dng");
 
@@ -484,8 +484,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			// It should update the Sidecar field when a sidecar file is add to the directory
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
-					CreateAnImageNoExif.Bytes,
-					CreateAnXmp.Bytes});
+					CreateAnImageNoExif.Bytes.ToArray(),
+					CreateAnXmp.Bytes.ToArray()});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.dng");
 
@@ -525,7 +525,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			// It should ignore the Sidecar field when a sidecar file when it already is there
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
-					CreateAnImageNoExif.Bytes,
+					CreateAnImageNoExif.Bytes.ToArray(),
 					Array.Empty<byte>()});
 			
 			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.jpg");

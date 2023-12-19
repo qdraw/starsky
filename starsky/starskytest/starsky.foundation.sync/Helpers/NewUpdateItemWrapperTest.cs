@@ -6,7 +6,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.Helpers;
-using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -34,7 +33,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery();
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/sub/test8495.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
 
@@ -46,9 +45,9 @@ public class NewUpdateItemWrapperTest
 		Assert.IsNotNull(syncResult);
 		var dbResult = await fakeQuery.GetAllRecursiveAsync();
 		var itemItSelf =
-			dbResult.Any(p => p.FilePath == "/sub/test8495.jpg");
+			dbResult.Exists(p => p.FilePath == "/sub/test8495.jpg");
 		var parentItem =
-			dbResult.Any(p => p.FilePath == "/sub");
+			dbResult.Exists(p => p.FilePath == "/sub");
 		Assert.AreEqual(2, dbResult.Count);
 			
 		Assert.IsTrue(itemItSelf);
@@ -61,7 +60,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery();
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/sub/test8495.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
 
@@ -74,9 +73,9 @@ public class NewUpdateItemWrapperTest
 		Assert.IsNotNull(syncResult);
 		var dbResult = await fakeQuery.GetAllRecursiveAsync();
 		var itemItSelf =
-			dbResult.Any(p => p.FilePath == "/sub/test8495.jpg");
+			dbResult.Exists(p => p.FilePath == "/sub/test8495.jpg");
 		var parentItem =
-			dbResult.Any(p => p.FilePath == "/sub");
+			dbResult.Exists(p => p.FilePath == "/sub");
 		Assert.AreEqual(2, dbResult.Count);
 			
 		Assert.IsTrue(itemItSelf);
@@ -89,7 +88,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery();
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/sub/test8495.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
 
@@ -101,9 +100,9 @@ public class NewUpdateItemWrapperTest
 		Assert.IsNotNull(syncResult);
 		var dbResult = await fakeQuery.GetAllRecursiveAsync();
 		var itemItSelf =
-			dbResult.Any(p => p.FilePath == "/sub/test8495.jpg");
+			dbResult.Exists(p => p.FilePath == "/sub/test8495.jpg");
 		var parentItem =
-			dbResult.Any(p => p.FilePath == "/sub");
+			dbResult.Exists(p => p.FilePath == "/sub");
 		Assert.AreEqual(1, dbResult.Count); // 1
 			
 		Assert.IsTrue(itemItSelf);
@@ -126,7 +125,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>{item});
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var updateItem = new NewUpdateItemWrapper( fakeQuery, storage, new AppSettings(), null, new FakeIWebLogger());
 
@@ -152,7 +151,7 @@ public class NewUpdateItemWrapperTest
 		var fakeQuery = new FakeIQuery(new List<FileIndexItem>{item});
 		var storage = new FakeIStorage(new List<string> { "/", "/sub" },
 			new List<string> { "/test.jpg" },
-			new List<byte[]> { CreateAnImageNoExif.Bytes });
+			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 		
 		var dbParentResultBefore = await fakeQuery.GetObjectByFilePathAsync("/");
 		Assert.IsNull(dbParentResultBefore);

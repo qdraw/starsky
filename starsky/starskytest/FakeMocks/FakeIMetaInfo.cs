@@ -22,7 +22,7 @@ namespace starskytest.FakeMocks
 			var result = new List<FileIndexItem>();
 			foreach ( var path in inputFilePaths )
 			{
-				var data = Exist.FirstOrDefault(p => p.FilePath == path);
+				var data = Exist.Find(p => p.FilePath == path);
 				if ( data == null ) continue;
 				result.Add(data);
 			}

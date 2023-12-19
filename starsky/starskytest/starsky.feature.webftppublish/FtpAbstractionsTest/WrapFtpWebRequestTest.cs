@@ -23,6 +23,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		public void Method_Get_Null()
 		{
 			var result = new WrapFtpWebRequest(null).Method;
+			Assert.IsNotNull(result);
 		}
 		
 		[TestMethod]
@@ -52,6 +53,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		public void UsePassive_Get_Null()
 		{
 			var result = new WrapFtpWebRequest(null).UsePassive;
+			Assert.IsNull(result);
 		}
 		
 		[TestMethod]

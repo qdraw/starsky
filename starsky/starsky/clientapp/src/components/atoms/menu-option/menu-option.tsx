@@ -5,50 +5,37 @@ import { Language } from "../../../shared/language";
 interface IMenuOptionProps {
   isReadOnly: boolean;
   testName: string;
-  isSet: boolean;
-  set: React.Dispatch<React.SetStateAction<boolean>>;
-  localization: { nl: string; en: string };
-  setEnableMoreMenu?: React.Dispatch<React.SetStateAction<boolean>>;
+  onClickKeydown: () => void;
+  localization?: { nl: string; en: string };
+  children?: React.ReactNode;
 }
 
-// eslint-disable-next-line react/display-name
 const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
   ({
     localization,
-    isSet,
-    set,
+    onClickKeydown,
     testName,
     isReadOnly = true,
-    setEnableMoreMenu = undefined
+    children = undefined
   }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
-    const Message = language.key(localization);
-
-    function onClickHandler() {
-      if (isReadOnly) {
-        return;
-      }
-      // close menu
-      if (setEnableMoreMenu) {
-        setEnableMoreMenu(false);
-      }
-      set(!isSet);
-    }
+    const Message = !localization ? "" : language.key(localization);
 
     return (
       <>
         {
-          <li
-            tabIndex={0}
-            data-test={testName}
-            className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-            onClick={onClickHandler}
-            onKeyDown={(event) => {
-              event.key === "Enter" && onClickHandler();
-            }}
-          >
-            {Message}
+          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"}>
+            <button
+              data-test={testName}
+              onClick={onClickKeydown}
+              onKeyDown={(event) => {
+                event.key === "Enter" && onClickKeydown();
+              }}
+            >
+              {Message}
+              {children}
+            </button>
           </li>
         }
       </>

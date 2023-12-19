@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -25,7 +26,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			
 			await new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
 				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
@@ -42,7 +43,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			
 			await new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
 				.WriteTagsThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
@@ -58,7 +59,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			
 			var result = await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
 				.RenameThumbnailByStream("OLDHASH",new MemoryStream(),true);
@@ -76,7 +77,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			
 			var result = await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
 				.RenameThumbnailByStream("OLDHASH",new MemoryStream(),false);
@@ -88,7 +89,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void StreamToStreamRunner_ArgumentNullException()
 		{
-			var _ = new StreamToStreamRunner(new AppSettings(), null,
+			_ = new StreamToStreamRunner(new AppSettings(), null,
 				new FakeIWebLogger());
 		}
 

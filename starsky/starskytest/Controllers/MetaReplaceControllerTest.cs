@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -40,7 +39,6 @@ namespace starskytest.Controllers
 	public sealed class MetaReplaceControllerTest
 	{
 		private readonly IQuery _query;
-		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
@@ -58,7 +56,7 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase("test1234");
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, new AppSettings(), null, new FakeIWebLogger(),memoryCache);
+			_query = new Query(context, new AppSettings(), null!, new FakeIWebLogger(),memoryCache);
             
 			// Inject Fake ExifTool; dependency injection
 			var services = new ServiceCollection();
@@ -99,9 +97,6 @@ namespace starskytest.Controllers
 			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 	        
 			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
-
-			// inject fake exifTool
-			_exifTool = new FakeExifTool(_iStorage,_appSettings);
 		}
         
 		private async Task InsertSearchData(bool delete = false)
@@ -190,9 +185,49 @@ namespace starskytest.Controllers
 
 			Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
 		}
+		
+		[TestMethod]
+		public async Task Replace_ShouldTriggerBackgroundService_OkAndSame()
+		{
+			var fakeFakeIWebSocketConnectionsService = new FakeIRealtimeConnectionsService();
+
+			var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test09.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.OkAndSame
+				}
+			});
+			var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue, 
+				fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(),NewScopeFactory());
+			
+			await controller.Replace("/test09.jpg", "tags", "test", "");
+
+			Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+		}
+		
+		[TestMethod]
+		public async Task Replace_ShouldTriggerBackgroundService_DeletedAndSame()
+		{
+			var fakeFakeIWebSocketConnectionsService = new FakeIRealtimeConnectionsService();
+
+			var metaReplaceService = new FakeIMetaReplaceService(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test09.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.DeletedAndSame
+				}
+			});
+			var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue, 
+				fakeFakeIWebSocketConnectionsService, new FakeIWebLogger(),NewScopeFactory());
+			
+			await controller.Replace("/test09.jpg", "tags", "test", "");
+
+			Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+		}
         
 		[TestMethod]
-		public void Replace_ShouldTriggerBackgroundService_Fail()
+		public async Task Replace_ShouldTriggerBackgroundService_Fail_OperationNotSupported()
 		{
 			var fakeFakeIWebSocketConnectionsService =
 				new FakeIWebSocketConnectionsService();
@@ -207,7 +242,7 @@ namespace starskytest.Controllers
 			var controller = new MetaReplaceController(metaReplaceService, _bgTaskQueue, 
 				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),NewScopeFactory());
 			
-			controller.Replace("/test09.jpg", "tags", "test", "");
+			await controller.Replace("/test09.jpg", "tags", "test", "");
 
 			Assert.AreEqual(0, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
 		}

@@ -52,13 +52,6 @@ for ((i = 1; i <= $#; i++ )); do
   fi
 done
 
-AIRPLAY=$(curl -sI "http://localhost:5000" | grep -Fi server)
-if [[ $AIRPLAY == *AirTunes* ]]; then
-  printf '%s%s%s\n' $COLOR_RED 'You should disable Airplay receiver in Config' $COLOR_REST
-  echo "...."
-  exit 1
-fi
-
 if (! docker stats --no-stream &> /dev/null); then
   if [[ "$(uname)" == "Darwin" ]]; then
     # On Mac OS this would be the terminal command to launch Docker

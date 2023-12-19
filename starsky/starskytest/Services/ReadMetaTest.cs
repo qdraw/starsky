@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +44,7 @@ namespace starskytest.Services
 
 		    
 			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
-				new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{CreateAnImage.Bytes,xmpByteArray}  );
+				new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{CreateAnImage.Bytes.ToArray(),xmpByteArray}  );
 		    
 			var data = new ReadMeta(fakeIStorage, new AppSettings(),
 				null, new FakeIWebLogger()).ReadExifAndXmpFromFile("/test.arw");
@@ -216,7 +217,7 @@ namespace starskytest.Services
 			var storage = new FakeIStorage(new List<string> { "/" },
 				new List<string> { "/test.dng", "/test.xmp" }, new List<byte[]>
 				{
-					CreateAnImage.Bytes,
+					CreateAnImage.Bytes.ToArray(),
 					Array.Empty<byte>()
 				});
 			var readMeta = new ReadMeta(storage, new AppSettings(), null!, new FakeIWebLogger());
@@ -230,8 +231,8 @@ namespace starskytest.Services
 			var storage = new FakeIStorage(new List<string> { "/" },
 				new List<string> { "/test.dng", "/test.xmp" }, new List<byte[]>
 				{
-					CreateAnImage.Bytes,
-					CreateAnXmp.Bytes
+					CreateAnImage.Bytes.ToArray(),
+					CreateAnXmp.Bytes.ToArray()
 				});
 			var readMeta = new ReadMeta(storage, new AppSettings(), null!, new FakeIWebLogger());
 	    

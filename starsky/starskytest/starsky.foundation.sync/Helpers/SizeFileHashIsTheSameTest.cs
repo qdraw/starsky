@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,7 +21,7 @@ public class SizeFileHashIsTheSameTest
 		var lastEdited = new DateTime(2020, 03, 07, 18, 25, 02);
 		var storage = new FakeIStorage(new List<string>{"/"}, 
 			new List<string>{"/test.jpg"}, new List<byte[]>{
-				CreateAnImage.Bytes}, 
+				CreateAnImage.Bytes.ToArray()}, 
 			new List<DateTime>{lastEdited});
 		var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.jpg");
 		var dbItems = new List<FileIndexItem> { new FileIndexItem("/test.jpg"){FileHash = fileHash ,LastEdited = lastEdited} };
@@ -57,7 +58,7 @@ public class SizeFileHashIsTheSameTest
 		} };
 		var storage = new FakeIStorage(new List<string>{"/"}, 
 			new List<string>{"/test.jpg"}, new List<byte[]>{
-				CreateAnImage.Bytes}, 
+				CreateAnImage.Bytes.ToArray()}, 
 			new List<DateTime>{lastEdited});
 		
 		var result = await new SizeFileHashIsTheSameHelper(storage).SizeFileHashIsTheSame(
@@ -73,7 +74,7 @@ public class SizeFileHashIsTheSameTest
 		var lastEdited = new DateTime(2020, 03, 07, 18, 25, 02);
 		var storage = new FakeIStorage(new List<string>{"/"}, 
 			new List<string>{"/test.jpg"}, new List<byte[]>{
-				CreateAnImage.Bytes}, 
+				CreateAnImage.Bytes.ToArray()}, 
 			new List<DateTime>{lastEdited});
 		var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.jpg");
 		var dbItems = new List<FileIndexItem> { new FileIndexItem("/test.jpg"){FileHash = fileHash} };
@@ -115,8 +116,8 @@ public class SizeFileHashIsTheSameTest
 		var lastEdited = new DateTime(2020, 03, 07, 18, 25, 02);
 		var storage = new FakeIStorage(new List<string>{"/","/101NZ_50"}, 
 			new List<string>{"/101NZ_50/DSC_0045.NEF","/101NZ_50/DSC_0045.xmp"}, new List<byte[]>{
-				CreateAnImage.Bytes, 
-				CreateAnGpx.Bytes}, 
+				CreateAnImage.Bytes.ToArray(), 
+				CreateAnGpx.Bytes.ToArray()}, 
 			new List<DateTime>{lastEdited, lastEdited});
 
 		var dbItems = JsonSerializer.Deserialize<List<FileIndexItem>>(text);

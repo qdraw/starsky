@@ -12,9 +12,7 @@ import { URLPath } from "../shared/url-path";
 function Archive(archive: Readonly<IArchiveProps>) {
   const history = useLocation();
 
-  const [iconList] = React.useState(
-    !new URLPath().StringToIUrl(history.location.search).list
-  );
+  const iconList = !new URLPath().StringToIUrl(history.location.search).list;
 
   // The sidebar
   const [sidebar, setSidebar] = React.useState(

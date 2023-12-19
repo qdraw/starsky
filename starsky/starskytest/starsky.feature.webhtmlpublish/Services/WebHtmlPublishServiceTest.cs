@@ -126,7 +126,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var appSettings = new AppSettings
@@ -166,7 +166,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 			var service = new WebHtmlPublishService(null,selectorStorage,null,
@@ -180,7 +180,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{CreateAnImageNoExif.Bytes});
+				new List<byte[]>{CreateAnImageNoExif.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 			var service = new WebHtmlPublishService(null,selectorStorage,null,
@@ -315,7 +315,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 			var storage = new FakeIStorage(new List<string>(),
 				new List<string>{"fileHash"}, 		
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
@@ -360,7 +360,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 			var storage = new FakeIStorage(new List<string>(),
 				new List<string>{"corrupt"}, 		
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 			
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
@@ -450,7 +450,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			};
 			var storage = new FakeIStorage(new List<string>(),
 				new List<string>{"/test.jpg"}, 		
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
@@ -558,31 +558,5 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			Assert.IsTrue(storage.ExistFile("/test.jpg"));
 		}
 
-		// [TestMethod]
-		// public async Task GenerateZip_RealFsTest()
-		// {
-		// 	var appSettings = new AppSettings();
-		// 	
-		// 	// RealFs
-		// 	var storage = new StorageHostFullPathFilesystem();
-		// 	var selectorStorage = new FakeSelectorStorage(storage);
-		// 	
-		// 	var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), 
-		// 		selectorStorage, appSettings,
-		// 		new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-		// 		new ConsoleWrapper(), new FakeIWebLogger());
-		//
-		// 	await service.GenerateZip(new CreateAnImage().BasePath, "test", 
-		// 		new Dictionary<string, bool>{
-		// 		{
-		// 			new CreateAnImage().FileName,true
-		// 		}}, true);
-		//
-		// 	var outputFile = Path.Combine(new CreateAnImage().BasePath, "test.zip");
-		// 	
-		// 	Assert.IsTrue(storage.ExistFile(outputFile));
-		// 	
-		// 	storage.FileDelete(outputFile);
-		// }
 	}
 }

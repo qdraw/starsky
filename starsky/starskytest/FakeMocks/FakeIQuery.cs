@@ -113,12 +113,12 @@ namespace starskytest.FakeMocks
 			bool enableCollections = true, bool hideDeleted = true, 
 			SortType? sort = SortType.FileName)
 		{
-			if ( _content.All(p => p.FilePath != singleItemDbPath) )
+			if ( _content.TrueForAll(p => p.FilePath != singleItemDbPath) )
 			{
 				return null;
 			}
 
-			var fileIndexItem = _content.FirstOrDefault(p => p.FilePath == singleItemDbPath);
+			var fileIndexItem = _content.Find(p => p.FilePath == singleItemDbPath);
 			if ( fileIndexItem == null ) return null;
 			fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 			fileIndexItem.CollectionPaths = new List<string>{singleItemDbPath};
@@ -143,19 +143,19 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem? GetObjectByFilePath(string filePath)
 		{
-			return _content.FirstOrDefault(p => p.FilePath == filePath);
+			return _content.Find(p => p.FilePath == filePath);
 		}
 
 		public async Task<FileIndexItem?> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
 		{
 			try
 			{
-				return _content.FirstOrDefault(p => p.FilePath == filePath);
+				return _content.Find(p => p.FilePath == filePath);
 			}
 			catch (InvalidOperationException)
 			{
 				await Task.Delay(new Random().Next(1, 5));
-				return _content.FirstOrDefault(p => p.FilePath == filePath);
+				return _content.Find(p => p.FilePath == filePath);
 			}
 		}
 
@@ -234,7 +234,7 @@ namespace starskytest.FakeMocks
 		public bool RemoveCacheParentItem(string directoryName)
 		{
 			if ( _fakeCachedContent == null ) return false;
-			var item = _fakeCachedContent.FirstOrDefault(p =>
+			var item = _fakeCachedContent.Find(p =>
 				p.ParentDirectory == directoryName);
 			if ( item == null ) return false;
 			_fakeCachedContent.Remove(item);
@@ -243,7 +243,7 @@ namespace starskytest.FakeMocks
 
 		public string? GetSubPathByHash(string fileHash)
 		{
-			return _content.FirstOrDefault(p => p.FileHash == fileHash)?.FilePath;
+			return _content.Find(p => p.FileHash == fileHash)?.FilePath;
 		}
 
 		public Task<string?> GetSubPathByHashAsync(string fileHash)
@@ -305,15 +305,15 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
-		public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
+		public async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 		{
-			_content.Add(updateStatusContent);
+			_content.Add(fileIndexItem);
 			await Task.Delay(new Random().Next(1, 5));
-			if ( _content.FirstOrDefault(p => 
-				p.FilePath == updateStatusContent.FilePath) != null ) return updateStatusContent;
+			if ( _content.Find(p => 
+				p.FilePath == fileIndexItem.FilePath) != null ) return fileIndexItem;
 			
-			_content.Add(updateStatusContent);
-			return updateStatusContent;
+			_content.Add(fileIndexItem);
+			return fileIndexItem;
 		}
 
 		public async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
@@ -327,7 +327,7 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
 		{
-			var item = _content.FirstOrDefault(p =>
+			var item = _content.Find(p =>
 				p.FilePath == updateStatusContent.FilePath);
 			if ( item == null ) return updateStatusContent;
 			var index = _content.IndexOf(item);
@@ -348,12 +348,7 @@ namespace starskytest.FakeMocks
 			}
 			return Task.FromResult(updateStatusContentList);
 		}
-
-		public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
-		{
-			throw new NotImplementedException();
-		}
-
+		
 		public RelativeObjects GetNextPrevInFolder(string currentFolder)
 		{
 			return new RelativeObjects();
@@ -401,7 +396,7 @@ namespace starskytest.FakeMocks
 			var toAddList = new List<FileIndexItem>();
 			
 			var indexItems = _content
-				.Where(p => pathListShouldExist.Any(f => f == p.FilePath)).ToList();
+				.Where(p => pathListShouldExist.Exists(f => f == p.FilePath)).ToList();
 
 			// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 			foreach ( var pathShouldExist in pathListShouldExist )

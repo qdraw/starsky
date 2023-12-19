@@ -15,7 +15,7 @@ namespace starskytest.FakeMocks
 	{
 		private readonly Exception? _exception;
 
-		public FakeINotificationQuery(IReadOnlyCollection<NotificationItem>? notificationItem = null)
+		public FakeINotificationQuery(IReadOnlyCollection<NotificationItem>? notificationItem)
 		{
 			if ( notificationItem == null )
 			{

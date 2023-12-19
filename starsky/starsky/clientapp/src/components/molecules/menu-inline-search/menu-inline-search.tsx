@@ -99,7 +99,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
 
   return (
     <div className="menu-inline-search">
-      <div
+      <button
         className={!formFocus ? "blur" : ""}
         onFocus={() => setFormFocus(true)}
       >
@@ -157,7 +157,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = (
             featuresResult={featuresResult}
           />
         </ul>
-      </div>
+      </button>
     </div>
   );
 };

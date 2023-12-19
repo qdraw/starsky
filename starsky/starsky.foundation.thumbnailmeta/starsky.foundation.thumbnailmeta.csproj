@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{88e70822-ae50-4fc5-9384-a8726b70849a}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.5.10</Version>
+        <Version>0.5.13</Version>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     
@@ -19,8 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MetadataExtractor" Version="2.8.0" />
-      <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
+      <PackageReference Include="MetadataExtractor" Version="2.8.1" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="3.1.1" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

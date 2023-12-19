@@ -2,6 +2,9 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Nuke.Common.Tooling;
 
+// ReSharper disable once CheckNamespace
+namespace build;
+
 [TypeConverter(typeof(TypeConverter<Configuration>))]
 [SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible")]
 [SuppressMessage("Usage", "S1104:Make this field 'private' and encapsulate it in a 'public' property")]

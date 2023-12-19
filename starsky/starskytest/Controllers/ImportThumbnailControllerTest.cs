@@ -34,7 +34,7 @@ namespace starskytest.Controllers
 		{
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
-			httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes);
+			httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes.ToArray());
 
 			var actionContext = new ActionContext(httpContext, new RouteData(),
 				new ControllerActionDescriptor());
@@ -101,8 +101,6 @@ namespace starskytest.Controllers
 			var services = new ServiceCollection();
 			services.AddSingleton<IStorage, FakeIStorage>();
 			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			var serviceProvider = services.BuildServiceProvider();
-			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 
 			var importController = new ImportThumbnailController(_appSettings, 
 				new FakeSelectorStorage(),new FakeIWebLogger(), 
@@ -180,7 +178,7 @@ namespace starskytest.Controllers
 			var storage = new FakeIStorage(new List<string>(), new List<string>{ "/upload/123.jpg" });
 			var service = new ImportThumbnailController(_appSettings,
 				new FakeSelectorStorage(storage), logger, new FakeIThumbnailQuery());
-			var result = await service.WriteThumbnails(new List<string>{  "/upload/123.jpg" }, new List<string>{ "123" });
+			await service.WriteThumbnails(new List<string>{  "/upload/123.jpg" }, new List<string>{ "123" });
 			
 			Assert.IsFalse(storage.ExistFile("/upload/123.jpg"));
 			Assert.IsTrue(storage.ExistFile("123"));
@@ -210,7 +208,7 @@ namespace starskytest.Controllers
 		public void MapToTransferObject1_NonValidType()
 		{
 			var inputList = new List<string> { "1234567890123456" };
-			var result = ImportThumbnailController.MapToTransferObject(inputList);
+			ImportThumbnailController.MapToTransferObject(inputList);
 		}
 	}
 }

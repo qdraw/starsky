@@ -132,8 +132,8 @@
     "nl": "geselecteerd"
   },
   "MessageSelectAction": {
-    "en": "Selecteer",
-    "nl": "Select"
+    "en": "Select",
+    "nl": "Selecteer"
   },
   "MessageNoneSelected": {
     "en": "Nothing selected",
@@ -154,6 +154,34 @@
   "MessageGoToParentFolder": {
     "en": "Go to parent folder",
     "nl": "Ga naar bovenliggende map"
+  },
+  "MessageMkdir": {
+    "en": "Create folder",
+    "nl": "Map maken"
+  },
+  "MessageDisplayOptions": {
+    "en": "Display options",
+    "nl": "Weergave opties"
+  },
+  "MessageRenameDir": {
+    "en": "Rename",
+    "nl": "Naam wijzigen"
+  },
+  "MessageLabels": {
+    "en": "Labels",
+    "nl": "Labels"
+  },
+  "MessageRenameFileName": {
+    "en": "Rename file name",
+    "nl": "Bestandsnaam wijzigen"
+  },
+  "MessageRotateToRight": {
+    "en": "Rotation to the right",
+    "nl": "Rotatie naar rechts"
+  },
+  "MessageDeleteImmediately": {
+    "en": "Delete immediately",
+    "nl": "Verwijder onmiddellijk"
   },
   "temp1": {
     "en": "",

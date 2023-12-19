@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -42,7 +43,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 				DependenciesFolder = Path.Combine(new CreateAnImage().BasePath, "tmp-dependencies"),
 			};
 			
-			// create a temp folder;
+			// create a temp folder
 			if ( !new StorageHostFullPathFilesystem().ExistFolder(_appSettings.DependenciesFolder) )
 			{
 				new StorageHostFullPathFilesystem().CreateDirectory(_appSettings
@@ -93,7 +94,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/2QOYZWMPACZAJ2MABGMOZ6CCPY.jpg"}, 
-				new List<byte[]>{CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()}
 				);
 			var storageSelector = new FakeSelectorStorage(storage);
 			var geoReverseLookup = new GeoReverseLookup(_appSettings, _geoFileDownload, new FakeIWebLogger(),_memoryCache);

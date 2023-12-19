@@ -1,7 +1,7 @@
 import React, { memo, useState } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import localization from "../../../localization/localization.json";
-import MenuOption from "../../atoms/menu-option/menu-option";
+import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import ModalMoveFolderToTrash from "../../organisms/modal-move-folder-to-trash/modal-move-folder-to-trash";
 interface IMenuOptionMoveToTrashProps {
   subPath: string;
@@ -29,7 +29,7 @@ const MenuOptionMoveFolderToTrash: React.FunctionComponent<IMenuOptionMoveToTras
           />
         ) : null}
 
-        <MenuOption
+        <MenuOptionModal
           isReadOnly={isReadOnly}
           testName="move-folder-to-trash"
           isSet={modalMoveFolderToTrashOpen}

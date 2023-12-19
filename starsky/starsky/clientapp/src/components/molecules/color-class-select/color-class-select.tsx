@@ -100,7 +100,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
                 : "btn colorclass colorclass--" + index
             }
           >
-            <label />
+            <span className="label" />
             <span>{item}</span>
           </button>
         ))}
