@@ -162,7 +162,7 @@ namespace helpers
 			var sonarArguments = new StringBuilder()
 				.Append($"sonarscanner ")
 				.Append($"begin ")
-				.Append($"/d:sonar.verbose=true ") 
+				// .Append($"/d:sonar.verbose=true ") 
 				.Append($"/d:sonar.host.url={url} ")
 				.Append($"/k:{key} ")
 				.Append($"/n:Starsky ")
