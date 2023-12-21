@@ -46,7 +46,7 @@ public class ModelsParserTest
 
 		var feature = featureCollection.Features[0];
 		Assert.IsNotNull(feature);
-		Assert.AreEqual("Feature", feature.Type);
+		Assert.AreEqual(FeatureType.Feature, feature.Type);
 
 		var geometry = feature.Geometry;
 		Assert.IsNotNull(geometry);

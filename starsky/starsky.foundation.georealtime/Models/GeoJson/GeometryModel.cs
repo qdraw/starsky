@@ -7,8 +7,9 @@ namespace starsky.foundation.georealtime.Models.GeoJson;
 public class GeometryModel
 {
 	public GeometryType? Type { get; set; }
-	
-	private List<List<double>> CoordinatesPrivate { get; set; }
+
+	private List<List<double>> CoordinatesPrivate { get; set; } =
+		new List<List<double>>();
 	
 	public List<List<double>> Coordinates
 	{

@@ -1,14 +1,27 @@
+using System.Collections.Generic;
 using starsky.foundation.georealtime.Models.GeoJson;
 
 namespace starsky.foundation.georealtime.Helpers;
 
-public class DefaultGeoJson
+public static class DefaultGeoJson
 {
-	public void CreateDefaultGeoJson()
+	public static FeatureCollectionModel CreateDefaultGeoJson(List<List<double>> coordinates)
 	{
-		var featureCollection = new FeatureCollectionModel
+		return new FeatureCollectionModel
 		{
-			Type = FeatureCollectionType.FeatureCollection
+			Type = FeatureCollectionType.FeatureCollection,
+			Features = new List<FeatureModel>
+			{
+				new FeatureModel
+				{
+					Type = FeatureType.Feature,
+					Geometry = new GeometryModel
+					{
+						Coordinates = coordinates
+					},
+					Properties = new PropertiesModel()
+				}
+			}
 		};
 	}
 }
