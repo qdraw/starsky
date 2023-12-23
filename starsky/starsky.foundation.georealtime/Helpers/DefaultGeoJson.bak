@@ -1,0 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using starsky.foundation.georealtime.Models.GeoJson;
+
+namespace starsky.foundation.georealtime.Helpers;
+
+public static class DefaultGeoJson
+{
+	public static FeatureCollectionModel CreateDefaultGeoJson(List<List<double>> coordinates, GeometryType geometryType = GeometryType.LineString)
+	{
+		
+		switch ( geometryType )
+		{
+			case GeometryType.Point:
+			{
+				return new FeatureCollectionModel
+				{
+					Type = FeatureCollectionType.FeatureCollection,
+					Features = new List<FeatureModel>
+					{
+						new FeatureModel
+						{
+							Type = FeatureType.Feature,
+							Geometry = new GeometryPointModel()
+							{
+								Coordinates = coordinates.FirstOrDefault() ?? new List<double>()
+							},
+							Properties = new PropertiesModel
+							{
+							}
+						}
+					}
+				};
+			}
+			case GeometryType.LineString:
+			{
+				return new FeatureCollectionModel
+				{
+					Type = FeatureCollectionType.FeatureCollection,
+					Features = new List<FeatureModel>
+					{
+						new FeatureModel
+						{
+							Type = FeatureType.Feature,
+							Geometry = new GeometryLineStringModel()
+							{
+								Coordinates = coordinates
+							},
+							Properties = new PropertiesModel()
+						}
+					}
+				};
+
+			}
+			default:
+				throw new ArgumentOutOfRangeException(nameof(geometryType), geometryType, null);
+		}
+	}
+}

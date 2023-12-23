@@ -152,16 +152,15 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Get the Application Version of Starsky
 		/// </summary>
-		public string AppVersion
+		public string AppVersion => GetAppVersion();
+
+		private static string GetAppVersion()
 		{
-			get
-			{
-				var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-				return string.IsNullOrEmpty(assemblyVersion) ? string.Empty : 
-					new Regex("\\.0$", RegexOptions.None, 
+			var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+			return string.IsNullOrEmpty(assemblyVersion) ? string.Empty : 
+				new Regex("\\.0$", RegexOptions.None, 
 						TimeSpan.FromMilliseconds(100))
-						.Replace(assemblyVersion, string.Empty);
-			}
+					.Replace(assemblyVersion, string.Empty);
 		}
 		
 		[PackageTelemetry]

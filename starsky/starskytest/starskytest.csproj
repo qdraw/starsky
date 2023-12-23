@@ -114,6 +114,10 @@
         <Content Include="FakeCreateAn\CreateAnImageCorrupt\corrupt.jpg">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="FakeCreateAn\CreateAnKml\garmin.kml" />
+        <Content Include="FakeCreateAn\CreateAnKml\garmin.kml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

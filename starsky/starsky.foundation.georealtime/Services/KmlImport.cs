@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using starsky.foundation.georealtime.Helpers;
 using starsky.foundation.georealtime.Interfaces;
 using starsky.foundation.georealtime.Models;
 using starsky.foundation.http.Interfaces;
@@ -34,7 +35,8 @@ public sealed class KmlImport : IKmlImport
 		}
 
 		var xDocument = XmlParse(readString.Value);
-		ParseKml(xDocument);
+		var result = Kml2IntermediateModelConverter.ParseKml(xDocument);
+		var model = IntermediateModelConverter.Covert2GeoJson(result, true);
 	}
 
 	private static XDocument XmlParse(string content)
@@ -42,44 +44,5 @@ public sealed class KmlImport : IKmlImport
 		return XDocument.Parse(content);
 	}
 
-	private static List<LatitudeLongitudeAltDateTimeModel> ParseKml(XContainer kml)
-	{
-		var coordinates = new List<LatitudeLongitudeAltDateTimeModel>();
-		DateTime timeUtc = DateTime.UtcNow;
-		
-		foreach (var placemark in kml.Descendants("{http://www.opengis.net/kml/2.2}Placemark"))
-		{
-			var timeUtcElement = placemark.Descendants("{http://www.opengis.net/kml/2.2}Data")
-				.FirstOrDefault(e => e.Attribute("name")?.Value == "Time UTC");
-			if (timeUtcElement != null)
-			{
-				var timeUtcString = timeUtcElement.Element("{http://www.opengis.net/kml/2.2}value")?.Value;
-				Console.WriteLine(timeUtcString);
-				timeUtc = DateTime.ParseExact(timeUtcString, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
-			}
-			
-			// now get the coordinates
-			
-			var lineString = placemark.Element("{http://www.opengis.net/kml/2.2}LineString");
-			var coordinatesElement = lineString?.Element("{http://www.opengis.net/kml/2.2}coordinates");
-			
-			if ( coordinatesElement == null ) continue;
-			
-			var coordinatesString = coordinatesElement.Value;
-			var coordinatesArray = coordinatesString.Split(' ');
-			// ReSharper disable once LoopCanBeConvertedToQuery
-			foreach (var coordinate in coordinatesArray)
-			{
-				var coordinateArray = coordinate.Split(',');
-				coordinates.Add(new LatitudeLongitudeAltDateTimeModel
-				{
-					Longitude = coordinateArray[0],
-					Latitude = coordinateArray[1],
-					Altitude = coordinateArray[2],
-					DateTime = timeUtc
-				});
-			}
-		}
-		return coordinates;
-	}
+
 }
