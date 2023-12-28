@@ -44,7 +44,7 @@ public class KmlImportTest
 		var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger(), 
 			new AppSettings{ AllowedHttpsDomains = new List<string>{"share.garmin.com"}});
 		
-		await new KmlImport(httpClientHelper, new FakeSelectorStorage()).Import("https://share.garmin.com/Feed/Share/test");
+		await new KmlImport(httpClientHelper, new FakeSelectorStorage(), new AppSettings()).Import("https://share.garmin.com/Feed/Share/test");
 
 		Console.WriteLine();
 	}

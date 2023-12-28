@@ -230,9 +230,9 @@ namespace starsky.foundation.accountmanagement.Services
 				return AccountRoles.AppAccountRoles.Administrator.ToString();
 			}
 
-			if ( _appSettings.AccountRolesByEmailRegisterOverwrite
-			    .TryGetValue(identifier, out var emailsForConfig) && 
-			     AccountRoles.GetAllRoles().Contains(emailsForConfig) )
+			if ( _appSettings.AccountRolesByEmailRegisterOverwrite?
+			    .TryGetValue(identifier, out var emailsForConfig) == true && 
+			     AccountRoles.GetAllRoles().Contains(emailsForConfig)  )
 			{
 				return emailsForConfig;
 			}

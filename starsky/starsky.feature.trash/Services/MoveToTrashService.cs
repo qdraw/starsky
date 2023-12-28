@@ -142,11 +142,11 @@ public class MoveToTrashService : IMoveToTrashService
 		return (moveToTrash,changedFileIndexItemName);
 	}
 
-	internal async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
+	private async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
 	{
 		var fullFilePaths = moveToTrash
 			.Where(p => p.FilePath != null)
-			.Select(p => _appSettings.DatabasePathToFilePath(p.FilePath, false))
+			.Select(p => _appSettings.DatabasePathToFilePath(p.FilePath!, false)).Cast<string>()
 			.ToList();
 		_systemTrashService.Trash(fullFilePaths);
 		

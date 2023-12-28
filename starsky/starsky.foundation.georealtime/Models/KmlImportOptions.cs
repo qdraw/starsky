@@ -13,5 +13,5 @@ public class KmlImportOptions
 	public bool OutputGeoJsonPoints { get; set; } = false;
 	public bool OutputGpx { get; set; } = true;
 
-	public List<LatitudeLongitudeModel> Filter { get; set; }
+	public List<LatitudeLongitudeModel> Filter { get; set; } = new List<LatitudeLongitudeModel>();
 }

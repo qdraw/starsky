@@ -16,12 +16,12 @@ namespace starsky.foundation.database.Helpers
 
 	    public FileIndexItem.ExifStatus IsReadOnlyStatus(FileIndexItem fileIndexItem)
 	    {
-		    if (fileIndexItem.IsDirectory == true && _appSettings.IsReadOnly(fileIndexItem.FilePath))
+		    if (fileIndexItem.IsDirectory == true && _appSettings.IsReadOnly(fileIndexItem.FilePath!))
 		    {
 			    return FileIndexItem.ExifStatus.DirReadOnly;
 		    }
 
-		    if ( _appSettings.IsReadOnly(fileIndexItem.ParentDirectory) )
+		    if ( _appSettings.IsReadOnly(fileIndexItem.ParentDirectory!) )
 		    {
 			    return  FileIndexItem.ExifStatus.ReadOnly;
 		    }
@@ -43,7 +43,7 @@ namespace starsky.foundation.database.Helpers
 			    return FileIndexItem.ExifStatus.DirReadOnly;
 		    }
 
-		    if ( _appSettings.IsReadOnly(detailView.FileIndexItem?.ParentDirectory) )
+		    if ( _appSettings.IsReadOnly(detailView.FileIndexItem?.ParentDirectory!) )
 		    {
 			    return  FileIndexItem.ExifStatus.ReadOnly;
 		    }

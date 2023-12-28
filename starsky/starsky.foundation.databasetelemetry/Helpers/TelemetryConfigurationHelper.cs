@@ -18,7 +18,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 			return null;
 		}
 		
-		public static TelemetryClient? InitTelemetryClient(string appInsightsConnectionString, string roleName, IWebLogger? logger, TelemetryClient? telemetryClient)
+		public static TelemetryClient? InitTelemetryClient(string? appInsightsConnectionString, string roleName, IWebLogger? logger, TelemetryClient? telemetryClient)
 		{
 			try
 			{
@@ -50,7 +50,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 			}
 		}
 
-		private static TelemetryConfiguration? CreateTelemetryConfiguration(string appInsightsConnectionString)
+		private static TelemetryConfiguration? CreateTelemetryConfiguration(string? appInsightsConnectionString)
 		{
 			var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
 			telemetryConfiguration.ConnectionString = appInsightsConnectionString;

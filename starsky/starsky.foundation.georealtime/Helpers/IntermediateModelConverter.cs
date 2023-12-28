@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml;
 using starsky.foundation.georealtime.Models;
 using starsky.foundation.georealtime.Models.GeoJson;
@@ -94,11 +95,16 @@ public static class IntermediateModelConverter
 		var settings = new XmlWriterSettings
 		{
 			Indent = true,
-			IndentChars = "    "
+			OmitXmlDeclaration = true,
+			Encoding = Encoding.UTF8
 		};
 
 		using var stringWriter = new StringWriter();
 		using var xmlWriter = XmlWriter.Create(stringWriter, settings);
+		
+		// Modify the encoding attribute in the XML declaration
+		xmlWriter.WriteRaw($"<?xml version=\"1.0\" encoding=\"{settings.Encoding.WebName}\"?>");
+		
 		xmlWriter.WriteStartElement("gpx", "http://www.topografix.com/GPX/1/1");
 		xmlWriter.WriteAttributeString("version", "1.1");
 		xmlWriter.WriteAttributeString("creator", $"Starsky {Assembly.GetExecutingAssembly().GetName().Version?.ToString()}");
