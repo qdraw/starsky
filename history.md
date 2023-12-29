@@ -35,8 +35,12 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.5.14 _(Unreleased)_ - 2023-12-?? {#v0.5.14}
-- nothing yet
+## version 0.5.15 _(Unreleased)_ - 2024-01-? {#v0.5.15}
+- no changes yet
+
+## version 0.5.14 - 2023-12-29 {#v0.5.14}
+
+- [x] (Changed) _Back-end_ upgrade various packages (PR #1321 #1322 #1319 #1318 #1317 #1315 #1314 #1312)
 
 ## version 0.5.13 - 2023-12-13 {#v0.5.13}
 
@@ -46,6 +50,7 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 - [x] (Changed) _Front-end_ Code style style issues (PR #1304, #1307)
 - [x] (Fixed) _Front-end_ long file names in multi select (Issue #1305 PR #1307)
 - [x] (Fixed) _Back-end_ Replace tags / info etc. with OkAndSame status (Issue #1175 PR #1308)
+- [x] (Changed) _Front-end_ Menu option change to button (PR #1310)
 
 ## version 0.5.12 - 2023-11-17 {#v0.5.12}
 
