@@ -69,7 +69,8 @@ public class CleanDemoDataServiceCliTest
 			{"https://qdraw.nl/1000/20211117_091926_dsc00514_e_kl1k.jpg",new StringContent("test")}
 		});
 
-		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger, 
+			new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 		var service = new CleanDemoDataServiceCli(appSettings, httpClientHelper,
 			_selectorStorage, _logger, _console, new FakeISynchronize());
@@ -88,7 +89,8 @@ public class CleanDemoDataServiceCliTest
 	{
 		var fakeIHttpClientHelper = new FakeIHttpProvider();
 		
-		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger, 
+			new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 		var service = new CleanDemoDataServiceCli(_appSettings, httpClientHelper,
 			_selectorStorage, _logger, _console, new FakeISynchronize());
@@ -105,7 +107,8 @@ public class CleanDemoDataServiceCliTest
 	{
 		var fakeIHttpClientHelper = new FakeIHttpProvider();
 		
-		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger);
+		var httpClientHelper = new HttpClientHelper(fakeIHttpClientHelper, _serviceScopeFactory, _logger, 
+			new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 		var appSettings = new AppSettings{Verbose = false};
 		var service = new CleanDemoDataServiceCli(appSettings, httpClientHelper,

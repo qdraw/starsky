@@ -107,6 +107,7 @@ namespace starsky.Helpers
 		{
 			if ( swaggerProvider == null ) return string.Empty;
 			var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");
+			// JsonConvert is newtonSoft see JsonSerializer.Serialize for System.Text.Json
 			var stringOutput = JsonConvert.SerializeObject(swaggerDocument,
 				Formatting.Indented,
 				new JsonSerializerSettings

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn;
@@ -406,7 +404,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void PublishProfiles_Null()
 		{
 			var appSettings = new AppSettings {PublishProfiles = null};
-			Assert.AreEqual(0, appSettings.PublishProfiles.Count );
+			Assert.AreEqual(0, appSettings.PublishProfiles?.Count );
 		}
 
 		[TestMethod]
@@ -486,6 +484,73 @@ namespace starskytest.starsky.foundation.platform.Models
 			
 			Assert.AreEqual(2,appSettings.AccountRolesByEmailRegisterOverwrite.Count);
 			Assert.AreEqual("Administrator", appSettings.AccountRolesByEmailRegisterOverwrite["bogusEmail2"]);
+		}
+
+		[TestMethod]
+		public void ExternalAccountsNull()
+		{
+			var appSettings = new AppSettings {ExternalAccounts = null};
+			Assert.AreEqual(0,appSettings.ExternalAccounts?.Count);
+		}
+		
+		[TestMethod]
+		public void ExternalAccounts_Should_Set_AllowedHttpsDomains()
+		{
+			
+			var appSettings = new AppSettings
+			{
+				ExternalAccounts = new Dictionary<string, AppSettingsExternalAccounts>{{"test",new AppSettingsExternalAccounts
+				{
+					AuthenticationMethod = "Basic",
+					Token = "test",
+					Username = "test",
+					BaseUrl = "https://test.com"
+				}}}
+			};
+			
+			Assert.AreEqual(1,appSettings.ExternalAccounts.Count);
+			
+			Assert.IsTrue(appSettings.AllowedHttpsDomains.Contains("test.com"));
+		}
+		
+		[TestMethod]
+		public void ExternalAccounts_Should_SkipHttp_AllowedHttpsDomains()
+		{
+			
+			var appSettings = new AppSettings
+			{
+				ExternalAccounts = new Dictionary<string, AppSettingsExternalAccounts>{{"test",new AppSettingsExternalAccounts
+				{
+					AuthenticationMethod = "Basic",
+					Token = "test",
+					Username = "test",
+					BaseUrl = "http://www.w3.org/" // NO https
+				}}}
+			};
+			
+			Assert.AreEqual(1,appSettings.ExternalAccounts.Count);
+			
+			Assert.IsFalse(appSettings.AllowedHttpsDomains.Contains("test.com"));
+		}
+		
+		[TestMethod]
+		public void ExternalAccounts_Should_SkipNull_AllowedHttpsDomains()
+		{
+			
+			var appSettings = new AppSettings
+			{
+				ExternalAccounts = new Dictionary<string, AppSettingsExternalAccounts>{{"test",new AppSettingsExternalAccounts
+				{
+					AuthenticationMethod = "Basic",
+					Token = "test",
+					Username = "test",
+					BaseUrl = null
+				}}}
+			};
+			
+			Assert.AreEqual(1,appSettings.ExternalAccounts.Count);
+			
+			Assert.IsFalse(appSettings.AllowedHttpsDomains.Contains(null));
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -29,7 +30,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			// use only whitelisted domains
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
@@ -50,7 +52,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			// there is an file written
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
@@ -71,7 +74,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			// http is not used anymore
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
@@ -93,7 +97,8 @@ namespace starskytest.Helpers
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			// there is an file written
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
@@ -120,7 +125,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var output = await httpClientHelper.Download("https://qdraw.nl/test","/sdkflndf",1);
 			Assert.IsFalse(output);
 		}
@@ -129,7 +135,14 @@ namespace starskytest.Helpers
 		[ExpectedException(typeof(EndOfStreamException))]
 		public async Task Download_HttpClientHelper_Download_NoStorage()
 		{
-			await new HttpClientHelper(new FakeIHttpProvider(), null, new FakeIWebLogger()).Download("t","T");
+			var client =  new HttpClientHelper(new FakeIHttpProvider(),
+				null, new FakeIWebLogger(),
+				new AppSettings
+				{
+					AllowedHttpsDomains = new List<string> { "qdraw.nl" }
+				});
+			
+			await client.Download("t","T");
 		}
 		
 		[TestMethod]
@@ -145,7 +158,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
 			
@@ -167,7 +181,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 			var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
 			Assert.IsFalse(output.Key);
 		}
@@ -185,7 +200,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			// http is not used anymore
 			var output = await httpClientHelper.ReadString("http://qdraw.nl");
@@ -205,7 +221,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var output = await httpClientHelper.ReadString("https://download.geonames.org/404");
 			Assert.AreEqual(false,output.Key);
@@ -224,7 +241,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var output = await httpClientHelper
 				.PostString("https://qdraw.nl/test", new StringContent(string.Empty));
@@ -246,7 +264,8 @@ namespace starskytest.Helpers
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 			var fakeLogger = new FakeIWebLogger();
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory,fakeLogger);
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory,fakeLogger, 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			await httpClientHelper
 				.PostString("https://qdraw.nl/test", new StringContent(string.Empty),false);
@@ -269,9 +288,12 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
+			
 			var output = await httpClientHelper
 				.PostString("https://qdraw.nl/test", new StringContent(string.Empty));
+			
 			Assert.IsFalse(output.Key);
 		}
 
@@ -288,7 +310,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			// http is not used anymore
 			var output = await httpClientHelper
@@ -309,7 +332,8 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var output = await httpClientHelper
 				.PostString("https://download.geonames.org/404", new StringContent(string.Empty));

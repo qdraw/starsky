@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -11,6 +12,7 @@ using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
@@ -27,13 +29,15 @@ namespace starsky.foundation.http.Services
 	    /// <param name="httpProvider">IHttpProvider</param>
 	    /// <param name="serviceScopeFactory">ScopeFactory contains a IStorageSelector</param>
 	    /// <param name="logger">WebLogger</param>
+	    /// <param name="appSettings">AppSettings</param>
 	    public HttpClientHelper(IHttpProvider httpProvider, 
-		    IServiceScopeFactory? serviceScopeFactory, IWebLogger logger)
+		    IServiceScopeFactory? serviceScopeFactory, IWebLogger logger, AppSettings appSettings)
 	    {
 		    _httpProvider = httpProvider;
 		    _logger = logger;
+		    _appSettings = appSettings;
+		    
 		    if ( serviceScopeFactory == null )  return;
-
 		    using ( var scope = serviceScopeFactory.CreateScope() )
 		    {
 			    // ISelectorStorage is a scoped service
@@ -48,30 +52,44 @@ namespace starsky.foundation.http.Services
 	    private readonly IHttpProvider _httpProvider;
 	    
 	    private readonly IWebLogger _logger;
+	    private readonly AppSettings _appSettings;
 
-		/// <summary>
+	    /// <summary>
 		/// This domains are only allowed domains to download from (and https only)
 		/// </summary>
 		private readonly List<string> _allowedDomains = new List<string>
         {
-            "dl.dropboxusercontent.com", 
-            "qdraw.nl", // < used by test
+	        "qdraw.nl", // < used by test
             "media.qdraw.nl", // < used by demo
-            "locker.ifttt.com",
 			"download.geonames.org",
 			"exiftool.org",
 			"api.github.com"
 		};
 
+	    /// <summary>
+	    /// Extend the allowed domains with the appSettings
+	    /// </summary>
+	    /// <returns>list of unique domains</returns>
+		private HashSet<string> AllowedDomains()
+		{
+			_allowedDomains.AddRange(_appSettings.AllowedHttpsDomains);
+			return _allowedDomains.ToHashSet();
+		}
+
+		/// <summary>
+		/// Get String of webPage - does check with domain whitelist
+		/// </summary>
+		/// <param name="sourceHttpUrl">webUrl</param>
+		/// <returns>bool: success or fail and string content of result</returns>
 		public async Task<KeyValuePair<bool,string>> ReadString(string sourceHttpUrl)
 		{
-			Uri sourceUri = new Uri(sourceHttpUrl);
+			var sourceUri = new Uri(sourceHttpUrl);
 
 			_logger.LogInformation("[ReadString] HttpClientHelper > " 
 			                       + sourceUri.Host + " ~ " + sourceHttpUrl);
 
 			// allow whitelist and https only
-			if (!_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
+			if (!AllowedDomains().Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
 				new KeyValuePair<bool, string>(false,string.Empty);
 
 			try
@@ -99,7 +117,7 @@ namespace starsky.foundation.http.Services
 			                                      + sourceUri.Host + " ~ " + sourceHttpUrl);
 
 			// // allow whitelist and https only
-			if (!_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
+			if (!AllowedDomains().Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
 				new KeyValuePair<bool, string>(false,string.Empty);
 
 			try
@@ -138,7 +156,7 @@ namespace starsky.foundation.http.Services
                                    + sourceUri.Host + " ~ " + sourceHttpUrl);
 
             // allow whitelist and https only
-            if ( !_allowedDomains.Contains(sourceUri.Host) ||
+            if ( !AllowedDomains().Contains(sourceUri.Host) ||
                  sourceUri.Scheme != "https" )
             {
 	            _logger.LogInformation("[Download] HttpClientHelper > " 

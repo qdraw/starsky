@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{fbf2e628-3cec-4970-8730-d32b586db13a}</ProjectGuid>
+        <DebugType>Full</DebugType>
+        <Version>0.5.10</Version>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+        
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
+      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+    </ItemGroup>
+
+</Project>

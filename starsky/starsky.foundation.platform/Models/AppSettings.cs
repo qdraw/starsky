@@ -1,3 +1,4 @@
+#nullable enable
 using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -152,23 +153,22 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Get the Application Version of Starsky
 		/// </summary>
-		public string AppVersion
+		public string AppVersion => GetAppVersion();
+
+		private static string GetAppVersion()
 		{
-			get
-			{
-				var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-				return string.IsNullOrEmpty(assemblyVersion) ? string.Empty : 
-					new Regex("\\.0$", RegexOptions.None, 
+			var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+			return string.IsNullOrEmpty(assemblyVersion) ? string.Empty : 
+				new Regex("\\.0$", RegexOptions.None, 
 						TimeSpan.FromMilliseconds(100))
-						.Replace(assemblyVersion, string.Empty);
-			}
+					.Replace(assemblyVersion, string.Empty);
 		}
 		
 		[PackageTelemetry]
 		public DateTime AppVersionBuildDateTime => DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 
 		// Can be used in the cli session to select files out of the file database system
-		private string _storageFolder;
+		private string? _storageFolder;
         
 		/// <summary>
 		/// Main Storage provider on disk
@@ -205,7 +205,7 @@ namespace starsky.foundation.platform.Models
 
 		// Used in the webHtmlCli to store the log item name
 		// used for the url
-		private string _name;
+		private string? _name;
 		
 		[PackageTelemetry]
 		public string Name
@@ -280,14 +280,14 @@ namespace starsky.foundation.platform.Models
 		}
         
 		// DatabaseType > above this one
-		private string _databaseConnection;
+		private string? _databaseConnection;
 
 		/// <summary>
 		/// Connection string for the database
 		/// </summary>
 		public string DatabaseConnection
 		{
-			get { return _databaseConnection; }
+			get { return _databaseConnection ??= string.Empty; }
 			set
 			{
 				var connection = ReplaceEnvironmentVariable(value);
@@ -298,7 +298,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Internal Structure save location
 		/// </summary>
-		private string _structure;
+		private string? _structure;
 		
 		/// <summary>
 		/// Auto storage structure
@@ -368,7 +368,7 @@ namespace starsky.foundation.platform.Models
 		}
 
 		[JsonIgnore]
-		public TimeZoneInfo CameraTimeZoneInfo { get; set; }
+		public TimeZoneInfo CameraTimeZoneInfo { get; set; } = TimeZoneInfo.Utc;
 
 		/// <summary>
 		/// To Check if the structure is any good
@@ -380,8 +380,8 @@ namespace starsky.foundation.platform.Models
 			// Unescaped regex:
 			//      ^(\/.+)?\/([\/_ A-Z0-9*{}\.\\-]+(?=\.ext))\.ext$
             
-			Regex structureRegex = new Regex( 
-				"^(\\/.+)?\\/([\\/_ A-Z0-9*{}\\.\\\\-]+(?=\\.ext))\\.ext$", 
+			var structureRegex = new Regex( 
+				@"^(\/.+)?\/([\/_ A-Z0-9*{}\.\\-]+(?=\.ext))\.ext$", 
 				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(300));
 
 			if (structureRegex.Match(structure).Success) return;
@@ -392,14 +392,14 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private: Location of storage of Thumbnails
 		/// </summary>
-		private string _thumbnailTempFolder;
+		private string? _thumbnailTempFolder;
         
 		/// <summary>
 		/// Location of storage of Thumbnails
 		/// </summary>
 		public string ThumbnailTempFolder
 		{
-			get => _thumbnailTempFolder;
+			get => _thumbnailTempFolder ??= string.Empty;
 			set
 			{
 				var thumbnailTempFolder = ReplaceEnvironmentVariable(value);
@@ -410,14 +410,14 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private: Location of temp folder
 		/// </summary>
-		private string _tempFolder;
+		private string? _tempFolder;
 
 		/// <summary>
 		/// Location of temp folder
 		/// </summary>
 		public string TempFolder
 		{
-			get => AssemblyDirectoryReplacer(_tempFolder);
+			get => AssemblyDirectoryReplacer(_tempFolder ??= string.Empty);
 			set
 			{
 				var tempFolder = ReplaceEnvironmentVariable(value);
@@ -428,14 +428,14 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private: Location of dependencies folder
 		/// </summary>
-		private string _dependenciesFolder;
+		private string? _dependenciesFolder;
 
 		/// <summary>
 		/// Location of dependencies folder
 		/// </summary>
 		public string DependenciesFolder
 		{
-			get => AssemblyDirectoryReplacer(_dependenciesFolder);
+			get => AssemblyDirectoryReplacer(_dependenciesFolder ??= string.Empty);
 			set
 			{
 				var dependenciesFolder = ReplaceEnvironmentVariable(value);
@@ -446,7 +446,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private: Location of AppSettings Path
 		/// </summary>
-		private string _appSettingsPathPrivate;
+		private string? _appSettingsPathPrivate;
         
 		/// <summary>
 		/// To store the settings by user in the AppData folder
@@ -454,7 +454,7 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public string AppSettingsPath
 		{
-			get => AssemblyDirectoryReplacer(_appSettingsPathPrivate); 
+			get => AssemblyDirectoryReplacer(_appSettingsPathPrivate ??= string.Empty); 
 			// ReSharper disable once MemberCanBePrivate.Global
 			set => _appSettingsPathPrivate = value; // set by ctor
 		}
@@ -467,7 +467,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private Location of ExifTool.exe
 		/// </summary>
-		private string ExifToolPathPrivate { get; set; }
+		private string? ExifToolPathPrivate { get; set; }
 		
 		/// <summary>
 		/// Set in ctor on startup
@@ -568,24 +568,20 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Internal location for webFtp credentials
 		/// </summary>
-		private string _webFtp;
+		private string? _webFtp;
 		
 		/// <summary>
 		/// Connection string for FTP
 		/// </summary>
 		public string WebFtp
 		{
-			get
-			{
-				if ( string.IsNullOrEmpty(_webFtp) ) return string.Empty;
-				return _webFtp;
-			}
+			get => string.IsNullOrEmpty(_webFtp) ? string.Empty : _webFtp;
 			set
 			{
 				// Anonymous FTP is not supported
 				// Make sure that '@' in username is '%40'
 				if ( string.IsNullOrEmpty(value) ) return;
-				Uri uriAddress = new Uri (value);
+				var uriAddress = new Uri (value);
 				if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2 
 				     && uriAddress.Scheme == "ftp" 
 				     && uriAddress.LocalPath.Length >= 1 )
@@ -606,7 +602,7 @@ namespace starsky.foundation.platform.Models
 		/// Publishing profiles used within the publishing module (Order by Key)
 		/// </summary>
 		[PackageTelemetry]
-		public Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfiles {
+		public Dictionary<string, List<AppSettingsPublishProfiles>>? PublishProfiles {
 			get => PublishProfilesPrivate;
 			set
 			{
@@ -639,7 +635,6 @@ namespace starsky.foundation.platform.Models
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		[PackageTelemetry]
 		public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
-		
 
 		/// <summary>
 		/// Value for AccountRolesDefaultByEmailRegisterOverwrite
@@ -654,7 +649,7 @@ namespace starsky.foundation.platform.Models
 		/// <remarks>
 		///    { "demo@qdraw.nl": "Administrator" }
 		/// </remarks>
-		public Dictionary<string, string> AccountRolesByEmailRegisterOverwrite {
+		public Dictionary<string, string>? AccountRolesByEmailRegisterOverwrite {
 			get => AccountRolesByEmailRegisterOverwritePrivate;
 			init
 			{
@@ -676,12 +671,12 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private storage for Application Insights InstrumentationKey
 		/// </summary>
-		private string ApplicationInsightsConnectionStringPrivate { get; set; } = "";
+		private string? ApplicationInsightsConnectionStringPrivate { get; set; } = "";
 		
 		/// <summary>
 		/// Insert the Application Insights Connection String here or use environment variable: APPLICATIONINSIGHTS_CONNECTION_STRING
 		/// </summary>
-		public string ApplicationInsightsConnectionString {
+		public string? ApplicationInsightsConnectionString {
 			get
 			{
 				if ( string.IsNullOrWhiteSpace(ApplicationInsightsConnectionStringPrivate) )
@@ -775,8 +770,6 @@ namespace starsky.foundation.platform.Models
 		/// Private storage for EnablePackageTelemetry
 		/// </summary>
 		private bool? EnablePackageTelemetryPrivate { get; set; }
-
-		
 		
 		/// <summary>
 		/// Disable logout buttons in UI
@@ -784,7 +777,6 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		[PackageTelemetry]
 		public bool? UseLocalDesktopUi { get; set; } = false;
-		
 		
 		/// <summary>
 		/// Helps us improve the software
@@ -839,23 +831,60 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		[PackageTelemetry]
 		public bool? UseSystemTrash { get; set; }
-		
 
-		// -------------------------------------------------
-		// ------------------- Modifiers -------------------
-		// -------------------------------------------------
 
-		private string AssemblyDirectoryReplacer(string value)
-		{
-			return value.Replace("{AssemblyDirectory}", BaseDirectoryProject);
-		}
-	    
+
 		/// <summary>
-		/// Used for CloneToDisplay
+		/// Security whitelist to allow GET requests from other domains than the default list
+		/// use env variable: app__AllowedHttpsDomains__0 - value
+		/// Always use a domain name only, no paths and exclude https://
+		/// http is not supported due security reasons
 		/// </summary>
-		public const string CloneToDisplaySecurityWarning =
-			"warning: The field is not empty but for security reasons it is not shown";
+		public List<string> AllowedHttpsDomains { get; set; } = new List<string>();
 
+		/// <summary>
+		/// Stored data of external accounts
+		/// </summary>
+		private Dictionary<string, AppSettingsExternalAccounts> ExternalAccountsPrivate { get; set; } = new Dictionary<string, AppSettingsExternalAccounts>();
+
+		/// <summary>
+		/// Information about external accounts
+		/// </summary>
+		public Dictionary<string, AppSettingsExternalAccounts> ExternalAccounts {
+			set
+			{
+				AppendAllowedHttpsDomains(value);
+				ExternalAccountsPrivate = value;
+			} 
+			
+			get => ExternalAccountsPrivate;
+		}
+
+		private void AppendAllowedHttpsDomains(
+			Dictionary<string, AppSettingsExternalAccounts>? value)
+		{
+			if(value == null) return;
+			
+			foreach ( var accountsKey in value.Keys )
+			{
+				if ( value[accountsKey].BaseUrl == null ||
+				     !value[accountsKey].BaseUrl
+					     .StartsWith("https://") )
+				{
+					continue;
+				}
+					
+				var match = new Regex(
+						@"^(?:https?:)?(?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)")
+					.Match(value[accountsKey].BaseUrl);
+				var domain = match.Value.Replace("https://", string.Empty);
+				if ( !AllowedHttpsDomains.Contains(domain) )
+				{
+					AllowedHttpsDomains.Add(domain);
+				}
+			}
+		}
+		
 		/// <summary>
 		/// For background task with lower priority e.g. thumbnails
 		/// it skips the current task if the current process is to busy
@@ -878,7 +907,22 @@ namespace starsky.foundation.platform.Models
 		/// Recommended to to keep false
 		/// </summary>
 		public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
+		
+		/// <summary>
+		/// Used for CloneToDisplay
+		/// </summary>
+		public const string CloneToDisplaySecurityWarning =
+			"warning: The field is not empty but for security reasons it is not shown";
 
+		// -------------------------------------------------
+		// ------------------- Modifiers -------------------
+		// -------------------------------------------------
+
+		private string AssemblyDirectoryReplacer(string value)
+		{
+			return value.Replace("{AssemblyDirectory}", BaseDirectoryProject);
+		}
+	    
 		/// <returns>AppSettings duplicated</returns>
 		/// <summary>
 		/// Duplicate this item in memory. AND remove _databaseConnection 
@@ -950,11 +994,11 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// StorageFolders ends always with a backslash
 		/// </summary>
-		/// <param name="subpath">in OS Style, StorageFolder ends with backslash</param>
+		/// <param name="subPath">in OS Style, StorageFolder ends with backslash</param>
 		/// <returns></returns>
-		public string FullPathToDatabaseStyle(string subpath)
+		public string FullPathToDatabaseStyle(string subPath)
 		{
-			var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
+			var databaseFilePath = subPath.Replace(StorageFolder, string.Empty);
 			databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
 			
 			return PathHelper.PrefixDbSlash(databaseFilePath);
@@ -986,7 +1030,7 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		/// <param name="subPath">path to replace</param>
 		/// <returns>replaced output</returns>
-		private string _pathToDatabaseStyle(string subPath)
+		private static string _pathToDatabaseStyle(string subPath)
 		{
 			if (Path.DirectorySeparatorChar.ToString() == "\\")
 			{
@@ -1000,7 +1044,7 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		/// <param name="subPath">path to replace</param>
 		/// <returns>replaced output</returns>
-		private string _pathToFilePathStyle(string subPath)
+		private static string _pathToFilePathStyle(string subPath)
 		{
 			if (Path.DirectorySeparatorChar.ToString() == "\\")
 			{
@@ -1015,7 +1059,7 @@ namespace starsky.foundation.platform.Models
 		/// <param name="databaseFilePath">databaseFilePath</param>
 		/// <param name="checkIfExist">checkIfExist</param>
 		/// <returns></returns>
-		public string DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
+		public string? DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
 		{
 			var filepath = StorageFolder + databaseFilePath;
 
@@ -1052,7 +1096,7 @@ namespace starsky.foundation.platform.Models
 		/// <returns></returns>
 		/// <exception cref="ArgumentException">The 'DatabaseConnection' field is null or empty or
 		/// missing Data Source in connection string</exception>
-		public string SqLiteFullPath(string connectionString, string baseDirectoryProject)
+		internal string SqLiteFullPath(string connectionString, string baseDirectoryProject)
 		{
 			if (DatabaseType == DatabaseTypeList.Mysql && string.IsNullOrWhiteSpace(connectionString)) 
 				throw  new ArgumentException("The 'DatabaseConnection' field is null or empty");

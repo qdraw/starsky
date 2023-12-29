@@ -19,7 +19,7 @@ namespace starskytest.FakeMocks
 			_inputDictionary = inputDictionary;
 		}
 		
-		public Task<HttpResponseMessage> GetAsync(string requestUri)
+		public Task<HttpResponseMessage> GetAsync(string requestUri, string authorization = "")
 		{
 			UrlCalled.Add(requestUri);
 

@@ -89,7 +89,7 @@ namespace starsky.feature.geolookup.Services
 			{
 				inputPath = _appSettings.DatabasePathToFilePath(
 					ArgsHelper.GetSubPathFormArgs(args)
-				);
+				)!;
 			}
 			else
 			{
@@ -105,7 +105,7 @@ namespace starsky.feature.geolookup.Services
 				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
 				inputPath = _appSettings.DatabasePathToFilePath(
 					new StructureService(_iStorage, _appSettings.Structure)
-						.ParseSubfolders(dateTime),false);
+						.ParseSubfolders(dateTime),false)!;
 			}
     
 			// used in this session to find the files back

@@ -182,7 +182,8 @@ namespace starskytest.Controllers
 			var serviceProvider = services.BuildServiceProvider();
 
 			var httpClientHelper = new HttpClientHelper(httpProvider,
-				serviceProvider.GetRequiredService<IServiceScopeFactory>(), new FakeIWebLogger());
+				serviceProvider.GetRequiredService<IServiceScopeFactory>(), new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"download.geonames.org"}});
 
 			var importController = new ImportController(_import, _appSettings,
 				_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()),
@@ -208,7 +209,8 @@ namespace starskytest.Controllers
 			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 
 			var httpClientHelper = new HttpClientHelper(httpProvider,
-				serviceProvider.GetRequiredService<IServiceScopeFactory>(), new FakeIWebLogger());
+				serviceProvider.GetRequiredService<IServiceScopeFactory>(), new FakeIWebLogger(), 
+				new AppSettings{ AllowedHttpsDomains = new List<string>{"qdraw.nl"}});
 
 			var importController = new ImportController(
 				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,

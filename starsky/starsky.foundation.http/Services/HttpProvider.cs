@@ -32,10 +32,15 @@ namespace starsky.foundation.http.Services
 		/// Get the Async results
 		/// </summary>
 		/// <param name="requestUri">https:// url</param>
+		/// <param name="authorization">Excluded Basic or Bearer keyword </param>
 		/// <returns>Task with Response</returns>
-		public Task<HttpResponseMessage> GetAsync(string requestUri)
+		public Task<HttpResponseMessage> GetAsync(string requestUri, string authorization = "")
 		{
 			_httpClient.DefaultRequestHeaders.Add("User-Agent",UserAgent);
+			if ( !string.IsNullOrEmpty(authorization) )
+			{
+				_httpClient.DefaultRequestHeaders.Add("Authorization", authorization);
+			}
 			return _httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 		}
 

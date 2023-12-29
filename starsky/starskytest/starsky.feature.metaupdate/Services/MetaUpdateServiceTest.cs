@@ -237,6 +237,9 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				"/test.gpx", new List<string>{"Tags"}
 			}};
 
+			var t = new CreateAnGpx().FullFileGpxPath;
+			
+
 			await _iStorageFake.WriteStreamAsync(new MemoryStream(CreateAnGpx.Bytes.ToArray()), "/test.gpx");
 			var updateItem = new FileIndexItem("/test.gpx")
 			{
