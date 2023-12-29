@@ -4,7 +4,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>starsky.feature.trash</RootNamespace>
         <ProjectGuid>{21affb47-1f8c-458a-84bb-24959e0fda31}</ProjectGuid>
-        <Version>0.5.13</Version>
+        <Version>0.5.14</Version>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
