@@ -1,6 +1,6 @@
 {
   "name": "mail",
-  "version": "0.5.13",
+  "version": "0.5.14",
   "description": "",
   "main": "mail.js",
   "scripts": {
