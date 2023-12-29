@@ -20,7 +20,7 @@ namespace starsky.foundation.webtelemetry.Extensions
 		/// <param name="appSettings">to use for ApplicationInsights InstrumentationKey</param>
 		public static void AddMonitoring(this IServiceCollection services, AppSettings appSettings)
 		{
-			if ( string.IsNullOrWhiteSpace(appSettings.ApplicationInsightsConnectionString) )
+			if ( string.IsNullOrWhiteSpace(appSettings.OpenTelemetryEndpoint) )
 			{
 				return;
 			}
