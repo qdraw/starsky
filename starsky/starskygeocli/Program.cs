@@ -33,7 +33,7 @@ namespace starskyGeoCli
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 			
 			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Geo);
-			services.AddApplicationInsightsLogging(appSettings);
+			services.AddTelemetryLogging(appSettings);
 			
 			new SetupDatabaseTypes(appSettings,services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();

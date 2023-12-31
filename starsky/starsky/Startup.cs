@@ -71,9 +71,10 @@ namespace starsky
             
             // Detect Application Insights (used in next SetupDatabaseTypes)
             services.AddMonitoring(_appSettings);
+            services.AddOpenTelemetryMonitoring(_appSettings);
             
             // LoggerFactory
-            services.AddApplicationInsightsLogging(_appSettings);
+            services.AddTelemetryLogging(_appSettings);
             
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName?.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);

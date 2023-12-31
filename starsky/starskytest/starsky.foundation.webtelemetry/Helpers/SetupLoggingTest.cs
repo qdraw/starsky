@@ -16,7 +16,7 @@ public class SetupLoggingTest
 	{
 		var testGuid = Guid.NewGuid().ToString();
 		IServiceCollection services = new ServiceCollection();
-		services.AddApplicationInsightsLogging(new AppSettings
+		services.AddTelemetryLogging(new AppSettings
 		{
 			ApplicationInsightsLog = true,
 			ApplicationInsightsConnectionString = $"InstrumentationKey={testGuid}"

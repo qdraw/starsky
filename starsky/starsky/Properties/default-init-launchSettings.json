@@ -27,7 +27,9 @@
           "app__DemoUnsafeDeleteStorageFolder": "false",
           "app__useSystemTrash": "true",
           "app__accountRolesByEmailRegisterOverwrite__demo@qdraw.nl": "Administrator",
-          "app__ThumbnailGenerationIntervalInMinutes": "15"
+          "app__ThumbnailGenerationIntervalInMinutes": "15",
+          "_app__OpenTelemetryEndpoint": "http://localhost:9411/api/v2/spans",
+          "app__OpenTelemetryHeader": "api-key=test"  
         }
     }
   }

@@ -1,6 +1,9 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
@@ -10,14 +13,26 @@ namespace starsky.foundation.webtelemetry.Helpers
 	public static class SetupLogging
 	{
 		[SuppressMessage("Usage", "S4792:Make sure that this logger's configuration is safe.")]
-		public static void AddApplicationInsightsLogging(this IServiceCollection services, AppSettings appSettings)
+		public static void AddTelemetryLogging(this IServiceCollection services, AppSettings appSettings)
 		{
 			services.AddLogging(logging =>
 			{
 				logging.ClearProviders();
 				logging.AddConsole();
-	            
-				// Skip when is Development
+
+				if ( !string.IsNullOrEmpty(appSettings.OpenTelemetryEndpoint) )
+				{
+					logging.AddOpenTelemetry(builder => builder.AddOtlpExporter(
+						"logging",
+						options =>
+						{
+							options.Protocol = OtlpExportProtocol.HttpProtobuf;
+							options.Headers = appSettings.OpenTelemetryHeader;
+							options.Endpoint = new Uri(appSettings.OpenTelemetryEndpoint);
+						}));
+				}
+				
+				// Remove when ApplicationInsights is phased out
 				if (appSettings.ApplicationInsightsLog != true || 
 				    string.IsNullOrWhiteSpace(appSettings.ApplicationInsightsConnectionString)) return;
 	            
@@ -27,6 +42,8 @@ namespace starsky.foundation.webtelemetry.Helpers
 						telemetryConfiguration.ConnectionString = appSettings.ApplicationInsightsConnectionString;
 					},
 					_ => { });
+				// End Remove when ApplicationInsights is phased out
+
 			});
 
 			services.AddScoped<IWebLogger, WebLogger>();
