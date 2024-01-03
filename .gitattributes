@@ -1,6 +1,34 @@
 * text=auto
 
+# backend
+*.config eol=lf
+*.cshtml eol=lf
+*.resx eol=lf
+*.cs text eol=lf
+*.sln text eol=lf
+
+# front-end
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.scss text eol=lf
+*.css text eol=lf
+*.hbs text eol=lf
+*.htm text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+
+# shell / other
 *.sh text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.xml text eol=lf
+
+# windows specific files
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
 
 # https://github.com/github/linguist
 docs/* linguist-documentation
