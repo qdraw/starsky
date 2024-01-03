@@ -33,9 +33,40 @@ namespace starsky.foundation.platform.Helpers
 	            
 				CompareMultipleSingleItems(propertyB, propertyInfoFromA, sourceIndexItem, updateObject, differenceList);
 				CompareMultipleListDictionary(propertyB, propertyInfoFromA, sourceIndexItem, updateObject, differenceList);
+				CompareMultipleObjects(propertyB, propertyInfoFromA, sourceIndexItem, updateObject, differenceList);
 
 			}
 			return differenceList;
+		}
+
+		private static void CompareMultipleObjects(PropertyInfo propertyB, PropertyInfo propertyInfoFromA, AppSettings sourceIndexItem, object updateObject, List<string> differenceList)
+		{
+			if (propertyInfoFromA.PropertyType == typeof(OpenTelemetrySettings) && propertyB.PropertyType == typeof(OpenTelemetrySettings))
+			{
+				var oldBoolValue = (OpenTelemetrySettings?)propertyInfoFromA.GetValue(sourceIndexItem, null);
+				var newBoolValue = (OpenTelemetrySettings?)propertyB.GetValue(updateObject, null);
+				CompareOpenTelemetrySettingsObject(propertyB.Name, sourceIndexItem, oldBoolValue, newBoolValue, differenceList);
+			}
+		}
+		
+		private static void CompareOpenTelemetrySettingsObject(string propertyName, AppSettings? sourceIndexItem, 
+			OpenTelemetrySettings? oldKeyValuePairStringStringValue, 
+			OpenTelemetrySettings? newKeyValuePairStringStringValue, ICollection<string> differenceList)
+		{
+			if ( oldKeyValuePairStringStringValue == null ||
+			     newKeyValuePairStringStringValue == null)
+			{
+				return;
+			}
+
+			if ( oldKeyValuePairStringStringValue.Equals(
+				    newKeyValuePairStringStringValue) )
+			{
+				return;
+			}
+
+			sourceIndexItem?.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newKeyValuePairStringStringValue, null);
+			differenceList.Add(propertyName.ToLowerInvariant());
 		}
 
 		private static void CompareMultipleSingleItems(PropertyInfo propertyB,

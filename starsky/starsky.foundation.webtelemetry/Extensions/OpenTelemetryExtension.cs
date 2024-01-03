@@ -7,6 +7,7 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -22,12 +23,7 @@ public static class OpenTelemetryExtension
 	public static void AddOpenTelemetryMonitoring(
 		this IServiceCollection services, AppSettings appSettings)
 	{
-		if ( string.IsNullOrWhiteSpace(appSettings.OpenTelemetryEndpoint) )
-		{
-			return;
-		}
-
-		services.AddOpenTelemetry()
+		var telemetryBuilder = services.AddOpenTelemetry()
 			.ConfigureResource(resource => resource.AddService(
 				serviceNamespace: appSettings.Name,
 				serviceName: appSettings.Name,
@@ -38,32 +34,51 @@ public static class OpenTelemetryExtension
 			{
 				{
 					"deployment.environment",
-					Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
-					!
+						Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!
 				}
-			}))
-			.WithTracing(tracing => tracing.AddAspNetCoreInstrumentation()
-				.AddConsoleExporter()
+			}));
+		
+		if ( !string.IsNullOrWhiteSpace(appSettings.OpenTelemetry.TracesEndpoint) )
+		{
+			telemetryBuilder.WithTracing(tracing => tracing
+				.AddAspNetCoreInstrumentation()
 				.AddOtlpExporter(
 					o =>
 					{
-						o.Endpoint = new Uri(appSettings.OpenTelemetryEndpoint);
+						o.Endpoint =
+							new Uri(appSettings.OpenTelemetry.TracesEndpoint);
 						o.Protocol = OtlpExportProtocol.HttpProtobuf;
-						o.Headers = appSettings.OpenTelemetryHeader;
+						o.Headers = appSettings.OpenTelemetry.GetTracesHeader();
 					}
+				).SetResourceBuilder(
+					ResourceBuilder.CreateDefault()
+						.AddService(appSettings.OpenTelemetry.GetServiceName())
 				)
-			)
-			.WithMetrics(metrics =>
-				metrics.AddAspNetCoreInstrumentation()
-					.AddRuntimeInstrumentation()
-					.AddConsoleExporter()
-					.AddOtlpExporter(	
-						o =>
+			);
+		}
+
+		if ( string.IsNullOrWhiteSpace(
+			    appSettings.OpenTelemetry.MetricsEndpoint) )
+		{
+			return;
+		}
+
+		telemetryBuilder.WithMetrics(metrics =>
+			metrics.AddAspNetCoreInstrumentation()
+				.AddRuntimeInstrumentation()
+				.AddHttpClientInstrumentation()
+				.AddOtlpExporter(
+					o =>
 					{
-						o.Endpoint = new Uri(appSettings.OpenTelemetryEndpoint);
+						o.Endpoint = new Uri(appSettings.OpenTelemetry.MetricsEndpoint);
 						o.Protocol = OtlpExportProtocol.HttpProtobuf;
-						o.Headers = appSettings.OpenTelemetryHeader;
+						o.Headers = appSettings.OpenTelemetry.GetMetricsHeader();
 					})
-				);
+				.SetResourceBuilder(
+					ResourceBuilder.CreateDefault()
+						.AddService(appSettings.OpenTelemetry.GetServiceName())	
+				)
+		);
+
 	}
 }

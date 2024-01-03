@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
@@ -20,16 +21,22 @@ namespace starsky.foundation.webtelemetry.Helpers
 				logging.ClearProviders();
 				logging.AddConsole();
 
-				if ( !string.IsNullOrEmpty(appSettings.OpenTelemetryEndpoint) )
+				if ( !string.IsNullOrEmpty(appSettings.OpenTelemetry.LogsEndpoint) )
 				{
-					logging.AddOpenTelemetry(builder => builder.AddOtlpExporter(
+					logging.AddOpenTelemetry(builder => 
+						builder.AddOtlpExporter(
 						"logging",
 						options =>
 						{
 							options.Protocol = OtlpExportProtocol.HttpProtobuf;
-							options.Headers = appSettings.OpenTelemetryHeader;
-							options.Endpoint = new Uri(appSettings.OpenTelemetryEndpoint);
-						}));
+							options.Headers = appSettings.OpenTelemetry.GetLogsHeader();
+							options.Endpoint = new Uri(appSettings.OpenTelemetry.LogsEndpoint);
+						})
+						.SetResourceBuilder(
+							ResourceBuilder.CreateDefault()
+								.AddService(appSettings.OpenTelemetry.GetServiceName())
+						)
+					);
 				}
 				
 				// Remove when ApplicationInsights is phased out

@@ -879,9 +879,8 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
 
-		public string OpenTelemetryEndpoint { get; set; }
-		
-		public string OpenTelemetryHeader { get; set; }
+		public OpenTelemetrySettings OpenTelemetry { get; set; } =
+			new OpenTelemetrySettings();
 
 		/// <returns>AppSettings duplicated</returns>
 		/// <summary>
