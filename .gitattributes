@@ -6,6 +6,7 @@
 *.resx eol=lf
 *.cs text eol=lf
 *.sln text eol=lf
+*.csproj text eol=lf
 
 # front-end
 *.ts text eol=lf
