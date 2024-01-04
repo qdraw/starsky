@@ -528,5 +528,26 @@ namespace starskytest.starsky.foundation.platform.Models
 			Assert.AreEqual(2,appSettings.AccountRolesByEmailRegisterOverwrite.Count);
 			Assert.AreEqual("Administrator", appSettings.AccountRolesByEmailRegisterOverwrite["bogusEmail2"]);
 		}
+
+
+		[TestMethod]
+		public void DatabasePathToFilePath_Null()
+		{
+			var appSettings = new AppSettings();
+			
+			var result = appSettings.DatabasePathToFilePath("\\test");
+			
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public void DatabasePathToFilePath_NoNull()
+		{
+			var appSettings = new AppSettings();
+			
+			var result = appSettings.DatabasePathToFilePath("\\test",false);
+			
+			Assert.IsNotNull(result);
+		}
 	}
 }
