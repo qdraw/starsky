@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn;
@@ -363,7 +361,50 @@ namespace starskytest.starsky.foundation.platform.Models
 			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.WebFtp);
 			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.ApplicationInsightsConnectionString);
 		}
+
+		[TestMethod]
+		public void AppSettings_CloneToDisplay_hideSecurityItems2()
+		{
+			var appSettings = new AppSettings
+			{
+				OpenTelemetry = new OpenTelemetrySettings
+				{
+					Header = "test",
+					LogsHeader = "test",
+					MetricsHeader = "test",
+					TracesHeader = "test"
+				}
+			};
+			var display = appSettings.CloneToDisplay();
+			
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry.Header);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry.LogsHeader);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry.MetricsHeader);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry.TracesHeader);
+		}
 		
+		[TestMethod]
+		public void AppSettings_CloneToDisplay_skipSecurityItems2()
+		{
+			var appSettings = new AppSettings
+			{
+				OpenTelemetry = new OpenTelemetrySettings
+				{
+					Header = null,
+					LogsHeader = null,
+					MetricsHeader = null,
+					TracesHeader = null,
+				}
+			};
+			
+			var display = appSettings.CloneToDisplay();
+			
+			Assert.IsNull(display.OpenTelemetry.Header);
+			Assert.IsNull(display.OpenTelemetry.LogsHeader);
+			Assert.IsNull(display.OpenTelemetry.MetricsHeader);
+			Assert.IsNull(display.OpenTelemetry.TracesHeader);
+		}
+
 		[TestMethod]
 		public void AppSettings_CloneToDisplay_hideSecurityItems_PublishProfiles()
 		{
@@ -406,7 +447,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void PublishProfiles_Null()
 		{
 			var appSettings = new AppSettings {PublishProfiles = null};
-			Assert.AreEqual(0, appSettings.PublishProfiles.Count );
+			Assert.AreEqual(0, appSettings.PublishProfiles?.Count);
 		}
 
 		[TestMethod]
