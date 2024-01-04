@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
@@ -40,15 +41,7 @@ public static class OpenTelemetryExtension
 		if ( !string.IsNullOrWhiteSpace(appSettings.OpenTelemetry.TracesEndpoint) )
 		{
 			telemetryBuilder.WithTracing(tracing => tracing
-				.AddAspNetCoreInstrumentation(o => o.Filter = context =>
-				{
-					if ( context.Request.Path.Value?.EndsWith("/realtime") == true && 
-					     context.Request.Path.Value?.EndsWith("/api/health") == true)
-					{
-						return false;
-					}
-					return true;
-				})
+				.AddAspNetCoreInstrumentation(o => o.Filter = FilterPath)
 				.AddOtlpExporter(
 					o =>
 					{
@@ -86,5 +79,15 @@ public static class OpenTelemetryExtension
 						.AddService(appSettings.OpenTelemetry.GetServiceName())	
 				)
 		);
+	}
+	
+	internal static bool FilterPath(HttpContext context)
+	{
+		if ( context.Request.Path.Value?.EndsWith("/realtime") == true || 
+		     context.Request.Path.Value?.EndsWith("/api/health") == true)
+		{
+			return false;
+		}
+		return true;
 	}
 }

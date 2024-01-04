@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenTelemetry.Metrics;
@@ -102,5 +103,26 @@ public class OpenTelemetryExtensionTest
 		// Verify metrics configuration
 		var meterProvider = serviceProvider.GetService<MeterProvider>();
 		Assert.IsNull(meterProvider);
+	}
+
+	[TestMethod]
+	public void FilterPathTestIsTrue()
+	{
+		var context = new DefaultHttpContext { Request = { Path = "/test" } };
+		Assert.IsTrue(OpenTelemetryExtension.FilterPath(context));
+	}
+	
+	[TestMethod]
+	public void FilterPathTestSkipHealth()
+	{
+		var context = new DefaultHttpContext { Request = { Path = "/api/health" } };
+		Assert.IsFalse(OpenTelemetryExtension.FilterPath(context));
+	}
+	
+	[TestMethod]
+	public void FilterPathTestSkipRealtime()
+	{
+		var context = new DefaultHttpContext { Request = { Path = "/realtime" } };
+		Assert.IsFalse(OpenTelemetryExtension.FilterPath(context));
 	}
 }
