@@ -54,13 +54,9 @@ namespace starsky.foundation.platform.Helpers
 			OpenTelemetrySettings? newKeyValuePairStringStringValue, ICollection<string> differenceList)
 		{
 			if ( oldKeyValuePairStringStringValue == null ||
-			     newKeyValuePairStringStringValue == null)
-			{
-				return;
-			}
-
-			if ( oldKeyValuePairStringStringValue.Equals(
-				    newKeyValuePairStringStringValue) )
+			     newKeyValuePairStringStringValue == null || 
+			     JsonSerializer.Serialize(oldKeyValuePairStringStringValue) == 
+			     JsonSerializer.Serialize(newKeyValuePairStringStringValue))
 			{
 				return;
 			}

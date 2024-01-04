@@ -7,7 +7,6 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -19,14 +18,14 @@ public static class OpenTelemetryExtension
 	/// Add Metrics & Monitoring for OpenTelemetry
 	/// </summary>
 	/// <param name="services">collection service</param>
-	/// <param name="appSettings">to use for ApplicationInsights InstrumentationKey</param>
+	/// <param name="appSettings">to use for OpenTelemetry keys and info</param>
 	public static void AddOpenTelemetryMonitoring(
 		this IServiceCollection services, AppSettings appSettings)
 	{
 		var telemetryBuilder = services.AddOpenTelemetry()
 			.ConfigureResource(resource => resource.AddService(
-				serviceNamespace: appSettings.Name,
-				serviceName: appSettings.Name,
+				serviceNamespace: appSettings.OpenTelemetry.GetServiceName(),
+				serviceName: appSettings.OpenTelemetry.GetServiceName(),
 				serviceVersion: Assembly.GetEntryAssembly()?.GetName().Version
 					?.ToString(),
 				serviceInstanceId: Environment.MachineName
@@ -34,14 +33,22 @@ public static class OpenTelemetryExtension
 			{
 				{
 					"deployment.environment",
-						Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!
+						Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty
 				}
 			}));
 		
 		if ( !string.IsNullOrWhiteSpace(appSettings.OpenTelemetry.TracesEndpoint) )
 		{
 			telemetryBuilder.WithTracing(tracing => tracing
-				.AddAspNetCoreInstrumentation()
+				.AddAspNetCoreInstrumentation(o => o.Filter = context =>
+				{
+					if ( context.Request.Path.Value?.EndsWith("/realtime") == true && 
+					     context.Request.Path.Value?.EndsWith("/api/health") == true)
+					{
+						return false;
+					}
+					return true;
+				})
 				.AddOtlpExporter(
 					o =>
 					{
@@ -79,6 +86,5 @@ public static class OpenTelemetryExtension
 						.AddService(appSettings.OpenTelemetry.GetServiceName())	
 				)
 		);
-
 	}
 }

@@ -930,7 +930,41 @@ namespace starsky.foundation.platform.Models
 				}
 			}
 
+			ReplaceOpenTelemetryData(appSettings);
+
 			return appSettings;
+		}
+
+		private static void ReplaceOpenTelemetryData(AppSettings appSettings)
+		{
+			if ( appSettings.OpenTelemetry == null )
+			{
+				return;
+			}
+			
+			if (!string.IsNullOrEmpty(appSettings.OpenTelemetry.Header) )
+			{
+				appSettings.OpenTelemetry.Header =
+					CloneToDisplaySecurityWarning;
+			}
+			
+			if (!string.IsNullOrEmpty(appSettings.OpenTelemetry.MetricsHeader) )
+			{
+				appSettings.OpenTelemetry.MetricsHeader =
+					CloneToDisplaySecurityWarning;
+			}
+			
+			if (!string.IsNullOrEmpty(appSettings.OpenTelemetry.LogsHeader) )
+			{
+				appSettings.OpenTelemetry.LogsHeader =
+					CloneToDisplaySecurityWarning;
+			}
+			
+			if (!string.IsNullOrEmpty(appSettings.OpenTelemetry.TracesHeader) )
+			{
+				appSettings.OpenTelemetry.TracesHeader =
+					CloneToDisplaySecurityWarning;
+			}
 		}
 
 		private static void ReplaceAppSettingsPublishProfilesCloneToDisplay(AppSettingsPublishProfiles value)
