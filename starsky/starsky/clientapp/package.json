@@ -22,6 +22,12 @@
     "update:install": "npx  --yes npm-check-updates -u && npm install"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.7.0",
+    "@opentelemetry/auto-instrumentations-web": "^0.34.0",
+    "@opentelemetry/context-zone": "^1.19.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.46.0",
+    "@opentelemetry/instrumentation-fetch": "^0.46.0",
+    "@opentelemetry/sdk-trace-web": "^1.19.0",
     "core-js": "^3.34.0",
     "leaflet": "^1.9.4",
     "react": "^18.2.0",

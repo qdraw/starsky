@@ -14,12 +14,18 @@ import "./style/css/00-index.css";
 /* used for image policy */
 /// <reference path='./index.d.ts'/>
 
+// Add OpenTelemetry
+const openTelemetry = await import("./shared/opentelemetry/opentelemetry.tsx");
+// end of OpenTelemetry
+
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
-    <RouterApp />
-  </React.StrictMode>
+  <openTelemetry.default>
+    <React.StrictMode>
+      <RouterApp />
+    </React.StrictMode>
+  </openTelemetry.default>
 );
 
 // when React is loaded 'trouble loading' is not needed
@@ -29,7 +35,9 @@ if (troubleLoading && troubleLoading.parentElement) {
 }
 
 // Add App insights
+// Remove when App insights is phased out
 const appInsightsScriptElement = document.createElement("script");
 appInsightsScriptElement.type = "text/javascript";
 appInsightsScriptElement.src = "/starsky/api/health/application-insights";
 document.body.appendChild(appInsightsScriptElement);
+// end app insights
