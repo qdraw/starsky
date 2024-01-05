@@ -5,6 +5,10 @@ using starsky.foundation.injection;
 
 namespace starsky.foundation.webtelemetry.Services
 {
+	/// <summary>
+	/// App Insights Filter Status Codes Initializer
+	/// Remove when App insights is phased out
+	/// </summary>
 	[Service(typeof(ITelemetryInitializer), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class FilterStatusCodesInitializer : ITelemetryInitializer
 	{

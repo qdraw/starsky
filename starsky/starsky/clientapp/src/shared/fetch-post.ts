@@ -1,24 +1,17 @@
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
-
+import { GetCookie } from "../get-cookie.ts";
 const FetchPost = async (
   url: string,
   body: string | FormData,
   method: "post" | "delete" = "post",
   headers: object = {}
 ): Promise<IConnectionDefault> => {
-  function getCookie(name: string): string {
-    const regex = new RegExp("(^| )" + name + "=([^;]+)");
-    const match = regex.exec(document.cookie);
-    if (match) return match[2];
-    return "X-XSRF-TOKEN";
-  }
-
   const settings: RequestInit = {
     method: method,
     body,
     credentials: "include" as RequestCredentials,
     headers: {
-      "X-XSRF-TOKEN": getCookie("X-XSRF-TOKEN"),
+      "X-XSRF-TOKEN": GetCookie("X-XSRF-TOKEN"),
       Accept: "application/json",
       ...headers
     }

@@ -8,6 +8,9 @@ using starsky.foundation.injection;
 
 namespace starsky.foundation.webtelemetry.Services
 {
+	/// <summary>
+	/// Remove when App insights is phased out
+	/// </summary>
 	[Service(InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class ApplicationInsightsJsHelper
 	{
