@@ -14,6 +14,17 @@ public class OpenTelemetrySettingsTest
 	}
 	
 	[TestMethod]
+	public void ServiceNameProperty()
+	{
+		var result = new OpenTelemetrySettings
+		{
+			ServiceName = "test-service"
+		}.GetServiceName();
+		
+		Assert.AreEqual("test-service",result);
+	}
+	
+	[TestMethod]
 	public void GetLogsHeaderDefault()
 	{
 		var result = new OpenTelemetrySettings().GetLogsHeader();
@@ -23,8 +34,15 @@ public class OpenTelemetrySettingsTest
 	[TestMethod]
 	public void GetLogsHeaderFallback()
 	{
-		var result = new OpenTelemetrySettings{Header = "1"}.GetLogsHeader();
-		Assert.AreEqual("1",result);
+		var result = new OpenTelemetrySettings{Header = "logs"}.GetLogsHeader();
+		Assert.AreEqual("logs",result);
+	}
+	
+	[TestMethod]
+	public void GetLogsShowProperty()
+	{
+		var result = new OpenTelemetrySettings{LogsHeader = "logs"}.GetLogsHeader();
+		Assert.AreEqual("logs",result);
 	}
 	
 	[TestMethod]
@@ -37,8 +55,15 @@ public class OpenTelemetrySettingsTest
 	[TestMethod]
 	public void GetMetricsHeaderFallback()
 	{
-		var result = new OpenTelemetrySettings{Header = "1"}.GetMetricsHeader();
-		Assert.AreEqual("1",result);
+		var result = new OpenTelemetrySettings{Header = "metrics"}.GetMetricsHeader();
+		Assert.AreEqual("metrics",result);
+	}
+	
+	[TestMethod]
+	public void GetMetricsShowProperty()
+	{
+		var result = new OpenTelemetrySettings{MetricsHeader = "metrics"}.GetMetricsHeader();
+		Assert.AreEqual("metrics",result);
 	}
 	
 	[TestMethod]
@@ -51,7 +76,14 @@ public class OpenTelemetrySettingsTest
 	[TestMethod]
 	public void GetTracesHeaderFallback()
 	{
-		var result = new OpenTelemetrySettings{Header = "1"}.GetTracesHeader();
-		Assert.AreEqual("1",result);
+		var result = new OpenTelemetrySettings{Header = "traces"}.GetTracesHeader();
+		Assert.AreEqual("traces",result);
+	}
+	
+	[TestMethod]
+	public void GetTracesShowProperty()
+	{
+		var result = new OpenTelemetrySettings{MetricsHeader = "traces"}.GetMetricsHeader();
+		Assert.AreEqual("traces",result);
 	}
 }
