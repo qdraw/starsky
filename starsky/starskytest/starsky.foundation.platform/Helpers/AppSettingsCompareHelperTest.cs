@@ -520,5 +520,35 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			Assert.AreEqual(source.OpenTelemetry.LogsHeader, to.OpenTelemetry.LogsHeader);
 
 		}
+
+		[TestMethod]
+		public void OpenTelemetrySettings_Ignore_DefaultOption()
+		{
+			var source = new AppSettings
+			{
+				OpenTelemetry = new OpenTelemetrySettings
+				{
+					Header = "source/test",
+					TracesEndpoint = "source/traces",
+					TracesHeader = "source/traces",
+					MetricsEndpoint = "source/metrics",
+					MetricsHeader = "source/metrics",
+					LogsEndpoint = "source/logs",
+					LogsHeader = "source/logs"
+				}
+			};
+			
+			var to = new AppSettings
+			{
+				OpenTelemetry = new OpenTelemetrySettings()
+			};
+
+			AppSettingsCompareHelper.Compare(source, to);
+			
+			Assert.AreEqual(source.OpenTelemetry.Header,  "source/test");
+			Assert.AreEqual(source.OpenTelemetry.TracesEndpoint, "source/traces");
+			Assert.AreEqual(source.OpenTelemetry.MetricsEndpoint,  "source/metrics");
+			Assert.AreEqual(source.OpenTelemetry.LogsEndpoint, "source/logs");
+		}
 	}
 }

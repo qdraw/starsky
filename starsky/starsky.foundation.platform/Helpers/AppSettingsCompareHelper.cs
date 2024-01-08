@@ -43,9 +43,9 @@ namespace starsky.foundation.platform.Helpers
 		{
 			if (propertyInfoFromA.PropertyType == typeof(OpenTelemetrySettings) && propertyB.PropertyType == typeof(OpenTelemetrySettings))
 			{
-				var oldBoolValue = (OpenTelemetrySettings?)propertyInfoFromA.GetValue(sourceIndexItem, null);
-				var newBoolValue = (OpenTelemetrySettings?)propertyB.GetValue(updateObject, null);
-				CompareOpenTelemetrySettingsObject(propertyB.Name, sourceIndexItem, oldBoolValue, newBoolValue, differenceList);
+				var oldObjectValue = (OpenTelemetrySettings?)propertyInfoFromA.GetValue(sourceIndexItem, null);
+				var newObjectValue = (OpenTelemetrySettings?)propertyB.GetValue(updateObject, null);
+				CompareOpenTelemetrySettingsObject(propertyB.Name, sourceIndexItem, oldObjectValue, newObjectValue, differenceList);
 			}
 		}
 		
@@ -55,8 +55,12 @@ namespace starsky.foundation.platform.Helpers
 		{
 			if ( oldKeyValuePairStringStringValue == null ||
 			     newKeyValuePairStringStringValue == null || 
+			     // compare lists
 			     JsonSerializer.Serialize(oldKeyValuePairStringStringValue) == 
-			     JsonSerializer.Serialize(newKeyValuePairStringStringValue))
+			     JsonSerializer.Serialize(newKeyValuePairStringStringValue) ||
+			     // default options
+			     JsonSerializer.Serialize(newKeyValuePairStringStringValue) == 
+			     JsonSerializer.Serialize(new OpenTelemetrySettings()))
 			{
 				return;
 			}
