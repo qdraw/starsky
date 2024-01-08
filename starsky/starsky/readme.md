@@ -92,6 +92,8 @@ You could use machine specific configuration files: appsettings.machinename.json
 36. `GeoFilesSkipDownloadOnStartup` Skip download of GeoFiles on startup, _recommend to keep this false or null_ - _default false_
 37. `ExiftoolSkipDownloadOnStartup` Skip download of Exiftool on startup, _recommend to keep this false or null_ - _default false_
 38. `AccountRolesByEmailRegisterOverwrite` Overwrite the default role for a user by email address, _default empty list_
+39. `OpenTelemetry` See logging in an external service, _default no enabled_ see [OpenTelemetry](https://docs.qdraw.nl/docs/developer-guide/logging/opentelemetry.md)
+
 
 ### Appsettings.json example
 ```json

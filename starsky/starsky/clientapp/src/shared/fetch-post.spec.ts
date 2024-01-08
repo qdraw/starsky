@@ -15,7 +15,7 @@ describe("fetch-post", () => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
-        "X-XSRF-TOKEN": "X-XSRF-TOKEN"
+        "X-XSRF-TOKEN": ""
       },
       method: "post"
     });
@@ -36,7 +36,7 @@ describe("fetch-post", () => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
-        "X-XSRF-TOKEN": "X-XSRF-TOKEN"
+        "X-XSRF-TOKEN": ""
       },
       method: "post"
     });
@@ -62,7 +62,7 @@ describe("fetch-post", () => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
-        "X-XSRF-TOKEN": "X-XSRF-TOKEN"
+        "X-XSRF-TOKEN": ""
       },
       method: "post"
     });
@@ -81,7 +81,7 @@ describe("fetch-post", () => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
-        "X-XSRF-TOKEN": "X-XSRF-TOKEN"
+        "X-XSRF-TOKEN": ""
       },
       method: "post"
     });

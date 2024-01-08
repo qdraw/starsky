@@ -36,7 +36,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## List of versions
 
 ## version 0.5.15 _(Unreleased)_ - 2024-01-? {#v0.5.15}
-- no changes yet
+
+- [x] (Added) _Back-end_ Add support for OpenTelemetry (server side only) (PR #1323)
 
 ## version 0.5.14 - 2023-12-29 {#v0.5.14}
 

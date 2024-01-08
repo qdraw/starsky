@@ -125,4 +125,35 @@ public class OpenTelemetryExtensionTest
 		var context = new DefaultHttpContext { Request = { Path = "/realtime" } };
 		Assert.IsFalse(OpenTelemetryExtension.FilterPath(context));
 	}
+	
+	[TestMethod]
+	public void FilterPathTestHitRealtimeFail()
+	{
+		var context = new DefaultHttpContext
+		{
+			Request = { Path = "/realtime" },
+			Response = { StatusCode = 500}
+		};
+		Assert.IsTrue(OpenTelemetryExtension.FilterPath(context));
+	}
+	
+	[TestMethod]
+	public void FilterPathTestSkipTraceApi()
+	{
+		var context = new DefaultHttpContext { Request = { Path = "/api/open-telemetry/trace" } };
+		Assert.IsFalse(OpenTelemetryExtension.FilterPath(context));
+	}
+	
+	[TestMethod]
+	public void FilterPathTestSkipIndexAuthApi()
+	{
+		var context = new DefaultHttpContext
+		{
+			Request = { Path = "/api/index" },
+			Response = { StatusCode = 401}
+		};
+		
+		Assert.IsFalse(OpenTelemetryExtension.FilterPath(context));
+	}
+
 }

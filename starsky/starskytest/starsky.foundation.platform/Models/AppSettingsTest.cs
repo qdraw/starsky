@@ -384,7 +384,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
-		public void AppSettings_CloneToDisplay_skipSecurityItems2()
+		public void AppSettings_CloneToDisplay_skip_Null_SecurityItems2_OpenTelemetrySettings()
 		{
 			var appSettings = new AppSettings
 			{
@@ -403,6 +403,19 @@ namespace starskytest.starsky.foundation.platform.Models
 			Assert.IsNull(display.OpenTelemetry.LogsHeader);
 			Assert.IsNull(display.OpenTelemetry.MetricsHeader);
 			Assert.IsNull(display.OpenTelemetry.TracesHeader);
+		}
+		
+		[TestMethod]
+		public void AppSettings_CloneToDisplay_skip_object_Null_SecurityItems2_OpenTelemetrySettings()
+		{
+			var appSettings = new AppSettings
+			{
+				OpenTelemetry = null
+			};
+			
+			var display = appSettings.CloneToDisplay();
+			
+			Assert.IsNull(display.OpenTelemetry);
 		}
 
 		[TestMethod]
