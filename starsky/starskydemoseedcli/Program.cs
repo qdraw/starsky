@@ -33,7 +33,7 @@ namespace starskydemoseedcli
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 			
 			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.DemoSeed);
-			services.AddApplicationInsightsLogging(appSettings);
+			services.AddTelemetryLogging(appSettings);
 			
 			new SetupDatabaseTypes(appSettings,services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();

@@ -33,9 +33,40 @@ namespace starsky.foundation.platform.Helpers
 	            
 				CompareMultipleSingleItems(propertyB, propertyInfoFromA, sourceIndexItem, updateObject, differenceList);
 				CompareMultipleListDictionary(propertyB, propertyInfoFromA, sourceIndexItem, updateObject, differenceList);
+				CompareMultipleObjects(propertyB, propertyInfoFromA, sourceIndexItem, updateObject, differenceList);
 
 			}
 			return differenceList;
+		}
+
+		private static void CompareMultipleObjects(PropertyInfo propertyB, PropertyInfo propertyInfoFromA, AppSettings sourceIndexItem, object updateObject, List<string> differenceList)
+		{
+			if (propertyInfoFromA.PropertyType == typeof(OpenTelemetrySettings) && propertyB.PropertyType == typeof(OpenTelemetrySettings))
+			{
+				var oldObjectValue = (OpenTelemetrySettings?)propertyInfoFromA.GetValue(sourceIndexItem, null);
+				var newObjectValue = (OpenTelemetrySettings?)propertyB.GetValue(updateObject, null);
+				CompareOpenTelemetrySettingsObject(propertyB.Name, sourceIndexItem, oldObjectValue, newObjectValue, differenceList);
+			}
+		}
+		
+		private static void CompareOpenTelemetrySettingsObject(string propertyName, AppSettings? sourceIndexItem, 
+			OpenTelemetrySettings? oldKeyValuePairStringStringValue, 
+			OpenTelemetrySettings? newKeyValuePairStringStringValue, ICollection<string> differenceList)
+		{
+			if ( oldKeyValuePairStringStringValue == null ||
+			     newKeyValuePairStringStringValue == null || 
+			     // compare lists
+			     JsonSerializer.Serialize(oldKeyValuePairStringStringValue) == 
+			     JsonSerializer.Serialize(newKeyValuePairStringStringValue) ||
+			     // default options
+			     JsonSerializer.Serialize(newKeyValuePairStringStringValue) == 
+			     JsonSerializer.Serialize(new OpenTelemetrySettings()))
+			{
+				return;
+			}
+
+			sourceIndexItem?.GetType().GetProperty(propertyName)?.SetValue(sourceIndexItem, newKeyValuePairStringStringValue, null);
+			differenceList.Add(propertyName.ToLowerInvariant());
 		}
 
 		private static void CompareMultipleSingleItems(PropertyInfo propertyB,

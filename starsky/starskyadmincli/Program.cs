@@ -38,7 +38,7 @@ namespace starskyAdminCli
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 						
 			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Geo);
-			services.AddApplicationInsightsLogging(appSettings);
+			services.AddTelemetryLogging(appSettings);
 			
 			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 

@@ -7,6 +7,9 @@ using starsky.foundation.webtelemetry.Interfaces;
 
 namespace starsky.foundation.webtelemetry.Services
 {
+	/// <summary>
+	/// Remove when App insights is phased out
+	/// </summary>
 	[Service(typeof(ITelemetryService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public sealed class TelemetryService : ITelemetryService
 	{
