@@ -545,10 +545,10 @@ namespace starskytest.starsky.foundation.platform.Helpers
 
 			AppSettingsCompareHelper.Compare(source, to);
 			
-			Assert.AreEqual(source.OpenTelemetry.Header,  "source/test");
-			Assert.AreEqual(source.OpenTelemetry.TracesEndpoint, "source/traces");
-			Assert.AreEqual(source.OpenTelemetry.MetricsEndpoint,  "source/metrics");
-			Assert.AreEqual(source.OpenTelemetry.LogsEndpoint, "source/logs");
+			Assert.AreEqual("source/test", source.OpenTelemetry.Header);
+			Assert.AreEqual("source/traces", source.OpenTelemetry.TracesEndpoint);
+			Assert.AreEqual("source/metrics", source.OpenTelemetry.MetricsEndpoint);
+			Assert.AreEqual("source/logs", source.OpenTelemetry.LogsEndpoint);
 		}
 	}
 }
