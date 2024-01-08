@@ -121,3 +121,7 @@ You may re-enable telemetry if you'd like to re-join the program by running the 
 
 `app__EnablePackageTelemetry=true`
 
+## OpenTelemetry
+
+By default OpenTelemetry is disabled to collect telemetry data.
+But you can setup your own provider to collect information
