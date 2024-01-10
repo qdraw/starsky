@@ -63,10 +63,10 @@ public static class OpenTelemetryExtension
 			return;
 		}
 
+		// AddHttpClientInstrumentation from OpenTelemetry.Instrumentation.Http
 		telemetryBuilder.WithMetrics(metrics =>
 			metrics.AddAspNetCoreInstrumentation()
 				.AddRuntimeInstrumentation()
-				.AddHttpClientInstrumentation()
 				.AddOtlpExporter(
 					o =>
 					{

@@ -25,7 +25,6 @@ namespace starsky.foundation.webtelemetry.Helpers
 				{
 					logging.AddOpenTelemetry(builder => 
 						builder.AddOtlpExporter(
-						"logging",
 						options =>
 						{
 							options.Protocol = OtlpExportProtocol.HttpProtobuf;
