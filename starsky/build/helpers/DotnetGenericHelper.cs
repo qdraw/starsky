@@ -107,7 +107,6 @@ namespace helpers
 					.EnableNoRestore()
 					.EnableNoBuild()
 					.EnableNoDependencies()
-					.EnableSelfContained()
 					.SetOutput(outputFullPath)
 					.SetProject(publishProjectFullPath)
 					.EnableNoLogo());

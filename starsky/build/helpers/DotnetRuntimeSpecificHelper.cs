@@ -43,7 +43,7 @@ namespace helpers
 					.FrameworkDescription;
 				var netMoniker = new Regex(".\\d+$", RegexOptions.None, TimeSpan.FromMilliseconds(100))
 					.Replace(version, string.Empty).Replace(".NET ","net");
-				// e.g net6.0
+				// e.g net6.0 or net8.0
 				
 				if (Directory.Exists($"obj/Release/{netMoniker}/{runtime}"))
 				{

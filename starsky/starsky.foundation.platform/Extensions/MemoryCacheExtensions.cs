@@ -1,23 +1,45 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace starsky.foundation.platform.Extensions
 {
+	/// <summary>
+	/// @see: https://stackoverflow.com/a/64291008
+	/// </summary>
 	public static class MemoryCacheExtensions
 	{
-		[SuppressMessage("Usage", "S3011:Make sure that this accessibility bypass is safe here", Justification = "Safe")]
-		private static readonly Func<MemoryCache, object> GetEntriesCollection = Delegate.CreateDelegate(
-			typeof(Func<MemoryCache, object>),
-			typeof(MemoryCache).GetProperty("EntriesCollection", BindingFlags.NonPublic | BindingFlags.Instance)?.GetGetMethod(true)!,
-			throwOnBindFailure: true) as Func<MemoryCache, object>;
+		private static readonly Lazy<Func<MemoryCache, object>> GetCoherentState =
+			new(() =>
+				CreateGetter<MemoryCache, object>(typeof(MemoryCache)
+					.GetField("_coherentState", BindingFlags.NonPublic | BindingFlags.Instance)));
 
-		private static IEnumerable GetKeys(this IMemoryCache memoryCache) =>
-			((IDictionary)GetEntriesCollection((MemoryCache)memoryCache)).Keys;
+		private static readonly Lazy<Func<object, IDictionary>> GetEntries7 =
+			new(() =>
+				CreateGetter<object, IDictionary>(typeof(MemoryCache)
+					.GetNestedType("CoherentState", BindingFlags.NonPublic)?
+					.GetField("_entries", BindingFlags.NonPublic | BindingFlags.Instance)));
+
+		private static Func<TParam, TReturn> CreateGetter<TParam, TReturn>(FieldInfo field)
+		{
+			var methodName = $"{field.ReflectedType?.FullName}.get_{field.Name}";
+			var method = new DynamicMethod(methodName, typeof(TReturn), new[] { typeof(TParam) }, typeof(TParam), true);
+			var ilGen = method.GetILGenerator();
+			ilGen.Emit(OpCodes.Ldarg_0);
+			ilGen.Emit(OpCodes.Ldfld, field);
+			ilGen.Emit(OpCodes.Ret);
+			return (Func<TParam, TReturn>)method.CreateDelegate(typeof(Func<TParam, TReturn>));
+		}
+		
+		private static readonly Func<MemoryCache, IDictionary> GetEntries = 
+			cache => GetEntries7.Value(GetCoherentState.Value(cache));
+
+		private static ICollection GetKeys(this IMemoryCache memoryCache) =>
+			GetEntries((MemoryCache)memoryCache).Keys;
 
 		/// <summary>
 		/// Get Keys
@@ -35,6 +57,7 @@ namespace starsky.foundation.platform.Extensions
 				return new List<T>();
 			}
 		}
+			
 			
 	}
 }

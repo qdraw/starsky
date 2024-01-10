@@ -143,7 +143,7 @@ namespace starsky.foundation.database.Query
 
 			// if result is not null return cached value
 			if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath) 
-			     && !string.IsNullOrEmpty((string)cachedSubPath)) return ( string ) cachedSubPath;
+			     && !string.IsNullOrEmpty((string?)cachedSubPath)) return ( string ) cachedSubPath;
 
 			cachedSubPath = await QueryGetItemByHashAsync(fileHash);
 		    
@@ -430,7 +430,7 @@ namespace starsky.foundation.database.Query
 
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
             
-            var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+            var displayFileFolders = (List<FileIndexItem>?) objectFileFolders;
 
             if ( updateStatusContent.FilePath == "/" )
             {

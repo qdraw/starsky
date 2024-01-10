@@ -119,10 +119,16 @@ public class DeviceIdService : IDeviceIdService
 		try
 		{
 			// Windows Only feature
-			var registryKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography");
+			var registryKey =
+				Registry.LocalMachine.OpenSubKey(
+					@"SOFTWARE\Microsoft\Cryptography");
 			var title = registryKey?.GetValue("MachineGuid")?.ToString();
 			registryKey?.Dispose();
 			return title;
+		}
+		catch ( NullReferenceException )
+		{
+			return string.Empty;
 		}
 		catch ( TypeInitializationException )
 		{

@@ -32,13 +32,6 @@ Check at least those files
  - [x] `starsky/starskywebftpcli/starskywebftpcli.csproj`
  - [x] `starsky/starskywebhtmlcli/starskywebhtmlcli.csproj`
 
-## Marked as deprecated
-- [x] `starsky/starskysynccli/starskysynccli.csproj`
-
-## Legacy project
- - [x] `starsky.netframework/starskyImporterNetFrameworkCli/starskyImporterNetFrameworkCli.csproj`
- - [x] `starsky.netframework/starskySyncNetFrameworkCli/starskySyncNetFrameworkCli.csproj`
-
 Might useful to force evaluate packages
 ```
 dotnet restore --force-evaluate

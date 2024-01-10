@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -36,7 +37,9 @@ public class PathHelperTests
 		var test2 =
 			PlainTextFileHelper.StreamToString(
 				new MemoryStream(CreateAnImageA6600.Bytes.ToArray()));
-		PathHelper.GetFileName(test + test2,100);
+		PathHelper.GetFileName(test + test2 + test,1);
+
+		Console.WriteLine();
 	}
 	
 	[TestMethod]
