@@ -87,7 +87,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 				throw new System.NotImplementedException();
 			}
-		
+
+			public void SetStoreGeneratedValue(IProperty property, object? value,
+				bool setModified = true)
+			{
+				throw new NotImplementedException();
+			}
+
 			public void SetStoreGeneratedValue(IProperty property, object? value)
 			{
 				throw new System.NotImplementedException();
@@ -114,6 +120,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 				throw new NotImplementedException();
 			}
+
+			public DbContext Context { get; }
 
 #pragma warning disable 8618
 			// ReSharper disable once UnassignedGetOnlyAutoProperty

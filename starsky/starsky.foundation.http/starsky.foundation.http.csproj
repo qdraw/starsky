@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{60193d91-0d92-4fc2-b469-d7691cb0e986}</ProjectGuid>
         <DebugType>Full</DebugType>
@@ -13,11 +13,6 @@
       <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
       <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
     </ItemGroup>
-
-<!-- For older versions of .NET Core   <ItemGroup>-->
-<!--      <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />-->
-<!--      <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.8" />-->
-<!--    </ItemGroup>-->
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>

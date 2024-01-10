@@ -71,7 +71,13 @@ public class ThumbnailQueryErrorTest
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
+		public void SetStoreGeneratedValue(IProperty property, object? value,
+			bool setModified = true)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void SetStoreGeneratedValue(IProperty property, object? value)
 		{
 			throw new NotImplementedException();
@@ -98,6 +104,8 @@ public class ThumbnailQueryErrorTest
 		{
 			throw new NotImplementedException();
 		}
+
+		public DbContext Context { get; }
 
 #pragma warning disable 8618
 		// ReSharper disable once UnassignedGetOnlyAutoProperty

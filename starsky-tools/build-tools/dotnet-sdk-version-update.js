@@ -12,7 +12,7 @@ const { getFiles } = require("./lib/get-files-directory");
 const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
 
-let newRunTimeVersion = "6.0.x";
+let newRunTimeVersion = "8.0.x";
 
 // https://docs.microsoft.com/en-us/dotnet/standard/frameworks
 

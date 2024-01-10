@@ -17,8 +17,7 @@ using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starskytest.FakeMocks;
-
-#pragma warning disable 1998
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace starskytest.starsky.foundation.worker.Services
 {

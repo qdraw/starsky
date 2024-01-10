@@ -2,10 +2,10 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{dcf1f6cb-1c65-4394-bef7-cccc2967b56c}</ProjectGuid>
-        <RuntimeFrameworkVersion>6.0.26</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>8.0.1</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <Version>0.5.14</Version>
     </PropertyGroup>

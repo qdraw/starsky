@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>starsky.feature.packagetelemetry</RootNamespace>
     <ProjectGuid>{6fbad8a6-53fa-41d2-98a4-61eb46d70794}</ProjectGuid>
     <Version>0.5.14</Version>
