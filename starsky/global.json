@@ -1,7 +1,7 @@
 {
     "strictVersion": true,
     "sdk": {
-        "version": "6.0.417",
+        "version": "6.0.418",
         "rollForward": "disable",
         "allowPrerelease": false
     }
