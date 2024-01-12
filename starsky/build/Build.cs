@@ -235,12 +235,14 @@ public sealed class Build : NukeBuild
 				
 			ShowSettingsInfo();
 			DotnetRuntimeSpecificHelper.Clean(GetRuntimesWithoutGeneric());
-			DotnetRuntimeSpecificHelper.RestoreNetCoreCommand(Solution,
-				GetRuntimesWithoutGeneric());
-			DotnetRuntimeSpecificHelper.BuildNetCoreCommand(Solution,
-				GetRuntimesWithoutGeneric(),Configuration);
-			DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Solution,
-				GetRuntimesWithoutGeneric(),Configuration);
+
+			foreach ( var runtime in GetRuntimesWithoutGeneric() )
+			{
+				DotnetRuntimeSpecificHelper.RestoreNetCoreCommand(Solution, runtime);
+				DotnetRuntimeSpecificHelper.BuildNetCoreCommand(Solution, Configuration, runtime);
+				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Configuration, runtime);
+			}
+			
 			DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
 				"generic-netcore",GetRuntimesWithoutGeneric());
 				
