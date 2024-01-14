@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, {ReactElement, useEffect, useState} from "react";
 import Button from "../button";
 import styles from "./styles.module.css";
 
@@ -7,11 +7,11 @@ type FeatureItem = {
 	type: string;
 	title?: string;
 	src?: any;
-	description?: JSX.Element;
+	description?: ReactElement;
 };
 
 function detectOS() {
-	var OSName = "Unknown OS";
+	let OSName = "Unknown OS";
 	if (navigator.userAgent.indexOf("Win") != -1) OSName = "Windows";
 	if (navigator.userAgent.indexOf("Mac") != -1) OSName = "Mac";
 	if (navigator.userAgent.indexOf("Linux") != -1) OSName = "Linux";
@@ -26,16 +26,16 @@ function Feature({ title, type, src, description }: FeatureItem) {
 			<div className="text--center padding-horiz--md">
 				{title ? <h1>{title}</h1> : null}
 				{description ? <p>{description}</p> : null}
-				{src ? <img src={src} /> : null}
+				{src ? <img src={src} alt={title} /> : null}
 			</div>
 		</div>
 	);
 }
 
-export default function DownloadFeatures(): JSX.Element {
+export default function DownloadFeatures(): ReactElement {
 	const [downloadUrl, setDownloadUrl] = useState("https://github.com/qdraw/starsky/releases/latest/");
 	const [downloadButtonText, setDownloadButtonText] = useState("Download App on Github");
-	const [systemDiscription, setSystemDiscription] = useState("");
+	const [systemDescription, setSystemDescription] = useState("");
 
 	useEffect(() => {
 		fetch("https://api.github.com/repos/qdraw/starsky/releases").then(
@@ -64,12 +64,16 @@ export default function DownloadFeatures(): JSX.Element {
 							setDownloadButtonText(
 								"Download App for Mac " + firstItem.tag_name
 							);
-							setSystemDiscription(
-								"Mac OS users are warned since we don't have certificates from Apple"
+							setSystemDescription(
+								"<b>You need to manually sign the code because we haven't purchased certificates from Apple:</b>" +
+                "<br />Run this command in the terminal: <br /> " +
+                "<code>codesign --force --deep -s - /Applications/Starsky.app && xattr -rd com.apple.quarantine /Applications/Starsky.app</code>" +
+                "<br /><br />" + "<a href='/docs/getting-started/desktop/desktop-macos'>Read more about how to install on Mac</a> "
 							);
 						} else {
-							setSystemDiscription(
-								"Mac OS users are warned since we don't have certificates from Apple"
+							setSystemDescription(
+								"You need to manually sign the code because we haven't purchased certificates from Apple<br />" +
+                "<a href='/docs/getting-started/desktop/desktop-macos'>Read more about how to install on Mac</a>"
 							);
 						}
 					});
@@ -91,18 +95,19 @@ export default function DownloadFeatures(): JSX.Element {
 					<Button href={downloadUrl} color="#25c2a0">
 						{downloadButtonText}
 					</Button>
-					{systemDiscription ? (
-						<>
-							<br />
-							<br />
-							<b>{systemDiscription}</b>
-						</>
-					) : null}
-					<br />
-					<br />
-					<a href="https://github.com/qdraw/starsky/releases/latest/">
-						Download other versions
-					</a>
+					{systemDescription ? (
+            <>
+              <br/>
+              <br/>
+              <p
+                dangerouslySetInnerHTML={{__html: systemDescription}}
+              />
+            </>
+          ) : null}
+          <br/>
+          <Button href={"https://github.com/qdraw/starsky/releases/latest/"} color={"rgb(38, 50, 56)"}>
+            Download other versions
+          </Button>
 					<br />
 					<br />
 
@@ -121,7 +126,7 @@ export default function DownloadFeatures(): JSX.Element {
 			<div className="container">
 				<div className="row">
 					{FeatureList.map((props, idx) => (
-						<Feature key={idx} {...props} />
+						<Feature key={props.title} {...props} />
 					))}
 				</div>
                 <div className="row">
@@ -147,6 +152,6 @@ export default function DownloadFeatures(): JSX.Element {
 					</i>
                 </div>
 			</div>
-		</section>
+    </section>
 	);
 }
