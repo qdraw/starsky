@@ -158,18 +158,28 @@ namespace starsky.foundation.writemeta.Helpers
 
 			try
 			{
-					
+
 				// run with pipes
-				var cmd =  Default.Run(_appSettings.ExifToolPath, options: opts => {
+				var cmd = Default.Run(_appSettings.ExifToolPath, options: opts =>
+				{
 					opts.StartInfo(si => si.Arguments = args);
-				}) < _src > ms;
-					
-				var result = await cmd.Task.ConfigureAwait(false);
+				});
+
+				cmd.RedirectFrom(_src);
+				cmd.RedirectTo(ms);
+				cmd.RedirectStandardErrorTo(ms);
+
+				var result = await cmd.Task;
+
+				if ( !result.Success )
+				{
+					Console.Error.WriteLine($"command failed with exit code {result.ExitCode}: {result.StandardError}");
+				}
 
 				// option without pipes:
 				//	await cmd.StandardInput.PipeFromAsync(_src).ConfigureAwait(false) await
 				// cmd.StandardOutput.BaseStream.CopyToAsync(ms).ConfigureAwait(false)
-					
+
 				if ( _appSettings.IsVerbose() ) _logger.LogInformation($"[RunProcessAsync] ~ exifTool {optionsArgs} " +
 					$"run with result: {result.Success} ~ ");
 	
