@@ -146,6 +146,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			var appSettings = new AppSettings
 			{
 				ExifToolPath = Path.Combine(outputPath, "exiftool.exe"),
+				Verbose = true
 			};
 			
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 

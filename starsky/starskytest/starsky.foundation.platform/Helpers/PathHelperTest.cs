@@ -1,9 +1,9 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starskytest.FakeCreateAn;
 
@@ -28,8 +28,14 @@ public class PathHelperTests
     
 	[TestMethod]
 	[ExpectedException(typeof(RegexMatchTimeoutException))]
-	public void GetFileName_ReturnsFileName_WithMaliciousInput()
+	public void GetFileName_ReturnsFileName_WithMaliciousInput_UnixOnly()
 	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("Test is Linux & Mac OS Only");
+			return;
+		}
+		
 		// Act and Assert
 		var test =
 			PlainTextFileHelper.StreamToString(
@@ -37,9 +43,7 @@ public class PathHelperTests
 		var test2 =
 			PlainTextFileHelper.StreamToString(
 				new MemoryStream(CreateAnImageA6600.Bytes.ToArray()));
-		PathHelper.GetFileName(test + test2 + test,1);
-
-		Console.WriteLine();
+		PathHelper.GetFileName(test + test2 + test + test,1);
 	}
 	
 	[TestMethod]
