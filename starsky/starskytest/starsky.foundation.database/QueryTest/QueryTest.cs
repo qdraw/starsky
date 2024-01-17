@@ -1102,9 +1102,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public void CacheUpdateItem_Skip_ShouldSetItem()
 		{
 			var item1 = new FileIndexItem {Id = 400, Tags = "hi", FileName = "cache"};
+			
 			// already verbose
 			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
 			
+            Assert.IsTrue(_logger.TrackedInformation.Any());
 			Assert.IsTrue(_logger.TrackedInformation.FirstOrDefault().Item2.Contains("[CacheUpdateItem]"));
 		}
 		

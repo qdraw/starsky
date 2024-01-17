@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -11,6 +12,7 @@ namespace starsky.foundation.platform.Extensions
 	/// <summary>
 	/// @see: https://stackoverflow.com/a/64291008
 	/// </summary>
+	[SuppressMessage("Usage", "S3011:Make sure that this accessibility bypass is safe here", Justification = "Safe")]
 	public static class MemoryCacheExtensions
 	{
 		private static readonly Lazy<Func<MemoryCache, object>> GetCoherentState =

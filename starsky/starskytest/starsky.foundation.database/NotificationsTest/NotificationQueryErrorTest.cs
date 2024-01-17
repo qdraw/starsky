@@ -100,14 +100,14 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 				throw new NotImplementedException();
 			}
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 			public DbContext Context { get; }
 
-#pragma warning disable 8618
 			// ReSharper disable once UnassignedGetOnlyAutoProperty
 			public IEntityType EntityType { get; }
-#pragma warning restore 8618
+
 			public EntityState EntityState { get; set; }
-#pragma warning disable 8618
+
 			// ReSharper disable once UnassignedGetOnlyAutoProperty
 			public IUpdateEntry SharedIdentityEntry { get; }
 #pragma warning restore 8618
