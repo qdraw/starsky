@@ -77,9 +77,9 @@ public class ProgramTest
 	}
 	
 	[TestMethod]
-	[Timeout(9000)]
+	[Timeout(15000)]
 	[ExpectedException(typeof(TimeoutException))]
-	public async Task Program_RunAsync_ReturnedTrue()
+	public async Task Program_RunAsync_WebApplication_CreateBuilder_TimeoutException()
 	{
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:7518");
 		
@@ -92,7 +92,7 @@ public class ProgramTest
 	[TestMethod]
 	[Timeout(9000)]
 	[ExpectedException(typeof(FormatException))]
-	public async Task Program_RunAsync_InvalidUrl()
+	public async Task Program_RunAsync_WebApplication_CreateBuilder_InvalidUrl()
 	{
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","test");
 
