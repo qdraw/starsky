@@ -56,7 +56,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			var createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:StorageFolder", createAnImage.BasePath },
 				{ "App:ThumbnailTempFolder",createAnImage.BasePath },

@@ -34,7 +34,7 @@ namespace starskytest.Models
 
 			if ( subPath.EndsWith(".xmp") )
 			{
-				var stream = PlainTextFileHelper.StringToStream(XmpInjection);
+				var stream = StringToStreamHelper.StringToStream(XmpInjection);
 				await _iStorage.WriteStreamAsync(stream, subPath);
 			}
 			return true;
@@ -47,7 +47,7 @@ namespace starskytest.Models
 
 			if ( subPath.EndsWith(".xmp") )
 			{
-				var stream = PlainTextFileHelper.StringToStream(XmpInjection);
+				var stream = StringToStreamHelper.StringToStream(XmpInjection);
 				await _iStorage.WriteStreamAsync(stream, subPath);
 			}
 			

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlConnector;
 using starsky.foundation.platform.Exceptions;
 
 namespace starskytest.starsky.foundation.platform.Exceptions
@@ -10,6 +11,7 @@ namespace starskytest.starsky.foundation.platform.Exceptions
 	[TestClass]
 	public class TelemetryServiceExceptionTest
 	{
+		
 		[TestMethod]
 		[ExpectedException(typeof(TelemetryServiceException))]
 		public void TelemetryServiceException()

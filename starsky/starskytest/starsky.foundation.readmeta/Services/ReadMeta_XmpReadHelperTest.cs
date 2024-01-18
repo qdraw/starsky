@@ -1,18 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.ReadMetaHelpers;
-using starsky.foundation.readmeta.Services;
-using starskycore.Helpers;
-using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.readmeta.Services
 {
 	[TestClass]
 	public sealed class XmpReadHelperTest
@@ -81,7 +78,7 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		public void XmpReadHelperTest_XmpGetSidecarFile_WithFakeStorage()
+		public async Task XmpReadHelperTest_XmpGetSidecarFile_WithFakeStorage()
 		{
 			// convert string to stream
 			byte[] xmpByteArray = Encoding.UTF8.GetBytes(Input);
@@ -94,7 +91,7 @@ namespace starskytest.Services
 				FileName = "test.arw"
 			};
 		    
-			var data = new ReadMetaXmp(fakeIStorage, new FakeIWebLogger()).XmpGetSidecarFile(fileIndexItem);
+			var data = await new ReadMetaXmp(fakeIStorage, new FakeIWebLogger()).XmpGetSidecarFileAsync(fileIndexItem);
 
 		    
 			Assert.AreEqual(52.3451333333,data.Latitude,0.001);
@@ -122,7 +119,7 @@ namespace starskytest.Services
 	    
 	    
 		[TestMethod]
-		public void XmpReadHelperTest_XmpGetSidecarFile_TestIfOverwrite()
+		public async Task XmpReadHelperTest_XmpGetSidecarFile_TestIfOverwrite()
 		{
 			// convert string to stream
 			byte[] xmpByteArray = Encoding.UTF8.GetBytes(Input);
@@ -143,8 +140,7 @@ namespace starskytest.Services
 				DateTime = new DateTime(1990,01,01,01,00,00)
 			};
 		    
-			var data = new ReadMetaXmp(fakeIStorage, new FakeIWebLogger()).XmpGetSidecarFile(fileIndexItem);
-
+			var data = await new ReadMetaXmp(fakeIStorage, new FakeIWebLogger()).XmpGetSidecarFileAsync(fileIndexItem);
 		    
 			Assert.AreEqual(52.3451333333,data.Latitude,0.001);
 			Assert.AreEqual(5.930,data.Longitude,0.001);
@@ -200,7 +196,7 @@ namespace starskytest.Services
 
 
 		[TestMethod]
-		public void XmpGetSidecarFile_LocationCountryCode()
+		public async Task XmpGetSidecarFile_LocationCountryCode()
 		{
 			const string xmpData = "<?xpacket begin=' ' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
 			                       "<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 12.42'>\n" +
@@ -217,7 +213,7 @@ namespace starskytest.Services
 				new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
 			
 			var readMetaXmp = new ReadMetaXmp(fakeIStorage, new FakeIWebLogger());
-			var data = readMetaXmp.XmpGetSidecarFile(new FileIndexItem("/test.arw"));
+			var data = await readMetaXmp.XmpGetSidecarFileAsync(new FileIndexItem("/test.arw"));
 
 			Assert.AreEqual("NLD", data.LocationCountryCode);
 		}

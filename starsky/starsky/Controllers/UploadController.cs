@@ -263,7 +263,7 @@ namespace starsky.Controllers
 			var importedList = new List<string>();
 			foreach ( var tempImportSinglePath in tempImportPaths )
 			{
-				var data = await PlainTextFileHelper.StreamToStringAsync(
+				var data = await StreamToStringHelper.StreamToStringAsync(
 					_iHostStorage.ReadStream(tempImportSinglePath));
 				if ( !IsValidXml(data) ) continue;
 				

@@ -37,7 +37,7 @@ public class NewUpdateItemWrapper
 	internal async Task<FileIndexItem> NewItem(FileIndexItem statusItem, string subPath)
 	{
 		// Add a new Item
-		var dbItem = await _newItem.NewFileItem(statusItem);
+		var dbItem = await _newItem.NewFileItemAsync(statusItem);
 
 		// When not OK do not Add (fileHash issues)
 		if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
@@ -58,7 +58,7 @@ public class NewUpdateItemWrapper
 	internal async Task<List<FileIndexItem>> NewItem(List<FileIndexItem> statusItems, bool addParentItem)
 	{
 		// Add a new Item
-		var dbItems = await _newItem.NewFileItem(statusItems);
+		var dbItems = await _newItem.NewFileItemAsync(statusItems);
 
 		// When not OK do not Add (fileHash issues)
 		var okDbItems =
@@ -115,7 +115,7 @@ public class NewUpdateItemWrapper
 			_logger.LogDebug($"[SyncSingleFile] Trigger Update Item {subPath}");
 		}
 			
-		var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
+		var updateItem = await _newItem.PrepareUpdateFileItemAsync(dbItem, size);
 		if ( updateItem.Status == FileIndexItem.ExifStatus.OkAndSame)
 		{
 			return updateItem;

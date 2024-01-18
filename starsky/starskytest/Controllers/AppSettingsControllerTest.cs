@@ -8,9 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Helpers;
-using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
@@ -34,11 +32,12 @@ namespace starskytest.Controllers
 			var controller = new AppSettingsController(new AppSettings(),
 				new FakeSelectorStorage());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			controller.ControllerContext.HttpContext.Request.Headers.Add("x-force-html", "true");
+			controller.ControllerContext.HttpContext.Request.Headers.Append("x-force-html", "true");
 			var actionResult = controller.Env() as JsonResult;
 			var resultAppSettings = actionResult?.Value as AppSettings;
 			Assert.AreEqual("Starsky", resultAppSettings?.Name);
-			Assert.AreEqual("text/html; charset=utf-8", controller.ControllerContext.HttpContext.Response.Headers.ContentType.ToString());
+			Assert.AreEqual("text/html; charset=utf-8", 
+				controller.ControllerContext.HttpContext.Response.Headers.ContentType.ToString());
 		}
 		
 		[TestMethod]
@@ -124,7 +123,7 @@ namespace starskytest.Controllers
 
 			Assert.IsTrue(storage.ExistFile(appSettings.AppSettingsPath));
 
-			var jsonContent= await PlainTextFileHelper.StreamToStringAsync(
+			var jsonContent= await StreamToStringHelper.StreamToStringAsync(
 				storage.ReadStream(appSettings.AppSettingsPath));
 
 			Assert.IsTrue(jsonContent.Contains("app\": {"));

@@ -233,7 +233,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    var embeddedResult = await new ParseRazor(_hostFileSystemStorage, _logger)
 			    .EmbeddedViews(currentProfile.Template, viewModel);
 
-		    var stream = PlainTextFileHelper.StringToStream(embeddedResult);
+		    var stream = StringToStreamHelper.StringToStream(embeddedResult);
 		    await _hostFileSystemStorage.WriteStreamAsync(stream, 
 			    Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
 
@@ -408,7 +408,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    // Write a single file to be sure that writing is ready
 		    var doneFileFullPath = Path.Combine(_appSettings.TempFolder, slugItemName) + ".done";
 		    await _hostFileSystemStorage.
-			    WriteStreamAsync(PlainTextFileHelper.StringToStream("OK"), doneFileFullPath);
+			    WriteStreamAsync(StringToStreamHelper.StringToStream("OK"), doneFileFullPath);
 
 		    if ( deleteFolderAfterwards )
 		    {

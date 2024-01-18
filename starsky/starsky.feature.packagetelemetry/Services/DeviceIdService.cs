@@ -50,7 +50,7 @@ public class DeviceIdService : IDeviceIdService
 		
 		if ( currentPlatform == OSPlatform.Linux || currentPlatform == OSPlatform.FreeBSD)
 		{
-			id = DeviceIdLinuxBsd();
+			id = await DeviceIdLinuxBsdAsync();
 		}
 
 		// For privacy reason this content of this id will be anonymous 
@@ -73,23 +73,23 @@ public class DeviceIdService : IDeviceIdService
 		return generatedString;
 	}
 
-	private string DeviceIdLinuxBsd()
+	private async Task<string> DeviceIdLinuxBsdAsync()
 	{
 		if ( _hostStorage.ExistFile(DbusMachineIdPath) )
 		{
 			var stream = _hostStorage.ReadStream(DbusMachineIdPath);
-			return PlainTextFileHelper.StreamToString(stream);
+			return await StreamToStringHelper.StreamToStringAsync(stream);
 		}
 		
 		if ( _hostStorage.ExistFile(MachineIdPath2) )
 		{
 			var stream = _hostStorage.ReadStream(MachineIdPath2);
-			return PlainTextFileHelper.StreamToString(stream);
+			return await StreamToStringHelper.StreamToStringAsync(stream);
 		}
 		
 		if ( !_hostStorage.ExistFile(BsdHostIdPath) ) return string.Empty;
 		var streamBsd = _hostStorage.ReadStream(BsdHostIdPath);
-		return PlainTextFileHelper.StreamToString(streamBsd);
+		return await StreamToStringHelper.StreamToStringAsync(streamBsd);
 	}
 
 	/// <summary>

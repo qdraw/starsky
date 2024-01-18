@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
@@ -80,7 +81,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		}
 
 		[TestMethod]
-		public void GeoIndexGpx_LoopFolderLookupTest()
+		public async Task GeoIndexGpx_LoopFolderLookupTest()
 		{
 			var exampleFiles = new List<FileIndexItem>(); 
 			exampleFiles.AddRange(new List<FileIndexItem>
@@ -102,8 +103,8 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var fakeIStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{_metaFilesDirectory[0].FilePath}, new List<byte[]>{CreateAnGpx.Bytes.ToArray()} );
                
-			var returnFileIndexItems = new GeoIndexGpx(_appSettings,
-				fakeIStorage, new FakeIWebLogger()).LoopFolder(exampleFiles);
+			var returnFileIndexItems = await  new GeoIndexGpx(_appSettings,
+				fakeIStorage, new FakeIWebLogger()).LoopFolderAsync(exampleFiles);
             
 			Assert.AreEqual(null,returnFileIndexItems.Find(p => p.FileName == "NotInRange.jpg"));
 			Assert.AreEqual("01.jpg",returnFileIndexItems.Find(p => p.FileName == "01.jpg")?.FileName);

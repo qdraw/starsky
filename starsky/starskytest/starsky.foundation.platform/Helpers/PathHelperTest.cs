@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
@@ -28,7 +29,7 @@ public class PathHelperTests
     
 	[TestMethod]
 	[ExpectedException(typeof(RegexMatchTimeoutException))]
-	public void GetFileName_ReturnsFileName_WithMaliciousInput_UnixOnly()
+	public async Task GetFileName_ReturnsFileName_WithMaliciousInput_UnixOnly()
 	{
 		if ( new AppSettings().IsWindows )
 		{
@@ -37,12 +38,13 @@ public class PathHelperTests
 		}
 		
 		// Act and Assert
-		var test =
-			PlainTextFileHelper.StreamToString(
+		var test = await 
+			StreamToStringHelper.StreamToStringAsync(
 				new MemoryStream(CreateAnImage.Bytes.ToArray()));
-		var test2 =
-			PlainTextFileHelper.StreamToString(
+		var test2 = await
+			StreamToStringHelper.StreamToStringAsync(
 				new MemoryStream(CreateAnImageA6600.Bytes.ToArray()));
+		
 		PathHelper.GetFileName(test + test2 + test + test,1);
 	}
 	

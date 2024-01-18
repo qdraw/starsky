@@ -88,7 +88,7 @@ namespace starskytest.Controllers
 		{
 			// Arrange
 			var storage = ArrangeStorage();
-			var plainTextStream = PlainTextFileHelper.StringToStream("CorruptImage");
+			var plainTextStream = StringToStreamHelper.StringToStream("CorruptImage");
 			await storage.WriteStreamAsync(plainTextStream, ThumbnailNameHelper.Combine(
 				"hash-corrupt-image", ThumbnailSize.ExtraLarge));
 

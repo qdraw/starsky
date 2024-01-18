@@ -91,7 +91,7 @@ namespace starsky.feature.import.Services
             _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
             _appSettings = appSettings;
-            _readMetaHost = new ReadMeta(_filesystemStorage, appSettings, null, logger);
+            _readMetaHost = new ReadMeta(_filesystemStorage, appSettings, null!, logger);
             _exifTool = exifTool;
             _query = query;
             _console = console;
@@ -366,11 +366,11 @@ namespace starsky.feature.import.Services
 			
 			// Only accept files with correct meta data
 			// Check if there is a xmp file that contains data
-			var fileIndexItem = _readMetaHost.ReadExifAndXmpFromFile(inputFileFullPath.Key);
+			var fileIndexItem = await _readMetaHost.ReadExifAndXmpFromFileAsync(inputFileFullPath.Key);
 			
 			// Parse the filename and create a new importIndexItem object
 			var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat, 
-				hashList.Key, fileIndexItem, importSettings.ColorClass,
+				hashList.Key, fileIndexItem!, importSettings.ColorClass,
 				_filesystemStorage.Info(inputFileFullPath.Key).Size);
 			
 			// Update the parent and filenames
@@ -638,7 +638,7 @@ namespace starsky.feature.import.Services
 			{
 				var exifCopy = new ExifCopy(_subPathStorage, 
 					_thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, 
-					_appSettings, null, _logger),_thumbnailQuery);
+					_appSettings, null!, _logger),_thumbnailQuery);
 				await exifCopy.XmpSync(importIndexItem.FileIndexItem!.FilePath);
 			}
 		}

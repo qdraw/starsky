@@ -18,7 +18,7 @@ using starskytest.FakeMocks;
 using XmpCore;
 using XmpCore.Impl;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.readmeta.Services
 {
 	public class MockDirectory : Directory
 	{

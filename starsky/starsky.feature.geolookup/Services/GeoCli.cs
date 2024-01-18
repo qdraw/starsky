@@ -45,7 +45,7 @@ namespace starsky.feature.geolookup.Services
 			_geoLocationWrite = geoLocationWrite;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_readMeta = new ReadMeta(_iStorage, appSettings, null, logger);
+			_readMeta = new ReadMeta(_iStorage, appSettings, null!, logger);
 			_appSettings = appSettings;
 			_console = console;
 			_exifToolDownload = exifToolDownload;
@@ -122,7 +122,7 @@ namespace starsky.feature.geolookup.Services
 			var listOfFiles = _iStorage.GetAllFilesInDirectory("/")
 				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
     
-			var fileIndexList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+			var fileIndexList = await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
     
 			var toMetaFilesUpdate = new List<FileIndexItem>();
 			if ( ArgsHelper.GetIndexMode(args) )
@@ -131,7 +131,7 @@ namespace starsky.feature.geolookup.Services
 				_console.WriteLine($"Folder: {inputPath}");
 
 				var geoIndexGpx = new GeoIndexGpx(_appSettings, _iStorage, _logger);
-				toMetaFilesUpdate = geoIndexGpx.LoopFolder(fileIndexList);
+				toMetaFilesUpdate = await geoIndexGpx.LoopFolderAsync(fileIndexList);
       
 				_console.Write("¬");
 				await _geoLocationWrite.LoopFolderAsync(toMetaFilesUpdate, false);

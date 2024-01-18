@@ -22,14 +22,14 @@ namespace starsky.feature.geolookup.Services
 			var result = new GeoCacheStatus();
 			
 			if(_cache.TryGetValue(totalCacheName, out var statusObjectTotal) && 
-			   TryParse(statusObjectTotal.ToString(), out var totalStatus))
+			   TryParse(statusObjectTotal?.ToString(), out var totalStatus))
 			{
 				result.Total = totalStatus;
 			}
 			
 			var currentCacheName = nameof(GeoCacheStatus) + path + StatusType.Current;
 			if(_cache.TryGetValue(currentCacheName, out var statusObjectCurrent) && 
-			   TryParse(statusObjectCurrent.ToString(), out var currentStatus))
+			   TryParse(statusObjectCurrent?.ToString(), out var currentStatus))
 			{
 				result.Current = currentStatus;
 			}

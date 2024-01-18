@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.storage.Helpers;
@@ -11,18 +12,18 @@ namespace starskytest.starsky.foundation.storage.Helpers
 	public sealed class DeserializeJsonTest
 	{
 		[TestMethod]
-		public void ReadTest_FromCopiedText_T_Model()
+		public async Task ReadTest_FromCopiedText_T_Model()
 		{
 			var input =
 				"{\n  \"Title\": \"Title\",\n  \"Price\": 200,\n  \"ShowButtons\": " +
 				"true}";
 			var fakeStorage = new FakeIStorage();
-			fakeStorage.WriteStream(
-				PlainTextFileHelper.StringToStream(input), "/test.json");
+			await fakeStorage.WriteStreamAsync(
+				StringToStreamHelper.StringToStream(input), "/test.json");
 			
 			var itemJsonParser = new DeserializeJson(fakeStorage);
 
-			var result = itemJsonParser.Read<FileIndexItemJsonParserTest_TestModel>("/test.json");
+			var result = await itemJsonParser.ReadAsync<FileIndexItemJsonParserTest_TestModel>("/test.json");
 			
 			Assert.AreEqual(200, result.Price);
 			Assert.AreEqual("Title", result.Title);
@@ -30,7 +31,7 @@ namespace starskytest.starsky.foundation.storage.Helpers
 		}
 
 		[TestMethod]
-		public void Item()
+		public async Task Item()
 		{
 			const string input = "{  \"$id\": \"https://docs.qdraw.nl/schema/meta-data-container.json\",  " +
 			                     "\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",  \"item\": {    " +
@@ -49,27 +50,29 @@ namespace starskytest.starsky.foundation.storage.Helpers
 			                     "\"lensModel\": \"\",    \"focalLength\": 200,    \"size\": 0,    " +
 			                     "\"imageStabilisation\": \"Unknown\",    \"lastChanged\": []  }}";
 			var fakeStorage = new FakeIStorage();
-			fakeStorage.WriteStream(
-				PlainTextFileHelper.StringToStream(input), "/test.json");
+			await fakeStorage.WriteStreamAsync(
+				StringToStreamHelper.StringToStream(input), "/test.json");
 			
 			var itemJsonParser = new DeserializeJson(fakeStorage);
-			var result = itemJsonParser.Read<MetadataContainer>("/test.json");
+			var result = await itemJsonParser.ReadAsync<MetadataContainer>("/test.json");
 
-			Assert.AreEqual("/test.jpg", result.Item.FilePath);
+			Assert.AreEqual("/test.jpg", result.Item?.FilePath);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
-		public void ReadTest_NotFound()
+		public async Task ReadTest_NotFound()
 		{
 			var fakeStorage = new FakeIStorage();
 			var itemJsonParser = new DeserializeJson(fakeStorage);
 
-			itemJsonParser.Read<FileIndexItemJsonParserTest_TestModel>("/notfound.json");
+			await itemJsonParser.ReadAsync<FileIndexItemJsonParserTest_TestModel>("/notfound.json");
 			// expect error
 		}
 	}
 
+	// ReSharper disable once InconsistentNaming
+	// ReSharper disable once ClassNeverInstantiated.Global
 	public class FileIndexItemJsonParserTest_TestModel
 	{
 		public string Title { get; set; }

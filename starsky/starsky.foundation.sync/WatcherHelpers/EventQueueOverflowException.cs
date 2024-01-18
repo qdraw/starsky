@@ -20,7 +20,9 @@ namespace starsky.foundation.sync.WatcherHelpers
         /// <param name="info"></param>
         /// <param name="context"></param>
         protected EventQueueOverflowException(SerializationInfo info, StreamingContext context) 
+#pragma warning disable SYSLIB0051
 	        : base(info, context)
+#pragma warning restore SYSLIB0051
         {
         }
     }

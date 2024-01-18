@@ -117,9 +117,9 @@ namespace starskytest.starsky.feature.geolookup.Services
             var geoFileDownload = new GeoFileDownload(appSettings, httpClientHelper, new FakeSelectorStorage(storage));
         
             storage.CreateDirectory(_dependenciesFolder3);
-            await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"),
+            await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
 	            Path.Combine(_dependenciesFolder3, GeoFileDownload.CountryName + ".txt"));
-            await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"), 
+            await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"), 
 	            Path.Combine(_dependenciesFolder3, "admin1CodesASCII.txt"));
         
             // Act
@@ -158,7 +158,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 	        
 	        geoFileDownload.CreateDependenciesFolder();
 
-	        await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"),
+	        await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
 		        Path.Combine(_dependenciesFolder5, GeoFileDownload.CountryName + ".zip"));
 	        Assert.IsTrue(storage.ExistFile(Path.Combine(_dependenciesFolder5, GeoFileDownload.CountryName + ".zip")));
 
@@ -180,7 +180,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 	        geoFileDownload.CreateDependenciesFolder();
 	        geoFileDownload.MinimumSizeInBytes = -1;
 	        
-	        await storage.WriteStreamAsync(PlainTextFileHelper.StringToStream("1"),
+	        await storage.WriteStreamAsync(StringToStreamHelper.StringToStream("1"),
 		        Path.Combine(_dependenciesFolder6, GeoFileDownload.CountryName + ".zip"));
 	        Assert.IsTrue(storage.ExistFile(Path.Combine(_dependenciesFolder6, GeoFileDownload.CountryName + ".zip")));
 

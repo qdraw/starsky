@@ -18,7 +18,8 @@ namespace starsky.foundation.writemeta.Services
 		private readonly IReadMeta _readMeta;
 		private readonly ExifToolCmdHelper _exifToolCmdHelper;
 
-		public ExifCopy(IStorage iStorage, IStorage thumbnailStorage,  IExifTool exifTool, IReadMeta readMeta, IThumbnailQuery thumbnailQuery)
+		public ExifCopy(IStorage iStorage, IStorage thumbnailStorage,  IExifTool exifTool, 
+			IReadMeta readMeta, IThumbnailQuery thumbnailQuery)
 		{
 			_iStorage = iStorage;
 			_readMeta = readMeta;
@@ -39,7 +40,7 @@ namespace starsky.foundation.writemeta.Services
 		{
 			if ( _iStorage.ExistFile(xmpPath) ) return;
 			
-			var plainTextStream = PlainTextFileHelper.StringToStream(XmpStartContent);
+			var plainTextStream = StringToStreamHelper.StringToStream(XmpStartContent);
 			_iStorage.WriteStream(plainTextStream, xmpPath);
 		}
 		
@@ -76,10 +77,10 @@ namespace starsky.foundation.writemeta.Services
 		/// <returns></returns>
 		internal async Task<string> CopyExifPublish(string fromSubPath, string toSubPath)
 		{
-			var updateModel = _readMeta.ReadExifAndXmpFromFile(fromSubPath);
+			var updateModel = await _readMeta.ReadExifAndXmpFromFileAsync(fromSubPath);
 			var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 			comparedNames.Add(nameof(FileIndexItem.Software));
-			updateModel.SetFilePath(toSubPath);
+			updateModel!.SetFilePath(toSubPath);
 			return (await _exifToolCmdHelper.UpdateAsync(updateModel, 
 				comparedNames, true, false)).Item1;
 		}

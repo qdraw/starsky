@@ -89,7 +89,7 @@ namespace starsky.Controllers
 			});
 
 			await _hostStorage.WriteStreamAsync(
-				PlainTextFileHelper.StringToStream(jsonOutput),
+				StringToStreamHelper.StringToStream(jsonOutput),
 				_appSettings.AppSettingsPath);
 			
 			return Env();

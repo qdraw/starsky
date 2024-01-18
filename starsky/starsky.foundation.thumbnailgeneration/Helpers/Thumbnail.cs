@@ -260,7 +260,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 
 		internal async Task WriteErrorMessageToBlockLog(string subPath, string resizeMessage)
 		{
-			var stream = PlainTextFileHelper.StringToStream("Thumbnail error " + resizeMessage);
+			var stream = StringToStreamHelper.StringToStream("Thumbnail error " + resizeMessage);
 			await _iStorage.WriteStreamAsync(stream, GetErrorLogItemFullPath(subPath));
 		}
 		

@@ -166,7 +166,7 @@ namespace starsky.feature.demo.Services
 					continue;
 				}
 				
-				var result = await PlainTextFileHelper.StreamToStringAsync(
+				var result = await StreamToStringHelper.StreamToStringAsync(
 					hostStorage.ReadStream(settingsJsonFullPath));
 
 				var data = Deserialize(result, webLogger, hostStorage, settingsJsonFullPath); 

@@ -23,7 +23,7 @@ public class ExifToolServiceTest
 	{
 		if ( !new AppSettings().IsWindows )
 		{
-			var stream = PlainTextFileHelper.StringToStream("#!/bin/bash\necho Fake ExifTool");
+			var stream = StringToStreamHelper.StringToStream("#!/bin/bash\necho Fake ExifTool");
 			_exifToolPath = Path.Join(new CreateAnImage().BasePath, "exiftool-tmp");
 			new StorageHostFullPathFilesystem().WriteStream(stream,
 				_exifToolPath);

@@ -6,7 +6,6 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.thumbnailmeta.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
-using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
@@ -18,7 +17,6 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 	public sealed class MetaExifThumbnailServiceTest
 	{
 		private readonly FakeIStorage _iStorageFake;
-		private readonly string _exampleHash;
 
 		public MetaExifThumbnailServiceTest()
 		{
@@ -27,8 +25,6 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 				new List<string>{"/no_thumbnail.jpg", "/poppy.jpg", ThumbnailNameHelper.Combine("test",ThumbnailSize.TinyMeta)},
 				new List<byte[]>{CreateAnImage.Bytes.ToArray(), new CreateAnImageWithThumbnail().Bytes, CreateAnImage.Bytes.ToArray()}
 				);
-			
-			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/no_thumbnail.jpg").Key;
 		}
 		
 		[TestMethod]
@@ -81,7 +77,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 			
 			var result = await new MetaExifThumbnailService(new AppSettings(), selectorStorage, 
 					new FakeIOffsetDataMetaExifThumbnail(), new FakeIWriteMetaThumbnailService(), logger)
-				.AddMetaThumbnail("/poppy.jpg",null);
+				.AddMetaThumbnail("/poppy.jpg",null!);
 			
 			Assert.IsTrue(result.Item1);
 		}
@@ -172,7 +168,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Services
 		[TestMethod]
 		public async Task AddMetaThumbnail_Fake_Corrupt()
 		{
-			await _iStorageFake.WriteStreamAsync(PlainTextFileHelper.StringToStream("test"), "/poppy_corrupt_22.jpg");
+			await _iStorageFake.WriteStreamAsync(StringToStreamHelper.StringToStream("test"), "/poppy_corrupt_22.jpg");
 			
 			var selectorStorage = new FakeSelectorStorage(_iStorageFake);
 			var logger = new FakeIWebLogger();

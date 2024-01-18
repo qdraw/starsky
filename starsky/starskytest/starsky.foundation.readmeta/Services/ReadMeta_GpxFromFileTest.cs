@@ -2,39 +2,38 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
-using starsky.foundation.readmeta.Services;
-using starsky.foundation.storage.Helpers;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.readmeta.Services
 {
 	[TestClass]
 	public sealed class ReadGpxFromFileTest
 	{
 		[TestMethod]
-		public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile_Null()
+		public async Task ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile_Null()
 		{
-			var returnItem =
+			var returnItem = await 
 				new ReadMetaGpx(new FakeIWebLogger())
-					.ReadGpxFromFileReturnAfterFirstField(null, "/test.gpx");
+					.ReadGpxFromFileReturnAfterFirstFieldAsync(null, "/test.gpx");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,
 				returnItem.Status);
 			Assert.AreEqual("/test.gpx", returnItem.FilePath);
 		}
 
 		[TestMethod]
-		public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile()
+		public async Task ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile()
 		{
 			var gpxBytes = CreateAnGpx.Bytes.ToArray();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 
-			var returnItem =
+			var returnItem = await 
 				new ReadMetaGpx(new FakeIWebLogger())
-					.ReadGpxFromFileReturnAfterFirstField(stream, "/test.gpx");
+					.ReadGpxFromFileReturnAfterFirstFieldAsync(stream, "/test.gpx");
 			Assert.AreEqual(5.485941, returnItem.Longitude, 0.001);
 			Assert.AreEqual(51.809360, returnItem.Latitude, 0.001);
 			Assert.AreEqual("_20180905-fietsen-oss", returnItem.Title);
@@ -51,14 +50,14 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		public void
+		public async Task
 			ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile_Utc_UseLocalFalse()
 		{
 			var gpxBytes = CreateAnGpx.Bytes.ToArray();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 
-			var returnItem = new ReadMetaGpx(new FakeIWebLogger())
-				.ReadGpxFromFileReturnAfterFirstField(stream, "/test.gpx",
+			var returnItem = await new ReadMetaGpx(new FakeIWebLogger())
+				.ReadGpxFromFileReturnAfterFirstFieldAsync(stream, "/test.gpx",
 					false);
 			Assert.AreEqual(5.485941, returnItem.Longitude, 0.001);
 			Assert.AreEqual(51.809360, returnItem.Latitude, 0.001);
@@ -76,38 +75,38 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		public void ReadGpxFromFileTest_NonValidInput()
+		public async Task ReadGpxFromFileTest_NonValidInput()
 		{
 			var gpxBytes = Array.Empty<byte>();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 
-			var returnItem =
+			var returnItem = await 
 				new ReadMetaGpx(new FakeIWebLogger())
-					.ReadGpxFromFileReturnAfterFirstField(stream, "/test.gpx");
+					.ReadGpxFromFileReturnAfterFirstFieldAsync(stream, "/test.gpx");
 			Assert.AreEqual(new DateTime(), returnItem.DateTime);
 			Assert.AreEqual("/test.gpx", returnItem.FilePath);
 		}
 
 		[TestMethod]
-		public void ReadGpxFromFileTest_TestFileName()
+		public async Task ReadGpxFromFileTest_TestFileName()
 		{
 			var gpxBytes = CreateAnGpx.Bytes.ToArray();
 			MemoryStream stream = new MemoryStream(gpxBytes);
 
-			var returnItem =
+			var returnItem = await 
 				new ReadMetaGpx(new FakeIWebLogger())
-					.ReadGpxFromFileReturnAfterFirstField(stream, "/test.gpx");
+					.ReadGpxFromFileReturnAfterFirstFieldAsync(stream, "/test.gpx");
 			Assert.AreEqual("test.gpx", returnItem.FileName);
 			Assert.AreEqual("/", returnItem.ParentDirectory);
 		}
 
 		[TestMethod]
-		public void ReadGpxFromFileTest_ReadFile()
+		public async Task ReadGpxFromFileTest_ReadFile()
 		{
 			var gpxBytes = CreateAnGpx.Bytes.ToArray();
 			MemoryStream stream = new MemoryStream(gpxBytes);
-			var returnItem =
-				new ReadMetaGpx(new FakeIWebLogger()).ReadGpxFile(stream);
+			var returnItem = await 
+				new ReadMetaGpx(new FakeIWebLogger()).ReadGpxFileAsync(stream);
 			Assert.AreEqual(5.485941, returnItem.FirstOrDefault()!.Longitude,
 				0.001);
 			Assert.AreEqual(51.809360, returnItem.FirstOrDefault()!.Latitude,

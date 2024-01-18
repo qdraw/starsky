@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.accountmanagement.Extensions;
-using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Middleware;
 
@@ -38,7 +37,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			// Arrange
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Scheme = "http";
-			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (innerHttpContext) => Task.FromResult(0));
+			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (_) => Task.FromResult(0));
 
 			// Act
 			await authMiddleware.Invoke(httpContext);
@@ -55,7 +54,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Scheme = "https";
 			
-			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (innerHttpContext) => Task.FromResult(0));
+			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (_) => Task.FromResult(0));
 
 			// Act
 			await authMiddleware.Invoke(httpContext);
@@ -74,7 +73,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			httpContext.Request.Scheme = "https";
 			httpContext.Request.Host = new HostString("localhost", 9000);
 			
-			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (innerHttpContext) => Task.FromResult(0));
+			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (_) => Task.FromResult(0));
 
 			// Act
 			await authMiddleware.Invoke(httpContext);
@@ -94,7 +93,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			httpContext.Request.Scheme = "https";
 			httpContext.Request.Host = new HostString("localhost");
 			
-			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (innerHttpContext) => Task.FromResult(0));
+			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (_) => Task.FromResult(0));
 
 			// Act
 			await authMiddleware.Invoke(httpContext);
@@ -112,7 +111,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			// Arrange
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Scheme = "http";
-			var authMiddleware = new ContentSecurityPolicyMiddleware((innerHttpContext) => Task.FromResult(0));
+			var authMiddleware = new ContentSecurityPolicyMiddleware((_) => Task.FromResult(0));
 
 			// Act
 			await authMiddleware.Invoke(httpContext);
@@ -139,10 +138,12 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			ContentSecurityPolicyMiddlewareTest_invoke_Chrome()
 		{
 			// Arrange
-			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Scheme = "http";
-			httpContext.Request.Headers.Add("User-Agent","Chrome");
-			var authMiddleware = new ContentSecurityPolicyMiddleware((innerHttpContext) => Task.FromResult(0));
+			var httpContext = new DefaultHttpContext { Request =
+			{
+				Scheme = "http"
+			} };
+			httpContext.Request.Headers.Append("User-Agent","Chrome");
+			var authMiddleware = new ContentSecurityPolicyMiddleware((_) => Task.FromResult(0));
 			
 			// Act
 			await authMiddleware.Invoke(httpContext);

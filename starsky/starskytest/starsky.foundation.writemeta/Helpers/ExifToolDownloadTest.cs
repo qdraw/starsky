@@ -156,7 +156,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var appSettings = new AppSettings{DependenciesFolder = Path.Combine(_createAnImage.BasePath,name)};
 			Directory.CreateDirectory(appSettings.DependenciesFolder);
 			Directory.CreateDirectory(Path.Combine(appSettings.DependenciesFolder,"exiftool-unix"));
-			var stream = PlainTextFileHelper.StringToStream("#!/bin/bash");
+			var stream = StringToStreamHelper.StringToStream("#!/bin/bash");
 			try
 			{
 				await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
@@ -312,7 +312,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Directory.CreateDirectory(Path.Combine(appSettings.DependenciesFolder,"exiftool-windows"));
 
 			var debugString = "\n\necho \"Fake ExifTool\"\n\n\n\necho 'test'";
-			var stream = PlainTextFileHelper.StringToStream("#!/bin/bash\n"+ debugString+ debugString
+			var stream = StringToStreamHelper.StringToStream("#!/bin/bash\n"+ debugString+ debugString
 			                            +debugString+debugString+debugString);
 			await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
 				Path.Combine(appSettings.DependenciesFolder, "exiftool-windows", "exiftool.exe"));

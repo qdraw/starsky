@@ -24,12 +24,12 @@ namespace starsky.foundation.sync.Helpers
 			_readMeta = readMeta;
 		}
 		
-		public async Task<List<FileIndexItem>> NewFileItem(List<FileIndexItem> inputItems)
+		public async Task<List<FileIndexItem>> NewFileItemAsync(List<FileIndexItem> inputItems)
 		{
 			var result = new List<FileIndexItem>();
 			foreach ( var inputItem in inputItems )
 			{
-				result.Add(await NewFileItem(inputItem));
+				result.Add(await NewFileItemAsync(inputItem));
 			}
 			return result;
 		}
@@ -39,9 +39,9 @@ namespace starsky.foundation.sync.Helpers
 		/// </summary>
 		/// <param name="inputItem">at least FilePath and ParentDirectory, fileHash is optional</param>
 		/// <returns></returns>
-		public async Task<FileIndexItem> NewFileItem(FileIndexItem inputItem)
+		public async Task<FileIndexItem> NewFileItemAsync(FileIndexItem inputItem)
 		{
-			return await NewFileItem(inputItem.FilePath, inputItem.FileHash,
+			return await NewFileItemAsync(inputItem.FilePath, inputItem.FileHash,
 				inputItem.ParentDirectory, inputItem.FileName);
 		}
 
@@ -53,10 +53,10 @@ namespace starsky.foundation.sync.Helpers
 		/// <param name="parentDirectory">parent directory name</param>
 		/// <param name="fileName">name without path</param>
 		/// <returns></returns>
-		private async Task<FileIndexItem> NewFileItem(string filePath, string fileHash, string parentDirectory, string fileName)
+		private async Task<FileIndexItem> NewFileItemAsync(string filePath, string fileHash, string parentDirectory, string fileName)
 		{
-			var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(filePath);
-			updatedDatabaseItem.ImageFormat = ExtensionRolesHelper
+			var updatedDatabaseItem =  await _readMeta.ReadExifAndXmpFromFileAsync(filePath);
+			updatedDatabaseItem!.ImageFormat = ExtensionRolesHelper
 				.GetImageFormat(_subPathStorage.ReadStream(filePath,50));
 
 			// future: read json sidecar
@@ -79,9 +79,9 @@ namespace starsky.foundation.sync.Helpers
 		/// <param name="dbItem">database item</param>
 		/// <param name="size">byte size</param>
 		/// <returns>the updated item</returns>
-		public async Task<FileIndexItem> PrepareUpdateFileItem(FileIndexItem dbItem, long size)
+		public async Task<FileIndexItem> PrepareUpdateFileItemAsync(FileIndexItem dbItem, long size)
 		{
-			var metaDataItem = _readMeta.ReadExifAndXmpFromFile(dbItem.FilePath);
+			var metaDataItem = await _readMeta.ReadExifAndXmpFromFileAsync(dbItem.FilePath!);
 			var compare = FileIndexCompareHelper.Compare(dbItem, metaDataItem);
 			dbItem.Size = size;
 			await SetFileHashStatus(dbItem.FilePath, dbItem.FileHash, dbItem);

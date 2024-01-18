@@ -74,7 +74,7 @@ namespace starsky.feature.import.Helpers
 
 			var exifToolCmdHelper = new ExifToolCmdHelper(_exifTool,
 				_subPathStorage, _thumbnailStorage,
-				new ReadMeta(_subPathStorage, _appSettings, null, _logger),
+				new ReadMeta(_subPathStorage, _appSettings, null!, _logger),
 				_thumbnailQuery);
 			await exifToolCmdHelper.UpdateAsync(fileIndexItem, comparedNamesList);
 

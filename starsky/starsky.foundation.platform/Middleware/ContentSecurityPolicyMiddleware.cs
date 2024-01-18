@@ -62,7 +62,7 @@ namespace starsky.foundation.platform.Middleware
 								                
 				// When change also update in Electron
 				httpContext.Response.Headers
-					.Add("Content-Security-Policy",cspHeader);
+					.Append("Content-Security-Policy",cspHeader);
 			}
 
 			// @see: https://www.permissionspolicy.com/
@@ -70,7 +70,7 @@ namespace starsky.foundation.platform.Middleware
 				    httpContext.Response.Headers["Permissions-Policy"]) )
 			{
 				httpContext.Response.Headers
-					.Add("Permissions-Policy", "autoplay=(self), " +
+					.Append("Permissions-Policy", "autoplay=(self), " +
 					                           "fullscreen=(self), " +
 					                           "geolocation=(self), " +
 					                           "picture-in-picture=(self), " +
@@ -82,25 +82,25 @@ namespace starsky.foundation.platform.Middleware
 			if (string.IsNullOrEmpty(httpContext.Response.Headers["Referrer-Policy"]) )
 			{
 				httpContext.Response.Headers
-					.Add("Referrer-Policy", "no-referrer");
+					.Append("Referrer-Policy", "no-referrer");
 			}
 			
 			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Frame-Options"]) )
 			{
 				httpContext.Response.Headers
-					.Add("X-Frame-Options", "DENY");
+					.Append("X-Frame-Options", "DENY");
 			}
 			
 			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Xss-Protection"]) )
 			{
 				httpContext.Response.Headers
-					.Add("X-Xss-Protection", "1; mode=block");
+					.Append("X-Xss-Protection", "1; mode=block");
 			}
 			
 			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Content-Type-Options"]) )
 			{
 				httpContext.Response.Headers
-					.Add("X-Content-Type-Options", "nosniff");
+					.Append("X-Content-Type-Options", "nosniff");
 			}
 				
 			await _next(httpContext);

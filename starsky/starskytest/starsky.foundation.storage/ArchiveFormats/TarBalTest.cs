@@ -60,7 +60,7 @@ namespace starskytest.starsky.foundation.storage.ArchiveFormats
 			Assert.IsTrue(storage.ExistFile($"/test/{CreateAnTagGzLongerThan100CharsFileName.FileName}"));
 			var file = storage.ReadStream($"/test/{CreateAnTagGzLongerThan100CharsFileName.FileName}");
 			// the filename is written as content in the file
-			Assert.AreEqual(CreateAnTagGzLongerThan100CharsFileName.FileName,PlainTextFileHelper.StreamToString(file).Trim());
+			Assert.AreEqual(CreateAnTagGzLongerThan100CharsFileName.FileName,(await StreamToStringHelper.StreamToStringAsync(file)).Trim());
 		}
 	}
 }

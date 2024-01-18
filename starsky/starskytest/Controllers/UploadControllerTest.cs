@@ -296,16 +296,16 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = "/"; //Set header
 
 			var actionResult = await controller.UploadToFolder()  as JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+			var list = actionResult?.Value as List<ImportIndexItem>;
 
-			Assert.AreEqual( ImportStatus.FileError, list.FirstOrDefault().Status);
+			Assert.AreEqual( ImportStatus.FileError, list?.FirstOrDefault()?.Status);
 		}
 
 		[TestMethod]
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/test.jpg");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/test.jpg");
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
@@ -323,7 +323,7 @@ namespace starskytest.Controllers
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestFolder()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/test/test.jpg");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/test/test.jpg");
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
@@ -341,7 +341,7 @@ namespace starskytest.Controllers
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestDirectFolder()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/test/");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/test/");
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 

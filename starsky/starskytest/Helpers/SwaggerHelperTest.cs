@@ -97,7 +97,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual(true,storage.ExistFile(swaggerFilePath));
 
 			var swaggerFileContent =
-				await PlainTextFileHelper.StreamToStringAsync(
+				await StreamToStringHelper.StreamToStringAsync(
 					storage.ReadStream(swaggerFilePath));
 
 			System.Console.WriteLine("swaggerFileContent " + swaggerFileContent);

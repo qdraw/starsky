@@ -58,6 +58,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 			if (  _cache.TryGetValue(QueryCheckForUpdatesCacheName,
 				    out var cacheResult) )
 			{
+				cacheResult ??= new List<ReleaseModel>();
 				return Parse(( List<ReleaseModel> ) cacheResult, currentVersion);
 			}
 

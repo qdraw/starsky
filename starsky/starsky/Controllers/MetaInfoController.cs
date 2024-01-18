@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
@@ -33,11 +34,11 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(List<FileIndexItem>),404)]
         [ProducesResponseType(typeof(List<FileIndexItem>),203)]
         [Produces("application/json")]
-        public IActionResult Info(string f, bool collections = true)
+        public async Task<IActionResult> InfoAsync(string f, bool collections = true)
         {
             var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 
-            var fileIndexResultsList = _metaInfo.GetInfo(inputFilePaths, collections);
+            var fileIndexResultsList = await _metaInfo.GetInfoAsync(inputFilePaths, collections);
             
             // returns read only
             if (fileIndexResultsList.TrueForAll(p => p.Status == FileIndexItem.ExifStatus.ReadOnly))

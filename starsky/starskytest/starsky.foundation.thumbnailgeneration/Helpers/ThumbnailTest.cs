@@ -127,13 +127,13 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			
 			var hash = (await new FileHash(storage).GetHashCodeAsync(_fakeIStorageImageSubPath)).Key;
 			await storage.WriteStreamAsync(
-				PlainTextFileHelper.StringToStream("not 0 bytes"), 
+				StringToStreamHelper.StringToStream("not 0 bytes"), 
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.ExtraLarge));
 			await storage.WriteStreamAsync(
-				PlainTextFileHelper.StringToStream("not 0 bytes"), 
+				StringToStreamHelper.StringToStream("not 0 bytes"), 
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Large));
 			await storage.WriteStreamAsync(
-				PlainTextFileHelper.StringToStream("not 0 bytes"), 
+				StringToStreamHelper.StringToStream("not 0 bytes"), 
 				ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small));
 			
 			var isCreated = await new Thumbnail(storage, 

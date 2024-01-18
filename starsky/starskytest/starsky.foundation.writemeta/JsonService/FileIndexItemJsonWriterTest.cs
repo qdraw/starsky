@@ -77,7 +77,7 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			var itemJsonParser = new FileIndexItemJsonParser(fakeStorage);
 			await itemJsonParser.WriteAsync(ExampleItem);
 
-			var result = itemJsonParser.Read(new FileIndexItem("/test.jpg"));
+			var result = await itemJsonParser.ReadAsync(new FileIndexItem("/test.jpg"));
 
 			Assert.IsNotNull(result);
 			Assert.AreEqual(ExampleItem.Tags, result.Tags);
@@ -108,7 +108,7 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 		}
 
 		[TestMethod]
-		public void ReadTest_OldFormat_Unsupported()
+		public async Task ReadTest_OldFormat_Unsupported()
 		{
 			const string input = "{\n  \"FilePath\": \"/test.jpg\",\n " +
 			                     " \"FileName\": \"test.jpg\",\n  \"FileHash\": " +
@@ -135,18 +135,18 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			var fakeStorage = new FakeIStorage();
 			var jsonSubPath = "/.starsky." + "test.jpg" + ".json";
 
-			fakeStorage.WriteStream(
-				PlainTextFileHelper.StringToStream(input), jsonSubPath);
+			await fakeStorage.WriteStreamAsync(
+				StringToStreamHelper.StringToStream(input), jsonSubPath);
 
 			var itemJsonParser = new FileIndexItemJsonParser(fakeStorage);
 
-			var result = itemJsonParser.Read(new FileIndexItem("/test.jpg"));
+			var result = await itemJsonParser.ReadAsync(new FileIndexItem("/test.jpg"));
 			
 			Assert.AreEqual(string.Empty, result.Tags);
 		}
 
 		[TestMethod]
-		public void ReadTest_FromCopiedText()
+		public async Task ReadTest_FromCopiedText()
 		{
 			const string input = "{ \"item\": {\n  \"FilePath\": \"/test.jpg\",\n " +
 			                     " \"FileName\": \"test.jpg\",\n  \"FileHash\": " +
@@ -174,12 +174,12 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			var fakeStorage = new FakeIStorage();
 			var jsonSubPath = "/.starsky." + "test.jpg" + ".json";
 
-			fakeStorage.WriteStream(
-				PlainTextFileHelper.StringToStream(input), jsonSubPath);
+			await fakeStorage.WriteStreamAsync(
+				StringToStreamHelper.StringToStream(input), jsonSubPath);
 
 			var itemJsonParser = new FileIndexItemJsonParser(fakeStorage);
 
-			var result = itemJsonParser.Read(new FileIndexItem("/test.jpg"));
+			var result = await itemJsonParser.ReadAsync(new FileIndexItem("/test.jpg"));
 
 			Assert.AreEqual(ExampleItem.Tags, result.Tags);
 			Assert.AreEqual(ExampleItem.FileHash, result.FileHash);

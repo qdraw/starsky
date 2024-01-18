@@ -54,15 +54,15 @@ namespace starsky.feature.geolookup.Services
 			var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
 				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-			var fileIndexList = _readMeta
-				.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+			var fileIndexList = await _readMeta  
+				.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
 			
 			var toMetaFilesUpdate = new List<FileIndexItem>();
 			if ( index )
 			{
 				toMetaFilesUpdate =
-					_geoIndexGpx
-						.LoopFolder(fileIndexList);
+					await _geoIndexGpx
+						.LoopFolderAsync(fileIndexList);
 					
 				if ( _appSettings.IsVerbose() ) Console.Write("¬");
 					

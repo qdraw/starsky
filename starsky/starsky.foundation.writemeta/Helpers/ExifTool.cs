@@ -63,7 +63,7 @@ namespace starsky.foundation.writemeta.Helpers
 			// Need to Dispose for Windows
 			inputStream.Close();
 
-			if ( stream.Length <= 15 && (await PlainTextFileHelper.StreamToStringAsync(stream))
+			if ( stream.Length <= 15 && (await StreamToStringHelper.StreamToStringAsync(stream))
 			    .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase))
 			{
 				_logger.LogError($"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
@@ -167,19 +167,9 @@ namespace starsky.foundation.writemeta.Helpers
 
 				cmd.RedirectFrom(_src);
 				cmd.RedirectTo(ms);
-				cmd.RedirectStandardErrorTo(ms);
 
 				var result = await cmd.Task;
-
-				if ( !result.Success )
-				{
-					Console.Error.WriteLine($"command failed with exit code {result.ExitCode}: {result.StandardError}");
-				}
-
-				// option without pipes:
-				//	await cmd.StandardInput.PipeFromAsync(_src).ConfigureAwait(false) await
-				// cmd.StandardOutput.BaseStream.CopyToAsync(ms).ConfigureAwait(false)
-
+				
 				if ( _appSettings.IsVerbose() ) _logger.LogInformation($"[RunProcessAsync] ~ exifTool {optionsArgs} " +
 					$"run with result: {result.Success} ~ ");
 	

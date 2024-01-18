@@ -69,7 +69,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 		
 		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-222.json");
-		var stream = PlainTextFileHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
+		var stream = StringToStreamHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
 			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            },\n            \"Http\": {\n      " +
 			"          \"Url\": \"http://*:8000\"\n            }\n        }\n    }\n }");
 		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,appSettingsPath);
@@ -93,7 +93,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 		
 		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-111.json");
-		var stream = PlainTextFileHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
+		var stream = StringToStreamHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
 			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            },\n            \"Http\": {\n      " +
 			"          \"Url\": \"http://*:8000\"\n            }\n        }\n    }\n }");
 		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,appSettingsPath);
@@ -117,7 +117,7 @@ public class PortProgramHelperTest
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","");
 		
 		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-333.json");
-		var stream = PlainTextFileHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
+		var stream = StringToStreamHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
 			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            }\n           " +
 			"\n        }\n    }\n }");
 		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,appSettingsPath);

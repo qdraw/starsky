@@ -9,7 +9,7 @@ using starsky.foundation.writemeta.Services;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.writemeta.Services
 {
 	[TestClass]
 	public sealed class ExifCopyTest
@@ -57,7 +57,7 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		public void ExifToolCmdHelper_XmpCreate()
+		public async Task ExifToolCmdHelper_XmpCreate()
 		{
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.dng"};
@@ -71,7 +71,7 @@ namespace starskytest.Services
 			
 			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta, new FakeIThumbnailQuery())
 				.XmpCreate("/test.xmp");
-			var result = PlainTextFileHelper.StreamToString(storage.ReadStream("/test.xmp"));
+			var result = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream("/test.xmp"));
 			Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n" +
 			                "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n</rdf:RDF>\n</x:xmpmeta>",result);
 		}
@@ -95,7 +95,7 @@ namespace starskytest.Services
 			
 			Assert.AreEqual(true,storage.ExistFile("/test.xmp"));
 			var xmpContentReadStream = storage.ReadStream("/test.xmp");
-			var xmpContent = await PlainTextFileHelper.StreamToStringAsync(xmpContentReadStream);
+			var xmpContent = await StreamToStringHelper.StreamToStringAsync(xmpContentReadStream);
 			
 			// Those values are injected by fakeExifTool
 			Assert.AreEqual(true,xmpContent.Contains("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));
