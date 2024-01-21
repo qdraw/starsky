@@ -49,8 +49,7 @@ namespace starsky.foundation.accountmanagement.Services
 		private bool IsCacheEnabled()
 		{
 			// || _appSettings?.AddMemoryCache == false > disabled
-			if( _cache == null ) return false;
-			return true;
+			return _cache != null;
 		}
 
 		/// <summary>
@@ -134,7 +133,7 @@ namespace starsky.foundation.accountmanagement.Services
 		{
 			if (IsCacheEnabled() && _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true)
 			{
-				return new UserOverviewModel(( List<User> ) objectAllUsersResult);
+				return new UserOverviewModel(( List<User>? ) objectAllUsersResult);
 			}
 
 			try
@@ -142,7 +141,7 @@ namespace starsky.foundation.accountmanagement.Services
 				var allUsers = await _dbContext.Users.TagWith("AllUsersAsync").ToListAsync();
 				if ( IsCacheEnabled() )
 				{
-					_cache.Set(AllUsersCacheKey, allUsers, 
+					_cache!.Set(AllUsersCacheKey, allUsers, 
 						new TimeSpan(99,0,0));
 				}
 				return new UserOverviewModel(allUsers);
@@ -173,7 +172,7 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				allUsers.Add(user);
 			}
-			_cache.Set(AllUsersCacheKey, allUsers, 
+			_cache!.Set(AllUsersCacheKey, allUsers, 
 				new TimeSpan(99,0,0));
 		}
 	    
@@ -185,7 +184,7 @@ namespace starsky.foundation.accountmanagement.Services
 			if ( !IsCacheEnabled() ) return;
 			var allUsers = (await AllUsersAsync()).Users;
 			allUsers.Remove(user);
-			_cache.Set(AllUsersCacheKey, allUsers, 
+			_cache!.Set(AllUsersCacheKey, allUsers, 
 				new TimeSpan(99,0,0));
 		}
 
@@ -230,7 +229,8 @@ namespace starsky.foundation.accountmanagement.Services
 				return AccountRoles.AppAccountRoles.Administrator.ToString();
 			}
 
-			if ( _appSettings.AccountRolesByEmailRegisterOverwrite
+			if (_appSettings.AccountRolesByEmailRegisterOverwrite != null 
+			    && _appSettings.AccountRolesByEmailRegisterOverwrite
 			    .TryGetValue(identifier, out var emailsForConfig) && 
 			     AccountRoles.GetAllRoles().Contains(emailsForConfig) )
 			{
@@ -407,7 +407,7 @@ namespace starsky.foundation.accountmanagement.Services
             
 			if ( IsCacheEnabled() )
 			{
-				_cache.Set(CredentialCacheKey(credentialType, identifier), 
+				_cache!.Set(CredentialCacheKey(credentialType, identifier), 
 					credential,new TimeSpan(99,0,0));
 			}
             
@@ -433,7 +433,7 @@ namespace starsky.foundation.accountmanagement.Services
 			if (IsCacheEnabled() && _cache?.TryGetValue(key, 
 				    out var objectCredentialTypeCode) == true)
 			{
-				return ( Credential ) objectCredentialTypeCode;
+				return ( Credential? ) objectCredentialTypeCode;
 			}
 
 			
@@ -460,7 +460,7 @@ namespace starsky.foundation.accountmanagement.Services
 
 			if ( IsCacheEnabled())
 			{
-				_cache.Set(key, credential,new TimeSpan(99,0,0));
+				_cache!.Set(key, credential,new TimeSpan(99,0,0));
 			}
 
 			return credential;
@@ -479,7 +479,7 @@ namespace starsky.foundation.accountmanagement.Services
 			if (IsCacheEnabled() && _cache?.TryGetValue(cacheKey, 
 				    out var objectCredentialTypeCode) == true)
 			{
-				return ( CredentialType ) objectCredentialTypeCode;
+				return ( CredentialType? ) objectCredentialTypeCode;
 			}
 			
 			var credentialTypeSelect = _dbContext.CredentialTypes.AsNoTracking().TagWith("CredentialType").Where(
@@ -502,7 +502,7 @@ namespace starsky.foundation.accountmanagement.Services
 
 			if ( IsCacheEnabled() )
 			{
-				_cache.Set(cacheKey, credentialType, 
+				_cache!.Set(cacheKey, credentialType, 
 					new TimeSpan(99,0,0));
 			}
 			return credentialType;
