@@ -63,9 +63,10 @@ jobs:
       shell: bash
       working-directory: ./documentation
       run: node scripts/openapi.js
-
-    - name: Commit changes
+      
+    - name: Commit changes openapi.json (if push to branch)
       uses: EndBug/add-and-commit@v9
+      if: github.event_name != 'pull_request'
       with:
         author_name: SwaggerUpdateBot
         author_email: qdraw@users.noreply.github.com
@@ -73,8 +74,9 @@ jobs:
         add: "documentation/static/openapi/openapi.json"
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Commit changes
+    - name: Commit changes docs/api/readme.md (if push to branch)
       uses: EndBug/add-and-commit@v9
+      if: github.event_name != 'pull_request'   
       with:
         author_name: SwaggerUpdateBot
         author_email: qdraw@users.noreply.github.com
