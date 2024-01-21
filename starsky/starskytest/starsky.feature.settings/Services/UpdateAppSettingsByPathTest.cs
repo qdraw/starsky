@@ -19,13 +19,15 @@ namespace starskytest.starsky.feature.settings.Services
         [TestMethod]
         public async Task UpdateAppSettingsAsync_ValidInput_Success()
         {
-            // Arrange
-            var storage = new FakeIStorage(new List<string>{"/"});
+			// Arrange
+			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" + Path.DirectorySeparatorChar.ToString();
+
+			var storage = new FakeIStorage(new List<string>{"/", testFolderPath });
             var selectorStorage = new FakeSelectorStorage(storage);
             var updateAppSettingsByPath = new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
             var appSettingTransferObject = new AppSettingsTransferObject
             {
-	            StorageFolder = "/",
+	            StorageFolder = testFolderPath,
 	            Verbose = true
             };
 
@@ -41,7 +43,6 @@ namespace starskytest.starsky.feature.settings.Services
         public async Task UpdateAppSettingsAsync_ValidInput_Success_CompareJson()
         {
 			// Arrange
-
 			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" + Path.DirectorySeparatorChar.ToString();
 
 			var storage = new FakeIStorage(new List<string>{"/", testFolderPath });
