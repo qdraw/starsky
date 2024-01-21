@@ -562,5 +562,48 @@ namespace starskytest.starsky.foundation.platform.Models
 			
 			Assert.IsNotNull(result);
 		}
+		
+		[TestMethod]
+		public void AppSettingsToTransferObjectConversion()
+		{
+			// Arrange
+			var appSettings = new AppSettings { StorageFolder = "Value1", Verbose = true };
+
+			// Act
+			AppSettingsTransferObject transferObject = (AppSettingsTransferObject)appSettings;
+
+			// Assert
+			Assert.AreEqual(appSettings.StorageFolder, transferObject.StorageFolder);
+			Assert.AreEqual(appSettings.Verbose, transferObject.Verbose);
+		}
+
+		[TestMethod]
+		public void TransferObjectToAppSettingsConversion()
+		{
+			// Arrange
+			var transferObject = new AppSettingsTransferObject { StorageFolder = "Value1/", Verbose = true };
+
+			// Act
+			var appSettings = (AppSettings)transferObject;
+
+			// Assert
+			Assert.AreEqual(appSettings.StorageFolder, transferObject.StorageFolder);
+			Assert.AreEqual(appSettings.Verbose, transferObject.Verbose);
+		}
+
+		[TestMethod]
+		public void CopyProperties_CopiesPropertiesCorrectly()
+		{
+			// Arrange
+			AppSettings source = new AppSettings { StorageFolder = "Value1", Verbose = true };
+			AppSettings destination = new AppSettings();
+
+			// Act
+			AppSettings.CopyProperties(source, destination);
+
+			// Assert
+			Assert.AreEqual(source.StorageFolder, destination.StorageFolder);
+			Assert.AreEqual(source.Verbose, destination.Verbose);
+		}
 	}
 }

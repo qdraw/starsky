@@ -48,11 +48,11 @@ public class UpdateAppSettingsByPath : IUpdateAppSettingsByPath
 			}
 		}
 		
-		// To update current session
 		AppSettingsCompareHelper.Compare(_appSettings, appSettingTransferObject);
+		var transfer = ( AppSettingsTransferObject ) _appSettings;
 			
 		// should not forget app: prefix
-		var jsonOutput = JsonSerializer.Serialize(new { app = appSettingTransferObject }, DefaultJsonSerializer.NoNamingPolicy);
+		var jsonOutput = JsonSerializer.Serialize(new { app = transfer }, DefaultJsonSerializer.NoNamingPolicy);
 
 		await _hostStorage.WriteStreamAsync(
 			StringToStreamHelper.StringToStream(jsonOutput),
@@ -64,4 +64,6 @@ public class UpdateAppSettingsByPath : IUpdateAppSettingsByPath
 			Message = "Updated"
 		};
 	}
+
+
 }

@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.settings.Services;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starskytest.FakeMocks;
@@ -38,6 +41,7 @@ namespace starskytest.starsky.feature.settings.Services
         public async Task UpdateAppSettingsAsync_ValidInput_Success_CompareJson()
         {
 	        // Arrange
+        
 	        var storage = new FakeIStorage(new List<string>{"/"});
 	        var selectorStorage = new FakeSelectorStorage(storage);
 	        var appSettings = new AppSettings();
@@ -45,7 +49,8 @@ namespace starskytest.starsky.feature.settings.Services
 	        var appSettingTransferObject = new AppSettingsTransferObject
 	        {
 		        StorageFolder = "/",
-		        Verbose = true
+		        Verbose = true,
+		        UseLocalDesktopUi = null
 	        };
 
 	        // Act
@@ -54,7 +59,7 @@ namespace starskytest.starsky.feature.settings.Services
 	        var result = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath)) ;
 	        
 	        // Assert
-	        const string expectedResult = "{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": \"/\"\n  }\n}";
+	        const string expectedResult = "{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": \"/\",\n    \"UseLocalDesktopUi\": \"false\"\n  }\n}";
 
 	        Assert.AreEqual(expectedResult, result);
         }
@@ -103,5 +108,41 @@ namespace starskytest.starsky.feature.settings.Services
 	        Assert.AreEqual("There is an Environment variable set so you can't update it here", result.Message);
         }
 
+        
+        [TestMethod]
+        public async Task UpdateAppSettingsAsync_ValidInput_TwoTimes_Success()
+        {
+	        // Arrange
+	        var storage = new FakeIStorage(new List<string>{"/"});
+	        var appSettings = new AppSettings();
+	        var selectorStorage = new FakeSelectorStorage(storage);
+	        var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
+	        var appSettingTransferObject1 = new AppSettingsTransferObject
+	        {
+		        Verbose = true
+	        };
+
+	        // Act
+	        await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject1);
+
+	        var fileResultString1 = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath));
+	        var fileResult1 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString1, DefaultJsonSerializer.NoNamingPolicy);
+
+	        Assert.IsTrue(fileResult1.App.Verbose);
+	        
+	        var appSettingTransferObject2 = new AppSettingsTransferObject
+	        {
+		        StorageFolder = "/"
+	        };
+	        
+	        await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject2);
+
+	        var fileResultString2 = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath));
+	        var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2, DefaultJsonSerializer.NoNamingPolicy);
+
+			Assert.AreEqual("/", fileResult2.App.StorageFolder);
+	        Assert.IsTrue(fileResult2.App.Verbose);
+        }
+        
     }
 }

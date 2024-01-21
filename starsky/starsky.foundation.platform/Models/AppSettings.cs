@@ -1,6 +1,8 @@
+#nullable enable
 using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -1111,6 +1113,40 @@ namespace starsky.foundation.platform.Models
 			var dataSource = "Data Source=" + baseDirectoryProject + 
 			                 Path.DirectorySeparatorChar+  databaseFileName;
 			return dataSource;
+		}
+		
+		public static explicit operator AppSettingsTransferObject(AppSettings appSettings)
+		{
+			var transferObject = new AppSettingsTransferObject();
+			CopyProperties(appSettings, transferObject);
+			return transferObject;
+		}
+
+		public static explicit operator AppSettings(AppSettingsTransferObject transferObject)
+		{
+			var appSettings = new AppSettings();
+			CopyProperties(transferObject, appSettings);
+			return appSettings;
+		}
+		
+		internal static void CopyProperties(object source, object destination)
+		{
+			var sourceType = source.GetType();
+			var destinationType = destination.GetType();
+
+			var sourceProperties = sourceType.GetProperties();
+			foreach (var sourceProperty in sourceProperties)
+			{
+				var destinationProperty = destinationType.GetProperty(sourceProperty.Name);
+				
+				if ( destinationProperty == null ||
+				     !destinationProperty.CanWrite )
+				{
+					continue;
+				}
+				var value = sourceProperty.GetValue(source);
+				destinationProperty.SetValue(destination, value);
+			}
 		}
 
 	}
