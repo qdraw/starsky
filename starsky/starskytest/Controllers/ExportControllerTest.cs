@@ -15,7 +15,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.feature.export.Services;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
@@ -39,7 +38,7 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class ExportControllerTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
@@ -66,7 +65,6 @@ namespace starskytest.Controllers
 
 			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
-
 			
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());

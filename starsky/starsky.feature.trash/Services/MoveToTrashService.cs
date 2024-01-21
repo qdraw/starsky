@@ -147,7 +147,6 @@ public class MoveToTrashService : IMoveToTrashService
 		var fullFilePaths = moveToTrash
 			.Where(p => p.FilePath != null)
 			.Select(p => _appSettings.DatabasePathToFilePath(p.FilePath!))
-			.Cast<string>()
 			.ToList();
 		
 		_systemTrashService.Trash(fullFilePaths);
