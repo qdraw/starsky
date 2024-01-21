@@ -8,7 +8,7 @@ namespace starskytest.FakeMocks
 {
 	public class FakeReadMetaSubPathStorage : IReadMetaSubPathStorage
 	{
-		private readonly IReadMeta _readMeta;
+		private readonly FakeReadMeta _readMeta;
 
 		public FakeReadMetaSubPathStorage()
 		{

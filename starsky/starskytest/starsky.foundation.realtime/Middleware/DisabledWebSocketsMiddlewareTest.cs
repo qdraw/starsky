@@ -15,7 +15,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		public async Task DisabledWebSocketsMiddleware_Invoke()
 		{
 			var httpContext = new DefaultHttpContext();
-			var disabledWebSocketsMiddleware = new DisabledWebSocketsMiddleware(next: (_) => Task.FromResult(0));
+			var disabledWebSocketsMiddleware = new DisabledWebSocketsMiddleware(next: (_) => Task.CompletedTask);
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 			Assert.AreEqual(400,httpContext.Response.StatusCode);
 		}
@@ -25,12 +25,12 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		{
 			var httpContext = new FakeWebSocketHttpContext(false);
 
-			var disabledWebSocketsMiddleware = new DisabledWebSocketsMiddleware(next: (_) => Task.FromResult(0));
+			var disabledWebSocketsMiddleware = new DisabledWebSocketsMiddleware(next: (_) => Task.CompletedTask);
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 			
 			var socketManager = httpContext.WebSockets as FakeWebSocketManager;
 			Assert.AreEqual(WebSocketCloseStatus.MessageTooBig, 
-				(socketManager.FakeWebSocket as FakeWebSocket).FakeCloseOutputAsync.LastOrDefault());
+				(socketManager?.FakeWebSocket as FakeWebSocket)?.FakeCloseOutputAsync.LastOrDefault());
 		}
 	}
 }

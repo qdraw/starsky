@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly AppSettings _appSettings;
-		private readonly IStorage _hostFileSystem;
+		private readonly StorageHostFullPathFilesystem _hostFileSystem;
 
 		/// <summary>
 		/// shasum -a 1 file.zip
@@ -89,8 +89,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			// Happy flow
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
 				.DownloadCheckSums();
-			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
-			Assert.AreEqual(true, result.Value.Key);
+			Assert.AreEqual(ExampleCheckSum, result?.Value);
+			Assert.AreEqual(true, result?.Key);
 		}
 		
 		[TestMethod]
@@ -107,8 +107,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
 				.DownloadCheckSums();
 			
-			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
-			Assert.AreEqual(false, result.Value.Key);
+			Assert.AreEqual(ExampleCheckSum, result?.Value);
+			Assert.AreEqual(false, result?.Key);
 		}
 		
 		[TestMethod]

@@ -8,7 +8,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -87,9 +86,10 @@ namespace starsky.feature.geolookup.Services
 			// -s = if subPath || -p is path
 			if ( ArgsHelper.IsSubPathOrPath(args) )
 			{
-				inputPath = _appSettings.DatabasePathToFilePath(
+				var path = _appSettings.DatabasePathToFilePath(
 					ArgsHelper.GetSubPathFormArgs(args)
 				);
+				inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
 			}
 			else
 			{
@@ -103,9 +103,10 @@ namespace starsky.feature.geolookup.Services
 			if (getSubPathRelative != null)
 			{
 				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
-				inputPath = _appSettings.DatabasePathToFilePath(
+				var path = _appSettings.DatabasePathToFilePath(
 					new StructureService(_iStorage, _appSettings.Structure)
-						.ParseSubfolders(dateTime),false);
+						.ParseSubfolders(dateTime), false);
+				inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
 			}
     
 			// used in this session to find the files back

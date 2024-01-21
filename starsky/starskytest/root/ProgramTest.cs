@@ -61,7 +61,7 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup","true");
 		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry","false");
 		
-		await Program.Main(new []{"--do-not-start"});
+		await Program.Main(["--do-not-start"]);
 
 		using HttpClient client = new();
 		await client.GetAsync("http://localhost:7514").TimeoutAfter(3000);

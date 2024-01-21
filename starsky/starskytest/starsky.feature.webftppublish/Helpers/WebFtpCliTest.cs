@@ -53,7 +53,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 		{
 			var console = new FakeConsoleWrapper();
 			await new WebFtpCli(_appSettings, new FakeSelectorStorage(), console, _webRequestFactory)
-				.RunAsync(new []{""});
+				.RunAsync([""]);
 			
 			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Please use the -p to add a path first"));
 		}
@@ -76,7 +76,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			
 			// no ftp settings
 			await new WebFtpCli(new AppSettings(),fakeSelectorStorage , console, _webRequestFactory)
-				.RunAsync(new []{"-p", "/test"});
+				.RunAsync(["-p", "/test"]);
 			
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("WebFtp settings"));
 		}
@@ -104,7 +104,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			// instead of new byte[0]
 			
 			await new WebFtpCli(_appSettings, fakeSelectorStorage , console, _webRequestFactory)
-				.RunAsync(new []{"-p", "/test"});
+				.RunAsync(["-p", "/test"]);
 
 			var isSuccess = console.WrittenLines?.LastOrDefault()?
 				.Contains("Ftp copy successful done");
