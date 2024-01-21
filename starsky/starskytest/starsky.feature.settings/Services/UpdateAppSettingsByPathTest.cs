@@ -19,6 +19,9 @@ namespace starskytest.starsky.feature.settings.Services
         [TestMethod]
         public async Task UpdateAppSettingsAsync_ValidInput_Success()
         {
+	        var before = Environment.GetEnvironmentVariable("app__storageFolder");
+	        Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+	        
 			// Arrange
 			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" + Path.DirectorySeparatorChar.ToString();
 
@@ -34,6 +37,8 @@ namespace starskytest.starsky.feature.settings.Services
             // Act
             var result = await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
+            Environment.SetEnvironmentVariable("app__storageFolder", before);
+            
             // Assert
             Assert.AreEqual(200, result.StatusCode);
             Assert.AreEqual("Updated", result.Message);
@@ -43,6 +48,10 @@ namespace starskytest.starsky.feature.settings.Services
         public async Task UpdateAppSettingsAsync_ValidInput_Success_CompareJson()
         {
 			// Arrange
+			
+			var before = Environment.GetEnvironmentVariable("app__storageFolder");
+			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+			
 			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" + Path.DirectorySeparatorChar.ToString();
 
 			var storage = new FakeIStorage(new List<string>{"/", testFolderPath });
@@ -61,6 +70,9 @@ namespace starskytest.starsky.feature.settings.Services
 
 	        var result = (await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath))).Replace("\r\n","\n");
 
+	        Environment.SetEnvironmentVariable("app__storageFolder", before);
+
+	        
 			var storageFolderJson = JsonSerializer.Serialize(testFolderPath, DefaultJsonSerializer.NoNamingPolicy);
 
 
@@ -74,6 +86,9 @@ namespace starskytest.starsky.feature.settings.Services
         [TestMethod]
         public async Task UpdateAppSettingsAsync_InvalidStorageFolder_Returns404()
         {
+	        var before = Environment.GetEnvironmentVariable("app__storageFolder");
+	        Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+	        
             // Arrange
             var selectorStorage = new FakeSelectorStorage();
             var updateAppSettingsByPath = new UpdateAppSettingsByPath(new AppSettings(), selectorStorage);
@@ -85,6 +100,9 @@ namespace starskytest.starsky.feature.settings.Services
             // Act
             var result = await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
+            Environment.SetEnvironmentVariable("app__storageFolder", before);
+
+            
             // Assert
             Assert.AreEqual(404, result.StatusCode);
             Assert.AreEqual("Location of StorageFolder on disk not found", result.Message);
@@ -119,8 +137,11 @@ namespace starskytest.starsky.feature.settings.Services
         [TestMethod]
         public async Task UpdateAppSettingsAsync_ValidInput_TwoTimes_Success()
         {
+	        var before = Environment.GetEnvironmentVariable("app__storageFolder");
+	        Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+	        
 			// Arrange
-			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" + Path.DirectorySeparatorChar.ToString();
+			var testFolderPath = Path.DirectorySeparatorChar + "test" + Path.DirectorySeparatorChar;
 
 			var storage = new FakeIStorage(new List<string>{
 				"/", testFolderPath		 });
@@ -133,7 +154,8 @@ namespace starskytest.starsky.feature.settings.Services
 	        };
 
 	        // Act
-	        await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject1);
+	        var re1 = await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject1);
+	        Assert.IsFalse(re1.IsError);
 
 	        var fileResultString1 = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath));
 	        var fileResult1 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString1, DefaultJsonSerializer.NoNamingPolicy);
@@ -150,6 +172,10 @@ namespace starskytest.starsky.feature.settings.Services
 	        var fileResultString2 = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath));
 	        var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2, DefaultJsonSerializer.NoNamingPolicy);
 
+	        
+	        // Set back to what is was before
+	        Environment.SetEnvironmentVariable("app__storageFolder", before);
+	        
 			Assert.AreEqual(testFolderPath, fileResult2.App.StorageFolder);
 	        Assert.IsTrue(fileResult2.App.Verbose);
         }
