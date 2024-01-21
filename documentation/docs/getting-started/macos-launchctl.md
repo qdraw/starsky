@@ -28,6 +28,11 @@ It is an important part of macOS security and helps to keep your Mac safe from t
 
 **We currently don't have any code signing for starsky, so you will need to work around Gatekeeper**
 
+Do code signing yourself or and remove from quarantine with the following command:
+````
+codesign --force --deep -s - /Applications/Starsky.app && xattr -rd com.apple.quarantine /Applications/Starsky.app
+````
+
 ## 1. Download the script that downloads the binaries
 
 The guide will assume you run it on a Mac OS machine.
