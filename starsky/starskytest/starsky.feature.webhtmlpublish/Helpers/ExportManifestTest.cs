@@ -39,9 +39,9 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 					new Dictionary<string, bool>());
 
 			var expectedPath = Path.Combine(appSettings.StorageFolder, "_settings.json");
-			var output = await 
+			var output = (await 
 				StreamToStringHelper.StreamToStringAsync(
-					storage.ReadStream(expectedPath));
+					storage.ReadStream(expectedPath))).Replace("\r\n","\n");
 
 			var expectedOutput =
 				$"{{\n  \"Name\": \"Test\",\n  \"Copy\": {{}},\n  \"Slug\": \"test\",\n" +

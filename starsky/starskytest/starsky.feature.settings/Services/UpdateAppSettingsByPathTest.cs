@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -40,15 +41,17 @@ namespace starskytest.starsky.feature.settings.Services
         [TestMethod]
         public async Task UpdateAppSettingsAsync_ValidInput_Success_CompareJson()
         {
-	        // Arrange
-        
-	        var storage = new FakeIStorage(new List<string>{"/"});
+			// Arrange
+
+			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" + Path.DirectorySeparatorChar.ToString();
+
+			var storage = new FakeIStorage(new List<string>{"/", testFolderPath });
 	        var selectorStorage = new FakeSelectorStorage(storage);
 	        var appSettings = new AppSettings();
 	        var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
 	        var appSettingTransferObject = new AppSettingsTransferObject
 	        {
-		        StorageFolder = "/",
+		        StorageFolder = testFolderPath,
 		        Verbose = true,
 		        UseLocalDesktopUi = null
 	        };
@@ -56,10 +59,11 @@ namespace starskytest.starsky.feature.settings.Services
 	        // Act
 	        await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
-	        var result = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath)) ;
+	        var result = (await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath))).Replace("\r\n","\n");
 	        
 	        // Assert
-	        const string expectedResult = "{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": \"/\",\n    \"UseLocalDesktopUi\": \"false\"\n  }\n}";
+	        var expectedResult = "{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": \"" +
+				testFolderPath + "\",\n    \"UseLocalDesktopUi\": \"false\"\n  }\n}";
 
 	        Assert.AreEqual(expectedResult, result);
         }
@@ -112,8 +116,11 @@ namespace starskytest.starsky.feature.settings.Services
         [TestMethod]
         public async Task UpdateAppSettingsAsync_ValidInput_TwoTimes_Success()
         {
-	        // Arrange
-	        var storage = new FakeIStorage(new List<string>{"/"});
+			// Arrange
+			var testFolderPath = Path.DirectorySeparatorChar.ToString() + "test" + Path.DirectorySeparatorChar.ToString();
+
+			var storage = new FakeIStorage(new List<string>{
+				"/", testFolderPath		 });
 	        var appSettings = new AppSettings();
 	        var selectorStorage = new FakeSelectorStorage(storage);
 	        var updateAppSettingsByPath = new UpdateAppSettingsByPath(appSettings, selectorStorage);
@@ -132,15 +139,15 @@ namespace starskytest.starsky.feature.settings.Services
 	        
 	        var appSettingTransferObject2 = new AppSettingsTransferObject
 	        {
-		        StorageFolder = "/"
-	        };
+				StorageFolder = testFolderPath
+			};
 	        
 	        await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject2);
 
 	        var fileResultString2 = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath));
 	        var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2, DefaultJsonSerializer.NoNamingPolicy);
 
-			Assert.AreEqual("/", fileResult2.App.StorageFolder);
+			Assert.AreEqual(testFolderPath, fileResult2.App.StorageFolder);
 	        Assert.IsTrue(fileResult2.App.Verbose);
         }
         

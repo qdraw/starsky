@@ -581,7 +581,10 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void TransferObjectToAppSettingsConversion()
 		{
 			// Arrange
-			var transferObject = new AppSettingsTransferObject { StorageFolder = "Value1/", Verbose = true };
+			var transferObject = new AppSettingsTransferObject { 
+				StorageFolder = $"Value1{Path.DirectorySeparatorChar}", 
+				Verbose = true 
+			};
 
 			// Act
 			var appSettings = (AppSettings)transferObject;
