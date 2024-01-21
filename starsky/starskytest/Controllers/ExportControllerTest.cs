@@ -280,8 +280,8 @@ namespace starskytest.Controllers
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
 			{
-				_appSettings.DatabasePathToFilePath("/test.dng", false), 
-				_appSettings.DatabasePathToFilePath("/test.xmp", false),
+				_appSettings.DatabasePathToFilePath("/test.dng"), 
+				_appSettings.DatabasePathToFilePath("/test.xmp"),
 				"/test.dng",
 				"/test.xmp"
 			});

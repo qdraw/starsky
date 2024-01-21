@@ -33,6 +33,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 						return null;
 					}
 					
+#pragma warning disable SYSLIB0050
 					var info = new SerializationInfo(typeof(Exception),
 						new FormatterConverter());
 					info.AddValue("Number", 1);
@@ -57,6 +58,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 							info,
 							new StreamingContext(StreamingContextStates.All)
 						});
+#pragma warning restore SYSLIB0050
 
 					throw instance;
 				}

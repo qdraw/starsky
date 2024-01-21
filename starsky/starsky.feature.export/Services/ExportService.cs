@@ -174,7 +174,7 @@ namespace starsky.feature.export.Services
 					continue;
 				}
 
-				var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath, false);
+				var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath!);
 
 				if ( !_hostFileSystemStorage.ExistFile(sourceFile) )
 				{
@@ -192,7 +192,7 @@ namespace starsky.feature.export.Services
 				
 				var xmpFileFullPath = _appSettings.DatabasePathToFilePath(
 					ExtensionRolesHelper.ReplaceExtensionWithXmp(
-						item.FilePath), false);
+						item.FilePath));
 
 				if ( !_hostFileSystemStorage.ExistFile(xmpFileFullPath) )
 				{

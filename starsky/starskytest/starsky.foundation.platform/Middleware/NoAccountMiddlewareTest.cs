@@ -74,7 +74,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				(_) =>
 				{
 					invoked = true;
-					return Task.FromResult(0);
+					return Task.CompletedTask;
 				}, new AppSettings());
 			
 			var services = new ServiceCollection();
@@ -106,7 +106,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				(_) =>
 				{
 					invoked = true;
-					return Task.FromResult(0);
+					return Task.CompletedTask;
 				}, new AppSettings{DemoUnsafeDeleteStorageFolder = true});
 			
 			var services = new ServiceCollection();
@@ -138,7 +138,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				(_) =>
 				{
 					invoked = true;
-					return Task.FromResult(0);
+					return Task.CompletedTask;
 				},new AppSettings());
 			
 			var services = new ServiceCollection();
@@ -170,7 +170,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				(_) =>
 				{
 					invoked = true;
-					return Task.FromResult(0);
+					return Task.CompletedTask;
 				}, new AppSettings());
 			
 			var services = new ServiceCollection();
@@ -199,7 +199,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				(_) =>
 				{
 					invoked = true;
-					return Task.FromResult(0);
+					return Task.CompletedTask;
 				},new AppSettings());
 
 			var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -224,7 +224,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				(_) =>
 				{
 					invoked = true;
-					return Task.FromResult(0);
+					return Task.CompletedTask;
 				},new AppSettings());
 			
 			var services = new ServiceCollection();

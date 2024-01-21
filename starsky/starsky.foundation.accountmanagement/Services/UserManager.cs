@@ -106,7 +106,7 @@ namespace starsky.foundation.accountmanagement.Services
 					.Equals(credentialTypeCode.ToLower()));
 
 			// When not exist add it
-			if (credentialType == null && credentialTypeCode.ToLower() == "email" )
+			if (credentialType == null && credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
 			{
 				credentialType = new CredentialType
 				{
@@ -623,9 +623,15 @@ namespace starsky.foundation.accountmanagement.Services
         
 		public async Task<bool> SignIn(HttpContext httpContext, User? user, bool isPersistent = false)
 		{
-			if ( user == null ) return false;
+			if ( user == null )
+			{
+				return false;
+			}
 			var claims = GetUserClaims(user).ToList();
-			if ( !claims.Any() ) return false;
+			if ( claims.Count == 0 )
+			{
+				return false;
+			}
 			
 			ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 			ClaimsPrincipal principal = new ClaimsPrincipal(identity);
@@ -775,7 +781,7 @@ namespace starsky.foundation.accountmanagement.Services
 			return claims;
 		}
         
-		private IEnumerable<Claim> GetUserRoleClaims(User user)
+		private List<Claim> GetUserRoleClaims(User user)
 		{
 			var claims = new List<Claim>();
 			IEnumerable<int> roleIds = _dbContext.UserRoles.TagWith("GetUserRoleClaims").Where(

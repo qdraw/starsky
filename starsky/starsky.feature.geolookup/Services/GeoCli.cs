@@ -105,7 +105,7 @@ namespace starsky.feature.geolookup.Services
 				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
 				var path = _appSettings.DatabasePathToFilePath(
 					new StructureService(_iStorage, _appSettings.Structure)
-						.ParseSubfolders(dateTime), false);
+						.ParseSubfolders(dateTime));
 				inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
 			}
     

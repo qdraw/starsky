@@ -28,6 +28,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[ExpectedException(typeof(EventQueueOverflowException))]
 		public void EventQueueOverflowException_Protected()
 		{
+#pragma warning disable SYSLIB0050
 			var info = new SerializationInfo(typeof(Exception),
 				new FormatterConverter());
 			info.AddValue("Message", "");
@@ -50,6 +51,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				});
 
 			throw instance;
+#pragma warning restore SYSLIB0050
 		}
 	}
 }

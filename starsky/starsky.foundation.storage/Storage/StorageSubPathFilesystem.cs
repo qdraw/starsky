@@ -30,14 +30,14 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>StorageInfo object</returns>
 		public StorageInfo Info(string path)
 		{
-			var subPath = _appSettings.DatabasePathToFilePath(path, false)!;
+			var subPath = _appSettings.DatabasePathToFilePath(path);
 			
 			return new StorageHostFullPathFilesystem(_logger).Info(subPath);
 		}
 
 		public DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
 		{
-			var subPath = _appSettings.DatabasePathToFilePath(path, false)!;
+			var subPath = _appSettings.DatabasePathToFilePath(path);
 			
 			return new StorageHostFullPathFilesystem(_logger).SetLastWriteTime(subPath, dateTime);
 		}
@@ -72,7 +72,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>is file, folder or deleted</returns>
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
 		{
-			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false)!;
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 			return new StorageHostFullPathFilesystem(_logger).IsFolderOrFile(fullFilePath);
 		}
 
@@ -83,8 +83,8 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="toPath">toSubPath</param>
 		public void FolderMove(string fromPath, string toPath)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath, false)!;
-			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath, false)!;
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath);
+			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath);
 			new StorageHostFullPathFilesystem(_logger).FolderMove(inputFileFullPath,toFileFullPath);
 		}
 
@@ -95,8 +95,8 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="toPath">toSubPath</param>
 		public void FileMove(string fromPath, string toPath)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath, false);
-			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath, false);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath);
+			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath);
 			new StorageHostFullPathFilesystem(_logger).FileMove(inputFileFullPath,toFileFullPath);
 		}
 		
@@ -107,8 +107,8 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="toPath">toSubPath</param>
 		public void FileCopy(string fromPath, string toPath)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath, false);
-			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath, false);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath);
+			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath);
 			new StorageHostFullPathFilesystem(_logger).FileCopy(inputFileFullPath,toFileFullPath);
 		}
 		
@@ -119,7 +119,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>bool</returns>
 		public bool FileDelete(string path)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path);
 			return new StorageHostFullPathFilesystem(_logger).FileDelete(inputFileFullPath);
 		}
 		
@@ -129,7 +129,7 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="path">subPath location</param>
 		public void CreateDirectory(string path)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path);
 			Directory.CreateDirectory(inputFileFullPath);
 		}
 		
@@ -140,7 +140,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>bool</returns>
 		public bool FolderDelete(string path)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path);
 			return new StorageHostFullPathFilesystem(_logger).FolderDelete(inputFileFullPath);
 		}
 		
@@ -154,11 +154,15 @@ namespace starsky.foundation.storage.Storage
 		/// <returns></returns>
 		public IEnumerable<string> GetAllFilesInDirectory(string path)
 		{
+			var storage = new StorageHostFullPathFilesystem(_logger);
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-			// null is not found
-			if (fullFilePath == null) return Enumerable.Empty<string>();
 
-			var imageFilesList = new StorageHostFullPathFilesystem(_logger).GetAllFilesInDirectory(fullFilePath);
+			if ( !storage.ExistFolder(fullFilePath) )
+			{
+				return Enumerable.Empty<string>();
+			}
+
+			var imageFilesList = storage.GetAllFilesInDirectory(fullFilePath);
 
 			// to filter use:
 			// ..etAllFilesInDirectory(subPath)
@@ -180,9 +184,14 @@ namespace starsky.foundation.storage.Storage
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-			if (fullFilePath == null) return Enumerable.Empty<string>();
+			var storage = new StorageHostFullPathFilesystem(_logger);
+			
+			if ( !storage.ExistFolder(fullFilePath) )
+			{
+				return Enumerable.Empty<string>();
+			}
 
-			var imageFilesList = new StorageHostFullPathFilesystem(_logger).GetAllFilesInDirectoryRecursive(fullFilePath);
+			var imageFilesList = storage.GetAllFilesInDirectoryRecursive(fullFilePath);
 
 			// to filter use:
 			// ..etAllFilesInDirectory(subPath)
@@ -202,9 +211,15 @@ namespace starsky.foundation.storage.Storage
 		public IEnumerable<string> GetDirectories(string path)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-			if (fullFilePath == null) return Enumerable.Empty<string>();
+			var storage = new StorageHostFullPathFilesystem(_logger);
+
+			if ( !storage.ExistFolder(fullFilePath) )
+			{
+				return Enumerable.Empty<string>();
+			}
 			
-			var folders = new StorageHostFullPathFilesystem(_logger).GetDirectories(fullFilePath);
+			var folders = storage.GetDirectories(fullFilePath);
+			
 			// Used For subfolders
 			// convert back to subPath style
 			return _appSettings.RenameListItemsToDbStyle(folders.ToList());
@@ -218,10 +233,15 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>list of paths</returns>
 		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
 		{
+			var storage = new StorageHostFullPathFilesystem(_logger);
+
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-			if (fullFilePath == null) return Enumerable.Empty<KeyValuePair<string,DateTime>>();
+			if ( !storage.ExistFolder(fullFilePath) )
+			{
+				return Enumerable.Empty<KeyValuePair<string,DateTime>>();
+			}
 			
-			var folders = new StorageHostFullPathFilesystem(_logger).GetDirectoryRecursive(fullFilePath);
+			var folders = storage.GetDirectoryRecursive(fullFilePath);
 
 			// Used For subfolders
 			// convert back to subPath style
@@ -242,7 +262,7 @@ namespace starsky.foundation.storage.Storage
 
 			Stream LocalGet()
 			{
-				var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
+				var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 				var fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read);
 				if ( maxRead <= 1 )
 				{
@@ -274,7 +294,7 @@ namespace starsky.foundation.storage.Storage
 		public bool WriteStream(Stream stream, string path)
 		{
 			// should be able to write files that are not exist yet			
-			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 
 			return new StorageHostFullPathFilesystem(_logger).WriteStream(stream, fullFilePath);
 		}
@@ -286,7 +306,7 @@ namespace starsky.foundation.storage.Storage
 
 		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
-			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 			return new StorageHostFullPathFilesystem(_logger).WriteStreamAsync(stream, fullFilePath);
 		}
 	}

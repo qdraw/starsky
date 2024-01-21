@@ -1060,23 +1060,14 @@ namespace starsky.foundation.platform.Models
 		/// from relative database path => file location path 
 		/// </summary>
 		/// <param name="databaseFilePath">databaseFilePath</param>
-		/// <param name="checkIfExist">checkIfExist</param>
 		/// <returns></returns>
-		public string? DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
+		public string DatabasePathToFilePath(string databaseFilePath)
 		{
 			var filepath = StorageFolder + databaseFilePath;
 
 			filepath = _pathToFilePathStyle(filepath);
 
-			// Used for deleted files
-			if (!checkIfExist) return filepath;
-            
-			var fileExist = File.Exists(filepath) ? filepath : null;
-			if (fileExist != null)
-			{
-				return fileExist;
-			}
-			return Directory.Exists(filepath) ? filepath : null;
+			 return filepath;
 		}
 
 		/// <summary>

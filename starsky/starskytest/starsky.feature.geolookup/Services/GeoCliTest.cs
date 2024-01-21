@@ -49,7 +49,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		{
 			var relativeParentFolder = new AppSettings().DatabasePathToFilePath(
 				new StructureService(new FakeIStorage(), new AppSettings().Structure)
-					.ParseSubfolders(0),false);
+					.ParseSubfolders(0)!);
 			
 			var storage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.jpg"},

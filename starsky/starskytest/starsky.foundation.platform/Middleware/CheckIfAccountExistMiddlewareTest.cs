@@ -74,7 +74,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				(_) =>
 				{
 					invoked = true;
-					return Task.FromResult(0);
+					return Task.CompletedTask;
 				});
 			
 			var httpContext = new DefaultHttpContext
@@ -96,7 +96,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				(_) =>
 				{
 					invoked = true;
-					return Task.FromResult(0);
+					return Task.CompletedTask;
 				});
 
 			var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -109,7 +109,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			await middleware.Invoke(httpContextAccessor.HttpContext);
 			
 			Assert.IsTrue(invoked);
-			Assert.IsTrue(httpContextAccessor.HttpContext.User.Identity.IsAuthenticated);
+			Assert.IsTrue(httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated);
 
 		}
 		
@@ -122,7 +122,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				(_) =>
 				{
 					invoked = true;
-					return Task.FromResult(0);
+					return Task.CompletedTask;
 				});
 
 			var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -134,12 +134,11 @@ namespace starskytest.starsky.foundation.platform.Middleware
 
 			// and remove user
 			await userManager.RemoveUser("email", "test");
-
 			
 			await middleware.Invoke(httpContextAccessor.HttpContext);
 			
 			Assert.IsFalse(invoked);
-			Assert.AreEqual(401,httpContextAccessor.HttpContext.Response.StatusCode);
+			Assert.AreEqual(401,httpContextAccessor.HttpContext?.Response.StatusCode);
 		}
 
 		[TestMethod]
@@ -153,7 +152,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		[TestMethod]
 		public void GetUserTableIdFromClaims_Valid()
 		{
-			var userId = "2";
+			const string userId = "2";
 			var httpContext = new DefaultHttpContext();
 			var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
