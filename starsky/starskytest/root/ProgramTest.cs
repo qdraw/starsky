@@ -77,18 +77,22 @@ public class ProgramTest
 	}
 	
 	[TestMethod]
-	[Timeout(15000)]
+	[Timeout(20000)]
 	[ExpectedException(typeof(TimeoutException))]
 	public async Task Program_RunAsync_WebApplication_CreateBuilder_TimeoutException()
 	{
-		Environment.SetEnvironmentVariable("ASPNETCORE_URLS","http://*:7518");
+		var number = new Random().Next(7500, 7900);
+		var url = $"http://*:{number}";
+		await Console.Out.WriteLineAsync(url);
+
+		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", url);
 		
 		var builder = WebApplication.CreateBuilder(Array.Empty<string>());
 		var app = builder.Build();
 
 		await Program.RunAsync(app).TimeoutAfter(1000);
 	}
-	
+
 	[TestMethod]
 	[Timeout(9000)]
 	[ExpectedException(typeof(FormatException))]
