@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.settings.Services;
@@ -13,7 +12,7 @@ using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.settings.Services
 {
-    [TestClass]
+	[TestClass]
     public class UpdateAppSettingsByPathTests
     {
 
@@ -60,10 +59,13 @@ namespace starskytest.starsky.feature.settings.Services
 	        await updateAppSettingsByPath.UpdateAppSettingsAsync(appSettingTransferObject);
 
 	        var result = (await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath))).Replace("\r\n","\n");
-	        
-	        // Assert
-	        var expectedResult = "{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": \"" +
-				testFolderPath + "\",\n    \"UseLocalDesktopUi\": \"false\"\n  }\n}";
+
+			var storageFolderJson = JsonSerializer.Serialize(testFolderPath, DefaultJsonSerializer.NoNamingPolicy);
+
+
+			// Assert
+			var expectedResult = "{\n  \"app\": {\n    \"Verbose\": \"true\",\n    \"StorageFolder\": " + // rm quotes
+				storageFolderJson + ",\n    \"UseLocalDesktopUi\": \"false\"\n  }\n}";
 
 	        Assert.AreEqual(expectedResult, result);
         }
