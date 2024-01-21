@@ -20,7 +20,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var fakeConsole = new FakeConsoleWrapper();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 			var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
-				new FakeIThumbnailService(), new FakeIThumbnailCleaner(),
+				new FakeIThumbnailService(new FakeSelectorStorage(storage)), new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
 			await thumbnailService.Thumbnail(Array.Empty<string>());
@@ -76,9 +76,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task Thumbnail_MinusP_FullPath()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
-			var fakeIThumbnailService = new FakeIThumbnailService();
-			var appSettings = new AppSettings();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
+			var appSettings = new AppSettings();
 			var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
@@ -92,9 +92,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task Thumbnail_MinusS_SubPath()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
-			var fakeIThumbnailService = new FakeIThumbnailService();
-			var appSettings = new AppSettings();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
+			var appSettings = new AppSettings();
 			var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
@@ -108,9 +108,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task Thumbnail_MinusS_SubPath_Direct()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
-			var fakeIThumbnailService = new FakeIThumbnailService();
-			var appSettings = new AppSettings();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
+			var appSettings = new AppSettings();
 			var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
@@ -127,9 +127,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task Thumbnail_MinusG_Relative()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
-			var fakeIThumbnailService = new FakeIThumbnailService();
-			var appSettings = new AppSettings();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
+			var appSettings = new AppSettings();
 			var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
@@ -149,7 +149,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 			var fakeIThumbnailCleaner = new FakeIThumbnailCleaner();
 			var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
-				new FakeIThumbnailService(), fakeIThumbnailCleaner,
+				new FakeIThumbnailService(new FakeSelectorStorage(storage)), fakeIThumbnailCleaner,
 				new FakeSelectorStorage(storage));
 			
 			await thumbnailService.Thumbnail(new []{"--clean","true"});
