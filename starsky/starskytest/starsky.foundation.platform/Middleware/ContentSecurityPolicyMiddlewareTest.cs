@@ -130,7 +130,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			var referrerPolicy = httpContext.Response.Headers["Referrer-Policy"].ToString();
 			Assert.AreEqual( "no-referrer",referrerPolicy);
 			
-			var frameOptions = httpContext.Response.Headers["X-Frame-Options"].ToString();
+			var frameOptions = httpContext.Response.Headers.XFrameOptions.ToString();
 			Assert.AreEqual( "DENY",frameOptions);
 			
 			// X-Xss-Protection

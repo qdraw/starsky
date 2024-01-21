@@ -23,6 +23,11 @@ public static class OpenTelemetryExtension
 	public static void AddOpenTelemetryMonitoring(
 		this IServiceCollection services, AppSettings appSettings)
 	{
+		if ( appSettings.OpenTelemetry == null )
+		{
+			return;
+		}
+		
 		var telemetryBuilder = services.AddOpenTelemetry()
 			.ConfigureResource(resource => resource.AddService(
 				serviceNamespace: appSettings.OpenTelemetry.GetServiceName(),
