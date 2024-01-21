@@ -162,7 +162,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 
 			var filtered = FilterBefore(syncData);
-			if ( !filtered.Any() )
+			if ( filtered.Count == 0 )
 			{
 				_logger.LogInformation($"[SyncWatcherConnector/EndOperation] f:{filtered.Count}/s:{syncData.Count} ~ skip: "+ 
 	                       string.Join(", ", syncData.Select(p => p.FileName).ToArray()) + " ~ " +

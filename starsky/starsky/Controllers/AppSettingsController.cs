@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
+using starsky.feature.settings.Interfaces;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
@@ -20,12 +21,12 @@ namespace starsky.Controllers
 	public sealed class AppSettingsController : Controller
 	{
 		private readonly AppSettings _appSettings;
-		private readonly IStorage _hostStorage;
+		private readonly IUpdateAppSettingsByPath _updateAppSettingsByPath;
 
-		public AppSettingsController(AppSettings appSettings, ISelectorStorage selectorStorage)
+		public AppSettingsController(AppSettings appSettings, IUpdateAppSettingsByPath updateAppSettingsByPath)
 		{
 			_appSettings = appSettings;
-			_hostStorage = selectorStorage.Get( SelectorStorage.StorageServices.HostFilesystem);
+			_updateAppSettingsByPath = updateAppSettingsByPath;
 		}
 		
 		/// <summary>
@@ -61,38 +62,16 @@ namespace starsky.Controllers
 		[Permission(UserManager.AppPermissions.AppSettingsWrite)]
 		public async Task<IActionResult> UpdateAppSettings(AppSettingsTransferObject appSettingTransferObject  )
 		{
-			if ( !string.IsNullOrEmpty(appSettingTransferObject.StorageFolder))
+			var result = await _updateAppSettingsByPath.UpdateAppSettingsAsync(
+				appSettingTransferObject);
+			
+			if ( !result.IsError )
 			{
-				if ( !_appSettings.StorageFolderAllowEdit )
-				{
-					Response.StatusCode = 403;
-					return Content("There is an Environment variable set so you can't update it here");
-				}
-				if (!_hostStorage.ExistFolder(appSettingTransferObject.StorageFolder) )
-				{
-					return NotFound("Location on disk not found");
-				}
+				return Env();
 			}
 			
-			// To update current session
-			AppSettingsCompareHelper.Compare(_appSettings, appSettingTransferObject);
-			
-			// should not forget app: prefix
-			var jsonOutput = JsonSerializer.Serialize(new { app = appSettingTransferObject }, new JsonSerializerOptions
-			{
-				WriteIndented = true, 
-				Converters =
-				{
-					new JsonBoolQuotedConverter(),
-				},
-				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-			});
-
-			await _hostStorage.WriteStreamAsync(
-				StringToStreamHelper.StringToStream(jsonOutput),
-				_appSettings.AppSettingsPath);
-			
-			return Env();
+			Response.StatusCode = result.StatusCode;
+			return Content(result.Message);
 		}
 	}
 }

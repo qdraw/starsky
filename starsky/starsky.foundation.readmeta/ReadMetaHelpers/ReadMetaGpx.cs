@@ -41,7 +41,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 	        var readGpxFile = await ReadGpxFileAsync(stream, null, 1);
 
-	        if ( !readGpxFile.Any() )
+	        if ( readGpxFile.Count == 0 )
 	        {
 		        _logger.LogInformation($"[ReadMetaGpx] SystemXmlXmlException for {subPath}");
 		        return new FileIndexItem(subPath)

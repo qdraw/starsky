@@ -45,6 +45,7 @@
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj" />
         <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
+        <ProjectReference Include="..\starsky.feature.settings\starsky.feature.settings.csproj" />
         <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj" />
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />

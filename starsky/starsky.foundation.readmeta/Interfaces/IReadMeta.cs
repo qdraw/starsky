@@ -13,7 +13,7 @@ namespace starsky.foundation.readmeta.Interfaces
 		/// <param name="subPath">subPath</param>
 		/// <returns></returns>
 	    Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath);
-	    Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList, List<string> fileHashes = null);
+	    Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList, List<string>? fileHashes = null);
         bool? RemoveReadMetaCache(string fullFilePath);
         void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel);
     }

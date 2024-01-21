@@ -20,7 +20,7 @@ namespace starsky.foundation.platform.Middleware
 		{
 			// For Error pages (for example 404) this middleware will be executed double,
 			// so Adding a Header that already exist give an Error 500			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers["Content-Security-Policy"]) )
+			if (string.IsNullOrEmpty(httpContext.Response.Headers.ContentSecurityPolicy) )
 			{
 				// CSP 2.0 nonce // used in ApplicationInsightsJsHelper
 				var nonce = Guid.NewGuid().ToString("N");
@@ -85,19 +85,19 @@ namespace starsky.foundation.platform.Middleware
 					.Append("Referrer-Policy", "no-referrer");
 			}
 			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Frame-Options"]) )
+			if (string.IsNullOrEmpty(httpContext.Response.Headers.XFrameOptions) )
 			{
 				httpContext.Response.Headers
 					.Append("X-Frame-Options", "DENY");
 			}
 			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Xss-Protection"]) )
+			if (string.IsNullOrEmpty(httpContext.Response.Headers.XXSSProtection) )
 			{
 				httpContext.Response.Headers
 					.Append("X-Xss-Protection", "1; mode=block");
 			}
 			
-			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Content-Type-Options"]) )
+			if (string.IsNullOrEmpty(httpContext.Response.Headers.XContentTypeOptions) )
 			{
 				httpContext.Response.Headers
 					.Append("X-Content-Type-Options", "nosniff");

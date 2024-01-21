@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.settings.Models;
+using starsky.feature.settings.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -20,7 +22,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ENV_StarskyTestEnv()
 		{
-			var controller = new AppSettingsController(new AppSettings(),new FakeSelectorStorage());
+			var controller = new AppSettingsController(new AppSettings(),new FakeIUpdateAppSettingsByPath());
 			var actionResult = controller.Env() as JsonResult;
 			var resultAppSettings = actionResult?.Value as AppSettings;
 			Assert.AreEqual("Starsky", resultAppSettings?.Name);
@@ -30,7 +32,7 @@ namespace starskytest.Controllers
 		public void ENV_StarskyTestEnv_ForceHtml()
 		{
 			var controller = new AppSettingsController(new AppSettings(),
-				new FakeSelectorStorage());
+				new FakeIUpdateAppSettingsByPath());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Request.Headers.Append("x-force-html", "true");
 			var actionResult = controller.Env() as JsonResult;
@@ -43,7 +45,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UpdateAppSettings_Verbose()
 		{
-			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage());
+			var controller = new AppSettingsController(new AppSettings(), new FakeIUpdateAppSettingsByPath());
 			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject {Verbose = true}) as JsonResult;
 			var result = actionResult?.Value as AppSettings;
 			Assert.IsTrue(result?.Verbose);
@@ -52,14 +54,15 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UpdateAppSettings_StorageFolder()
 		{
-			var storage = new FakeIStorage(new List<string> { "test" });
-			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
-			
-			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage(storage));
+			var appSettings = new AppSettings();
+			var controller = new AppSettingsController(appSettings, new UpdateAppSettingsByPath(appSettings,new FakeSelectorStorage(new FakeIStorage())));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
 			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject
 			{
 				Verbose = true, StorageFolder = "test"
 			}) as JsonResult;
+
 			var result = actionResult?.Value as AppSettings;
 			Assert.IsTrue(result?.Verbose);
 			Assert.AreEqual(PathHelper.AddBackslash("test"),result?.StorageFolder);
@@ -68,13 +71,14 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UpdateAppSettingsTest_IgnoreWhenEnvIsSet()
 		{
-			var storage = new FakeIStorage(new List<string> { "test" });
-			
 			Environment.SetEnvironmentVariable("app__storageFolder",
 				"any_value");
 
 			var appSettings = new AppSettings();
-			var controller = new AppSettingsController(appSettings, new FakeSelectorStorage(storage));
+			var controller = new AppSettingsController(appSettings, new FakeIUpdateAppSettingsByPath(new UpdateAppSettingsStatusModel
+			{
+				StatusCode = 403
+			}));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			await controller.UpdateAppSettings(
 				new AppSettingsTransferObject
@@ -88,12 +92,11 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UpdateAppSettingsTest_DirNotFound()
 		{
-			var storage = new FakeIStorage(new List<string> { "test" });
-			
-			Environment.SetEnvironmentVariable("app__storageFolder",string.Empty);
-
 			var appSettings = new AppSettings();
-			var controller = new AppSettingsController(appSettings, new FakeSelectorStorage(storage));
+			var controller = new AppSettingsController(appSettings, new FakeIUpdateAppSettingsByPath(new UpdateAppSettingsStatusModel
+			{
+				StatusCode = 404
+			}));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = (await controller.UpdateAppSettings(
 				new AppSettingsTransferObject
@@ -114,7 +117,7 @@ namespace starskytest.Controllers
 			{
 				AppSettingsPath = $"{Path.DirectorySeparatorChar}temp{Path.DirectorySeparatorChar}appsettings.json"
 			};
-			var controller = new AppSettingsController(appSettings, new FakeSelectorStorage(storage));
+			var controller = new AppSettingsController(appSettings, new UpdateAppSettingsByPath(appSettings,new FakeSelectorStorage(storage)));
 			await controller.UpdateAppSettings(
 				new AppSettingsTransferObject
 				{
@@ -133,7 +136,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UpdateAppSettings_UseLocalDesktopUi()
 		{
-			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage());
+			var controller = new AppSettingsController(new AppSettings(), new FakeIUpdateAppSettingsByPath());
 			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject {UseLocalDesktopUi = true}) as JsonResult;
 			var result = actionResult?.Value as AppSettings;
 			Assert.IsTrue(result?.UseLocalDesktopUi);
@@ -142,7 +145,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UpdateAppSettings_UseSystemTrash()
 		{
-			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage());
+			var controller = new AppSettingsController(new AppSettings(), new FakeIUpdateAppSettingsByPath());
 			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject {UseSystemTrash = true}) as JsonResult;
 			var result = actionResult?.Value as AppSettings;
 			Assert.IsTrue(result?.UseSystemTrash);
@@ -152,7 +155,7 @@ namespace starskytest.Controllers
 		public async Task UpdateAppSettings_Verbose_IgnoreSystemTrashValue()
 		{
 			var appSettings = new AppSettings();
-			var controller = new AppSettingsController(appSettings, new FakeSelectorStorage());
+			var controller = new AppSettingsController(appSettings, new FakeIUpdateAppSettingsByPath());
 			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject {Verbose = true}) as JsonResult;
 			var result = actionResult?.Value as AppSettings;
 			

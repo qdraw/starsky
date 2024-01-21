@@ -87,7 +87,10 @@ namespace starsky.feature.geolookup.Services
             var toUpdateMetaFiles = new List<FileIndexItem>();
 
             var gpxList = await GetGpxFileAsync(metaFilesInDirectory);
-            if(!gpxList.Any()) return toUpdateMetaFiles;
+            if ( gpxList.Count == 0 )
+            {
+	            return toUpdateMetaFiles;
+            }
 
             metaFilesInDirectory = GetNoLocationItems(metaFilesInDirectory);
 

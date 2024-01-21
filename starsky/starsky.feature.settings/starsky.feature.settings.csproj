@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ProjectGuid>{67a8a132-6551-4042-96a4-3ec507b0cb83}</ProjectGuid>
+        <Version>0.5.14</Version>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+    
+</Project>

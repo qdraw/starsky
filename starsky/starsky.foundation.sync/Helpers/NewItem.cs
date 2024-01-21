@@ -86,7 +86,7 @@ namespace starsky.foundation.sync.Helpers
 			dbItem.Size = size;
 			await SetFileHashStatus(dbItem.FilePath, dbItem.FileHash, dbItem);
 			dbItem.LastChanged.AddRange(compare);
-			if ( !compare.Any() )
+			if ( compare.Count == 0 )
 			{
 				dbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
 			}

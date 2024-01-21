@@ -103,7 +103,7 @@ namespace starsky.feature.demo.Services
 		internal async Task<bool> PushToSockets(List<FileIndexItem> updatedList)
 		{
 			var filtered = updatedList.Where(p => p.FilePath != "/").ToList();
-			if ( !filtered.Any() )
+			if ( filtered.Count == 0 )
 			{
 				return false;
 			}

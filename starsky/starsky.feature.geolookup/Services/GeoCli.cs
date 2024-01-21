@@ -31,7 +31,7 @@ namespace starsky.feature.geolookup.Services
 		private readonly IGeoLocationWrite _geoLocationWrite;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
-		private readonly IReadMeta _readMeta;
+		private readonly ReadMeta _readMeta;
 		private readonly IGeoFileDownload _geoFileDownload;
 		private readonly IExifToolDownload _exifToolDownload;
 		private readonly IWebLogger _logger;

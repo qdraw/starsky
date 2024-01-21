@@ -141,6 +141,7 @@
         <ProjectReference Include="..\starsky.feature.realtime\starsky.feature.realtime.csproj" />
         <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj" />
         <ProjectReference Include="..\starsky.feature.search\starsky.feature.search.csproj" />
+        <ProjectReference Include="..\starsky.feature.settings\starsky.feature.settings.csproj" />
         <ProjectReference Include="..\starsky.feature.syncbackground\starsky.feature.syncbackground.csproj" />
         <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj" />
         <ProjectReference Include="..\starsky.feature.trash\starsky.feature.trash.csproj" />

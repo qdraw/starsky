@@ -60,7 +60,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubStarskyReleaseApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 			
@@ -202,7 +202,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubStarskyReleaseApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 
@@ -265,7 +265,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "test");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubStarskyReleaseApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 	        
@@ -282,7 +282,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "test");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubStarskyReleaseApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 	        
