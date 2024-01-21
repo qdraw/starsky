@@ -42,7 +42,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 		{
 			var console = new FakeConsoleWrapper();
 			await new WebFtpCli(_appSettings, new FakeSelectorStorage(), console,_webRequestFactory )
-				.RunAsync(new []{"-h"});
+				.RunAsync(["-h"]);
 			
 			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Starsky WebFtp Cli ~ Help:"));
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("  use -v -help to show settings: "));
@@ -63,7 +63,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 		{
 			var console = new FakeConsoleWrapper();
 			await new WebFtpCli(_appSettings, new FakeSelectorStorage(), console, _webRequestFactory)
-				.RunAsync(new []{"-p"});
+				.RunAsync(["-p"]);
 			
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("is not found"));
 		}
@@ -88,7 +88,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}));
 			
 			await new WebFtpCli(_appSettings,fakeSelectorStorage , console, _webRequestFactory)
-				.RunAsync(new []{"-p", "/test"});
+				.RunAsync(["-p", "/test"]);
 			
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("generate a settings file"));
 		}

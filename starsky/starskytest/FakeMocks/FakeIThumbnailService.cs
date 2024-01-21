@@ -30,12 +30,13 @@ namespace starskytest.FakeMocks
 		public Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
 		{
 			if ( _exception != null ) throw _exception;
+			if ( _subPathStorage == null ) throw new NullReferenceException("_subPathStorage not be null");
 			
-			_subPathStorage?.WriteStream(
+			_subPathStorage.WriteStream(
 				StringToStreamHelper.StringToStream("test"), subPath);
 			Inputs.Add(new Tuple<string, string?>(subPath, null));
 
-			var items = _subPathStorage?.GetAllFilesInDirectory(subPath);
+			var items = _subPathStorage.GetAllFilesInDirectory(subPath);
 			if ( items == null  )
 			{
 				return Task.FromResult(new List<GenerationResultModel>{new GenerationResultModel()

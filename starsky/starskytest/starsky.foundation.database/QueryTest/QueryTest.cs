@@ -1106,7 +1106,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// already verbose
 			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
 			
-            Assert.IsTrue(_logger.TrackedInformation.Any());
+            Assert.IsTrue(_logger.TrackedInformation.Count != 0);
 			Assert.IsTrue(_logger.TrackedInformation.FirstOrDefault().Item2.Contains("[CacheUpdateItem]"));
 		}
 		

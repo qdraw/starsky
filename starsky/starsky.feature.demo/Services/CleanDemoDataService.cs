@@ -143,7 +143,7 @@ namespace starsky.feature.demo.Services
 			IHttpClientHelper httpClientHelper, IStorage hostStorage,
 			IStorage subStorage, IWebLogger webLogger)
 		{
-			if ( !appSettings.DemoData.Any() )
+			if ( appSettings.DemoData.Count == 0 )
 			{
 				webLogger.LogError("DemoData is empty");
 				return false;

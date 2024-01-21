@@ -29,7 +29,7 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class CacheIndexControllerTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 		private readonly AppSettings _appSettings;
 		private readonly ApplicationDbContext _context;
 

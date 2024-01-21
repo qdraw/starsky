@@ -169,8 +169,10 @@ namespace starsky.foundation.platform.Models
 		[PackageTelemetry]
 		public DateTime AppVersionBuildDateTime => DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 
-		// Can be used in the cli session to select files out of the file database system
-		private string _storageFolder;
+		/// <summary>
+		/// Can be used in the cli session to select files out of the file database system
+		/// </summary>
+		private string _storageFolder = string.Empty;
         
 		/// <summary>
 		/// Main Storage provider on disk
@@ -518,7 +520,10 @@ namespace starsky.foundation.platform.Models
 		/// <returns>true = don't edit</returns>
 		public bool IsReadOnly(string f)
 		{
-			if (!ReadOnlyFolders.Any() ) return false;
+			if ( ReadOnlyFolders.Count == 0 )
+			{
+				return false;
+			}
             
 			var result = ReadOnlyFolders.Find(f.Contains);
 			return result != null;
@@ -688,7 +693,12 @@ namespace starsky.foundation.platform.Models
 			{
 				if ( string.IsNullOrWhiteSpace(ApplicationInsightsConnectionStringPrivate) )
 				{
-					return Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
+					var connectionString =
+						Environment.GetEnvironmentVariable(
+							"APPLICATIONINSIGHTS_CONNECTION_STRING");
+					connectionString = connectionString ??=
+							string.Empty;
+					return connectionString;
 				}
 				return ApplicationInsightsConnectionStringPrivate;
 			}
@@ -1054,7 +1064,7 @@ namespace starsky.foundation.platform.Models
 		/// <param name="databaseFilePath">databaseFilePath</param>
 		/// <param name="checkIfExist">checkIfExist</param>
 		/// <returns></returns>
-		public string DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
+		public string? DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
 		{
 			var filepath = StorageFolder + databaseFilePath;
 

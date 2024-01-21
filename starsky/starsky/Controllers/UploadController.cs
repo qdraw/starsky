@@ -287,7 +287,7 @@ namespace starsky.Controllers
 				_logger.LogInformation($"delete {tempImportSinglePath} is {deleteStatus}");
 			}
 			
-			if ( !importedList.Any() )
+			if ( importedList.Count == 0 )
 			{
 				Response.StatusCode = 415;
 			}

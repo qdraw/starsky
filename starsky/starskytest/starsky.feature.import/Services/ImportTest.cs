@@ -430,7 +430,7 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 
 			Assert.IsNotNull(result);
-			Assert.IsTrue(!result.Any());
+			Assert.IsTrue(result.Count == 0);
 		}
 		
 		[TestMethod]

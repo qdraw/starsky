@@ -35,14 +35,16 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task ContentSecurityPolicyMiddlewareTest_invoke_testContent()
 		{
 			// Arrange
-			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Scheme = "http";
+			var httpContext = new DefaultHttpContext { Request =
+			{
+				Scheme = "http"
+			} };
 			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (_) => Task.FromResult(0));
 
 			// Act
 			await authMiddleware.Invoke(httpContext);
 			//test
-			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
+			var csp = httpContext.Response.Headers.ContentSecurityPolicy.ToString();
 			Assert.AreEqual(true,csp.Contains("default-src"));
 			Assert.AreEqual(true,csp.Contains("ws://"));
 		}
@@ -59,7 +61,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			// Act
 			await authMiddleware.Invoke(httpContext);
 			//test
-			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
+			var csp = httpContext.Response.Headers.ContentSecurityPolicy.ToString();
 			
 			Assert.AreEqual(true,csp.Contains("default-src"));
 			Assert.AreEqual(true,csp.Contains("wss://"));
@@ -69,16 +71,18 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task invoke_httpsTest_websockets_localhostWithPort9000()
 		{
 			// Arrange
-			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Scheme = "https";
-			httpContext.Request.Host = new HostString("localhost", 9000);
-			
+			var httpContext = new DefaultHttpContext { Request =
+			{
+				Scheme = "https", 
+				Host = new HostString("localhost", 9000)
+			} };
+
 			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (_) => Task.FromResult(0));
 
 			// Act
 			await authMiddleware.Invoke(httpContext);
 			//test
-			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
+			var csp = httpContext.Response.Headers.ContentSecurityPolicy.ToString();
 			
 			Assert.AreEqual(true,csp.Contains("default-src"));
 			Assert.AreEqual(true,csp.Contains("wss://localhost"));
@@ -89,16 +93,18 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task invoke_httpsTest_websockets_localhostWithNoPort()
 		{
 			// Arrange
-			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Scheme = "https";
-			httpContext.Request.Host = new HostString("localhost");
-			
+			var httpContext = new DefaultHttpContext { Request =
+			{
+				Scheme = "https", 
+				Host = new HostString("localhost")
+			} };
+
 			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (_) => Task.FromResult(0));
 
 			// Act
 			await authMiddleware.Invoke(httpContext);
 			//test
-			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
+			var csp = httpContext.Response.Headers.ContentSecurityPolicy.ToString();
 			
 			Assert.AreEqual(true,csp.Contains("default-src"));
 			Assert.AreEqual(true,csp.Contains("wss://localhost"));
@@ -109,8 +115,10 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task ContentSecurityPolicyMiddlewareTest_invoke_otherTypes()
 		{
 			// Arrange
-			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Scheme = "http";
+			var httpContext = new DefaultHttpContext { Request =
+			{
+				Scheme = "http"
+			} };
 			var authMiddleware = new ContentSecurityPolicyMiddleware((_) => Task.FromResult(0));
 
 			// Act
@@ -148,7 +156,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			// Act
 			await authMiddleware.Invoke(httpContext);
 			
-			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
+			var csp = httpContext.Response.Headers.ContentSecurityPolicy.ToString();
 			
 			Assert.AreEqual(true,csp.Contains("require-trusted-types-for"));
 		}

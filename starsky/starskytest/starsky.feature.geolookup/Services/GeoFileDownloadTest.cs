@@ -126,7 +126,7 @@ namespace starskytest.starsky.feature.geolookup.Services
             await geoFileDownload.DownloadAsync();
         
             // Assert
-            Assert.IsTrue(!httpClientHelper.UrlsCalled.Any());
+            Assert.IsTrue(httpClientHelper.UrlsCalled.Count == 0);
             
             storage.FolderDelete(_dependenciesFolder3);
         }

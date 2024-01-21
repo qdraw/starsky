@@ -33,7 +33,7 @@ namespace starskytest.Controllers
 		private static ControllerContext RequestWithFile()
 		{
 			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
+			httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
 			httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes.ToArray());
 
 			var actionContext = new ActionContext(httpContext, new RouteData(),

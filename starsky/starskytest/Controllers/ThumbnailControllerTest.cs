@@ -28,7 +28,7 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class ThumbnailControllerTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 
 		public ThumbnailControllerTest()
 		{
@@ -63,7 +63,7 @@ namespace starskytest.Controllers
 			return item;
 		}
 
-		private static IStorage ArrangeStorage()
+		private static FakeIStorage ArrangeStorage()
 		{
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.jpg","/test2.jpg", "/test.dng"};

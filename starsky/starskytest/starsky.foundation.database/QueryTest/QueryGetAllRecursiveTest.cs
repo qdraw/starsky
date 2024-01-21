@@ -22,10 +22,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public sealed class QueryGetAllRecursiveTest
 	{
-		private readonly IMemoryCache? _memoryCache;
-		private readonly IQuery _query;
+		private readonly Query _query;
 				
-		private IServiceScopeFactory CreateNewScope()
+		private static IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryGetAllFilesTest)));
@@ -38,12 +37,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetService<IMemoryCache>();
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			_query = new Query(dbContext, 
-				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),memoryCache);
 		}
 		
 		[TestMethod]
