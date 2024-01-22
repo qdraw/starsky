@@ -541,26 +541,61 @@ namespace starskytest.starsky.foundation.platform.Models
 			Assert.AreEqual(2,appSettings.AccountRolesByEmailRegisterOverwrite.Count);
 			Assert.AreEqual("Administrator", appSettings.AccountRolesByEmailRegisterOverwrite["bogusEmail2"]);
 		}
-
-
-		[TestMethod]
-		public void DatabasePathToFilePath_Null()
-		{
-			var appSettings = new AppSettings();
-			
-			var result = appSettings.DatabasePathToFilePath("\\test");
-			
-			Assert.IsNull(result);
-		}
 		
 		[TestMethod]
 		public void DatabasePathToFilePath_NoNull()
 		{
 			var appSettings = new AppSettings();
 			
-			var result = appSettings.DatabasePathToFilePath("\\test",false);
+			var result = appSettings.DatabasePathToFilePath("\\test");
 			
 			Assert.IsNotNull(result);
+		}
+		
+		[TestMethod]
+		public void AppSettingsToTransferObjectConversion()
+		{
+			// Arrange
+			var appSettings = new AppSettings { StorageFolder = "Value1", Verbose = true };
+
+			// Act
+			AppSettingsTransferObject transferObject = (AppSettingsTransferObject)appSettings;
+
+			// Assert
+			Assert.AreEqual(appSettings.StorageFolder, transferObject.StorageFolder);
+			Assert.AreEqual(appSettings.Verbose, transferObject.Verbose);
+		}
+
+		[TestMethod]
+		public void TransferObjectToAppSettingsConversion()
+		{
+			// Arrange
+			var transferObject = new AppSettingsTransferObject { 
+				StorageFolder = $"Value1{Path.DirectorySeparatorChar}", 
+				Verbose = true 
+			};
+
+			// Act
+			var appSettings = (AppSettings)transferObject;
+
+			// Assert
+			Assert.AreEqual(appSettings.StorageFolder, transferObject.StorageFolder);
+			Assert.AreEqual(appSettings.Verbose, transferObject.Verbose);
+		}
+
+		[TestMethod]
+		public void CopyProperties_CopiesPropertiesCorrectly()
+		{
+			// Arrange
+			AppSettings source = new AppSettings { StorageFolder = "Value1", Verbose = true };
+			AppSettings destination = new AppSettings();
+
+			// Act
+			AppSettings.CopyProperties(source, destination);
+
+			// Assert
+			Assert.AreEqual(source.StorageFolder, destination.StorageFolder);
+			Assert.AreEqual(source.Verbose, destination.Verbose);
 		}
 	}
 }

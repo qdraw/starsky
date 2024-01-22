@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
 
@@ -17,7 +18,7 @@ namespace starskytest.FakeMocks
 			}
 		}
 		
-		public List<FileIndexItem> GetInfo(List<string> inputFilePaths, bool collections)
+		public Task<List<FileIndexItem>> GetInfoAsync(List<string> inputFilePaths, bool collections)
 		{
 			var result = new List<FileIndexItem>();
 			foreach ( var path in inputFilePaths )
@@ -26,7 +27,7 @@ namespace starskytest.FakeMocks
 				if ( data == null ) continue;
 				result.Add(data);
 			}
-			return result;
+			return Task.FromResult(result);
 		}
 	}
 }

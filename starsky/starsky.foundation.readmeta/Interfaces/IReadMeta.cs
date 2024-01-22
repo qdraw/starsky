@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 
 namespace starsky.foundation.readmeta.Interfaces
@@ -10,8 +12,8 @@ namespace starsky.foundation.readmeta.Interfaces
 		/// </summary>
 		/// <param name="subPath">subPath</param>
 		/// <returns></returns>
-	    FileIndexItem ReadExifAndXmpFromFile(string subPath);
-        List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList, List<string> fileHashes = null);
+	    Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath);
+	    Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList, List<string>? fileHashes = null);
         bool? RemoveReadMetaCache(string fullFilePath);
         void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel);
     }

@@ -39,8 +39,8 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class UploadControllerTest
 	{
-		private readonly IQuery _query;
-		private readonly IStorage _iStorage;
+		private readonly Query _query;
+		private readonly FakeIStorage _iStorage;
 		private readonly AppSettings _appSettings;
 		private readonly Import _import;
 		private readonly IMemoryCache _memoryCache;
@@ -107,7 +107,7 @@ namespace starskytest.Controllers
 			// ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
 			if ( bytes == null ) bytes = CreateAnImage.Bytes.ToArray();
 			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
+			httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
 			httpContext.Request.Body = new MemoryStream(bytes);
 	        
 			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
@@ -296,16 +296,16 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = "/"; //Set header
 
 			var actionResult = await controller.UploadToFolder()  as JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+			var list = actionResult?.Value as List<ImportIndexItem>;
 
-			Assert.AreEqual( ImportStatus.FileError, list.FirstOrDefault().Status);
+			Assert.AreEqual( ImportStatus.FileError, list?.FirstOrDefault()?.Status);
 		}
 
 		[TestMethod]
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/test.jpg");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/test.jpg");
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
@@ -323,7 +323,7 @@ namespace starskytest.Controllers
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestFolder()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/test/test.jpg");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/test/test.jpg");
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
@@ -341,7 +341,7 @@ namespace starskytest.Controllers
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestDirectFolder()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/test/");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/test/");
 			
 			var controller = new UploadController(_import, _appSettings, 
 				new FakeSelectorStorage(_iStorage), _query, 
@@ -359,7 +359,7 @@ namespace starskytest.Controllers
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_NonExistFolder()
 		{
 			var controllerContext = RequestWithFile();
-			controllerContext.HttpContext.Request.Headers.Add("to", "/non-exist/test.jpg");
+			controllerContext.HttpContext.Request.Headers.Append("to", "/non-exist/test.jpg");
 
 			var controller =
 				new UploadController(_import, _appSettings, 
@@ -381,7 +381,7 @@ namespace starskytest.Controllers
 		private static ControllerContext RequestWithSidecar()
 		{
 			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
+			httpContext.Request.Headers.Append("Content-Type", "application/octet-stream");
 			httpContext.Request.Body = new MemoryStream(CreateAnXmp.Bytes.ToArray());
 	        
 			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());

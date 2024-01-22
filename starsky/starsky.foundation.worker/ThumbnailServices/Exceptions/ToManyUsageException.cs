@@ -22,10 +22,12 @@ namespace starsky.foundation.worker.ThumbnailServices.Exceptions
 		/// </summary>
 		/// <param name="info"></param>
 		/// <param name="context"></param>
+#pragma warning disable SYSLIB0051
 		protected ToManyUsageException(SerializationInfo info, StreamingContext context) 
 			: base(info, context)
 		{
 		}
+#pragma warning restore SYSLIB0051
 	}
 }
 

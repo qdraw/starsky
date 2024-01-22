@@ -82,7 +82,7 @@ namespace starsky.Controllers
 			}
 			
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
-			var info = _metaInfo.GetInfo(inputFilePaths, false);
+			var info =  await _metaInfo.GetInfoAsync(inputFilePaths, false);
 			if ( info.TrueForAll(p =>
 				    p.Status != FileIndexItem.ExifStatus.Ok &&
 				    p.Status != FileIndexItem.ExifStatus.ReadOnly) )

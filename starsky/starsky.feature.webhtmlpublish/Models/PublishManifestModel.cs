@@ -37,6 +37,6 @@ namespace starsky.feature.webhtmlpublish.Models
 		/// <summary>
 		/// Starsky Version
 		/// </summary>
-		public string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+		public string Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 	}
 }

@@ -18,7 +18,7 @@ using starskytest.FakeMocks;
 using XmpCore;
 using XmpCore.Impl;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.readmeta.Services
 {
 	public class MockDirectory : Directory
 	{
@@ -674,8 +674,12 @@ namespace starskytest.Services
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);
 		}
 
-		// https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/MetadataExtractor.Tests/DirectoryExtensionsTest.cs
-		private static Directory BuildDirectory(IEnumerable<object> values)
+		/// <summary>
+		/// @see: https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/MetadataExtractor.Tests/DirectoryExtensionsTest.cs
+		/// </summary>
+		/// <param name="values">values to put in</param>
+		/// <returns>a mock dir</returns>
+		private static MockDirectory BuildDirectory(IEnumerable<object> values)
 		{
 			var directory = new MockDirectory(null);
 

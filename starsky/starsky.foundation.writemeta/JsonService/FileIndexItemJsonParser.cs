@@ -35,7 +35,7 @@ namespace starsky.foundation.writemeta.JsonService
 				fileIndexItem.FileName);
 			
 			await _iStorage.WriteStreamAsync(
-				PlainTextFileHelper.StringToStream(jsonOutput), jsonSubPath);
+				StringToStreamHelper.StringToStream(jsonOutput), jsonSubPath);
 		}
 
 		/// <summary>
@@ -43,13 +43,13 @@ namespace starsky.foundation.writemeta.JsonService
 		/// </summary>
 		/// <param name="fileIndexItem">data object</param>
 		/// <returns>data</returns>
-		public FileIndexItem Read(FileIndexItem fileIndexItem)
+		public async Task<FileIndexItem> ReadAsync(FileIndexItem fileIndexItem)
 		{
 			var jsonSubPath = JsonSidecarLocation.JsonLocation(fileIndexItem.ParentDirectory, fileIndexItem.FileName);
 			// when sidecar file does not exist
 			if ( !_iStorage.ExistFile(jsonSubPath) ) return fileIndexItem;
 			
-			var returnContainer = new DeserializeJson(_iStorage).Read<MetadataContainer>(jsonSubPath);
+			var returnContainer = await new DeserializeJson(_iStorage).ReadAsync<MetadataContainer>(jsonSubPath);
 			
 			// in case of invalid json
 			returnContainer.Item ??= fileIndexItem;

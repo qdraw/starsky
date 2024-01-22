@@ -22,10 +22,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public sealed class QueryGetAllRecursiveTest
 	{
-		private readonly IMemoryCache? _memoryCache;
-		private readonly IQuery _query;
+		private readonly Query _query;
 				
-		private IServiceScopeFactory CreateNewScope()
+		private static IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryGetAllFilesTest)));
@@ -38,12 +37,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetService<IMemoryCache>();
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			_query = new Query(dbContext, 
-				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),memoryCache);
 		}
 		
 		[TestMethod]
@@ -77,31 +76,24 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		
 		private static MySqlException CreateMySqlException(string message)
 		{
-			var info = new SerializationInfo(typeof(Exception),
-				new FormatterConverter());
-			info.AddValue("Number", 1);
-			info.AddValue("SqlState", "SqlState");
-			info.AddValue("Message", message);
-			info.AddValue("InnerException", new Exception());
-			info.AddValue("HelpURL", "");
-			info.AddValue("StackTraceString", "");
-			info.AddValue("RemoteStackTraceString", "");
-			info.AddValue("RemoteStackIndex", 1);
-			info.AddValue("HResult", 1);
-			info.AddValue("Source", "");
-			info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
-					
-			// private MySqlException(SerializationInfo info, StreamingContext context)
-			var ctor =
-				typeof(MySqlException).GetConstructors(BindingFlags.Instance |
-					BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
+			// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
+
+			var ctorLIst =
+				typeof(MySqlException).GetConstructors(
+					BindingFlags.Instance |
+					BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+			var ctor = ctorLIst.FirstOrDefault(p => 
+				p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
+				
 			var instance =
-				( MySqlException? ) ctor?.Invoke(new object[]
+				( MySqlException ) ctor?.Invoke(new object[]
 				{
-					info,
-					new StreamingContext(StreamingContextStates.All)
-				});
-			return instance!;
+					MySqlErrorCode.AccessDenied,
+					"test",
+					message,
+					new Exception()
+				})!;
+			return instance;
 		}
 		
 		private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }

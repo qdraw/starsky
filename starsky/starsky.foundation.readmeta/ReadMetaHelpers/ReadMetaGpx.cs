@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using GeoTimeZone;
 using starsky.foundation.database.Models;
@@ -26,7 +27,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    
 	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
 	    
-        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream? stream, 
+        public async Task<FileIndexItem> ReadGpxFromFileReturnAfterFirstFieldAsync(Stream? stream, 
 	        string subPath, bool useLocal = true)
         {
 	        if ( stream == null )
@@ -38,9 +39,9 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        return returnItem;
 	        }
 
-	        var readGpxFile = ReadGpxFile(stream, null, 1);
+	        var readGpxFile = await ReadGpxFileAsync(stream, null, 1);
 
-	        if ( !readGpxFile.Any() )
+	        if ( readGpxFile.Count == 0 )
 	        {
 		        _logger.LogInformation($"[ReadMetaGpx] SystemXmlXmlException for {subPath}");
 		        return new FileIndexItem(subPath)
@@ -103,13 +104,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// <param name="geoList"></param>
 	    /// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
 	    /// <returns></returns>
-	    public List<GeoListItem> ReadGpxFile(Stream stream, 
+	    public async Task<List<GeoListItem>> ReadGpxFileAsync(Stream stream, 
 		    List<GeoListItem>? geoList = null, int returnAfter = int.MaxValue)
         {
-            if (geoList == null) geoList = new List<GeoListItem>();
+            geoList ??= new List<GeoListItem>();
 
 	        // Some files are having problems with gpxDoc.Load()
-	        var fileString = PlainTextFileHelper.StreamToString(stream);
+	        var fileString = await StreamToStringHelper.StreamToStringAsync(stream);
 	        
 	        try
 	        {

@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly AppSettings _appSettings;
-		private readonly IStorage _hostFileSystem;
+		private readonly StorageHostFullPathFilesystem _hostFileSystem;
 
 		/// <summary>
 		/// shasum -a 1 file.zip
@@ -89,8 +89,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			// Happy flow
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
 				.DownloadCheckSums();
-			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
-			Assert.AreEqual(true, result.Value.Key);
+			Assert.AreEqual(ExampleCheckSum, result?.Value);
+			Assert.AreEqual(true, result?.Key);
 		}
 		
 		[TestMethod]
@@ -107,8 +107,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
 				.DownloadCheckSums();
 			
-			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
-			Assert.AreEqual(false, result.Value.Key);
+			Assert.AreEqual(ExampleCheckSum, result?.Value);
+			Assert.AreEqual(false, result?.Key);
 		}
 		
 		[TestMethod]
@@ -156,7 +156,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var appSettings = new AppSettings{DependenciesFolder = Path.Combine(_createAnImage.BasePath,name)};
 			Directory.CreateDirectory(appSettings.DependenciesFolder);
 			Directory.CreateDirectory(Path.Combine(appSettings.DependenciesFolder,"exiftool-unix"));
-			var stream = PlainTextFileHelper.StringToStream("#!/bin/bash");
+			var stream = StringToStreamHelper.StringToStream("#!/bin/bash");
 			try
 			{
 				await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
@@ -312,7 +312,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Directory.CreateDirectory(Path.Combine(appSettings.DependenciesFolder,"exiftool-windows"));
 
 			var debugString = "\n\necho \"Fake ExifTool\"\n\n\n\necho 'test'";
-			var stream = PlainTextFileHelper.StringToStream("#!/bin/bash\n"+ debugString+ debugString
+			var stream = StringToStreamHelper.StringToStream("#!/bin/bash\n"+ debugString+ debugString
 			                            +debugString+debugString+debugString);
 			await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
 				Path.Combine(appSettings.DependenciesFolder, "exiftool-windows", "exiftool.exe"));

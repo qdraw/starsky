@@ -1,6 +1,8 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -16,8 +18,8 @@ namespace starsky.foundation.readmeta.Services
 {
 	public sealed class ReadMeta : IReadMeta
 	{
-		private readonly AppSettings _appSettings;
-		private readonly IMemoryCache _cache;
+		private readonly AppSettings? _appSettings;
+		private readonly IMemoryCache? _cache;
 		private readonly IStorage _iStorage;
 		private readonly ReadMetaExif _readExif;
 		private readonly ReadMetaXmp _readXmp;
@@ -40,13 +42,13 @@ namespace starsky.foundation.readmeta.Services
 			_readMetaGpx = new ReadMetaGpx(logger);
 		}
 
-		private FileIndexItem ReadExifAndXmpFromFileDirect(string subPath)
+		private async Task<FileIndexItem> ReadExifAndXmpFromFileDirectAsync(string subPath)
 		{
 			if ( _iStorage.ExistFile(subPath) 
 			     && ExtensionRolesHelper.IsExtensionForceGpx(subPath) )
 			{
 				// Get the item back with DateTime as Camera local datetime
-				return _readMetaGpx.ReadGpxFromFileReturnAfterFirstField(
+				return await _readMetaGpx.ReadGpxFromFileReturnAfterFirstFieldAsync(
 					_iStorage.ReadStream(subPath), 
 					subPath); // use local
 			}
@@ -54,7 +56,7 @@ namespace starsky.foundation.readmeta.Services
 			var fileIndexItemWithPath = new FileIndexItem(subPath);
 
 			// Read first the sidecar file
-			var xmpFileIndexItem = _readXmp.XmpGetSidecarFile(fileIndexItemWithPath.Clone());
+			var xmpFileIndexItem = await _readXmp.XmpGetSidecarFileAsync(fileIndexItemWithPath.Clone());
 
 			// if the sidecar file is not complete, read the original file
 			// when reading a .xmp file direct ignore the readExifFromFile
@@ -78,7 +80,7 @@ namespace starsky.foundation.readmeta.Services
 		}
 
 		// used by the html generator
-		public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList, List<string> fileHashes = null)
+		public async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList, List<string>? fileHashes = null)
 		{
 			var fileIndexList = new List<FileIndexItem>();
 
@@ -86,10 +88,10 @@ namespace starsky.foundation.readmeta.Services
 			{
 				var subPath = subPathList[i];
 		        
-				var returnItem = ReadExifAndXmpFromFile(subPath);
+				var returnItem = await ReadExifAndXmpFromFileAsync(subPath);
 				var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(subPath, 50)); 
 
-				returnItem.ImageFormat = imageFormat;
+				returnItem!.ImageFormat = imageFormat;
 				returnItem.FileName = Path.GetFileName(subPath);
 				returnItem.IsDirectory = false;
 				returnItem.Status = FileIndexItem.ExifStatus.Ok;
@@ -97,7 +99,7 @@ namespace starsky.foundation.readmeta.Services
 
 				if ( fileHashes == null || fileHashes.Count <= i )
 				{
-					returnItem.FileHash = new FileHash(_iStorage).GetHashCode(subPath).Key;
+					returnItem.FileHash = (await new FileHash(_iStorage).GetHashCodeAsync(subPath)).Key;
 				}
 				else
 				{
@@ -118,11 +120,11 @@ namespace starsky.foundation.readmeta.Services
 		/// </summary>
 		/// <param name="subPath">path</param>
 		/// <returns>metaData</returns>
-		public FileIndexItem ReadExifAndXmpFromFile(string subPath)
+		public async Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath)
 		{
 			// The CLI programs uses no cache
 			if( _cache == null || _appSettings?.AddMemoryCache == false) 
-				return ReadExifAndXmpFromFileDirect(subPath);
+				return await ReadExifAndXmpFromFileDirectAsync(subPath);
             
 			// Return values from IMemoryCache
 			var queryReadMetaCacheName = CachePrefix + subPath;
@@ -132,10 +134,11 @@ namespace starsky.foundation.readmeta.Services
 				return objectExifToolModel as FileIndexItem;
             
 			// Try to catch a new object
-			objectExifToolModel = ReadExifAndXmpFromFileDirect(subPath);
+			objectExifToolModel = await ReadExifAndXmpFromFileDirectAsync(subPath);
+			
 			_cache.Set(queryReadMetaCacheName, objectExifToolModel, 
 				new TimeSpan(0,1,0));
-			return (FileIndexItem) objectExifToolModel;
+			return (FileIndexItem?) objectExifToolModel!;
 		}
 
         
@@ -165,7 +168,7 @@ namespace starsky.foundation.readmeta.Services
 		{
 			foreach ( var item in objectExifToolModel )
 			{
-				UpdateReadMetaCache(item.FilePath, item);
+				UpdateReadMetaCache(item.FilePath!, item);
 			}
 		}
 

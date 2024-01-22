@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,13 +14,13 @@ using starsky.foundation.readmeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.readmeta.Services
 {
 	[TestClass]
 	public sealed class ReadMetaTest
 	{
 		[TestMethod]
-		public void ReadMetaTest_HalfCompleteFile()
+		public async Task ReadMetaTest_HalfCompleteFile()
 		{
 			const string xmpString = 	"<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Image::ExifTool 11.11\'>" +
 			                            "<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>" +
@@ -46,8 +47,8 @@ namespace starskytest.Services
 			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
 				new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{CreateAnImage.Bytes.ToArray(),xmpByteArray}  );
 		    
-			var data = new ReadMeta(fakeIStorage, new AppSettings(),
-				null, new FakeIWebLogger()).ReadExifAndXmpFromFile("/test.arw");
+			var data = await new ReadMeta(fakeIStorage, new AppSettings(),
+				null, new FakeIWebLogger()).ReadExifAndXmpFromFileAsync("/test.arw");
 		    
 			// Is in source file
 			Assert.AreEqual(200,data.IsoSpeed);
@@ -69,7 +70,7 @@ namespace starskytest.Services
 		}
 		
 		[TestMethod]
-		public void UpdateReadMetaCache_Null()
+		public async Task UpdateReadMetaCache_Null()
 		{
 			var readMeta = new ReadMeta(new FakeIStorage(), new AppSettings(), null, new FakeIWebLogger());
 		    
@@ -81,11 +82,11 @@ namespace starskytest.Services
 				}
 			});
 		    
-			Assert.AreEqual(string.Empty,readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
+			Assert.AreEqual(string.Empty,(await readMeta.ReadExifAndXmpFromFileAsync("/test.jpg"))!.Tags);
 		}
 		
 		[TestMethod]
-		public void UpdateReadMetaCache_AppSettingsDisabled()
+		public async Task UpdateReadMetaCache_AppSettingsDisabled()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
@@ -103,8 +104,10 @@ namespace starskytest.Services
 					Tags = "t2"
 				}
 			});
-		    
-			Assert.AreEqual(string.Empty,readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
+
+			var result =  (await readMeta.ReadExifAndXmpFromFileAsync("/test.jpg") )?
+				.Tags;
+			Assert.AreEqual(string.Empty, result);
 		}
 		
 				
@@ -165,7 +168,7 @@ namespace starskytest.Services
 			}, memoryCache, new FakeIWebLogger());
 			
 			// set cache
-			readMeta.ReadExifAndXmpFromFile("/test.jpg");
+			readMeta.ReadExifAndXmpFromFileAsync("/test.jpg");
 
 			var result = readMeta.RemoveReadMetaCache("/test.jpg");
 		    
@@ -173,7 +176,7 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		public void ReadMetaTest_CheckIfCacheListIsUpdated()
+		public async Task ReadMetaTest_CheckIfCacheListIsUpdated()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
@@ -188,12 +191,15 @@ namespace starskytest.Services
 					Tags = "t2"
 				}
 			});
+
+			var result =
+				await readMeta.ReadExifAndXmpFromFileAsync("/test.jpg");
 		    
-			Assert.AreEqual("t2",readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
+			Assert.AreEqual("t2",result?.Tags);
 		}
 	    
 		[TestMethod]
-		public void ReadMetaTest_CheckIfCacheIsUpdated_SingleItem()
+		public async Task ReadMetaTest_CheckIfCacheIsUpdated_SingleItem()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
@@ -207,12 +213,15 @@ namespace starskytest.Services
 					Tags = "t2"
 				}
 			);
+			
+			var result =
+				await readMeta.ReadExifAndXmpFromFileAsync("/test.jpg");
 		    
-			Assert.AreEqual("t2",readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
+			Assert.AreEqual("t2",result?.Tags);
 		}
 		
 		[TestMethod]
-		public void CorruptXmpFile_SoIgnore()
+		public async Task CorruptXmpFile_SoIgnore()
 		{
 			var storage = new FakeIStorage(new List<string> { "/" },
 				new List<string> { "/test.dng", "/test.xmp" }, new List<byte[]>
@@ -222,11 +231,15 @@ namespace starskytest.Services
 				});
 			var readMeta = new ReadMeta(storage, new AppSettings(), null!, new FakeIWebLogger());
 	    
-			Assert.AreEqual("test, sion",readMeta.ReadExifAndXmpFromFile("/test.dng").Tags);
+			var resultDng =
+				await readMeta.ReadExifAndXmpFromFileAsync("/test.dng");
+		    
+			Assert.AreEqual("test, sion",resultDng?.Tags);
+			
 		}
 		
 		[TestMethod]
-		public void ShouldPickXmpFile()
+		public async Task ShouldPickXmpFile()
 		{
 			var storage = new FakeIStorage(new List<string> { "/" },
 				new List<string> { "/test.dng", "/test.xmp" }, new List<byte[]>
@@ -236,7 +249,10 @@ namespace starskytest.Services
 				});
 			var readMeta = new ReadMeta(storage, new AppSettings(), null!, new FakeIWebLogger());
 	    
-			Assert.AreEqual(string.Empty,readMeta.ReadExifAndXmpFromFile("/test.dng").Tags);
+			var result =
+				await readMeta.ReadExifAndXmpFromFileAsync("/test.jpg");
+			
+			Assert.AreEqual(string.Empty,result?.Tags);
 		}
 	}
 }

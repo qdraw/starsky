@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Services;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.writemeta.Helpers
@@ -110,6 +112,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var runner = new StreamToStreamRunner(appSettings,
 				new MemoryStream(Array.Empty<byte>()), new FakeIWebLogger());
 			var result = await runner.RunProcessAsync(string.Empty);
+			
+			var test = await StreamToStringHelper.StreamToStringAsync(result, false);
+			
 			Assert.AreEqual(0, result.Length);
 		}
 

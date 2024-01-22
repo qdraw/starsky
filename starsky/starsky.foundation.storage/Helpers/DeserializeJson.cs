@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.storage.Interfaces;
 
@@ -21,11 +22,11 @@ namespace starsky.foundation.storage.Helpers
 		/// <typeparam name="T">Typed</typeparam>
 		/// <returns>Data</returns>
 		/// <exception cref="FileNotFoundException">when file is not found</exception>
-		public T? Read<T>(string jsonSubPath)
+		public async Task<T?> ReadAsync<T>(string jsonSubPath)
 		{
 			if ( !_iStorage.ExistFile(jsonSubPath) ) throw new FileNotFoundException(jsonSubPath);
 			var stream = _iStorage.ReadStream(jsonSubPath);
-			var jsonAsString = PlainTextFileHelper.StreamToString(stream);
+			var jsonAsString = await StreamToStringHelper.StreamToStringAsync(stream);
 			var returnFileIndexItem = JsonSerializer.Deserialize<T>(jsonAsString, DefaultJsonSerializer.CamelCase);
 			return returnFileIndexItem;
 		}

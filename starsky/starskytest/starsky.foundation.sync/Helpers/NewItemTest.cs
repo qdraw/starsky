@@ -14,7 +14,7 @@ public class NewItemTest
 	public async Task NewItemTest_KeepDefault()
 	{
 		var storage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"});
-		var newItem = await new NewItem(storage, new FakeReadMeta()).PrepareUpdateFileItem(new FileIndexItem("/test.jpg")
+		var newItem = await new NewItem(storage, new FakeReadMeta()).PrepareUpdateFileItemAsync(new FileIndexItem("/test.jpg")
 		{
 			LastChanged = new List<string>{"test"}
 		}, 100);
@@ -28,7 +28,7 @@ public class NewItemTest
 	public async Task NewItemTest_SetOkAndSame()
 	{
 		var storage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"});
-		var newItem = await new NewItem(storage, new FakeReadMeta()).PrepareUpdateFileItem(new FileIndexItem("/test.jpg")
+		var newItem = await new NewItem(storage, new FakeReadMeta()).PrepareUpdateFileItemAsync(new FileIndexItem("/test.jpg")
 		{
 			Tags = "test, fake read meta",
 			LastChanged = new List<string>()

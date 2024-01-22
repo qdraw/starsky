@@ -26,7 +26,8 @@ namespace starskytest.starsky.feature.thumbnail.Services
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ManualThumbnailGenerationService( new FakeIQuery(
 				new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
-			), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
+			), new FakeIWebLogger(), new FakeIWebSocketConnectionsService(), 
+				new FakeIThumbnailService(selectorStorage), new FakeThumbnailBackgroundTaskQueue());
 
 			await controller.WorkThumbnailGeneration("/");
 
@@ -59,7 +60,8 @@ namespace starskytest.starsky.feature.thumbnail.Services
 		{
 			var socket = new FakeIWebSocketConnectionsService();
 			var controller = new ManualThumbnailGenerationService( new FakeIQuery(
-				new List<FileIndexItem>()), new FakeIWebLogger(), socket, new FakeIThumbnailService(), new FakeThumbnailBackgroundTaskQueue());
+				new List<FileIndexItem>()), new FakeIWebLogger(), socket, 
+				new FakeIThumbnailService(new FakeSelectorStorage()), new FakeThumbnailBackgroundTaskQueue());
 
 			await controller.WorkThumbnailGeneration("/");
 

@@ -20,7 +20,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var fakeConsole = new FakeConsoleWrapper();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 			var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
-				new FakeIThumbnailService(), new FakeIThumbnailCleaner(),
+				new FakeIThumbnailService(new FakeSelectorStorage(storage)), new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
 			await thumbnailService.Thumbnail(Array.Empty<string>());
@@ -38,7 +38,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
-			await thumbnailService.Thumbnail(new []{"-t", "true"});
+			await thumbnailService.Thumbnail(["-t", "true"]);
 			
 			Assert.AreEqual("/", fakeIThumbnailService.Inputs[0].Item1);
 		}
@@ -52,7 +52,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new FakeIThumbnailService(), new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
-			await thumbnailService.Thumbnail(new []{"-h"});
+			await thumbnailService.Thumbnail(["-h"]);
 			
 			Assert.IsTrue(fakeConsole.WrittenLines[0].Contains("Help"));
 		}
@@ -67,7 +67,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				fakeThumbnail, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 		
-			await thumbnailService.Thumbnail(new []{"-t", "false"});
+			await thumbnailService.Thumbnail(["-t", "false"]);
 
 			Assert.AreEqual(0, fakeThumbnail.Inputs.Count);
 		}
@@ -76,14 +76,15 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task Thumbnail_MinusP_FullPath()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
-			var fakeIThumbnailService = new FakeIThumbnailService();
-			var appSettings = new AppSettings();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
+			var appSettings = new AppSettings();
 			var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
-			await thumbnailService.Thumbnail(new []{"-v", "true", "-t","true", "-p", Path.Combine(appSettings.StorageFolder, "test")});
+			await thumbnailService.Thumbnail(["-v", "true", "-t","true", "-p", Path.Combine(appSettings.StorageFolder, "test")
+			]);
 			
 			Assert.AreEqual("/test", fakeIThumbnailService.Inputs[0].Item1);
 		}
@@ -92,14 +93,14 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task Thumbnail_MinusS_SubPath()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
-			var fakeIThumbnailService = new FakeIThumbnailService();
-			var appSettings = new AppSettings();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
+			var appSettings = new AppSettings();
 			var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
-			await thumbnailService.Thumbnail(new []{"-t","true", "-s", "/test"});
+			await thumbnailService.Thumbnail(["-t","true", "-s", "/test"]);
 			
 			Assert.AreEqual("/test", fakeIThumbnailService.Inputs[0].Item1);
 		}
@@ -108,14 +109,14 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task Thumbnail_MinusS_SubPath_Direct()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
-			var fakeIThumbnailService = new FakeIThumbnailService();
-			var appSettings = new AppSettings();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
+			var appSettings = new AppSettings();
 			var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
-			await thumbnailService.Thumbnail(new []{"-t","true", "-s", "/test.jpg"});
+			await thumbnailService.Thumbnail(["-t","true", "-s", "/test.jpg"]);
 			
 			Assert.AreEqual("/test.jpg", fakeIThumbnailService.Inputs[0].Item1);
 			
@@ -127,14 +128,14 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		public async Task Thumbnail_MinusG_Relative()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
-			var fakeIThumbnailService = new FakeIThumbnailService();
-			var appSettings = new AppSettings();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailService = new FakeIThumbnailService(new FakeSelectorStorage(storage));
+			var appSettings = new AppSettings();
 			var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
-			await thumbnailService.Thumbnail(new []{"-t","true", "-g", "0"});
+			await thumbnailService.Thumbnail(["-t","true", "-g", "0"]);
 			
 			var subPathRelative = new StructureService(new FakeIStorage(),appSettings.Structure)
 				.ParseSubfolders(0);
@@ -149,10 +150,10 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 			var fakeIThumbnailCleaner = new FakeIThumbnailCleaner();
 			var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
-				new FakeIThumbnailService(), fakeIThumbnailCleaner,
+				new FakeIThumbnailService(new FakeSelectorStorage(storage)), fakeIThumbnailCleaner,
 				new FakeSelectorStorage(storage));
 			
-			await thumbnailService.Thumbnail(new []{"--clean","true"});
+			await thumbnailService.Thumbnail(["--clean","true"]);
 
 			Assert.IsTrue(fakeIThumbnailCleaner.Inputs[0]);
 		}

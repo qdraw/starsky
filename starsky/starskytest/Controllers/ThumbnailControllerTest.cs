@@ -28,7 +28,7 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class ThumbnailControllerTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 
 		public ThumbnailControllerTest()
 		{
@@ -63,7 +63,7 @@ namespace starskytest.Controllers
 			return item;
 		}
 
-		private static IStorage ArrangeStorage()
+		private static FakeIStorage ArrangeStorage()
 		{
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.jpg","/test2.jpg", "/test.dng"};
@@ -88,7 +88,7 @@ namespace starskytest.Controllers
 		{
 			// Arrange
 			var storage = ArrangeStorage();
-			var plainTextStream = PlainTextFileHelper.StringToStream("CorruptImage");
+			var plainTextStream = StringToStreamHelper.StringToStream("CorruptImage");
 			await storage.WriteStreamAsync(plainTextStream, ThumbnailNameHelper.Combine(
 				"hash-corrupt-image", ThumbnailSize.ExtraLarge));
 

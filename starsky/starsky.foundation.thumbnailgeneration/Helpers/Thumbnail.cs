@@ -153,7 +153,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			var largeImageResult = await CreateLargestImageFromSource(fileHash, largeThumbnailHash, subPath, thumbnailToSourceSize);
 
 			// when all images are already created
-			if ( !thumbnailFromThumbnailUpdateList.Any() )
+			if ( thumbnailFromThumbnailUpdateList.Count == 0 )
 			{
 				return ThumbnailNameHelper.GeneratedThumbnailSizes.Select(size => new GenerationResultModel
 				{
@@ -260,7 +260,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 
 		internal async Task WriteErrorMessageToBlockLog(string subPath, string resizeMessage)
 		{
-			var stream = PlainTextFileHelper.StringToStream("Thumbnail error " + resizeMessage);
+			var stream = StringToStreamHelper.StringToStream("Thumbnail error " + resizeMessage);
 			await _iStorage.WriteStreamAsync(stream, GetErrorLogItemFullPath(subPath));
 		}
 		
@@ -424,10 +424,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			ExtensionRolesHelper.ImageFormat imageFormat,
 			MemoryStream outputStream)
 		{
-			if ( outputStream == null )
-			{
-				throw new ArgumentNullException(nameof(outputStream));
-			}
+			ArgumentNullException.ThrowIfNull(outputStream);
 
 			return SaveThumbnailImageFormatInternal(image, imageFormat, outputStream);
 		}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.Helpers;
 using starsky.foundation.platform.Models;
@@ -32,68 +33,68 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			            "true,\n    \"_settings.json\": false\n  },\n" +
 			            "  \"Slug\": \"test\",\n  \"Export\": \"20200808121411\",\n" +
 			            "  \"Version\": \"0.3.0.0\"\n}";
-			var stream = PlainTextFileHelper.StringToStream(input) as MemoryStream;
+			var stream = StringToStreamHelper.StringToStream(input) as MemoryStream;
 			return stream?.ToArray();
 		}
 		
 		[TestMethod]
-		public void Run_Help()
+		public async Task Run_Help()
 		{
 			var console = new FakeConsoleWrapper();
-			new WebFtpCli(_appSettings, new FakeSelectorStorage(), console,_webRequestFactory )
-				.Run(new []{"-h"});
+			await new WebFtpCli(_appSettings, new FakeSelectorStorage(), console,_webRequestFactory )
+				.RunAsync(["-h"]);
 			
 			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Starsky WebFtp Cli ~ Help:"));
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("  use -v -help to show settings: "));
 		}
 
 		[TestMethod]
-		public void Run_Default()
+		public async Task Run_Default()
 		{
 			var console = new FakeConsoleWrapper();
-			new WebFtpCli(_appSettings, new FakeSelectorStorage(), console, _webRequestFactory)
-				.Run(new []{""});
+			await new WebFtpCli(_appSettings, new FakeSelectorStorage(), console, _webRequestFactory)
+				.RunAsync([""]);
 			
-			Assert.IsTrue(console.WrittenLines.FirstOrDefault().Contains("Please use the -p to add a path first"));
+			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Please use the -p to add a path first"));
 		}
 		
 		[TestMethod]
-		public void Run_PathArg()
+		public async Task Run_PathArg()
 		{
 			var console = new FakeConsoleWrapper();
-			new WebFtpCli(_appSettings, new FakeSelectorStorage(), console, _webRequestFactory)
-				.Run(new []{"-p"});
+			await new WebFtpCli(_appSettings, new FakeSelectorStorage(), console, _webRequestFactory)
+				.RunAsync(["-p"]);
 			
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("is not found"));
 		}
 
 		[TestMethod]
-		public void Run_NoFtpSettings()
+		public async Task Run_NoFtpSettings()
 		{			
 			var console = new FakeConsoleWrapper();
 			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}));
 			
 			// no ftp settings
-			new WebFtpCli(new AppSettings(),fakeSelectorStorage , console, _webRequestFactory)
-				.Run(new []{"-p", "/test"});
+			await new WebFtpCli(new AppSettings(),fakeSelectorStorage , console, _webRequestFactory)
+				.RunAsync(["-p", "/test"]);
 			
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("WebFtp settings"));
 		}
 		
 		[TestMethod]
-		public void Run_NoSettingsFileInFolder()
+		public async Task Run_NoSettingsFileInFolder()
 		{			
 			var console = new FakeConsoleWrapper();
 			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}));
 			
-			new WebFtpCli(_appSettings,fakeSelectorStorage , console, _webRequestFactory)
-				.Run(new []{"-p", "/test"});
+			await new WebFtpCli(_appSettings,fakeSelectorStorage , console, _webRequestFactory)
+				.RunAsync(["-p", "/test"]);
 			
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("generate a settings file"));
 		}
 		
 		[TestMethod]
-		public void Run_SettingsFile_successful()
+		public async Task Run_SettingsFile_successful()
 		{			
 			var console = new FakeConsoleWrapper();
 
@@ -102,10 +103,10 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 					"/test/1000/0_kl1k.jpg"}, new List<byte[]> {ExampleManifest(), Array.Empty<byte>()}));
 			// instead of new byte[0]
 			
-			new WebFtpCli(_appSettings, fakeSelectorStorage , console, _webRequestFactory)
-				.Run(new []{"-p", "/test"});
+			await new WebFtpCli(_appSettings, fakeSelectorStorage , console, _webRequestFactory)
+				.RunAsync(["-p", "/test"]);
 
-			var isSuccess = console?.WrittenLines?.LastOrDefault()?
+			var isSuccess = console.WrittenLines?.LastOrDefault()?
 				.Contains("Ftp copy successful done");
 
 			switch ( isSuccess )

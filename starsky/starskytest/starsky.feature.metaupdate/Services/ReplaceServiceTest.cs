@@ -13,7 +13,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.feature.metaupdate.Services
 {
 	[TestClass]
 	public sealed class ReplaceServiceTest

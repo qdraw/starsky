@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{9402eb61-ae4c-4e8b-8413-c47573d16c9d}</ProjectGuid>
         <DebugType>Full</DebugType>
@@ -16,7 +16,8 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     </ItemGroup>
 
 </Project>

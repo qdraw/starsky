@@ -31,7 +31,7 @@ namespace starskywebftpcli
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var webRequestFactory = serviceProvider.GetRequiredService<IFtpWebRequestFactory>();
 			
-			new WebFtpCli(appSettings, storageSelector, console, webRequestFactory).Run(args);
+			await new WebFtpCli(appSettings, storageSelector, console, webRequestFactory).RunAsync(args);
 		}
 	}
 }

@@ -67,7 +67,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 
 			new StorageHostFullPathFilesystem().WriteStream(
-				PlainTextFileHelper.StringToStream(mockCities1000),
+				StringToStreamHelper.StringToStream(mockCities1000),
 				Path.Combine(_appSettings.DependenciesFolder, "cities1000.txt"));
 			
 			// Mockup data to:
@@ -80,7 +80,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			                                "AR.07\tBuenos Aires F.D.\tBuenos Aires F.D.\t3433955\r\n";
 
 			new StorageHostFullPathFilesystem().WriteStream(
-				PlainTextFileHelper.StringToStream(admin1CodesAscii),
+				StringToStreamHelper.StringToStream(admin1CodesAscii),
 				Path.Combine(_appSettings.DependenciesFolder, "admin1CodesASCII.txt"));
 		}
 
@@ -296,7 +296,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		public async Task GetLocation_No_nearest_place_found()
 		{
 			await new StorageHostFullPathFilesystem().WriteStreamAsync(
-				PlainTextFileHelper.StringToStream(""), // empty file yes!
+				StringToStreamHelper.StringToStream(string.Empty), // empty file yes!
 				Path.Combine(_appSettings.DependenciesFolder, "cities1000.txt"));
 			
 			var result = await new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload(),

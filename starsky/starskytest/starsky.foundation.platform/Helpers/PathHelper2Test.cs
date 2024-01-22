@@ -2,12 +2,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starskycore.Attributes;
-using starskycore.Helpers;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
-	public sealed class ConfigReadTest
+	public sealed class PathHelper2Test
 	{
 
 		[ExcludeFromCoverage]

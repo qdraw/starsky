@@ -135,7 +135,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    string[] base64ImageArray, string publishProfileName, string itemName, 
 		    string outputParentFullFilePathFolder, bool moveSourceFiles = false)
 	    {
-		    if ( !_appSettings.PublishProfiles.Any() )
+		    if ( _appSettings.PublishProfiles.Count == 0 )
 		    {
 			    _console.WriteLine("There are no config items");
 			    return null;
@@ -190,7 +190,10 @@ namespace starsky.feature.webhtmlpublish.Services
 						    ,true);
 					    break;
 				    case TemplateContentType.OnlyFirstJpeg:
-					    if ( !fileIndexItemsList.Any() ) break;
+					    if ( fileIndexItemsList.Count == 0 )
+					    {
+						    break;
+					    }
 					    var firstInList = new List<FileIndexItem>{fileIndexItemsList.FirstOrDefault()};
 					    copyResult.AddRangeOverride(await GenerateJpeg(currentProfile, firstInList, 
 						    outputParentFullFilePathFolder));
@@ -233,7 +236,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    var embeddedResult = await new ParseRazor(_hostFileSystemStorage, _logger)
 			    .EmbeddedViews(currentProfile.Template, viewModel);
 
-		    var stream = PlainTextFileHelper.StringToStream(embeddedResult);
+		    var stream = StringToStreamHelper.StringToStream(embeddedResult);
 		    await _hostFileSystemStorage.WriteStreamAsync(stream, 
 			    Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
 
@@ -349,13 +352,12 @@ namespace starsky.feature.webhtmlpublish.Services
 
 		    // Output has already rotated the image
 		    var rotation = nameof(FileIndexItem.Orientation).ToLowerInvariant();
-		    if ( comparedNames.Contains(rotation) )
-		    {
-			    comparedNames.Remove(rotation);
-		    }
+		    
+		    // should already check if it exists
+			comparedNames.Remove(rotation);
 
-		    // Write it back
-		    await new ExifToolCmdHelper(_exifTool, _hostFileSystemStorage,
+			// Write it back
+			await new ExifToolCmdHelper(_exifTool, _hostFileSystemStorage,
 			    _thumbnailStorage, null,null).UpdateAsync(item, 
 			    new List<string> {outputPath}, comparedNames, 
 			    false, false);
@@ -408,7 +410,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    // Write a single file to be sure that writing is ready
 		    var doneFileFullPath = Path.Combine(_appSettings.TempFolder, slugItemName) + ".done";
 		    await _hostFileSystemStorage.
-			    WriteStreamAsync(PlainTextFileHelper.StringToStream("OK"), doneFileFullPath);
+			    WriteStreamAsync(StringToStreamHelper.StringToStream("OK"), doneFileFullPath);
 
 		    if ( deleteFolderAfterwards )
 		    {

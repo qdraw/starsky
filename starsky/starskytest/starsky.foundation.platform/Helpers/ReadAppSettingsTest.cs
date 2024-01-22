@@ -22,7 +22,7 @@ public class ReadAppSettingsTest
 	public async Task ReadAppSettingsTest_readKestrelData()
 	{
 		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-test2.json");
-		var stream = PlainTextFileHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
+		var stream = StringToStreamHelper.StringToStream("{     \"Kestrel\": {\n        \"Endpoints\": {\n          " +
 			"  \"Https\": {\n                \"Url\": \"https://*:8001\"\n            },\n            \"Http\": {\n      " +
 			"          \"Url\": \"http://*:8000\"\n            }\n        }\n    }\n }");
 		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,appSettingsPath);

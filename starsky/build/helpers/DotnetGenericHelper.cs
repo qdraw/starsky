@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using build;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static build.Build;
@@ -12,24 +13,20 @@ namespace helpers
 	{
 		public static void RestoreNetCoreCommand(Solution solution)
 		{
-			ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
-			DotNetRestore(_ => _
-				.SetProjectFile(solution));
-			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
+			Console.WriteLine("solution: " + solution);
+			DotNetRestore(p => p
+				.SetProjectFile(solution.Path)
+			);
 		}
 	
 		public static void BuildNetCoreGenericCommand(Solution solution,
 			Configuration configuration)
 		{
-			ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
-		    
 			DotNetBuild(_ => _
 				.SetConfiguration(configuration)
 				.EnableNoRestore()
 				.EnableNoLogo()
 				.SetProjectFile(solution));
-
-			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
 		}
 
 		/// <summary>
@@ -49,9 +46,7 @@ namespace helpers
 				Console.WriteLine("skip --no-dependencies");
 				return;
 			}
-		
-			ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
-
+			
 			var genericDepsFullPath = Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
 			Console.WriteLine($"genericDepsFullPath: {genericDepsFullPath}");
 		
@@ -75,7 +70,6 @@ namespace helpers
 			}
 
 			Environment.SetEnvironmentVariable("app__DependenciesFolder", string.Empty);
-			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
 
 			Console.WriteLine($"   genericDepsFullPath: {genericDepsFullPath}");
 			Console.WriteLine("DownloadDependencies done");
@@ -90,8 +84,6 @@ namespace helpers
 				return;
 			}
 			
-			ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(GenericRuntimeName, solution);
-
 			foreach ( var publishProject in PublishProjectsList )
 			{
 				var publishProjectFullPath = Path.Combine(
@@ -107,12 +99,10 @@ namespace helpers
 					.EnableNoRestore()
 					.EnableNoBuild()
 					.EnableNoDependencies()
-					.EnableSelfContained()
 					.SetOutput(outputFullPath)
 					.SetProject(publishProjectFullPath)
 					.EnableNoLogo());
 			}
-			ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(GenericRuntimeName, solution);
 		}
 	
 		static string BasePath()

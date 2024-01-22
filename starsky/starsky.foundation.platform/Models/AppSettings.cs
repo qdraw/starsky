@@ -1,3 +1,4 @@
+#nullable enable
 using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -167,8 +168,10 @@ namespace starsky.foundation.platform.Models
 		[PackageTelemetry]
 		public DateTime AppVersionBuildDateTime => DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 
-		// Can be used in the cli session to select files out of the file database system
-		private string _storageFolder;
+		/// <summary>
+		/// Can be used in the cli session to select files out of the file database system
+		/// </summary>
+		private string _storageFolder = string.Empty;
         
 		/// <summary>
 		/// Main Storage provider on disk
@@ -205,7 +208,7 @@ namespace starsky.foundation.platform.Models
 
 		// Used in the webHtmlCli to store the log item name
 		// used for the url
-		private string _name;
+		private string? _name;
 		
 		[PackageTelemetry]
 		public string Name
@@ -280,7 +283,7 @@ namespace starsky.foundation.platform.Models
 		}
         
 		// DatabaseType > above this one
-		private string _databaseConnection;
+		private string _databaseConnection = string.Empty;
 
 		/// <summary>
 		/// Connection string for the database
@@ -298,7 +301,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Internal Structure save location
 		/// </summary>
-		private string _structure;
+		private string? _structure;
 		
 		/// <summary>
 		/// Auto storage structure
@@ -368,7 +371,7 @@ namespace starsky.foundation.platform.Models
 		}
 
 		[JsonIgnore]
-		public TimeZoneInfo CameraTimeZoneInfo { get; set; }
+		public TimeZoneInfo? CameraTimeZoneInfo { get; set; }
 
 		/// <summary>
 		/// To Check if the structure is any good
@@ -392,14 +395,14 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private: Location of storage of Thumbnails
 		/// </summary>
-		private string _thumbnailTempFolder;
+		private string? _thumbnailTempFolder;
         
 		/// <summary>
 		/// Location of storage of Thumbnails
 		/// </summary>
 		public string ThumbnailTempFolder
 		{
-			get => _thumbnailTempFolder;
+			get => _thumbnailTempFolder ??= string.Empty;
 			set
 			{
 				var thumbnailTempFolder = ReplaceEnvironmentVariable(value);
@@ -410,7 +413,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private: Location of temp folder
 		/// </summary>
-		private string _tempFolder;
+		private string? _tempFolder;
 
 		/// <summary>
 		/// Location of temp folder
@@ -428,7 +431,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private: Location of dependencies folder
 		/// </summary>
-		private string _dependenciesFolder;
+		private string? _dependenciesFolder;
 
 		/// <summary>
 		/// Location of dependencies folder
@@ -446,7 +449,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private: Location of AppSettings Path
 		/// </summary>
-		private string _appSettingsPathPrivate;
+		private string? _appSettingsPathPrivate;
         
 		/// <summary>
 		/// To store the settings by user in the AppData folder
@@ -467,7 +470,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Private Location of ExifTool.exe
 		/// </summary>
-		private string ExifToolPathPrivate { get; set; }
+		private string? ExifToolPathPrivate { get; set; }
 		
 		/// <summary>
 		/// Set in ctor on startup
@@ -516,7 +519,10 @@ namespace starsky.foundation.platform.Models
 		/// <returns>true = don't edit</returns>
 		public bool IsReadOnly(string f)
 		{
-			if (!ReadOnlyFolders.Any() ) return false;
+			if ( ReadOnlyFolders.Count == 0 )
+			{
+				return false;
+			}
             
 			var result = ReadOnlyFolders.Find(f.Contains);
 			return result != null;
@@ -568,7 +574,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Internal location for webFtp credentials
 		/// </summary>
-		private string _webFtp;
+		private string? _webFtp;
 		
 		/// <summary>
 		/// Connection string for FTP
@@ -606,7 +612,7 @@ namespace starsky.foundation.platform.Models
 		/// Publishing profiles used within the publishing module (Order by Key)
 		/// </summary>
 		[PackageTelemetry]
-		public Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfiles {
+		public Dictionary<string, List<AppSettingsPublishProfiles>>? PublishProfiles {
 			get => PublishProfilesPrivate;
 			set
 			{
@@ -654,7 +660,7 @@ namespace starsky.foundation.platform.Models
 		/// <remarks>
 		///    { "demo@qdraw.nl": "Administrator" }
 		/// </remarks>
-		public Dictionary<string, string> AccountRolesByEmailRegisterOverwrite {
+		public Dictionary<string, string>? AccountRolesByEmailRegisterOverwrite {
 			get => AccountRolesByEmailRegisterOverwritePrivate;
 			init
 			{
@@ -686,7 +692,10 @@ namespace starsky.foundation.platform.Models
 			{
 				if ( string.IsNullOrWhiteSpace(ApplicationInsightsConnectionStringPrivate) )
 				{
-					return Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
+					var connectionString =
+						Environment.GetEnvironmentVariable(
+							"APPLICATIONINSIGHTS_CONNECTION_STRING");
+					return !string.IsNullOrEmpty(connectionString) ? connectionString : string.Empty ;
 				}
 				return ApplicationInsightsConnectionStringPrivate;
 			}
@@ -845,8 +854,9 @@ namespace starsky.foundation.platform.Models
 		// ------------------- Modifiers -------------------
 		// -------------------------------------------------
 
-		private string AssemblyDirectoryReplacer(string value)
+		private string AssemblyDirectoryReplacer(string? value)
 		{
+			value ??= string.Empty;
 			return value.Replace("{AssemblyDirectory}", BaseDirectoryProject);
 		}
 	    
@@ -879,7 +889,7 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public bool? ExiftoolSkipDownloadOnStartup { get; set; } = false;
 
-		public OpenTelemetrySettings OpenTelemetry { get; set; } =
+		public OpenTelemetrySettings? OpenTelemetry { get; set; } =
 			new OpenTelemetrySettings();
 
 		/// <returns>AppSettings duplicated</returns>
@@ -1050,23 +1060,14 @@ namespace starsky.foundation.platform.Models
 		/// from relative database path => file location path 
 		/// </summary>
 		/// <param name="databaseFilePath">databaseFilePath</param>
-		/// <param name="checkIfExist">checkIfExist</param>
 		/// <returns></returns>
-		public string DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
+		public string DatabasePathToFilePath(string databaseFilePath)
 		{
 			var filepath = StorageFolder + databaseFilePath;
 
 			filepath = _pathToFilePathStyle(filepath);
 
-			// Used for deleted files
-			if (!checkIfExist) return filepath;
-            
-			var fileExist = File.Exists(filepath) ? filepath : null;
-			if (fileExist != null)
-			{
-				return fileExist;
-			}
-			return Directory.Exists(filepath) ? filepath : null;
+			 return filepath;
 		}
 
 		/// <summary>
@@ -1111,6 +1112,40 @@ namespace starsky.foundation.platform.Models
 			var dataSource = "Data Source=" + baseDirectoryProject + 
 			                 Path.DirectorySeparatorChar+  databaseFileName;
 			return dataSource;
+		}
+		
+		public static explicit operator AppSettingsTransferObject(AppSettings appSettings)
+		{
+			var transferObject = new AppSettingsTransferObject();
+			CopyProperties(appSettings, transferObject);
+			return transferObject;
+		}
+
+		public static explicit operator AppSettings(AppSettingsTransferObject transferObject)
+		{
+			var appSettings = new AppSettings();
+			CopyProperties(transferObject, appSettings);
+			return appSettings;
+		}
+		
+		internal static void CopyProperties(object source, object destination)
+		{
+			var sourceType = source.GetType();
+			var destinationType = destination.GetType();
+
+			var sourceProperties = sourceType.GetProperties();
+			foreach (var sourceProperty in sourceProperties)
+			{
+				var destinationProperty = destinationType.GetProperty(sourceProperty.Name);
+				
+				if ( destinationProperty == null ||
+				     !destinationProperty.CanWrite )
+				{
+					continue;
+				}
+				var value = sourceProperty.GetValue(source);
+				destinationProperty.SetValue(destination, value);
+			}
 		}
 
 	}

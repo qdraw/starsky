@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace starsky.foundation.platform.JsonConverter
 {
@@ -26,6 +27,24 @@ namespace starsky.foundation.platform.JsonConverter
 				PropertyNameCaseInsensitive = true,
 				AllowTrailingCommas = true,
 				WriteIndented = true
+			};
+		
+		/// <summary>
+		/// Please use CamelCase if possible
+		/// Bool is written as quoted string
+		/// </summary>
+		public static JsonSerializerOptions NoNamingPolicy =>
+			new JsonSerializerOptions
+			{
+				PropertyNamingPolicy = null,
+				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+				PropertyNameCaseInsensitive = true,
+				AllowTrailingCommas = true,
+				WriteIndented = true,
+				Converters =
+				{
+					new JsonBoolQuotedConverter(),
+				},
 			};
 	}
 }

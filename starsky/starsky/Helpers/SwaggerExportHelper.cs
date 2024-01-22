@@ -77,7 +77,7 @@ namespace starsky.Helpers
 
 			var storage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			storage.FileDelete(swaggerJsonFullPath);
-			storage.WriteStream(PlainTextFileHelper.StringToStream(swaggerJsonText),
+			storage.WriteStream(StringToStreamHelper.StringToStream(swaggerJsonText),
 				swaggerJsonFullPath);
 
 			_logger?.LogInformation($"app__addSwaggerExport {swaggerJsonFullPath}");

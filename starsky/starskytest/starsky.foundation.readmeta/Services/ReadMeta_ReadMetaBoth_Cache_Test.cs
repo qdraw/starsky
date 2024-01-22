@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Storage;
-using starskycore.Helpers;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.readmeta.Services
 {
 	[TestClass]
 	public sealed class ReadMeta_ReadMetaBoth_Cache_Test
@@ -19,19 +17,18 @@ namespace starskytest.Services
 
         
 		[TestMethod]
-		public void ReadMeta_ReadMetaBothTest_ReadBothWithFilePath()
+		public async Task ReadMeta_ReadMetaBothTest_ReadBothWithFilePath()
 		{
+			var appSettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
+			var iStorage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 
-			var appsettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
-			var iStorage = new StorageSubPathFilesystem(appsettings, new FakeIWebLogger());
-
-			var listofFiles = new List<string>{ new CreateAnImage().DbPath};
+			var listOfFiles = new List<string>{ new CreateAnImage().DbPath};
 			var fakeCache =
 				new FakeMemoryCache(new Dictionary<string, object>());
-			var listOfMetas = new ReadMeta(iStorage,appsettings,fakeCache, new FakeIWebLogger())
-				.ReadExifAndXmpFromFileAddFilePathHash(listofFiles);
+			var listOfMetas = await new ReadMeta(iStorage,appSettings,fakeCache, new FakeIWebLogger())
+				.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
 			Assert.AreEqual(new CreateAnImage().DbPath.Remove(0,1), 
-				listOfMetas.FirstOrDefault().FileName);
+				listOfMetas.FirstOrDefault()?.FileName);
 		}
 
 		[TestMethod]
@@ -47,12 +44,15 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		public void ReadMeta_ReadMetaBothTest_FakeReadEntry()
+		public async Task ReadMeta_ReadMetaBothTest_FakeReadEntry()
 		{
 			var iStorage = new FakeIStorage();
 			var fakeCache =
 				new FakeMemoryCache(new Dictionary<string, object>{{"info_test",new FileIndexItem(){Tags = "test"}}});
-			Assert.AreEqual("test",new ReadMeta(iStorage,null, fakeCache, new FakeIWebLogger()).ReadExifAndXmpFromFile("test").Tags);
+			var result = ( await new ReadMeta(iStorage, null, fakeCache,
+					new FakeIWebLogger())
+				.ReadExifAndXmpFromFileAsync("test") )?.Tags;
+			Assert.AreEqual("test",result);
 		}
 	}
 }

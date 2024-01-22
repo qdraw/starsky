@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -14,6 +15,11 @@ namespace helpers
 	{
 		public static List<string> GetSolutionAllProjectsList(Solution solution)
 		{
+			if ( solution.Directory == null )
+			{
+				throw new ArgumentNullException(nameof(Solution));
+			}
+			
 			var slnListOutput =  
 				DotNet($"sln {solution.ToString()} list", null, 
 					null, null, false);
@@ -27,10 +33,12 @@ namespace helpers
 				{
 					continue;
 				}
-
-				if ( File.Exists(slnListOutputItem.Text) )
+				
+				var fullPath = Path.Combine(solution.Directory, slnListOutputItem.Text);
+				
+				if ( File.Exists(fullPath) )
 				{
-					result.Add(slnListOutputItem.Text);
+					result.Add(fullPath);
 				}
 			}
 			return result;

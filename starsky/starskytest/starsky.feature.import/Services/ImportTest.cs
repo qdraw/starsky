@@ -369,10 +369,10 @@ namespace starskytest.starsky.feature.import.Services
 		/// <param name="inputFileFullPath">subPath style </param>
 		/// <param name="index">number</param>
 		/// <returns>expected result</returns>
-		public static string GetExpectedFilePath(IStorage storage, AppSettings appSettings, string inputFileFullPath, int index = 0)
+		public static async Task<string> GetExpectedFilePathAsync(IStorage storage, AppSettings appSettings, string inputFileFullPath, int index = 0)
 		{
-			var fileIndexItem = new ReadMeta(storage, appSettings, 
-				null, new FakeIWebLogger()).ReadExifAndXmpFromFile(inputFileFullPath);
+			var fileIndexItem = await new ReadMeta(storage, appSettings, 
+				null, new FakeIWebLogger()).ReadExifAndXmpFromFileAsync(inputFileFullPath);
 			var importIndexItem = new ImportIndexItem(appSettings)
 			{
 				FileIndexItem = fileIndexItem,
@@ -430,7 +430,7 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 
 			Assert.IsNotNull(result);
-			Assert.IsTrue(!result.Any());
+			Assert.IsTrue(result.Count == 0);
 		}
 		
 		[TestMethod]
@@ -446,7 +446,7 @@ namespace starskytest.starsky.feature.import.Services
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query,_console, 
 				new FakeIMetaExifThumbnailService(), new FakeIWebLogger(),  new FakeIThumbnailQuery(), new FakeMemoryCache());
-			var expectedFilePath = GetExpectedFilePath(storage, appSettings, 
+			var expectedFilePath = await GetExpectedFilePathAsync(storage, appSettings, 
 				"/test.dng");
 
 			var result = await importService.Importer(new List<string> {"/test.dng"},
@@ -509,13 +509,13 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 			
 			Assert.AreEqual(1, result.Count);
-			var xmpExpectedFilePath = GetExpectedFilePath(storage, appSettings, 
-				"/test.dng").Replace(".dng",".xmp");
+			var xmpExpectedFilePath = (await GetExpectedFilePathAsync(storage, appSettings, 
+				"/test.dng")).Replace(".dng",".xmp");
 
 			var xmpReadStream = storage.ReadStream(xmpExpectedFilePath);
 
 			var xmpStreamLength = xmpReadStream.Length;
-			var toStringAsync = await PlainTextFileHelper.StreamToStringAsync(xmpReadStream);
+			var toStringAsync = await StreamToStringHelper.StreamToStringAsync(xmpReadStream);
 			
 			Assert.AreEqual(CreateAnXmp.Bytes.Length,xmpStreamLength);
 			Assert.IsTrue(toStringAsync.Contains("<tiff:Make>Apple</tiff:Make>"));
@@ -539,13 +539,13 @@ namespace starskytest.starsky.feature.import.Services
 			await importService.Importer(new List<string> {"/test.dng"},
 				new ImportSettingsModel());
 			
-			var expectedFilePath = GetExpectedFilePath(storage, appSettings, 
-				"/test.dng").Replace(".dng",".xmp");
+			var expectedFilePath = (await GetExpectedFilePathAsync(storage, appSettings, 
+				"/test.dng")).Replace(".dng",".xmp");
 
 			Assert.IsTrue(storage.ExistFile(expectedFilePath));
 			
 			var stream = storage.ReadStream(expectedFilePath);
-			var toStringAsync = await PlainTextFileHelper.StreamToStringAsync(stream);
+			var toStringAsync = await StreamToStringHelper.StreamToStringAsync(stream);
 
 			Assert.AreEqual(FakeExifTool.XmpInjection,toStringAsync);
 		}
@@ -561,7 +561,7 @@ namespace starskytest.starsky.feature.import.Services
 				new MemoryStream(CreateAnImage.Bytes.ToArray()), "/test.jpg"
 			);
 			// write  /2018/04/2018_04_22/20180422_161454_test.jpg
-			var path = GetExpectedFilePath(storage, appSettings, "/test.jpg");
+			var path = await GetExpectedFilePathAsync(storage, appSettings, "/test.jpg");
 			await storage.WriteStreamAsync(
 				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes.ToArray()), path
 			);
@@ -600,7 +600,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(ImportStatus.Ok,result[0].Status);
 
 			// get something like  /2018/04/2018_04_22/20180422_161454_test_1.jpg
-			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.jpg", 1);
+			var expectedFilePath = await GetExpectedFilePathAsync(storage, appSettings, "/test.jpg", 1);
 			Assert.AreEqual(expectedFilePath,result[0].FilePath);
 		}
 

@@ -16,6 +16,12 @@ namespace helpers
 	/// </summary>
 	public static class DotnetRuntimeSpecificHelper
 	{
+		static string BasePath()
+		{
+			return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
+				?.Parent?.Parent?.Parent?.FullName;
+		}
+		
 		public static void Clean(List<string> runtimesWithoutGeneric)
 		{
 			foreach(var runtime in runtimesWithoutGeneric)
@@ -43,7 +49,7 @@ namespace helpers
 					.FrameworkDescription;
 				var netMoniker = new Regex(".\\d+$", RegexOptions.None, TimeSpan.FromMilliseconds(100))
 					.Replace(version, string.Empty).Replace(".NET ","net");
-				// e.g net6.0
+				// e.g net6.0 or net8.0
 				
 				if (Directory.Exists($"obj/Release/{netMoniker}/{runtime}"))
 				{
@@ -89,91 +95,67 @@ namespace helpers
 
 		}
 
-		public static void RestoreNetCoreCommand(Solution solution,
-			List<string> runtimesWithoutGeneric)
+		public static void RestoreNetCoreCommand(Solution solution, string runtime)
 		{
-			foreach ( var runtime in runtimesWithoutGeneric )
-			{
-				ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(runtime, solution);
-				// OverwriteRuntimeIdentifier is done via Directory.Build.props
-				DotNetRestore(_ => _
-					.SetProjectFile(solution)
-					.SetProcessArgumentConfigurator(args => args
-						.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
-						.Add("/p:noSonar=true")));
-				
-				ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(runtime, solution);
-			}
+			Console.WriteLine("> dotnet restore next for: solution: " + solution + " runtime: " + runtime);
+			// OverwriteRuntimeIdentifier is done via Directory.Build.props
+			DotNetRestore(p => p
+				.SetProjectFile(solution)
+				.SetRuntime(runtime)
+				.SetProcessArgumentConfigurator(args => args
+					.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
+					.Add("/p:noSonar=true")));
 		}
-	
-		public static void PublishNetCoreGenericCommand(Solution solution,
-			List<string> runtimesWithoutGeneric, Configuration configuration)
+
+		public static void BuildNetCoreCommand(Solution solution, Configuration configuration, string runtime)
 		{
-			foreach ( var runtime in runtimesWithoutGeneric )
-			{
-				ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(runtime, solution);
-				foreach ( var publishProject in Build.PublishProjectsList )
-				{
-					var publishProjectFullPath = Path.Combine(
-						WorkingDirectory.GetSolutionParentFolder(),
-						publishProject);
-					
-					var outputFullPath = Path.Combine(
-						WorkingDirectory.GetSolutionParentFolder(),
-						runtime);
-					
-					DotNetPublish(_ => _
-						.SetConfiguration(configuration)
-						.EnableNoRestore()
-						.EnableNoBuild()
-						.EnableNoDependencies()
-						.EnableSelfContained()
-						.SetOutput(outputFullPath)
-						.SetProject(publishProjectFullPath)
-						.SetRuntime(runtime)
-						.EnableNoLogo()
-						.SetProcessArgumentConfigurator(args => args.Add("/p:noSonar=true"))
-					);
-
-				}
-
-				// to check if the right runtime is published
-				var runtimeDebugFile = Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
-					runtime, "_runtime_" + runtime + ".debug");
-				
-				if ( !File.Exists(runtimeDebugFile) )
-				{
-					File.Create(runtimeDebugFile).Close();
-				}
+			Console.WriteLine("> dotnet build next for: solution: " + solution + " runtime: " + runtime);
 			
-				ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(runtime, solution);
-			}
+			// OverwriteRuntimeIdentifier is done via Directory.Build.props
+			// search for: dotnet build
+			DotNetBuild(p => p
+				.SetProjectFile(solution)
+				.EnableNoRestore()
+				.EnableNoLogo()
+				.DisableRunCodeAnalysis()
+				.SetConfiguration(configuration)
+				.SetProcessArgumentConfigurator(args => 
+					args
+						.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
+						// Warnings are disabled because in Generic build they are already checked
+						.Add("-v q")
+						.Add("/p:WarningLevel=0")
+						.Add("/p:noSonar=true")
+				));
 		}
 
-		public static void BuildNetCoreCommand(Solution solution, List<string> getRuntimesWithoutGeneric, Configuration configuration)
+		public static void PublishNetCoreGenericCommand(Configuration configuration, string runtime)
 		{
-			foreach ( var runtime in getRuntimesWithoutGeneric )
+			foreach ( var publishProject in Build.PublishProjectsList )
 			{
-				ProjectAssetsCopier.CopyAssetFileToCurrentRuntime(runtime, solution);
-				// OverwriteRuntimeIdentifier is done via Directory.Build.props
-				// search for: dotnet build
-				DotNetBuild(_ => _
-					.SetProjectFile(solution)
-					.EnableNoRestore()
-					.EnableNoLogo()
+				Console.WriteLine(">> next publishProject: " + publishProject + " runtime: " + runtime);
+				
+				var publishProjectFullPath = Path.Combine(
+					WorkingDirectory.GetSolutionParentFolder(),
+					publishProject);
+					
+				var outputFullPath = Path.Combine(
+					WorkingDirectory.GetSolutionParentFolder(),
+					runtime);
+					
+				DotNetPublish(p => p
 					.SetConfiguration(configuration)
-					.SetProcessArgumentConfigurator(args => 
-						args
-							.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
-							.Add("/p:noSonar=true")
-					));
-				ProjectAssetsCopier.CopyNewAssetFileByRuntimeId(runtime, solution);
+					.EnableNoRestore()
+					.EnableNoBuild()
+					.EnableNoDependencies()
+					.EnableSelfContained()
+					.SetOutput(outputFullPath)
+					.SetProject(publishProjectFullPath)
+					.SetRuntime(runtime)
+					.EnableNoLogo()
+					.SetProcessArgumentConfigurator(args => args.Add("/p:noSonar=true"))
+				);
 			}
-		}
-		static string BasePath()
-		{
-			return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)
-				?.Parent?.Parent?.Parent?.FullName;
 		}
 	}
 	

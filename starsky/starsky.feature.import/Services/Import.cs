@@ -25,7 +25,6 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -52,7 +51,7 @@ namespace starsky.feature.import.Services
 
 		private readonly AppSettings _appSettings;
 
-		private readonly IReadMeta _readMetaHost;
+		private readonly ReadMeta _readMetaHost;
 		private readonly IExifTool _exifTool;
 		private readonly IQuery _query;
 		
@@ -91,7 +90,7 @@ namespace starsky.feature.import.Services
             _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
             _appSettings = appSettings;
-            _readMetaHost = new ReadMeta(_filesystemStorage, appSettings, null, logger);
+            _readMetaHost = new ReadMeta(_filesystemStorage, appSettings, null!, logger);
             _exifTool = exifTool;
             _query = query;
             _console = console;
@@ -118,7 +117,10 @@ namespace starsky.feature.import.Services
 				importSettings).ToList();
 			
 			// When Directory is Empty
-			if ( !includedDirectoryFilePaths.Any() ) return new List<ImportIndexItem>();
+			if ( includedDirectoryFilePaths.Count == 0 )
+			{
+				return new List<ImportIndexItem>();
+			}
 			
 			var importIndexItemsList = (await includedDirectoryFilePaths
 				.ForEachAsync(
@@ -136,7 +138,10 @@ namespace starsky.feature.import.Services
 
 		internal List<Tuple<string?, List<string>>> CheckForReadOnlyFileSystems( List<ImportIndexItem> importIndexItemsList, bool deleteAfter = true)
 		{
-			if ( !deleteAfter ) return new List<Tuple<string?, List<string>>>();
+			if ( !deleteAfter )
+			{
+				return new List<Tuple<string?, List<string>>>();
+			}
 			
 			var parentFolders = new List<Tuple<string?, List<string>>>();
 			foreach ( var itemSourceFullFilePath in importIndexItemsList.Select(item => item.SourceFullFilePath) )
@@ -366,11 +371,11 @@ namespace starsky.feature.import.Services
 			
 			// Only accept files with correct meta data
 			// Check if there is a xmp file that contains data
-			var fileIndexItem = _readMetaHost.ReadExifAndXmpFromFile(inputFileFullPath.Key);
+			var fileIndexItem = await _readMetaHost.ReadExifAndXmpFromFileAsync(inputFileFullPath.Key);
 			
 			// Parse the filename and create a new importIndexItem object
 			var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat, 
-				hashList.Key, fileIndexItem, importSettings.ColorClass,
+				hashList.Key, fileIndexItem!, importSettings.ColorClass,
 				_filesystemStorage.Info(inputFileFullPath.Key).Size);
 			
 			// Update the parent and filenames
@@ -493,7 +498,10 @@ namespace starsky.feature.import.Services
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
 			
 			// When directory is empty 
-			if ( !preflightItemList.Any() ) return new List<ImportIndexItem>();
+			if ( preflightItemList.Count == 0 )
+			{
+				return new List<ImportIndexItem>();
+			}
 
 			var directoriesContent = ParentFoldersDictionary(preflightItemList);
 			if ( importSettings.IndexMode ) await CreateParentFolders(directoriesContent);
@@ -516,11 +524,20 @@ namespace starsky.feature.import.Services
 		internal async Task<IEnumerable<(bool, bool, string, string?)>> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
 			importIndexItemsList, ImportSettingsModel importSettings)
 		{
-			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return new List<(bool, bool, string, string?)>();
+			if ( _appSettings.MetaThumbnailOnImport == false ||
+			     !importSettings.IndexMode )
+			{
+				return new List<(bool, bool, string, string?)>();
+			}
+			
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
 				.Select(p => (p.FilePath, p.FileIndexItem!.FileHash)).Cast<(string,string)>().ToList();
-			if ( !items.Any() ) return new List<(bool, bool, string, string?)>();
+			
+			if ( items.Count == 0 )
+			{
+				return new List<(bool, bool, string, string?)>();
+			}
 			return await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}
 
@@ -638,7 +655,7 @@ namespace starsky.feature.import.Services
 			{
 				var exifCopy = new ExifCopy(_subPathStorage, 
 					_thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, 
-					_appSettings, null, _logger),_thumbnailQuery);
+					_appSettings, null!, _logger),_thumbnailQuery);
 				await exifCopy.XmpSync(importIndexItem.FileIndexItem!.FilePath);
 			}
 		}

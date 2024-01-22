@@ -1,4 +1,6 @@
+#nullable enable
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -21,15 +23,15 @@ namespace starsky.foundation.readmeta.Services
 			_readMeta = new ReadMeta(storage, appSettings, memoryCache,logger);
 		}
 		
-		public FileIndexItem ReadExifAndXmpFromFile(string subPath)
+		public async Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList,
+			List<string>? fileHashes = null)
 		{
-			return _readMeta.ReadExifAndXmpFromFile(subPath);
+			return await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(subPathList,fileHashes);
 		}
 
-		public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList,
-			List<string> fileHashes = null)
+		public async Task<FileIndexItem?> ReadExifAndXmpFromFileAsync(string subPath)
 		{
-			return _readMeta.ReadExifAndXmpFromFileAddFilePathHash(subPathList,fileHashes);
+			return await _readMeta.ReadExifAndXmpFromFileAsync(subPath);
 		}
 
 		public bool? RemoveReadMetaCache(string fullFilePath)

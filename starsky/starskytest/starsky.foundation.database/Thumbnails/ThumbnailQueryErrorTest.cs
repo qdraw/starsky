@@ -71,7 +71,13 @@ public class ThumbnailQueryErrorTest
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
+		public void SetStoreGeneratedValue(IProperty property, object? value,
+			bool setModified = true)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void SetStoreGeneratedValue(IProperty property, object? value)
 		{
 			throw new NotImplementedException();
@@ -98,15 +104,15 @@ public class ThumbnailQueryErrorTest
 		{
 			throw new NotImplementedException();
 		}
-
 #pragma warning disable 8618
+		public DbContext Context { get; }
+
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IEntityType EntityType { get; }
-#pragma warning restore 8618
 		public EntityState EntityState { get; set; }
-#pragma warning disable 8618
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IUpdateEntry SharedIdentityEntry { get; }
+
 #pragma warning restore 8618
 	}
 	
@@ -200,31 +206,24 @@ public class ThumbnailQueryErrorTest
 		
 	private static MySqlException CreateMySqlException(string message)
 	{
-		var info = new SerializationInfo(typeof(Exception),
-			new FormatterConverter());
-		info.AddValue("Number", 1);
-		info.AddValue("SqlState", "SqlState");
-		info.AddValue("Message", message);
-		info.AddValue("InnerException", new Exception());
-		info.AddValue("HelpURL", "");
-		info.AddValue("StackTraceString", "");
-		info.AddValue("RemoteStackTraceString", "");
-		info.AddValue("RemoteStackIndex", 1);
-		info.AddValue("HResult", 1);
-		info.AddValue("Source", "");
-		info.AddValue("WatsonBuckets",  Array.Empty<byte>() );
-					
-		// private MySqlException(SerializationInfo info, StreamingContext context)
-		var ctor =
-			typeof(MySqlException).GetConstructors(BindingFlags.Instance |
-			                                       BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
+		// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
+
+		var ctorLIst =
+			typeof(MySqlException).GetConstructors(
+				BindingFlags.Instance |
+				BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+		var ctor = ctorLIst.FirstOrDefault(p => 
+			p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
+				
 		var instance =
-			( MySqlException? ) ctor?.Invoke(new object[]
+			( MySqlException ) ctor?.Invoke(new object[]
 			{
-				info,
-				new StreamingContext(StreamingContextStates.All)
-			});
-		return instance!;
+				MySqlErrorCode.AccessDenied,
+				"test",
+				message,
+				new Exception()
+			})!;
+		return instance;
 	}
 	private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }
 

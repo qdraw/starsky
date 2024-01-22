@@ -70,14 +70,14 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			if ( !_iStorageSubPath.ExistFile(fileAlreadyExistSubPath) )
 			{
-				await _iStorageSubPath.WriteStreamAsync(PlainTextFileHelper.StringToStream("test"),
+				await _iStorageSubPath.WriteStreamAsync(StringToStreamHelper.StringToStream("test"),
 					fileAlreadyExistSubPath);
 			}
 			
 			var renameFs = await new RenameService( _query,_iStorageSubPath).Rename(_newImage.DbPath,
 				fileAlreadyExistSubPath);
 			
-			var result = await PlainTextFileHelper.StreamToStringAsync(
+			var result = await StreamToStringHelper.StreamToStringAsync(
 				_iStorageSubPath.ReadStream(fileAlreadyExistSubPath));
 			
 			// it should not overwrite the target file

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
@@ -31,7 +32,7 @@ namespace starsky.feature.metaupdate.Services
 			_statusCodeHelper = new StatusCodesHelper(appSettings);
 		}
 		
-		public List<FileIndexItem> GetInfo(List<string> inputFilePaths, bool collections)
+		public async Task<List<FileIndexItem>> GetInfoAsync(List<string> inputFilePaths, bool collections)
 		{
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
@@ -62,7 +63,7 @@ namespace starsky.feature.metaupdate.Services
 				   && !ExtensionRolesHelper.IsExtensionSidecar(detailView.FileIndexItem!.FileName))
 				{
 					StatusCodesHelper.ReturnExifStatusError(
-						new FileIndexItemJsonParser(_iStorage).Read(detailView.FileIndexItem), 
+						await new FileIndexItemJsonParser(_iStorage).ReadAsync(detailView.FileIndexItem), 
 						FileIndexItem.ExifStatus.ExifWriteNotSupported,
 						fileIndexResultsList);
 					continue;
@@ -78,9 +79,9 @@ namespace starsky.feature.metaupdate.Services
         
 				foreach ( var collectionSubPath in collectionSubPathList )
 				{
-					var collectionItem = _readMeta.ReadExifAndXmpFromFile(collectionSubPath);
+					var collectionItem = await _readMeta.ReadExifAndXmpFromFileAsync(collectionSubPath);
 		            
-					collectionItem.Status = statusResults;
+					collectionItem!.Status = statusResults;
 					collectionItem.CollectionPaths = collectionSubPathList;
 					collectionItem.ImageFormat =
 						ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath);

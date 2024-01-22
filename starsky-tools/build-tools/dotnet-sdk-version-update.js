@@ -12,7 +12,7 @@ const { getFiles } = require("./lib/get-files-directory");
 const { prefixPath } = require("./lib/prefix-path.const.js");
 const { httpsGet } = require("./lib/https-get.js");
 
-let newRunTimeVersion = "6.0.x";
+let newRunTimeVersion = "8.0.x";
 
 // https://docs.microsoft.com/en-us/dotnet/standard/frameworks
 
@@ -84,7 +84,7 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 					await addReferencedProjectMonikers(frameworkMonikerByPath);
 
 				const sortedFrameworkMonikerByPath =
-					await sortNetFrameworkMoniker(refFrameworkMonikerByPath);
+					await sortNetFrameworkMoniker(refFrameworkMonikerByPath, newTargetVersion);
 
 				await updateNetFrameworkMoniker(sortedFrameworkMonikerByPath);
 
@@ -561,7 +561,7 @@ async function addReferencedProjectMonikers(frameworkMonikerByPath) {
 	return frameworkMonikerByPath;
 }
 
-async function sortNetFrameworkMoniker(frameworkMonikerByPath) {
+async function sortNetFrameworkMoniker(frameworkMonikerByPath, newTargetVersionAsFallback) {
 	// references
 	for (let [filePath, netMonikers] of Object.entries(
 		frameworkMonikerByPath
@@ -571,6 +571,14 @@ async function sortNetFrameworkMoniker(frameworkMonikerByPath) {
 		);
 		// console.log(filePath + ' referencedProjectPaths')
 		// console.log(referencedProjectPaths)
+
+		if (referencedProjectPaths.length === 0) {
+			const netMonikerFallback = "net" + newTargetVersionAsFallback.match(/^\d\.\d/ig,"")[0];
+			frameworkMonikerByPath[filePath].push(netMonikerFallback);
+			console.log(
+				`🎁 ${filePath} - is using default ${netMonikerFallback}`
+			);
+		}
 
 		for (const refPath of referencedProjectPaths) {
 			for (const netMoniker of netMonikers) {
@@ -701,6 +709,11 @@ async function updateNetFrameworkMoniker(sortedFrameworkMonikerByPath) {
 				usedTargetFrameworkMonikers[filePath] = [];
 			}
 			usedTargetFrameworkMonikers[filePath].push(lastNet);
+		}
+		else {
+			console.log(
+				`❌ ✖ ${filePath} - is skipped to ${usedTargetFrameworkMonikers}`
+			);
 		}
 	}
 }

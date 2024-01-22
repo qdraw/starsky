@@ -304,7 +304,11 @@ namespace starsky.foundation.storage.Storage
 
 		public bool FileDelete(string path)
 		{
-			if ( !File.Exists(path) ) return false;
+			if ( !File.Exists(path) )
+			{
+				return false;
+			}
+			
 			bool LocalRun()
 			{
 				File.Delete(path);
@@ -384,7 +388,6 @@ namespace starsky.foundation.storage.Storage
 					FileOptions.Asynchronous | FileOptions.SequentialScan))
 				{
 					await stream.CopyToAsync(fileStream);
-					await fileStream.DisposeAsync();
 				}
 				await stream.DisposeAsync();
 				return true;

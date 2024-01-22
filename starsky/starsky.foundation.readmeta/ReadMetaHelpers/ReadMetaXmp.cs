@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -23,7 +24,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			_logger = logger;
 		}
 		
-        public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem)
+        public async Task<FileIndexItem> XmpGetSidecarFileAsync(FileIndexItem databaseItem)
         {
 	        databaseItem ??= new FileIndexItem();
 
@@ -38,7 +39,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	             !_iStorage.ExistFile(xmpSubPath) ) return databaseItem;
 	        
 	        // Read the text-content of the xmp file.
-            var xmp = PlainTextFileHelper.StreamToString(_iStorage.ReadStream(xmpSubPath));
+            var xmp = await StreamToStringHelper.StreamToStringAsync(_iStorage.ReadStream(xmpSubPath));
             // Get the data from the xmp
             databaseItem = GetDataFromString(xmp,databaseItem);
             return databaseItem;

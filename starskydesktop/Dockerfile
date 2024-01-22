@@ -19,7 +19,7 @@ RUN npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund
 RUN npm run build
 RUN echo "react done"
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 

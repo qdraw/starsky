@@ -9,7 +9,6 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -22,7 +21,7 @@ namespace starsky.feature.geolookup.Services
 	public class GeoBackgroundTask : IGeoBackgroundTask
 	{
 		private readonly AppSettings _appSettings;
-		private readonly IReadMeta _readMeta;
+		private readonly ReadMeta _readMeta;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _iStorage;
 		private readonly IGeoLocationWrite _geoLocationWrite;
@@ -54,15 +53,15 @@ namespace starsky.feature.geolookup.Services
 			var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
 				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-			var fileIndexList = _readMeta
-				.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+			var fileIndexList = await _readMeta  
+				.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
 			
 			var toMetaFilesUpdate = new List<FileIndexItem>();
 			if ( index )
 			{
 				toMetaFilesUpdate =
-					_geoIndexGpx
-						.LoopFolder(fileIndexList);
+					await _geoIndexGpx
+						.LoopFolderAsync(fileIndexList);
 					
 				if ( _appSettings.IsVerbose() ) Console.Write("¬");
 					

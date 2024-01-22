@@ -263,7 +263,7 @@ namespace starsky.Controllers
 			var importedList = new List<string>();
 			foreach ( var tempImportSinglePath in tempImportPaths )
 			{
-				var data = await PlainTextFileHelper.StreamToStringAsync(
+				var data = await StreamToStringHelper.StreamToStringAsync(
 					_iHostStorage.ReadStream(tempImportSinglePath));
 				if ( !IsValidXml(data) ) continue;
 				
@@ -287,7 +287,7 @@ namespace starsky.Controllers
 				_logger.LogInformation($"delete {tempImportSinglePath} is {deleteStatus}");
 			}
 			
-			if ( !importedList.Any() )
+			if ( importedList.Count == 0 )
 			{
 				Response.StatusCode = 415;
 			}
