@@ -46,7 +46,7 @@ namespace starsky.foundation.sync.SyncServices
 		}
 
 		public async Task<List<FileIndexItem>> Sync(string subPath,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null,
 			DateTime? childDirectoriesAfter = null)
 		{
 			return await _syncAddThumbnail.SyncThumbnailTableAsync(
@@ -61,14 +61,14 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="updateDelegate"></param>
 		/// <returns></returns>
 		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, 
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			var results = await _syncMultiFile.MultiFile(subPaths,updateDelegate);
 			return await _syncAddThumbnail.SyncThumbnailTableAsync(results);
 		}
 
 		private async Task<List<FileIndexItem>> SyncWithoutThumbnail(string subPath, 
-			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null,
 			DateTime? childDirectoriesAfter = null)
 		{
 			// Prefix / for database

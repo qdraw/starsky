@@ -495,7 +495,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
 			
 			var result = item.ParseQuickTimeDateTime(new CameraMakeModel(),
-				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+				new List<Directory>{dir});
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
 			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
@@ -520,7 +520,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
 			
 			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
-				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+				new List<Directory>{dir});
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
 			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
@@ -545,7 +545,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
 			
 			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
-				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+				new List<Directory>{dir});
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
 
@@ -571,7 +571,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
 			
 			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
-				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+				new List<Directory>{dir});
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4).ToLocalTime();
 			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
@@ -596,7 +596,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
 			
 			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
-				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+				new List<Directory>{dir});
 		
 			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4).ToLocalTime();
 			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);

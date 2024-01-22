@@ -236,7 +236,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// otherwise <see langword="false"/>.
 		/// </returns>
 		/// <exception cref="InvalidCastException">The <paramref name="obj"/> is not a <see cref="SemVersion"/>.</exception>
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			if (obj is null)
 				return false;
@@ -259,7 +259,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <param name="versionA">The first version to compare.</param>
 		/// <param name="versionB">The second version to compare.</param>
 		/// <returns><see langword="true"/> if the two values are equal, otherwise <see langword="false"/>.</returns>
-		public static bool Equals(SemVersion versionA, SemVersion versionB)
+		public static bool Equals(SemVersion? versionA, SemVersion? versionB)
 		{
 			if (ReferenceEquals(versionA, versionB)) return true;
 			if (versionA is null || versionB is null) return false;

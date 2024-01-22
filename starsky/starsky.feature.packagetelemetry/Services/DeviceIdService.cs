@@ -109,7 +109,7 @@ public class DeviceIdService : IDeviceIdService
 	}
 
 	[SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
-	internal static string? DeviceIdWindows(OSPlatform? currentPlatform)
+	internal static string DeviceIdWindows(OSPlatform? currentPlatform)
 	{
 		if (currentPlatform != OSPlatform.Windows)
 		{
@@ -124,7 +124,7 @@ public class DeviceIdService : IDeviceIdService
 					@"SOFTWARE\Microsoft\Cryptography");
 			var title = registryKey?.GetValue("MachineGuid")?.ToString();
 			registryKey?.Dispose();
-			return title;
+			return title ?? string.Empty;
 		}
 		catch ( NullReferenceException )
 		{

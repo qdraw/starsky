@@ -48,7 +48,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal const string ManualSyncCacheName = "ManualSync_";
 		
 		public async Task<FileIndexItem.ExifStatus> ManualSync(string subPath,
-			string operationId = null)
+			string? operationId = null)
 		{
 			var fileIndexItem = await _query.GetObjectByFilePathAsync(subPath);
 			// on a new database ->

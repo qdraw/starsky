@@ -22,8 +22,11 @@ public static class PortProgramHelper
 	internal static async Task<bool> SkipForAppSettingsJsonFile(string appSettingsPath)
 	{
 		var appContainer = await ReadAppSettings.Read(appSettingsPath);
-		if ( appContainer.Kestrel?.Endpoints?.Http?.Url == null &&
-		     appContainer.Kestrel?.Endpoints?.Https?.Url == null ) return false;
+		if ( appContainer?.Kestrel?.Endpoints?.Http?.Url == null &&
+		     appContainer?.Kestrel?.Endpoints?.Https?.Url == null )
+		{
+			return false;
+		}
 		
 		Console.WriteLine("Kestrel Endpoints are set in appsettings.json, " +
 		                  "this results in skip setting the PORT and default " +

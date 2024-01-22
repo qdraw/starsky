@@ -86,7 +86,7 @@ namespace starsky.foundation.platform.Models
 	    /// </summary>
 	    /// <param name="value">input value, can be null</param>
 	    /// <returns>system path with replaced {AssemblyDirectory}</returns>
-	    public static string GetDefaultPath(string value = null)
+	    public static string GetDefaultPath(string? value = null)
 	    {
 		    if ( string.IsNullOrEmpty(value) )
 		    {
@@ -168,11 +168,11 @@ namespace starsky.foundation.platform.Models
         /// do not add slash check, used for _kl
         /// </summary>
         public string Append { get; set; } = string.Empty;
-       
+
         /// <summary>
         /// index.cshtml for example
         /// </summary>
-        public string Template { get; set; }
+        public string Template { get; set; } = string.Empty;
         
         /// <summary>
         /// To add before

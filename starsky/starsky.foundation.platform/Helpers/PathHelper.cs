@@ -14,8 +14,13 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="filePath">path to parse</param>
 		/// <param name="timeOut">default timeout (to avoid ReDoS vulnerability)</param>
 		/// <returns></returns>
-		public static string GetFileName(string filePath, int timeOut = 5000)
+		public static string GetFileName(string? filePath, int timeOut = 5000)
 		{
+			if ( string.IsNullOrEmpty(filePath)  )
+			{
+				return string.Empty;
+			}
+			
 			// unescaped:
 			// [^/]+(?=(?:\.[^.]+)?$)
 			return Regex.Match(filePath, "[^/]+(?=(?:\\.[^.]+)?$)", 
@@ -27,9 +32,12 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="basePath">The base path.</param>
 		/// <returns></returns>
-		public static string RemoveLatestBackslash(string basePath = "/")
+		public static string? RemoveLatestBackslash(string basePath = "/")
 		{
-			if (string.IsNullOrWhiteSpace(basePath)) return null;
+			if ( string.IsNullOrWhiteSpace(basePath) )
+			{
+				return null;
+			}
 
 			// Depends on Platform
 			if (basePath == "/") return basePath;

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Services;
 using starskycore.ViewModels;
 using starskytest.FakeMocks;
@@ -69,7 +68,7 @@ namespace starskytest.Controllers
 
 			var actionResult = await controller.Index() as ContentResult;
 			
-			Assert.AreEqual("Healthy",actionResult.Content);
+			Assert.AreEqual("Healthy",actionResult?.Content);
 		}
 		
 				
@@ -91,71 +90,71 @@ namespace starskytest.Controllers
 		public void HealthControllerTest_ApplicationInsights()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
-				new ApplicationInsightsJsHelper(null,null))
+				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 
 			var actionResult = controller.ApplicationInsights() as ContentResult;
 			Assert.AreEqual("/* ApplicationInsights JavaScriptSnippet disabled */",
-				actionResult.Content);
+				actionResult?.Content);
 		}
 
 		[TestMethod]
 		public void Version_NoVersion()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
-				new ApplicationInsightsJsHelper(null,null))
+				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			var noVersion = controller.Version() as BadRequestObjectResult;
-			Assert.AreEqual(400, noVersion.StatusCode);
+			Assert.AreEqual(400, noVersion?.StatusCode);
 		}
 		
 		[TestMethod]
 		public void Version_Version_newer()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
-				new ApplicationInsightsJsHelper(null,null))
+				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "1.0";
 			var noVersion = controller.Version() as OkObjectResult;
-			Assert.AreEqual(200, noVersion.StatusCode);
+			Assert.AreEqual(200, noVersion?.StatusCode);
 		}
 
 		[TestMethod]
 		public void Version_Version_older()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
-				new ApplicationInsightsJsHelper(null,null))
+				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "0.1";
 			var noVersion = controller.Version() as ObjectResult;
-			Assert.AreEqual(202, noVersion.StatusCode);
+			Assert.AreEqual(202, noVersion?.StatusCode);
 		}
 		
 		[TestMethod]
 		public void Version_Version_AsParam_older()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
-				new ApplicationInsightsJsHelper(null,null))
+				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			var noVersion = controller.Version("0.1") as ObjectResult;
-			Assert.AreEqual(202, noVersion.StatusCode);
+			Assert.AreEqual(202, noVersion?.StatusCode);
 		}
 
 		[TestMethod]
 		public void Version_Version_beta1_isBefore()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
-				new ApplicationInsightsJsHelper(null,null))
+				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -171,7 +170,7 @@ namespace starskytest.Controllers
 		public void Version_Version_eq()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
-				new ApplicationInsightsJsHelper(null,null))
+				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -179,20 +178,20 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = 
 				HealthController.MinimumVersion;
 			var noVersion = controller.Version() as OkObjectResult;
-			Assert.AreEqual(200, noVersion.StatusCode);
+			Assert.AreEqual(200, noVersion?.StatusCode);
 		}
 
 		[TestMethod]
 		public void Version_Version_NonValidInput()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
-				new ApplicationInsightsJsHelper(null,null))
+				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "0.bad-input";
 			var noVersion = controller.Version() as ObjectResult;
-			Assert.AreEqual(400, noVersion.StatusCode);
+			Assert.AreEqual(400, noVersion?.StatusCode);
 		}
 		
 
@@ -200,13 +199,13 @@ namespace starskytest.Controllers
 		public void Version_Version_0()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
-				new ApplicationInsightsJsHelper(null,null))
+				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "0";
 			var noVersion = controller.Version() as ObjectResult;
-			Assert.AreEqual(202, noVersion.StatusCode);
+			Assert.AreEqual(202, noVersion?.StatusCode);
 		}
 
 		[TestMethod]

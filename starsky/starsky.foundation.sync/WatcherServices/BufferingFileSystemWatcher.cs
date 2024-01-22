@@ -21,21 +21,21 @@ namespace starsky.foundation.sync.WatcherServices
 	[SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
 	public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWrapper
     {
-        private readonly FileSystemWatcher _containedFsw = null;
+        private readonly FileSystemWatcher _containedFsw;
 
-        private FileSystemEventHandler _onExistedHandler = null;
-        private FileSystemEventHandler _onAllChangesHandler = null;
+        private FileSystemEventHandler? _onExistedHandler = null;
+        private FileSystemEventHandler? _onAllChangesHandler = null;
 
-        private FileSystemEventHandler _onCreatedHandler = null;
-        private FileSystemEventHandler _onChangedHandler = null;
-        private FileSystemEventHandler _onDeletedHandler = null;
-        private RenamedEventHandler _onRenamedHandler = null;
+        private FileSystemEventHandler? _onCreatedHandler = null;
+        private FileSystemEventHandler? _onChangedHandler = null;
+        private FileSystemEventHandler? _onDeletedHandler = null;
+        private RenamedEventHandler? _onRenamedHandler = null;
 
-        private ErrorEventHandler _onErrorHandler = null;
+        private ErrorEventHandler? _onErrorHandler = null;
 
         //We use a single buffer for all change types. Alternatively we could use one buffer per event type, costing additional enumerate tasks.
-        private BlockingCollection<FileSystemEventArgs> _fileSystemEventBuffer = null;
-        private CancellationTokenSource _cancellationTokenSource = null;
+        private BlockingCollection<FileSystemEventArgs>? _fileSystemEventBuffer;
+        private CancellationTokenSource? _cancellationTokenSource = null;
 
         #region Contained FileSystemWatcher
         
@@ -125,13 +125,13 @@ namespace starsky.foundation.sync.WatcherServices
             set { _containedFsw.Path = value; }
         }
 
-        public ISynchronizeInvoke SynchronizingObject
+        public ISynchronizeInvoke? SynchronizingObject
         {
             get { return _containedFsw.SynchronizingObject; }
             set { _containedFsw.SynchronizingObject = value; }
         }
 
-        public override ISite Site
+        public override ISite? Site
         {
             get { return _containedFsw.Site; }
             set { _containedFsw.Site = value; }

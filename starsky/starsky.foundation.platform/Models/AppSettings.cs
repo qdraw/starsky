@@ -378,16 +378,24 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		/// <param name="structure"></param>
 		/// <exception cref="ArgumentException"></exception>
-		public static void StructureCheck(string structure)
+		public static void StructureCheck(string? structure)
 		{
+			if ( string.IsNullOrEmpty(structure) )
+			{
+				throw new ArgumentNullException(structure, "(StructureCheck) Structure is empty");
+			}
+			
 			// Unescaped regex:
 			//      ^(\/.+)?\/([\/_ A-Z0-9*{}\.\\-]+(?=\.ext))\.ext$
             
-			Regex structureRegex = new Regex( 
+			var structureRegex = new Regex( 
 				"^(\\/.+)?\\/([\\/_ A-Z0-9*{}\\.\\\\-]+(?=\\.ext))\\.ext$", 
 				RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(300));
 
-			if (structureRegex.Match(structure).Success) return;
+			if ( structureRegex.Match(structure).Success )
+			{
+				return;
+			}
 
 			throw new ArgumentException("(StructureCheck) Structure is not confirm regex - " + structure);
 		}
@@ -775,7 +783,7 @@ namespace starsky.foundation.platform.Models
 		/// But it seems a lot of cameras don't do this
 		/// We assume that the standard is followed, and for Camera brands that don't follow the specs use this setting.
 		/// </summary>
-		public List<CameraMakeModel> VideoUseLocalTime { get; set; } = new List<CameraMakeModel>
+		public List<CameraMakeModel>? VideoUseLocalTime { get; set; } = new List<CameraMakeModel>
 		{
 			new CameraMakeModel("Sony","A58")
 		};
@@ -904,6 +912,10 @@ namespace starsky.foundation.platform.Models
 				Environment.SpecialFolder.UserProfile); // can be null on azure webapp
 
 			var appSettings = this.CloneViaJson();
+			if ( appSettings == null )
+			{
+				return new AppSettings();
+			}
 		    
 			if ( appSettings.DatabaseType != DatabaseTypeList.Sqlite )
 			{

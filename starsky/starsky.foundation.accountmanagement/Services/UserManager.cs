@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -202,7 +201,7 @@ namespace starsky.foundation.accountmanagement.Services
 			return user;
 		}
 
-		public async Task<User?> Exist(int userTableId)
+		public async Task<User?> ExistAsync(int userTableId)
 		{
 			if ( !IsCacheEnabled() )
 			{
@@ -243,7 +242,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <summary>
 		/// Add a new user, including Roles and UserRoles
 		/// </summary>
-		/// <param name="name">Nice Name, default string.Emthy</param>
+		/// <param name="name">Nice Name, default string.Empty</param>
 		/// <param name="credentialTypeCode">default is: Email</param>
 		/// <param name="identifier">an email address, e.g. dont@mail.us</param>
 		/// <param name="secret">Password</param>
@@ -379,7 +378,7 @@ namespace starsky.foundation.accountmanagement.Services
 			_dbContext.SaveChanges();
 		}
         
-		public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
+		public ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier, string secret)
 		{
 			var credentialType = _dbContext.CredentialTypes.FirstOrDefault(
 				ct => ct.Code != null && ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
@@ -392,7 +391,7 @@ namespace starsky.foundation.accountmanagement.Services
 			var credential = _dbContext.Credentials.TagWith("ChangeSecret").FirstOrDefault(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
             
-			if (credential == null)
+			if (credential == null || identifier == null)
 			{
 				return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialNotFound);
 			}
@@ -581,7 +580,9 @@ namespace starsky.foundation.accountmanagement.Services
 		internal async Task<ValidateResult> ResetAndSuccess(int accessFailedCount, int userId, User? userData )
 		{
 			if ( accessFailedCount <= 0 )
+			{
 				return new ValidateResult(userData, true);
+			}
 			
 			userData = await _dbContext.Users.FindAsync(userId);
 			if ( userData == null )

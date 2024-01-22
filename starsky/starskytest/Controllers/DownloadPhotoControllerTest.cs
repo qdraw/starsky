@@ -245,7 +245,7 @@ namespace starskytest.Controllers
 			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as NotFoundObjectResult;
 			Assert.AreNotEqual(null,actionResult);
 			Assert.AreEqual(404,actionResult?.StatusCode);
-			Assert.AreEqual("source image missing /test.jpg",actionResult.Value);
+			Assert.AreEqual("source image missing /test.jpg",actionResult?.Value);
 		}
 
 		[TestMethod]
@@ -267,8 +267,8 @@ namespace starskytest.Controllers
 			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as NotFoundObjectResult;
 		
 			Assert.AreNotEqual(null,actionResult);
-			Assert.AreEqual(404,actionResult.StatusCode);
-			Assert.AreEqual("ThumbnailTempFolder not found",actionResult.Value);
+			Assert.AreEqual(404,actionResult?.StatusCode);
+			Assert.AreEqual("ThumbnailTempFolder not found",actionResult?.Value);
 		}
 	}
 }

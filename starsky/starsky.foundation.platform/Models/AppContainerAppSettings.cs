@@ -4,7 +4,7 @@ namespace starsky.foundation.platform.Models
 {
 	public sealed class AppContainerAppSettings
 	{
-		public KestrelContainer Kestrel { get; set; }
-		public AppSettings App { get; set; }
+		public KestrelContainer? Kestrel { get; set; }
+		public AppSettings App { get; set; } = new AppSettings();
 	}
 }

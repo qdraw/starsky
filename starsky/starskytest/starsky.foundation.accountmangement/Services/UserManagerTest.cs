@@ -715,7 +715,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser", Id = 1});
 
-			var result = await userManager.Exist(1);
+			var result = await userManager.ExistAsync(1);
 			
 			Assert.IsNotNull(result);
 		}
@@ -726,7 +726,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser", Id = 1});
 
-			var result = await userManager.Exist(9822);
+			var result = await userManager.ExistAsync(9822);
 			
 			Assert.IsNull(result);
 		}
@@ -739,7 +739,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var id = await userManager.SignUpAsync(string.Empty, "email", "t", "t");
 			Assert.IsNotNull(id);
 
-			var result = await userManager.Exist(id.User.Id);
+			var result = await userManager.ExistAsync(id.User.Id);
 			
 			Assert.IsNotNull(result);
 		}
@@ -749,7 +749,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
 
-			var result = await userManager.Exist(852);
+			var result = await userManager.ExistAsync(852);
 			
 			Assert.IsNull(result);
 		}

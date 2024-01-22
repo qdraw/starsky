@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Internal;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -15,10 +14,10 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIStorage : IStorage
 	{
-		private readonly List<string> _outputSubPathFolders = new List<string>();
-		private readonly List<string> _outputSubPathFiles  = new List<string>();
+		private readonly List<string?> _outputSubPathFolders = new List<string?>();
+		private readonly List<string?> _outputSubPathFiles  = new List<string?>();
 
-		private readonly  Dictionary<string, DateTime> _lastEditDict = new Dictionary<string, DateTime>();
+		private readonly  Dictionary<string, DateTime>? _lastEditDict = new Dictionary<string, DateTime>();
 
 		private readonly  Dictionary<string, byte[]> _byteList = new Dictionary<string, byte[]>();
 
@@ -53,7 +52,7 @@ namespace starskytest.FakeMocks
 			{
 				for ( int i = 0; i < _outputSubPathFiles.Count; i++ )
 				{
-					_byteList.Add(_outputSubPathFiles[i],byteListSource[i]);
+					_byteList.Add(_outputSubPathFiles[i]!,byteListSource[i]);
 				}
 			}
 
@@ -61,17 +60,20 @@ namespace starskytest.FakeMocks
 			{
 				for ( var i = 0; i < _outputSubPathFiles.Count; i++ )
 				{
-					_lastEditDict.Add(_outputSubPathFiles[i],lastEdited[i]);
+					_lastEditDict.Add(_outputSubPathFiles[i]!,lastEdited[i]);
 				}
 			}
 		}
-
-		private readonly Exception _exception;
 		
 		public FakeIStorage(Exception exception)
 		{
 			_exception = exception;
 		}
+		
+
+		private readonly Exception? _exception;
+		
+
 		
 		public bool ExistFile(string path)
 		{
@@ -114,18 +116,18 @@ namespace starskytest.FakeMocks
 			_outputSubPathFolders[indexOfFolders] = toPath;
 		}
 
-		public void FileMove(string inputSubPath, string toSubPath)
+		public void FileMove(string fromPath, string toPath)
 		{
-			var existOldFile = ExistFile(inputSubPath);
-			var existNewFile = ExistFile(toSubPath);
+			var existOldFile = ExistFile(fromPath);
+			var existNewFile = ExistFile(toPath);
 
 			if (!existOldFile || existNewFile)
 			{
 				return;
 			}
 			
-			var indexOfFiles = _outputSubPathFiles.IndexOf(inputSubPath);
-			_outputSubPathFiles[indexOfFiles] = toSubPath;
+			var indexOfFiles = _outputSubPathFiles.IndexOf(fromPath);
+			_outputSubPathFiles[indexOfFiles] = toPath;
 		}
 
 		public void FileCopy(string fromPath, string toPath)
@@ -140,13 +142,13 @@ namespace starskytest.FakeMocks
 		{
 			if ( !ExistFile(path) ) return false;
 			var index = _outputSubPathFiles.IndexOf(path);
-			_outputSubPathFiles[index] = null;
+			_outputSubPathFiles[index] = null!;
 			return true;
 		}
 
-		public void CreateDirectory(string subPath)
+		public void CreateDirectory(string path)
 		{
-			_outputSubPathFolders.Add(subPath);
+			_outputSubPathFolders.Add(path);
 		}
 
 		public bool FolderDelete(string path)
@@ -158,7 +160,7 @@ namespace starskytest.FakeMocks
 			// recursive delete all files
 			for ( var i = 0; i < _outputSubPathFolders.Count; i++ )
 			{
-				if ( _outputSubPathFolders[i] != null && _outputSubPathFolders[i].StartsWith(path) )
+				if ( _outputSubPathFolders[i] != null && _outputSubPathFolders[i]!.StartsWith(path) )
 				{
 					_outputSubPathFolders[i] = null;
 				}
@@ -166,31 +168,32 @@ namespace starskytest.FakeMocks
 			return true;
 		}
 
-		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
+		public IEnumerable<string> GetAllFilesInDirectory(string? path)
 		{
-			if ( subPath == null )
+			if ( path == null )
 			{
 				// for thumbnails
-				return _outputSubPathFiles.Where(p => !p.StartsWith("/"));
+				return _outputSubPathFiles.Where(p => p?.StartsWith('/') == false).Cast<string>();
 			}
 			
-			var path = PathHelper.RemoveLatestSlash(subPath);
+			var pathNoEndSlash = PathHelper.RemoveLatestSlash(path);
 			
 			// non recruisive
-			if ( path != string.Empty && !ExistFolder(path) )
+			if ( pathNoEndSlash != string.Empty && !ExistFolder(pathNoEndSlash) )
 			{
 				return new List<string>();
 			}
 
 
 
-			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(path, p)).AsEnumerable();
+			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(pathNoEndSlash, p!))
+				.AsEnumerable().Cast<string>();
 		}
 
-		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string subPath)
+		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
 		{
-			subPath = PathHelper.RemoveLatestSlash(subPath);
-			return _outputSubPathFiles.Where(p => p != null && p.StartsWith(subPath));
+			path = PathHelper.RemoveLatestSlash(path);
+			return _outputSubPathFiles.Where(p => p != null && p.StartsWith(path)).Cast<string>();
 		}
 
 		/// <summary>
@@ -200,16 +203,16 @@ namespace starskytest.FakeMocks
 		/// <returns></returns>
 		public IEnumerable<string> GetDirectories(string path)
 		{
-			
 			path = PathHelper.RemoveLatestSlash(path);
 			var folderFileList = _outputSubPathFolders.
-				Where(p => p.Contains(path) && p != path).
+				Where(p => p?.Contains(path) == true && p != path).
 				ToList();
 			
 			var parentPathWithSlash = string.IsNullOrEmpty(path) ? "/" : path;
 
-			var folderFileListNotRecrusive = folderFileList.Where(p => CheckAndFixChildFolders(parentPathWithSlash, p)).ToList();
-			return folderFileListNotRecrusive;
+			var folderFileListNotRecrusive = folderFileList.Where(
+				p => CheckAndFixChildFolders(parentPathWithSlash, p!)).ToList();
+			return folderFileListNotRecrusive.Cast<string>();
 		}
 
 		private static bool CheckAndFixChildFolders(string parentFolder, string childFolder)
@@ -226,9 +229,6 @@ namespace starskytest.FakeMocks
 		{
 			if ( parentFolder != string.Empty && !filePath.StartsWith(parentFolder) ) return false;
 			// unescaped: (\/|\\)\w+.[a-z]{1,4}$
-			//var regex =  $"{Regex.Escape(parentFolder)}" + "(\\/|\\)\\w+.[a-z]{1,4}$";
-			//var result = Regex.Match(filePath, regex).Success;
-			//return result;
 			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}" + "(\\/|\\\\)\\w+.[a-z]{1,4}$").Success;
 		}
 
@@ -236,7 +236,6 @@ namespace starskytest.FakeMocks
 		/// Returns a list of directories // Get list of child folders
 		/// </summary>
 		/// <param name="path">subPath</param>
-		/// <param name="orderByAlphabet">order by alphabet or last edited, newest first</param>
 		/// <returns>list of paths</returns>
 		[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 		public IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path)
@@ -249,17 +248,22 @@ namespace starskytest.FakeMocks
 			}
 
 			var result = new List<KeyValuePair<string, DateTime>>();
-			foreach ( var item in _outputSubPathFolders.Where(p => p.StartsWith(path) && p != path ).AsEnumerable() )
+			foreach ( var item in _outputSubPathFolders.Where(p => 
+				         p?.StartsWith(path) == true && p != path ).AsEnumerable() )
 			{
-				result.Add(new KeyValuePair<string, DateTime>(item, DateTime.Now));
+				result.Add(new KeyValuePair<string, DateTime>(item!, DateTime.Now));
 			}
 			return result;
 
 		}
 
-		public Stream ReadStream(string path, int maxRead = 2147483647)
+		public Stream ReadStream(string path, int maxRead = -1)
 		{
-			if ( ! ExistFile(path) ) return Stream.Null;
+			if ( !ExistFile(path) )
+			{
+				return Stream.Null;
+			}
+			
 			// whats that? -->
 			if ( ExistFile(path) && _byteList.All(p => p.Key != path) )
 			{
@@ -354,7 +358,7 @@ namespace starskytest.FakeMocks
 			
 			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
 
-			var lastEdit = new DateTime();
+			var lastEdit = new DateTime(1994, 7, 5, 16, 23, 42, DateTimeKind.Utc);
 			if ( _lastEditDict != null )
 			{
 				lastEdit = _lastEditDict.FirstOrDefault(p => p.Key == path).Value;
@@ -381,16 +385,15 @@ namespace starskytest.FakeMocks
 			return dateTime ?? DateTime.Now;
 		}
 		
-		private bool SetDateTime(string path, DateTime dateTime)
+		private void SetDateTime(string path, DateTime dateTime)
 		{
-			if ( _lastEditDict == null ) return false;
+			if ( _lastEditDict == null ) return;
 			if ( _lastEditDict.Any(p => p.Key == path) )
 			{
 				_lastEditDict[path] = dateTime;
-				return true;
+				return;
 			}
 			_lastEditDict.Add(path, dateTime);
-			return true;
 		}
 	}
 }

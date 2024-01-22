@@ -248,7 +248,8 @@ namespace starsky.foundation.sync.SyncServices
 						_subPathStorage,
 						null!,
 						_logger);
-					var databaseItems = await syncMultiFile.MultiFile(subPathInFiles, updateDelegate, addParentFolder);
+					var databaseItems = await syncMultiFile.MultiFile(
+						subPathInFiles, updateDelegate, addParentFolder);
 				
 					await new SyncRemove(_appSettings, _setupDatabaseTypes,
 							query, _memoryCache, _logger)

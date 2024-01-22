@@ -142,7 +142,7 @@ namespace starskytest.FakeMocks
 			return null;
 		}
 
-		public Task<User> Exist(int userTableId)
+		public Task<User> ExistAsync(int userTableId)
 		{
 			return Task.FromResult(CurrentUser) ;
 		}

@@ -40,7 +40,7 @@ namespace starsky.foundation.realtime.Middleware
 				{
 					WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
                     
-					if ( !context.User.Identity.IsAuthenticated)
+					if ( context.User.Identity?.IsAuthenticated == false)
 					{
 						// Status Code 1008 PolicyViolation
 						await webSocket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, 
@@ -50,12 +50,13 @@ namespace starsky.foundation.realtime.Middleware
                     
 					WebSocketConnection webSocketConnection = new WebSocketConnection(webSocket, _options.ReceivePayloadBufferSize);
 
-					async void OnWebSocketConnectionOnNewConnection(object sender, EventArgs message)
+					async void OnWebSocketConnectionOnNewConnection(object? sender, EventArgs message)
 					{
 						await Task.Delay(150);
 						try
 						{
-							var welcomeMessage = new ApiNotificationResponseModel<HeartbeatModel>(new HeartbeatModel(null))
+							var welcomeMessage = new ApiNotificationResponseModel<HeartbeatModel>(
+								new HeartbeatModel(null))
 							{
 								Type =  ApiNotificationType.Welcome,
 							};

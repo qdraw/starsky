@@ -105,7 +105,7 @@ public class FakeIUserManger : IUserManager
 		throw new System.NotImplementedException();
 	}
 
-	public Task<User> Exist(int userTableId)
+	public Task<User> ExistAsync(int userTableId)
 	{
 		throw new System.NotImplementedException();
 	}

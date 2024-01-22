@@ -12,10 +12,14 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="inputString">base64 string</param>
 		/// <returns>byte array</returns>
-		public static byte[] TryParse(string inputString)
+		public static byte[] TryParse(string? inputString)
 		{
-			if ( inputString?.Length % 4 != 0 || !Base64Regex.IsMatch(inputString) )
+			inputString ??= string.Empty;
+			if ( inputString.Length % 4 != 0 ||
+			     !Base64Regex.IsMatch(inputString) )
+			{
 				return Array.Empty<byte>();
+			}
 			return Convert.FromBase64String(inputString);
 		}
 
