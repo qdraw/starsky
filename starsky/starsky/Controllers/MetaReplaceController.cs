@@ -80,10 +80,10 @@ namespace starsky.Controllers
 			
 			// before sending not founds
 			new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", 
-				fileIndexResultsList.FirstOrDefault()?.FilePath, collections, stopwatch);
+				fileIndexResultsList.FirstOrDefault()?.FilePath!, collections, stopwatch);
 			
 			// When all items are not found
-			if (!resultsOkOrDeleteList.Any())
+			if (resultsOkOrDeleteList.Count == 0 )
 			{
 				return NotFound(fileIndexResultsList);
 			}

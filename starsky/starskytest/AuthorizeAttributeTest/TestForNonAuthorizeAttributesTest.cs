@@ -82,7 +82,7 @@ public class TestForNonAuthorizeAttributesTest
                 attributes.AddRange(allowAnonymousAttributes);
                 attributes.AddRange(allowAnonymousParentAttributes);
 
-                Assert.IsTrue(attributes.Any(), $"No AuthorizeAttribute found on {controller.FullName} {method.Name} method");
+                Assert.IsTrue(attributes.Count != 0, $"No AuthorizeAttribute found on {controller.FullName} {method.Name} method");
             }
         }
     }

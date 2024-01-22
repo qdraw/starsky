@@ -17,7 +17,7 @@ namespace helpers
 		{
 			if ( solution.Directory == null )
 			{
-				throw new ArgumentNullException(nameof(Solution));
+				throw new ArgumentNullException(solution, "Solution.Directory is null");
 			}
 			
 			var slnListOutput =  

@@ -15,7 +15,7 @@ namespace starsky.foundation.writemeta.Services
 	[Service(typeof(IExifTool), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class ExifToolService : IExifTool
 	{
-		private readonly IExifTool _exifTool;
+		private readonly ExifTool _exifTool;
 
 		public ExifToolService(ISelectorStorage selectorStorage, AppSettings appSettings, IWebLogger logger)
 		{

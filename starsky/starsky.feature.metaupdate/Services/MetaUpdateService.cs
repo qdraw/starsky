@@ -90,12 +90,11 @@ namespace starsky.feature.metaupdate.Services
 				
 			foreach ( var fileIndexItem in fileIndexItemList )
 			{
-				if (changedFileIndexItemName.ContainsKey(fileIndexItem.FilePath!) )
+				if (changedFileIndexItemName.TryGetValue(fileIndexItem.FilePath!, out List<string> value) )
 				{
-					// used for tracking differences, in the database/ExifTool compare
-					var comparedNamesList = changedFileIndexItemName[fileIndexItem.FilePath];
+					// used for tracking differences, in the database/ExifTool compared to the inputModel
 
-					await UpdateWriteDiskDatabase(fileIndexItem, comparedNamesList, rotateClock);
+					await UpdateWriteDiskDatabase(fileIndexItem, value, rotateClock);
 					updatedItems.Add(fileIndexItem);
 					continue;
 				}

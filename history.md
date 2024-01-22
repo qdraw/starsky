@@ -35,9 +35,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.5.15 _(Unreleased)_ - 2024-01-? {#v0.5.15}
+## version 0.6.0-beta.0 -  _(Unreleased)_ - 2024-01-? {#v0.6.0-beta.0}
 
 - [x] (Added) _Back-end_ Add support for OpenTelemetry (server side only) (PR #1323)
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.100 (Runtime: 8.0.1) (PR #1335)
 
 ## version 0.5.14 - 2023-12-29 {#v0.5.14}
 

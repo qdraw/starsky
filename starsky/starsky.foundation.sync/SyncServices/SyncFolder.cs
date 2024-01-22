@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,13 +80,16 @@ namespace starsky.foundation.sync.SyncServices
 					var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 						.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-					if ( fileIndexItems.Any() ) _console.Write("⁘");
+					if ( fileIndexItems.Count != 0 )
+					{
+						_console.Write("⁘");
+					}
 				
 					var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate, false);
 					allResults.AddRange(indexItems);
 
 					var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems)).Where(p => p != null).ToList();
-					if ( dirItems.Any() )
+					if ( dirItems.Count != 0 )
 					{
 						allResults.AddRange(dirItems!);
 					}
@@ -116,7 +118,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			var parentItems = (await AddParentFolder(inputSubPath, allResults))
 				.Where( p => p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
-			if ( parentItems.Any() )
+			if ( parentItems.Count != 0 )
 			{
 				allResults.AddRange(parentItems);
 			}
@@ -125,7 +127,7 @@ namespace starsky.foundation.sync.SyncServices
 				p.Status is FileIndexItem.ExifStatus.Ok
 					or FileIndexItem.ExifStatus.Deleted).ToList();
 			
-			if ( updateDelegate != null && socketUpdates.Any() )
+			if ( updateDelegate != null && socketUpdates.Count != 0 )
 			{
 				await updateDelegate(socketUpdates);
 			}
@@ -227,7 +229,10 @@ namespace starsky.foundation.sync.SyncServices
 				.Where(p => p.IsDirectory == false).ToList();
 			
 			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
-			if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
+			if ( pathsToUpdateInDatabase.Count == 0 )
+			{
+				return new List<FileIndexItem>();
+			}
 
 			var resultChunkList = await pathsToUpdateInDatabase.Chunk(50).ForEachAsync(
 				async chunks =>
@@ -237,11 +242,11 @@ namespace starsky.foundation.sync.SyncServices
 					var queryFactory = new QueryFactory(_setupDatabaseTypes,
 						_query, _memoryCache, _appSettings,
 						_serviceScopeFactory, _logger);
-					var query = queryFactory.Query();
+					var query = queryFactory.Query()!;
 					
 					var syncMultiFile = new SyncMultiFile(_appSettings, query,
 						_subPathStorage,
-						null,
+						null!,
 						_logger);
 					var databaseItems = await syncMultiFile.MultiFile(subPathInFiles, updateDelegate, addParentFolder);
 				
@@ -317,8 +322,11 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var fileIndexItemsOnlyFolders = fileIndexItems
 				.Where(p => p.IsDirectory == true).ToList();
-			
-			if ( !fileIndexItemsOnlyFolders.Any() ) return new List<FileIndexItem?>();
+
+			if ( fileIndexItemsOnlyFolders.Count == 0 )
+			{
+				return new List<FileIndexItem?>();
+			}
 		
 			// can this be done in a batch?
 			return (await fileIndexItemsOnlyFolders

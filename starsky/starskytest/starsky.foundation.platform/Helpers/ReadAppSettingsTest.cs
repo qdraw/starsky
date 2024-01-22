@@ -32,7 +32,22 @@ public class ReadAppSettingsTest
 		// remove afterwards
 		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
 		
-		Assert.AreEqual("http://*:8000",readAppSettings.Kestrel?.Endpoints?.Http?.Url);
-		Assert.AreEqual("https://*:8001",readAppSettings.Kestrel?.Endpoints?.Https?.Url);
+		Assert.AreEqual("http://*:8000",readAppSettings?.Kestrel?.Endpoints?.Http?.Url);
+		Assert.AreEqual("https://*:8001",readAppSettings?.Kestrel?.Endpoints?.Https?.Url);
+	}
+	
+	[TestMethod]
+	public async Task ReadAppSettingsTest_readApp_TrueSetting()
+	{
+		var appSettingsPath = Path.Combine(new AppSettings().BaseDirectoryProject,"appsettings-test3.json");
+		var stream = StringToStreamHelper.StringToStream("{\n    \"app\" : {\n        \"verbose\" : \"true\"\n    }\n}");
+		await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,appSettingsPath);
+		
+		var readAppSettings = await ReadAppSettings.Read(appSettingsPath);
+		
+		// remove afterwards
+		new StorageHostFullPathFilesystem().FileDelete(appSettingsPath);
+		
+		Assert.IsTrue(readAppSettings?.App.Verbose);
 	}
 }

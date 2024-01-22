@@ -40,8 +40,9 @@ namespace starsky.foundation.accountmanagement.Middleware
 
         private static BasicAuthenticationHeaderValue GetBasicAuthenticationHeaderValue(HttpContext context)
         {
-            var basicAuthenticationHeader = context.Request.Headers["Authorization"]
-                .FirstOrDefault(header => header.StartsWith("Basic", StringComparison.OrdinalIgnoreCase));
+            var basicAuthenticationHeader = context.Request.Headers.Authorization.FirstOrDefault(header => 
+	            header!.StartsWith("Basic", StringComparison.OrdinalIgnoreCase));
+            
             var decodedHeader = new BasicAuthenticationHeaderValue(basicAuthenticationHeader);
             return decodedHeader;
         }

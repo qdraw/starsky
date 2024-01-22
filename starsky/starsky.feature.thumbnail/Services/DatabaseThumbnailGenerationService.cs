@@ -100,7 +100,7 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 				generationResultModels);
 			var removedItems = await _updateStatusGeneratedThumbnailService
 				.RemoveNotfoundStatusAsync(generationResultModels);
-			if ( removedItems.Any() )
+			if ( removedItems.Count != 0 )
 			{
 				_logger.LogInformation($"[DatabaseThumbnailGenerationService] removed items ({DateTime.UtcNow:HH:mm:ss})" +
 				                       $" items: {string.Join(",",removedItems)}");
@@ -113,14 +113,15 @@ public class DatabaseThumbnailGenerationService : IDatabaseThumbnailGenerationSe
 		var filteredData = resultData
 			.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
 
-		if ( !filteredData.Any() )
+		if ( filteredData.Count == 0 )
 		{
 			_logger.LogInformation($"[DatabaseThumbnailGenerationService] no items ({DateTime.UtcNow:HH:mm:ss})");
 			return chuckedItems;
 		}
 		
 		_logger.LogInformation($"[DatabaseThumbnailGenerationService] done ({DateTime.UtcNow:HH:mm:ss})" +
-		                       $" {filteredData.Count} items: {string.Join(",",filteredData.Select(p => p.FilePath).ToList())}");
+		                       $" {filteredData.Count} items: " +
+		                       $"{string.Join(",",filteredData.Select(p => p.FilePath).ToList())}");
 
 		var webSocketResponse =
 			new ApiNotificationResponseModel<List<FileIndexItem>>(filteredData, ApiNotificationType.ThumbnailGeneration);

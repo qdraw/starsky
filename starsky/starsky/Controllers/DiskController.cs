@@ -52,7 +52,7 @@ namespace starsky.Controllers
 		public async Task<IActionResult> Mkdir(string f)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
-			if ( !inputFilePaths.Any() )
+			if ( inputFilePaths.Count == 0 )
 			{
 				Response.StatusCode = 400;
 				return Json(new List<SyncViewModel>());

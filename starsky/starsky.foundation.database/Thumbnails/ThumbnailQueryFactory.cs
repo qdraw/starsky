@@ -36,6 +36,7 @@ namespace starsky.foundation.database.Thumbnails
 
 			// FakeIQuery should skip creation
 			var isAnyContentIncluded = _thumbnailQuery.GetReflectionFieldValue<List<ThumbnailItem>?>("_content")?.Any();
+			
 			if ( isAnyContentIncluded != true )
 			{
 				return Activator.CreateInstance(_thumbnailQuery.GetType(),

@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -32,7 +31,7 @@ namespace starsky.foundation.readmeta.Services
 		/// <param name="appSettings"></param>
 		/// <param name="memoryCache"></param>
 		/// <param name="logger"></param>
-		public ReadMeta(IStorage iStorage, AppSettings appSettings, IMemoryCache memoryCache, IWebLogger logger)
+		public ReadMeta(IStorage iStorage, AppSettings appSettings, IMemoryCache? memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_cache = memoryCache;

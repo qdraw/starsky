@@ -73,17 +73,17 @@ namespace starsky.foundation.accountmanagement.Interfaces
         void AddToRole(User user, Role role);
         void RemoveFromRole(User user, string roleCode);
         void RemoveFromRole(User user, Role role);
-        ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
+        ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier, string secret);
         Task<ValidateResult> ValidateAsync(string credentialTypeCode,
-	        string identifier, string secret);
+	        string? identifier, string secret);
 
         Task<bool> SignIn(HttpContext httpContext, User user,
 	        bool isPersistent = false);
         void SignOut(HttpContext httpContext);
         int GetCurrentUserId(HttpContext httpContext);
-        User GetCurrentUser(HttpContext httpContext);
+        User? GetCurrentUser(HttpContext httpContext);
         User GetUser(string credentialTypeCode, string identifier);
-        Credential GetCredentialsByUserId(int userId);
+        Credential? GetCredentialsByUserId(int userId);
         Task<ValidateResult> RemoveUser(string credentialTypeCode,
 	        string identifier);
         User Exist(string identifier);

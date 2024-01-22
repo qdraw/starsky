@@ -26,14 +26,14 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IStorage _subPathStorage;
 		private readonly SyncSingleFile _syncSingleFile;
 		private readonly SyncRemove _syncRemove;
-		private readonly IConsole _console;
+		private readonly ConsoleWrapper _console;
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 		private readonly SyncMultiFile _syncMultiFile;
 
 		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, 
-			ISyncAddThumbnailTable syncAddThumbnail, IServiceScopeFactory serviceScopeFactory = null,  
-			IMemoryCache memoryCache = null)
+			ISyncAddThumbnailTable syncAddThumbnail, IServiceScopeFactory? serviceScopeFactory = null,  
+			IMemoryCache? memoryCache = null)
 		{
 			_syncAddThumbnail = syncAddThumbnail;
 			_console = new ConsoleWrapper();

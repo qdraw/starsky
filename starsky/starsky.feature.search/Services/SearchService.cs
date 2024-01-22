@@ -190,6 +190,9 @@ namespace starsky.feature.search.Services
 	    /// <param name="model">temp output model</param>
 	    /// <returns>search model with content</returns>
 	    [SuppressMessage("ReSharper", "AccessToModifiedClosure")]
+	    [SuppressMessage("Performance", "CA1862:Use the \'StringComparison\' " +
+	                                    "method overloads to perform case-insensitive string comparisons", 
+		    Justification = "EF Core does not support this:  System.InvalidOperationException: The LINQ expression 'DbSet<FileIndexItem>()")]
 	    private async Task<SearchViewModel> WideSearch(IQueryable<FileIndexItem> sourceList,
 		    SearchViewModel model)
 	    {
@@ -198,7 +201,8 @@ namespace starsky.feature.search.Services
 		    // .AsNoTracking() => never change data to update
 		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
-				Enum.TryParse<SearchViewModel.SearchInTypes>(model.SearchIn[i].ToLowerInvariant(), true, out var searchInType);
+				Enum.TryParse<SearchViewModel.SearchInTypes>(model.SearchIn[i].ToLowerInvariant(), 
+					true, out var searchInType);
 
 			    if ( model.SearchForOptions[i] == SearchViewModel.SearchForOptionType.Not )
 			    {
@@ -407,13 +411,13 @@ namespace starsky.feature.search.Services
 
                 // To Search Type
                 var itemNameSearch = rgx.Match(itemQuery).Value;
-                if (!itemNameSearch.Any()) continue;
+                if (itemNameSearch.Length == 0 ) continue;
 
                 // replace
                 itemQuery = rgx.Replace(itemQuery, string.Empty);
 
-	            // Option last of itemNameSearch
-                var searchForOption = itemNameSearch[itemNameSearch.Length - 1].ToString();
+	            // Option last of itemNameSearch (Get last option = ^1)
+                var searchForOption = itemNameSearch[^1].ToString();
                 
                 // Remove parenthesis
                 itemQuery = itemQuery.Replace("\"", string.Empty);

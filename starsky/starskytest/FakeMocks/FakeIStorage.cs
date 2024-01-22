@@ -29,8 +29,8 @@ namespace starskytest.FakeMocks
 		/// <param name="outputSubPathFiles">/test.jpg</param>
 		/// <param name="byteListSource"></param>
 		/// <param name="lastEdited"></param>
-		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
-			IReadOnlyList<byte[]> byteListSource = null, IReadOnlyList<DateTime> lastEdited = null)
+		public FakeIStorage(List<string>? outputSubPathFolders = null, List<string>? outputSubPathFiles = null, 
+			IReadOnlyList<byte[]>? byteListSource = null, IReadOnlyList<DateTime>? lastEdited = null)
 		{
 	
 			if ( outputSubPathFolders != null )

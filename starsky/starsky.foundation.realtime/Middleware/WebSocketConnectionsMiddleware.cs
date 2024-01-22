@@ -96,7 +96,7 @@ namespace starsky.foundation.realtime.Middleware
 		private bool ValidateOrigin(HttpContext context)
 		{
 			return (_options.AllowedOrigins == null) || (_options.AllowedOrigins.Count == 0) || (
-				_options.AllowedOrigins.Contains(context.Request.Headers["Origin"].ToString()));
+				_options.AllowedOrigins.Contains(context.Request.Headers.Origin.ToString()));
 		}
 
 		#endregion

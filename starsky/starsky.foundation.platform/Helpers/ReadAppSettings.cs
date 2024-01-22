@@ -8,7 +8,7 @@ namespace starsky.foundation.platform.Helpers;
 
 public static class ReadAppSettings
 {
-	internal static async Task<AppContainerAppSettings> Read(string path)
+	internal static async Task<AppContainerAppSettings?> Read(string path)
 	{
 		if ( !File.Exists(path) )
 		{
@@ -17,16 +17,10 @@ public static class ReadAppSettings
 			
 		using ( var openStream = File.OpenRead(path) )
 		{
-			return  await JsonSerializer
-				.DeserializeAsync<AppContainerAppSettings>(openStream,
-					new JsonSerializerOptions
-					{
-						PropertyNameCaseInsensitive = true,
-						Converters =
-						{
-							new JsonBoolQuotedConverter(),
-						},
-					});
+			var result = await JsonSerializer.DeserializeAsync<AppContainerAppSettings>(
+				openStream, DefaultJsonSerializer.NoNamingPolicy);
+			
+			return result;
 		}
 	}
 }

@@ -5,7 +5,7 @@ namespace starsky.foundation.accountmanagement.Middleware
 {
     public sealed class BasicAuthenticationHeaderValue
     {
-        public BasicAuthenticationHeaderValue(string authenticationHeaderValue)
+        public BasicAuthenticationHeaderValue(string? authenticationHeaderValue)
         {
             if (!string.IsNullOrWhiteSpace(authenticationHeaderValue))
             {
@@ -17,12 +17,12 @@ namespace starsky.foundation.accountmanagement.Middleware
             }
         }
 
-        private readonly string _authenticationHeaderValue;
-        private string[] _splitDecodedCredentials;
+        private readonly string _authenticationHeaderValue = string.Empty;
+        private string[] _splitDecodedCredentials = Array.Empty<string>();
 
         public bool IsValidBasicAuthenticationHeaderValue { get; private set; }
-        public string UserIdentifier { get; private set; }
-        public string UserPassword { get; private set; }
+        public string UserIdentifier { get; private set; } = string.Empty;
+        public string UserPassword { get; private set; } = string.Empty;
 
         private bool TryDecodeHeaderValue()
         {

@@ -28,12 +28,12 @@ namespace starskytest.Controllers
 			};
 
 			var actionResult = await controller.Details() as JsonResult;
-			var castedResult = actionResult.Value as HealthView;
+			var castedResult = actionResult?.Value as HealthView;
 
-			Assert.IsTrue(castedResult.IsHealthy);
-			Assert.IsTrue(castedResult.Entries.FirstOrDefault().IsHealthy);
-			Assert.AreEqual("test", castedResult.Entries.FirstOrDefault().Name );
-			Assert.IsTrue(castedResult.Entries.FirstOrDefault().Duration == TimeSpan.Zero);
+			Assert.IsTrue(castedResult?.IsHealthy);
+			Assert.IsTrue(castedResult?.Entries.FirstOrDefault()?.IsHealthy);
+			Assert.AreEqual("test", castedResult?.Entries.FirstOrDefault()?.Name );
+			Assert.IsTrue(castedResult?.Entries.FirstOrDefault()?.Duration == TimeSpan.Zero);
 			Assert.IsTrue(castedResult.Entries.Any());
 			Assert.IsTrue(castedResult.TotalDuration == TimeSpan.Zero);
 		}
@@ -48,13 +48,13 @@ namespace starskytest.Controllers
 			};
 
 			var actionResult = await controller.Details() as JsonResult;
-			var castedResult = actionResult.Value as HealthView;
+			var castedResult = actionResult?.Value as HealthView;
 
-			Assert.IsFalse(castedResult.IsHealthy);
-			Assert.IsFalse(castedResult.Entries.FirstOrDefault().IsHealthy);
-			Assert.AreEqual("test", castedResult.Entries.FirstOrDefault().Name );
-			Assert.IsTrue(castedResult.Entries.FirstOrDefault().Duration == TimeSpan.Zero);
-			Assert.IsTrue(castedResult.Entries.Any());
+			Assert.IsFalse(castedResult?.IsHealthy);
+			Assert.IsFalse(castedResult?.Entries.FirstOrDefault()?.IsHealthy);
+			Assert.AreEqual("test", castedResult?.Entries?.FirstOrDefault()?.Name );
+			Assert.IsTrue(castedResult?.Entries?.FirstOrDefault()?.Duration == TimeSpan.Zero);
+			Assert.IsTrue(castedResult.Entries.Count != 0);
 			Assert.IsTrue(castedResult.TotalDuration == TimeSpan.Zero);
 		}
 		
@@ -84,7 +84,7 @@ namespace starskytest.Controllers
 
 			var actionResult = await controller.Index() as ContentResult;
 
-			Assert.AreEqual("Unhealthy",actionResult.Content);
+			Assert.AreEqual("Unhealthy",actionResult?.Content);
 		}
 		
 		[TestMethod]

@@ -62,12 +62,14 @@ namespace starsky.foundation.readmeta.Helpers
             
 		    return (degrees + minutes) * multiplier;
 	    }
-	    
+
+		private static readonly char[] Separator = ['+', '-'];
+
 		/// <summary>
 		/// Parsing method
 		/// </summary>
 		/// <param name="isoStr"></param>
-        public static GeoListItem ParseIsoString(string isoStr)
+		public static GeoListItem ParseIsoString(string isoStr)
         {
 	        var geoListItem = new GeoListItem();
 	        
@@ -95,53 +97,75 @@ namespace starsky.foundation.readmeta.Helpers
 
             isoStr = isoStr.Remove(isoStr.Length - 1); // Remove trailing slash
 
-            string[] parts = isoStr.Split(new char[] { '+', '-' }, StringSplitOptions.None);
-            if (parts.Length < 3 || parts.Length > 4)  // Check for parts count
+            var parts = isoStr.Split(Separator, StringSplitOptions.None);
+            if ( parts.Length < 3 || parts.Length > 4 )
+            {
+	            // Check for parts count
 	            return geoListItem;
-            if (parts[0].Length != 0)  // Check if first part is empty
-	            return geoListItem;
-
-            int point = parts[1].IndexOf('.');
-            if (point != 2 && point != 4 && point != 6) // Check for valid lenght for lat/lon
-	            return geoListItem;
-
-            if (point != parts[2].IndexOf('.') - 1) // Check for lat/lon decimal positions
-	            return geoListItem;
+            }  
             
-            NumberFormatInfo fi = NumberFormatInfo.InvariantInfo; 
+            if ( parts[0].Length != 0 )
+            {
+	            // Check if first part is empty
+	            return geoListItem;
+            } 
 
-            // Parse latitude and longitude values, according to format
-            if (point == 2)
+            var point = parts[1].IndexOf('.');
+            if ( point != 2 && point != 4 && point != 6 )
             {
-	            geoListItem.Latitude = float.Parse(parts[1], fi) * 3600;
-	            geoListItem.Longitude = float.Parse(parts[2], fi) * 3600;
+	            // Check for valid length for lat/lon
+	            return geoListItem;
             }
-            else if (point == 4)
+
+            if ( point != parts[2].IndexOf('.') - 1 )
             {
-	            geoListItem.Latitude = float.Parse(parts[1].Substring(0, 2), fi) * 3600 + 
-	                                   float.Parse(parts[1].Substring(2), fi) * 60;
-	            geoListItem.Longitude = float.Parse(parts[2].Substring(0, 3), fi) * 3600 + 
-	                                    float.Parse(parts[2].Substring(3), fi) * 60;
+	            // Check for lat/lon decimal positions
+	            return geoListItem;
             }
-            else  // point==8 / 6
+            
+            var numberFormatInfo = NumberFormatInfo.InvariantInfo;
+
+            switch ( point )
             {
-	            geoListItem.Latitude = float.Parse(parts[1].Substring(0, 2), fi) * 3600 + 
-	                                   float.Parse(parts[1].Substring(2, 2), fi) * 60 + 
-	                                   float.Parse(parts[1].Substring(4), fi);
-	            geoListItem.Longitude = float.Parse(parts[2].Substring(0, 3), fi) * 3600 + 
-	                                    float.Parse(parts[2].Substring(3, 2), fi) * 60 + 
-	                                    float.Parse(parts[2].Substring(5), fi);
+	            // Parse latitude and longitude values, according to format
+	            case 2:
+		            geoListItem.Latitude = float.Parse(parts[1], numberFormatInfo) * 3600;
+		            geoListItem.Longitude = float.Parse(parts[2], numberFormatInfo) * 3600;
+		            break;
+	            case 4:
+		            geoListItem.Latitude = float.Parse(parts[1].AsSpan(0, 2), numberFormatInfo) * 3600 + 
+		                                   float.Parse(parts[1].AsSpan(2), numberFormatInfo) * 60;
+		            geoListItem.Longitude = float.Parse(parts[2].AsSpan(0, 3), numberFormatInfo) * 3600 + 
+		                                    float.Parse(parts[2].AsSpan(3), numberFormatInfo) * 60;
+		            break;
+	            // point==8 / 6
+	            default:
+		            geoListItem.Latitude = float.Parse(parts[1].AsSpan(0, 2), numberFormatInfo) * 3600 + 
+		                                   float.Parse(parts[1].AsSpan(2, 2), numberFormatInfo) * 60 + 
+		                                   float.Parse(parts[1].AsSpan(4), numberFormatInfo);
+		            geoListItem.Longitude = float.Parse(parts[2].AsSpan(0, 3), numberFormatInfo) * 3600 + 
+		                                    float.Parse(parts[2].AsSpan(3, 2), numberFormatInfo) * 60 + 
+		                                    float.Parse(parts[2].AsSpan(5), numberFormatInfo);
+		            break;
             }
             
             // Parse altitude, just to check if it is valid
-            if ( parts.Length == 4 && !float.TryParse(parts[3], NumberStyles.Float, fi, out _))
+            if ( parts.Length == 4 && !float.TryParse(parts[3],
+	                NumberStyles.Float, numberFormatInfo, out _) )
+            {
 	            return geoListItem;
+            }
 
             // Add proper sign to lat/lon
-            if (isoStr[0] == '-')
+            if ( isoStr[0] == '-' )
+            {
 	            geoListItem.Latitude = - geoListItem.Latitude;
-            if (isoStr[parts[1].Length + 1] == '-')
+            }
+
+            if ( isoStr[parts[1].Length + 1] == '-' )
+            {
 	            geoListItem.Longitude = - geoListItem.Longitude;
+            }
 
             // and calc back to degrees
             geoListItem.Latitude /= 3600.0f;

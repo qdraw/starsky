@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <!--         Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " -->
         <RuntimeFrameworkVersion>8.0.1</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <!-- SonarQube needs this -->
@@ -10,6 +9,7 @@
         <!-- used for RazorLight -->
         <PreserveCompilationContext>true</PreserveCompilationContext>
         <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     
     <PropertyGroup>

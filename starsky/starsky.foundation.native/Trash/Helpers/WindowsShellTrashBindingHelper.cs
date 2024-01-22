@@ -126,6 +126,8 @@ public static class WindowsShellTrashBindingHelper
 	}
 
 	[DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+	[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' " +
+	                                     "to generate P/Invoke marshalling code at compile time")]
 	private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
 
 
@@ -182,6 +184,8 @@ public static class WindowsShellTrashBindingHelper
 	/// <param name="pSHQueryRBInfo"></param>
 	/// <returns></returns>
 	[DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+	[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
+	                                     "instead of \'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
 	private static extern int SHQueryRecycleBin(string pszRootPath, ref SHQUERYRBINFO
 		pSHQueryRBInfo);
 

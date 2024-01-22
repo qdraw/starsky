@@ -25,7 +25,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly CheckForStatusNotOkHelper _checkForStatusNotOkHelper;
 
 		public SyncMultiFile(AppSettings appSettings, IQuery query, 
-			IStorage subPathStorage, IMemoryCache cache, IWebLogger logger)
+			IStorage subPathStorage, IMemoryCache? cache, IWebLogger logger)
 		{
 			_query = query;
 			_subPathStorage = subPathStorage;
@@ -210,7 +210,7 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var notOkayAndSame = updatedDbItems.Where(p =>
 				p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
-			if ( notOkayAndSame.Any() )
+			if ( notOkayAndSame.Count != 0 )
 			{
 				await updateDelegate(notOkayAndSame);
 			}

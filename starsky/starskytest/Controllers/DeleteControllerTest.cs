@@ -24,10 +24,8 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
-using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using starskytest.Models;
 
 namespace starskytest.Controllers
 {
@@ -35,7 +33,7 @@ namespace starskytest.Controllers
 	public sealed class DeleteControllerTest
 	{
 		
-		private readonly IQuery _query;
+		private readonly Query _query;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly ApplicationDbContext _context;

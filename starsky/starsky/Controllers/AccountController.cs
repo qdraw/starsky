@@ -56,7 +56,7 @@ namespace starsky.Controllers
 				return Json("Database error");
 			}
 			
-			if ( ! userOverview.Users.Any() && _appSettings.NoAccountLocalhost != true )
+			if ( userOverview.Users.Count == 0 && _appSettings.NoAccountLocalhost != true )
 			{
 				Response.StatusCode = 406;
 				return Json("There are no accounts, you must create an account first");
@@ -83,8 +83,8 @@ namespace starsky.Controllers
 				return Json(model);
 			}
 			
-			model.CredentialsIdentifiers.Add(credentials.Identifier);
-			model.CredentialTypeIds.Add(credentials.CredentialTypeId);
+			model.CredentialsIdentifiers?.Add(credentials.Identifier);
+			model.CredentialTypeIds?.Add(credentials.CredentialTypeId);
 			return Json(model);
 		}
 
@@ -209,14 +209,15 @@ namespace starsky.Controllers
 	        {
 		        return BadRequest("Model is not correct");
 	        }
-	        
-	        var currentUserId = _userManager.GetCurrentUser(HttpContext).Id;
-	        var credential = _userManager.GetCredentialsByUserId(currentUserId);
+
+	        var currentUserId = _userManager.GetCurrentUser(HttpContext)?.Id;
+	        currentUserId ??= -1;
+	        var credential = _userManager.GetCredentialsByUserId((int) currentUserId);
 
 	        // Re-check password
 	        var validateResult = await _userManager.ValidateAsync(
 		        "Email", 
-		        credential.Identifier, 
+		        credential?.Identifier, 
 		        model.Password);
 	        
 	        if ( !validateResult.Success )
@@ -225,7 +226,7 @@ namespace starsky.Controllers
 	        }
 
 	        var changeSecretResult =
-		        _userManager.ChangeSecret("Email", credential.Identifier,
+		        _userManager.ChangeSecret("Email", credential?.Identifier,
 			        model.ChangedPassword);
 
 	        return Json(changeSecretResult);
@@ -275,7 +276,7 @@ namespace starsky.Controllers
         private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
         {
 	        if ( userIdentityIsAuthenticated ) return false;
-	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsersAsync()).Users.Any();
+	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsersAsync()).Users.Count != 0;
         }
         
         /// <summary>
@@ -292,8 +293,17 @@ namespace starsky.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RegisterStatus()
         {
-	        if ( !(await _userManager.AllUsersAsync()).Users.Any() ) Response.StatusCode = 202;
-	        if ( !await IsAccountRegisterClosed(User.Identity?.IsAuthenticated == true) ) return Json("RegisterStatus open");
+	        if ( ( await _userManager.AllUsersAsync() ).Users.Count == 0 )
+	        {
+		        Response.StatusCode = 202;
+	        }
+
+	        if ( !await IsAccountRegisterClosed(
+		            User.Identity?.IsAuthenticated == true) )
+	        {
+		        return Json("RegisterStatus open");
+	        }
+	        
 	        Response.StatusCode = 403;
 	        return Json("Account Register page is closed");
         }

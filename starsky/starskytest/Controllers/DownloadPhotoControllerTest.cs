@@ -10,12 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
@@ -23,7 +21,7 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class DownloadPhotoControllerTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 
 		public DownloadPhotoControllerTest()
 		{
@@ -57,7 +55,7 @@ namespace starskytest.Controllers
 			return item;
 		}
 
-		private static IStorage ArrangeStorage()
+		private static FakeIStorage ArrangeStorage()
 		{
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.jpg","/test.xmp", "/corrupt.jpg"};
@@ -80,7 +78,7 @@ namespace starskytest.Controllers
 			var actionResult = controller.DownloadSidecar("/test.xmp") as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
 
-			actionResult.FileStream.Dispose();
+			actionResult?.FileStream.Dispose();
 		}
 		
 		[TestMethod]
@@ -97,7 +95,7 @@ namespace starskytest.Controllers
 			var actionResult = controller.DownloadSidecar("/test.jpg") as NotFoundObjectResult;
 			
 			Assert.AreNotEqual(null,actionResult);
-			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual(404,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -114,7 +112,7 @@ namespace starskytest.Controllers
 			var actionResult = controller.DownloadSidecar("/not-found.xmp") as NotFoundObjectResult;
 			
 			Assert.AreNotEqual(null,actionResult);
-			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual(404,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -130,7 +128,7 @@ namespace starskytest.Controllers
 			var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath) as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
 
-			await actionResult.FileStream.DisposeAsync();
+			await actionResult!.FileStream.DisposeAsync();
 		}
 		
 		[TestMethod]
@@ -147,7 +145,7 @@ namespace starskytest.Controllers
 			var actionResult = await controller.DownloadPhoto("?isthumbnail") as NotFoundObjectResult;
 			
 			Assert.AreNotEqual(null,actionResult);
-			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual(404,actionResult?.StatusCode);
 		}
 				
 		[TestMethod]
@@ -192,7 +190,7 @@ namespace starskytest.Controllers
 			var actionResult = await controller.DownloadPhoto("/not-found.jpg") as NotFoundObjectResult;
 			
 			Assert.AreNotEqual(null,actionResult);
-			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual(404,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -208,7 +206,7 @@ namespace starskytest.Controllers
 			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
   
-			await actionResult.FileStream.DisposeAsync();
+			await actionResult!.FileStream.DisposeAsync();
 		}
 
 		[TestMethod]
@@ -246,7 +244,7 @@ namespace starskytest.Controllers
 			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger(), new FakeIThumbnailService());
 			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as NotFoundObjectResult;
 			Assert.AreNotEqual(null,actionResult);
-			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual(404,actionResult?.StatusCode);
 			Assert.AreEqual("source image missing /test.jpg",actionResult.Value);
 		}
 
@@ -256,7 +254,7 @@ namespace starskytest.Controllers
 			// Arrange
 			var fileIndexItem = await InsertSearchData();
 			var storage =
-				new FakeIStorage(null, new List<string>{"/test.jpg"}, 
+				new FakeIStorage(null!, new List<string>{"/test.jpg"}, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()});
 			var selectorStorage = new FakeSelectorStorage(storage);
 			

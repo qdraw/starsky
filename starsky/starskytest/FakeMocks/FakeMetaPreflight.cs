@@ -10,12 +10,12 @@ namespace starskytest.FakeMocks
 	{
 
 		public Task<(List<FileIndexItem> fileIndexResultsList, Dictionary<string, 
-			List<string>> changedFileIndexItemName)> PreflightAsync(FileIndexItem inputModel, 
+			List<string>> changedFileIndexItemName)> PreflightAsync(FileIndexItem? inputModel, 
 			List<string> inputFilePaths, bool append,
 			bool collections, int rotateClock)
 		{
 						
-			if ( inputModel != null && (string.IsNullOrEmpty(inputModel.FilePath) || inputModel.FilePath == "/") && inputFilePaths.Any() )
+			if ( inputModel != null && (string.IsNullOrEmpty(inputModel.FilePath) || inputModel.FilePath == "/") && inputFilePaths.Count != 0 )
 			{
 				inputModel.FilePath = inputFilePaths.FirstOrDefault();
 			}

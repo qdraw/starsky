@@ -6,7 +6,7 @@
         <ProjectGuid>{82ba730f-0aca-470d-ad0e-af046d422f8c}</ProjectGuid>
         <DebugType>Full</DebugType>
         <Version>0.5.14</Version>
-        <Nullable>disable</Nullable> <!-- todo enable nullable -->
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     
     <ItemGroup>

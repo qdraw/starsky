@@ -11,7 +11,7 @@ namespace starsky.foundation.platform.JsonConverter
 			var isString = reader.TokenType == JsonTokenType.String;
 			if ( !isString ) return reader.GetBoolean();
 			var stringValue = reader.GetString();
-			return stringValue!.ToLowerInvariant() == "true";
+			return stringValue?.Equals("true", StringComparison.InvariantCultureIgnoreCase) == true;
 		}
 
 		public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
