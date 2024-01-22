@@ -34,10 +34,10 @@ namespace starsky.foundation.sync.WatcherServices
         private ErrorEventHandler? _onErrorHandler = null;
 
         //We use a single buffer for all change types. Alternatively we could use one buffer per event type, costing additional enumerate tasks.
-        private BlockingCollection<FileSystemEventArgs>? _fileSystemEventBuffer;
-        private CancellationTokenSource? _cancellationTokenSource = null;
+        private BlockingCollection<FileSystemEventArgs> _fileSystemEventBuffer = new BlockingCollection<FileSystemEventArgs>();
+        
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        #region Contained FileSystemWatcher
         
         /// <devdoc>
         /// Features:
@@ -136,8 +136,6 @@ namespace starsky.foundation.sync.WatcherServices
             get { return _containedFsw.Site; }
             set { _containedFsw.Site = value; }
         }
-
-        #endregion
 
         [DefaultValue(false)]
         public bool OrderByOldestFirst { get; set; } = false;
@@ -249,13 +247,13 @@ namespace starsky.foundation.sync.WatcherServices
         {
 	        if ( _fileSystemEventBuffer.TryAdd(e) ) return;
 	        var ex = new EventQueueOverflowException($"Event queue size {_fileSystemEventBuffer.BoundedCapacity} events exceeded.");
-	        InvokeHandler(_onErrorHandler, new ErrorEventArgs(ex));
+	        InvokeHandler(_onErrorHandler!, new ErrorEventArgs(ex));
         }
 
-        internal void StopRaisingBufferedEvents(object _ = null, EventArgs __ = null)
+        internal void StopRaisingBufferedEvents(object? _ = null, EventArgs? __ = null)
         {
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
             _fileSystemEventBuffer = new BlockingCollection<FileSystemEventArgs>(EventQueueCapacity);
         }
 
@@ -277,7 +275,7 @@ namespace starsky.foundation.sync.WatcherServices
 
         internal void BufferingFileSystemWatcher_Error(object sender, ErrorEventArgs e)
         {
-            InvokeHandler(_onErrorHandler, e);
+            InvokeHandler(_onErrorHandler!, e);
         }
         
         // end standard events
@@ -292,16 +290,16 @@ namespace starsky.foundation.sync.WatcherServices
 		        switch (fileSystemEventArgs.ChangeType)
 		        {
 			        case WatcherChangeTypes.Created:
-				        InvokeHandler(_onCreatedHandler, fileSystemEventArgs);
+				        InvokeHandler(_onCreatedHandler!, fileSystemEventArgs);
 				        break;
 			        case WatcherChangeTypes.Changed:
-				        InvokeHandler(_onChangedHandler, fileSystemEventArgs);
+				        InvokeHandler(_onChangedHandler!, fileSystemEventArgs);
 				        break;
 			        case WatcherChangeTypes.Deleted:
-				        InvokeHandler(_onDeletedHandler, fileSystemEventArgs);
+				        InvokeHandler(_onDeletedHandler!, fileSystemEventArgs);
 				        break;
 			        case WatcherChangeTypes.Renamed:
-				        InvokeHandler(_onRenamedHandler, fileSystemEventArgs as RenamedEventArgs);
+				        InvokeHandler(_onRenamedHandler!, fileSystemEventArgs as RenamedEventArgs);
 				        break;
 		        }
 		        return fileSystemEventArgs.ChangeType;
@@ -376,9 +374,13 @@ namespace starsky.foundation.sync.WatcherServices
         // InvokeHandlers
         // Automatically raise event in calling thread when _fsw.SynchronizingObject is set. Ex: When used as a component in Win Forms.
         //  remove redundancy. I don't understand how to cast the specific *EventHandler to a generic Delegate, EventHandler, Action or whatever.
-        internal bool? InvokeHandler(FileSystemEventHandler eventHandler, FileSystemEventArgs e)
+        internal bool? InvokeHandler(FileSystemEventHandler? eventHandler, FileSystemEventArgs e)
         {
-	        if ( eventHandler == null ) return null;
+	        if ( eventHandler == null )
+	        {
+		        return null;
+	        }
+	        
 	        if ( _containedFsw.SynchronizingObject != null && _containedFsw
 		            .SynchronizingObject.InvokeRequired )
 	        {
@@ -389,11 +391,14 @@ namespace starsky.foundation.sync.WatcherServices
 	        eventHandler(this, e);
 	        return false;
         }
-        internal bool? InvokeHandler(RenamedEventHandler eventHandler, RenamedEventArgs e)
+        internal bool? InvokeHandler(RenamedEventHandler? eventHandler, RenamedEventArgs? e)
         {
-	        if ( eventHandler == null ) return null;
-	        if ( _containedFsw.SynchronizingObject != null && this._containedFsw
-		            .SynchronizingObject.InvokeRequired )
+	        if ( eventHandler == null || e == null )
+	        {
+		        return null;
+	        }
+	        
+	        if ( _containedFsw.SynchronizingObject is { InvokeRequired: true } )
 	        {
 		        _containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });
 		        return true;
@@ -402,9 +407,13 @@ namespace starsky.foundation.sync.WatcherServices
 	        eventHandler(this, e);
 	        return false;
         }
-        internal bool? InvokeHandler(ErrorEventHandler eventHandler, ErrorEventArgs e)
+        internal bool? InvokeHandler(ErrorEventHandler? eventHandler, ErrorEventArgs e)
         {
-	        if ( eventHandler == null ) return null;
+	        if ( eventHandler == null )
+	        {
+		        return null;
+	        }
+	        
 	        if ( _containedFsw.SynchronizingObject != null && this._containedFsw
 		            .SynchronizingObject.InvokeRequired )
 	        {
@@ -421,9 +430,9 @@ namespace starsky.foundation.sync.WatcherServices
         {
             if (disposing)
             {
-                _cancellationTokenSource?.Cancel();
-                _cancellationTokenSource?.Dispose();
-                _containedFsw?.Dispose();
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+                _containedFsw.Dispose();
             }
             base.Dispose(disposing);
         }

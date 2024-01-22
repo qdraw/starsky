@@ -2,7 +2,7 @@ using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.accountmanagement.Helpers;
 
-namespace starskytest.starsky.foundation.accountmangement.Helpers
+namespace starskytest.starsky.foundation.accountmanagement.Helpers
 {
 	[TestClass]
 	public sealed class IsLocalhostTest

@@ -100,7 +100,7 @@ namespace starsky.foundation.sync.SyncServices
 			
 			// Convert chunks into one list
 			var allResults = new List<FileIndexItem>();
-			foreach ( var resultChunk in resultChunkList )
+			foreach ( var resultChunk in resultChunkList! )
 			{
 				allResults.AddRange(resultChunk);
 			}
@@ -262,7 +262,7 @@ namespace starsky.foundation.sync.SyncServices
 
 
 			var results = new List<FileIndexItem>();
-			foreach ( var resultChunk in resultChunkList )
+			foreach ( var resultChunk in resultChunkList! )
 			{
 				results.AddRange(resultChunk);
 			}
@@ -345,7 +345,7 @@ namespace starsky.foundation.sync.SyncServices
 					var query = queryFactory.Query();
 					
 					return await RemoveChildItems(query!, item);
-				}, _appSettings.MaxDegreesOfParallelism)).ToList();
+				}, _appSettings.MaxDegreesOfParallelism))!.ToList();
 		}
 	
 		/// <summary>
