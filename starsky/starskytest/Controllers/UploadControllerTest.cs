@@ -224,7 +224,7 @@ namespace starskytest.Controllers
 			var queryResult = _query.SingleItem(toPlaceSubPath);
 			Assert.AreEqual("Sony",queryResult?.FileIndexItem?.Make);
 
-			await _query.RemoveItemAsync(queryResult?.FileIndexItem);
+			await _query.RemoveItemAsync(queryResult?.FileIndexItem!);
 		}
 		
 		[TestMethod]
