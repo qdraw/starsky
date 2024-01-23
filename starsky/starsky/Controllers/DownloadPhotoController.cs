@@ -118,7 +118,7 @@ namespace starsky.Controllers
 	                fileIndexItem.FileHash);
                 
                 if ( !_thumbnailStorage.ExistFile(
-	                ThumbnailNameHelper.Combine(fileIndexItem.FileHash,
+	                ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,
 		                ThumbnailSize.Large)) )
                 {
 	                Response.StatusCode = 500;
@@ -127,7 +127,7 @@ namespace starsky.Controllers
             }
 
             var thumbnailFs = _thumbnailStorage.ReadStream(
-	            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Large));
+	            ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,ThumbnailSize.Large));
             return File(thumbnailFs, "image/jpeg");
         }
 	}

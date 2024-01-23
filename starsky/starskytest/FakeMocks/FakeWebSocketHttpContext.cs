@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace starskytest.FakeMocks
 {
-	[SuppressMessage("Usage", "CS8764:Nullability of return type doesn't match overridden member (possibly because of nullability attributes)")]
+#pragma warning disable 8764
 	[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
 	public class FakeWebSocketHttpContext : HttpContext
 	{
@@ -61,4 +61,6 @@ namespace starskytest.FakeMocks
 		public override IList<string> WebSocketRequestedProtocols { get; } =
 			new List<string>();
 	}
+#pragma warning restore 8764
+	
 }

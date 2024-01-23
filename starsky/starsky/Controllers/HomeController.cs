@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -179,7 +180,8 @@ namespace starsky.Controllers
 		[ProducesResponseType(200)]
 		[Produces("text/html")]
 		[ProducesResponseType(200)]
-		public IActionResult Register(string returnUrl = null)
+		[SuppressMessage("ReSharper", "UnusedParameter.Global")]
+		public IActionResult Register(string? returnUrl = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			return PhysicalFile(_clientApp, "text/html");
