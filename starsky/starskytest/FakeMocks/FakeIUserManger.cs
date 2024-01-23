@@ -53,7 +53,7 @@ public class FakeIUserManger : IUserManager
 		throw new System.NotImplementedException();
 	}
 
-	public Task<ValidateResult> ValidateAsync(string credentialTypeCode, string identifier, string secret)
+	public Task<ValidateResult> ValidateAsync(string credentialTypeCode, string? identifier, string secret)
 	{
 		var validateResult = new ValidateResult();
 		var result = _userOverviewModel.Users.Find(p => p.Credentials?.FirstOrDefault()?.Identifier == identifier);

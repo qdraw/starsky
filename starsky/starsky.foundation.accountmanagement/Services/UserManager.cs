@@ -424,7 +424,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="credentialType">email</param>
 		/// <param name="identifier">the id</param>
 		/// <returns>Credential data object</returns>
-		internal Credential? CachedCredential(CredentialType credentialType, string identifier)
+		internal Credential? CachedCredential(CredentialType credentialType, string? identifier)
 		{
 			if ( string.IsNullOrEmpty(identifier) )
 			{

@@ -268,14 +268,18 @@ namespace starskytest.FakeMocks
 			if ( ExistFile(path) && _byteList.All(p => p.Key != path) )
 			{
 				byte[] byteArray = Encoding.UTF8.GetBytes("test");
-				MemoryStream stream = new MemoryStream(byteArray);
+				var stream = new MemoryStream(byteArray);
 				return stream;
 			}
 
 			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
-			if ( result == null ) return Stream.Null;
-			MemoryStream stream1 = new MemoryStream(result);
-			return stream1;
+			if ( result == null )
+			{
+				return Stream.Null;
+			}
+			
+			var returnStream = new MemoryStream(result);
+			return returnStream;
 		}
 
 		public bool WriteStreamOpenOrCreate(Stream stream, string path)

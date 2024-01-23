@@ -79,7 +79,7 @@ namespace starskytest.FakeMocks
 		}
 
 #pragma warning disable 1998
-		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode, string identifier, string secret)
+		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode, string? identifier, string secret)
 #pragma warning restore 1998
 		{
 			return identifier switch

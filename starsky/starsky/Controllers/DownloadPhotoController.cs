@@ -72,10 +72,10 @@ namespace starsky.Controllers
         [ProducesResponseType(200)] // file
         [ProducesResponseType(404)] // not found
         [ProducesResponseType(500)] // "Thumbnail generation failed"
-        public async Task<IActionResult> DownloadPhoto(string? f, bool isThumbnail = true, bool cache = true)
+        public async Task<IActionResult> DownloadPhoto(string f, bool isThumbnail = true, bool cache = true)
         {
             // f = subpath/filepath
-            if (f?.Contains("?isthumbnail") == true) {
+            if (f.Contains("?isthumbnail")) {
 	            return NotFound("please use &isthumbnail = instead of ?isthumbnail= ");
             }
 

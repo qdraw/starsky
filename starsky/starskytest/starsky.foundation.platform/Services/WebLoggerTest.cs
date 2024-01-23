@@ -15,7 +15,7 @@ namespace starskytest.starsky.foundation.platform.Services
 	{
 		private readonly IServiceScopeFactory _scopeFactory;
 
-		public class FakeILogger : ILogger
+		private class FakeILogger : ILogger
 		{
 			public List<string> ErrorLog { get; set; } = new List<string>();
 			public List<LogLevel> LogLevelLog { get; set; } = new List<LogLevel>();
@@ -180,6 +180,18 @@ namespace starskytest.starsky.foundation.platform.Services
 
 			Assert.AreEqual("error1",error);
 			Assert.AreEqual(LogLevel.Debug,	logLevel);
+		}
+		
+		[TestMethod]
+		public void Debug_Null_string_ShouldSkipFakeLogger()
+		{
+			var factory = new FakeILoggerFactory();
+			new WebLogger(factory).LogDebug(null);
+			var error = factory.Storage.ErrorLog.Count;
+			var logLevel = factory.Storage.LogLevelLog.Count;
+
+			Assert.AreEqual(0,error);
+			Assert.AreEqual(0,logLevel);
 		}
 		
 		[TestMethod]

@@ -260,7 +260,7 @@ namespace starsky
 
 			app.UseRouting();
 
-	        new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+	        new SwaggerSetupHelper(_appSettings!).Add02AppUseSwaggerAndUi(app);
 			
 			app.UseContentSecurityPolicy();
 

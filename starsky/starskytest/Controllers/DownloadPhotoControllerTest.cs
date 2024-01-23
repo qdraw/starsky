@@ -125,7 +125,7 @@ namespace starskytest.Controllers
 			// Act
 			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath) as FileStreamResult;
+			var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath!) as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
 
 			await actionResult!.FileStream.DisposeAsync();
@@ -203,7 +203,7 @@ namespace starskytest.Controllers
 			// Act
 			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger(), new FakeIThumbnailService());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
+			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath!,false)  as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
   
 			await actionResult!.FileStream.DisposeAsync();
@@ -221,11 +221,11 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			// Run once
-			var actionResult1 = await controller.DownloadPhoto(fileIndexItem.FilePath) as FileStreamResult;
+			var actionResult1 = await controller.DownloadPhoto(fileIndexItem.FilePath!) as FileStreamResult;
 			await actionResult1!.FileStream.DisposeAsync();
 
 			// Run twice
-			var actionResult2 =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as FileStreamResult;
+			var actionResult2 =  await controller.DownloadPhoto(fileIndexItem.FilePath!)  as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult2);
 
 			await actionResult2!.FileStream.DisposeAsync();
@@ -242,7 +242,7 @@ namespace starskytest.Controllers
 			
 			// Act
 			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger(), new FakeIThumbnailService());
-			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as NotFoundObjectResult;
+			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath!)  as NotFoundObjectResult;
 			Assert.AreNotEqual(null,actionResult);
 			Assert.AreEqual(404,actionResult?.StatusCode);
 			Assert.AreEqual("source image missing /test.jpg",actionResult?.Value);
@@ -264,7 +264,7 @@ namespace starskytest.Controllers
 				new FakeIWebLogger(), new FakeIThumbnailService());
 			
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as NotFoundObjectResult;
+			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath!)  as NotFoundObjectResult;
 		
 			Assert.AreNotEqual(null,actionResult);
 			Assert.AreEqual(404,actionResult?.StatusCode);

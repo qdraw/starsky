@@ -485,7 +485,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 			var users = (await userManager.AllUsersAsync()).Users;
 			
 			Assert.AreEqual(0, users.Count);
-			Assert.IsTrue(logger.TrackedExceptions.LastOrDefault().Item2.Contains("RetryLimitExceededException"));
+			Assert.IsTrue(logger.TrackedExceptions.LastOrDefault().Item2?.Contains("RetryLimitExceededException") == true);
 		}
 		
 		[TestMethod]

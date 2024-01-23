@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
@@ -9,6 +10,8 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace starskytest.FakeMocks
 {
+	[SuppressMessage("Usage", "CS8764:Nullability of return type doesn't match overridden member (possibly because of nullability attributes)")]
+	[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
 	public class FakeWebSocketHttpContext : HttpContext
 	{
 		public FakeWebSocketHttpContext(bool userLoggedIn = true)
@@ -54,6 +57,8 @@ namespace starskytest.FakeMocks
 		}
 
 		public override bool IsWebSocketRequest { get; }
-		public override IList<string> WebSocketRequestedProtocols { get; }
+
+		public override IList<string> WebSocketRequestedProtocols { get; } =
+			new List<string>();
 	}
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -316,10 +315,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			return RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(2),5);
 		}
-
-		[SuppressMessage("Usage", "S3966: Resource '_iStorage.ReadStream' has " +
-		                          "already been disposed explicitly or through a using statement implicitly. " +
-		                          "Remove the redundant disposal.")]
+		
 		public bool WriteStream(Stream stream, string path)
 		{
 			if ( !stream.CanRead ) return false;
@@ -335,7 +331,7 @@ namespace starsky.foundation.storage.Storage
 					FileOptions.Asynchronous))
 				{
 					stream.CopyTo(fileStream);
-					fileStream.Dispose();
+					// fileStream is disposed due using
 				}
 
 				stream.Dispose();

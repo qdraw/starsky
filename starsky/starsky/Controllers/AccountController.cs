@@ -182,7 +182,7 @@ namespace starsky.Controllers
         [HttpGet("/account/logout")]
         [ProducesResponseType(200)]
         [AllowAnonymous]
-        public IActionResult Logout(string returnUrl = null)
+        public IActionResult Logout(string? returnUrl = null)
         {
             _userManager.SignOut(HttpContext);
             // fromLogout is used in middleware
@@ -232,7 +232,7 @@ namespace starsky.Controllers
 	        }
 
 	        var changeSecretResult =
-		        _userManager.ChangeSecret("Email", credential.Identifier,
+		        _userManager.ChangeSecret("Email", credential?.Identifier,
 			        model.ChangedPassword);
 
 	        return Json(changeSecretResult);
