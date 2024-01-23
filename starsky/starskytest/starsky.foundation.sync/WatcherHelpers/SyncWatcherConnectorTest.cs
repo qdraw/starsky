@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		public async Task Sync_ArgumentException()
 		{
 			// ReSharper disable once AssignNullToNotNullAttribute
-			var syncWatcherPreflight = new SyncWatcherConnector(null,null!,null!,null!,null!,null, null);
+			var syncWatcherPreflight = new SyncWatcherConnector(null!,null!,null!,null!,null!,null!, null);
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string?, WatcherChangeTypes>("test", null!, WatcherChangeTypes.Changed));
 		}
@@ -120,7 +120,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
 
 			Assert.AreEqual(1, websockets.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
-			var value = websockets.FakeSendToAllAsync.FirstOrDefault(p =>
+			var value = websockets.FakeSendToAllAsync.Find(p =>
 					!p.StartsWith("[system]"));
 			Assert.IsTrue(value?.Contains("filePath\":\"/test\""));
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
@@ -181,7 +181,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
 
-			Assert.AreEqual(string.Empty,query.SingleItem("/test.jpg").FileIndexItem.Tags);
+			Assert.AreEqual(string.Empty,query.SingleItem("/test.jpg")?.FileIndexItem?.Tags);
 		}
 		
 		[TestMethod]
@@ -218,7 +218,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
 				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			syncWatcherConnector.Sync(
-				new Tuple<string, string,  WatcherChangeTypes>(
+				new Tuple<string, string?,  WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
 			
 			Assert.AreEqual(0, query.DisplayFileFolders().Count());
@@ -292,7 +292,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 
 			var operationHolder = connector.CreateNewRequestTelemetry();
 			var operationHolder2 = operationHolder as EmptyOperationHolder<RequestTelemetry>;
-			Assert.IsTrue(operationHolder2.Empty);
+			Assert.IsTrue(operationHolder2?.Empty);
 		}
 		
 		[TestMethod]
@@ -339,7 +339,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var operationHolder = connector.CreateNewRequestTelemetry();
 			
 			var operationHolder2 = operationHolder as EmptyOperationHolder<RequestTelemetry>;
-			Assert.IsTrue(operationHolder2.Empty);
+			Assert.IsTrue(operationHolder2?.Empty);
 		}
 		
 		[TestMethod]

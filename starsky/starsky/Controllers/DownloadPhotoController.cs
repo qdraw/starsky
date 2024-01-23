@@ -115,7 +115,7 @@ namespace starsky.Controllers
             {
 	            _logger.LogDebug("Thumbnail generation started");
                 await _thumbnailService.CreateThumbAsync(fileIndexItem.FilePath!, 
-	                fileIndexItem.FileHash);
+	                fileIndexItem.FileHash!);
                 
                 if ( !_thumbnailStorage.ExistFile(
 	                ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,

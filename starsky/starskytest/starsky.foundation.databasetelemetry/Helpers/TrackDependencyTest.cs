@@ -8,6 +8,8 @@ using starsky.foundation.databasetelemetry.Helpers;
 
 namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 {
+#pragma warning disable 8764
+
 	[TestClass]
 	public sealed class TrackDependencyTest
 	{
@@ -85,4 +87,5 @@ namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 			Assert.IsFalse(result);
 		}
 	}
+#pragma warning restore 8764
 }
