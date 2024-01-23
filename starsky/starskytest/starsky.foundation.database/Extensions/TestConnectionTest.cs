@@ -23,9 +23,11 @@ namespace starskytest.starsky.foundation.database.Extensions
 
 			public int Count { get; set; }
 
+#pragma warning disable CS8764 // Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
 			public override DatabaseFacade? Database
 			{
 				get
+#pragma warning restore CS8764 // Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
 				{
 					Count++;
 					if ( Count <= 1 )

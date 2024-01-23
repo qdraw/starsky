@@ -160,6 +160,7 @@ namespace starskytest.starsky.feature.settings.Services
 	        var fileResultString1 = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath));
 	        var fileResult1 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString1, DefaultJsonSerializer.NoNamingPolicy);
 
+	        Assert.IsNotNull(fileResult1);
 	        Assert.IsTrue(fileResult1.App.Verbose);
 	        
 	        var appSettingTransferObject2 = new AppSettingsTransferObject
@@ -172,6 +173,7 @@ namespace starskytest.starsky.feature.settings.Services
 	        var fileResultString2 = await StreamToStringHelper.StreamToStringAsync(storage.ReadStream(appSettings.AppSettingsPath));
 	        var fileResult2 = JsonSerializer.Deserialize<AppContainerAppSettings>(fileResultString2, DefaultJsonSerializer.NoNamingPolicy);
 
+	        Assert.IsNotNull(fileResult2);
 	        
 	        // Set back to what is was before
 	        Environment.SetEnvironmentVariable("app__storageFolder", before);

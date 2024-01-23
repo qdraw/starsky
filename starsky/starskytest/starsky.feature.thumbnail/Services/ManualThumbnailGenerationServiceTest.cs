@@ -80,7 +80,7 @@ namespace starskytest.starsky.feature.thumbnail.Services
 			
 			await controller.WorkThumbnailGeneration("/");
 
-			Assert.IsTrue(webLogger.TrackedExceptions.FirstOrDefault().Item2.Contains(message));
+			Assert.IsTrue(webLogger.TrackedExceptions.FirstOrDefault().Item2?.Contains(message));
 		}
 
 		[TestMethod]

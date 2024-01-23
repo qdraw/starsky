@@ -4,7 +4,6 @@ using System.Diagnostics.Tracing;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.worker.CpuEventListener;
-using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.worker.CpuEventListener
 {
@@ -52,7 +51,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 			var payload = new ReadOnlyCollection<object>(data);
 			
 			// Act
-			listener.UpdateEventData("EventCounters", payload);
+			listener.UpdateEventData("EventCounters", payload!);
 			// no pay load
 			
 			// Assert
@@ -74,7 +73,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 			var payload = new ReadOnlyCollection<object>(data);
 			
 			// Act
-			listener.UpdateEventData("EventCounters", payload);
+			listener.UpdateEventData("EventCounters", payload!);
 			// wrong payload data
 			
 			// Assert
@@ -96,7 +95,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 			var payload = new ReadOnlyCollection<object>(data);
 			
 			// Act
-			listener.UpdateEventData("EventCounters", payload);
+			listener.UpdateEventData("EventCounters", payload!);
 			// wrong payload data
 			
 			// Assert
@@ -118,7 +117,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 			var payload = new ReadOnlyCollection<object>(data);
 			
 			// Act
-			listener.UpdateEventData("EventCounters", payload);
+			listener.UpdateEventData("EventCounters", payload!);
 			// wrong payload data
 			
 			// Assert
@@ -140,7 +139,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 			var payload = new ReadOnlyCollection<object>(data);
 			
 			// Act
-			listener.UpdateEventData("EventCounters", payload);
+			listener.UpdateEventData("EventCounters", payload!);
 			// wrong payload data
 			
 			// Assert
@@ -163,7 +162,7 @@ namespace starskytest.starsky.foundation.worker.CpuEventListener
 			var payload = new ReadOnlyCollection<object>(data);
 			
 			// Act
-			listener.UpdateEventData("EventCounters", payload);
+			listener.UpdateEventData("EventCounters", payload!);
 			// wrong payload data
 			
 			// Assert

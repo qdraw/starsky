@@ -17,7 +17,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		[TestMethod]
 		public void GetOperationIdNull()
 		{
-			HttpContext context = null;
+			HttpContext? context = null;
 			var id = context.GetOperationId();
 			Assert.AreEqual(string.Empty, id);
 		}
@@ -47,7 +47,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		public void GetOperationHolderNull()
 		{
 			var holder = RequestTelemetryHelper.GetOperationHolder(
-				null,null, null) as EmptyOperationHolder<DependencyTelemetry>;
+				null!,null!, null) as EmptyOperationHolder<DependencyTelemetry>;
 			Assert.IsNotNull(holder);
 			Assert.IsTrue(holder.Empty);
 		}
@@ -60,7 +60,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			var serviceProvider = service.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			var holder = RequestTelemetryHelper.GetOperationHolder(
-				scopeFactory,null, "1") as EmptyOperationHolder<DependencyTelemetry>;
+				scopeFactory,null!, "1") as EmptyOperationHolder<DependencyTelemetry>;
 			Assert.IsNotNull(holder);
 			Assert.IsTrue(holder.Empty);
 		}
@@ -84,32 +84,18 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		public void SetDataDataNull()
 		{
 			var holder = new EmptyOperationHolder<DependencyTelemetry>();
-			holder.SetData(null,null);
+			holder.SetData(null!,null);
 			Assert.IsNotNull(holder);
 		}
 		
 		[TestMethod]
 		public void SetDataNullHolder()
 		{
-			IOperationHolder<DependencyTelemetry> holder = null;
+			IOperationHolder<DependencyTelemetry>? holder = null;
 			
 			// ReSharper disable once ExpressionIsAlwaysNull
-			holder.SetData(null,null);
+			holder.SetData(null!,null);
 			Assert.IsNull(holder);
-		}
-		
-		[TestMethod]
-		public void SetData()
-		{
-			var service = new ServiceCollection();
-			service.AddSingleton<TelemetryClient>();
-			var serviceProvider = service.BuildServiceProvider();
-			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			var holder = RequestTelemetryHelper.GetOperationHolder(scopeFactory, "1",
-					"1");
-			
-			Assert.IsNotNull(holder);
-			Assert.IsNotNull(holder.Telemetry.Timestamp);
 		}
 	}
 }

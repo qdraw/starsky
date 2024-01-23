@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.foundation.platform.Extensions;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
@@ -19,8 +17,8 @@ namespace starskytest.Controllers
 		{
 			var controller = new MemoryCacheDebugController(new FakeMemoryCache(), new FakeIWebLogger());
 			var actionResult = controller.MemoryCacheDebug() as JsonResult;
-			var list = actionResult.Value as Dictionary<string, object>;
-			Assert.AreEqual(0, list.Count);
+			var list = actionResult?.Value as Dictionary<string, object>;
+			Assert.AreEqual(0, list?.Count);
 		}
 		
 		[TestMethod]
@@ -31,12 +29,14 @@ namespace starskytest.Controllers
 
 			var buildServiceProvider =  provider.BuildServiceProvider();
 			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
+			Assert.IsNotNull(memoryCache);
+			
 			memoryCache.Set("test", "");
 			
 			var controller = new MemoryCacheDebugController(memoryCache, new FakeIWebLogger());
 			var actionResult = controller.MemoryCacheDebug() as JsonResult;
-			var list = actionResult.Value as Dictionary<string, object>;
-			Assert.AreEqual(1, list.Count);
+			var list = actionResult?.Value as Dictionary<string, object>;
+			Assert.AreEqual(1, list?.Count);
 		}
 		
 		[TestMethod]
@@ -50,17 +50,19 @@ namespace starskytest.Controllers
 
 			dynamic nonValidData = new ExpandoObject();
 			nonValidData.Data = nonValidData; //  A possible object cycle was detected
+			Assert.IsNotNull(memoryCache);
 
 			memoryCache.Set("test", (object)nonValidData);
 			
 			var controller = new MemoryCacheDebugController(memoryCache, new FakeIWebLogger());
 			var actionResult = controller.MemoryCacheDebug() as JsonResult;
-			var list = actionResult.Value as Dictionary<string, object>;
-			Assert.AreEqual(1, list.Count);
+			var list = actionResult?.Value as Dictionary<string, object>;
+			Assert.AreEqual(1, list?.Count);
+			Assert.IsNotNull(list);
 			list.TryGetValue("test", out var result);
-			var stringValue = ( string ) result;
+			var stringValue = ( string? ) result;
 			
-			Assert.IsTrue(stringValue.StartsWith("[ERROR]") );
+			Assert.IsTrue(stringValue?.StartsWith("[ERROR]") );
 		}
 	}
 }

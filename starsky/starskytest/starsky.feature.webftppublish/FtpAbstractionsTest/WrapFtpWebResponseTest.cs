@@ -15,7 +15,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		[TestMethod]
 		public void WrapFtpWebResponse1_Dispose()
 		{
-			FtpWebResponse response = null;
+			FtpWebResponse? response = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
 			new WrapFtpWebResponse(response).Dispose();
 			Assert.IsNull(response);
@@ -32,7 +32,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 			
 			// using reflection
 			// ReSharper disable once PossibleNullReferenceException
-			var instance = (FtpWebResponse)ctor.Invoke(new object[]
+			var instance = (FtpWebResponse?)ctor!.Invoke(new object[]
 			{
 				new MemoryStream(), // Stream responseStream,
 				1L, // long contentLength,
