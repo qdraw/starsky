@@ -21,6 +21,15 @@ public class JsonCloneTest
 		var result = testClass.CloneViaJson();
 		
 		Assert.AreEqual(1, result?.Number);
+	}
+	
+	[TestMethod]
+	public void ShouldCopyNullValue()
+	{
+		MyClass? testClass = null;
 		
+		var result = testClass.CloneViaJson();
+		
+		Assert.IsNull(result);
 	}
 }
