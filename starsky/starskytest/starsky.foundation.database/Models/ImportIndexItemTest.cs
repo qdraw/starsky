@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,7 +59,7 @@ namespace starskytest.starsky.foundation.database.Models
 		[TestMethod]
 		public void ParseDateTimeFromFileName_Null()
 		{
-			var importItem = new ImportIndexItem {SourceFullFilePath = null};
+			var importItem = new ImportIndexItem {SourceFullFilePath = null!};
 			var dateTime = importItem.ParseDateTimeFromFileName();
 			Assert.AreEqual(new DateTime(), dateTime);
 		}
@@ -197,7 +196,7 @@ namespace starskytest.starsky.foundation.database.Models
 		[TestMethod]
 		public void ImportIndexItemParse_Structure_Fallback()
 		{
-			_appSettings.Structure = null;
+			_appSettings.Structure = null!;
 			var input = new ImportIndexItem(_appSettings){SourceFullFilePath = ".jpg"};
 			var result = input.ParseDateTimeFromFileName();
 			Assert.AreEqual(result,new DateTime());
@@ -215,10 +214,7 @@ namespace starskytest.starsky.foundation.database.Models
 			};
             
 			input.ParseDateTimeFromFileName();
-            
-			Regex pattern = new Regex("-|_| |;|\\.|:", RegexOptions.None, TimeSpan.FromMilliseconds(100));
-			var output = pattern.Replace("2018-02-03 18.47.35.jpg",string.Empty);
-            
+			
 			DateTime.TryParseExact(
 				"20180203_184735", 
 				"yyyyMMdd_HHmmss",
@@ -247,7 +243,7 @@ namespace starskytest.starsky.foundation.database.Models
 			var createAnImageNoExif = new CreateAnImageNoExif();
 			var createAnImage = new CreateAnImage();
 
-			_appSettings.Structure = null;
+			_appSettings.Structure = null!;
 			// Go to the default structure setting 
 			_appSettings.StorageFolder = createAnImage.BasePath;
     

@@ -200,7 +200,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				Path = "test.jpg",
 				ContentType = TemplateContentType.Jpeg,
 			};
-			_testAppSettings.PublishProfiles[publishProfileName] =
+			_testAppSettings.PublishProfiles![publishProfileName] =
 				new List<AppSettingsPublishProfiles> { publishProfile };
 			
 			var publishPreflight = new PublishPreflight(_testAppSettings, 
@@ -225,7 +225,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				Path = "non-exist-only-first-jpeg.jpg",
 				ContentType = TemplateContentType.OnlyFirstJpeg,
 			};
-			_testAppSettings.PublishProfiles[publishProfileName] =
+			_testAppSettings.PublishProfiles![publishProfileName] =
 				new List<AppSettingsPublishProfiles> { publishProfile };
 			
 			var publishPreflight = new PublishPreflight(_testAppSettings, 

@@ -226,7 +226,7 @@ namespace starskytest.Controllers
 			await InsertSearchData();
 			var serviceScopeFactory = NewScopeFactory();
 			
-			var fakeIMetaUpdateService =  _serviceProvider.GetService<IMetaUpdateService>() as
+			var fakeIMetaUpdateService =  _serviceProvider?.GetService<IMetaUpdateService>() as
 				FakeIMetaUpdateService;
 			Assert.IsNotNull(fakeIMetaUpdateService);
 			fakeIMetaUpdateService.ChangedFileIndexItemNameContent =
