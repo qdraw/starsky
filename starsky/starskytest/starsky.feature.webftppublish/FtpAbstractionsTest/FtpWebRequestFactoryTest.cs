@@ -21,7 +21,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		{
 			var factory = new FtpWebRequestFactory();
 
-			var test = factory.Create("ftp://test:test@404.nl");
+			var test = factory.Create("ftp://test:test@404.undefined");
 			test.GetResponse();
 		}
 	}

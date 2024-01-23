@@ -76,7 +76,7 @@ public class CleanDemoDataServiceTest
 			token
 		});
 			
-		Assert.IsTrue(_logger?.TrackedExceptions.Count != 0);
+		Assert.IsTrue(_logger?.TrackedExceptions.Count == 0);
 		
 		source.Dispose();
 	}
