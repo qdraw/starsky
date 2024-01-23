@@ -103,7 +103,8 @@ namespace starskytest.starsky.foundation.readmeta.Helpers
 		public void ParseIsoString_InvalidLength_ReturnsEmptyGeoListItem()
 		{
 			// Arrange
-			string isoStr = "InvalidString123456/"; // Replace with your invalid string
+			// Doesn't has seperators so that's why its invalid
+			const string isoStr = "InvalidString123456/"; 
 
 			// Act
 			var result = GeoParser.ParseIsoString(isoStr);
@@ -119,7 +120,7 @@ namespace starskytest.starsky.foundation.readmeta.Helpers
 		{
 			// Arrange
 			// First part is not dash or plus
-			string isoStr = "Invalid-test-String123456/"; // Replace with your invalid string
+			const string isoStr = "Invalid-test-String123456/"; // Replace with your invalid string
 
 			// Act
 			var result = GeoParser.ParseIsoString(isoStr);
@@ -134,7 +135,22 @@ namespace starskytest.starsky.foundation.readmeta.Helpers
 		public void ParseIsoString_InvalidLength1_ReturnsEmptyGeoListItem()
 		{
 			// Arrange
-			string isoStr = "-Invalid-test-String123456/"; 
+			const string isoStr = "-Invalid-test-String123456/"; 
+
+			// Act
+			var result = GeoParser.ParseIsoString(isoStr);
+
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(0, result.Latitude);
+			Assert.AreEqual(0, result.Longitude);
+		}
+		
+		[TestMethod]
+		public void ParseIsoString_InvalidLength3_ReturnsEmptyGeoListItem()
+		{
+			// Arrange
+			const string isoStr = "-In.valid-test-String123456/"; 
 
 			// Act
 			var result = GeoParser.ParseIsoString(isoStr);

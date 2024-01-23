@@ -47,7 +47,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// <param name="fileHash">output name</param>
 		/// <param name="skipExtraLarge">skip xl</param>
 		/// <returns>true if success</returns>
-		public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false)
+		public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string? subPath, string fileHash, bool skipExtraLarge = false)
 		{
 			return _thumbnail.CreateThumbAsync(subPath, fileHash);
 		}

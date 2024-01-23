@@ -20,7 +20,7 @@ namespace starsky.foundation.thumbnailgeneration.Interfaces
 		/// <param name="fileHash">fileHash</param>
 		/// <param name="skipExtraLarge"></param>
 		/// <returns></returns>
-		Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false);
+		Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string? subPath, string fileHash, bool skipExtraLarge = false);
 
 		/// <summary>
 		/// Rotate a thumbnail
