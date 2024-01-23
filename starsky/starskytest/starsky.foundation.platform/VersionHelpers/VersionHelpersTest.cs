@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.VersionHelpers;
@@ -13,7 +14,7 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		[TestMethod]
 		public void CtorNull()
 		{
-			var v = new SemVersion(1, 0, 0, null, null);
+			var v = new SemVersion(1, 0, 0, null!, null!);
 			Assert.AreEqual("1.0.0", v.ToString());
 		}
 		
@@ -40,6 +41,7 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		/// These are version numbers given with the link in the spec to a regex for semver versions
 		/// @see: https://github.com/maxhauser/semver/blob/master/Semver.Test/SemVersionComparisonTests.cs
 		/// </summary>
+		[SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")] 
 		private static readonly Dictionary<string, SemVersionBasic> RegexValidExamples =
 			new Dictionary<string, SemVersionBasic>()
 			{
@@ -229,10 +231,10 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		{
 			var directQ = new SemVersion(1);
 			// ReSharper disable once EqualExpressionComparison
-			var v2 = null >= directQ;
+			var v2 = null! >= directQ;
 			Assert.IsFalse(v2);
 			
-			var v3 = null > directQ;
+			var v3 = null! > directQ;
 			Assert.IsFalse(v3);
 		}
 		
@@ -240,17 +242,16 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		public void ComparisonNull2()
 		{
 			var directQ = new SemVersion(1);
-			// ReSharper disable once EqualExpressionComparison
-			var v2 = directQ >= null;
+			var v2 = directQ >= null!;
 			Assert.IsTrue(v2);
-			var v3 = directQ > null;
+			var v3 = directQ > null!;
 			Assert.IsTrue(v3);
 		}
 
 		[TestMethod]
 		public void ComparisonOperatorsNullToValueTest()
 		{
-			var v1 = default(SemVersion);
+			var v1 = default(SemVersion)!;
 			var v2 = new SemVersion(1);
 
 			Assert.IsTrue(v1 <= v2, $"{v1} <= {v2}");
@@ -290,7 +291,7 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		public void ComparisonOperatorsValueToNullTest()
 		{
 			var v1 = new SemVersion(1);
-			var v2 = default(SemVersion);
+			var v2 = default(SemVersion)!;
 
 			Assert.IsFalse(v1 <= v2, $"{v1} <= {v2}");
 			Assert.IsTrue(v1 >= v2, $"{v1} >= {v2}");
@@ -302,8 +303,8 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		[TestMethod]
 		public void ComparisonOperatorsNullToNullTest()
 		{
-			var v1 = default(SemVersion);
-			var v2 = default(SemVersion);
+			var v1 = default(SemVersion)!;
+			var v2 = default(SemVersion)!;
 
 			Assert.IsTrue(v1 <= v2, $"{v1} <= {v2}");
 			Assert.IsTrue(v1 >= v2, $"{v1} >= {v2}");

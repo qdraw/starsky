@@ -169,7 +169,7 @@ public class WindowsShellTrashBindingHelperTest
 		if ( !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
 			Assert.AreEqual(null, hResult);
-			Assert.IsTrue(info.Contains("Unable to load shared library"));
+			Assert.IsTrue(info?.Contains("Unable to load shared library"));
 			Assert.AreEqual(0, pShQueryRbInfo.i64NumItems);
 			return;
 		}

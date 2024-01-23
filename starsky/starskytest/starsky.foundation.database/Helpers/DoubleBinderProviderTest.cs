@@ -1,15 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.platform.Exceptions;
 
 namespace starskytest.starsky.foundation.database.Helpers;
 
@@ -20,13 +15,13 @@ public class DoubleBinderProviderTest
 	{
 		public override IModelBinder CreateBinder(ModelMetadata metadata)
 		{
-			return null;
+			return null!;
 		}
 
-		public override BindingInfo BindingInfo { get; }
+		public override BindingInfo BindingInfo { get; } = new BindingInfo();
 
-		public override ModelMetadata Metadata { get; }
-		public override IModelMetadataProvider MetadataProvider { get; }
+		public override ModelMetadata? Metadata { get; }
+		public override IModelMetadataProvider? MetadataProvider { get; }
 	}
 	
 	[TestMethod]

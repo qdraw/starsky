@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 
 			public int Count { get; set; }
 
-			public override DatabaseFacade Database
+			public override DatabaseFacade? Database
 			{
 				get
 				{
@@ -53,7 +53,7 @@ namespace starskytest.starsky.foundation.database.Extensions
 						typeof(MySqlException).GetConstructors(BindingFlags.Instance |
 							BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
 					var instance =
-						( MySqlException ) ctor.Invoke(new object[]
+						( MySqlException ) ctor!.Invoke(new object[]
 						{
 							info,
 							new StreamingContext(StreamingContextStates.All)

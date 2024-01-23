@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -104,7 +104,7 @@ namespace starskytest.starsky.foundation.database.Import
 			var queryFromDb = await dbContext.ImportIndex.FirstOrDefaultAsync(
 				p => p.FileHash == expectedResult.FileHash);
 			
-			Assert.AreEqual(expectedResult.FileHash,queryFromDb.FileHash);
+			Assert.AreEqual(expectedResult.FileHash,queryFromDb?.FileHash);
 		}
 		
 		[TestMethod]
@@ -122,7 +122,10 @@ namespace starskytest.starsky.foundation.database.Import
 			var historyResult = new ImportQuery(serviceScopeFactory, 
 				new FakeConsoleWrapper(), new FakeIWebLogger()).History();
 
-			if ( !historyResult.Any() ) throw new ArgumentNullException("should not be 0");
+			if ( historyResult.Count == 0 )
+			{
+				throw new WebException("should not be 0");
+			}
 			
 			Assert.IsTrue(historyResult.Exists(p => p.FileHash == "TEST8"));
 		}
@@ -144,7 +147,7 @@ namespace starskytest.starsky.foundation.database.Import
 			
 			var queryFromDb = dbContext.ImportIndex
 				.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
-			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
+			Assert.AreEqual(expectedResult.FirstOrDefault()?.FileHash, queryFromDb.FirstOrDefault()?.FileHash);
 			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
 		}
 		

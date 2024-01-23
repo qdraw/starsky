@@ -97,7 +97,7 @@ public class MacOsTrashBindingHelperTest
 			return;
 		}
 
-		string exception = null;
+		string? exception = null;
 		try
 		{
 			MacOsTrashBindingHelper.CreateCfArray(new List<IntPtr>().ToArray());
@@ -118,7 +118,7 @@ public class MacOsTrashBindingHelperTest
 			return;
 		}
 
-		string exception = null;
+		string? exception = null;
 		try
 		{
 			MacOsTrashBindingHelper.CreateCfString("test");
