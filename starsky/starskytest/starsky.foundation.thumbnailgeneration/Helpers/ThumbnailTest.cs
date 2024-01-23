@@ -57,7 +57,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 		
 		[TestMethod]
-		public async Task CreateThumbTest_FileHash_AlreadyFailedBefore()
+		public async Task CreateThumbTest_FileHash_AlreadyFailBefore()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
@@ -223,11 +223,6 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task ResizeThumbnailImageFormat_NullInput()
 		{
-			var storage = new FakeIStorage(
-				new List<string> {"/"}, 
-				new List<string> {"test"}, 
-				new List<byte[]> { Array.Empty<byte>() });
-
 			await  Thumbnail.SaveThumbnailImageFormat(null,
 				ExtensionRolesHelper.ImageFormat.bmp, null);
 			// ArgumentNullException

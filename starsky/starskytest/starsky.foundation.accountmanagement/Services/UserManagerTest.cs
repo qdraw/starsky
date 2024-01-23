@@ -764,7 +764,7 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 		}
 		
 		[TestMethod]
-		public async Task SetLockIfFailedCountIsToHighTest()
+		public async Task SetLockIfFailCountIsToHighTest()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
 			var result = await userManager.SetLockIfFailedCountIsToHigh(9999);

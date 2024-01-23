@@ -90,7 +90,7 @@ namespace starskytest.starsky.feature.import.Services
 		}
 		
 		[TestMethod]
-		public async Task ImporterCli_ArgPath_Failed()
+		public async Task ImporterCli_ArgPath_Fail()
 		{
 			var fakeConsole = new FakeConsoleWrapper(new List<string>());
 			var storage = new FakeIStorage(new List<string>{"/"}, 
@@ -100,7 +100,7 @@ namespace starskytest.starsky.feature.import.Services
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
 					new AppSettings{Verbose = false}, fakeConsole, new FakeExifToolDownload())
 				.Importer(new List<string>{"-p", "/test"}.ToArray());
-			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault().Contains("Failed"));
+			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault()?.Contains("Failed"));
 		}
         		
 	}
