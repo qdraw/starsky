@@ -27,7 +27,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// Make example config in memory
 			var newImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:StorageFolder", newImage.BasePath },
 				{ "App:Verbose", "true" }

@@ -26,7 +26,7 @@ namespace starskytest.Controllers
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled, string.Empty));
 
 			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(208,actionResult.StatusCode);
+			Assert.AreEqual(208,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -36,7 +36,7 @@ namespace starskytest.Controllers
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.HttpError, string.Empty));
 
 			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]

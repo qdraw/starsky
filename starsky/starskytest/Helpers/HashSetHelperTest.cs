@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
 
 namespace starskytest.Helpers
 {
@@ -50,14 +49,14 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void HashSetHelperTest_SetToStringNull()
 		{
-			Assert.AreEqual(string.Empty,HashSetHelper.HashSetToString(null));
+			Assert.AreEqual(string.Empty,HashSetHelper.HashSetToString(null!));
 		}
 
 
 		[TestMethod]
 		public void HashSetHelperTest_ListToStringNullTest()
 		{
-			var item = HashSetHelper.ListToString(null);
+			var item = HashSetHelper.ListToString(null!);
 			Assert.AreEqual(0,item.Length);
 		}
 	}

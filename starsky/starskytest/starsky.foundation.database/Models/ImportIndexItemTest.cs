@@ -29,7 +29,7 @@ namespace starskytest.starsky.foundation.database.Models
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			var newImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:StorageFolder", newImage.BasePath },
 				{ "App:Verbose", "true" }

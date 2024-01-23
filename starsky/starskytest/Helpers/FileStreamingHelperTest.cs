@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,11 +10,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-#pragma warning disable 1998
 
 namespace starskytest.Helpers 
 {
@@ -32,7 +29,7 @@ namespace starskytest.Helpers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			var newImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:StorageFolder", newImage.BasePath },
 				{ "App:ThumbnailTempFolder", newImage.BasePath },
@@ -51,14 +48,7 @@ namespace starskytest.Helpers
 			// get the service
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 		}
-        
-		//        ContentDispositionHeaderValue.TryParse(
-		//        "form-data; name=\"file\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
-		//        var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
-		//        sectionSingle.Headers = new Dictionary<string, StringValues>();
-		//        sectionSingle.Headers.Add("Content-Type",request.ContentType);
-		//        sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
-
+ 
 		[TestMethod]
 		[ExpectedException(typeof(FileLoadException))]
 		public async Task StreamFileExeption()
@@ -94,10 +84,12 @@ namespace starskytest.Helpers
             
 			Assert.AreNotEqual(null, formValueProvider.ToString());
 			await requestBody.DisposeAsync();
+			
+			Assert.IsNotNull(formValueProvider.FirstOrDefault());
             
 			// Clean
 			streamSelector.Get(SelectorStorage.StorageServices.HostFilesystem)
-				.FileDelete(formValueProvider.FirstOrDefault());
+				.FileDelete(formValueProvider.FirstOrDefault()!);
 		}
 
 		[TestMethod]

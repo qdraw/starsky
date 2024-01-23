@@ -37,7 +37,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		{
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();  
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:Verbose", "true" }
 			};

@@ -12,8 +12,6 @@ using starsky.Controllers;
 using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
-using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
@@ -29,7 +27,6 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class GeoControllerTest
 	{
-		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly IMemoryCache _memoryCache;
@@ -39,7 +36,7 @@ namespace starskytest.Controllers
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			_memoryCache = provider.GetRequiredService<IMemoryCache>();
 
 			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
@@ -54,11 +51,11 @@ namespace starskytest.Controllers
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
-			_createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var createAnImage = new CreateAnImage();
+			var dict = new Dictionary<string, string?>
 			{
-				{"App:StorageFolder", _createAnImage.BasePath},
-				{"App:ThumbnailTempFolder", _createAnImage.BasePath},
+				{"App:StorageFolder", createAnImage.BasePath},
+				{"App:ThumbnailTempFolder", createAnImage.BasePath},
 				{"App:Verbose", "true"}
 			};
 			// Start using dependency injection
@@ -88,60 +85,68 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task FolderExist()
 		{
-			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
+				new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(fakeIStorage), null, new FakeIWebLogger(), _scopeFactory)
+			var controller = new GeoController(_bgTaskQueue, 
+				new FakeSelectorStorage(fakeIStorage), null!, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
-			var result = await controller.GeoSyncFolder("/") as JsonResult;
-			Assert.AreEqual("job started",result.Value);
+			var result = await controller.GeoSyncFolder() as JsonResult;
+			Assert.AreEqual("job started",result?.Value);
 		}
 		
 		[TestMethod]
 		public async Task FolderNotExist()
 		{
-			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var istorage = new FakeIStorage(new List<string> {"/"}, 
+				new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(istorage), _memoryCache, new FakeIWebLogger(), _scopeFactory)
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(istorage),
+				_memoryCache, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			var result = await controller.GeoSyncFolder("/not-found") as NotFoundObjectResult;
-			Assert.AreEqual(404,result.StatusCode);
+			Assert.AreEqual(404,result?.StatusCode);
 		}
 
 		[TestMethod]
 		public void StatusCheck_CachedItemExist()
 		{
 			// set startup status aka 50%
-			new GeoCacheStatusService(_memoryCache).StatusUpdate("/StatusCheck_CachedItemExist",1, StatusType.Current);
-			new GeoCacheStatusService(_memoryCache).StatusUpdate("/StatusCheck_CachedItemExist",2, StatusType.Total);
+			new GeoCacheStatusService(_memoryCache).StatusUpdate("/StatusCheck_CachedItemExist",
+				1, StatusType.Current);
+			new GeoCacheStatusService(_memoryCache).StatusUpdate("/StatusCheck_CachedItemExist",
+				2, StatusType.Total);
 
 			var storage = new FakeIStorage();
 			
-			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(storage), _memoryCache, new FakeIWebLogger(), _scopeFactory)
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(storage),
+				_memoryCache, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			
 			var statusJson = controller.Status("/StatusCheck_CachedItemExist") as JsonResult;
 			var status = statusJson!.Value as GeoCacheStatus;
-			Assert.AreEqual(1,status.Current);
-			Assert.AreEqual(2,status.Total);
+			Assert.AreEqual(1,status?.Current);
+			Assert.AreEqual(2,status?.Total);
 		}
 		
 		[TestMethod]
 		public void StatusCheck_CacheServiceMissing_ItemNotExist()
 		{
 			var storage = new FakeIStorage();
-			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(storage), null, new FakeIWebLogger(), _scopeFactory)
+			var controller = new GeoController(_bgTaskQueue, 
+				new FakeSelectorStorage(storage), null!, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			
 			var status = controller.Status("/StatusCheck_CachedItemNotExist") as NotFoundObjectResult;
-			Assert.AreEqual(404,status.StatusCode);
+			Assert.AreEqual(404,status?.StatusCode);
 		}
 	}
 }

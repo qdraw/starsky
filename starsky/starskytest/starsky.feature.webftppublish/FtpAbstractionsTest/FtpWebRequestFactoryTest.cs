@@ -8,7 +8,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 	public sealed class FtpWebRequestFactoryTest
 	{
 		[TestMethod]
-		[ExpectedException(typeof(System.UriFormatException))]
+		[ExpectedException(typeof(UriFormatException))]
 		public void FtpWebRequestFactoryTestCreate_UriFormatException()
 		{
 			new FtpWebRequestFactory().Create("t");

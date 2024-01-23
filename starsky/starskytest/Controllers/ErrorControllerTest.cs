@@ -19,7 +19,7 @@ namespace starskytest.Controllers
 			};
 
 			var actionResult = controller.Error(404) as PhysicalFileResult;
-			Assert.AreEqual("text/html",actionResult.ContentType);
+			Assert.AreEqual("text/html",actionResult?.ContentType);
 		}
 	}
 }
