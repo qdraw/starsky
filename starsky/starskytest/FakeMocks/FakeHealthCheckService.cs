@@ -15,7 +15,7 @@ namespace starskytest.FakeMocks
 			_isHealthy = isHealthy;
 		}
 		
-		public override Task<HealthReport> CheckHealthAsync(Func<HealthCheckRegistration, bool> predicate,
+		public override Task<HealthReport> CheckHealthAsync(Func<HealthCheckRegistration, bool>? predicate,
 			CancellationToken cancellationToken = new CancellationToken())
 		{
 			var entry = new HealthReportEntry(_isHealthy ? HealthStatus.Healthy : HealthStatus.Unhealthy, "", TimeSpan.Zero, null, null);

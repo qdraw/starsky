@@ -33,7 +33,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, string, WatcherChangeTypes> value);
 
 
-		public async Task QueueInput(string filepath, string toPath,
+		public async Task QueueInput(string filepath, string? toPath,
 			WatcherChangeTypes changeTypes)
 		{
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>

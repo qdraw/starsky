@@ -18,7 +18,7 @@ namespace starskytest.FakeMocks
 	{
 		private readonly List<FileIndexItem> _input = new List<FileIndexItem>();
 
-		public FakeIMetaReplaceService(List<FileIndexItem> input = null)
+		public FakeIMetaReplaceService(List<FileIndexItem>? input = null)
 		{
 			if ( input != null )
 			{

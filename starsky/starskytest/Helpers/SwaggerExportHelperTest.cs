@@ -20,7 +20,7 @@ namespace starskytest.Helpers
 {
 	public sealed class FakeISwaggerProvider : ISwaggerProvider
 	{
-		public OpenApiDocument GetSwagger(string documentName, string host = null, string basePath = null)
+		public OpenApiDocument GetSwagger(string documentName, string? host = null, string? basePath = null)
 		{
 			return new OpenApiDocument{ Components = new OpenApiComponents{ Links = null}};
 		}

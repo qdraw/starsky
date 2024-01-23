@@ -14,7 +14,7 @@ namespace starskytest.FakeMocks
 		private readonly ICacheEntry _fakeCacheEntry;
 		private readonly Dictionary<string, object> _items;
 
-		public FakeMemoryCache(Dictionary<string, object> items = null)
+		public FakeMemoryCache(Dictionary<string, object>? items = null)
 		{
 			var services = new ServiceCollection();
 			services.AddSingleton<ICacheEntry,FakeICacheEntry>();

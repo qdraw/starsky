@@ -25,6 +25,6 @@ public static class DeleteStatusHelper
 		FileIndexItem.ExifStatus exifStatus =
 			FileIndexItem.ExifStatus.Deleted)
 	{
-		return dbItems.Select(item => AddDeleteStatus(item, exifStatus)).ToList();
+		return dbItems.Select(item => AddDeleteStatus(item, exifStatus)).Cast<FileIndexItem>().ToList();
 	}
 }

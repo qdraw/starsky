@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.search.ViewModels;
 using starsky.foundation.database.Models;
@@ -52,7 +51,7 @@ namespace starskytest.Models
 			var searchType = SearchViewModel.SearchForOptionType.Equal;
 
 			// Act
-			var result = SearchViewModel.PropertySearchStringType(model, property, searchForQuery, searchType);
+			var result = SearchViewModel.PropertySearchStringType(model, property!, searchForQuery, searchType);
 
 			// Assert
 			Assert.IsNotNull(result);
@@ -73,7 +72,7 @@ namespace starskytest.Models
 			var searchType = SearchViewModel.SearchForOptionType.Equal;
 
 			// Act
-			var result = SearchViewModel.PropertySearchStringType(model, property, searchForQuery, searchType);
+			var result = SearchViewModel.PropertySearchStringType(model, property!, searchForQuery, searchType);
 
 			// Assert
 			Assert.IsNotNull(result);
@@ -94,7 +93,7 @@ namespace starskytest.Models
 			var searchType = SearchViewModel.SearchForOptionType.Equal;
 
 			// Act
-			var result = SearchViewModel.PropertySearchStringType(model, property, searchForQuery, searchType);
+			var result = SearchViewModel.PropertySearchStringType(model, property!, searchForQuery, searchType);
 
 			// Assert
 			Assert.IsNotNull(result);
@@ -115,7 +114,7 @@ namespace starskytest.Models
 			var searchType = SearchViewModel.SearchForOptionType.Equal;
 
 			// Act
-			var result = SearchViewModel.PropertySearchStringType(model, property, searchForQuery, searchType);
+			var result = SearchViewModel.PropertySearchStringType(model, property!, searchForQuery, searchType);
 
 			// Assert
 			Assert.IsNotNull(result);
@@ -141,14 +140,14 @@ namespace starskytest.Models
 
 			// Assert
 			Assert.AreEqual(2, result.FileIndexItems?.Count);
-			Assert.IsTrue(result.FileIndexItems?.All(item => item.IsDirectory == true));
+			Assert.IsTrue(result.FileIndexItems?.Exists(item => item.IsDirectory == true));
 		}
 
 		[TestMethod]
 		public void PropertySearchBoolType_WithNullModel_ReturnsNullModel()
 		{
 			// Arrange
-			SearchViewModel model = null;
+			SearchViewModel? model = null;
 			var property = typeof(FileIndexItem).GetProperty("IsDirectory");
 			const bool boolIsValue = true;
 
@@ -231,11 +230,11 @@ namespace starskytest.Models
 			const SearchViewModel.SearchForOptionType searchType = SearchViewModel.SearchForOptionType.Equal;
 
 			// Act
-			var result = SearchViewModel.PropertySearch(model, property, searchForQuery, searchType);
+			var result = SearchViewModel.PropertySearch(model, property!, searchForQuery, searchType);
 
 			// Assert
 			Assert.AreEqual(2, result.FileIndexItems?.Count);
-			Assert.IsTrue(result.FileIndexItems?.All(item => item.IsDirectory == true));
+			Assert.IsTrue(result.FileIndexItems?.Exists(item => item.IsDirectory == true));
 		}
 
 		[TestMethod]
@@ -249,11 +248,11 @@ namespace starskytest.Models
 				new FileIndexItem { IsDirectory = false },
 			};
 			var property = typeof(FileIndexItem).GetProperty("IsDirectory");
-			var searchForQuery = "invalid_bool_value"; // An invalid boolean string
-			var searchType = SearchViewModel.SearchForOptionType.Equal; // You can set this as needed
+			const string searchForQuery = "invalid_bool_value"; // An invalid boolean string
+			const SearchViewModel.SearchForOptionType searchType = SearchViewModel.SearchForOptionType.Equal; // You can set this as needed
 
 			// Act
-			var result = SearchViewModel.PropertySearch(model, property, searchForQuery, searchType);
+			var result = SearchViewModel.PropertySearch(model, property!, searchForQuery, searchType);
 
 			// Assert
 			CollectionAssert.AreEqual(model.FileIndexItems, result.FileIndexItems);

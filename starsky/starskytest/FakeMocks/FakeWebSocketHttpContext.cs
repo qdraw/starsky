@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		public override void Abort() { }
 		public override ConnectionInfo Connection { get; }
 		public override IFeatureCollection Features { get; }
-		public override IDictionary<object, object> Items { get; set; }
+		public override IDictionary<object?, object?> Items { get; set; }
 		public override HttpRequest Request { get; }
 		public override CancellationToken RequestAborted { get; set; }
 		public override IServiceProvider RequestServices { get; set; }
@@ -46,7 +46,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			
 #pragma warning disable 1998
 		// ReSharper disable once ArrangeModifiersOrder
-		public async override Task<WebSocket> AcceptWebSocketAsync(string subProtocol)
+		public async override Task<WebSocket> AcceptWebSocketAsync(string? subProtocol)
 #pragma warning restore 1998
 		{
 			return FakeWebSocket;

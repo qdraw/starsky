@@ -7,7 +7,7 @@ namespace starskytest.FakeMocks
 	{
 		private readonly IStorage _storage;
 		
-		public FakeSelectorStorage(IStorage storage = null)
+		public FakeSelectorStorage(IStorage? storage = null)
 		{
 			if(storage != null) _storage = storage;
 			if(storage == null) _storage = new FakeIStorage();

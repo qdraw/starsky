@@ -8,9 +8,9 @@ namespace starskytest.FakeMocks
 {
 	public class FakeHttpMessageHandler : HttpMessageHandler
 	{
-		private readonly Exception _exception;
+		private readonly Exception? _exception;
 
-		public FakeHttpMessageHandler(Exception exception = null)
+		public FakeHttpMessageHandler(Exception? exception = null)
 		{
 			_exception = exception;
 		}
@@ -18,7 +18,7 @@ namespace starskytest.FakeMocks
 		public virtual HttpResponseMessage Send(HttpRequestMessage request)
 		{
 			if ( _exception != null ) throw _exception;
-			if ( request.RequestUri.Host == "download.geonames.org" )
+			if ( request.RequestUri?.Host == "download.geonames.org" )
 			{
 				return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("404") };
 

@@ -5,7 +5,7 @@ namespace starskytest.FakeMocks
 {
 	public static class AppSettingsReflection
 	{
-		public static void Modify(AppSettings inputObject, string methodGetName = "get_DatabaseType", object value = null)
+		public static void Modify(AppSettings inputObject, string methodGetName = "get_DatabaseType", object? value = null)
 		{
 			var type = typeof(AppSettings);
 			foreach ( var property in type.GetProperties(BindingFlags.Public 

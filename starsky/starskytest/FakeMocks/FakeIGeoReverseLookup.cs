@@ -12,7 +12,7 @@ namespace starskytest.FakeMocks
 	{
 		private readonly List<FileIndexItem> _fileIndexItems = new List<FileIndexItem>();
 
-		public FakeIGeoReverseLookup(List<FileIndexItem> fileIndexItems = null)
+		public FakeIGeoReverseLookup(List<FileIndexItem>? fileIndexItems = null)
 		{
 			if ( fileIndexItems != null ) _fileIndexItems = fileIndexItems;
 		}

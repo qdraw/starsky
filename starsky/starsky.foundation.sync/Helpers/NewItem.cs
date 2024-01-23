@@ -41,8 +41,8 @@ namespace starsky.foundation.sync.Helpers
 		/// <returns></returns>
 		public async Task<FileIndexItem> NewFileItemAsync(FileIndexItem inputItem)
 		{
-			return await NewFileItemAsync(inputItem.FilePath, inputItem.FileHash,
-				inputItem.ParentDirectory, inputItem.FileName);
+			return await NewFileItemAsync(inputItem.FilePath!, inputItem.FileHash!,
+				inputItem.ParentDirectory!, inputItem.FileName!);
 		}
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace starsky.foundation.sync.Helpers
 			var metaDataItem = await _readMeta.ReadExifAndXmpFromFileAsync(dbItem.FilePath!);
 			var compare = FileIndexCompareHelper.Compare(dbItem, metaDataItem);
 			dbItem.Size = size;
-			await SetFileHashStatus(dbItem.FilePath, dbItem.FileHash, dbItem);
+			await SetFileHashStatus(dbItem.FilePath!, dbItem.FileHash!, dbItem);
 			dbItem.LastChanged.AddRange(compare);
 			if ( compare.Count == 0 )
 			{
