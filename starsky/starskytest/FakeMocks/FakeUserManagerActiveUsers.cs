@@ -13,7 +13,6 @@ namespace starskytest.FakeMocks
 
 		public FakeUserManagerActiveUsers(string identifier = "test", User? currentUser = null )
 		{
-			currentUser ??= new User();
 			CurrentUser = currentUser;
 			Credentials = new Credential
 			{
@@ -26,7 +25,7 @@ namespace starskytest.FakeMocks
 			Role = new Role {Code = AccountRoles.AppAccountRoles.User.ToString()};
 		}
 
-		public User CurrentUser { get; set; }
+		public User? CurrentUser { get; set; }
 		public Credential Credentials { get; set; }
 		public Role? Role { get; set; }
 
@@ -34,7 +33,8 @@ namespace starskytest.FakeMocks
 
 		public Task<UserOverviewModel> AllUsersAsync()
 		{
-			return Task.FromResult(new UserOverviewModel(new List<User>{CurrentUser}));
+			// null can be for testing
+			return Task.FromResult(new UserOverviewModel(new List<User>{CurrentUser!}));
 		}
 
 		public void AddUserToCache(User user)
@@ -114,12 +114,12 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
-		public User GetCurrentUser(HttpContext httpContext)
+		public User? GetCurrentUser(HttpContext httpContext)
 		{
 			return CurrentUser;
 		}
 
-		public User GetUser(string credentialTypeCode, string identifier)
+		public User? GetUser(string credentialTypeCode, string identifier)
 		{
 			return CurrentUser;
 		}
@@ -146,7 +146,7 @@ namespace starskytest.FakeMocks
 
 		public Task<User?> ExistAsync(int userTableId)
 		{
-			return Task.FromResult(CurrentUser)!;
+			return Task.FromResult(CurrentUser);
 		}
 
 		public Role? GetRole(string credentialTypeCode, string identifier)

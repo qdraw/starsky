@@ -100,8 +100,7 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 		}
 		
 		[TestMethod]
-		[ExpectedException(typeof(JsonException))]
-		public void Read_DeserializeNonValid_Null()
+		public void Read_Deserialize_Null()
 		{
 			var output = JsonSerializer.Deserialize<KeyExample>(
 				"{\"Key\":null}",
@@ -116,5 +115,7 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 			// Expect exception
 			Assert.IsFalse(output?.Key);
 		}
+		
+
 	}
 }

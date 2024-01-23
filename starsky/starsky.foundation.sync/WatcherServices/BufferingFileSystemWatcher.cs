@@ -393,11 +393,13 @@ namespace starsky.foundation.sync.WatcherServices
         }
         internal bool? InvokeHandler(RenamedEventHandler? eventHandler, RenamedEventArgs? e)
         {
-	        if ( eventHandler == null || e == null )
+	        if ( eventHandler == null)
 	        {
 		        return null;
 	        }
 	        
+	        ArgumentNullException.ThrowIfNull(e);
+
 	        if ( _containedFsw.SynchronizingObject is { InvokeRequired: true } )
 	        {
 		        _containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });

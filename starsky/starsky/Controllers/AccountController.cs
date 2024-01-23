@@ -61,12 +61,18 @@ namespace starsky.Controllers
 				Response.StatusCode = 406;
 				return Json("There are no accounts, you must create an account first");
 			}
-			
-			if ( User.Identity?.IsAuthenticated == false ) return Unauthorized("false");
+
+			if ( User.Identity?.IsAuthenticated == false )
+			{
+				return Unauthorized("false");
+			}
 
 			// use model to avoid circular references
 			var currentUser = _userManager.GetCurrentUser(HttpContext);
-			if ( currentUser == null ) return Conflict("Current User does not exist in database");
+			if ( currentUser == null )
+			{
+				return Conflict("Current User does not exist in database");
+			}
 			
 			var model = new UserIdentifierStatusModel
 			{

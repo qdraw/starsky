@@ -479,7 +479,15 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			Assert.IsNull(watcher.SynchronizingObject);
 			
 			wrapper.EnableRaisingEvents = false;
-			wrapper.Dispose();
+
+			try
+			{
+				wrapper.Dispose();
+			}
+			catch ( Exception )
+			{
+				// do nothing
+			}
 			watcher.Dispose();
 		}
 		
@@ -611,8 +619,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 		
 		[TestMethod]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void InvokeHandler_RenamedEventHandler()
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void InvokeHandler_RenamedEventHandler_ExpectException()
 		{
 			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);

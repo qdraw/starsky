@@ -21,7 +21,7 @@ namespace starskytest.starsky.foundation.platform.Services
 			public List<LogLevel> LogLevelLog { get; set; } = new List<LogLevel>();
 
 			public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
-				Exception exception, Func<TState, Exception, string> formatter)
+				Exception? exception, Func<TState, Exception, string> formatter)
 			{
 				LogLevelLog.Add(logLevel);
 				if ( exception != null )
@@ -82,6 +82,18 @@ namespace starskytest.starsky.foundation.platform.Services
 			Assert.AreEqual("error1",error);
 			Assert.AreEqual(LogLevel.Error,	logLevel);
 		}
+		
+		[TestMethod]
+		public void Error_Null_string_ShouldSkipFakeLogger()
+		{
+			var factory = new FakeILoggerFactory();
+			new WebLogger(factory).LogError(null);
+			var error = factory.Storage.ErrorLog.Count;
+			var logLevel = factory.Storage.LogLevelLog.Count;
+
+			Assert.AreEqual(0,error);
+			Assert.AreEqual(0,logLevel);
+		}
 				
 		[TestMethod]
 		public void Error_string_ConsoleFallback()
@@ -127,13 +139,25 @@ namespace starskytest.starsky.foundation.platform.Services
 			Assert.AreEqual("error1",error);
 			Assert.AreEqual(LogLevel.Information,	logLevel);
 		}
+				
+		[TestMethod]
+		public void Information_Null_string_ShouldSkipFakeLogger()
+		{
+			var factory = new FakeILoggerFactory();
+			new WebLogger(factory).LogInformation(null);
+			var error = factory.Storage.ErrorLog.Count;
+			var logLevel = factory.Storage.LogLevelLog.Count;
+
+			Assert.AreEqual(0,error);
+			Assert.AreEqual(0,logLevel);
+		}
 		
 		[TestMethod]
 		public void Information_string_ConsoleFallback()
 		{
 			new WebLogger(null, _scopeFactory).LogInformation("message_info");
 			var fakeConsole = _scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
-			Assert.AreEqual("message_info",fakeConsole.WrittenLines[0]);
+			Assert.AreEqual("message_info",fakeConsole?.WrittenLines[0]);
 		}
 		
 		[TestMethod]
