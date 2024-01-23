@@ -89,7 +89,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HealthControllerTest_ApplicationInsights()
 		{
-			var controller = new HealthController(null, new FakeTelemetryService(), 
+			var controller = new HealthController(null!, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -103,7 +103,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Version_NoVersion()
 		{
-			var controller = new HealthController(null, new FakeTelemetryService(), 
+			var controller = new HealthController(null!, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -115,7 +115,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Version_Version_newer()
 		{
-			var controller = new HealthController(null, new FakeTelemetryService(), 
+			var controller = new HealthController(null!, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -128,7 +128,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Version_Version_older()
 		{
-			var controller = new HealthController(null, new FakeTelemetryService(), 
+			var controller = new HealthController(null!, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -141,7 +141,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Version_Version_AsParam_older()
 		{
-			var controller = new HealthController(null, new FakeTelemetryService(), 
+			var controller = new HealthController(null!, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -153,7 +153,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Version_Version_beta1_isBefore()
 		{
-			var controller = new HealthController(null, new FakeTelemetryService(), 
+			var controller = new HealthController(null!, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -169,7 +169,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Version_Version_eq()
 		{
-			var controller = new HealthController(null, new FakeTelemetryService(), 
+			var controller = new HealthController(null!, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -184,7 +184,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Version_Version_NonValidInput()
 		{
-			var controller = new HealthController(null, new FakeTelemetryService(), 
+			var controller = new HealthController(null!, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -198,7 +198,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Version_Version_0()
 		{
-			var controller = new HealthController(null, new FakeTelemetryService(), 
+			var controller = new HealthController(null!, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -212,7 +212,7 @@ namespace starskytest.Controllers
 		public async Task CheckHealthAsyncWithTimeout_ShouldTimeout()
 		{
 			var result = await new HealthController(
-					new FakeHealthCheckService(true), null)
+					new FakeHealthCheckService(true), null!)
 				.CheckHealthAsyncWithTimeout(-1);
 			Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
 		}
@@ -221,7 +221,7 @@ namespace starskytest.Controllers
 		public async Task CheckHealthAsyncWithTimeout_ShouldSucceed()
 		{
 			var result = await new HealthController(new FakeHealthCheckService(true), 
-					null)
+					null!)
 				.CheckHealthAsyncWithTimeout();
 			Assert.AreEqual(HealthStatus.Healthy, result.Status);
 		}
@@ -241,7 +241,7 @@ namespace starskytest.Controllers
 			
 			var result = await new HealthController(
 					new FakeHealthCheckService(true),
-					null, null, new FakeMemoryCache(cachedItem))
+					null!, null!, new FakeMemoryCache(cachedItem))
 				.CheckHealthAsyncWithTimeout();
 			Assert.AreEqual(HealthStatus.Healthy, result.Status);
 		}
@@ -261,7 +261,7 @@ namespace starskytest.Controllers
 			
 			var result = await new HealthController(
 					new FakeHealthCheckService(false),
-					null, null, new FakeMemoryCache(cachedItem))
+					null!, null!, new FakeMemoryCache(cachedItem))
 				.CheckHealthAsyncWithTimeout();
 			Assert.AreEqual(HealthStatus.Healthy, result.Status);
 		}

@@ -16,7 +16,7 @@ namespace starskytest.FakeMocks
 			throw new NotImplementedException();
 		}
 
-		public override Task CloseAsync(WebSocketCloseStatus closeStatus, string statusDescription,
+		public override Task CloseAsync(WebSocketCloseStatus closeStatus, string? statusDescription,
 			CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
@@ -25,7 +25,7 @@ namespace starskytest.FakeMocks
 		public List<WebSocketCloseStatus> FakeCloseOutputAsync { get; set; } = new List<WebSocketCloseStatus>();
 		
 #pragma warning disable 1998
-		public async override Task CloseOutputAsync(WebSocketCloseStatus closeStatus, string statusDescription,
+		public async override Task CloseOutputAsync(WebSocketCloseStatus closeStatus, string? statusDescription,
 #pragma warning restore 1998
 			CancellationToken cancellationToken)
 		{
@@ -68,8 +68,9 @@ namespace starskytest.FakeMocks
 		}
 
 		public override WebSocketCloseStatus? CloseStatus { get; }
-		public override string CloseStatusDescription { get; }
-		public override WebSocketState State { get; }
-		public override string SubProtocol { get; }
+		public override string? CloseStatusDescription { get; }
+
+		public override WebSocketState State { get; } = WebSocketState.None;
+		public override string? SubProtocol { get; }
 	}
 }

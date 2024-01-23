@@ -222,9 +222,9 @@ namespace starskytest.Controllers
 			Assert.AreEqual(1,getAllFiles.Count);
 			
 			var queryResult = _query.SingleItem(toPlaceSubPath);
-			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+			Assert.AreEqual("Sony",queryResult?.FileIndexItem?.Make);
 
-			await _query.RemoveItemAsync(queryResult.FileIndexItem);
+			await _query.RemoveItemAsync(queryResult?.FileIndexItem);
 		}
 		
 		[TestMethod]

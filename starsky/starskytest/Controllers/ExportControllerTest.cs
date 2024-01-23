@@ -70,7 +70,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			_createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{"App:StorageFolder", _createAnImage.BasePath},
 				{"App:ThumbnailTempFolder", _createAnImage.BasePath},
@@ -139,7 +139,7 @@ namespace starskytest.Controllers
 
 			var service = serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
 
-			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
+			var backgroundQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 
 			if ( service == null ) throw new Exception("service should not be null");
 			await service.StartAsync(CancellationToken.None);
@@ -187,7 +187,7 @@ namespace starskytest.Controllers
 			var actionResult2Zip = controller.Status(zipHash,true) as JsonResult;
 			Assert.AreNotEqual(null,actionResult2Zip);
 
-			var resultValue = ( string ) actionResult2Zip?.Value;
+			var resultValue = ( string? ) actionResult2Zip?.Value;
 			
 			if ( resultValue != "OK" && resultValue != "Not Ready" )
 			{

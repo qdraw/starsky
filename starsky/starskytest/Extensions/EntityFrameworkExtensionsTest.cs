@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,7 +10,6 @@ using MySqlConnector;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Extensions;
-using starsky.foundation.database.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.Extensions
@@ -53,7 +51,7 @@ namespace starskytest.Extensions
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetRequiredService<IMemoryCache>();
 			
 			var result = context.TestConnection(new FakeIWebLogger(), memoryCache);
 			Assert.AreEqual(true,result);
@@ -73,7 +71,7 @@ namespace starskytest.Extensions
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetRequiredService<IMemoryCache>();
 			memoryCache.Set("TestConnection", false);
 			
 			var result = context.TestConnection(new FakeIWebLogger(), memoryCache);
@@ -102,14 +100,14 @@ namespace starskytest.Extensions
 					p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
 				
 				var instance =
-					( MySqlException ) ctor?.Invoke(new object[]
+					( MySqlException? ) ctor?.Invoke(new object[]
 					{
 						MySqlErrorCode.AccessDenied,
 						"test",
 						message,
 						new Exception()
 					});
-				return instance;
+				return instance!;
 			}
 			
 			public override DatabaseFacade Database => throw CreateMySqlException("Database is not available");
@@ -129,7 +127,7 @@ namespace starskytest.Extensions
 			var result = context.TestConnection(logger);
 			
 			Assert.AreEqual(false,result);
-			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2.Contains("Database is not available"));
+			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2?.Contains("Database is not available"));
 		}
 	} 
 }

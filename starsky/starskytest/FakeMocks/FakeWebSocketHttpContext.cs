@@ -6,9 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.realtime.Middleware
+namespace starskytest.FakeMocks
 {
 	public class FakeWebSocketHttpContext : HttpContext
 	{
@@ -26,8 +25,8 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		public override void Abort() { }
 		public override ConnectionInfo Connection { get; }
 		public override IFeatureCollection Features { get; }
-		public override IDictionary<object?, object?> Items { get; set; }
-		public override HttpRequest Request { get; }
+		public override IDictionary<object, object?> Items { get; set; }
+		public override HttpRequest? Request { get; }
 		public override CancellationToken RequestAborted { get; set; }
 		public override IServiceProvider RequestServices { get; set; }
 		public override HttpResponse Response { get; }

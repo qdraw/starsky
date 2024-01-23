@@ -128,7 +128,7 @@ namespace starskytest.Controllers
 			var createAnImage1 = new CreateAnImage();
 			Assert.IsNotNull(createAnImage1);
 			
-			var actionResult = await controller.Delete(createAnImage?.FilePath) as JsonResult;
+			var actionResult = await controller.Delete(createAnImage?.FilePath!) as JsonResult;
 			Assert.AreNotEqual(null,actionResult);
 			var jsonCollection = actionResult?.Value as List<FileIndexItem>;
 			Assert.AreEqual(createAnImage?.FilePath,jsonCollection?.FirstOrDefault()?.FilePath);
