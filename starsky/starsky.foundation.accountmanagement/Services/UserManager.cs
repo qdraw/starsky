@@ -248,7 +248,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="secret">Password</param>
 		/// <returns>result object</returns>
 		public async Task<SignUpResult> SignUpAsync(string name,
-			string credentialTypeCode, string identifier, string secret)
+			string credentialTypeCode, string? identifier, string? secret)
 		{
 			var credentialType = await AddDefaultCredentialType(credentialTypeCode);
 			var roles = AddDefaultRoles();
@@ -413,7 +413,7 @@ namespace starsky.foundation.accountmanagement.Services
 			return new ChangeSecretResult(success: true);
 		}
 
-		internal static string CredentialCacheKey(CredentialType credentialType, string identifier)
+		internal static string CredentialCacheKey(CredentialType credentialType, string? identifier)
 		{
 			return "credential_" + credentialType.Id + "_" + identifier;
 		}
@@ -426,6 +426,11 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <returns>Credential data object</returns>
 		internal Credential? CachedCredential(CredentialType credentialType, string identifier)
 		{
+			if ( string.IsNullOrEmpty(identifier) )
+			{
+				return null;
+			}
+			
 			var key = CredentialCacheKey(credentialType, identifier);
 	        
 			// Add caching for credentialType
@@ -434,7 +439,6 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				return ( Credential? ) objectCredentialTypeCode;
 			}
-
 			
 			var credentialSelect = _dbContext.Credentials.AsNoTracking().TagWith("Credential").Where(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier).Select(x => new
@@ -446,7 +450,10 @@ namespace starsky.foundation.accountmanagement.Services
 				x.Extra
 			}).FirstOrDefault();
 
-			if ( credentialSelect == null ) return null;
+			if ( credentialSelect == null )
+			{
+				return null;
+			}
 
 			var credential = new Credential
 			{
@@ -532,7 +539,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="secret">password</param>
 		/// <returns>status</returns>
 		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode,
-			string identifier, string secret)
+			string? identifier, string secret)
 		{
 			var credentialType = CachedCredentialType(credentialTypeCode);
 

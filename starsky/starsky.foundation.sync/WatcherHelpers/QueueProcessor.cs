@@ -30,7 +30,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_processFile = processFile;
 		}
 
-		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, string, WatcherChangeTypes> value);
+		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, string?, WatcherChangeTypes> value);
 
 
 		public async Task QueueInput(string filepath, string? toPath,
@@ -38,7 +38,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		{
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				await _processFile.Invoke(new Tuple<string, string, WatcherChangeTypes>(filepath,toPath,changeTypes));
+				await _processFile.Invoke(new Tuple<string, string?, WatcherChangeTypes>(filepath,toPath,changeTypes));
 			}, $"from:{filepath}" + (string.IsNullOrEmpty(toPath) ? "" : "_to:" + toPath));
 		}
 	}

@@ -12,7 +12,7 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIWebSocketConnectionsService : IWebSocketConnectionsService
 	{
-		private readonly Exception _exception;
+		private readonly Exception? _exception;
 
 		public FakeIWebSocketConnectionsService(Exception? exception = null)
 		{

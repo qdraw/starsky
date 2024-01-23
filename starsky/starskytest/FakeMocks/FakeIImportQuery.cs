@@ -53,7 +53,7 @@ namespace starskytest.FakeMocks
 
 		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true)
 		{
-			_exist.Add(updateStatusContent.FileHash);
+			_exist.Add(updateStatusContent.FileHash!);
 			return true;
 		}
 

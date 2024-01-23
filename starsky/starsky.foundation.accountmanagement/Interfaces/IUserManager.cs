@@ -66,7 +66,7 @@ namespace starsky.foundation.accountmanagement.Interfaces
 	    /// <param name="secret">Password</param>
 	    /// <returns>result object</returns>
         Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
-	        string identifier, string secret);
+	        string? identifier, string? secret);
         
         void AddToRole(User user, string roleCode);
         void AddToRole(User user, Role role);
@@ -74,7 +74,7 @@ namespace starsky.foundation.accountmanagement.Interfaces
         void RemoveFromRole(User user, Role role);
         ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier, string secret);
         Task<ValidateResult> ValidateAsync(string credentialTypeCode,
-	        string identifier, string secret);
+	        string? identifier, string secret);
 
         Task<bool> SignIn(HttpContext httpContext, User? user,
 	        bool isPersistent = false);

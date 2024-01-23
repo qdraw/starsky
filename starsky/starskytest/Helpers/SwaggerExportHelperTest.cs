@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,7 +33,7 @@ namespace starskytest.Helpers
 		public SwaggerExportHelperTest()
 		{
 			var services = new ServiceCollection();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:Verbose", "true" },
 				{ "App:AddSwagger", "true" },
@@ -62,15 +60,15 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void GenerateSwagger_NullInput()
 		{
-			Assert.AreEqual(string.Empty, SwaggerExportHelper.GenerateSwagger(null, null));
+			Assert.AreEqual(string.Empty, SwaggerExportHelper.GenerateSwagger(null!, null!));
 		}
 		
 		[TestMethod]
 		public void Add03AppExport_disabled_AddSwagger()
 		{
 			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = false};
-			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
-			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
+			var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
+			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null!);
 			
 			Assert.IsFalse(result);
 		}
@@ -79,7 +77,7 @@ namespace starskytest.Helpers
 		public void Add04SwaggerExportExitAfter_True()
 		{
 			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = true, AddSwaggerExportExitAfter = true};
-			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
+			var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
 			var appLifeTime = new FakeIApplicationLifetime();
 			var result = swagger.Add04SwaggerExportExitAfter(appSettings, appLifeTime);
 			
@@ -90,7 +88,7 @@ namespace starskytest.Helpers
 		public void Add04SwaggerExportExitAfter_False()
 		{
 			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = false, AddSwaggerExportExitAfter = false};
-			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
+			var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
 			var appLifeTime = new FakeIApplicationLifetime();
 			var result = swagger.Add04SwaggerExportExitAfter(appSettings, appLifeTime);
 			
@@ -102,16 +100,16 @@ namespace starskytest.Helpers
 		public void Add03AppExport_null_ArgumentException()
 		{
 			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = true};
-			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
-			swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
+			var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
+			swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null!);
 		}
 		
 		[TestMethod]
 		public void Add03AppExport_disabled_AddSwaggerExport()
 		{
 			var appSettings = new AppSettings {AddSwagger = false, AddSwaggerExport = true};
-			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
-			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
+			var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
+			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null!);
 			
 			Assert.IsFalse(result);
 		}
@@ -121,7 +119,7 @@ namespace starskytest.Helpers
 		public void ExecuteAsync_ShouldWrite()
 		{
 			new SwaggerExportHelper(_serviceScopeFactory).ExecuteAsync();
-			var selectorStorage = _serviceProvider.GetService<ISelectorStorage>();
+			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
 			var storage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
 			Assert.IsTrue(storage.ExistFile( Path.DirectorySeparatorChar +"starsky_test_name.json"));

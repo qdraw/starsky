@@ -185,12 +185,12 @@ namespace starsky.Controllers
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
-		internal static string AppendPathBasePrefix(string requestPathBase, string url)
+		internal static string AppendPathBasePrefix(string? requestPathBase, string url)
 		{
 			return requestPathBase.Equals("/starsky", StringComparison.InvariantCultureIgnoreCase) ? $"/starsky{url}" : url;
 		}
 
-		internal static bool IsCaseSensitiveRedirect(string expectedRequestPath, string requestPathValue)
+		internal static bool IsCaseSensitiveRedirect(string? expectedRequestPath, string? requestPathValue)
 		{
 			return expectedRequestPath != requestPathValue;
 		}

@@ -36,7 +36,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			// ReSharper disable once AssignNullToNotNullAttribute
 			var syncWatcherPreflight = new SyncWatcherConnector(null,null!,null!,null!,null!,null, null);
 			await syncWatcherPreflight.Sync(
-				new Tuple<string, string, WatcherChangeTypes>("test", null, WatcherChangeTypes.Changed));
+				new Tuple<string, string?, WatcherChangeTypes>("test", null!, WatcherChangeTypes.Changed));
 		}
 		
 		[TestMethod]

@@ -21,8 +21,8 @@ public class FakeIUserManger : IUserManager
 		return Task.FromResult(_userOverviewModel);
 	}
 
-	public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode, string identifier,
-		string secret)
+	public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode, string? identifier,
+		string? secret)
 	{
 		throw new System.NotImplementedException();
 	}

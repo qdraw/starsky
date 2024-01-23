@@ -43,7 +43,7 @@ namespace starskytest.FakeMocks
 		}
 
 		public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
-			string identifier, string secret)
+			string? identifier, string secret)
 		{
 			Users.Add(new User{Name = name, Credentials = new List<Credential>
 			{

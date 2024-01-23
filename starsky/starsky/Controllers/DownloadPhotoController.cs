@@ -75,8 +75,9 @@ namespace starsky.Controllers
         public async Task<IActionResult> DownloadPhoto(string? f, bool isThumbnail = true, bool cache = true)
         {
             // f = subpath/filepath
-            if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail = "+
-                                                            "instead of ?isthumbnail= ");
+            if (f?.Contains("?isthumbnail") == true) {
+	            return NotFound("please use &isthumbnail = instead of ?isthumbnail= ");
+            }
 
             var fileIndexItem = await _query.GetObjectByFilePathAsync(f);
             if ( fileIndexItem == null)
@@ -91,7 +92,7 @@ namespace starsky.Controllers
             if (!isThumbnail)
             {
 	            if ( cache ) CacheControlOverwrite.SetExpiresResponseHeaders(Request);
-	            var fileStream = _iStorage.ReadStream(fileIndexItem.FilePath);
+	            var fileStream = _iStorage.ReadStream(fileIndexItem.FilePath!);
 	            // Return the right mime type (enableRangeProcessing = needed for safari and mp4)
 	            return File(fileStream, MimeHelper.GetMimeTypeByFileName(fileIndexItem.FilePath),true);
             }
@@ -105,15 +106,15 @@ namespace starsky.Controllers
 	            Small = _thumbnailStorage.ExistFile(
 		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,ThumbnailSize.Small)),
 	            Large = _thumbnailStorage.ExistFile(
-		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Large)),
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,ThumbnailSize.Large)),
 	            ExtraLarge = _thumbnailStorage.ExistFile(
-		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.ExtraLarge))
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash!,ThumbnailSize.ExtraLarge))
             };
 
             if (!data.Small || !data.Large || !data.ExtraLarge)
             {
 	            _logger.LogDebug("Thumbnail generation started");
-                await _thumbnailService.CreateThumbAsync(fileIndexItem.FilePath, 
+                await _thumbnailService.CreateThumbAsync(fileIndexItem.FilePath!, 
 	                fileIndexItem.FileHash);
                 
                 if ( !_thumbnailStorage.ExistFile(

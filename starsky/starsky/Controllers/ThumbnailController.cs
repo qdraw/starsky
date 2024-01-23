@@ -195,7 +195,7 @@ namespace starsky.Controllers
         [ResponseCache(Duration = 29030400)] // 4 weeks
         public async Task<IActionResult> Thumbnail(
             string f, 
-            string filePath = null,
+            string? filePath = null,
             bool isSingleItem = false, 
             bool json = false,
             bool extraLarge = true)

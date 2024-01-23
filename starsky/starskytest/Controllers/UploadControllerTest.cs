@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -205,11 +205,15 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolder() as JsonResult;
-			if ( actionResult == null ) throw new ArgumentNullException(nameof(actionResult),
-				"actionResult should not be null");
+			if ( actionResult == null ) {
+				throw new WebException("actionResult should not be null");
+			}
+			
 			var list = actionResult.Value as List<ImportIndexItem>;
-			if ( list == null ) throw new ArgumentNullException(nameof(list),
-				"result should not be null");
+			if ( list == null )
+			{
+				throw new WebException("list should not be null");
+			}
 
 			Assert.AreEqual( ImportStatus.Ok, list[0].Status);
 
@@ -249,11 +253,11 @@ namespace starskytest.Controllers
 
 			var queryResult = _query.SingleItem(toPlaceSubPath);
 
-			var sidecarExtList = queryResult.FileIndexItem.SidecarExtensionsList.ToList();
-			Assert.AreEqual(1,sidecarExtList.Count);
-			Assert.AreEqual("xmp",sidecarExtList[0]);
+			var sidecarExtList = queryResult?.FileIndexItem?.SidecarExtensionsList.ToList();
+			Assert.AreEqual(1,sidecarExtList?.Count);
+			Assert.AreEqual("xmp",sidecarExtList?[0]);
 
-			await _query.RemoveItemAsync(queryResult.FileIndexItem);
+			await _query.RemoveItemAsync(queryResult?.FileIndexItem!);
 		}
 		
 		[TestMethod]
@@ -271,7 +275,7 @@ namespace starskytest.Controllers
 
 			var actionResult = await controller.UploadToFolder()as NotFoundObjectResult;
 			
-			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual(404,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -395,9 +399,9 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
-			var list = actionResult.Value as List<string>;
+			var list = actionResult?.Value as List<string>;
 
-			Assert.AreEqual(toPlaceSubPath, list.FirstOrDefault());
+			Assert.AreEqual(toPlaceSubPath, list?.FirstOrDefault());
 		}
 		
 		[TestMethod]
@@ -422,9 +426,9 @@ namespace starskytest.Controllers
 			await controller.UploadToFolderSidecarFile();
 
 			var queryResult = await _query.GetObjectByFilePathAsync(dngSubPath);
-			var sidecarExtList = queryResult.SidecarExtensionsList.ToList();
-			Assert.AreEqual(1,sidecarExtList.Count);
-			Assert.AreEqual("xmp",sidecarExtList[0]);
+			var sidecarExtList = queryResult?.SidecarExtensionsList.ToList();
+			Assert.AreEqual(1,sidecarExtList?.Count);
+			Assert.AreEqual("xmp",sidecarExtList?[0]);
 		}
 				
 		[TestMethod]
@@ -442,9 +446,9 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
-			var list = actionResult.Value as List<string>;
+			var list = actionResult?.Value as List<string>;
 
-			Assert.AreEqual(0, list.Count);
+			Assert.AreEqual(0, list?.Count);
 		}
 		
 		[TestMethod]
@@ -462,7 +466,7 @@ namespace starskytest.Controllers
 
 			var actionResult = await controller.UploadToFolderSidecarFile()as NotFoundObjectResult;
 			
-			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual(404,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -479,7 +483,7 @@ namespace starskytest.Controllers
 			
 			var actionResult = await controller.UploadToFolderSidecarFile()as BadRequestObjectResult;
 			
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 	}
 }

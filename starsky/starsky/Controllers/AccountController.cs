@@ -89,7 +89,7 @@ namespace starsky.Controllers
 				return Json(model);
 			}
 			
-			model.CredentialsIdentifiers?.Add(credentials.Identifier);
+			model.CredentialsIdentifiers?.Add(credentials.Identifier!);
 			model.CredentialTypeIds?.Add(credentials.CredentialTypeId);
 			return Json(model);
 		}
@@ -106,7 +106,7 @@ namespace starsky.Controllers
 		[Produces("text/html")]
 		[SuppressMessage("ReSharper", "UnusedParameter.Global")]
 		[AllowAnonymous]
-		public IActionResult LoginGet(string returnUrl = null, bool? fromLogout = null)
+		public IActionResult LoginGet(string? returnUrl = null, bool? fromLogout = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
@@ -232,7 +232,7 @@ namespace starsky.Controllers
 	        }
 
 	        var changeSecretResult =
-		        _userManager.ChangeSecret("Email", credential?.Identifier,
+		        _userManager.ChangeSecret("Email", credential.Identifier,
 			        model.ChangedPassword);
 
 	        return Json(changeSecretResult);

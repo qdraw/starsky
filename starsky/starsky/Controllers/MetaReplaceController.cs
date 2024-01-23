@@ -66,7 +66,7 @@ namespace starsky.Controllers
 					or FileIndexItem.ExifStatus.DeletedAndSame).ToList();
 			
 			var changedFileIndexItemName = resultsOkOrDeleteList.
-				ToDictionary(item => item.FilePath, item => new List<string> {fieldName});
+				ToDictionary(item => item.FilePath!, _ => new List<string> {fieldName});
 
 			// Update >
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>

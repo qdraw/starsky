@@ -23,15 +23,17 @@ namespace starskytest.FakeMocks
 			Response = new DefaultHttpContext().Response;
 		}
 		public override void Abort() { }
-		public override ConnectionInfo Connection { get; }
-		public override IFeatureCollection Features { get; }
-		public override IDictionary<object, object?> Items { get; set; }
+		public override ConnectionInfo? Connection { get; }
+		public override IFeatureCollection? Features { get; }
+
+		public override IDictionary<object, object?> Items { get; set; } =
+			new Dictionary<object, object?>();
 		public override HttpRequest? Request { get; }
 		public override CancellationToken RequestAborted { get; set; }
-		public override IServiceProvider RequestServices { get; set; }
-		public override HttpResponse Response { get; }
-		public override ISession Session { get; set; }
-		public override string TraceIdentifier { get; set; }
+		public override IServiceProvider? RequestServices { get; set; }
+		public override HttpResponse? Response { get; }
+		public override ISession? Session { get; set; }
+		public override string? TraceIdentifier { get; set; }
 		public sealed override ClaimsPrincipal User { get; set; }
 		public override WebSocketManager WebSockets { get; }
 	}

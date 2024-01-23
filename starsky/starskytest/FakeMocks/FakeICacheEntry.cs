@@ -20,7 +20,7 @@ namespace starskytest.FakeMocks
 			// do nothing
 		}
 
-		public object? Key { get; } = string.Empty;
+		public object Key { get; } = string.Empty;
 		public object? Value { get; set; }
 		public DateTimeOffset? AbsoluteExpiration { get; set; }
 		public TimeSpan? AbsoluteExpirationRelativeToNow { get; set; }
