@@ -43,7 +43,7 @@ namespace starskytest.Controllers
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
-		private static ServiceProvider _serviceProvider;
+		private static ServiceProvider? _serviceProvider;
 
 		public MetaReplaceControllerTest()
 		{
@@ -254,7 +254,7 @@ namespace starskytest.Controllers
 			await InsertSearchData();
 			var serviceScopeFactory = NewScopeFactory();
 			
-			var fakeIMetaUpdateService =  _serviceProvider.GetService<IMetaUpdateService>() as
+			var fakeIMetaUpdateService =  _serviceProvider?.GetService<IMetaUpdateService>() as
 				FakeIMetaUpdateService;
 			Assert.IsNotNull(fakeIMetaUpdateService);
 			fakeIMetaUpdateService.ChangedFileIndexItemNameContent =

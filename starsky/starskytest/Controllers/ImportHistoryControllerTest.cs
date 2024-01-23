@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
@@ -23,8 +22,8 @@ namespace starskytest.Controllers
 		public void HistoryTest()
 		{
 			var result = new ImportHistoryController(_fakeImportQuery).History() as JsonResult;
-			var output = result.Value as List<ImportIndexItem>;
-			Assert.AreEqual("/test.jpg", output.FirstOrDefault().FilePath);
+			var output = result?.Value as List<ImportIndexItem>;
+			Assert.AreEqual("/test.jpg", output?.FirstOrDefault()?.FilePath);
 		}
 	}
 }

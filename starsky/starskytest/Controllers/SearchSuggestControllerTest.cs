@@ -20,16 +20,16 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class SearchSuggestControllerTest
 	{
-		private SearchSuggestionsService _searchSuggest;
-		private Query _query;
-		private IMemoryCache _memoryCache;
+		private readonly SearchSuggestionsService _searchSuggest;
+		private readonly Query _query;
+		private readonly IMemoryCache _memoryCache;
 
 		public SearchSuggestControllerTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			_memoryCache = provider.GetRequiredService<IMemoryCache>();
 
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase(nameof(SearchSuggestController));

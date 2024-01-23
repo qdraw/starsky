@@ -1,19 +1,17 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.DataProtection;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.DataProtection;
@@ -63,6 +61,7 @@ public class SqlXmlRepositoryTest
 		// ExpectedException NullReferenceException
 	}
 	
+	[SuppressMessage("Usage", "S6602:FirstOrDefault is not Find")]
 	private static MySqlException CreateMySqlException(string message)
 	{
 		// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
@@ -71,18 +70,19 @@ public class SqlXmlRepositoryTest
 			typeof(MySqlException).GetConstructors(
 				BindingFlags.Instance |
 				BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+		// s6602
 		var ctor = ctorLIst.FirstOrDefault(p => 
 			p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
 				
 		var instance =
-			( MySqlException ) ctor?.Invoke(new object[]
+			( MySqlException ?) ctor?.Invoke(new object[]
 			{
 				MySqlErrorCode.AccessDenied,
 				"test",
 				message,
 				new Exception()
 			});
-		return instance;
+		return instance!;
 	}
 	
 	private class AppDbMySqlException : ApplicationDbContext
@@ -172,11 +172,13 @@ public class SqlXmlRepositoryTest
 		}
 		catch ( DbUpdateException )
 		{
+			// do nothing
 		}
+		
 		Assert.AreEqual(0, count);
 		
-		var error = logger.TrackedExceptions.FirstOrDefault(p =>
-			p.Item2.Contains("AggregateException"));
+		var error = logger.TrackedExceptions.Find(p =>
+			p.Item2?.Contains("AggregateException") == true);
 		
 		Assert.IsNotNull(error);
 	}
@@ -203,8 +205,8 @@ public class SqlXmlRepositoryTest
 		
 		repo.StoreElement(new XElement("x1", "x1"), "hi3");
 
-		var error = logger.TrackedExceptions.FirstOrDefault(p =>
-			p.Item2.Contains("AggregateException"));
+		var error = logger.TrackedExceptions.Find(p =>
+			p.Item2?.Contains("AggregateException") == true);
 		
 		var count = 0;
 		try
@@ -213,7 +215,9 @@ public class SqlXmlRepositoryTest
 		}
 		catch ( RetryLimitExceededException )
 		{
+			// do nothing
 		}
+		
 		Assert.AreEqual(0, count);
 		
 		Assert.IsNotNull(error);

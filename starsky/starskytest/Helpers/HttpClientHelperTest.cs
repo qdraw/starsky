@@ -1,5 +1,4 @@
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -251,8 +250,8 @@ namespace starskytest.Helpers
 			await httpClientHelper
 				.PostString("https://qdraw.nl/test", new StringContent(string.Empty),false);
 			
-			Assert.IsFalse(fakeLogger.TrackedInformation.Exists(p => p.Item2.Contains("PostString")));
-			Assert.IsFalse(fakeLogger.TrackedInformation.Exists(p => p.Item2.Contains("HttpClientHelper")));
+			Assert.IsFalse(fakeLogger.TrackedInformation.Exists(p => p.Item2?.Contains("PostString") == true));
+			Assert.IsFalse(fakeLogger.TrackedInformation.Exists(p => p.Item2?.Contains("HttpClientHelper") == true));
 		}
 		
 		[TestMethod]

@@ -28,7 +28,7 @@ namespace starskytest.Controllers
 			var result = controller.SubPathRelative(0, true) as JsonResult;
 
 			var today = "/" + DateTime.Now.ToString("yyyyMMdd");
-			Assert.AreEqual(today,result.Value);
+			Assert.AreEqual(today,result?.Value);
 		}
 
 		[TestMethod]
@@ -40,7 +40,7 @@ namespace starskytest.Controllers
 			var result = controller.SubPathRelative(1, true) as JsonResult;
 
 			var today = "/" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd");
-			Assert.AreEqual(today, result.Value);
+			Assert.AreEqual(today, result?.Value);
 		}
 		
 		[TestMethod]
@@ -54,11 +54,11 @@ namespace starskytest.Controllers
 			var result = controller.SubPathRelative(201801020, true) as JsonResult;
 			// 201801020= not a date but a large number ==> fallback to today
 			var today = "/" + DateTime.Now.ToString("yyyyMMdd");
-			Assert.AreEqual(today, result.Value);
+			Assert.AreEqual(today, result?.Value);
 		}
 
 		[TestMethod]
-		public void RedirectControllerTest_SubpathRelativeRedirectToAction()
+		public void RedirectControllerTest_SubPathRelativeRedirectToAction()
 		{
 			var appSettings = new AppSettings {Structure = "/yyyyMMdd/{filenamebase}.ext"};
 			var controller = new RedirectController(_fakeSelectorStorage, appSettings)
@@ -69,7 +69,7 @@ namespace starskytest.Controllers
 
 			var today = "/" + DateTime.Now.ToString("yyyyMMdd");
 
-			Assert.AreEqual(today, result.RouteValues.Values.FirstOrDefault());
+			Assert.AreEqual(today, result?.RouteValues?.Values.FirstOrDefault());
 		}
 	}
 }

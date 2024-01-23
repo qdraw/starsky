@@ -36,7 +36,7 @@ public class AddDataProtectionKeysTest
 		var dataProtectionProvider = serviceProvider.GetService<IDataProtectionProvider>();
 
 		// Act
-		var protector = dataProtectionProvider.CreateProtector("test");
+		var protector = dataProtectionProvider?.CreateProtector("test");
 
 		// Assert
 		Assert.IsInstanceOfType(protector, typeof(IDataProtector));

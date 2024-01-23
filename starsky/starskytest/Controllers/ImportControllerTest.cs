@@ -83,7 +83,7 @@ namespace starskytest.Controllers
 
 			var importController = new ImportController(new FakeIImport(fakeStorageSelector),
 				_appSettings,
-				_bgTaskQueue, null, fakeStorageSelector, _scopeFactory, new FakeIWebLogger())
+				_bgTaskQueue, null!, fakeStorageSelector, _scopeFactory, new FakeIWebLogger())
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -114,8 +114,8 @@ namespace starskytest.Controllers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-			var importController = new ImportController(null, new AppSettings(),
-				null, null, new FakeSelectorStorage(),
+			var importController = new ImportController(null!, new AppSettings(),
+				null!, null!, new FakeSelectorStorage(),
 				scopeFactory, new FakeIWebLogger());
 			
 			var result = await importController.ImportPostBackgroundTask(
@@ -145,8 +145,8 @@ namespace starskytest.Controllers
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 			var logger = new FakeIWebLogger();
-			var importController = new ImportController(null, new AppSettings(),
-				null, null, new FakeSelectorStorage(),
+			var importController = new ImportController(null!, new AppSettings(),
+				null!, null!, new FakeSelectorStorage(),
 				scopeFactory, logger);
 			
 			await importController.ImportPostBackgroundTask(
@@ -159,12 +159,12 @@ namespace starskytest.Controllers
 		public async Task FromUrl_PathInjection()
 		{
 			var importController = new ImportController(_import, _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory, new FakeIWebLogger())
+				_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory, new FakeIWebLogger())
 			{
 				ControllerContext = RequestWithFile(),
 			};
 			var actionResult =
-				await importController.FromUrl("", "../../path-injection.dll", null) as
+				await importController.FromUrl("", "../../path-injection.dll", null!) as
 					BadRequestResult;
 			Assert.AreEqual(400, actionResult?.StatusCode);
 		}
@@ -190,7 +190,7 @@ namespace starskytest.Controllers
 			// download.geoNames is in the FakeHttpMessageHandler always a 404
 			var actionResult =
 				await importController.FromUrl("https://download.geonames.org", "example.tiff",
-					null) as NotFoundObjectResult;
+					null!) as NotFoundObjectResult;
 			Assert.AreEqual(404, actionResult?.StatusCode);
 		}
 
@@ -216,7 +216,7 @@ namespace starskytest.Controllers
 				_scopeFactory, new FakeIWebLogger()) {ControllerContext = RequestWithFile(),};
 
 			var actionResult =
-				await importController.FromUrl("https://qdraw.nl", "example_image.tiff", null) as
+				await importController.FromUrl("https://qdraw.nl", "example_image.tiff", null!) as
 					JsonResult;
 			var list = actionResult?.Value as List<ImportIndexItem>;
 

@@ -350,10 +350,10 @@ namespace starskytest.Helpers
 			Assert.IsNotNull(list);
 		}
 		
-		public static void SetNull(object obj, string propertyName)
+		private static void SetNull(object obj, string propertyName)
 		{
-			PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName);
-			propertyInfo.SetValue(obj, null);
+			var propertyInfo = obj.GetType().GetProperty(propertyName);
+			propertyInfo?.SetValue(obj, null);
 		}
 		
 		[TestMethod]
