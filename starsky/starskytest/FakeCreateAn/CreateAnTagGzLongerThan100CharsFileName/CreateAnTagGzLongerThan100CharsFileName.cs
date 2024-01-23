@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using starsky.foundation.storage.Storage;
@@ -29,7 +30,7 @@ namespace starskytest.FakeCreateAn.CreateAnTagGzLongerThan100CharsFileName
 			return ms.ToArray();
 		}
 
-		public readonly byte[] Bytes;
+		public readonly byte[] Bytes = Array.Empty<byte>();
 
 		public const string FileName = "0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy0vs1ontl39mjughoz44odh6mlx5z4k2n0pv7xn43fca79lbphy.txt";
 	}

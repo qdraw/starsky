@@ -114,7 +114,8 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			}
 			
 			Assert.IsFalse(renameThumbnailAsync.Key);
-			Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p => p.Item2.Contains("Fake Exiftool detected")));
+			Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p => 
+				p.Item2?.Contains("Fake Exiftool detected") == true));
 		}
 		
 		[TestMethod]
@@ -176,7 +177,8 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			}
 			
 			Assert.IsFalse(renameThumbnailAsync.Key);
-			Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p => p.Item2.Contains("Fake Exiftool detected")));
+			Assert.IsTrue(fakeLogger.TrackedExceptions.Exists(p => 
+				p.Item2?.Contains("Fake Exiftool detected") == true));
 		}
 		
 		[TestMethod]

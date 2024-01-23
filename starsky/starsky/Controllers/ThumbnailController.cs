@@ -302,7 +302,7 @@ namespace starsky.Controllers
         [ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
         [ProducesResponseType(404)] // not found
         [ProducesResponseType(210)] // raw
-        public async Task<IActionResult> ByZoomFactor(
+        public async Task<IActionResult> ByZoomFactorAsync(
 	        string f,
 	        int z = 0, 
 	        string filePath = "")

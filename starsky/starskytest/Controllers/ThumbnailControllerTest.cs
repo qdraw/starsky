@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,14 +10,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
@@ -69,7 +68,8 @@ namespace starskytest.Controllers
 			var inputSubPaths = new List<string>{"/test.jpg","/test2.jpg", "/test.dng"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{CreateAnImage.Bytes.ToArray(),CreateAnImage.Bytes.ToArray(),CreateAnImage.Bytes.ToArray()});
+					new List<byte[]>{CreateAnImage.Bytes.ToArray(),
+						CreateAnImage.Bytes.ToArray(),CreateAnImage.Bytes.ToArray()});
 			return storage;
 		}
 		
@@ -78,9 +78,9 @@ namespace starskytest.Controllers
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
-			var controller = new ThumbnailController(_query,storageSelector);;
+			var controller = new ThumbnailController(_query,storageSelector);
 			var actionResult = await controller.Thumbnail("../") as BadRequestResult;
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 
 		[TestMethod]
@@ -100,10 +100,15 @@ namespace starskytest.Controllers
   
 			var actionResult = await controller.Thumbnail("hash-corrupt-image", "/test2.jpg",
 				false, true) as NoContentResult;
-			Assert.AreEqual(204,actionResult.StatusCode);
+			Assert.AreEqual(204,actionResult?.StatusCode);
                
 			// remove files + database item
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/test2.jpg"));
+			var resultItem = await _query.GetObjectByFilePathAsync("/test2.jpg");
+			if ( resultItem == null )
+			{
+				throw new WebException("object is null");
+			}
+			await _query.RemoveItemAsync(resultItem);
 		}
 		
 		[TestMethod]
@@ -126,13 +131,13 @@ namespace starskytest.Controllers
 			// Act
 			// Create thumbnail in fake storage
 			await new Thumbnail(storage,storage, 
-				new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(createAnImage.FilePath, createAnImage.FileHash);
+				new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(createAnImage.FilePath, createAnImage.FileHash!);
 			
 			// Check if exist
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.Thumbnail(createAnImage.FileHash,null, true,true) as JsonResult;
+			var actionResult = await controller.Thumbnail(createAnImage.FileHash!,null, true,true) as JsonResult;
 			
 			// Thumbnail exist
 			Assert.AreNotEqual(null,actionResult);
@@ -150,13 +155,13 @@ namespace starskytest.Controllers
 			// Act
 			// Create thumbnail in fake storage
 			await new Thumbnail(storage,storage, new FakeIWebLogger(), new AppSettings()
-			).CreateThumbAsync(createAnImage.FilePath, createAnImage.FileHash);
+			).CreateThumbAsync(createAnImage.FilePath, createAnImage.FileHash!);
 			
 			// Check if exist
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.Thumbnail(createAnImage.FileHash, null,true) as FileStreamResult;
+			var actionResult = await controller.Thumbnail(createAnImage.FileHash!, null,true) as FileStreamResult;
 			
 			// Thumbnail exist
 			Assert.AreNotEqual(null,actionResult);
@@ -242,7 +247,10 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.Thumbnail(createAnImage.FileHash, null, true) as FileStreamResult;
+			var actionResult = await controller.Thumbnail(createAnImage.FileHash!, null, true) as FileStreamResult;
+			Assert.IsNotNull(actionResult);
+			Assert.IsNotNull(actionResult.FileStream);
+
 			var thumbnailAnswer = actionResult.ContentType;
 			
 			controller.Response.Headers.TryGetValue("x-filename", out var value ); 
@@ -250,7 +258,7 @@ namespace starskytest.Controllers
 			
 			Assert.AreEqual("image/jpeg",thumbnailAnswer);
 			
-			actionResult.FileStream.Dispose(); // for windows
+			await actionResult.FileStream.DisposeAsync(); // for windows
 		}
 
 		[TestMethod]
@@ -263,8 +271,7 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.Thumbnail(createAnImage.FileHash, null,false, true) as JsonResult;
-			var thumbnailAnswer = actionResult?.StatusCode; // always null for some reason ?!
+			var actionResult = await controller.Thumbnail(createAnImage.FileHash!, null,false, true) as JsonResult;
 			Assert.AreEqual("Thumbnail is not ready yet",actionResult?.Value);
 		}
 
@@ -284,8 +291,8 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
             
-			var actionResult = await controller.Thumbnail(item.FileHash, null,false, true) as NotFoundObjectResult;
-			var thumbnailAnswer = actionResult.StatusCode;
+			var actionResult = await controller.Thumbnail(item.FileHash!, null,false, true) as NotFoundObjectResult;
+			var thumbnailAnswer = actionResult?.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
 			await _query.RemoveItemAsync(item);
 		}
@@ -297,7 +304,7 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = await controller.Thumbnail("404filehash", null,false, true) as NotFoundObjectResult;
-			var thumbnailAnswer = actionResult.StatusCode;
+			var thumbnailAnswer = actionResult?.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
 		}
 		
@@ -359,8 +366,8 @@ namespace starskytest.Controllers
 		{
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var actionResult = await controller.ByZoomFactor("404filehash", 1) as NotFoundObjectResult;
-			var thumbnailAnswer = actionResult.StatusCode;
+			var actionResult = await controller.ByZoomFactorAsync("404filehash", 1) as NotFoundObjectResult;
+			var thumbnailAnswer = actionResult?.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
 		}
 
@@ -369,13 +376,13 @@ namespace starskytest.Controllers
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
-			var controller = new ThumbnailController(_query,storageSelector);;
-			var actionResult = await controller.ByZoomFactor("../") as BadRequestResult;
-			Assert.AreEqual(400,actionResult.StatusCode);
+			var controller = new ThumbnailController(_query,storageSelector);
+			var actionResult = await controller.ByZoomFactorAsync("../") as BadRequestResult;
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
-		public void ByZoomFactor_IgnoreRawFile()
+		public async Task ByZoomFactor_IgnoreRawFile()
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
@@ -386,7 +393,7 @@ namespace starskytest.Controllers
 				}),storageSelector);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			controller.ByZoomFactor("hash1");
+			await controller.ByZoomFactorAsync("hash1");
 			
 			Assert.AreEqual(210,controller.Response.StatusCode);
 		}
@@ -401,13 +408,15 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.ByZoomFactor(createAnImage.FileHash, 1) as FileStreamResult;
-			var thumbnailAnswer = actionResult.ContentType;
+			var actionResult = await controller.ByZoomFactorAsync(createAnImage.FileHash!, 1) as FileStreamResult;
+			var thumbnailAnswer = actionResult?.ContentType;
 			
 			controller.Response.Headers.TryGetValue("x-filename", out var value ); 
 			Assert.AreEqual("test.jpg", value.ToString());
 			
 			Assert.AreEqual("image/jpeg",thumbnailAnswer);
+			
+			Assert.IsNotNull(actionResult?.FileStream);
 			
 			await actionResult.FileStream.DisposeAsync(); // for windows
 		}
@@ -421,7 +430,7 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.ByZoomFactor("____", 1, "/test.jpg") as FileStreamResult;
+			var actionResult = await controller.ByZoomFactorAsync("____", 1, "/test.jpg") as FileStreamResult;
 			Assert.IsNotNull(actionResult);
 			var thumbnailAnswer = actionResult.ContentType;
 			
@@ -438,9 +447,9 @@ namespace starskytest.Controllers
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
-			var controller = new ThumbnailController(_query,storageSelector);;
+			var controller = new ThumbnailController(_query,storageSelector);
 			var actionResult = controller.ThumbnailSmallOrTinyMeta("../") as BadRequestResult;
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 
 		[TestMethod]
@@ -451,7 +460,7 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			
 			var actionResult = controller.ThumbnailSmallOrTinyMeta("404filehash") as NotFoundObjectResult;
-			var thumbnailAnswer = actionResult.StatusCode;
+			var thumbnailAnswer = actionResult?.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
 		}
 		
@@ -520,7 +529,7 @@ namespace starskytest.Controllers
 			var actionResult = await controller.ListSizesByHash("01234567890123456789123456") as NotFoundObjectResult;
 			
 			Assert.AreNotEqual(null, actionResult);
-			Assert.AreEqual(404, actionResult.StatusCode);
+			Assert.AreEqual(404, actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -597,7 +606,7 @@ namespace starskytest.Controllers
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
-			var controller = new ThumbnailController(_query,storageSelector);;
+			var controller = new ThumbnailController(_query,storageSelector);
 			var actionResult = await controller.ListSizesByHash("../") as BadRequestResult;
 			Assert.AreEqual(400,actionResult?.StatusCode);
 		}

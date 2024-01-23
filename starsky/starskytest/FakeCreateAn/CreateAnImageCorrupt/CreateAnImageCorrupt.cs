@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using starsky.foundation.storage.Storage;
@@ -26,7 +27,7 @@ namespace starskytest.FakeCreateAn.CreateAnImageCorrupt
 			return ms.ToArray();
 		}
 
-		public readonly byte[] Bytes;
+		public readonly byte[] Bytes = Array.Empty<byte>();
 
 	}
 }

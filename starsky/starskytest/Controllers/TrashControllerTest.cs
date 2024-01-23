@@ -16,7 +16,7 @@ public class TrashControllerTest
 	{
 		var controller = new TrashController(
 			new FakeIMoveToTrashService(new List<FileIndexItem>()));
-		var result = await controller.TrashMoveAsync(null, true) as BadRequestObjectResult;
+		var result = await controller.TrashMoveAsync(null!, true) as BadRequestObjectResult;
 		Assert.AreEqual(400,result?.StatusCode);
 	}
 	
