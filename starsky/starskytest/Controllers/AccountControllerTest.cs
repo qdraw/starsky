@@ -232,7 +232,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task LoginPost_FailedSignIn()
+		public async Task LoginPost_Fail_SignIn()
 		{
 			AccountController controller = new AccountController(new FakeUserManagerActiveUsers(),_appSettings,_antiForgery, _selectorStorage);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();

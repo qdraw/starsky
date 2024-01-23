@@ -1,4 +1,3 @@
-#nullable enable
 using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -339,7 +338,7 @@ namespace starsky.foundation.platform.Models
 				if (string.IsNullOrEmpty(value) || value == "/") return;
 				var structure = PathHelper.PrefixDbSlash(value);
 				_structure = PathHelper.RemoveLatestBackslash(structure);
-				// Struture regex check
+				// Structure regex check
 				StructureCheck(_structure);
 			}
 		}

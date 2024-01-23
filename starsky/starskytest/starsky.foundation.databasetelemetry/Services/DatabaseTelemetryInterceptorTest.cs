@@ -37,7 +37,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 		{
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.CommandCreating(null, new InterceptionResult<DbCommand>());
+				.CommandCreating(null!, new InterceptionResult<DbCommand>());
 			Assert.IsNotNull(result);
 		}
 		
@@ -46,7 +46,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 		{
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.CommandCreated(null, null);
+				.CommandCreated(null!, null!);
 			Assert.IsNull(result);
 		}
 				
@@ -57,7 +57,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 			
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.ReaderExecuting(null, null, eventData);
+				.ReaderExecuting(null!, null!, eventData);
 			Assert.IsNotNull(result);
 		}
 				
@@ -68,7 +68,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.ScalarExecuting(null, null, eventData);
+				.ScalarExecuting(null!, null!, eventData);
 			Assert.IsNotNull(result);
 		}
 		
@@ -80,7 +80,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.NonQueryExecuting(null, null, eventData);
+				.NonQueryExecuting(null!, null!, eventData);
 			Assert.IsNotNull(result);
 		}
 		
@@ -93,7 +93,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.ReaderExecutingAsync(null, null, eventData);
+				.ReaderExecutingAsync(null!, null!, eventData);
 			Assert.IsNotNull(result);
 		}
 		
@@ -104,7 +104,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.ScalarExecutingAsync(null, null, eventData);
+				.ScalarExecutingAsync(null!, null!, eventData);
 			Assert.IsNotNull(result);
 		}
 				
@@ -115,7 +115,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.NonQueryExecutingAsync(null, null, eventData);
+				.NonQueryExecutingAsync(null!, null!, eventData);
 			Assert.IsNotNull(result);
 		}
 		
@@ -125,7 +125,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.ReaderExecuted(null, null, null);
+				.ReaderExecuted(null!, null!, null!);
 			Assert.IsNull(result);
 		}
 		
@@ -135,7 +135,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.ScalarExecuted(null, null, null);
+				.ScalarExecuted(null!, null!, null);
 			Assert.IsNull(result);
 		}
 		
@@ -146,7 +146,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.NonQueryExecuted(null, null, 1);
+				.NonQueryExecuted(null!, null!, 1);
 			Assert.IsNotNull(result);
 		}
 		
@@ -157,7 +157,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.ReaderExecutedAsync(null, null, new DataTableReader(new DataTable()));
+				.ReaderExecutedAsync(null!, null!, new DataTableReader(new DataTable()));
 			Assert.IsNotNull(result);
 		}
 		
@@ -167,7 +167,7 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.ScalarExecutedAsync(null, null, 1);
+				.ScalarExecutedAsync(null!, null!, 1);
 			Assert.IsNotNull(result);
 		}
 		
@@ -177,29 +177,29 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.NonQueryExecutedAsync(null, null, 1);
+				.NonQueryExecutedAsync(null!, null!, 1);
 			Assert.IsNotNull(result);
 		}
 		
 		[TestMethod]
-		public void DatabaseTelemetryInterceptor_CommandFailed()
+		public void DatabaseTelemetryInterceptor_CommandFail()
 		{
-			CommandErrorEventData eventData = null;
+			CommandErrorEventData? eventData = null;
 			// void >
 			new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.CommandFailed(null, eventData);
+				.CommandFailed(null!, eventData!);
 			Assert.IsNull(eventData);
 		}
 				
 		[TestMethod]
-		public void DatabaseTelemetryInterceptor_CommandFailedAsync()
+		public void DatabaseTelemetryInterceptor_CommandFailAsync()
 		{
-			CommandErrorEventData eventData = null;
+			CommandErrorEventData? eventData = null;
 			// void >
 			new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.CommandFailedAsync(null, eventData);
+				.CommandFailedAsync(null!, eventData!);
 			Assert.IsNull(eventData);
 		}
 

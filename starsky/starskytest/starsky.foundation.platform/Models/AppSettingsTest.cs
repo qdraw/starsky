@@ -158,6 +158,14 @@ namespace starskytest.starsky.foundation.platform.Models
 			AppSettings.StructureCheck("dion.ext");
 			// >= ArgumentException
 		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void AppSettingsProviderTest_Null()
+		{
+			AppSettings.StructureCheck(string.Empty);
+			// >= ArgumentException
+		}
 
 		[TestMethod]
 		public void AppSettingsNameNullTest()
