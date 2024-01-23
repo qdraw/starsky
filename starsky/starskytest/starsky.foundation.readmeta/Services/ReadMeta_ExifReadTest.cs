@@ -612,7 +612,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
 
-			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
+			var item = new ReadMetaExif(fakeStorage,null!, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
 
 			var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Local).ToLocalTime();
 			Assert.AreEqual(date, item.DateTime);
@@ -634,7 +634,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
 
-			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
+			var item = new ReadMetaExif(fakeStorage,null!, new FakeIWebLogger()).ReadExifFromFile("/test.mp4");
 
 			var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Local).ToLocalTime();
 			Assert.AreEqual(date, item.DateTime);
@@ -654,7 +654,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.png"},new List<byte[]>{newImage});
 		     
-			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.png");
+			var item = new ReadMetaExif(fakeStorage,null!, new FakeIWebLogger()).ReadExifFromFile("/test.png");
 			 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, item.ImageFormat);
@@ -664,8 +664,8 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		public void ExifRead_DataParsingCorruptStreamNull()
 		{
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.png"},new List<byte[]>{null});
-			var item = new ReadMetaExif(fakeStorage,null, new FakeIWebLogger()).ReadExifFromFile("/test.png");
+				new List<string>{"/test.png"},new List<byte[]>{null!});
+			var item = new ReadMetaExif(fakeStorage,null!, new FakeIWebLogger()).ReadExifFromFile("/test.png");
 			// streamNull
 			 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);
@@ -679,7 +679,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		/// <returns>a mock dir</returns>
 		private static MockDirectory BuildDirectory(IEnumerable<object> values)
 		{
-			var directory = new MockDirectory(null);
+			var directory = new MockDirectory(null!);
 
 			foreach (var pair in Enumerable.Range(1, int.MaxValue).Zip(values, Tuple.Create))
 				directory.Set(pair.Item1, pair.Item2);

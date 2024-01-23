@@ -28,7 +28,7 @@ namespace starsky.foundation.sync.WatcherServices
 		{
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 			var serviceProvider = scopeFactory.CreateScope().ServiceProvider;
-			_webLogger = serviceProvider.GetService<IWebLogger>();
+			_webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 			_queueProcessor = new QueueProcessor(scopeFactory, new SyncWatcherConnector(scopeFactory).Sync);
 		}
 

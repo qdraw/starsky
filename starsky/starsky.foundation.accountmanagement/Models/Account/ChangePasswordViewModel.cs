@@ -10,7 +10,7 @@ namespace starsky.foundation.accountmanagement.Models.Account
 	    /// </summary>
 	    [StringLength(100, MinimumLength = 8)]
 	    [DataType(DataType.Password)]
-	    public string Password { get; set; }
+	    public string Password { get; set; } = string.Empty;
 	    
 	    /// <summary>
 	    /// The new password
@@ -19,7 +19,7 @@ namespace starsky.foundation.accountmanagement.Models.Account
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
         [DataType(DataType.Password)]
         [Display(Name = "ChangedPassword")]
-        public string ChangedPassword { get; set; }
+        public string ChangedPassword { get; set; } = string.Empty;
 
 	    /// <summary>
 	    /// The new password confirmed
@@ -27,6 +27,6 @@ namespace starsky.foundation.accountmanagement.Models.Account
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         [Compare("ChangedPassword", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ChangedConfirmPassword { get; set; }
+        public string ChangedConfirmPassword { get; set; } = string.Empty;
     }
 }

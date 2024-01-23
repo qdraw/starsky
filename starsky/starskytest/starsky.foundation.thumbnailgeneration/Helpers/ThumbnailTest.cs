@@ -71,7 +71,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var isCreated = (await thumbnailService.CreateThumbAsync( _fakeIStorageImageSubPath, 
 				_fakeIStorageImageSubPath)).ToList();
 				
-			Assert.AreEqual(false,isCreated!.FirstOrDefault()!.Success);
+			Assert.AreEqual(false,isCreated.FirstOrDefault()!.Success);
 			Assert.AreEqual("File already failed before",isCreated.FirstOrDefault()!.ErrorMessage);
 		}
 		
@@ -82,9 +82,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 
-			var fileHash = "test_hash";
+			const string fileHash = "test_hash";
 			
-			// skip xtra large
+			// skip extra large
 			var isCreated = await new Thumbnail(storage, 
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
 				_fakeIStorageImageSubPath, fileHash, true);
@@ -104,8 +104,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
 
-			var fileHash = "test_hash";
-			// include xtra large
+			const string fileHash = "test_hash";
+			// include extra large
 			var isCreated = await new Thumbnail(storage, 
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbAsync(
 				_fakeIStorageImageSubPath, fileHash);
@@ -159,7 +159,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		{
 			var storage = new FakeIStorage(new List<string>{"/test"}, 
 				new List<string>{"/test/test.jpg"}, 
-				new List<byte[]>{ null });
+				new List<byte[]?>{ null });
 			
 			var isCreated = await new Thumbnail(storage, 
 				storage, new FakeIWebLogger(), new AppSettings()).CreateThumbnailAsync("/test/test.jpg");
@@ -178,7 +178,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var thumb = await new Thumbnail(iStorage,
 				iStorage, new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage(
 				newImage.FullFilePath, 1, null, true);
-			Assert.AreEqual(true,thumb.Item1.CanRead);
+			Assert.AreEqual(true,thumb.Item1?.CanRead);
 		}
         
 		[TestMethod]
@@ -188,7 +188,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				_iStorage, new FakeIWebLogger(), new AppSettings()).ResizeThumbnailFromSourceImage(
 				_fakeIStorageImageSubPath, 1, null, true,
 				ExtensionRolesHelper.ImageFormat.png);
-			Assert.AreEqual(true,thumb.Item1.CanRead);
+			Assert.AreEqual(true,thumb.Item1?.CanRead);
 		}
 		
 		[TestMethod]
@@ -223,8 +223,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task ResizeThumbnailImageFormat_NullInput()
 		{
-			await  Thumbnail.SaveThumbnailImageFormat(null,
-				ExtensionRolesHelper.ImageFormat.bmp, null);
+			await  Thumbnail.SaveThumbnailImageFormat(null!,
+				ExtensionRolesHelper.ImageFormat.bmp, null!);
 			// ArgumentNullException
 		}
 		

@@ -126,7 +126,7 @@ namespace starsky.feature.import.Services
 				.ForEachAsync(
 					async (includedFilePath) 
 						=> await PreflightPerFile(includedFilePath, importSettings),
-					_appSettings.MaxDegreesOfParallelism)).ToList();
+					_appSettings.MaxDegreesOfParallelism))!.ToList();
 			
 			var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
 
@@ -656,7 +656,7 @@ namespace starsky.feature.import.Services
 				var exifCopy = new ExifCopy(_subPathStorage, 
 					_thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, 
 					_appSettings, null!, _logger),_thumbnailQuery);
-				await exifCopy.XmpSync(importIndexItem.FileIndexItem!.FilePath);
+				await exifCopy.XmpSync(importIndexItem.FileIndexItem!.FilePath!);
 			}
 		}
 

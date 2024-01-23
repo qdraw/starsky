@@ -343,7 +343,9 @@ namespace starskytest.starsky.foundation.accountmanagement.Services
 				AccountRegisterFirstRoleAdmin = true
 			}, new FakeIWebLogger(), _memoryCache);
 			
-			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).Where(p => p.Credentials != null && p.Credentials.Any()).ToList() )
+			foreach ( var user in _dbContext.Users.Include(p => p.Credentials)
+				         .Where(p => p.Credentials != null && p.Credentials.Count != 0)
+				         .ToList() )
 			{
 				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier!);
 			}

@@ -19,7 +19,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		public QueueProcessor(IServiceScopeFactory serviceProvider,
 			SynchronizeDelegate processFile)
 		{
-			_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider.GetService<IDiskWatcherBackgroundTaskQueue>();
+			_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IDiskWatcherBackgroundTaskQueue>();
 			_processFile = processFile;
 		}
 

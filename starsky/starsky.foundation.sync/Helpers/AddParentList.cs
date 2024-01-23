@@ -23,11 +23,13 @@ public sealed class AddParentList
 	{
 		// give parent folders back
 		var addedParentItems = new List<FileIndexItem>();
-		var ok = updatedDbItems.Where(p =>
+		var okUpdatedDbItems = updatedDbItems.Where(p =>
 			p.Status is FileIndexItem.ExifStatus.Ok
 				or FileIndexItem.ExifStatus.OkAndSame
-				or FileIndexItem.ExifStatus.Default).Select(p => p.ParentDirectory).Distinct();
-		foreach ( var subPath in ok
+				or FileIndexItem.ExifStatus.Default).Select(p => p.ParentDirectory)
+			.Distinct().Where(p => p != null).Cast<string>();
+		
+		foreach ( var subPath in okUpdatedDbItems
 			         .Where(p => _subPathStorage.ExistFolder(p)))
 		{
 			var path = PathHelper.RemoveLatestSlash(subPath) + "/test.jpg";

@@ -10,12 +10,15 @@ namespace starskytest.FakeMocks
 	{
 		private readonly List<FileIndexItem> _data = new List<FileIndexItem>();
 
-		public FakeISynchronize(List<FileIndexItem> data = null)
+		public FakeISynchronize(List<FileIndexItem>? data = null)
 		{
-			if ( data != null ) _data = data;
+			if ( data != null )
+			{
+				_data = data;
+			}
 		}
 		
-		public event EventHandler<string> Receive;
+		public event EventHandler<string> Receive = delegate { };
 
 		public List<Tuple<string, bool>> Inputs { get; set; } = new List<Tuple<string, bool>>();
 		

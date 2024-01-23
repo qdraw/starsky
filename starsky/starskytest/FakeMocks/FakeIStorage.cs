@@ -19,7 +19,7 @@ namespace starskytest.FakeMocks
 
 		private readonly  Dictionary<string, DateTime>? _lastEditDict = new Dictionary<string, DateTime>();
 
-		private readonly  Dictionary<string, byte[]> _byteList = new Dictionary<string, byte[]>();
+		private readonly  Dictionary<string, byte[]?> _byteList = new Dictionary<string, byte[]?>();
 
 		/// <summary>
 		/// 
@@ -29,7 +29,7 @@ namespace starskytest.FakeMocks
 		/// <param name="byteListSource"></param>
 		/// <param name="lastEdited"></param>
 		public FakeIStorage(List<string>? outputSubPathFolders = null, List<string>? outputSubPathFiles = null, 
-			IReadOnlyList<byte[]>? byteListSource = null, IReadOnlyList<DateTime>? lastEdited = null)
+			IReadOnlyList<byte[]?>? byteListSource = null, IReadOnlyList<DateTime>? lastEdited = null)
 		{
 	
 			if ( outputSubPathFolders != null )
