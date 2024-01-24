@@ -169,7 +169,7 @@ namespace starsky.Controllers
 		public IActionResult ApplicationInsights()
 		{
 			// Remove when ApplicationInsights is phased out
-			return Content(_applicationInsightsJsHelper?.ScriptPlain, "application/javascript");
+			return Content(_applicationInsightsJsHelper?.ScriptPlain!, "application/javascript");
 		}
 
 		/// <summary>

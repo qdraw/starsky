@@ -64,14 +64,14 @@ namespace starsky.Controllers
 
 			if (photoIndexOfQuery != searchViewModel.FileIndexItems?.Count - 1 )
 			{
-				relativeObject.NextFilePath = searchViewModel.FileIndexItems?[photoIndexOfQuery + 1].FilePath;
-				relativeObject.NextHash = searchViewModel.FileIndexItems?[photoIndexOfQuery + 1].FileHash;
+				relativeObject.NextFilePath = searchViewModel.FileIndexItems?[photoIndexOfQuery + 1].FilePath!;
+				relativeObject.NextHash = searchViewModel.FileIndexItems?[photoIndexOfQuery + 1].FileHash!;
 			}
 
 			if (photoIndexOfQuery >= 1)
 			{
-				relativeObject.PrevFilePath = searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FilePath;
-				relativeObject.PrevHash = searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FileHash;
+				relativeObject.PrevFilePath = searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FilePath!;
+				relativeObject.PrevHash = searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FileHash!;
 			}
 	        
 			return Json(relativeObject);
