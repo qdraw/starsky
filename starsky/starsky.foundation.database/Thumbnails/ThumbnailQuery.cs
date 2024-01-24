@@ -161,13 +161,13 @@ public class ThumbnailQuery : IThumbnailQuery
 		}
 	}
 
-	private static async Task RemoveThumbnailsInternalAsync(
+	internal static async Task<bool> RemoveThumbnailsInternalAsync(
 		ApplicationDbContext context,
 		IReadOnlyCollection<string> deletedFileHashes)
 	{
 		if ( deletedFileHashes.Count == 0 )
 		{
-			return;
+			return false;
 		}
 		
 		foreach ( var fileNamesInChunk in deletedFileHashes.ChunkyEnumerable(100) )
@@ -176,6 +176,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			context.Thumbnails.RemoveRange(thumbnailItems);
 			await context.SaveChangesAsync();
 		}
+		return true;
 	}
 	
 	public async Task<bool> RenameAsync(string beforeFileHash, string newFileHash)
