@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -26,6 +27,8 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 {
 
 	
+	[SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
+	[SuppressMessage("ReSharper", "S3881:\"IDisposable\" should be implemented correctly")]
 	public class MockTelemetryChannel : ITelemetryChannel
 	{
 		public IList<ITelemetry> Items

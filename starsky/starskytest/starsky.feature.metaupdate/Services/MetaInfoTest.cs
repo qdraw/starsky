@@ -78,10 +78,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					new List<string> {"/test.jpg"}, new List<byte[]>
 					{
 						FakeCreateAn.CreateAnImage.Bytes.ToArray()
-					}, new List<DateTime>{new DateTime(2000,01,01)})),null, new FakeIWebLogger());
+					}, new List<DateTime>{new DateTime(2000,01,01, 
+						01,01,01, kind: DateTimeKind.Local)})),null, new FakeIWebLogger());
 			var test = await metaInfo.GetInfoAsync(new List<string>{"/test.jpg"}, false);
 
-			Assert.AreEqual(new DateTime(2000,01,01),test.FirstOrDefault()?.LastEdited);
+			Assert.AreEqual(new DateTime(2000,01,01, 
+				01,01,01, kind: DateTimeKind.Local),test.FirstOrDefault()?.LastEdited);
 		}
 	}
 }

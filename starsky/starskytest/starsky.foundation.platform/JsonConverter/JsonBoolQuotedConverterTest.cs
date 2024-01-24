@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.JsonConverter;
@@ -24,12 +25,12 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 			
 			Assert.AreEqual("{\"key\":\"true\"}", json);
 		}
-		
-		// ReSharper disable once ClassNeverInstantiated.Local
+
+		[SuppressMessage("Usage", "S1144:Unused private types or members should be removed")]
+		[SuppressMessage("Usage", "S3459:Unassigned members should be removed")]
+		[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Local")]
 		private class KeyExample
 		{
-			// ReSharper disable once UnassignedGetOnlyAutoProperty
-			// ReSharper disable once UnusedAutoPropertyAccessor.Local
 			public bool Key { get; set; }
 		}
 		

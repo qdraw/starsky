@@ -80,7 +80,8 @@ namespace starskytest.starsky.foundation.database.Models
 			var result = parser.ParseDateTimeFromFileName();
 
 			// Assert
-			Assert.AreEqual(new DateTime(2019, 10, 1, 23, 59, 59), result);
+			Assert.AreEqual(new DateTime(2019, 10, 1, 
+				23, 59, 59, kind: DateTimeKind.Local), result);
 		}
 		
 				

@@ -232,7 +232,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void Files_GetImageFormat_corrupt_Test()
 		{
-			var fileType = ExtensionRolesHelper.GetImageFormat(new CreateAnImageCorrupt().Bytes);
+			var fileType = ExtensionRolesHelper.GetImageFormat(new CreateAnImageCorrupt().Bytes.ToArray());
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown,fileType);
 		}
         

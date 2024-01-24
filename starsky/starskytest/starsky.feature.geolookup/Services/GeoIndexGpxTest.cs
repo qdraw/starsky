@@ -99,12 +99,14 @@ namespace starskytest.starsky.feature.geolookup.Services
 				new FileIndexItem
 				{
 					FileName = "01.jpg", 
-					DateTime = new DateTime(2018,09,05,20,31,54) // 2018-09-05T17:31:53Z UTC > In europe/Minsk
+					DateTime = new DateTime(2018,09,05,
+						20,31,54, kind: DateTimeKind.Local) // 2018-09-05T17:31:53Z UTC > In europe/Minsk
 				},
 				new FileIndexItem
 				{
 					FileName = "NotInRange.jpg", 
-					DateTime = new DateTime(2018,09,06,00,00,00)
+					DateTime = new DateTime(2018,09,06,
+						00,00,00, kind: DateTimeKind.Local)
 				}
                 
 			});

@@ -29,8 +29,7 @@ namespace starskytest.FakeMocks
 			}
 			
 			CompareAllLabelsAndRotation(changedFileIndexItemName,
-				detailView,
-				inputModel, append, rotateClock);
+				detailView);
 
 			if ( inputModel.Status == FileIndexItem.ExifStatus.Default )
 			{
@@ -46,9 +45,8 @@ namespace starskytest.FakeMocks
 			return Task.FromResult( (new List<FileIndexItem>{inputModel}, changedFileIndexItemName));
 		}
 
-		private static void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView,
-			FileIndexItem _, bool _1, int _2)
-		{
+		private static void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView)
+        {
 			if (detailView.FileIndexItem?.FilePath != null && !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )
 			{
 				changedFileIndexItemName.Add(detailView.FileIndexItem!.FilePath, new List<string>{"Tags"});
