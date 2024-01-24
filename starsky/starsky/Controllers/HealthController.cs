@@ -155,7 +155,6 @@ namespace starsky.Controllers
 			}
 			return health;
 		}
-		
 				
 		/// <summary>
 		/// Add Application Insights script to user context
