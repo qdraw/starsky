@@ -18,7 +18,8 @@ namespace starskytest.starsky.foundation.database.Thumbnails
 		[TestMethod]
 		public void QueryFactoryTest_Null()
 		{
-			var query = new ThumbnailQueryFactory(null, null,null,null).ThumbnailQuery();
+			var query = new ThumbnailQueryFactory(
+				null, null,null,null!).ThumbnailQuery();
 			Assert.IsNull(query);
 		}
 		

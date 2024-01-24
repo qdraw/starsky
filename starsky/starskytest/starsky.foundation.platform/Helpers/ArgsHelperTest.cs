@@ -27,7 +27,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// Make example config in memory
 			var newImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:StorageFolder", newImage.BasePath },
 				{ "App:Verbose", "true" }
@@ -131,9 +131,9 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[ExpectedException(typeof(FieldAccessException))]
 		public void ArgsHelper_GetPathFormArgsTest_FieldAccessException()
 		{
-			// inject appsettings!
+			// inject appSettings!
 			var args = new List<string> {"-p", "/"}.ToArray();
-			new ArgsHelper(null).GetPathFormArgs(args);
+			new ArgsHelper(null!).GetPathFormArgs(args);
 		}
 	    
 		[TestMethod]
@@ -179,7 +179,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// inject appSettings!
 			var args = new List<string> {"-p", "/"}.ToArray();
-			new ArgsHelper(null).GetPathListFormArgs(args);
+			new ArgsHelper(null!).GetPathListFormArgs(args);
 		}
 	    
 		[TestMethod]
@@ -284,7 +284,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			args = new List<string> {"-a","false"}.ToArray();
 			Assert.AreEqual(false, ArgsHelper.GetAll(args));
             
-			args = new List<string> {}.ToArray();
+			args = new List<string>().ToArray();
 			Assert.AreEqual(false, ArgsHelper.GetAll(args));
             
 		}
@@ -365,9 +365,9 @@ namespace starskytest.starsky.foundation.platform.Helpers
 	    
 		[TestMethod]
 		[ExpectedException(typeof(FieldAccessException))]
-		public void ArgsHelper_GetSubpathRelative_Null_Test()
+		public void ArgsHelper_GetSubPathRelative_Null_Test()
 		{
-			new ArgsHelper(null).GetRelativeValue(new List<string>());
+			new ArgsHelper(null!).GetRelativeValue(new List<string>());
 			// FieldAccessException
 		}
 
@@ -521,7 +521,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[ExpectedException(typeof(FieldAccessException))]
 		public void ArgsHelper_NeedHelpShowDialog_Null_Test()
 		{
-			new ArgsHelper(null).NeedHelpShowDialog();
+			new ArgsHelper(null!).NeedHelpShowDialog();
 			// FieldAccessException
 		}
 	    
@@ -530,7 +530,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[ExpectedException(typeof(FieldAccessException))]
 		public void ArgsHelper_SetEnvironmentToAppSettings_Null_Test()
 		{
-			new ArgsHelper(null).SetEnvironmentToAppSettings();
+			new ArgsHelper(null!).SetEnvironmentToAppSettings();
 			// FieldAccessException
 		}
 
@@ -633,7 +633,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void ArgsHelper_GetColorClassFallback()
 		{
-			var args = new List<string> {}.ToArray();
+			var args = new List<string>().ToArray();
 			var value = ArgsHelper.GetColorClass(args);
 			Assert.AreEqual(-1, value);
 		}

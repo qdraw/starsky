@@ -54,7 +54,7 @@ namespace starsky.foundation.database.Query
 						break;
 				}
 
-				if ( !success || item == null || !item.Any())
+				if ( !success || item == null || item.Count == 0 )
 				{
 					toQueryPaths.Add(path);
 					continue;
@@ -75,7 +75,7 @@ namespace starsky.foundation.database.Query
 		/// <returns></returns>
 		internal async Task<List<FileIndexItem>> GetObjectsByFilePathQuery(string[] inputFilePaths, bool collections)
 		{
-			if ( !inputFilePaths.Any() )
+			if ( inputFilePaths.Length == 0 )
 			{
 				return new List<FileIndexItem>();
 			}

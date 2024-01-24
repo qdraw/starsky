@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 
@@ -6,6 +7,8 @@ namespace starskytest.starsky.foundation.database.Helpers;
 [TestClass]
 public class ReflectionValueHelperTest
 {
+	[SuppressMessage("Usage", "S1144:Unused private types or members should be removed")]
+	[SuppressMessage("Usage", "S2933:Fields that are only assigned in the constructor should be \"readonly\"")]
 	private class Foo
 	{
 #pragma warning disable CS0414
@@ -15,6 +18,7 @@ public class ReflectionValueHelperTest
 
 	private class FooNothing
 	{
+		// nothing here
 	}
 	
 	[TestMethod]

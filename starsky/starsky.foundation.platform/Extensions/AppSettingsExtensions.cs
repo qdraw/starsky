@@ -9,10 +9,10 @@ namespace starsky.foundation.platform.Extensions
         public static TConfig ConfigurePoCo<TConfig>(
 	        this IServiceCollection services, IConfiguration configuration) where TConfig : class, new()
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
- 
-            var config = new TConfig();
+			ArgumentNullException.ThrowIfNull(services);
+			ArgumentNullException.ThrowIfNull(configuration);
+
+			var config = new TConfig();
             configuration.Bind(config);
             services.AddSingleton(config);
             return config;

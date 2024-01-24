@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Helpers;
-using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starskytest.FakeCreateAn;
@@ -30,7 +29,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public async Task TestIfContainsDataImageBaseHash_CorruptOutput()
 		{
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.jpg"},new List<byte[]>{new CreateAnImageCorrupt().Bytes});
+				new List<string>{"/test.jpg"},new List<byte[]>{new CreateAnImageCorrupt().Bytes.ToArray()});
 			var result = await new ToBase64DataUriList(fakeStorage, 
 				fakeStorage, new FakeIWebLogger(), new AppSettings()).Create(
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")});

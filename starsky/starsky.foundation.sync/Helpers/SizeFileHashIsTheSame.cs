@@ -29,7 +29,7 @@ public class SizeFileHashIsTheSameHelper
 		var dbItem = dbItems.Find(p => p.FilePath == subPath);
 		if ( dbItem == null )
 		{
-			return new Tuple<bool?, bool?, FileIndexItem>(false, false, null);
+			return new Tuple<bool?, bool?, FileIndexItem>(false, false, null!);
 		}
 		
 		// when last edited is the same
@@ -44,7 +44,7 @@ public class SizeFileHashIsTheSameHelper
 			.Select(CompareLastEditIsTheSame)
 			.Where(p => p.Item1).ToList();
 	
-		if ( isRequestFileLastEditTheSame && !otherRawItems.Any())
+		if ( isRequestFileLastEditTheSame && otherRawItems.Count == 0 )
 		{
 			return new Tuple<bool?, bool?, FileIndexItem>(true, null, dbItem);
 		}
@@ -53,7 +53,7 @@ public class SizeFileHashIsTheSameHelper
 		var (requestFileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
 		
 		// when there are xmp files in the list and the fileHash of the current raw is the same
-		if ( isRequestFileLastEditTheSame && requestFileHashTheSame && otherRawItems.Any())
+		if ( isRequestFileLastEditTheSame && requestFileHashTheSame )
 		{
 			return new Tuple<bool?, bool?, FileIndexItem>(null, null, dbItem);
 		}
@@ -85,12 +85,12 @@ public class SizeFileHashIsTheSameHelper
 		var lastWriteTime = _subPathStorage.Info(dbItem.FilePath!).LastWriteTime;
 		if (lastWriteTime.Year == 1 )
 		{
-			return new Tuple<bool, DateTime,string>(false, lastWriteTime, dbItem.FilePath);
+			return new Tuple<bool, DateTime,string>(false, lastWriteTime, dbItem.FilePath!);
 		}
 
 		var isTheSame = DateTime.Compare(dbItem.LastEdited, lastWriteTime) == 0;
 
 		dbItem.LastEdited = lastWriteTime;
-		return new Tuple<bool, DateTime,string>(isTheSame, lastWriteTime, dbItem.FilePath);
+		return new Tuple<bool, DateTime,string>(isTheSame, lastWriteTime, dbItem.FilePath!);
 	}
 }

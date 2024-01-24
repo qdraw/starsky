@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ namespace starsky.foundation.writemeta.Services
 	[Service(typeof(IExifToolHostStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public sealed class ExifToolHostStorageService : IExifToolHostStorage
 	{
-		private readonly IExifTool _exifTool;
+		private readonly ExifTool _exifTool;
 
 		public ExifToolHostStorageService(ISelectorStorage selectorStorage, 
 			AppSettings appSettings, IWebLogger webLogger)

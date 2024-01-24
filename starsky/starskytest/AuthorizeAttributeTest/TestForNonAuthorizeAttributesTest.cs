@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -31,6 +32,7 @@ public class TestForNonAuthorizeAttributesTest
         return (assembly, name);
     }
 
+    [SuppressMessage("Usage", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension")]
     private static List<MethodInfo> GetControllerMethods(Type projectController)
     {
         var projectMethods = projectController.GetMethods(BindingFlags.Public | BindingFlags.Instance);
@@ -82,7 +84,7 @@ public class TestForNonAuthorizeAttributesTest
                 attributes.AddRange(allowAnonymousAttributes);
                 attributes.AddRange(allowAnonymousParentAttributes);
 
-                Assert.IsTrue(attributes.Any(), $"No AuthorizeAttribute found on {controller.FullName} {method.Name} method");
+                Assert.IsTrue(attributes.Count != 0, $"No AuthorizeAttribute found on {controller.FullName} {method.Name} method");
             }
         }
     }

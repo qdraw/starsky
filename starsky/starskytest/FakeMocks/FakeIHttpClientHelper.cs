@@ -49,7 +49,7 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(_inputDictionary.FirstOrDefault(p => p.Key == sourceHttpUrl).Value);
 		}
 
-		public Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl, HttpContent httpContent,
+		public Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl, HttpContent? httpContent,
 			bool verbose = true)
 		{
 			UrlsCalled.Add(sourceHttpUrl);

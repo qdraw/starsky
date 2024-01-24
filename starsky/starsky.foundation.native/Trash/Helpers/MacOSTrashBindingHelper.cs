@@ -13,7 +13,9 @@ namespace starsky.foundation.native.Trash.Helpers
 	/// 
 	/// @see: https://stackoverflow.com/a/44669560
 	/// </summary>
-    public static class MacOsTrashBindingHelper
+    [SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' " +
+                                         "to generate P/Invoke marshalling code at compile time")]
+	public static class MacOsTrashBindingHelper
     {
 	    /// <summary>
 	    /// Trash endpoint

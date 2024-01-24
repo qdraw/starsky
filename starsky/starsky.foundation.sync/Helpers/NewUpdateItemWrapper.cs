@@ -19,7 +19,7 @@ public class NewUpdateItemWrapper
 	private readonly IWebLogger _logger;
 	private readonly IStorage _subPathStorage;
 
-	public NewUpdateItemWrapper(IQuery query, IStorage subPathStorage, AppSettings appSettings, IMemoryCache memoryCache, IWebLogger logger)
+	public NewUpdateItemWrapper(IQuery query, IStorage subPathStorage, AppSettings appSettings, IMemoryCache? memoryCache, IWebLogger logger)
 	{
 		_newItem = new NewItem(subPathStorage, new ReadMeta(subPathStorage, appSettings, memoryCache, logger));
 		_appSettings = appSettings;

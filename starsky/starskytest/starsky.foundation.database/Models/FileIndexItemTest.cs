@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
 
 namespace starskytest.starsky.foundation.database.Models
 {
@@ -29,13 +29,14 @@ namespace starskytest.starsky.foundation.database.Models
 		[TestMethod]
 		public void FileIndexItem_DoubleSpaces()
 		{
-			var item = new FileIndexItem{Tags = "test0, test1  ,   test2,   test3, test4,   test5, test6, test7,   "};
+			var item = new FileIndexItem{Tags = "test0, test1  ,   test2,   test3, " +
+			                                    "test4,   test5, test6, test7,   "};
 		    
-			Assert.AreEqual("test1", item.Keywords.ToList()[1]);
-			Assert.AreEqual("test2", item.Keywords.ToList()[2]);
-			Assert.AreEqual("test5", item.Keywords.ToList()[5]);
-			Assert.AreEqual("test7", item.Keywords.ToList()[7]);
-			Assert.AreEqual(8,item.Keywords.Count);
+			Assert.AreEqual("test1", item.Keywords?.ToList()[1]);
+			Assert.AreEqual("test2", item.Keywords?.ToList()[2]);
+			Assert.AreEqual("test5", item.Keywords?.ToList()[5]);
+			Assert.AreEqual("test7", item.Keywords?.ToList()[7]);
+			Assert.AreEqual(8,item.Keywords?.Count);
 		}
         	    
 		[TestMethod]
@@ -63,6 +64,7 @@ namespace starskytest.starsky.foundation.database.Models
 		}
         
 		[TestMethod]
+		[SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
 		public void FileIndexItemTest_SetColorClassTest0()
 		{
 			var input = ColorClassParser.GetColorClass("0");
@@ -236,7 +238,7 @@ namespace starskytest.starsky.foundation.database.Models
 		[TestMethod]
 		public void FileIndexItemTest_SetAbsoluteOrientation_DoNotChange()
 		{
-			var rotationItem = new FileIndexItem().SetAbsoluteOrientation("0");
+			var rotationItem = new FileIndexItem().SetAbsoluteOrientation();
 			Assert.AreEqual(FileIndexItem.Rotation.DoNotChange,rotationItem);
 		}
 

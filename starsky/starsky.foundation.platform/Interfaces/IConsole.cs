@@ -4,6 +4,6 @@ namespace starsky.foundation.platform.Interfaces
 	{
 		void Write(string message);
 		void WriteLine(string message);
-		string ReadLine();
+		string? ReadLine();
 	}
 }

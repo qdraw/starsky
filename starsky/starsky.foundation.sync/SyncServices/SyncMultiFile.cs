@@ -25,7 +25,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly CheckForStatusNotOkHelper _checkForStatusNotOkHelper;
 
 		public SyncMultiFile(AppSettings appSettings, IQuery query, 
-			IStorage subPathStorage, IMemoryCache cache, IWebLogger logger)
+			IStorage subPathStorage, IMemoryCache? cache, IWebLogger logger)
 		{
 			_query = query;
 			_subPathStorage = subPathStorage;
@@ -42,7 +42,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="updateDelegate">callback when done</param>
 		/// <returns>items that are changed</returns>
 		internal async Task<List<FileIndexItem>> MultiFile(List<string> subPathInFiles,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			_logger.LogInformation("MultiFileQuery: " + string.Join(",", subPathInFiles));
 			var databaseItems = await _query.GetObjectsByFilePathQueryAsync(subPathInFiles);
@@ -72,8 +72,8 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="addParentFolder"></param>
 		/// <returns>updated item with status</returns>
 		internal async Task<List<FileIndexItem>> MultiFile(
-			List<FileIndexItem> dbItems,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			List<FileIndexItem>? dbItems,
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null,
 			bool addParentFolder = true)
 		{
 			if ( dbItems == null ) return new List<FileIndexItem>();
@@ -81,7 +81,7 @@ namespace starsky.foundation.sync.SyncServices
 			dbItems = DeleteStatusHelper.AddDeleteStatus(dbItems, FileIndexItem.ExifStatus.DeletedAndSame);
 
 			var statusItems =  _checkForStatusNotOkHelper
-				.CheckForStatusNotOk(dbItems.Select(p => p.FilePath)).ToList();
+				.CheckForStatusNotOk(dbItems.Select(p => p.FilePath).Cast<string>()).ToList();
 			UpdateCheckStatus(dbItems, statusItems);
 
 			AddSidecarExtensionData(dbItems, statusItems);
@@ -93,10 +93,10 @@ namespace starsky.foundation.sync.SyncServices
 				.ForEachAsync(
 					async dbItem => await new SizeFileHashIsTheSameHelper(_subPathStorage)
 						.SizeFileHashIsTheSame(dbItems
-						.Where(p => p.FileCollectionName == dbItem.FileCollectionName).ToList(), dbItem.FilePath),
+						.Where(p => p.FileCollectionName == dbItem.FileCollectionName).ToList(), dbItem.FilePath!),
 					_appSettings.MaxDegreesOfParallelism);
 
-			dbItems = await IsSameUpdatedItemList(isSameUpdatedItemList?.ToList(), dbItems);
+			dbItems = await IsSameUpdatedItemList(isSameUpdatedItemList, dbItems);
 
 			// add new items
 			var newItemsList = await _newUpdateItemWrapper.NewItem(
@@ -138,7 +138,7 @@ namespace starsky.foundation.sync.SyncServices
 				}
 				var dbItemSearched = dbItems[dbItemSearchedIndex];
 				
-				if ( dbItemSearched == null || (dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex 
+				if ( dbItemSearched == null! || (dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex 
 				                                // why statusItem.Status?
 				                                && statusItem.Status == FileIndexItem.ExifStatus.Ok))
 				{
@@ -160,10 +160,12 @@ namespace starsky.foundation.sync.SyncServices
 			}
 		}
 
-		private async Task<List<FileIndexItem>> IsSameUpdatedItemList(IReadOnlyCollection<Tuple<bool?, bool?, FileIndexItem>> 
-			isSameUpdatedItemList, List<FileIndexItem> dbItems)
+		private async Task<List<FileIndexItem>> IsSameUpdatedItemList(IEnumerable<Tuple<bool?, bool?, FileIndexItem>>? isSameUpdatedItemList, List<FileIndexItem> dbItems)
 		{
-			if ( isSameUpdatedItemList == null ) return dbItems;
+			if ( isSameUpdatedItemList == null )
+			{
+				return dbItems;
+			}
 			
 			foreach ( var (isLastEditedSame,isFileHashSame,isSameUpdatedItem) in 
 			         isSameUpdatedItemList.Where(p=> p.Item1 != true) )
@@ -179,7 +181,7 @@ namespace starsky.foundation.sync.SyncServices
 					
 				dbItems[updateItemIndex] = await _newUpdateItemWrapper.UpdateItem(isSameUpdatedItem,
 					isSameUpdatedItem.Size,
-					isSameUpdatedItem.FilePath, false);
+					isSameUpdatedItem.FilePath!, false);
 			}
 
 			return dbItems;
@@ -210,7 +212,7 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var notOkayAndSame = updatedDbItems.Where(p =>
 				p.Status != FileIndexItem.ExifStatus.OkAndSame).ToList();
-			if ( notOkayAndSame.Any() )
+			if ( notOkayAndSame.Count != 0 )
 			{
 				await updateDelegate(notOkayAndSame);
 			}

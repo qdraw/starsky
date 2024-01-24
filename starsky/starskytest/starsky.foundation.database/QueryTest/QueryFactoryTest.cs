@@ -20,10 +20,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public void QueryFactoryTest_QueryReturn()
 		{
-			var query = new QueryFactory(null,new Query(null,null, 
+			var query = new QueryFactory(null,new Query(null!,null!, 
 				null, new FakeIWebLogger()),null,
 				null,null, null).Query();
-			Assert.AreEqual(typeof(Query),query.GetType());
+			Assert.AreEqual(typeof(Query),query?.GetType());
 		}
 		
 		[TestMethod]

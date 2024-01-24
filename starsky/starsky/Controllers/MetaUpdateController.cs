@@ -67,7 +67,7 @@ namespace starsky.Controllers
 			bool collections = true, int rotateClock = 0)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
-			if ( !inputFilePaths.Any() )
+			if ( inputFilePaths.Length == 0 )
 			{
 				return BadRequest("No input files");
 			}

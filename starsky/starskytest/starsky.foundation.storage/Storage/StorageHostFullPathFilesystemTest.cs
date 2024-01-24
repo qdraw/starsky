@@ -38,11 +38,11 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			if ( new AppSettings().IsWindows )
 			{
-				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("The filename, directory name, or volume label syntax is incorrect"));
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("The filename, directory name, or volume label syntax is incorrect"));
 			}
 			else
 			{
-				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("Could not find a part of the path"));
 			}
 			
 			Assert.AreEqual(0,directories.Count());
@@ -73,7 +73,8 @@ namespace starskytest.starsky.foundation.storage.Storage
 		public void TestIfFileSystemIsReadOnly_True()
 		{
 			// not found is also readonly
-			var result = StorageHostFullPathFilesystem.TestIfFileSystemIsReadOnly("/382sfdkjssfd", FolderOrFileModel.FolderOrFileTypeList.Folder);
+			var result = StorageHostFullPathFilesystem.TestIfFileSystemIsReadOnly("/382sfdkjssfd", 
+				FolderOrFileModel.FolderOrFileTypeList.Folder);
 			
 			Assert.AreEqual(true, result );
 		}
@@ -126,11 +127,12 @@ namespace starskytest.starsky.foundation.storage.Storage
 			
 			if ( new AppSettings().IsWindows )
 			{
-				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("The filename, directory name, or volume label syntax is incorrect"));
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?
+					.Contains("The filename, directory name, or volume label syntax is incorrect"));
 			}
 			else
 			{
-				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("Could not find a part of the path"));
 			}
 			
 			Assert.AreEqual(0,directories.Item1.Length);
@@ -195,7 +197,10 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var realStorage = new StorageHostFullPathFilesystem();
 			realStorage.WriteStream(new MemoryStream(new byte[1]), tmpFile);
 
-			var result = realStorage.SetLastWriteTime(tmpFile, new DateTime(1999,01,01));
+			var date = new DateTime(1999, 01, 01, 
+				01,01,01, kind: DateTimeKind.Local);
+			
+			var result = realStorage.SetLastWriteTime(tmpFile, date);
 			
 			var lastWriteTime2 = realStorage.Info(tmpFile).LastWriteTime;
 			realStorage.FileDelete(tmpFile);

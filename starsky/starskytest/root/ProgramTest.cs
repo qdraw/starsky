@@ -12,14 +12,14 @@ namespace starskytest.root;
 [TestClass]
 public class ProgramTest
 {
-	private static string _prePort;
-	private static string _preAspNetUrls;
-	private static string _diskWatcherSetting;
-	private static string _syncOnStartup;
-	private static string _thumbnailGenerationIntervalInMinutes;
-	private static string _geoFilesSkipDownloadOnStartup;
-	private static string _exiftoolSkipDownloadOnStartup;
-	private static string _enablePackageTelemetry;
+	private static string? _prePort;
+	private static string? _preAspNetUrls;
+	private static string? _diskWatcherSetting;
+	private static string? _syncOnStartup;
+	private static string? _thumbnailGenerationIntervalInMinutes;
+	private static string? _geoFilesSkipDownloadOnStartup;
+	private static string? _exiftoolSkipDownloadOnStartup;
+	private static string? _enablePackageTelemetry;
 
 	public ProgramTest()
 	{
@@ -72,7 +72,7 @@ public class ProgramTest
 	[Timeout(9000)]
 	public async Task Program_RunAsync_Null_False()
 	{
-		var result = await Program.RunAsync(null,false);
+		var result = await Program.RunAsync(null!,false);
 		Assert.IsFalse(result);
 	}
 	
@@ -119,6 +119,7 @@ public class ProgramTest
 		Environment.SetEnvironmentVariable("app__thumbnailGenerationIntervalInMinutes",_thumbnailGenerationIntervalInMinutes);
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup",_geoFilesSkipDownloadOnStartup);
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup",_exiftoolSkipDownloadOnStartup);
+		Environment.SetEnvironmentVariable("app__EnablePackageTelemetry",_enablePackageTelemetry);
 	}
 	
 }

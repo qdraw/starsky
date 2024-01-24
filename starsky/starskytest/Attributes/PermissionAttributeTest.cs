@@ -27,7 +27,7 @@ namespace starskytest.Attributes
 			
 			permissionAttribute.OnAuthorization(authorizationFilterContext);
 			
-			Assert.AreEqual(authorizationFilterContext.Result.GetType(), new UnauthorizedResult().GetType());
+			Assert.AreEqual(authorizationFilterContext.Result?.GetType(), new UnauthorizedResult().GetType());
 		}
 		
 		[TestMethod]
@@ -40,7 +40,7 @@ namespace starskytest.Attributes
 			var httpContext = new DefaultHttpContext
 			{
 				User = new ClaimsPrincipal(new ClaimsIdentity(
-					new Claim[] {new Claim(ClaimTypes.Name, "username")}, "someAuthTypeName"))
+					new[] {new Claim(ClaimTypes.Name, "username")}, "someAuthTypeName"))
 			};
 			
 			var authorizationFilterContext = new AuthorizationFilterContext(
@@ -49,7 +49,7 @@ namespace starskytest.Attributes
 			
 			permissionAttribute.OnAuthorization(authorizationFilterContext);
 			
-			Assert.AreEqual(authorizationFilterContext.Result.GetType(), new UnauthorizedResult().GetType());
+			Assert.AreEqual(authorizationFilterContext.Result?.GetType(), new UnauthorizedResult().GetType());
 		}
 		
 		[TestMethod]

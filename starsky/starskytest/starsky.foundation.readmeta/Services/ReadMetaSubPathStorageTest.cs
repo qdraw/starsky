@@ -21,6 +21,7 @@ public class ReadMetaSubPathStorageTest
 		var fakeStorage = new FakeIStorage();
 		var readMetaSubPathStorage = new ReadMetaSubPathStorage(new FakeSelectorStorage(fakeStorage), new AppSettings(), new FakeMemoryCache(), new FakeIWebLogger());
 		var result = await readMetaSubPathStorage.ReadExifAndXmpFromFileAsync("test.jpg");
+		Assert.IsNotNull(result);
 		Assert.AreEqual("test.jpg", result.FileName);	
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
 	}
@@ -42,6 +43,7 @@ public class ReadMetaSubPathStorageTest
 			.AddMemoryCache()
 			.BuildServiceProvider();
 		var memoryCache = provider.GetService<IMemoryCache>();
+		Assert.IsNotNull(memoryCache);
 		
 		var readMetaSubPathStorage = new ReadMetaSubPathStorage(new FakeSelectorStorage(fakeStorage), 
 			new AppSettings(), memoryCache, new FakeIWebLogger());

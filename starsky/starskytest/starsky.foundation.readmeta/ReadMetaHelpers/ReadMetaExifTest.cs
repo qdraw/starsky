@@ -6,8 +6,10 @@ using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Exif.Makernotes;
 using MetadataExtractor.Formats.Xmp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 using XmpCore.Impl;
 using Directory = MetadataExtractor.Directory;
 
@@ -148,5 +150,15 @@ public class ReadMetaExifTest
         Assert.AreEqual(800, result);
         
         xmpStream.Dispose();
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(System.ArgumentException))]
+    public void ParseExifDirectory_NullItem()
+    {
+	    var readMetaExif = new ReadMetaExif(new FakeIStorage(), new AppSettings(),
+		    new FakeIWebLogger());
+	    readMetaExif.ParseExifDirectory([], null);
+	    // expect exception
     }
 }

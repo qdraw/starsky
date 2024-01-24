@@ -13,10 +13,10 @@ namespace starsky.Helpers
 		public static void SetExpiresResponseHeaders(HttpRequest request, int time = 29030400)
 		{
 			request.HttpContext.Response.Headers.Remove("Cache-Control");
-			request.HttpContext.Response.Headers.Add("Cache-Control", $"private,max-age={time}");
+			request.HttpContext.Response.Headers.Append("Cache-Control", $"private,max-age={time}");
         
 			request.HttpContext.Response.Headers.Remove("Expires");
-			request.HttpContext.Response.Headers.Add("Expires", time.ToString());
+			request.HttpContext.Response.Headers.Append("Expires", time.ToString());
 		}
 	}
 }

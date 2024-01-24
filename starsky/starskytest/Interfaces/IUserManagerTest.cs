@@ -27,7 +27,7 @@ namespace starskytest.Interfaces
 		public void UserManagerTestSignUpResult()
 		{
 			var result = new SignUpResult(new User{Name = "test"});
-			Assert.AreEqual("test",result.User.Name);
+			Assert.AreEqual("test",result.User?.Name);
 		}
 		
 		[TestMethod]

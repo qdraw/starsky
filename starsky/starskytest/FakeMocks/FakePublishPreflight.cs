@@ -10,7 +10,7 @@ namespace starskytest.FakeMocks
 		private readonly List<AppSettingsPublishProfiles> _input = new List<AppSettingsPublishProfiles>();
 		private readonly bool _isOk;
 
-		public FakeIPublishPreflight(List<AppSettingsPublishProfiles> input = null, bool isOk = true)
+		public FakeIPublishPreflight(List<AppSettingsPublishProfiles>? input = null, bool isOk = true)
 		{
 			if ( input != null )
 			{

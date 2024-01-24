@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
@@ -30,7 +29,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public QueryGetObjectsByFilePathCollectionAsyncTest()
 		{
 			_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-					.GetService<ApplicationDbContext>(),  
+					.GetRequiredService<ApplicationDbContext>(),  
 				new AppSettings(), CreateNewScope(), new FakeIWebLogger(),new FakeMemoryCache()) ;
 		}
 
@@ -59,8 +58,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual("/single_item1_async.jpg",result[0].FilePath);
 
 			await _query.RemoveItemAsync(result[0]);
-			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2_async.jpg"));
+
+			var item =
+				await _query.GetObjectByFilePathAsync(
+					"/single_item2_async.jpg");
+			Assert.IsNotNull(item);
+			await _query.RemoveItemAsync(item);
 		}
 		
 		[TestMethod]
@@ -79,8 +82,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual("/single_item1_collection.jpg",result[0].FilePath);
 
 			await _query.RemoveItemAsync(result[0]);
-			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2_collection.jpg"));
+
+			var item =
+				await _query.GetObjectByFilePathAsync(
+					"/single_item2_collection.jpg");
+			Assert.IsNotNull(item);
+			await _query.RemoveItemAsync(item);
 		}
 		
 		[TestMethod]
@@ -95,9 +102,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
 				new List<string> {"/3.jpg"});
 
-			Assert.AreEqual(1, result.Count(p => p.FileName?.StartsWith("3") == true));
+			Assert.AreEqual(1, result.Count(p => p.FileName?.StartsWith('3') == true));
 			var threeJpg =
-				result.Where(p => p.FileName?.StartsWith("3") == true)
+				result.Where(p => p.FileName?.StartsWith('3') == true)
 					.ToList()[0];
 			Assert.AreEqual("/3.jpg",threeJpg.FilePath);
 
@@ -126,7 +133,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			await _query.RemoveItemAsync(result[0]);
 			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/2020"));
+			await _query.RemoveItemAsync((await _query.GetObjectByFilePathAsync("/2020"))!);
 		}
 		
 

@@ -1,10 +1,8 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -57,12 +55,12 @@ public class ThumbnailQueryErrorTest
 			throw new System.NotImplementedException();
 		}
 		
-		public object GetOriginalValue(IPropertyBase propertyBase)
+		public TProperty GetCurrentValue<TProperty>(IPropertyBase propertyBase)
 		{
 			throw new System.NotImplementedException();
 		}
 		
-		public TProperty GetCurrentValue<TProperty>(IPropertyBase propertyBase)
+		public object GetOriginalValue(IPropertyBase propertyBase)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -74,11 +72,6 @@ public class ThumbnailQueryErrorTest
 
 		public void SetStoreGeneratedValue(IProperty property, object? value,
 			bool setModified = true)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SetStoreGeneratedValue(IProperty property, object? value)
 		{
 			throw new NotImplementedException();
 		}
@@ -203,28 +196,8 @@ public class ThumbnailQueryErrorTest
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
 	
-		
-	private static MySqlException CreateMySqlException(string message)
-	{
-		// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
 
-		var ctorLIst =
-			typeof(MySqlException).GetConstructors(
-				BindingFlags.Instance |
-				BindingFlags.NonPublic | BindingFlags.InvokeMethod);
-		var ctor = ctorLIst.FirstOrDefault(p => 
-			p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
-				
-		var instance =
-			( MySqlException ) ctor?.Invoke(new object[]
-			{
-				MySqlErrorCode.AccessDenied,
-				"test",
-				message,
-				new Exception()
-			})!;
-		return instance;
-	}
+
 	private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }
 
 	private class MySqlSaveDbExceptionContext : ApplicationDbContext
@@ -240,6 +213,29 @@ public class ThumbnailQueryErrorTest
 		{
 			IsCalledMySqlSaveDbExceptionContext = true;
 			throw CreateMySqlException(_error);
+		}
+		
+		[SuppressMessage("Usage", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension")]
+		private static MySqlException CreateMySqlException(string message)
+		{
+			// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
+
+			var ctorLIst =
+				typeof(MySqlException).GetConstructors(
+					BindingFlags.Instance |
+					BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+			var ctor = ctorLIst.FirstOrDefault(p => 
+				p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
+				
+			var instance =
+				( MySqlException ) ctor?.Invoke(new object[]
+				{
+					MySqlErrorCode.AccessDenied,
+					"test",
+					message,
+					new Exception()
+				})!;
+			return instance;
 		}
 	}
 	

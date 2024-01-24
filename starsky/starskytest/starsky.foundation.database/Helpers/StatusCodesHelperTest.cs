@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
-using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Helpers
 {
@@ -16,7 +14,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod] 
 		public void IsDeletedStatus_Null1_Default()
 		{
-			DetailView detailView = null;
+			DetailView? detailView = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
 			var status = StatusCodesHelper.IsDeletedStatus(detailView);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
@@ -77,7 +75,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public void IsReadOnlyStatus_Null_Default()
 		{
-			DetailView detailView = null;
+			DetailView? detailView = null;
 			var appSettings = new AppSettings();
 			// ReSharper disable once ExpressionIsAlwaysNull
 			var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(detailView);
@@ -102,17 +100,17 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[ExpectedException(typeof(DllNotFoundException))]
 		public void IsReadOnlyStatus_DetailView_AppSettingsNull()
 		{
-			DetailView detailView = null;
-			// ReSharper disable once ExpressionIsAlwaysNull
-			new StatusCodesHelper(null).IsReadOnlyStatus(detailView);
+			DetailView? detailView = null;
+			new StatusCodesHelper(null!).IsReadOnlyStatus(detailView);
+			
 			// expect DllNotFoundException
 		}
 				
 		[TestMethod]
 		public void IsReadOnlyStatus_DetailView_Null()
 		{
-			DetailView detailView = null;
-			// ReSharper disable once ExpressionIsAlwaysNull
+			DetailView? detailView = null;
+
 			var status = new StatusCodesHelper(new AppSettings()).IsReadOnlyStatus(detailView);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
 		}
@@ -134,7 +132,6 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public void StatusCodesHelperTest_InjectFakeIStorage_FileDeletedTag()
 		{
-			var appSettings = new AppSettings();
 			var detailView = new DetailView
 			{
 				IsDirectory = false,
@@ -142,8 +139,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 				FileIndexItem = new FileIndexItem{ParentDirectory = "/", 
 					Tags = TrashKeyword.TrashKeywordString, FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
 			};
-			var istorage = new FakeIStorage(new List<string> {"/"}, 
-				new List<string> {"/test.jpg"});
+
 			var status = StatusCodesHelper.IsDeletedStatus(detailView);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,status);
@@ -152,9 +148,8 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public void StatusCodesHelperTest_ReturnExifStatusError_DirReadOnly()
 		{
-			var appSettings = new AppSettings();
 			var statusModel = new FileIndexItem();
-			var statusResults = FileIndexItem.ExifStatus.DirReadOnly;
+			const FileIndexItem.ExifStatus statusResults = FileIndexItem.ExifStatus.DirReadOnly;
 			var fileIndexResultsList = new List<FileIndexItem>();
 			var statusBool = StatusCodesHelper.ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
@@ -164,7 +159,6 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public void StatusCodesHelperTest_ReturnExifStatusError_NotFoundNotInIndex()
 		{
-			var appSettings = new AppSettings();
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.NotFoundNotInIndex;
 			var fileIndexResultsList = new List<FileIndexItem>();
@@ -176,7 +170,6 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public void StatusCodesHelperTest_ReturnExifStatusError_NotFoundSourceMissing()
 		{
-			var appSettings = new AppSettings();
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.NotFoundSourceMissing;
 			var fileIndexResultsList = new List<FileIndexItem>();
@@ -222,11 +215,13 @@ namespace starskytest.starsky.foundation.database.Helpers
 		public void StatusCodesHelperTest_ReadonlyAllowed_true()
 		{
 			var statusModel = new FileIndexItem();
-			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
+			const FileIndexItem.ExifStatus statusResults = FileIndexItem.ExifStatus.ReadOnly;
 			var fileIndexResultsList = new List<FileIndexItem>();
 			StatusCodesHelper.ReadonlyAllowed(statusModel, statusResults,
 				fileIndexResultsList);
-			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly,fileIndexResultsList.FirstOrDefault().Status);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly,
+				fileIndexResultsList.FirstOrDefault()?.Status);
 		}
 	}
 }

@@ -5,11 +5,11 @@ namespace starsky.foundation.accountmanagement.Models
 {
 	public sealed class ValidateResult
 	{
-		public User User { get; set; }
+		public User? User { get; set; }
 		public bool Success { get; set; }
 		public ValidateResultError? Error { get; set; }
         
-		public ValidateResult(User user = null, bool success = false, ValidateResultError? error = null)
+		public ValidateResult(User? user = null, bool success = false, ValidateResultError? error = null)
 		{
 			User = user;
 			Success = success;

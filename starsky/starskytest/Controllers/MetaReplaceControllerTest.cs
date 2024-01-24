@@ -43,7 +43,7 @@ namespace starskytest.Controllers
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
-		private static ServiceProvider _serviceProvider;
+		private static ServiceProvider? _serviceProvider;
 
 		public MetaReplaceControllerTest()
 		{
@@ -68,7 +68,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			_createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:StorageFolder", _createAnImage.BasePath },
 				{ "App:ThumbnailTempFolder",_createAnImage.BasePath },
@@ -254,7 +254,7 @@ namespace starskytest.Controllers
 			await InsertSearchData();
 			var serviceScopeFactory = NewScopeFactory();
 			
-			var fakeIMetaUpdateService =  _serviceProvider.GetService<IMetaUpdateService>() as
+			var fakeIMetaUpdateService =  _serviceProvider?.GetService<IMetaUpdateService>() as
 				FakeIMetaUpdateService;
 			Assert.IsNotNull(fakeIMetaUpdateService);
 			fakeIMetaUpdateService.ChangedFileIndexItemNameContent =

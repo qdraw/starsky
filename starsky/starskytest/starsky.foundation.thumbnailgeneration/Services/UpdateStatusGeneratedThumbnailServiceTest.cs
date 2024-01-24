@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Enums;
@@ -22,7 +24,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		Assert.AreEqual(0, getResult.Count);
 	}
 
-	public static readonly List<GenerationResultModel> ExampleData = new List<GenerationResultModel>
+	[SuppressMessage("Usage", "S3887:Mutable, non-private fields should not be \"readonly\"")]
+	private static readonly List<GenerationResultModel> ExampleData = new List<GenerationResultModel>
 	{
 		new GenerationResultModel
 		{
@@ -165,7 +168,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		Assert.AreEqual(null, getResult[0].Small);
 	}
 	
-	public static readonly List<GenerationResultModel> ExampleData2 = new List<GenerationResultModel>
+	[SuppressMessage("Usage", "S3887:Mutable, non-private fields should not be \"readonly\"")]
+	private static readonly List<GenerationResultModel> ExampleData2 = new List<GenerationResultModel>
 	{
 		new GenerationResultModel
 		{
@@ -202,7 +206,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData2);
+		await service.AddOrUpdateStatusAsync(ExampleData2.ToList());
 
 		var getResult = await query.Get(ExampleData2[0].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -226,7 +230,6 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Success = false,
 			SubPath = "test.jpg"
 		}});
-
 		
 		var getResult = await query.Get(ExampleData2[0].FileHash);
 		Assert.AreEqual(1, getResult.Count);

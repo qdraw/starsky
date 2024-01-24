@@ -34,9 +34,9 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		public async Task Sync_ArgumentException()
 		{
 			// ReSharper disable once AssignNullToNotNullAttribute
-			var syncWatcherPreflight = new SyncWatcherConnector(null,null!,null!,null!,null!,null, null);
+			var syncWatcherPreflight = new SyncWatcherConnector(null!,null!,null!,null!,null!,null!, null);
 			await syncWatcherPreflight.Sync(
-				new Tuple<string, string, WatcherChangeTypes>("test", null, WatcherChangeTypes.Changed));
+				new Tuple<string, string?, WatcherChangeTypes>("test", null!, WatcherChangeTypes.Changed));
 		}
 		
 		[TestMethod]
@@ -48,7 +48,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new FakeIWebSocketConnectionsService(), 
 				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery() ,new TelemetryClient(new TelemetryConfiguration()));
 			await syncWatcherPreflight.Sync(
-				new Tuple<string, string, WatcherChangeTypes>(
+				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
 
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
@@ -65,7 +65,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			
 			var syncWatcherPreflight = new SyncWatcherConnector(scope);
 			await syncWatcherPreflight.Sync(
-				new Tuple<string, string, WatcherChangeTypes>(
+				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
 		}
 
@@ -78,7 +78,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new FakeIWebSocketConnectionsService(), 
 				new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			var result = await syncWatcherPreflight.Sync(
-				new Tuple<string, string, WatcherChangeTypes>(
+				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), Path.Combine(appSettings.StorageFolder, "test2"), WatcherChangeTypes.Renamed));
 
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
@@ -98,7 +98,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new FakeIWebSocketConnectionsService(), new FakeIQuery(), 
 				new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			await syncWatcherPreflight.Sync(
-				new Tuple<string, string, WatcherChangeTypes>(
+				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Renamed));
 
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
@@ -116,11 +116,11 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(),
 				sync, websockets, new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			syncWatcherPreflight.Sync(
-				new Tuple<string, string, WatcherChangeTypes>(
+				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
 
 			Assert.AreEqual(1, websockets.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
-			var value = websockets.FakeSendToAllAsync.FirstOrDefault(p =>
+			var value = websockets.FakeSendToAllAsync.Find(p =>
 					!p.StartsWith("[system]"));
 			Assert.IsTrue(value?.Contains("filePath\":\"/test\""));
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
@@ -138,7 +138,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings, 
 				sync, websockets, new FakeIQuery(), new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			syncWatcherConnector.Sync(
-				new Tuple<string, string, WatcherChangeTypes>(
+				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
 
 			Assert.AreEqual(0, websockets.FakeSendToAllAsync.Count);
@@ -178,10 +178,10 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
 				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			syncWatcherConnector.Sync(
-				new Tuple<string, string, WatcherChangeTypes>(
+				new Tuple<string, string?, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
 
-			Assert.AreEqual(string.Empty,query.SingleItem("/test.jpg").FileIndexItem.Tags);
+			Assert.AreEqual(string.Empty,query.SingleItem("/test.jpg")?.FileIndexItem?.Tags);
 		}
 		
 		[TestMethod]
@@ -218,7 +218,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
 				sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery(), new TelemetryClient(new TelemetryConfiguration()));
 			syncWatcherConnector.Sync(
-				new Tuple<string, string,  WatcherChangeTypes>(
+				new Tuple<string, string?,  WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
 			
 			Assert.AreEqual(0, query.DisplayFileFolders().Count());
@@ -292,7 +292,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 
 			var operationHolder = connector.CreateNewRequestTelemetry();
 			var operationHolder2 = operationHolder as EmptyOperationHolder<RequestTelemetry>;
-			Assert.IsTrue(operationHolder2.Empty);
+			Assert.IsTrue(operationHolder2?.Empty);
 		}
 		
 		[TestMethod]
@@ -339,7 +339,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var operationHolder = connector.CreateNewRequestTelemetry();
 			
 			var operationHolder2 = operationHolder as EmptyOperationHolder<RequestTelemetry>;
-			Assert.IsTrue(operationHolder2.Empty);
+			Assert.IsTrue(operationHolder2?.Empty);
 		}
 		
 		[TestMethod]

@@ -13,6 +13,23 @@ public class OpenTelemetryExtensionTest
 {
 
 	[TestMethod]
+	public void ConfiguresTelemetryBuilderNull()
+	{
+		var services = new ServiceCollection();
+		var appSettings = new AppSettings
+		{
+			OpenTelemetry = null
+		};
+
+		// Act
+		services.AddOpenTelemetryMonitoring(appSettings);
+		
+		// should not crash
+		
+		Assert.IsNull(appSettings.OpenTelemetry);
+	}
+
+	[TestMethod]
 	public void ConfiguresTelemetryBuilder()
 	{
 		// Arrange

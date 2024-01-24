@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,6 +22,7 @@ public class SelectorStorageTest
 	/// <summary>
 	/// Used to overwrite with reflection
 	/// </summary>
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
 	private class MyClass
 	{
 		public SelectorStorage.StorageServices Type { get; set; }

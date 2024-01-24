@@ -15,16 +15,16 @@ namespace starsky.foundation.platform.Extensions
 	[SuppressMessage("Usage", "S3011:Make sure that this accessibility bypass is safe here", Justification = "Safe")]
 	public static class MemoryCacheExtensions
 	{
-		private static readonly Lazy<Func<MemoryCache, object>> GetCoherentState =
+		private static readonly Lazy<Func<MemoryCache, object>>? GetCoherentState =
 			new(() =>
 				CreateGetter<MemoryCache, object>(typeof(MemoryCache)
-					.GetField("_coherentState", BindingFlags.NonPublic | BindingFlags.Instance)));
+					.GetField("_coherentState", BindingFlags.NonPublic | BindingFlags.Instance)!));
 
 		private static readonly Lazy<Func<object, IDictionary>> GetEntries7 =
 			new(() =>
 				CreateGetter<object, IDictionary>(typeof(MemoryCache)
 					.GetNestedType("CoherentState", BindingFlags.NonPublic)?
-					.GetField("_entries", BindingFlags.NonPublic | BindingFlags.Instance)));
+					.GetField("_entries", BindingFlags.NonPublic | BindingFlags.Instance)!));
 
 		private static Func<TParam, TReturn> CreateGetter<TParam, TReturn>(FieldInfo field)
 		{

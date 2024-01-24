@@ -41,6 +41,7 @@ namespace starsky.foundation.database.Query
         }
 
 	    [SuppressMessage("Usage", "S3267:Loops should be simplified with LINQ expressions")]
+	    [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
 	    private static List<FileIndexItem> AddNonDuplicateBackToList(IEnumerable<FileIndexItem> databaseSubFolderList,
 		    IReadOnlyCollection<FileIndexItem> stackItemsByFileCollectionName, ICollection<FileIndexItem> querySubFolderList)
 	    {

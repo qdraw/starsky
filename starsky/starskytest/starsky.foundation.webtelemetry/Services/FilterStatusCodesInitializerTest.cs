@@ -3,7 +3,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.webtelemetry.Services;
 
-namespace starskytest.starsky.foundation.platform.Services
+namespace starskytest.starsky.foundation.webtelemetry.Services
 {
 	[TestClass]
 	public sealed class FilterStatusCodesInitializerTest
@@ -38,9 +38,9 @@ namespace starskytest.starsky.foundation.platform.Services
 		[TestMethod]
 		public void IgnoreNullInput()
 		{
-			RequestTelemetry input = null;
+			RequestTelemetry? input = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			new FilterStatusCodesInitializer().Initialize(input);
+			new FilterStatusCodesInitializer().Initialize(input!);
 			// should not crash
 			Assert.IsNull(input);
 		}

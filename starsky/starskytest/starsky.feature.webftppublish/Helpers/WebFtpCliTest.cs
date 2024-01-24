@@ -26,7 +26,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			_webRequestFactory = new FakeIFtpWebRequestFactory();
 		}
 
-		private static byte[] ExampleManifest()
+		private static byte[]? ExampleManifest()
 		{
 			var input = "{\n  \"Name\": \"Test\",\n  " +
 			            "\"Copy\": {\n    \"1000/0_kl1k.jpg\": " +
@@ -100,13 +100,13 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 
 			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}, 
 				new List<string>{$"/test{Path.DirectorySeparatorChar}_settings.json", 
-					"/test/1000/0_kl1k.jpg"}, new List<byte[]> {ExampleManifest(), Array.Empty<byte>()}));
+					"/test/1000/0_kl1k.jpg"}, new List<byte[]?> {ExampleManifest(), Array.Empty<byte>()}));
 			// instead of new byte[0]
 			
 			await new WebFtpCli(_appSettings, fakeSelectorStorage , console, _webRequestFactory)
 				.RunAsync(["-p", "/test"]);
 
-			var isSuccess = console.WrittenLines?.LastOrDefault()?
+			var isSuccess = console.WrittenLines.LastOrDefault()?
 				.Contains("Ftp copy successful done");
 
 			switch ( isSuccess )
@@ -114,7 +114,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 				// To Debug why the test has failed
 				case false:
 				{
-					foreach ( var line in console.WrittenLines )
+					foreach ( var line in console.WrittenLines! )
 					{
 						Console.WriteLine(line);
 					}

@@ -25,7 +25,7 @@ namespace starskytest.FakeMocks
 			_exception = exception;
 		}
 
-		public List<Tuple<string, string?>> Inputs { get; set; } = new List<Tuple<string, string?>>();
+		public List<Tuple<string?, string?>> Inputs { get; set; } = new List<Tuple<string?, string?>>();
 		
 		public Task<List<GenerationResultModel>> CreateThumbnailAsync(string subPath)
 		{
@@ -34,7 +34,7 @@ namespace starskytest.FakeMocks
 			
 			_subPathStorage.WriteStream(
 				StringToStreamHelper.StringToStream("test"), subPath);
-			Inputs.Add(new Tuple<string, string?>(subPath, null));
+			Inputs.Add(new Tuple<string?, string?>(subPath, null));
 
 			var items = _subPathStorage.GetAllFilesInDirectory(subPath);
 			if ( items == null  )
@@ -62,13 +62,16 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(resultModel);
 		}
 
-		public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge)
+		public Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string? subPath, 
+			string fileHash, bool skipExtraLarge = false)
 		{
+			ArgumentNullException.ThrowIfNull(subPath);
+			
 			if ( _exception != null ) throw _exception;
 
 			_subPathStorage?.WriteStream(
 				StringToStreamHelper.StringToStream("test"), fileHash);
-			Inputs.Add(new Tuple<string, string?>(subPath, fileHash));
+			Inputs.Add(new Tuple<string?, string?>(subPath, fileHash));
 			
 			return Task.FromResult(new List<GenerationResultModel>{new GenerationResultModel()
 			{

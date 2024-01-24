@@ -49,7 +49,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			
 			var testNotification =
 				await _dbContext.Notifications.FirstOrDefaultAsync(p =>
-					p.Content.Contains("test"));
+					p.Content!.Contains("test"));
 			
 			Assert.IsNotNull(testNotification);
 			
@@ -74,7 +74,7 @@ namespace starskytest.starsky.foundation.database.NotificationsTest
 			
 			var testNotification =
 				await context.Notifications.FirstOrDefaultAsync(p =>
-					p.Content.Contains("test_disposed_notification"));
+					p.Content!.Contains("test_disposed_notification"));
 
 			// and remove it afterwards
 			foreach ( var notificationsItem in await context.Notifications.ToListAsync() )

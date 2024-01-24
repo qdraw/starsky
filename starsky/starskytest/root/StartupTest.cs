@@ -29,34 +29,7 @@ namespace starskytest.root
 			new Startup().ConfigureServices(serviceCollection);
 			Assert.IsNotNull(serviceCollection);
 		}
-		
-		// [TestMethod]
-		// public void Startup_Configure()
-		// {
-		// 	var serviceCollection = new ServiceCollection();
-		// 	serviceCollection.AddRouting();
-		// 	serviceCollection.AddSingleton<AppSettings, AppSettings>();
-		// 	IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
-		// 	serviceCollection.AddSingleton(configuration); 
-		// 	
-		// 	serviceCollection.AddAuthorization();
-		// 	serviceCollection.AddControllers();
-		// 	serviceCollection.AddLogging();
-		// 		
-		// 	var serviceProvider = serviceCollection.BuildServiceProvider();
-		// 	var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
-		// 	
-		// 	var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
-		// 	IHostEnvironment env = new HostingEnvironment { EnvironmentName = Environments.Development };
-		// 	IHostApplicationLifetime lifetime = null;
-		//
-		// 	// should not crash
-		// 	new Startup().Configure(applicationBuilder, env, lifetime);
-		// 	
-		// 	Assert.IsNotNull(applicationBuilder);
-		// 	Assert.IsNotNull(env);
-		// }
-		// 		
+	
 		[TestMethod]
 		public void Startup_ConfigureServicesConfigure1()
 		{

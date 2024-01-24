@@ -1,9 +1,8 @@
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using starsky.foundation.accountmanagement.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.accountmanagement.Interfaces;
 
 // ReSharper disable once IdentifierTypo
@@ -41,10 +40,10 @@ namespace starsky.foundation.accountmanagement.Middleware
 
 			if (context.User.Identity?.IsAuthenticated == true && isApiCall)
 			{
-				var userManager = (IUserManager) context.RequestServices.GetService(typeof(IUserManager));
+				var userManager = (IUserManager) context.RequestServices.GetRequiredService(typeof(IUserManager));
 
 				var id = GetUserTableIdFromClaims(context);
-				var result = await userManager.Exist(id);
+				var result = await userManager.ExistAsync(id);
 				if ( result == null)
 				{
 					userManager.SignOut(context);

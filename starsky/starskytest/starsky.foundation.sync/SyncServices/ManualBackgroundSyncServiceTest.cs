@@ -77,8 +77,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
 			var query = buildServiceProvider.GetService<IQuery>();
 				
-			var cacheDbName = new Query(null,null, 
-				null, null).CachingDbName(
+			var cacheDbName = new Query(null!,null!, 
+				null, null!).CachingDbName(
 				nameof(FileIndexItem) + "manual_sync", "/");
 			memoryCache!.Remove(cacheDbName);
 			
@@ -162,10 +162,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var buildServiceProvider = provider.BuildServiceProvider();
 			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
+			Assert.IsNotNull(memoryCache);
 			
 			var service = new ManualBackgroundSyncService(
 				new FakeISynchronize(new List<FileIndexItem>()),
-				null,
+				null!,
 				new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(), new FakeINotificationQuery(), new FakeIWebLogger()),
 				memoryCache,
 				new FakeIWebLogger(),

@@ -26,7 +26,7 @@ namespace starskytest.Controllers
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled, string.Empty));
 
 			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(208,actionResult.StatusCode);
+			Assert.AreEqual(208,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -36,7 +36,7 @@ namespace starskytest.Controllers
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.HttpError, string.Empty));
 
 			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -46,7 +46,7 @@ namespace starskytest.Controllers
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.InputNotValid, string.Empty));
 
 			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -56,7 +56,7 @@ namespace starskytest.Controllers
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound, string.Empty));
 
 			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(206,actionResult.StatusCode);
+			Assert.AreEqual(206,actionResult?.StatusCode);
 		}
 		
 		// NeedToUpdate
@@ -67,7 +67,7 @@ namespace starskytest.Controllers
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.NeedToUpdate, string.Empty));
 
 			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(202,actionResult.StatusCode);
+			Assert.AreEqual(202,actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -77,7 +77,7 @@ namespace starskytest.Controllers
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.CurrentVersionIsLatest, string.Empty));
 
 			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
-			Assert.AreEqual(200,actionResult.StatusCode);
+			Assert.AreEqual(200,actionResult?.StatusCode);
 		}
 
 	}

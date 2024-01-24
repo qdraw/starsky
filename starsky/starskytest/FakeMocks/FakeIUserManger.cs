@@ -21,8 +21,8 @@ public class FakeIUserManger : IUserManager
 		return Task.FromResult(_userOverviewModel);
 	}
 
-	public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode, string identifier,
-		string secret)
+	public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode, string? identifier,
+		string? secret)
 	{
 		throw new System.NotImplementedException();
 	}
@@ -47,13 +47,13 @@ public class FakeIUserManger : IUserManager
 		throw new System.NotImplementedException();
 	}
 
-	public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier,
+	public ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier,
 		string secret)
 	{
 		throw new System.NotImplementedException();
 	}
 
-	public Task<ValidateResult> ValidateAsync(string credentialTypeCode, string identifier, string secret)
+	public Task<ValidateResult> ValidateAsync(string credentialTypeCode, string? identifier, string secret)
 	{
 		var validateResult = new ValidateResult();
 		var result = _userOverviewModel.Users.Find(p => p.Credentials?.FirstOrDefault()?.Identifier == identifier);
@@ -64,7 +64,7 @@ public class FakeIUserManger : IUserManager
 		return Task.FromResult(validateResult);
 	}
 
-	public Task<bool> SignIn(HttpContext httpContext, User user, bool isPersistent = false)
+	public Task<bool> SignIn(HttpContext httpContext, User? user, bool isPersistent = false)
 	{
 		// should contain salt value to be successful!
 		return Task.FromResult(!string.IsNullOrEmpty(user?.Credentials?.FirstOrDefault()?.Extra));
@@ -105,7 +105,7 @@ public class FakeIUserManger : IUserManager
 		throw new System.NotImplementedException();
 	}
 
-	public Task<User> Exist(int userTableId)
+	public Task<User?> ExistAsync(int userTableId)
 	{
 		throw new System.NotImplementedException();
 	}

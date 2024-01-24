@@ -53,7 +53,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 			services.AddScoped<IUrlHelper>(factory =>
 			{
-				var actionContext = factory.GetService<IActionContextAccessor>()
+				var actionContext = factory.GetRequiredService<IActionContextAccessor>()
 					.ActionContext;
 				return new UrlHelper(actionContext!);
 			});
@@ -232,7 +232,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task LoginPost_FailedSignIn()
+		public async Task LoginPost_Fail_SignIn()
 		{
 			AccountController controller = new AccountController(new FakeUserManagerActiveUsers(),_appSettings,_antiForgery, _selectorStorage);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
@@ -711,7 +711,7 @@ namespace starskytest.Controllers
 			var actionResult = await controller.Status() as JsonResult;
 			var user = actionResult?.Value as UserIdentifierStatusModel;
 			Assert.AreEqual("test", 
-				user?.CredentialsIdentifiers.FirstOrDefault());
+				user?.CredentialsIdentifiers?.FirstOrDefault());
 			Assert.AreEqual(99, user?.Id);
 			Assert.AreEqual("t1", user?.Name);
 			Assert.AreEqual(DateTime.MinValue, user?.Created);

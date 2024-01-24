@@ -77,8 +77,8 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 		[TestMethod]
 		public void NullableTimeSpanDeserializationTest()
 		{
-			NullableTestClass actual = JsonSerializer.Deserialize<
-				NullableTestClass>(@"{""TimeSpan"":""01:02:03""}");
+			var actual = JsonSerializer.Deserialize<
+				NullableTestClass?>(@"{""TimeSpan"":""01:02:03""}");
 
 			Assert.IsNotNull(actual);
 			Assert.IsTrue(actual.TimeSpan.HasValue);

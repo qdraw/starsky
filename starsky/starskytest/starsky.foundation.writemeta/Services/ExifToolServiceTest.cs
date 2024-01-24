@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +16,7 @@ namespace starskytest.starsky.foundation.writemeta.Services;
 [TestClass]
 public class ExifToolServiceTest
 {
-	private readonly string _exifToolPath;
+	private readonly string _exifToolPath = string.Empty;
 
 	public ExifToolServiceTest()
 	{

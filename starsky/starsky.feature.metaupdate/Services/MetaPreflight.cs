@@ -154,10 +154,8 @@ namespace starsky.feature.metaupdate.Services
 
 			collectionsFileIndexItem.LastChanged = comparedNamesList;
 
-			if ( ! changedFileIndexItemName.ContainsKey(collectionsFileIndexItem.FilePath!) )
+			if ( changedFileIndexItemName.TryAdd(collectionsFileIndexItem.FilePath!, comparedNamesList) )
 			{
-				// add to list
-				changedFileIndexItemName.Add(collectionsFileIndexItem.FilePath!,comparedNamesList);
 				return;
 			}
 

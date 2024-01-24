@@ -2,17 +2,17 @@ namespace starsky.foundation.platform.Models;
 
 public class OpenTelemetrySettings
 {
-	public string Header { get; set; }
+	public string? Header { get; set; }
 
-	public string ServiceName { get; set; }
-	public string TracesEndpoint { get; set; }
-	public string TracesHeader { get; set; }
+	public string? ServiceName { get; set; }
+	public string? TracesEndpoint { get; set; }
+	public string? TracesHeader { get; set; }
 
-	public string MetricsEndpoint { get; set; }
-	public string MetricsHeader { get; set; }
+	public string? MetricsEndpoint { get; set; }
+	public string? MetricsHeader { get; set; }
 
-	public string LogsEndpoint { get; set; }
-	public string LogsHeader { get; set; }
+	public string? LogsEndpoint { get; set; }
+	public string? LogsHeader { get; set; }
 
 	public string GetServiceName()
 	{
@@ -21,21 +21,21 @@ public class OpenTelemetrySettings
 			: ServiceName ;
 	}
 
-	public string GetLogsHeader()
+	public string? GetLogsHeader()
 	{
 		return string.IsNullOrWhiteSpace(LogsHeader)
 			? Header
 			: LogsHeader;
 	}
 	
-	public string GetMetricsHeader()
+	public string? GetMetricsHeader()
 	{
 		return string.IsNullOrWhiteSpace(MetricsHeader)
 			? Header
 			: MetricsHeader;
 	}
 
-	public string GetTracesHeader()
+	public string? GetTracesHeader()
 	{
 		return string.IsNullOrWhiteSpace(TracesHeader)
 			? Header

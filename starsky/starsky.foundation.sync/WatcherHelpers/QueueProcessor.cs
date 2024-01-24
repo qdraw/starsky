@@ -19,7 +19,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		public QueueProcessor(IServiceScopeFactory serviceProvider,
 			SynchronizeDelegate processFile)
 		{
-			_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider.GetService<IDiskWatcherBackgroundTaskQueue>();
+			_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IDiskWatcherBackgroundTaskQueue>();
 			_processFile = processFile;
 		}
 
@@ -30,15 +30,15 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_processFile = processFile;
 		}
 
-		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, string, WatcherChangeTypes> value);
+		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, string?, WatcherChangeTypes> value);
 
 
-		public async Task QueueInput(string filepath, string toPath,
+		public async Task QueueInput(string filepath, string? toPath,
 			WatcherChangeTypes changeTypes)
 		{
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				await _processFile.Invoke(new Tuple<string, string, WatcherChangeTypes>(filepath,toPath,changeTypes));
+				await _processFile.Invoke(new Tuple<string, string?, WatcherChangeTypes>(filepath,toPath,changeTypes));
 			}, $"from:{filepath}" + (string.IsNullOrEmpty(toPath) ? "" : "_to:" + toPath));
 		}
 	}

@@ -34,7 +34,6 @@ namespace starsky.foundation.accountmanagement.Middleware
         /// <param name="context"></param>
         public async Task Invoke(HttpContext context)
         {
-	        
 	        var isHostAllowed = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress,
 		        context.Connection.RemoteIpAddress) || _appSettings?.DemoUnsafeDeleteStorageFolder == true;
 
@@ -44,7 +43,7 @@ namespace starsky.foundation.accountmanagement.Middleware
 	        var isFromLogoutCall = context.Request.QueryString.HasValue && 
 	                               context.Request.QueryString.Value!.Contains("fromLogout");
 	        
-	        if ( isHostAllowed && !context.User.Identity!.IsAuthenticated && !isApiCall && !isFromLogoutCall)
+	        if ( isHostAllowed && context.User.Identity?.IsAuthenticated == false && !isApiCall && !isFromLogoutCall)
 	        {
 		        var userManager = (IUserManager) context.RequestServices.GetRequiredService(typeof(IUserManager));
 

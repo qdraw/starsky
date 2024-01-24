@@ -85,7 +85,7 @@ namespace starsky.foundation.database.Models
 			// filenames are without starting slash
 			_fileName = PathHelper.RemovePrefixDbSlash(_fileName);
 			
-			FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName);
+			FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory!) + PathHelper.PrefixDbSlash(FileName!);
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace starsky.foundation.database.Models
 					return;
 				}
 				_fileName = value;
-				FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory) +
+				FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory!) +
 				                  PathHelper.PrefixDbSlash(value);
 			}
 		}
@@ -167,7 +167,7 @@ namespace starsky.foundation.database.Models
 				}
 				_parentDirectory = value;
 				FilePathPrivate = PathHelper.RemoveLatestSlash(value) +
-				                  PathHelper.PrefixDbSlash(FileName);
+				                  PathHelper.PrefixDbSlash(FileName!);
 			}
 		}
 
@@ -189,7 +189,7 @@ namespace starsky.foundation.database.Models
 		[NotMapped]
 		[JsonIgnore] // <== gives conversion errors with jsonParser
 		internal HashSet<string>? Keywords {
-			get => HashSetHelper.StringToHashSet(Tags?.Trim());
+			get => HashSetHelper.StringToHashSet(Tags?.Trim()!);
 			set
 			{
 				if (value == null) return;

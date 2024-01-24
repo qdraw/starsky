@@ -32,7 +32,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="filePath">unix style subPath</param>
 		/// <param name="runtimeInformationIsOsPlatform">use to test string replacer under unix</param>
 		/// <returns>filename with extension and without its parent path</returns>
-		public static string GetFileName(string filePath, IsOsPlatformDelegate runtimeInformationIsOsPlatform = null)
+		public static string GetFileName(string filePath, IsOsPlatformDelegate? runtimeInformationIsOsPlatform = null)
 		{
 			runtimeInformationIsOsPlatform ??= RuntimeInformation.IsOSPlatform;
 			if( !runtimeInformationIsOsPlatform(OSPlatform.Windows) )
@@ -79,9 +79,12 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="filePath">unix style subPath</param>
 		/// <returns>parent folder path</returns>
-		public static string GetParentPath(string filePath)
+		public static string GetParentPath(string? filePath)
 		{
-			if ( string.IsNullOrEmpty(filePath) ) return "/";
+			if ( string.IsNullOrEmpty(filePath) )
+			{
+				return "/";
+			}
 	        
 			// unescaped regex: /.+(?=\/[^/]+$)/
 			var parentRegex =

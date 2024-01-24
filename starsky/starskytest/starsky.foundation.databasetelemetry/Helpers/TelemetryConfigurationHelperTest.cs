@@ -42,22 +42,5 @@ namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 				"test","role", new FakeIWebLogger(), telemetryClient);
 			Assert.AreEqual(testGuid, result?.TelemetryConfiguration.InstrumentationKey);
 		}
-		
-		[TestMethod]
-		public void Clean_Exception_LogsExceptionMessageAndReturnsNull()
-		{
-			// Arrange
-			var expectedMessage = "test exception";
-			var exception = new Exception(expectedMessage);
-			IWebLogger logger = new FakeIWebLogger();
-            
-			// Act
-			var result = TelemetryConfigurationHelper.Clean(exception, logger);
-            
-			// Assert
-			Assert.IsNull(result);
-			Assert.AreEqual(2, ((FakeIWebLogger)logger).TrackedInformation.Count);
-			Assert.IsTrue(((FakeIWebLogger)logger).TrackedInformation.LastOrDefault().Item2.Contains(expectedMessage));
-		}
 	}
 }

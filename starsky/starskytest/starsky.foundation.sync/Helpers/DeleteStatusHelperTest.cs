@@ -11,16 +11,17 @@ public class DeleteStatusHelperTest
 	[TestMethod]
 	public void AddDeleteStatus_Null()
 	{
-		var result = DeleteStatusHelper.AddDeleteStatus(null as FileIndexItem);
+		var result = DeleteStatusHelper.AddDeleteStatus((null as FileIndexItem)!);
 		Assert.IsNull(result);
 	}
 		
 	[TestMethod]
 	public void AddDeleteStatus_NotDeleted()
 	{
-		var item = new FileIndexItem() {Tags = "test", Status = FileIndexItem.ExifStatus.Ok};
+		var item = new FileIndexItem {Tags = "test", Status = FileIndexItem.ExifStatus.Ok};
 
 		var result = DeleteStatusHelper.AddDeleteStatus(item);
+		Assert.IsNotNull(result);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result.Status);
 	}
 		
@@ -30,6 +31,7 @@ public class DeleteStatusHelperTest
 		var item = new FileIndexItem() {Tags = TrashKeyword.TrashKeywordString};
 
 		var result = DeleteStatusHelper.AddDeleteStatus(item);
+		Assert.IsNotNull(result);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
 	}
 

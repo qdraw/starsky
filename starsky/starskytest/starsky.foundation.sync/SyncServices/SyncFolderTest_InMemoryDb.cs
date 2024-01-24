@@ -73,19 +73,19 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.Folder("/Folder_FilesOnDiskButNotInTheDb");
 
-			var test1 = result.FirstOrDefault(p =>
+			var test1 = result.Find(p =>
 				p.FilePath == "/Folder_FilesOnDiskButNotInTheDb/test1.jpg");
 			Assert.IsNotNull(test1);
-			var test2 = result.FirstOrDefault(p =>
+			var test2 = result.Find(p =>
 				p.FilePath == "/Folder_FilesOnDiskButNotInTheDb/test2.jpg");
 			Assert.IsNotNull(test2);
-			var test3 = result.FirstOrDefault(p =>
+			var test3 = result.Find(p =>
 				p.FilePath == "/Folder_FilesOnDiskButNotInTheDb/test3.jpg");
 			Assert.IsNotNull(test3);
 
-			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test1.jpg",test1!.FilePath);
-			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test2.jpg",test2!.FilePath);
-			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test3.jpg",test3!.FilePath);
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test1.jpg",test1.FilePath);
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test2.jpg",test2.FilePath);
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test3.jpg",test3.FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test1.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test2.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,test3.Status);
@@ -109,9 +109,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 			var result = await syncFolder.Folder("/Folder_InDbButNotOnDisk");
 
-			var test0 = result.FirstOrDefault(p =>
+			var test0 = result.Find(p =>
 				p.FilePath == "/Folder_InDbButNotOnDisk/test.jpg");
-			var test2 = result.FirstOrDefault(p =>
+			var test2 = result.Find(p =>
 				p.FilePath == "/Folder_InDbButNotOnDisk/test2.jpg");
 			
 			Assert.AreEqual("/Folder_InDbButNotOnDisk/test.jpg",test0!.FilePath);
@@ -141,18 +141,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			
 			Assert.AreEqual("/Folder_InDbButNotOnDisk2/test.jpg", 
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test.jpg")?.FilePath);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test.jpg")?.FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk2/test_dir",
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test_dir")?.FilePath);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test_dir")?.FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk2",
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2")?.FilePath);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk2")?.FilePath);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test.jpg")?.Status);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test.jpg")?.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test_dir")?.Status);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk2/test_dir")?.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk2")?.Status);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk2")?.Status);
 			
 			var data = await _query.GetAllRecursiveAsync("/Folder_InDbButNotOnDisk2");
 			Assert.AreEqual(0, data.Count);
@@ -187,18 +187,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				.Where(p => p.FilePath != "/").ToList();
 			
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4/test.jpg", 
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg")?.FilePath);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg")?.FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4",
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4")?.FilePath);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk4")?.FilePath);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg")?.Status);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test.jpg")?.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/test.jpg")?.Status);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/test.jpg")?.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/child")?.Status);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk4/test_dir/child")?.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
-				result.FirstOrDefault(p => p.FilePath == "/Folder_InDbButNotOnDisk4")?.Status);
+				result.Find(p => p.FilePath == "/Folder_InDbButNotOnDisk4")?.Status);
 
 			// for debugging pipelines
 			Console.WriteLine("\n--result---");
@@ -219,9 +219,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			// Check for database
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4", 
-				(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4")).FilePath);
+				(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4"))?.FilePath);
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4/test_dir", 
-				(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4/test_dir")).FilePath);
+				(await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4/test_dir"))?.FilePath);
 			Assert.AreEqual(null, 
 				await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk4/test_dir/test.jpg"));
 			Assert.AreEqual(null, 

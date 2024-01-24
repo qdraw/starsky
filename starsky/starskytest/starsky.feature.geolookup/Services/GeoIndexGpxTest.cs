@@ -44,7 +44,10 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/Amsterdam"}, 
 				fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(new DateTime(2020, 04, 15,
 				17, 0, 0, 0, kind: DateTimeKind.Unspecified));
-			Assert.AreEqual(new DateTime(2020, 04, 15, 15, 0, 0, 0, kind: DateTimeKind.Local), result);
+			var expected = new DateTime(2020, 04, 15, 15, 0, 0, 0,
+				kind: DateTimeKind.Local);
+			
+			Assert.AreEqual(expected, result);
 		}
         
 		[TestMethod]
@@ -54,7 +57,10 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, 
 				fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(new DateTime(2020, 01, 15,
 				17, 0, 0, 0, kind: DateTimeKind.Unspecified));
-			Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0, kind: DateTimeKind.Local), result);
+			var expected = new DateTime(2020, 01, 15, 17, 0, 0, 0,
+				kind: DateTimeKind.Local);
+			
+			Assert.AreEqual(expected, result);
 		}
         
 		[TestMethod]
@@ -64,8 +70,11 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var inputDateTime = new DateTime(2020, 01, 15,
 				17, 0, 0, 0, kind: DateTimeKind.Unspecified);
 			inputDateTime = DateTime.SpecifyKind(inputDateTime, DateTimeKind.Utc);
-			var result =new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(inputDateTime);
-			Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0), result);
+			var result =new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, 
+				fakeIStorage, new FakeIWebLogger()).ConvertTimeZone(inputDateTime);
+			var expected = new DateTime(2020, 01, 15, 17, 0, 0, 0,
+				kind: DateTimeKind.Local);
+			Assert.AreEqual(expected, result);
 		}
 
 		[TestMethod]
@@ -86,22 +95,24 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var exampleFiles = new List<FileIndexItem>(); 
 			exampleFiles.AddRange(new List<FileIndexItem>
 			{
-				_metaFilesDirectory.FirstOrDefault(),
+				_metaFilesDirectory.FirstOrDefault()!,
 				new FileIndexItem
 				{
 					FileName = "01.jpg", 
-					DateTime = new DateTime(2018,09,05,20,31,54) // 2018-09-05T17:31:53Z UTC > In europe/Minsk
+					DateTime = new DateTime(2018,09,05,
+						20,31,54, kind: DateTimeKind.Unspecified) // 2018-09-05T17:31:53Z UTC > In europe/Minsk
 				},
 				new FileIndexItem
 				{
 					FileName = "NotInRange.jpg", 
-					DateTime = new DateTime(2018,09,06,00,00,00)
+					DateTime = new DateTime(2018,09,06,
+						00,00,00, kind: DateTimeKind.Unspecified)
 				}
                 
 			});
 
 			var fakeIStorage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{_metaFilesDirectory[0].FilePath}, new List<byte[]>{CreateAnGpx.Bytes.ToArray()} );
+				new List<string>{_metaFilesDirectory[0].FilePath!}, new List<byte[]>{CreateAnGpx.Bytes.ToArray()} );
                
 			var returnFileIndexItems = await  new GeoIndexGpx(_appSettings,
 				fakeIStorage, new FakeIWebLogger()).LoopFolderAsync(exampleFiles);

@@ -29,7 +29,11 @@ namespace starsky.feature.metaupdate.Helpers
 
 			var shouldAddParentDirectoriesToCache = parentDirectoryList.Where(parentDirectory => 
 				!_query.CacheGetParentFolder(parentDirectory).Item1).ToList();
-			if ( !shouldAddParentDirectoriesToCache.Any() ) return new List<string>();
+			
+			if ( shouldAddParentDirectoriesToCache.Count == 0 )
+			{
+				return new List<string>();
+			}
 
 			var databaseQueryResult = await _query.GetAllObjectsAsync(shouldAddParentDirectoriesToCache);
 			

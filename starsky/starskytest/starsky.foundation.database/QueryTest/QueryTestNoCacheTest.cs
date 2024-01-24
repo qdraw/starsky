@@ -20,12 +20,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			builder.UseInMemoryDatabase("QueryTestNoCacheTest");
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_logger = new FakeIWebLogger();
-			_query = new Query(context,new AppSettings(), null, _logger);
+			var logger = new FakeIWebLogger();
+			_query = new Query(context,new AppSettings(), null, logger);
 		}
 
 		private readonly Query _query;
-		private readonly FakeIWebLogger _logger;
 
 		[TestMethod]
 		public async Task QueryNoCache_SingleItem_Test()
@@ -40,8 +39,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				Title = ""
 			});
             
-			var singleItem = _query.SingleItem("/nocache/nocache.jpg").FileIndexItem;
-			Assert.AreEqual("/nocache/nocache.jpg", singleItem.FilePath);
+			var singleItem = _query.SingleItem("/nocache/nocache.jpg")?.FileIndexItem;
+			Assert.AreEqual("/nocache/nocache.jpg", singleItem?.FilePath);
 		}
 
 		[TestMethod]

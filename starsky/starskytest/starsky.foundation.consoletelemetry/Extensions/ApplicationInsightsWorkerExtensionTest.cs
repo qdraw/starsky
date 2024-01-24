@@ -22,7 +22,7 @@ namespace starskytest.starsky.foundation.consoletelemetry.Extensions
 
 			Assert.IsTrue(serviceCollection.Count >= 1);
 			var result= serviceCollection.FirstOrDefault(p
-				=> p.ServiceType.FullName.Contains("ApplicationInsights"));
+				=> p.ServiceType.FullName?.Contains("ApplicationInsights") == true);
 			Assert.IsNotNull(result);
 		}
 		
@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.consoletelemetry.Extensions
 
 			Assert.AreEqual(0, serviceCollection.Count);
 			var result= serviceCollection.FirstOrDefault(p
-				=> p.ServiceType.FullName.Contains("ApplicationInsights"));
+				=> p.ServiceType.FullName?.Contains("ApplicationInsights") == true);
 			Assert.IsNull(result);
 		}
 	}

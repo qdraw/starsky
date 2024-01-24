@@ -49,7 +49,7 @@ namespace starskytest.starsky.foundation.storage.Services
 			var structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			var importItem = new StructureService(new FakeIStorage(), structure);
 			var fileName = importItem.ParseFileName(
-				new DateTime(2020, 01, 01, 01, 01, 01), 
+				new DateTime(2020, 01, 01, 01, 01, 01, kind: DateTimeKind.Local), 
 				"test", "jpg" );
 			
 			Assert.AreEqual("20200101_010101_test.jpg", fileName);
@@ -60,7 +60,8 @@ namespace starskytest.starsky.foundation.storage.Services
 		public void ParseFileName_FieldAccessException_Null()
 		{
 			new StructureService(new FakeIStorage(), null!).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			// ExpectedException
 		}
 
@@ -76,7 +77,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			storage.CreateDirectory("test");
 			
 			var result = new StructureService(storage, structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			
 			Assert.AreEqual("/test",result);
 		}
@@ -91,7 +93,8 @@ namespace starskytest.starsky.foundation.storage.Services
 				new List<string>());
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			
 			Assert.AreEqual("/test",result);
 		}
@@ -106,7 +109,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			
 			Assert.AreEqual("/2020/01/2020_01_01",result);
 		}
@@ -121,7 +125,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			var structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			
 			Assert.AreEqual("/default",result);
 		}
@@ -136,7 +141,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			var structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			
 			Assert.AreEqual("/any",result);
 		}
@@ -152,7 +158,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			
 			Assert.AreEqual("/2020/01/2020_01_01 test",result);
 		}
@@ -167,7 +174,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			
 			Assert.AreEqual("/2020/01/2020_01_01",result);
 		}
@@ -180,7 +188,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			
 			var structure = "/{filenamebase}/file.ext";
 			var result = new StructureService(storage,structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01),"test");
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local),"test");
 			Assert.AreEqual("/test",result);
 		}
 		
@@ -192,7 +201,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			
 			var structure = "/con\\ten\\t.ext/file.ext";
 			var result = new StructureService(storage,structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01),"test");
+				new DateTime(2020, 01, 01,
+					01, 01, 01, kind: DateTimeKind.Local),"test");
 			Assert.AreEqual("/content.unknown",result);
 		}
 
@@ -202,7 +212,8 @@ namespace starskytest.starsky.foundation.storage.Services
 		{
 			var structure = "";
 			new StructureService(new FakeIStorage(), structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			// ExpectedException
 		}
 		
@@ -212,7 +223,8 @@ namespace starskytest.starsky.foundation.storage.Services
 		{
 			var structure = "/.ext";
 			new StructureService(new FakeIStorage(), structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01,
+					01, 01, 01, kind: DateTimeKind.Local));
 			// ExpectedException
 		}
 		
@@ -222,7 +234,8 @@ namespace starskytest.starsky.foundation.storage.Services
 		{
 			var structure = "test/on";
 			new StructureService(new FakeIStorage(), structure).ParseSubfolders(
-				new DateTime(2020, 01, 01, 01, 01, 01));
+				new DateTime(2020, 01, 01, 
+					01, 01, 01, kind: DateTimeKind.Local));
 			// ExpectedException
 		}
 

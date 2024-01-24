@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,10 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Controllers;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Middleware;
-using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
@@ -77,6 +76,10 @@ namespace starskytest.Middleware
 			// Arrange
 			var iUserManager = _serviceProvider.GetRequiredService<IUserManager>();
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+			if ( httpContext == null )
+			{
+				throw new WebException("missing httpContext");
+			}
             
 			const string userId = "TestUserA";
 			var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };

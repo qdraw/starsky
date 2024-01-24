@@ -12,9 +12,12 @@ namespace starsky.foundation.database.Helpers
         /// </summary>
         /// <param name="filePath">subPath (unix style)</param>
         /// <returns>list of parent folders</returns>
-        public static List<string> BreadcrumbHelper(string filePath)
+        public static List<string> BreadcrumbHelper(string? filePath)
         {
-            if (filePath == null) return new List<string>(); 
+	        if ( filePath == null )
+	        {
+		        return new List<string>();
+	        } 
 
             // remove backslash from end
             filePath = PathHelper.RemoveLatestBackslash(filePath);

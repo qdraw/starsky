@@ -20,7 +20,10 @@ namespace starsky.foundation.database.Query
 		public virtual async Task<List<FileIndexItem>> AddRangeAsync(
 			List<FileIndexItem> fileIndexItemList)
 		{
-			if ( !fileIndexItemList.Any() ) return new List<FileIndexItem>();
+			if ( fileIndexItemList.Count == 0 )
+			{
+				return new List<FileIndexItem>();
+			}
 
 			async Task LocalQuery(ApplicationDbContext context,
 				IReadOnlyCollection<FileIndexItem> items)
@@ -36,7 +39,7 @@ namespace starsky.foundation.database.Query
 			
 			async Task<bool> LocalRemoveDefaultQuery()
 			{
-				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(),fileIndexItemList);
+				await LocalQuery(new InjectServiceScope(_scopeFactory).Context(), fileIndexItemList);
 				return true;
 			}
 
@@ -57,6 +60,7 @@ namespace starsky.foundation.database.Query
 					if ( _appSettings.Verbose == true )
 					{
 						_context.ChangeTracker.DetectChanges();
+						// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 						_logger?.LogDebug(_context.ChangeTracker.DebugView
 							.LongView);
 					}

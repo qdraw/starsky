@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -37,7 +38,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		{
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();  
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:Verbose", "true" }
 			};
@@ -84,7 +85,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		{
 			var backgroundQueue = new ThumbnailBackgroundTaskQueue(new FakeICpuUsageListener(), 
 				new FakeIWebLogger(), new AppSettings(), _scopeFactory);
-			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
+			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(1,count);
 		}
@@ -96,15 +97,20 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			var e = new FakeICpuUsageListener(100d);
 			Console.WriteLine(e.CpuUsageMean);
 			var backgroundQueue = new ThumbnailBackgroundTaskQueue(e, new FakeIWebLogger(), new AppSettings(), _scopeFactory);
-			await backgroundQueue!.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
+			await backgroundQueue.QueueBackgroundWorkItemAsync(_ => ValueTask.CompletedTask, string.Empty);
 			var count = backgroundQueue.Count();
 			Assert.AreEqual(0,count);
 		}
 
 
-		// https://stackoverflow.com/a/51224556
+		/// <summary>
+		/// @see: https://stackoverflow.com/a/51224556
+		/// </summary>
+		/// <exception cref="NotSupportedException">not found</exception>
+		/// <exception cref="NullReferenceException">null ref</exception>
 		[TestMethod]
 		[Timeout(5000)]
+		[SuppressMessage("Usage", "S2589:Dup isExecuted")]
 		public async Task ThumbnailQueuedHostedServiceTest_Verify_Hosted_Service_Executes_Task() {
 			IServiceCollection services = new ServiceCollection();
 			services.AddSingleton<IHostedService, ThumbnailQueuedHostedService>();
@@ -123,7 +129,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			{
 				throw new NotSupportedException("hostedServices.Count() != 1");
 			}
-			var service = hostedServices.First() as ThumbnailQueuedHostedService;
+			var service = hostedServices[0] as ThumbnailQueuedHostedService;
 			
 			
 			var backgroundQueue = serviceProvider.GetService<IThumbnailQueuedHostedService>();
@@ -156,7 +162,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		[TestMethod]
 		public async Task ThumbnailQueuedHostedServiceTest_ArgumentNullExceptionFail()
 		{
-			Func<CancellationToken, ValueTask> func = null;
+			Func<CancellationToken, ValueTask>? func = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(func!, string.Empty);
 			Assert.IsNull(func);
@@ -164,6 +170,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 
 		[TestMethod]
 		[Timeout(5000)]
+		[SuppressMessage("Usage", "S2589:Dup isExecuted")]
 		public async Task BackgroundQueuedHostedServiceTestHandleException()
 		{
 			IServiceCollection services = new ServiceCollection();
@@ -180,7 +187,7 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			{
 				throw new NotSupportedException("hostedServices.Count() != 1");
 			}
-			var service = hostedServices.First() as ThumbnailQueuedHostedService;
+			var service = hostedServices[0] as ThumbnailQueuedHostedService;
 
 			var backgroundQueue = serviceProvider.GetService<IThumbnailQueuedHostedService>();
 			
@@ -214,8 +221,8 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 			var fakeLogger = new FakeIWebLogger();
 			var service = new ThumbnailQueuedHostedService(new FakeThumbnailBackgroundTaskQueue(), fakeLogger, new AppSettings());
 
-			var cancelTokenSource = new CancellationTokenSource();
-			cancelTokenSource.Cancel();
+			using var cancelTokenSource = new CancellationTokenSource();
+			await cancelTokenSource.CancelAsync();
 			
 			// use reflection to hit protected method
 			var method = service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
@@ -230,14 +237,14 @@ namespace starskytest.starsky.foundation.worker.ThumbnailServices
 		{
 			var logger = new FakeIWebLogger();
 			var service = new ThumbnailQueuedHostedService(new FakeThumbnailBackgroundTaskQueue(), logger, new AppSettings());
-			
-			var source = new CancellationTokenSource();
+
+			using var source = new CancellationTokenSource();
 			var token = source.Token;
-			source.Cancel(); // <- cancel before start
+			await source.CancelAsync(); // <- cancel before start
 
 			await service.StopAsync(token);
 			
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("is stopping"));
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("is stopping"));
 		}
 
 	}

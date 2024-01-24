@@ -102,27 +102,29 @@ namespace starsky.foundation.storage.Services
                 return Array.Empty<byte>();
             }
 
-            int encodedLength = encoded.Length;
-            int outLength = encodedLength * Shift / 8;
-            byte[] result = new byte[outLength];
-            int buffer = 0;
-            int next = 0;
-            int bitsLeft = 0;
-            foreach (char c in encoded)
+            var encodedLength = encoded.Length;
+            var outLength = encodedLength * Shift / 8;
+            var result = new byte[outLength];
+            var buffer = 0;
+            var next = 0;
+            var bitsLeft = 0;
+            
+            foreach (var c in encoded)
             {
-                if (!CharMap.ContainsKey(c))
+                if (!CharMap.TryGetValue(c, out var value) )
                 {
                     throw new DecodingException("Illegal character: " + c);
                 }
 
                 buffer <<= Shift;
-                buffer |= CharMap[c] & Mask;
+                buffer |= value & Mask;
                 bitsLeft += Shift;
-                if (bitsLeft >= 8)
+                if ( bitsLeft < 8 )
                 {
-                    result[next++] = (byte) (buffer >> (bitsLeft - 8));
-                    bitsLeft -= 8;
+	                continue;
                 }
+                result[next++] = (byte) (buffer >> (bitsLeft - 8));
+                bitsLeft -= 8;
             }
 
             return result;

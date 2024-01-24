@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
@@ -64,12 +63,12 @@ namespace starsky.foundation.database.Query
 	            p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp &&
 	            p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json).ToList();
 	            
-            if (colorClassActiveList.Any())
+            if (colorClassActiveList.Count != 0 )
             {
                 fileIndexItems = fileIndexItems.Where(p => colorClassActiveList.Contains(p.ColorClass)).ToList();
             }
 
-            if (!fileIndexItems.Any())
+            if (fileIndexItems.Count == 0 )
             {
                 return new List<FileIndexItem>();
             }
@@ -80,8 +79,7 @@ namespace starsky.foundation.database.Query
                 fileIndexItems =  StackCollections(fileIndexItems);         
             }
             
-            if(hideDeleted) return HideDeletedFileFolderList(fileIndexItems);
-            return fileIndexItems;
+            return hideDeleted ? HideDeletedFileFolderList(fileIndexItems) : fileIndexItems;
         }
 
         public Tuple<bool,List<FileIndexItem>> CacheGetParentFolder(string subPath)
@@ -153,7 +151,7 @@ namespace starsky.foundation.database.Query
         /// </summary>
         /// <param name="queryItems">list of items</param>
         /// <returns>list without deleted items</returns>
-        private static IEnumerable<FileIndexItem> HideDeletedFileFolderList(List<FileIndexItem> queryItems){
+        private static List<FileIndexItem> HideDeletedFileFolderList(List<FileIndexItem> queryItems){
             // temp feature to hide deleted items
             var displayItems = new List<FileIndexItem>();
                 foreach (var item in queryItems)

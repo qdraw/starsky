@@ -31,7 +31,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			source.Cancel(); // <- cancel before start
 
 			// "StartAsync" is protected, so we need to use reflection
-			MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
+			MethodInfo? dynMethod = service.GetType().GetMethod("ExecuteAsync", 
 				BindingFlags.NonPublic | BindingFlags.Instance);
 			if ( dynMethod == null )
 				throw new Exception("missing ExecuteAsync");
@@ -40,7 +40,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 				token
 			});
 			
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Queued Hosted Service"));
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("Queued Hosted Service"));
 			source.Dispose();
 		}
 		
@@ -59,11 +59,11 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			
 			var source = new CancellationTokenSource();
 			var token = source.Token;
-			source.Cancel(); // <- cancel before start
+			await source.CancelAsync(); // <- cancel before start
 
 			await service.StopAsync(token);
 			
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("is stopping"));
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2?.Contains("is stopping"));
 			source.Dispose();
 		}
 	}

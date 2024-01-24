@@ -31,8 +31,8 @@ namespace starsky.foundation.writemeta.JsonService
 			}, DefaultJsonSerializer.CamelCase);
 			
 			var jsonSubPath = JsonSidecarLocation.JsonLocation(
-				fileIndexItem.ParentDirectory, 
-				fileIndexItem.FileName);
+				fileIndexItem.ParentDirectory!, 
+				fileIndexItem.FileName!);
 			
 			await _iStorage.WriteStreamAsync(
 				StringToStreamHelper.StringToStream(jsonOutput), jsonSubPath);
@@ -45,14 +45,14 @@ namespace starsky.foundation.writemeta.JsonService
 		/// <returns>data</returns>
 		public async Task<FileIndexItem> ReadAsync(FileIndexItem fileIndexItem)
 		{
-			var jsonSubPath = JsonSidecarLocation.JsonLocation(fileIndexItem.ParentDirectory, fileIndexItem.FileName);
+			var jsonSubPath = JsonSidecarLocation.JsonLocation(fileIndexItem.ParentDirectory!, fileIndexItem.FileName!);
 			// when sidecar file does not exist
 			if ( !_iStorage.ExistFile(jsonSubPath) ) return fileIndexItem;
 			
 			var returnContainer = await new DeserializeJson(_iStorage).ReadAsync<MetadataContainer>(jsonSubPath);
 			
 			// in case of invalid json
-			returnContainer.Item ??= fileIndexItem;
+			returnContainer!.Item ??= fileIndexItem;
 			
 			returnContainer.Item.Status = FileIndexItem.ExifStatus.ExifWriteNotSupported;
 			return returnContainer.Item;

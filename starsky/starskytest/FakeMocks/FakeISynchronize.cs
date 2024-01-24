@@ -10,17 +10,20 @@ namespace starskytest.FakeMocks
 	{
 		private readonly List<FileIndexItem> _data = new List<FileIndexItem>();
 
-		public FakeISynchronize(List<FileIndexItem> data = null)
+		public FakeISynchronize(List<FileIndexItem>? data = null)
 		{
-			if ( data != null ) _data = data;
+			if ( data != null )
+			{
+				_data = data;
+			}
 		}
 		
-		public event EventHandler<string> Receive;
+		public event EventHandler<string> Receive = delegate { };
 
 		public List<Tuple<string, bool>> Inputs { get; set; } = new List<Tuple<string, bool>>();
 		
 		public Task<List<FileIndexItem>> Sync(string subPath, 
-			ISynchronize.SocketUpdateDelegate updateDelegate = null,
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null,
 			DateTime? childDirectoriesAfter = null)
 		{
 			Console.WriteLine($"[FakeISync] sync => {subPath}");
@@ -29,7 +32,8 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(_data);
 		}
 
-		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, ISynchronize.SocketUpdateDelegate updateDelegate = null)
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, 
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			var results = new List<FileIndexItem>();
 			foreach ( var subPath in subPaths )

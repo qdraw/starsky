@@ -1,5 +1,5 @@
 using System;
-using System.Threading;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +14,9 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.database.QueryTest;
 
 [TestClass]
-public class QueryGetAllRecursive_Error
+public class QueryGetAllRecursiveError
 {
-	private IServiceScopeFactory _serviceScopeFactory;
+	private IServiceScopeFactory? _serviceScopeFactory;
 
 	private void CreateScope()
 	{
@@ -39,6 +39,7 @@ public class QueryGetAllRecursive_Error
 		{
 		}
 
+		[SuppressMessage("Usage", "S3237:value in set")]
 		public override DbSet<FileIndexItem> FileIndex
 		{
 			get
@@ -48,6 +49,7 @@ public class QueryGetAllRecursive_Error
 			}
 			set
 			{
+				// do nothing
 			}
 		}
 	}

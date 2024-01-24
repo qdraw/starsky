@@ -13,7 +13,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void ServiceCollectionExtensions_ServiceCollectionConfigurePoco_null_Config_Test()
 		{
-			new ServiceCollection().ConfigurePoCo<AppSettings>(null);
+			new ServiceCollection().ConfigurePoCo<AppSettings>(null!);
 		}
 		
 	}

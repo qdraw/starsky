@@ -45,8 +45,14 @@ namespace starsky
     {
         private readonly IConfigurationRoot _configuration;
         private AppSettings? _appSettings;
+        
+		private static readonly string[] CompressionMimeTypes =
+		[
+			"application/xhtml+xml",
+			        "image/svg+xml"
+		];
 
-        public Startup(string[]? args = null)
+		public Startup(string[]? args = null)
 		{
 			if ( !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__appsettingspath")) )
 			{
@@ -199,10 +205,7 @@ namespace starsky
 	        services.AddResponseCompression(options =>
 	        {
 		        options.Providers.Add<GzipCompressionProvider>();
-		        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] {
-			        "application/xhtml+xml",
-			        "image/svg+xml",
-		        });
+		        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(CompressionMimeTypes);
 	        });
 	        services.Configure<GzipCompressionProviderOptions>(options => 
 	        {
@@ -257,7 +260,7 @@ namespace starsky
 
 			app.UseRouting();
 
-	        new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+	        new SwaggerSetupHelper(_appSettings!).Add02AppUseSwaggerAndUi(app);
 			
 			app.UseContentSecurityPolicy();
 

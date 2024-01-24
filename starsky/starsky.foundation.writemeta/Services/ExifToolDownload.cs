@@ -273,7 +273,7 @@ namespace starsky.foundation.writemeta.Services
 			
 			var byteHash = hashAlgorithm.ComputeHash(buffer);
 			var hash = BitConverter.ToString(byteHash).Replace("-",string.Empty).ToLowerInvariant();
-			return checkSumOptions.AsEnumerable().Any(p => p.ToLowerInvariant() == hash);
+			return checkSumOptions.AsEnumerable().Any(p => p.Equals(hash, StringComparison.InvariantCultureIgnoreCase));
 		}
 
 		private string ExeExifToolWindowsFullFilePath()

@@ -126,7 +126,7 @@ namespace starsky.feature.import.Services
 				.ForEachAsync(
 					async (includedFilePath) 
 						=> await PreflightPerFile(includedFilePath, importSettings),
-					_appSettings.MaxDegreesOfParallelism)).ToList();
+					_appSettings.MaxDegreesOfParallelism))!.ToList();
 			
 			var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
 
@@ -476,11 +476,11 @@ namespace starsky.feature.import.Services
 			
 			importIndexItem.FileIndexItem!.ParentDirectory = structureService.ParseSubfolders(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName!,
-				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
+				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName!));
 			
 			importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName!,
-				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
+				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName!));
 			importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
 			
 			return importIndexItem;
@@ -510,7 +510,7 @@ namespace starsky.feature.import.Services
 				.ForEachAsync(
 					async (preflightItem) 
 						=> await Importer(preflightItem, importSettings),
-					_appSettings.MaxDegreesOfParallelism)).ToList();
+					_appSettings.MaxDegreesOfParallelism))!.ToList();
 			
 			return importIndexItemsList;
 		}
@@ -656,7 +656,7 @@ namespace starsky.feature.import.Services
 				var exifCopy = new ExifCopy(_subPathStorage, 
 					_thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, 
 					_appSettings, null!, _logger),_thumbnailQuery);
-				await exifCopy.XmpSync(importIndexItem.FileIndexItem!.FilePath);
+				await exifCopy.XmpSync(importIndexItem.FileIndexItem!.FilePath!);
 			}
 		}
 

@@ -11,7 +11,6 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-#nullable enable
 
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
@@ -23,7 +22,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 		public SyncMultiFileTest()
 		{
-			_lastEditedDateTime = new DateTime(2020, 02, 02);
+			_lastEditedDateTime = new DateTime(2020, 02, 02,
+				01,01,01, kind: DateTimeKind.Local);
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg","/color_class_test.jpg", "/status_deleted.jpg"},
 				new List<byte[]>{

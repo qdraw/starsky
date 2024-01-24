@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -26,14 +25,14 @@ namespace starsky.foundation.database.Query
 	public partial class Query : IQuery
     {
         private ApplicationDbContext _context;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IServiceScopeFactory? _scopeFactory;
         private readonly IMemoryCache? _cache;
         private readonly AppSettings _appSettings;
         private readonly IWebLogger _logger;
 
         public Query(ApplicationDbContext context, 
             AppSettings appSettings,
-            IServiceScopeFactory scopeFactory, 
+            IServiceScopeFactory? scopeFactory, 
             IWebLogger logger, IMemoryCache? memoryCache = null)
         {
 	        _context = context;
@@ -565,7 +564,7 @@ namespace starsky.foundation.database.Query
             if( _cache == null || _appSettings.AddMemoryCache == false) return false;
             
             var queryCacheName = CachingDbName(nameof(FileIndexItem), 
-                PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
+                PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
             if (!_cache.TryGetValue(queryCacheName, out _)) return false;
             
             _cache.Remove(queryCacheName);
@@ -583,7 +582,7 @@ namespace starsky.foundation.database.Query
 	        if( _cache == null || _appSettings.AddMemoryCache == false) return false;
             
 	        var queryCacheName = CachingDbName(nameof(FileIndexItem), 
-		        PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
+		        PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
             
 	        _cache.Set(queryCacheName, items,  
 		        new TimeSpan(1,0,0));

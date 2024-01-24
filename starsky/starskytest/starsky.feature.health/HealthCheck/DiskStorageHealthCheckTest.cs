@@ -33,7 +33,7 @@ namespace starskytest.starsky.feature.health.HealthCheck
 			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new DiskStorageHealthCheck(diskOptions),null,null )};
 			var result = await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
 			Assert.AreEqual(HealthStatus.Unhealthy,result.Status);
-			Assert.IsTrue(result.Description.Contains("Minimum configured megabytes for disk"));
+			Assert.IsTrue(result.Description?.Contains("Minimum configured megabytes for disk"));
 		}
 		
 		[TestMethod]
@@ -45,7 +45,7 @@ namespace starskytest.starsky.feature.health.HealthCheck
 			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new DiskStorageHealthCheck(diskOptions),null,null )};
 			var result = await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
 			Assert.AreEqual(HealthStatus.Unhealthy,result.Status);
-			Assert.IsTrue(result.Description.Contains("is not present on system"));
+			Assert.IsTrue(result.Description?.Contains("is not present on system"));
 		}
 		
 		[TestMethod]

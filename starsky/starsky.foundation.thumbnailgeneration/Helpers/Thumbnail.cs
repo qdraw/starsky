@@ -75,14 +75,17 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				async singleSubPath =>
 				{
 					var hashResult =  await new FileHash(_iStorage).GetHashCodeAsync(singleSubPath);
-					if ( !hashResult.Value ) return null;
+					if ( !hashResult.Value )
+					{
+						return null;
+					}
 
 					return await CreateThumbAsync(singleSubPath, hashResult.Key);
 				}, _appSettings.MaxDegreesOfParallelismThumbnail);
 			
 			var results = new List<GenerationResultModel>();
 			
-			foreach ( var resultChunk in resultChunkList )
+			foreach ( var resultChunk in resultChunkList! )
 			{
 				results.AddRange(resultChunk ?? new List<GenerationResultModel>());
 			}
@@ -98,9 +101,10 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="fileHash">the base32 hash of the subPath file</param>
 		/// <param name="skipExtraLarge">skip the extra large variant</param>
 		/// <returns>true, if successful</returns>
-		internal Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string subPath, string fileHash, bool skipExtraLarge = false)
+		internal Task<IEnumerable<GenerationResultModel>> CreateThumbAsync(string? subPath, string fileHash, bool skipExtraLarge = false)
 		{
 			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
+			if ( string.IsNullOrWhiteSpace(subPath) ) throw new ArgumentNullException(nameof(fileHash));
 
 			return CreateThumbInternal(subPath, fileHash, skipExtraLarge);
 		}
@@ -175,8 +179,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 
 			_logger.LogInformation(".");
 
-			// results return null if thumbnailFromThumbnailUpdateList has lenght 0
-			return results.Select(p =>p.Item2).Append(largeImageResult);
+			// results return null if thumbnailFromThumbnailUpdateList has count 0
+			return results!.Select(p =>p.Item2).Append(largeImageResult);
 		}
 
 		private static ThumbnailSize ThumbnailToSourceSize(bool skipExtraLarge)

@@ -46,7 +46,7 @@ namespace starskytest.Controllers
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
-		private ServiceProvider _serviceProvider;
+		private ServiceProvider? _serviceProvider;
 
 		public MetaUpdateControllerTest()
 		{
@@ -71,7 +71,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			_createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{ "App:StorageFolder", _createAnImage.BasePath },
 				{ "App:ThumbnailTempFolder",_createAnImage.BasePath },
@@ -96,7 +96,7 @@ namespace starskytest.Controllers
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
            
 			// inject fake exifTool
-			_exifTool = new FakeExifTool(_iStorage,_appSettings);
+			_exifTool = new FakeExifTool(_iStorage!,_appSettings);
             
 			// get the background helper
 			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
@@ -209,7 +209,14 @@ namespace starskytest.Controllers
 
 			Assert.AreEqual(404,notFoundResult.StatusCode);
 
-			await _query.RemoveItemAsync(_query.SingleItem("/ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool.jpg").FileIndexItem);
+			var item = _query
+				.SingleItem(
+					"/ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool.jpg")
+				?.FileIndexItem;
+			
+			Assert.IsNotNull(item);
+			
+			await _query.RemoveItemAsync(item);
 		}
 
 		[TestMethod]
@@ -219,7 +226,7 @@ namespace starskytest.Controllers
 			await InsertSearchData();
 			var serviceScopeFactory = NewScopeFactory();
 			
-			var fakeIMetaUpdateService =  _serviceProvider.GetService<IMetaUpdateService>() as
+			var fakeIMetaUpdateService =  _serviceProvider?.GetService<IMetaUpdateService>() as
 				FakeIMetaUpdateService;
 			Assert.IsNotNull(fakeIMetaUpdateService);
 			fakeIMetaUpdateService.ChangedFileIndexItemNameContent =

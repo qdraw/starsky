@@ -126,7 +126,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				null, DateTime.MaxValue);
 
 			var childFolder =
-				result.FirstOrDefault(p => p.FilePath =="/test/test/test.jpg");
+				result.Find(p => p.FilePath =="/test/test/test.jpg");
 			
 			// are NOT equal
 			Assert.AreNotEqual("/test/test/test.jpg",childFolder?.FilePath);
@@ -156,7 +156,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				DateTime.Now.AddDays(-1));
 
 			var childFolder =
-				result.FirstOrDefault(p => p.FilePath =="/test/test/test.jpg");
+				result.Find(p => p.FilePath =="/test/test/test.jpg");
 			Assert.AreEqual("/test/test/test.jpg",childFolder?.FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,childFolder?.Status);
 		}
@@ -181,7 +181,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await syncFolder.Folder("/test");
 
 			var childFolder =
-				result.FirstOrDefault(p => p.FilePath =="/test/test/test.jpg");
+				result.Find(p => p.FilePath =="/test/test/test.jpg");
 			Assert.AreEqual("/test/test/test.jpg",childFolder?.FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,childFolder?.Status);
 		}
@@ -263,11 +263,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new List<byte[]>
 				{
 					CreateAnImage.Bytes.ToArray(),
-				}, new List<DateTime>{new DateTime(2000,01,01,01,01,01)});
+				}, new List<DateTime>
+				{
+					new DateTime(2000,01,01,01,01,01, kind: DateTimeKind.Local)
+				});
 			
 			await _query.AddItemAsync(new FileIndexItem("/same_test/test.jpg")
 			{
-				LastEdited = new DateTime(2000,01,01,01,01,01)
+				LastEdited = new DateTime(2000,01,01,
+					01,01,01, kind: DateTimeKind.Local)
 			});
 			
 			var queryResultBefore = await _query.GetAllFilesAsync("/same_test");
@@ -289,7 +293,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1, queryResult.Count); 
 			Assert.AreEqual(1, queryResult.Count(p => p.FileName == "test.jpg")); 
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, queryResult.FirstOrDefault(p => p.FileName == "test.jpg")?.Status); 
+			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, queryResult.Find(p => p.FileName == "test.jpg")?.Status); 
 
 			await _query.RemoveItemAsync(queryResult[0]);
 		}
@@ -311,11 +315,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new List<byte[]>
 				{
 					CreateAnImage.Bytes.ToArray(),
-				}, new List<DateTime>{new DateTime(3000,01,01,01,01,01)});
+				}, new List<DateTime>{new DateTime(3000,01,
+					01,01,01,01, kind: DateTimeKind.Local)});
 			
 			await _query.AddItemAsync(new FileIndexItem("/same_test/test.jpg")
 			{
-				LastEdited = new DateTime(2000,01,01,01,01,01)
+				LastEdited = new DateTime(2000,01,01,
+					01,01,01, kind: DateTimeKind.Local)
 			});
 			
 			var queryResultBefore = await _query.GetAllFilesAsync("/same_test");
@@ -338,7 +344,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1, queryResult.Count(p => p.FileName == "test.jpg")); 
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				queryResult.FirstOrDefault(p => p.FileName == "test.jpg")?.Status); 
+				queryResult.Find(p => p.FileName == "test.jpg")?.Status); 
 
 			await _query.RemoveItemAsync(queryResult[0]);
 		}
@@ -380,7 +386,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-			var item = result.FirstOrDefault(p =>
+			var item = result.Find(p =>
 				p.FilePath == folderPath &&
 				p.Status == FileIndexItem.ExifStatus.Ok);
 			
@@ -428,7 +434,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await syncFolder.AddParentFolder(folderPath, null);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-			var item = result.FirstOrDefault(p => p.FilePath == folderPath);
+			var item = result.Find(p => p.FilePath == folderPath);
 			
 			Assert.IsNotNull(item);
 			Assert.AreEqual(folderPath, item.FilePath);
@@ -447,7 +453,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(),null);
 			var result = await syncFolder.AddParentFolder("/test", 
 				new List<FileIndexItem>{new FileIndexItem("/test")});
-			Assert.AreEqual(0,result.Where(p => p.Status != FileIndexItem.ExifStatus.OkAndSame).Count());
+			Assert.AreEqual(0,
+				result.Count(p => p.Status != FileIndexItem.ExifStatus.OkAndSame));
 		}
 
 		[TestMethod]
@@ -529,7 +536,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					"all folder should not be null");
 			}
 			
-			Assert.AreEqual("/", allFolders.FirstOrDefault(p => p.FilePath == "/")?.FilePath);
+			Assert.AreEqual("/", allFolders.Find(p => p.FilePath == "/")?.FilePath);
 			Assert.AreEqual(1, allFolders.Count(p => p.FilePath == "/DuplicateFolder"));
 		}
 		
@@ -548,13 +555,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await syncFolder.Folder("/DuplicateFolder");
 
 			var allFolders = _query.GetAllFolders().Where(p => p.FilePath == "/DuplicateFolder").ToList();
-			if ( allFolders == null )
-			{
-				throw new NullReferenceException(
-					"all folder should not be null");
-			}
+			Assert.IsNotNull(allFolders);
 			
-			Assert.AreEqual("/DuplicateFolder", allFolders.FirstOrDefault(p => p.FilePath == "/DuplicateFolder")?.FilePath);
+			Assert.AreEqual("/DuplicateFolder", allFolders.Find(p => p.FilePath == "/DuplicateFolder")?.FilePath);
 			Assert.AreEqual(1, allFolders.Count(p => p.FilePath == "/DuplicateFolder"));
 
 		}
@@ -613,6 +616,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FakeMemoryCache(new Dictionary<string, object>()), null);
 
 			var rootItem = await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk3");
+			Assert.IsNotNull(rootItem);
 			var result = await syncFolder.RemoveChildItems(_query, rootItem);
 			
 			Assert.AreEqual("/Folder_InDbButNotOnDisk3", result.FilePath);
@@ -636,8 +640,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new List<FileIndexItem>{new FileIndexItem("/2018")});
 			
 			Assert.AreEqual(null,(await _query.GetObjectByFilePathAsync("/2018")));
-			Assert.AreEqual("/2018/02",(await _query.GetObjectByFilePathAsync("/2018/02")).FilePath);
-			Assert.AreEqual("/2018/02/2018_02_01",(await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01")).FilePath);
+			Assert.AreEqual("/2018/02",(await _query.GetObjectByFilePathAsync("/2018/02"))?.FilePath);
+			Assert.AreEqual("/2018/02/2018_02_01",(await _query.GetObjectByFilePathAsync("/2018/02/2018_02_01"))?.FilePath);
 		}
 		
 		[TestMethod]

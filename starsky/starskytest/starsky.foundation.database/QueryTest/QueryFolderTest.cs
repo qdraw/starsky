@@ -14,7 +14,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public sealed class QueryFolderTest
 	{
-		private IMemoryCache _memoryCache;
+		private IMemoryCache? _memoryCache;
 
 		private IServiceScopeFactory CreateNewScope()
 		{
@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			services.AddDbContext<ApplicationDbContext>(options => 
 				options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathAsyncTest)));
 			var serviceProvider = services.BuildServiceProvider();
-			_memoryCache = serviceProvider.GetService<IMemoryCache>();
+			_memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 		
@@ -31,7 +31,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public void CacheGetParentFolder_FallbackWhenNoCache()
 		{
 			var queryNoCache = new Query(CreateNewScope().CreateScope().ServiceProvider
-					.GetService<ApplicationDbContext>(), new AppSettings(), 
+					.GetRequiredService<ApplicationDbContext>(), new AppSettings(), 
 				CreateNewScope(), new FakeIWebLogger(),_memoryCache) ;
 
 			var result = queryNoCache.CacheGetParentFolder("/");
@@ -42,7 +42,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public void CacheGetParentFolder_FallbackWhenNoCache_appSettings()
 		{
 			var queryNoCache = new Query(CreateNewScope().CreateScope().ServiceProvider
-					.GetService<ApplicationDbContext>(), 
+					.GetRequiredService<ApplicationDbContext>(), 
 				new AppSettings{ AddMemoryCache = false}, null!, new FakeIWebLogger(),_memoryCache) ;
 
 			var result = queryNoCache.CacheGetParentFolder("/");

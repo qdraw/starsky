@@ -51,7 +51,7 @@ public class TrashController : Controller
 	public async Task<IActionResult> TrashMoveAsync(string f, bool collections = false)
 	{
 		var inputFilePaths = PathHelper.SplitInputFilePaths(f);
-		if ( !inputFilePaths.Any() )
+		if ( inputFilePaths.Length == 0 )
 		{
 			return BadRequest("No input files");
 		}

@@ -20,7 +20,7 @@ namespace starskytest.Controllers
 				new FakeIManualBackgroundSyncService(items)
 			).Index("/") as OkObjectResult;
 			
-			Assert.AreEqual(200, actionResult.StatusCode);
+			Assert.AreEqual(200, actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -32,7 +32,7 @@ namespace starskytest.Controllers
 				new FakeIManualBackgroundSyncService(items)
 			).Index("/") as NotFoundObjectResult;
 			
-			Assert.AreEqual(404, actionResult.StatusCode);
+			Assert.AreEqual(404, actionResult?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -45,7 +45,7 @@ namespace starskytest.Controllers
 				new FakeIManualBackgroundSyncService(items)
 			).Index("/") as BadRequestObjectResult;
 			
-			Assert.AreEqual(400, actionResult.StatusCode);
+			Assert.AreEqual(400, actionResult?.StatusCode);
 		}
 	}
 }

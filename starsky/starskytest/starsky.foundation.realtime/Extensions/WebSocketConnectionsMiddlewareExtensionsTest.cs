@@ -46,7 +46,7 @@ namespace starskytest.starsky.foundation.realtime.Extensions
 		public void ExpectedException_ArgumentNullException()
 		{
 			var app = null as IApplicationBuilder;
-			app.MapWebSocketConnections("/test1", new WebSocketConnectionsOptions());
+			app!.MapWebSocketConnections("/test1", new WebSocketConnectionsOptions());
 		}
 	}
 }

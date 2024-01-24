@@ -12,10 +12,8 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.readmeta.Services
 {
 	[TestClass]
-	public sealed class ReadMeta_ReadMetaBoth_Cache_Test
+	public sealed class ReadMetaReadMetaBothCacheTest
 	{
-
-        
 		[TestMethod]
 		public async Task ReadMeta_ReadMetaBothTest_ReadBothWithFilePath()
 		{
@@ -48,8 +46,9 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		{
 			var iStorage = new FakeIStorage();
 			var fakeCache =
-				new FakeMemoryCache(new Dictionary<string, object>{{"info_test",new FileIndexItem(){Tags = "test"}}});
-			var result = ( await new ReadMeta(iStorage, null, fakeCache,
+				new FakeMemoryCache(new Dictionary<string, object>{{"info_test",
+					new FileIndexItem(){Tags = "test"}}});
+			var result = ( await new ReadMeta(iStorage, null!, fakeCache,
 					new FakeIWebLogger())
 				.ReadExifAndXmpFromFileAsync("test") )?.Tags;
 			Assert.AreEqual("test",result);

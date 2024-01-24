@@ -8,7 +8,9 @@ namespace starskytest.FakeMocks
 {
 	public class FakeReadMeta : IReadMeta
 	{
+#pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
 		public Task<FileIndexItem> ReadExifAndXmpFromFileAsync(string subPath)
+#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
 		{
 			return Task.FromResult(new FileIndexItem
 			{
@@ -18,7 +20,7 @@ namespace starskytest.FakeMocks
 		}
 
 		public Task<List<FileIndexItem>> ReadExifAndXmpFromFileAddFilePathHashAsync(List<string> subPathList,
-			List<string> fileHashes = null)
+			List<string>? fileHashes = null)
 		{
 			var createAnImage = new CreateAnImage();
 			return Task.FromResult(new List<FileIndexItem>

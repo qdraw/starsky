@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.platform.Models
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			var newImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{"App:StorageFolder", newImage.BasePath},
 				{"App:Verbose", "true"}
@@ -75,8 +75,8 @@ namespace starskytest.starsky.foundation.platform.Models
 		[TestMethod]
 		public void ReplaceEnvironmentVariable_Non_Existing_EnvVariable()
 		{
-			var value = AppSettings.ReplaceEnvironmentVariable("$sdhfdskfbndsfjb38");
-			Assert.AreEqual("$sdhfdskfbndsfjb38", value);
+			var value = AppSettings.ReplaceEnvironmentVariable("$test12345");
+			Assert.AreEqual("$test12345", value);
 		}
 		
 		[TestMethod]
@@ -105,7 +105,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
 			// should give exception
-			_appSettings.SqLiteFullPath(string.Empty, null);
+			_appSettings.SqLiteFullPath(string.Empty, null!);
 		}
 
 		[TestMethod]
@@ -113,7 +113,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void AppSettingsProviderTest_MySQL_ExpectException()
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
-			_appSettings.SqLiteFullPath(string.Empty, null);
+			_appSettings.SqLiteFullPath(string.Empty, null!);
 		}
 
 		[TestMethod]
@@ -158,11 +158,19 @@ namespace starskytest.starsky.foundation.platform.Models
 			AppSettings.StructureCheck("dion.ext");
 			// >= ArgumentException
 		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void AppSettingsProviderTest_Null()
+		{
+			AppSettings.StructureCheck(string.Empty);
+			// >= ArgumentException
+		}
 
 		[TestMethod]
 		public void AppSettingsNameNullTest()
 		{
-			var appSettings = new AppSettings {Name = null};
+			var appSettings = new AppSettings {Name = null!};
 			Assert.AreEqual(string.Empty, appSettings.Name);
 		}
 
@@ -377,10 +385,10 @@ namespace starskytest.starsky.foundation.platform.Models
 			};
 			var display = appSettings.CloneToDisplay();
 			
-			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry.Header);
-			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry.LogsHeader);
-			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry.MetricsHeader);
-			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry.TracesHeader);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry?.Header);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry?.LogsHeader);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry?.MetricsHeader);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.OpenTelemetry?.TracesHeader);
 		}
 		
 		[TestMethod]
@@ -399,10 +407,10 @@ namespace starskytest.starsky.foundation.platform.Models
 			
 			var display = appSettings.CloneToDisplay();
 			
-			Assert.IsNull(display.OpenTelemetry.Header);
-			Assert.IsNull(display.OpenTelemetry.LogsHeader);
-			Assert.IsNull(display.OpenTelemetry.MetricsHeader);
-			Assert.IsNull(display.OpenTelemetry.TracesHeader);
+			Assert.IsNull(display.OpenTelemetry?.Header);
+			Assert.IsNull(display.OpenTelemetry?.LogsHeader);
+			Assert.IsNull(display.OpenTelemetry?.MetricsHeader);
+			Assert.IsNull(display.OpenTelemetry?.TracesHeader);
 		}
 		
 		[TestMethod]
@@ -442,11 +450,11 @@ namespace starskytest.starsky.foundation.platform.Models
 			
 			var display = appSettings.CloneToDisplay();
 			// nr 0
-			Assert.AreEqual(string.Empty,display.PublishProfiles["test"][0].Path);
-			Assert.AreEqual(string.Empty,display.PublishProfiles["test"][0].Prepend);
+			Assert.AreEqual(string.Empty,display.PublishProfiles?["test"][0].Path);
+			Assert.AreEqual(string.Empty,display.PublishProfiles?["test"][0].Prepend);
 			// nr 1
-			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,display.PublishProfiles["test"][1].Path);
-			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,display.PublishProfiles["test"][1].Prepend);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,display.PublishProfiles?["test"][1].Path);
+			Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning,display.PublishProfiles?["test"][1].Prepend);
 		}
 
 		[TestMethod]

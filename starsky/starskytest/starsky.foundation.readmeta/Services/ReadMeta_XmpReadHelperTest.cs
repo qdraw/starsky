@@ -49,7 +49,6 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		[TestMethod]
 		public void XmpReadHelperTest_GetData_usingStringExample()
 		{
-			var iStorage = new FakeIStorage();
 			var data = new ReadMetaXmp(new FakeIStorage(),new FakeIWebLogger()).GetDataFromString(Input);
             
 			Assert.AreEqual(52.3451333333,data.Latitude,0.001);
@@ -84,7 +83,9 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			byte[] xmpByteArray = Encoding.UTF8.GetBytes(Input);
 		    
 		    
-			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
+			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
+				new List<string> {"/test.arw", "/test.xmp"}, 
+				new List<byte[]>{null!,xmpByteArray}  );
 			var fileIndexItem = new FileIndexItem
 			{
 				ParentDirectory = "/",
@@ -117,7 +118,6 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		    
 		}
 	    
-	    
 		[TestMethod]
 		public async Task XmpReadHelperTest_XmpGetSidecarFile_TestIfOverwrite()
 		{
@@ -125,7 +125,9 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			byte[] xmpByteArray = Encoding.UTF8.GetBytes(Input);
 		    
 		    
-			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
+			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
+				new List<string> {"/test.arw", "/test.xmp"}, 
+				new List<byte[]>{null!,xmpByteArray});
 			var fileIndexItem = new FileIndexItem
 			{
 				ParentDirectory = "/",
@@ -137,7 +139,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 				LocationCity = "Essen",
 				LocationState = "Flevoland",
 				LocationCountry = "Germany",
-				DateTime = new DateTime(1990,01,01,01,00,00)
+				DateTime = new DateTime(1990,01,01,01,00,00, kind: DateTimeKind.Local)
 			};
 		    
 			var data = await new ReadMetaXmp(fakeIStorage, new FakeIWebLogger()).XmpGetSidecarFileAsync(fileIndexItem);
@@ -210,7 +212,8 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var xmpByteArray = Encoding.UTF8.GetBytes(xmpData);
 		    
 			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
-				new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
+				new List<string> {"/test.arw", "/test.xmp"}, 
+				new List<byte[]>{null!,xmpByteArray}  );
 			
 			var readMetaXmp = new ReadMetaXmp(fakeIStorage, new FakeIWebLogger());
 			var data = await readMetaXmp.XmpGetSidecarFileAsync(new FileIndexItem("/test.arw"));

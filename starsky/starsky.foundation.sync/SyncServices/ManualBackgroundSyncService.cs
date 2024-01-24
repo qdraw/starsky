@@ -48,7 +48,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal const string ManualSyncCacheName = "ManualSync_";
 		
 		public async Task<FileIndexItem.ExifStatus> ManualSync(string subPath,
-			string operationId = null)
+			string? operationId = null)
 		{
 			var fileIndexItem = await _query.GetObjectByFilePathAsync(subPath);
 			// on a new database ->
@@ -72,7 +72,7 @@ namespace starsky.foundation.sync.SyncServices
 			// Runs within IUpdateBackgroundTaskQueue
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				await BackgroundTaskExceptionWrapper(fileIndexItem.FilePath,
+				await BackgroundTaskExceptionWrapper(fileIndexItem.FilePath!,
 					operationId);
 			}, fileIndexItem.FilePath!);
 
@@ -85,12 +85,13 @@ namespace starsky.foundation.sync.SyncServices
 				new TimeSpan(0,2,0));
 		}
 
-		private void RemoveSyncLock(string subPath)
+		private void RemoveSyncLock(string? subPath)
 		{
+			subPath ??= string.Empty;
 			_cache.Remove(ManualSyncCacheName + subPath);
 		}
 
-		internal async Task BackgroundTaskExceptionWrapper(string subPath, string operationId)
+		internal async Task BackgroundTaskExceptionWrapper(string? subPath, string? operationId)
 		{
 			try
 			{
@@ -104,8 +105,10 @@ namespace starsky.foundation.sync.SyncServices
 			}
 		}
 
-		internal async Task BackgroundTask(string subPath, string operationId)
+		internal async Task BackgroundTask(string? subPath, string? operationId)
 		{
+			subPath ??= string.Empty;
+			
 			var operationHolder = RequestTelemetryHelper.GetOperationHolder(_scopeFactory,
 				nameof(ManualSync), operationId);
 			

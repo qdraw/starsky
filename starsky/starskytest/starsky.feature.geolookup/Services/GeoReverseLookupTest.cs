@@ -10,8 +10,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.worker.Interfaces;
-using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -20,7 +18,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 	[TestClass]
 	public sealed class GeoReverseLookupTest
 	{
-		private AppSettings _appSettings;
+		private AppSettings _appSettings = new AppSettings();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GeoReverseLookupTest"/> class.
@@ -235,10 +233,11 @@ namespace starskytest.starsky.feature.geolookup.Services
 		public async Task GetLocation_NearestPlace_HitGeoDownload()
 		{
 			var fakeIGeoFileDownload = new FakeIGeoFileDownload();
-			var result = await new GeoReverseLookup(_appSettings, fakeIGeoFileDownload,
+			
+			await new GeoReverseLookup(_appSettings, fakeIGeoFileDownload,
 				new FakeIWebLogger()).GetLocation(51.69917,5.304170);
 			
-			Assert.AreEqual(1, fakeIGeoFileDownload?.Count);
+			Assert.AreEqual(1, fakeIGeoFileDownload.Count);
 		}
 		
 		[TestMethod]
@@ -263,7 +262,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-			var result = await new GeoReverseLookup(_appSettings, scopeFactory,
+			await new GeoReverseLookup(_appSettings, scopeFactory,
 				new FakeIWebLogger(), new FakeMemoryCache()).GetLocation(51.69917,5.304170);
 			
 			var fakeIGeoFileDownload = serviceProvider.GetRequiredService<IGeoFileDownload>() as FakeIGeoFileDownload;

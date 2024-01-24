@@ -41,7 +41,7 @@ namespace starskytest.starsky.feature.import.Helpers
 				false, true);
 
 			var updatedItem = await query.GetObjectByFilePathAsync("/test.jpg");
-			Assert.AreEqual(ColorClassParser.Color.Typical,updatedItem.ColorClass);
+			Assert.AreEqual(ColorClassParser.Color.Typical,updatedItem?.ColorClass);
 		}
 		
 		[TestMethod]
@@ -69,7 +69,7 @@ namespace starskytest.starsky.feature.import.Helpers
 
 			var updatedItem = await query.GetObjectByFilePathAsync("/test.jpg");
 			// Are NOT equal!
-			Assert.AreNotEqual(ColorClassParser.Color.Typical,updatedItem.ColorClass);
+			Assert.AreNotEqual(ColorClassParser.Color.Typical,updatedItem?.ColorClass);
 		}
 
 		[TestMethod]
@@ -95,7 +95,7 @@ namespace starskytest.starsky.feature.import.Helpers
 				true, true);
 
 			var updatedItem = await query.GetObjectByFilePathAsync("/test.jpg");
-			Assert.AreEqual("test-ung",updatedItem.Description);
+			Assert.AreEqual("test-ung",updatedItem?.Description);
 		}
 
 		[TestMethod]

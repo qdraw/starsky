@@ -20,12 +20,12 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly AppSettings _appSettings;
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;
 		private readonly IQuery _query;
-		private readonly IMemoryCache _memoryCache;
+		private readonly IMemoryCache? _memoryCache;
 		private readonly IWebLogger _logger;
-		private readonly IServiceScopeFactory _serviceScopeFactory;
+		private readonly IServiceScopeFactory? _serviceScopeFactory;
 
 		public SyncRemove(AppSettings appSettings, IQuery query, 
-			IMemoryCache memoryCache, IWebLogger logger, IServiceScopeFactory serviceScopeFactory)
+			IMemoryCache? memoryCache, IWebLogger logger, IServiceScopeFactory? serviceScopeFactory)
 		{
 			_appSettings = appSettings;
 			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings);
@@ -36,7 +36,7 @@ namespace starsky.foundation.sync.SyncServices
 		}
 
 		public SyncRemove(AppSettings appSettings, SetupDatabaseTypes setupDatabaseTypes,
-			IQuery query, IMemoryCache memoryCache, IWebLogger logger)
+			IQuery query, IMemoryCache? memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_setupDatabaseTypes = setupDatabaseTypes;
@@ -52,7 +52,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="updateDelegate"></param>
 		/// <returns></returns>
 		public async Task<List<FileIndexItem>> RemoveAsync(string subPath,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			return await RemoveAsync(new List<string> {subPath}, updateDelegate);
 		}
@@ -64,7 +64,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="updateDelegate">SocketUpdateDelegate</param>
 		/// <returns>file with status</returns>
 		public async Task<List<FileIndexItem>> RemoveAsync(List<string> subPaths,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			// Get folders
 			var toDeleteList = await _query.GetAllRecursiveAsync(subPaths);
@@ -97,7 +97,7 @@ namespace starsky.foundation.sync.SyncServices
 				});
 			}
 
-			if ( updateDelegate != null && toDeleteList.Any() )
+			if ( updateDelegate != null && toDeleteList.Count != 0 )
 			{
 				await updateDelegate(toDeleteList);
 			}
@@ -113,12 +113,13 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns>Gives only back the files that are deleted</returns>
 		public async Task<List<FileIndexItem>> RemoveAsync(
 			IEnumerable<FileIndexItem> databaseItems,
-			ISynchronize.SocketUpdateDelegate updateDelegate = null)
+			ISynchronize.SocketUpdateDelegate? updateDelegate = null)
 		{
 			var deleted = databaseItems
 				.Where(p =>
 					p.Status is FileIndexItem.ExifStatus
-						.NotFoundSourceMissing).Select(p => p.FilePath).ToList();
+						.NotFoundSourceMissing).Select(p => p.FilePath)
+				.Cast<string>().ToList();
 			
 			return await RemoveAsync(deleted, updateDelegate);
 		}

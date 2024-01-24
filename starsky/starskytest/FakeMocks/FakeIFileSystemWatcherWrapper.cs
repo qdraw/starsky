@@ -11,7 +11,7 @@ namespace starskytest.FakeMocks
 			Changed?.Invoke(this, args);
 		}
 		
-		public event FileSystemEventHandler Created;
+		public event FileSystemEventHandler? Created;
 		
 		public void TriggerOnCreated(FileSystemEventArgs args)
 	    {
@@ -23,17 +23,17 @@ namespace starskytest.FakeMocks
 			Deleted?.Invoke(this, args);
 		}
 		
-		public event FileSystemEventHandler Deleted;
+		public event FileSystemEventHandler? Deleted;
 		
 		public void TriggerOnRename(RenamedEventArgs args)
 		{
 			Renamed?.Invoke(this, args);
 		}
 		
-		public event RenamedEventHandler Renamed;
+		public event RenamedEventHandler? Renamed;
 		
-		public event FileSystemEventHandler Changed;
-		public event ErrorEventHandler Error;
+		public event FileSystemEventHandler? Changed;
+		public event ErrorEventHandler? Error;
 		
 		public void TriggerOnError(ErrorEventArgs args)
 		{
@@ -59,8 +59,8 @@ namespace starskytest.FakeMocks
 		}
 
 		public bool IncludeSubdirectories { get; set; }
-		public string Path { get; set; }
-		public string Filter { get; set; }
+		public string Path { get; set; } = string.Empty;
+		public string Filter { get; set; } = string.Empty;
 		public NotifyFilters NotifyFilter { get; set; }
 
 		public bool IsDisposed { get; set; }

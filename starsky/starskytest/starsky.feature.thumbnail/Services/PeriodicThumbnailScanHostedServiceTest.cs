@@ -33,7 +33,8 @@ public class PeriodicThumbnailScanHostedServiceTest
 			},
 			new FakeIWebLogger(),
 			scopeFactory);
-		var cancelToken = new CancellationTokenSource();
+		
+		using var cancelToken = new CancellationTokenSource();
 		cancelToken.Cancel();
 		
 		await periodicThumbnailScanHostedService.StartBackgroundAsync(false,
@@ -60,7 +61,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		var periodicThumbnailScanHostedService = new PeriodicThumbnailScanHostedService(new AppSettings(),
 			new FakeIWebLogger(),
 			scopeFactory);
-		var cancelToken = new CancellationTokenSource();
+		using var cancelToken = new CancellationTokenSource();
 		cancelToken.Cancel();
 		
 		Assert.AreEqual(true, periodicThumbnailScanHostedService.IsEnabled);
@@ -85,8 +86,8 @@ public class PeriodicThumbnailScanHostedServiceTest
 			},
 			new FakeIWebLogger(),
 			scopeFactory){MinimumIntervalInMinutes = 0, IsEnabled = true};
-		var cancelToken = new CancellationTokenSource();
-		cancelToken.Cancel();
+		using var cancelToken = new CancellationTokenSource();
+		await cancelToken.CancelAsync();
 		
 		await periodicThumbnailScanHostedService.StartBackgroundAsync(true,
 			cancelToken.Token);
@@ -110,7 +111,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 			},
 			new FakeIWebLogger(),
 			scopeFactory);
-		var cancelToken = new CancellationTokenSource();
+		using var cancelToken = new CancellationTokenSource();
 		cancelToken.Cancel();
 		
 		Assert.AreEqual(false, periodicThumbnailScanHostedService.IsEnabled);
@@ -139,7 +140,7 @@ public class PeriodicThumbnailScanHostedServiceTest
 		periodicThumbnailScanHostedService.IsEnabled = true;
 		periodicThumbnailScanHostedService.MinimumIntervalInMinutes = 0;
 
-		var cancelToken = new CancellationTokenSource();
+		using var cancelToken = new CancellationTokenSource();
 		cancelToken.CancelAfter(400);
 		
 		var result = await periodicThumbnailScanHostedService.StartBackgroundAsync(false,
@@ -228,8 +229,8 @@ public class PeriodicThumbnailScanHostedServiceTest
 		periodicThumbnailScanHostedService.IsEnabled = true;
 		periodicThumbnailScanHostedService.MinimumIntervalInMinutes = 0;
 
-		var cancelToken = new CancellationTokenSource();
-		cancelToken.Cancel();
+		using var cancelToken = new CancellationTokenSource();
+		await cancelToken.CancelAsync();
 		
 		await periodicThumbnailScanHostedService.RunJob(
 			cancelToken.Token);
@@ -251,12 +252,12 @@ public class PeriodicThumbnailScanHostedServiceTest
 			},
 			logger,
 			scopeFactory);
-			
-		CancellationTokenSource source = new CancellationTokenSource();
-		CancellationToken token = source.Token;
+
+		using CancellationTokenSource source = new CancellationTokenSource();
+		var token = source.Token;
 		source.Cancel(); // <- cancel before start
 
-		MethodInfo dynMethod = service.GetType().GetMethod("ExecuteAsync", 
+		var dynMethod = service.GetType().GetMethod("ExecuteAsync", 
 			BindingFlags.NonPublic | BindingFlags.Instance);
 		if ( dynMethod == null )
 			throw new Exception("missing ExecuteAsync");

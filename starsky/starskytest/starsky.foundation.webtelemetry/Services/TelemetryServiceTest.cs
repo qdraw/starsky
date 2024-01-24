@@ -1,10 +1,9 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.webtelemetry.Services;
 
-namespace starskytest.starsky.foundation.platform.Services
+namespace starskytest.starsky.foundation.webtelemetry.Services
 {
 	[TestClass]
 	public sealed class TelemetryServiceTest
@@ -25,7 +24,7 @@ namespace starskytest.starsky.foundation.platform.Services
 		{
 			var result = new TelemetryService(new AppSettings
 			{
-				ApplicationInsightsConnectionString = null
+				ApplicationInsightsConnectionString = null!
 			}).TrackException(new Exception("test"));
 			Assert.IsFalse(result);
 		}

@@ -5,7 +5,7 @@ using starsky.foundation.readmeta.Models;
 namespace starskytest.starsky.foundation.readmeta.Helpers
 {
 	[TestClass]
-	public sealed class GeoParserTest
+	public sealed class GeoParserTest // GeoParserTests
 	{
 		
 		[TestMethod]
@@ -97,6 +97,68 @@ namespace starskytest.starsky.foundation.readmeta.Helpers
 			Assert.AreEqual(0,result.Latitude,0.001);
 			Assert.AreEqual(0,result.Longitude,0.001);
 			Assert.AreEqual(0,result.Altitude,0.001);
+		}
+		
+		[TestMethod]
+		public void ParseIsoString_InvalidLength_ReturnsEmptyGeoListItem()
+		{
+			// Arrange
+			// Doesn't has seperators so that's why its invalid
+			const string isoStr = "InvalidString123456/"; 
+
+			// Act
+			var result = GeoParser.ParseIsoString(isoStr);
+
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(0, result.Latitude);
+			Assert.AreEqual(0, result.Longitude);
+		}
+
+		[TestMethod]
+		public void ParseIsoString_InvalidLength2_ReturnsEmptyGeoListItem()
+		{
+			// Arrange
+			// First part is not dash or plus
+			const string isoStr = "Invalid-test-String123456/"; // Replace with your invalid string
+
+			// Act
+			var result = GeoParser.ParseIsoString(isoStr);
+
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(0, result.Latitude);
+			Assert.AreEqual(0, result.Longitude);
+		}
+		
+		[TestMethod]
+		public void ParseIsoString_InvalidLength1_ReturnsEmptyGeoListItem()
+		{
+			// Arrange
+			const string isoStr = "-Invalid-test-String123456/"; 
+
+			// Act
+			var result = GeoParser.ParseIsoString(isoStr);
+
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(0, result.Latitude);
+			Assert.AreEqual(0, result.Longitude);
+		}
+		
+		[TestMethod]
+		public void ParseIsoString_InvalidLength3_ReturnsEmptyGeoListItem()
+		{
+			// Arrange
+			const string isoStr = "-In.valid-test-String123456/"; 
+
+			// Act
+			var result = GeoParser.ParseIsoString(isoStr);
+
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(0, result.Latitude);
+			Assert.AreEqual(0, result.Longitude);
 		}
 		
 		[TestMethod]

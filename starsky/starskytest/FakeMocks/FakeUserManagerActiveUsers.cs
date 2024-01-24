@@ -11,7 +11,7 @@ namespace starskytest.FakeMocks
 	public class FakeUserManagerActiveUsers : IUserManager
 	{
 
-		public FakeUserManagerActiveUsers(string identifier = "test", User currentUser = null )
+		public FakeUserManagerActiveUsers(string identifier = "test", User? currentUser = null )
 		{
 			CurrentUser = currentUser;
 			Credentials = new Credential
@@ -24,15 +24,17 @@ namespace starskytest.FakeMocks
 			};
 			Role = new Role {Code = AccountRoles.AppAccountRoles.User.ToString()};
 		}
-		public User CurrentUser { get; set; }
+
+		public User? CurrentUser { get; set; }
 		public Credential Credentials { get; set; }
-		public Role Role { get; set; }
+		public Role? Role { get; set; }
 
 		public List<User> Users { get; set; } = new List<User>();
 
 		public Task<UserOverviewModel> AllUsersAsync()
 		{
-			return Task.FromResult(new UserOverviewModel(new List<User>{CurrentUser}));
+			// null can be for testing
+			return Task.FromResult(new UserOverviewModel(new List<User>{CurrentUser!}));
 		}
 
 		public void AddUserToCache(User user)
@@ -41,7 +43,7 @@ namespace starskytest.FakeMocks
 		}
 
 		public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
-			string identifier, string secret)
+			string? identifier, string? secret)
 		{
 			Users.Add(new User{Name = name, Credentials = new List<Credential>
 			{
@@ -71,13 +73,13 @@ namespace starskytest.FakeMocks
 			Role = null;
 		}
 
-		public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
+		public ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier, string secret)
 		{
 			return new ChangeSecretResult{Success = true};
 		}
 
 #pragma warning disable 1998
-		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode, string identifier, string secret)
+		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode, string? identifier, string secret)
 #pragma warning restore 1998
 		{
 			return identifier switch
@@ -97,7 +99,7 @@ namespace starskytest.FakeMocks
 			};
 		}
 
-		public Task<bool> SignIn(HttpContext httpContext, User user, bool isPersistent = false)
+		public Task<bool> SignIn(HttpContext httpContext, User? user, bool isPersistent = false)
 		{
 			return Task.FromResult(true);
 		}
@@ -112,12 +114,12 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
-		public User GetCurrentUser(HttpContext httpContext)
+		public User? GetCurrentUser(HttpContext httpContext)
 		{
 			return CurrentUser;
 		}
 
-		public User GetUser(string credentialTypeCode, string identifier)
+		public User? GetUser(string credentialTypeCode, string identifier)
 		{
 			return CurrentUser;
 		}
@@ -133,7 +135,7 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(new ValidateResult());
 		}
 
-		public User Exist(string identifier)
+		public User? Exist(string identifier)
 		{
 			if ( Credentials.Identifier == identifier )
 			{
@@ -142,12 +144,12 @@ namespace starskytest.FakeMocks
 			return null;
 		}
 
-		public Task<User> Exist(int userTableId)
+		public Task<User?> ExistAsync(int userTableId)
 		{
-			return Task.FromResult(CurrentUser) ;
+			return Task.FromResult(CurrentUser);
 		}
 
-		public Role GetRole(string credentialTypeCode, string identifier)
+		public Role? GetRole(string credentialTypeCode, string identifier)
 		{
 			return Role;
 		}

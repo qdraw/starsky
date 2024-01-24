@@ -17,7 +17,7 @@ using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.accountmangement.Services
+namespace starskytest.starsky.foundation.accountmanagement.Services
 {
 	[TestClass]
 	public sealed class UserManagerTest
@@ -30,7 +30,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			_memoryCache = provider.GetRequiredService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase(nameof(MetaUpdateService));
@@ -115,9 +115,9 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 					new Credential{Identifier = "email"}
 				}}).ToList();
 			
-			Assert.AreEqual("test",claims.FirstOrDefault(p =>p.Type == ClaimTypes.Name)?.Value);
-			Assert.AreEqual("1",claims.FirstOrDefault(p =>p.Type == ClaimTypes.NameIdentifier)?.Value);
-			Assert.AreEqual("email",claims.FirstOrDefault(p =>p.Type == ClaimTypes.Email)?.Value);
+			Assert.AreEqual("test",claims.Find(p =>p.Type == ClaimTypes.Name)?.Value);
+			Assert.AreEqual("1",claims.Find(p =>p.Type == ClaimTypes.NameIdentifier)?.Value);
+			Assert.AreEqual("email",claims.Find(p =>p.Type == ClaimTypes.Email)?.Value);
 		}
 		
 		[TestMethod]
@@ -128,9 +128,9 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var claims = userManager
 				.GetUserClaims(new User { Name = "test", Id = 1, Credentials = null}).ToList();
 			
-			Assert.AreEqual("test",claims.FirstOrDefault(p =>p.Type == ClaimTypes.Name)?.Value);
-			Assert.AreEqual("1",claims.FirstOrDefault(p =>p.Type == ClaimTypes.NameIdentifier)?.Value);
-			Assert.AreEqual("",claims.FirstOrDefault(p =>p.Type == ClaimTypes.Email)?.Value);
+			Assert.AreEqual("test",claims.Find(p =>p.Type == ClaimTypes.Name)?.Value);
+			Assert.AreEqual("1",claims.Find(p =>p.Type == ClaimTypes.NameIdentifier)?.Value);
+			Assert.AreEqual("",claims.Find(p =>p.Type == ClaimTypes.Email)?.Value);
 		}
 		
 		
@@ -343,7 +343,9 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				AccountRegisterFirstRoleAdmin = true
 			}, new FakeIWebLogger(), _memoryCache);
 			
-			foreach ( var user in _dbContext.Users.Include(p => p.Credentials).Where(p => p.Credentials != null && p.Credentials.Any()).ToList() )
+			foreach ( var user in _dbContext.Users.Include(p => p.Credentials)
+				         .Where(p => p.Credentials != null && p.Credentials.Count != 0)
+				         .ToList() )
 			{
 				await userManager.RemoveUser("email", user.Credentials!.FirstOrDefault()!.Identifier!);
 			}
@@ -417,7 +419,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 
-			var result = userManager.ChangeSecret("wrongtype", "dont@mail.us", "pass123456789");
+			var result = userManager.ChangeSecret("wrong-type", "dont@mail.us", "pass123456789");
 			
 			Assert.AreEqual(ChangeSecretResultError.CredentialTypeNotFound,result.Error);
 		}
@@ -459,7 +461,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser"});
 
-			var user = (await userManager.AllUsersAsync()).Users.FirstOrDefault(p => p.Name == "cachedUser");
+			var user = (await userManager.AllUsersAsync()).Users.Find(p => p.Name == "cachedUser");
 			Assert.IsNotNull(user);
 		}
 						
@@ -483,7 +485,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var users = (await userManager.AllUsersAsync()).Users;
 			
 			Assert.AreEqual(0, users.Count);
-			Assert.IsTrue(logger.TrackedExceptions?.LastOrDefault().Item2.Contains("RetryLimitExceededException"));
+			Assert.IsTrue(logger.TrackedExceptions.LastOrDefault().Item2?.Contains("RetryLimitExceededException") == true);
 		}
 		
 		[TestMethod]
@@ -497,7 +499,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			Assert.AreEqual(true, result.Success);
 			
-			var user = (await userManager.AllUsersAsync()).Users.FirstOrDefault(p => p.Name == "to_remove");
+			var user = (await userManager.AllUsersAsync()).Users.Find(p => p.Name == "to_remove");
 			Assert.IsNull(user);
 		}
 		
@@ -550,7 +552,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			var count = _dbContext.Roles.Count();
-			userManager.AddToRole(new User(),"dsfnlksdfn");
+			userManager.AddToRole(new User(),"test123");
 			
 			Assert.AreEqual(count, _dbContext.Roles.Count());
 		}
@@ -559,7 +561,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public void GetRole_NotExists()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
-			var result = userManager.GetRole("kfsdlnsdf", "sdknflsdf");
+			var result = userManager.GetRole("test12", "test");
 			Assert.IsNull(result);
 		}
 
@@ -587,7 +589,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			var count = _dbContext.Roles.Count();
-			userManager.AddToRole(new User(),"dsfnlksdfn");
+			userManager.RemoveFromRole(new User(),"test");
 			
 			Assert.AreEqual(count, _dbContext.Roles.Count());
 		}
@@ -715,7 +717,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser", Id = 1});
 
-			var result = await userManager.Exist(1);
+			var result = await userManager.ExistAsync(1);
 			
 			Assert.IsNotNull(result);
 		}
@@ -726,7 +728,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings(), new FakeIWebLogger(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser", Id = 1});
 
-			var result = await userManager.Exist(9822);
+			var result = await userManager.ExistAsync(9822);
 			
 			Assert.IsNull(result);
 		}
@@ -738,8 +740,9 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
 			var id = await userManager.SignUpAsync(string.Empty, "email", "t", "t");
 			Assert.IsNotNull(id);
+			Assert.IsNotNull(id.User);
 
-			var result = await userManager.Exist(id.User.Id);
+			var result = await userManager.ExistAsync(id.User.Id);
 			
 			Assert.IsNotNull(result);
 		}
@@ -749,7 +752,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
 
-			var result = await userManager.Exist(852);
+			var result = await userManager.ExistAsync(852);
 			
 			Assert.IsNull(result);
 		}
@@ -763,7 +766,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 		
 		[TestMethod]
-		public async Task SetLockIfFailedCountIsToHighTest()
+		public async Task SetLockIfFailCountIsToHighTest()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, new FakeIWebLogger(), _memoryCache);
 			var result = await userManager.SetLockIfFailedCountIsToHigh(9999);
@@ -783,10 +786,12 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				AddMemoryCache = false,
 				AccountRegisterFirstRoleAdmin = false,
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+#pragma warning disable CS8670 // Object or collection initializer implicitly dereferences possibly null member.
 				AccountRolesByEmailRegisterOverwrite = {
 				{
 					testEmail, "Administrator"
 				}}
+#pragma warning restore CS8670 // Object or collection initializer implicitly dereferences possibly null member.
 			}, new FakeIWebLogger(), _memoryCache);
 			
 			var roleAddToUser = userManager.GetRoleAddToUser(testEmail, new User());
@@ -811,10 +816,12 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				AddMemoryCache = false,
 				AccountRegisterFirstRoleAdmin = false,
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.Administrator,
+#pragma warning disable CS8670 // Object or collection initializer implicitly dereferences possibly null member.
 				AccountRolesByEmailRegisterOverwrite = {
 				{
 					testEmail, "User"
 				}}
+#pragma warning restore CS8670 // Object or collection initializer implicitly dereferences possibly null member.
 			}, new FakeIWebLogger(), _memoryCache);
 			
 			var roleAddToUser = userManager.GetRoleAddToUser(testEmail, new User());
@@ -839,10 +846,12 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				AddMemoryCache = false,
 				AccountRegisterFirstRoleAdmin = false,
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
+#pragma warning disable CS8670 // Object or collection initializer implicitly dereferences possibly null member.
 				AccountRolesByEmailRegisterOverwrite = {
 				{
 					testEmail, "BogusRole"
 				}}
+#pragma warning restore CS8670 // Object or collection initializer implicitly dereferences possibly null member.
 			}, new FakeIWebLogger(), _memoryCache);
 			
 			var roleAddToUser = userManager.GetRoleAddToUser(testEmail, new User());
@@ -882,10 +891,10 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 				AccountRegisterDefaultRole = AccountRoles.AppAccountRoles.User,
 			}, new FakeIWebLogger(), _memoryCache);
 			
-			var roleAddToUser = userManager.GetRoleAddToUser(testEmail, beforeItem!);
+			var roleAddToUser = userManager.GetRoleAddToUser(testEmail, beforeItem);
 
 			// clean user
-			_dbContext.Users.Remove(_dbContext.Users.FirstOrDefault(p => p.Name == id));
+			_dbContext.Users.Remove(_dbContext.Users.FirstOrDefault(p => p.Name == id)!);
 			await _dbContext.SaveChangesAsync();
 
 			// check right roles

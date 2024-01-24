@@ -104,7 +104,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			using var scope = _scopeFactory.CreateScope();
 			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
 
-			Assert.IsTrue(logger?.TrackedExceptions.LastOrDefault().Item2.Contains("is not started"));
+			Assert.IsTrue(logger?.TrackedExceptions.LastOrDefault().Item2?.Contains("is not started"));
 		}
 
 		[TestMethod]
@@ -133,8 +133,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			watcher.Dispose();
 
 			Console.WriteLine(logger!.TrackedDebug.LastOrDefault().Item2);
-			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2.Contains("/test"));
-			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2.Contains("Changed"));
+			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2?.Contains("/test"));
+			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2?.Contains("Changed"));
 		}
 		
 		
@@ -166,10 +166,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			watcher.Dispose();
 			var lastItem = logger!.TrackedInformation.LastOrDefault(
-				p => !p.Item2.Contains("SyncWatcherConnector"));
+				p => p.Item2?.Contains("SyncWatcherConnector") == false);
 			
-			Assert.IsTrue(lastItem.Item2.Contains(_createAnImage.FileName));
-			Assert.IsTrue(lastItem.Item2.Contains("OnRenamed to"));
+			Assert.IsTrue(lastItem.Item2?.Contains(_createAnImage.FileName));
+			Assert.IsTrue(lastItem.Item2?.Contains("OnRenamed to"));
 		}
 
 		[TestMethod]
@@ -228,8 +228,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			var event1 = new FileSystemEventArgs(WatcherChangeTypes.Changed,
 				"t", "test.jpg");
-			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null);
-			watcher.OnChanged(null, event1);
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!);
+			watcher.OnChanged(null!, event1);
 			
 			watcher.Dispose();
 		}
@@ -245,10 +245,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var event1 = new FileSystemEventArgs(WatcherChangeTypes.Changed,
 				"t", "test.tmp");
 
-			QueueProcessor processor = null;
+			QueueProcessor? processor = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor);
-			watcher.OnChanged(null, event1);
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor!);
+			watcher.OnChanged(null!, event1);
 			
 			Assert.IsNull(processor);
 		}
@@ -264,10 +264,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var event1 = new FileSystemEventArgs(WatcherChangeTypes.Changed,
 				"t", "test.esp");
 
-			QueueProcessor processor = null;
+			QueueProcessor? processor = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor);
-			watcher.OnChanged(null, event1);
+			var watcher = new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor!);
+			watcher.OnChanged(null!, event1);
 			
 			Assert.IsNull(processor);
 		}
@@ -285,7 +285,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, 
 				"t", "test.jpg", "test2.jpg");
 			
-			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null).OnRenamed(null, event1);
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null!)
+				.OnRenamed(null!, event1);
 		}
 		
 		[TestMethod]
@@ -302,7 +303,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			var processor = new FakeIQueueProcessor();
 			// ReSharper disable once ExpressionIsAlwaysNull
-			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null!, event1);
 			
 			Assert.AreEqual(1, processor.Data.Count);
 			Assert.AreEqual($"t{Path.DirectorySeparatorChar}test2.jpg", processor.Data[0].Item1);
@@ -323,7 +324,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			var processor = new FakeIQueueProcessor();
 			// ReSharper disable once ExpressionIsAlwaysNull
-			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null!, event1);
 			
 			Assert.AreEqual(1, processor.Data.Count);
 			Assert.AreEqual(_createAnImage.FullFilePath, processor.Data[0].Item1);
@@ -345,7 +346,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			var processor = new FakeIQueueProcessor();
 			// ReSharper disable once ExpressionIsAlwaysNull
-			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null!, event1);
 			
 			Assert.AreEqual(0, processor.Data.Count);
 		}
@@ -365,7 +366,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			var processor = new FakeIQueueProcessor();
 			// ReSharper disable once ExpressionIsAlwaysNull
-			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null!, event1);
 			
 			Assert.AreEqual(0, processor.Data.Count);
 		}

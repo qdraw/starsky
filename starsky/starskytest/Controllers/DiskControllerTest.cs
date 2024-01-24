@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
@@ -33,12 +32,9 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class DiskControllerTest
 	{
-		private readonly IQuery _query;
-		private readonly AppSettings _appSettings;
+		private readonly Query _query;
 		private readonly CreateAnImage _createAnImage;
-		private readonly ApplicationDbContext _context;
-		private readonly IServiceScopeFactory _scopeFactory;
-		private IStorage _iStorage;
+		private IStorage? _iStorage;
 
 		public DiskControllerTest()
 		{
@@ -50,7 +46,7 @@ namespace starskytest.Controllers
 			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builderDb.UseInMemoryDatabase("SyncControllerTest");
 			var options = builderDb.Options;
-			_context = new ApplicationDbContext(options);
+			var context = new ApplicationDbContext(options);
 
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
@@ -64,7 +60,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			_createAnImage = new CreateAnImage();
-			var dict = new Dictionary<string, string>
+			var dict = new Dictionary<string, string?>
 			{
 				{"App:StorageFolder", _createAnImage.BasePath},
 				{"App:ThumbnailTempFolder", _createAnImage.BasePath},
@@ -73,7 +69,7 @@ namespace starskytest.Controllers
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();
 			// Add random config to dependency injection
-			builder.AddInMemoryCollection(dict);
+			builder.AddInMemoryCollection(dict!);
 			// build config
 			var configuration = builder.Build();
 			// inject config as object to a service
@@ -86,13 +82,13 @@ namespace starskytest.Controllers
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
-			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
+			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 			
-			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			_query = new Query(_context, _appSettings, _scopeFactory, new FakeIWebLogger(), memoryCache);
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_query = new Query(context, appSettings, scopeFactory, new FakeIWebLogger(), memoryCache);
 		}
 
-		private async Task<FileIndexItem> InsertSearchData()
+		private async Task InsertSearchData()
 		{
 			_iStorage = new FakeIStorage(new List<string> { "/" }, 
 				new List<string> { _createAnImage.DbPath });
@@ -116,7 +112,7 @@ namespace starskytest.Controllers
 				});
 			}
 
-			return _query.GetObjectByFilePath(_createAnImage.DbPath);
+			_query.GetObjectByFilePath(_createAnImage.DbPath);
 		}
 
 		
@@ -137,7 +133,7 @@ namespace starskytest.Controllers
 
 			var result = await controller.Rename("/notfound-image.jpg", "/test.jpg") as NotFoundObjectResult;
 			
-			Assert.AreEqual(404,result.StatusCode);
+			Assert.AreEqual(404,result?.StatusCode);
 		}
 		
 		[TestMethod]
@@ -181,11 +177,11 @@ namespace starskytest.Controllers
 				};
 			
 			var result = await controller.Rename(_createAnImage.DbPath, "/test.jpg") as JsonResult;
-			var list = result.Value as List<FileIndexItem>;
+			var list = result?.Value as List<FileIndexItem>;
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list.FirstOrDefault().Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list?.FirstOrDefault()?.Status);
 
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/test.jpg"));
+			await _query.RemoveItemAsync((await _query.GetObjectByFilePathAsync("/test.jpg"))!);
 		}
 		
 		[TestMethod]
@@ -210,12 +206,12 @@ namespace starskytest.Controllers
 				};
 			
 			var result = await controller.Rename(_createAnImage.DbPath, "/test.jpg", true, false) as JsonResult;
-			var list = result.Value as List<FileIndexItem>;
+			var list = result?.Value as List<FileIndexItem>;
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list[0].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,list[1].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list?[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,list?[1].Status);
 
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/test.jpg"));
+			await _query.RemoveItemAsync((await _query.GetObjectByFilePathAsync("/test.jpg"))!);
 		}
 
 		[TestMethod]
@@ -245,7 +241,7 @@ namespace starskytest.Controllers
 			Assert.AreEqual(1,socket.FakeSendToAllAsync.Count(p => !p.Contains("[system]")));
 			Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
 			
-			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/test.jpg"));
+			await _query.RemoveItemAsync((await _query.GetObjectByFilePathAsync("/test.jpg"))!);
 		}
 
 		[TestMethod]
@@ -269,8 +265,8 @@ namespace starskytest.Controllers
 				};
 			
 			var result = await controller.Mkdir("/test_dir") as JsonResult;
-			var list = result.Value as List<SyncViewModel>;
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list.FirstOrDefault().Status);
+			var list = result?.Value as List<SyncViewModel>;
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list?.FirstOrDefault()?.Status);
 		}
 		
 		[TestMethod]
@@ -324,8 +320,8 @@ namespace starskytest.Controllers
 				};
 			
 			var result = await controller.Mkdir("/test_dir") as JsonResult;
-			var list = result.Value as List<SyncViewModel>;
-			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,list.FirstOrDefault().Status);
+			var list = result?.Value as List<SyncViewModel>;
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,list?.FirstOrDefault()?.Status);
 		}
 		
 				

@@ -28,7 +28,7 @@ namespace starsky.feature.health.HealthCheck
 			var resultsList = _options.ConfiguredPaths.Select(path => new StorageHostFullPathFilesystem()
 				.IsFolderOrFile(path)).ToList();
 
-			if ( !resultsList.Any() )
+			if ( resultsList.Count == 0 )
 				return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus,
 					$"Not configured"));
 

@@ -17,7 +17,7 @@ namespace starsky.foundation.platform.Services
 			Console.WriteLine(message);
 		}
 
-		public string ReadLine()
+		public string? ReadLine()
 		{
 			return Console.ReadLine();
 		}

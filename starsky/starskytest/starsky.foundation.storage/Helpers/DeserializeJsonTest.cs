@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,6 +24,7 @@ namespace starskytest.starsky.foundation.storage.Helpers
 
 			var result = await itemJsonParser.ReadAsync<FileIndexItemJsonParserTest_TestModel>("/test.json");
 			
+			Assert.IsNotNull(result);
 			Assert.AreEqual(200, result.Price);
 			Assert.AreEqual("Title", result.Title);
 			Assert.AreEqual(true, result.ShowButtons);
@@ -56,7 +56,7 @@ namespace starskytest.starsky.foundation.storage.Helpers
 			var itemJsonParser = new DeserializeJson(fakeStorage);
 			var result = await itemJsonParser.ReadAsync<MetadataContainer>("/test.json");
 
-			Assert.AreEqual("/test.jpg", result.Item?.FilePath);
+			Assert.AreEqual("/test.jpg", result?.Item?.FilePath);
 		}
 
 		[TestMethod]
@@ -75,7 +75,7 @@ namespace starskytest.starsky.foundation.storage.Helpers
 	// ReSharper disable once ClassNeverInstantiated.Global
 	public class FileIndexItemJsonParserTest_TestModel
 	{
-		public string Title { get; set; }
+		public string Title { get; set; } = string.Empty;
 		public int Price { get; set; }
 		public bool ShowButtons { get; set; }
 	}

@@ -60,7 +60,7 @@ public class ManualThumbnailGenerationService : IManualThumbnailGenerationServic
 			var result =
 				WhichFilesNeedToBePushedForUpdates(thumbs, getAllFilesAsync);
 
-			if ( !result.Any() )
+			if ( result.Count == 0 )
 			{
 				_logger.LogInformation($"[ThumbnailGenerationController] done - no results {subPath}");
 				return;
