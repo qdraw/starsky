@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Data;
@@ -71,6 +72,9 @@ namespace starskytest.Controllers
 			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
 			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 
+			// for in bg test
+			services.AddSingleton<IGeoBackgroundTask, FakeIGeoBackgroundTask>();
+
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
@@ -100,10 +104,10 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task FolderNotExist()
 		{
-			var istorage = new FakeIStorage(new List<string> {"/"}, 
+			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
 				new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(istorage),
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(fakeIStorage),
 				_memoryCache, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
@@ -147,6 +151,31 @@ namespace starskytest.Controllers
 			
 			var status = controller.Status("/StatusCheck_CachedItemNotExist") as NotFoundObjectResult;
 			Assert.AreEqual(404,status?.StatusCode);
+		}
+
+		[TestMethod]
+		public async Task QueueBackgroundWorkItemAsync()
+		{
+			// reset
+			var geoBackgroundTaskBefore = _scopeFactory.CreateScope().ServiceProvider
+				.GetRequiredService<IGeoBackgroundTask>() as FakeIGeoBackgroundTask;
+			Assert.IsNotNull(geoBackgroundTaskBefore);
+			geoBackgroundTaskBefore.Count = 0;
+			// end reset
+			
+			var storage = new FakeIStorage(new List<string>{"/"});
+			var controller = new GeoController(new FakeIUpdateBackgroundTaskQueue(), 
+				new FakeSelectorStorage(storage), null!, new FakeIWebLogger(), _scopeFactory)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			await controller.GeoSyncFolder();
+
+			var geoBackgroundTask = _scopeFactory.CreateScope().ServiceProvider
+				.GetRequiredService<IGeoBackgroundTask>() as FakeIGeoBackgroundTask;
+			Assert.IsNotNull(geoBackgroundTask);
+			Assert.AreEqual(1,geoBackgroundTask.Count);
 		}
 	}
 }

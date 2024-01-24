@@ -242,7 +242,6 @@ namespace starskytest.starsky.foundation.storage.Services
 			// ExpectedException
 		}
 
-
 		[TestMethod]
 		public void ParseSubfolders_Int_Null()
 		{
