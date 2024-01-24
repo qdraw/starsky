@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,7 +24,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		Assert.AreEqual(0, getResult.Count);
 	}
 
-	public static readonly ImmutableArray<GenerationResultModel> ExampleData = new ImmutableArray<GenerationResultModel>
+	[SuppressMessage("Usage", "S3887:Mutable, non-private fields should not be \"readonly\"")]
+	private static readonly List<GenerationResultModel> ExampleData = new List<GenerationResultModel>
 	{
 		new GenerationResultModel
 		{
@@ -76,7 +77,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData.ToList());
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get();
 		Assert.AreEqual(6, getResult.Count);
@@ -87,7 +88,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData.ToList());
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[0].FileHash); // see the index
 		Assert.AreEqual(1, getResult.Count);
@@ -101,7 +102,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData.ToList());
+		await service.AddOrUpdateStatusAsync(ExampleData);
 								// see the index
 		var getResult = await query.Get(ExampleData[1].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -116,7 +117,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData.ToList());
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[2].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -130,7 +131,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData.ToList());
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[3].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -144,7 +145,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData.ToList());
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[4].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -158,7 +159,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData.ToList());
+		await service.AddOrUpdateStatusAsync(ExampleData);
 
 		var getResult = await query.Get(ExampleData[5].FileHash);
 		Assert.AreEqual(1, getResult.Count);
@@ -167,7 +168,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		Assert.AreEqual(null, getResult[0].Small);
 	}
 	
-	public static readonly ImmutableArray<GenerationResultModel> ExampleData2 = new ImmutableArray<GenerationResultModel>
+	[SuppressMessage("Usage", "S3887:Mutable, non-private fields should not be \"readonly\"")]
+	private static readonly List<GenerationResultModel> ExampleData2 = new List<GenerationResultModel>
 	{
 		new GenerationResultModel
 		{
@@ -219,7 +221,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData2.ToList());
+		await service.AddOrUpdateStatusAsync(ExampleData2);
 
 		await service.AddOrUpdateStatusAsync(new List<GenerationResultModel>{new GenerationResultModel
 		{
@@ -228,7 +230,6 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Success = false,
 			SubPath = "test.jpg"
 		}});
-
 		
 		var getResult = await query.Get(ExampleData2[0].FileHash);
 		Assert.AreEqual(1, getResult.Count);
