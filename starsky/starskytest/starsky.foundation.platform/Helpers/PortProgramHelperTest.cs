@@ -13,8 +13,8 @@ namespace starskytest.starsky.foundation.platform.Helpers;
 [TestClass]
 public class PortProgramHelperTest
 {
-	private readonly string _prePort;
-	private readonly string _preAspNetUrls;
+	private readonly string? _prePort;
+	private readonly string? _preAspNetUrls;
 
 	public PortProgramHelperTest()
 	{

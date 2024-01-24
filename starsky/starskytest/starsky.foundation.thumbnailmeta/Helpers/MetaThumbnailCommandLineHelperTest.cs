@@ -42,7 +42,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 			
 			Assert.AreEqual("/test",fakeMetaThumb.Input[0].Item1);
 
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("Done"));
+			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("Done"));
 		}
 		
 		[TestMethod]

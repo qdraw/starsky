@@ -13,7 +13,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void NewObject()
 		{
 			var input = new AppSettings();
-			AppSettingsCompareHelper.Compare(input,null);
+			AppSettingsCompareHelper.Compare(input);
 
 			Assert.AreEqual(input.Structure, new AppSettings().Structure);
 		}
@@ -301,12 +301,12 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			
 			var to = new AppSettings
 			{
-				DemoData = null
+				DemoData = null!
 			};
 
 			var compare = AppSettingsCompareHelper.Compare(source, to);
 			
-			Assert.AreEqual(null, to.DemoData?.FirstOrDefault());
+			Assert.IsNull(to.DemoData);
 			Assert.AreEqual(0, compare.Count);
 		}
 
@@ -340,7 +340,8 @@ namespace starskytest.starsky.foundation.platform.Helpers
 
 			AppSettingsCompareHelper.Compare(source, to);
 			
-			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
+			Assert.AreEqual(source.PublishProfiles?.Keys.FirstOrDefault(), 
+				to.PublishProfiles?.Keys.FirstOrDefault());
 		}
 		
 		[TestMethod]
@@ -365,7 +366,8 @@ namespace starskytest.starsky.foundation.platform.Helpers
 
 			AppSettingsCompareHelper.Compare(source, to);
 			
-			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
+			Assert.AreEqual(source.PublishProfiles?.Keys.FirstOrDefault(), 
+				to.PublishProfiles?.Keys.FirstOrDefault());
 		}
 		
 		[TestMethod]

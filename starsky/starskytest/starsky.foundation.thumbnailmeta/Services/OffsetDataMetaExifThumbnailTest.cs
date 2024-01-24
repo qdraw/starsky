@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
-using MetadataExtractor.Formats.Iptc;
 using MetadataExtractor.Formats.Jpeg;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -12,8 +10,7 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
 using starskytest.FakeMocks;
 
-
-namespace starskytest.starsky.foundation.readmeta.Services
+namespace starskytest.starsky.foundation.thumbnailmeta.Services
 {
 	[TestClass]
 	public sealed class OffsetDataMetaExifThumbnailTest
@@ -144,7 +141,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 				new FakeIWebLogger()).ReadExifMetaDirectories("/test.jpg");
 
 			// overwrite to set an wrong value
-			thumbnailDirectory.Set(ExifThumbnailDirectory.TagThumbnailLength,1);
+			thumbnailDirectory?.Set(ExifThumbnailDirectory.TagThumbnailLength,1);
 
 			var offsetData = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
 				new FakeIWebLogger()).ParseOffsetData(thumbnailDirectory, "/test.jpg");

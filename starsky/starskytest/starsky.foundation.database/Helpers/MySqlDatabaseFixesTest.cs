@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
@@ -20,7 +19,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(null,new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
-			},new FakeIWebLogger()).FixUtf8Encoding(new List<string>());
+			},new FakeIWebLogger()).FixUtf8Encoding(new List<string?>());
 			Assert.IsNull(result);
 		}
 	
@@ -32,7 +31,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var result = await new MySqlDatabaseFixes(new MySqlConnection(fakeConnectionString),new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
-			},new FakeIWebLogger()).FixUtf8Encoding(new List<string>{""});
+			},new FakeIWebLogger()).FixUtf8Encoding(new List<string?>{""});
 			Assert.IsTrue(result);
 		}
 	
@@ -117,7 +116,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public async Task OpenConnection_Null()
 		{
-			MySqlConnection connection = null;
+			MySqlConnection? connection = null;
 			await new MySqlDatabaseFixes(null!,new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
@@ -136,7 +135,8 @@ namespace starskytest.starsky.foundation.database.Helpers
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql
 			},logger).OpenConnection();
 			
-			Assert.IsTrue(logger.TrackedExceptions.Exists(x=>x.Item2.Contains("MySqlException")));
+			Assert.IsTrue(logger.TrackedExceptions.Exists(
+				x=>x.Item2?.Contains("MySqlException") == true));
 		}
 	
 		[TestMethod]

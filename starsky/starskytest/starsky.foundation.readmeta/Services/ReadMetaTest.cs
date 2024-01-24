@@ -51,6 +51,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 				null, new FakeIWebLogger()).ReadExifAndXmpFromFileAsync("/test.arw");
 		    
 			// Is in source file
+			Assert.IsNotNull(data);
 			Assert.AreEqual(200,data.IsoSpeed);
 			Assert.AreEqual("Diepenveen",data.LocationCity);
 			Assert.AreEqual("caption",data.Description);
@@ -156,7 +157,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		}
 		
 		[TestMethod]
-		public void RemoveReadMetaCache_Exists()
+		public async Task RemoveReadMetaCache_Exists()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
@@ -168,7 +169,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			}, memoryCache, new FakeIWebLogger());
 			
 			// set cache
-			readMeta.ReadExifAndXmpFromFileAsync("/test.jpg");
+			await readMeta.ReadExifAndXmpFromFileAsync("/test.jpg");
 
 			var result = readMeta.RemoveReadMetaCache("/test.jpg");
 		    

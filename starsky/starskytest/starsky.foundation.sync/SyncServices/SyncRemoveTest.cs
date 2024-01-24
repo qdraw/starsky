@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +28,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			(_query, _) = CreateNewExampleData(null);
 		}
 
-		private Tuple<IQuery, IServiceScopeFactory> CreateNewExampleData(List<FileIndexItem> content)
+		private Tuple<IQuery, IServiceScopeFactory> CreateNewExampleData(List<FileIndexItem>? content)
 		{
 			// ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
 			if ( content == null )
@@ -45,9 +44,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var services = new ServiceCollection();
 			var serviceProvider = services.BuildServiceProvider();
 
-			services.AddScoped(p =>_appSettings);
+			services.AddScoped(_ =>_appSettings);
 			var query = new FakeIQuery(content);
-			services.AddScoped<IQuery, FakeIQuery>(p => query);
+			services.AddScoped<IQuery, FakeIQuery>(_ => query);
 			var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			return new Tuple<IQuery, IServiceScopeFactory>(query, serviceScopeFactory);
 		}
@@ -55,7 +54,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task FileNotOnDrive()
 		{
-			var remove = new SyncRemove(_appSettings, _query, null, null, null);
+			var remove = new SyncRemove(_appSettings, _query, null, null!, null);
 			var result= await remove.RemoveAsync("/not_found");
 			
 			Assert.AreEqual(1, result.Count);
@@ -65,7 +64,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task FileNotOnDrive_Object()
 		{
-			var remove = new SyncRemove(_appSettings, _query, null, null, null);
+			var remove = new SyncRemove(_appSettings, _query, null, null!, null);
 			await _query.AddItemAsync(new FileIndexItem("/FileNotOnDrive_Object.jpg"));
 			var item = await 
 				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object.jpg");
@@ -78,7 +77,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);
 
 			var allRecursive = await _query.GetAllRecursiveAsync();
-			var item2 = allRecursive.FirstOrDefault(p =>
+			var item2 = allRecursive.Find(p =>
 				p.FilePath == "/FileNotOnDrive_Object.jpg" && p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing);
 
 			Assert.IsNull(item2);
@@ -87,7 +86,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task FileNotOnDrive_Object_Ignore_wrongStatus()
 		{
-			var remove = new SyncRemove(_appSettings, _query, null, null, null);
+			var remove = new SyncRemove(_appSettings, _query, null, null!, null);
 			await _query.AddItemAsync(new FileIndexItem("/FileNotOnDrive_Object_Ignore_wrongStatus.jpg"));
 			var item = await 
 				_query.GetObjectByFilePathAsync("/FileNotOnDrive_Object_Ignore_wrongStatus.jpg");
@@ -99,7 +98,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(0, result.Count);
 
 			var allRecursive = await _query.GetAllRecursiveAsync();
-			var queryResult = allRecursive.FirstOrDefault(p =>
+			var queryResult = allRecursive.Find(p =>
 				p.FilePath == "/FileNotOnDrive_Object_Ignore_wrongStatus.jpg");
 
 			Assert.AreEqual(item,queryResult);
@@ -108,7 +107,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task SingleItem_Folder_Remove()
 		{
-			var remove = new SyncRemove(_appSettings, _query, null, null,null);
+			var remove = new SyncRemove(_appSettings, _query, null, null!,null);
 			var result= await remove.RemoveAsync("/folder_no_content");
 			
 			Assert.AreEqual(1, result.Count);
@@ -147,7 +146,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				}
 			};
 			var query = new FakeIQuery(queryContent);
-			var remove = new SyncRemove(appSettings, query, null, null, null);
+			var remove = new SyncRemove(appSettings, query, null, null!, null);
 
 			var result= await remove.RemoveAsync(new List<string>{
 				"/sidecar_test__1/test.xmp",
@@ -166,6 +165,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			{
 				item = await query.GetObjectByFilePathAsync("/sidecar_test__1/test.dng");
 			}
+			
+			Assert.IsNotNull(item);
 			
 			Assert.AreEqual(0, item.SidecarExtensionsList.Count);
 			

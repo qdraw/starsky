@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.realtime.Services
 
 			await service.SendToAllAsync("test", CancellationToken.None);
 			
-			Assert.IsTrue(fakeSocket.FakeSendItems.LastOrDefault().StartsWith("test"));
+			Assert.IsTrue(fakeSocket.FakeSendItems.LastOrDefault()?.StartsWith("test"));
 		}
 		
 		[TestMethod]
@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.realtime.Services
 			var fakeSocket = new FakeWebSocket();
 			service.AddConnection(new WebSocketConnection(fakeSocket));
 
-			await service.SendToAllAsync(null as string, CancellationToken.None);
+			await service.SendToAllAsync(null!, CancellationToken.None);
 			Assert.AreEqual(1,logger.TrackedInformation.Count);
 		}
 		

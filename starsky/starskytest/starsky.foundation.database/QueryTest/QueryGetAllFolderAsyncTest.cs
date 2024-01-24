@@ -7,10 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
@@ -20,19 +18,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	public sealed class QueryGetAllFolderAsyncTest
 	{
 		private readonly IMemoryCache _memoryCache;
-		private readonly IQuery _query;
 
 		public QueryGetAllFolderAsyncTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
-			var serviceScope = CreateNewScope();
-			var scope = serviceScope.CreateScope();
-			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			_query = new Query(dbContext, 
-				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
+			_memoryCache = provider.GetRequiredService<IMemoryCache>();
 		}
 		
 		private IServiceScopeFactory CreateNewScope()
@@ -51,7 +43,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
-			var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
+			var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
 			var query = new Query(dbContext, new AppSettings(), null, 
 				new FakeIWebLogger(), new FakeMemoryCache());
 
@@ -76,7 +68,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
-			var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
+			var dbContext = new SetupDatabaseTypes(appSettings).BuilderDbFactory();
 			var query = new Query(dbContext, new AppSettings(), 
 				null, new FakeIWebLogger(), new FakeMemoryCache());
 
@@ -123,9 +115,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			var getItem = await query.GetFoldersAsync("/test_324323423");
 			Assert.IsNotNull(getItem);
-			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
+			Assert.AreEqual("test", getItem.FirstOrDefault()?.Tags);
 
-			await query.RemoveItemAsync(getItem.FirstOrDefault());
+			var cleanItem = getItem.FirstOrDefault();
+			Assert.IsNotNull(cleanItem);
+			await query.RemoveItemAsync(cleanItem);
 		}
 	}
 }

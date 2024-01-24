@@ -1,12 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -47,6 +42,8 @@ namespace starskytest.starsky.foundation.database.Helpers
 			// expect exception: Relational-specific methods can only be used when the context is using a relational database provider.
 		}
 
+		[SuppressMessage("Usage", "S6602: First or Default")]
+		[SuppressMessage("Usage", "S3398: move function")]
 		private static MySqlException CreateMySqlException(string message)
 		{
 			// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
@@ -59,14 +56,14 @@ namespace starskytest.starsky.foundation.database.Helpers
 				p.ToString() == "Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)" );
 				
 			var instance =
-				( MySqlException ) ctor?.Invoke(new object[]
+				( MySqlException? ) ctor?.Invoke(new object[]
 				{
 					MySqlErrorCode.AccessDenied,
 					"test",
 					message,
 					new Exception()
 				});
-			return instance;
+			return instance!;
 		}
 		
 		private class AppDbMySqlException : ApplicationDbContext

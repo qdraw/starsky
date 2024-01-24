@@ -18,7 +18,9 @@ public class SizeFileHashIsTheSameTest
 	[TestMethod]
 	public async Task SizeFileHashIsTheSame_true()
 	{
-		var lastEdited = new DateTime(2020, 03, 07, 18, 25, 02);
+		var lastEdited = new DateTime(2020, 03, 07, 18, 
+			25, 02, kind: DateTimeKind.Local);
+		
 		var storage = new FakeIStorage(new List<string>{"/"}, 
 			new List<string>{"/test.jpg"}, new List<byte[]>{
 				CreateAnImage.Bytes.ToArray()}, 
@@ -51,7 +53,8 @@ public class SizeFileHashIsTheSameTest
 	[TestMethod]
 	public async Task IsTheSame_DateTime()
 	{
-		var lastEdited = new DateTime(2020, 03, 07, 18, 25, 02);
+		var lastEdited = new DateTime(2020, 03, 07, 
+			18, 25, 02, kind: DateTimeKind.Local);
 		var dbItems = new List<FileIndexItem> { new FileIndexItem("/test.jpg")
 		{
 			DateTime = lastEdited
@@ -64,6 +67,7 @@ public class SizeFileHashIsTheSameTest
 		var result = await new SizeFileHashIsTheSameHelper(storage).SizeFileHashIsTheSame(
 			dbItems,
 			"/101NZ_50/DSC_0045.NEF");
+		
 		Assert.AreEqual(false, result.Item1);
 		Assert.AreEqual(false, result.Item2);
 	}
@@ -71,7 +75,8 @@ public class SizeFileHashIsTheSameTest
 	[TestMethod]
 	public async Task IsTheSame_Hash()
 	{
-		var lastEdited = new DateTime(2020, 03, 07, 18, 25, 02);
+		var lastEdited = new DateTime(2020, 03, 07, 18, 
+			25, 02, kind: DateTimeKind.Local);
 		var storage = new FakeIStorage(new List<string>{"/"}, 
 			new List<string>{"/test.jpg"}, new List<byte[]>{
 				CreateAnImage.Bytes.ToArray()}, 
@@ -113,7 +118,8 @@ public class SizeFileHashIsTheSameTest
 		                    "\"Make\":\"Nikon Corporation\",\"Model\":\"NIKON Z 50\"," +
 		                    "\"LensModel\":\"NIKKOR Z DX 16-50mm f/3.5-6.3 VR\",\"FocalLength\":20,\"Size\":26494796,\"ImageStabilisation\":\"Unknown\",\"LastChanged\":[]}]";
 
-		var lastEdited = new DateTime(2020, 03, 07, 18, 25, 02);
+		var lastEdited = new DateTime(2020, 03, 07, 
+			18, 25, 02, kind: DateTimeKind.Local);
 		var storage = new FakeIStorage(new List<string>{"/","/101NZ_50"}, 
 			new List<string>{"/101NZ_50/DSC_0045.NEF","/101NZ_50/DSC_0045.xmp"}, new List<byte[]>{
 				CreateAnImage.Bytes.ToArray(), 
@@ -121,6 +127,7 @@ public class SizeFileHashIsTheSameTest
 			new List<DateTime>{lastEdited, lastEdited});
 
 		var dbItems = JsonSerializer.Deserialize<List<FileIndexItem>>(text);
+		Assert.IsNotNull(dbItems);
 		dbItems[0].LastEdited = lastEdited;
 		var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/101NZ_50/DSC_0045.NEF");
 		dbItems[1].FileHash = fileHash;

@@ -28,7 +28,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void AppSettingsPublishProfilesTest_FolderNull()
 		{
 			var model = new AppSettingsPublishProfiles();
-			model.Folder = null;
+			model.Folder = null!;
 
 			var getFolder = model.Folder;
 
@@ -63,7 +63,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		{
 			var model = new AppSettingsPublishProfiles
 			{
-				Path = null
+				Path = null!
 			};
 			
 			Assert.IsTrue(model.Path.Contains("default.png"));
@@ -72,9 +72,7 @@ namespace starskytest.starsky.foundation.platform.Models
 		[TestMethod]
 		public void GetExtensionWithDot_Nothing()
 		{
-			var model = new AppSettingsPublishProfiles
-			{
-			};
+			var model = new AppSettingsPublishProfiles();
 
 			var result = model.GetExtensionWithDot("");
 			Assert.AreEqual("",result);

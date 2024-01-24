@@ -18,7 +18,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	public sealed class QueryGetObjectsByFilePathAsyncTest
 	{
 		private readonly Query _query;
-		private IMemoryCache _memoryCache;
+		private IMemoryCache? _memoryCache;
 
 		private IServiceScopeFactory CreateNewScope()
 		{
@@ -27,14 +27,14 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			services.AddDbContext<ApplicationDbContext>(options => 
 				options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathAsyncTest)));
 			var serviceProvider = services.BuildServiceProvider();
-			_memoryCache = serviceProvider.GetService<IMemoryCache>();
+			_memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 
 		public QueryGetObjectsByFilePathAsyncTest()
 		{
 			_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), new AppSettings(), 
+				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), 
 				null!, new FakeIWebLogger(), new FakeMemoryCache()) ;
 		}
 
@@ -43,7 +43,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task GetObjectsByFilePathAsync_cache_collectionFalse()
 		{
 			var query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(),_memoryCache) ;
+				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(),_memoryCache) ;
 
 			var dirName = "/cache_01";
 			query.AddCacheParentItem(dirName,
@@ -65,7 +65,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task GetObjectsByFilePathAsync_cache_collectionTrue()
 		{
 			var query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(), _memoryCache);
+				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(), _memoryCache);
 
 			var dirName = "/cache_02";
 			query.AddCacheParentItem(dirName,
@@ -87,7 +87,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task GetObjectsByFilePathAsync_notImplicitSet_cache_collectionTrue()
 		{
 			var query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(), _memoryCache);
+				.GetRequiredService<ApplicationDbContext>(), new AppSettings(), CreateNewScope(), new FakeIWebLogger(), _memoryCache);
 
 			var dirName = "/implicit_item_02";
 			await query.AddRangeAsync(new List<FileIndexItem>

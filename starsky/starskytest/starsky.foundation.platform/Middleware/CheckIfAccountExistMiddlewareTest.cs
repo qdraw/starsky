@@ -103,6 +103,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			var userManager = _serviceProvider.GetRequiredService<IUserManager>();
 
 			var result = await userManager.SignUpAsync("test", "email", "test", "test");
+			Assert.IsNotNull(httpContextAccessor.HttpContext);
 			
 			await userManager.SignIn(httpContextAccessor.HttpContext, result.User);
 			
@@ -129,6 +130,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			var userManager = _serviceProvider.GetRequiredService<IUserManager>();
 
 			var result = await userManager.SignUpAsync("test", "email", "test", "test");
+			Assert.IsNotNull(httpContextAccessor.HttpContext);
 
 			await userManager.SignIn(httpContextAccessor.HttpContext, result.User);
 

@@ -17,10 +17,7 @@ namespace starskytest.starsky.foundation.database.QueryTest;
 public class QueryRemoveItemAsyncTest
 {
 	private readonly Query _query;
-	private readonly IMemoryCache _memoryCache;
-	private readonly FakeIWebLogger _logger;
-	private readonly Query _queryNoVerbose;
-	
+
 	private static IServiceScopeFactory CreateNewScope()
 	{
 		var services = new ServiceCollection();
@@ -34,15 +31,13 @@ public class QueryRemoveItemAsyncTest
 		var provider = new ServiceCollection()
 			.AddMemoryCache()
 			.BuildServiceProvider();
-		_memoryCache = provider.GetService<IMemoryCache>();
+		var memoryCache = provider.GetRequiredService<IMemoryCache>();
 		var serviceScope = CreateNewScope();
 		var scope = serviceScope.CreateScope();
 		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-		_logger = new FakeIWebLogger();
+		var logger = new FakeIWebLogger();
 		_query = new Query(dbContext, 
-			new AppSettings{Verbose = true}, serviceScope,_logger ,_memoryCache);
-		_queryNoVerbose = new Query(dbContext, 
-			new AppSettings{Verbose = false}, serviceScope,_logger ,_memoryCache);
+			new AppSettings{Verbose = true}, serviceScope,logger ,memoryCache);
 	}
 	
 	[TestMethod]
@@ -55,7 +50,6 @@ public class QueryRemoveItemAsyncTest
 		await _query.RemoveItemAsync(result);
 		Assert.AreEqual(null, _query.GetObjectByFilePath(path));
 	}
-	
 		
 	[TestMethod]
 	public async Task QueryRemoveItemAsyncTest_List_AddOneItem()

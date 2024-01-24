@@ -17,7 +17,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly IGeoFileDownload _geoFileDownload;
-		private readonly FakeIWebLogger _logger;
+		private readonly FakeIWebLogger? _logger;
 
 		public GeoFileDownloadBackgroundServiceTest()
 		{
@@ -50,7 +50,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			value!.Count = int.MaxValue;
 			await new GeoFileDownloadBackgroundService(_serviceScopeFactory).StartAsync(new CancellationToken());
 		
-			Assert.IsTrue(_logger.TrackedExceptions.LastOrDefault().Item2?.Contains("Not allowed to write to disk"));
+			Assert.IsTrue(_logger?.TrackedExceptions.LastOrDefault().Item2?.Contains("Not allowed to write to disk"));
 		}
 		
 		[TestMethod]
