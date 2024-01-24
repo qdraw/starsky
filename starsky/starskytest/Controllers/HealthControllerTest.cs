@@ -33,7 +33,7 @@ namespace starskytest.Controllers
 			Assert.IsTrue(castedResult?.Entries.FirstOrDefault()?.IsHealthy);
 			Assert.AreEqual("test", castedResult?.Entries.FirstOrDefault()?.Name );
 			Assert.IsTrue(castedResult?.Entries.FirstOrDefault()?.Duration == TimeSpan.Zero);
-			Assert.IsTrue(castedResult.Entries.Any());
+			Assert.IsTrue(castedResult.Entries.Count != 0);
 			Assert.IsTrue(castedResult.TotalDuration == TimeSpan.Zero);
 		}
 		

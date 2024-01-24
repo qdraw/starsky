@@ -25,7 +25,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 			Console.WriteLine("count => "+ content.Count);
 
 			// Gives a list of the content in the temp folder.
-			Assert.AreEqual(true, content.Any());            
+			Assert.AreEqual(true, content.Count != 0);            
 		}
 		
 		[TestMethod]
