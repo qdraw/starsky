@@ -81,7 +81,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return ParseExifDirectory(allExifItems, existingFileIndexItem);
         }
 
-        private FileIndexItem ParseExifDirectory(List<Directory> allExifItems, FileIndexItem item)
+        internal FileIndexItem ParseExifDirectory(List<Directory> allExifItems, FileIndexItem? item)
         {
             // Used to overwrite feature
             if (item == null)
