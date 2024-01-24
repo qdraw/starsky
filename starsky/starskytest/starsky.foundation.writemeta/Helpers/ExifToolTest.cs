@@ -88,6 +88,25 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		}
 
 		[TestMethod]
+		public void StreamSeekBegin1()
+		{
+			var exifTool = new ExifTool(null!, null!, null!, new FakeIWebLogger());
+			var streamSeekBegin = exifTool.StreamSeekBegin(Stream.Null);
+			Assert.IsTrue(streamSeekBegin);
+		}
+		
+		[TestMethod]
+		public void StreamSeekBegin2()
+		{
+			var exifTool = new ExifTool(null!, null!, null!, new FakeIWebLogger());
+			var stream = new MemoryStream();
+			stream.Dispose();
+			var streamSeekBegin = exifTool.StreamSeekBegin(stream);
+			
+			Assert.IsFalse(streamSeekBegin);
+		}
+
+		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void StreamToStreamRunner_ArgumentNullException()
 		{

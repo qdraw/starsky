@@ -56,9 +56,8 @@ namespace starsky.foundation.writemeta.Helpers
 
 			var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
 				!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
-			
-			// Set stream to begin for use afterwards
-			stream.Seek(0, SeekOrigin.Begin);
+
+			StreamSeekBegin(stream);
 			
 			// Need to Dispose for Windows
 			inputStream.Close();
@@ -71,6 +70,24 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 			
 			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
+		}
+
+		/// <summary>
+		/// Set stream to begin for use afterwards
+		/// </summary>
+		/// <param name="stream">memoryStream</param>
+		internal bool StreamSeekBegin(Stream stream)
+		{
+			try
+			{
+				stream.Seek(0, SeekOrigin.Begin);
+			}
+			catch ( ObjectDisposedException error)
+			{
+				_logger.LogError(error,"Catch-ed object ObjectDisposedException");
+				return false;
+			}
+			return true;
 		}
 		
 		[SuppressMessage("ReSharper", "MustUseReturnValue")]
