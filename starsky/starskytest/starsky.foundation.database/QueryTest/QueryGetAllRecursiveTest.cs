@@ -1,9 +1,8 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
@@ -74,6 +72,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await _query.RemoveItemAsync(result[3]);
 		}
 		
+		[SuppressMessage("Usage", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension")]
+		[SuppressMessage("Usage", "S3398:move class")]
 		private static MySqlException CreateMySqlException(string message)
 		{
 			// MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException
@@ -108,6 +108,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				_error = error;
 			}
 
+			[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")] 
 			public DbSet<FileIndexItem> IndexItems { get; set; } = null!;
 
 			public override DbSet<FileIndexItem> FileIndex

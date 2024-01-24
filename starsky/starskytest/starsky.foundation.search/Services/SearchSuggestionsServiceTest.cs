@@ -17,10 +17,10 @@ namespace starskytest.starsky.foundation.search.Services
 	[TestClass]
 	public sealed class SearchSuggestionsServiceTest
 	{
-		private SearchSuggestionsService _suggest;
-		private Query _query;
-		private ApplicationDbContext _dbContext;
-		private IMemoryCache _memoryCache;
+		private readonly SearchSuggestionsService _suggest;
+		private readonly Query _query;
+		private readonly ApplicationDbContext _dbContext;
+		private readonly IMemoryCache _memoryCache;
 		
 		public SearchSuggestionsServiceTest()
 		{
@@ -73,12 +73,6 @@ namespace starskytest.starsky.foundation.search.Services
 
 		}
 		
-		[TestCleanup]
-		public void TestCleanup()
-		{
-			
-		}
-		
 		[TestMethod]
 		public async Task SearchSuggestionsService_MoreThat2_StartArray()
 		{
@@ -86,7 +80,6 @@ namespace starskytest.starsky.foundation.search.Services
 			var result = await _suggest.SearchSuggest("sch");
 			
 			Assert.AreEqual("schiphol", result.FirstOrDefault());
-			
 		}
 		
 		[TestMethod]

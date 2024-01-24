@@ -17,11 +17,6 @@ public class SettingsServiceTest
 {
 	private static ApplicationDbContext SetScope()
 	{
-		// var provider = new ServiceCollection()
-		// 	.AddMemoryCache()
-		// 	.BuildServiceProvider();
-		// var memoryCache = provider.GetService<IMemoryCache>();
-            
 		var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
 		builderDb.UseInMemoryDatabase("test1234");
 		var options = builderDb.Options;

@@ -25,7 +25,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly IMemoryCache _memoryCache;
 
 		public SingleFileIntegrationTest()
@@ -49,28 +48,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var serviceProvider = provider.BuildServiceProvider();
 			
 			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
-			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
 
 			_query = serviceProvider.GetRequiredService<IQuery>();
 		}
-		
-		// [TestMethod]
-		// public async Task NewItem()
-		// {
-		// 	var stopWatch = new Stopwatch();
-		// 	stopWatch.Start();
-		//
-		// 	var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage), new FakeIWebLogger(),null);
-		// 	var result = await sync.Sync(_createAnImage.DbPath);
-		//
-		// 	stopWatch.Stop();
-		// 	var ts = stopWatch.Elapsed;
-		// 	// Format and display the TimeSpan value.
-		// 	var elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-		// 	Console.WriteLine("RunTime " + elapsedTime);
-		// 	Assert.IsNotNull(result);
-		// }
 		
 		[TestMethod]
 		public async Task ExistingItem()

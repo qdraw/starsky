@@ -6,13 +6,11 @@ export default {
 
 export const Default = () => {
   return (
-    <>
-      <CurrentLocationButton
-        callback={(result) => {
-          alert(`${result.latitude} ${result.longitude}`);
-        }}
-      ></CurrentLocationButton>
-    </>
+    <CurrentLocationButton
+      callback={(result) => {
+        alert(`${result.latitude} ${result.longitude}`);
+      }}
+    ></CurrentLocationButton>
   );
 };
 

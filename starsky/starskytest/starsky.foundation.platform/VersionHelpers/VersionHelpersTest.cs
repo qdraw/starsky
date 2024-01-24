@@ -417,9 +417,11 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		
 		private static IEnumerable<(SemVersion, SemVersion)> AllPairs(IReadOnlyList<SemVersion> versions)
 		{
-			for (var i = 0; i < versions.Count; i++)
-			for (var j = i + 1; j < versions.Count; j++)
-				yield return (versions[i], versions[j]);
+			for ( var i = 0; i < versions.Count; i++ )
+			{
+				for (var j = i + 1; j < versions.Count; j++)
+					yield return (versions[i], versions[j]);
+			}
 		}
 	}
 }

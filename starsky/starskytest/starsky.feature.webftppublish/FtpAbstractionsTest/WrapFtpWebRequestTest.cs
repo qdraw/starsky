@@ -67,7 +67,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		[ExpectedException(typeof(System.NullReferenceException))]
 		public void KeepAlive_Get_UseBinary()
 		{
-			var result = new WrapFtpWebRequest(null).UseBinary;
+			_ = new WrapFtpWebRequest(null).UseBinary;
 		}
 		
 		[TestMethod]
@@ -81,7 +81,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		[ExpectedException(typeof(System.NullReferenceException))]
 		public void KeepAlive_Get_Null()
 		{
-			var keepAlive = new WrapFtpWebRequest(null).KeepAlive;
+			_ = new WrapFtpWebRequest(null).KeepAlive;
 		}
 		
 		[TestMethod]

@@ -596,7 +596,8 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
 				new List<Directory>{dir});
 		
-			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4).ToLocalTime();
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 
+				9, 40, 4, kind: DateTimeKind.Utc).ToLocalTime();
 			CultureInfo.CurrentCulture = new CultureInfo(currentCultureThreeLetterIsoLanguageName);
 
 			Assert.AreEqual(expectedExifDateTime, result);

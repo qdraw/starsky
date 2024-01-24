@@ -52,7 +52,7 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			Assert.IsNotNull(setting);
 			Assert.AreEqual(DateTime.UtcNow.Day, setting.ToUniversalTime().Day);
 			Assert.AreEqual(DateTime.UtcNow.Hour, setting.ToUniversalTime().Hour);
-			Assert.IsTrue((synchronize as FakeISynchronize)!.Inputs.Any(p => p.Item1 == "/"));
+			Assert.IsTrue((synchronize as FakeISynchronize)!.Inputs.Exists(p => p.Item1 == "/"));
 		}
 		
 		[TestMethod]
@@ -73,7 +73,7 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			var setting = await settingsService.GetSetting<DateTime>(SettingsType
 				.LastSyncBackgroundDateTime);
 			
-			Assert.IsFalse((synchronize as FakeISynchronize)!.Inputs.Any(p => p.Item1 == "/"));
+			Assert.IsFalse((synchronize as FakeISynchronize)!.Inputs.Exists(p => p.Item1 == "/"));
 			
 			Assert.AreEqual(1, setting.Year);
 			Assert.AreEqual(1, setting.Month);

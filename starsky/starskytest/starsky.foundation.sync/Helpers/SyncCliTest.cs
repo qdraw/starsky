@@ -37,7 +37,7 @@ namespace starskytest.starsky.foundation.sync.Helpers
 				new FakeSelectorStorage()).Sync(
 				new List<string>{""}.ToArray());
 		
-			Assert.IsTrue(console.WrittenLines.Any(p => p.Contains("Not Found")));
+			Assert.IsTrue(console.WrittenLines.Exists(p => p.Contains("Not Found")));
 		}
 		
 		[TestMethod]
@@ -49,7 +49,7 @@ namespace starskytest.starsky.foundation.sync.Helpers
 				new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}))).Sync(
 				new List<string>{""}.ToArray());
 
-			var t = console.WrittenLines.Any(p => p.Contains("Not Found"));
+			var t = console.WrittenLines.Exists(p => p.Contains("Not Found"));
 			Assert.IsFalse(t);
 		}
 		
