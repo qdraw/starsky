@@ -141,6 +141,12 @@ namespace starsky.foundation.storage.Storage
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Read Stream (and keep open)
+		/// </summary>
+		/// <param name="path">location</param>
+		/// <param name="maxRead">how many bytes are read (default all or -1)</param>
+		/// <returns>Stream with data (non-disposed)</returns>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( !ExistFile(path) ) throw new FileNotFoundException(path); 

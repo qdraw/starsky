@@ -11,7 +11,7 @@ namespace starsky.foundation.storage.Helpers
     {
 
 	    /// <summary>
-	    /// Stream to string (UTF8) But Async
+	    /// Stream to string (UTF8) But Async - check dispose flag
 	    /// </summary>
 	    /// <param name="stream">stream</param>
 	    /// <param name="dispose">dispose afterwards = default true</param>

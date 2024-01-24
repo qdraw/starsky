@@ -54,12 +54,25 @@ namespace starsky.foundation.storage.Interfaces
 		/// <returns>list</returns>
 		IEnumerable<KeyValuePair<string,DateTime>> GetDirectoryRecursive(string path);
 
+		/// <summary>
+		/// Read Stream (and keep open)
+		/// </summary>
+		/// <param name="path">location</param>
+		/// <param name="maxRead">how many bytes are read (default all or -1)</param>
+		/// <returns>Stream with data (non-disposed)</returns>
 		Stream ReadStream(string path, int maxRead = -1);
 		
 		bool WriteStream(Stream stream, string path);
 		bool WriteStreamOpenOrCreate(Stream stream, string path);
 
+		/// <summary>
+		/// Write and dispose afterwards
+		/// </summary>
+		/// <param name="stream">stream</param>
+		/// <param name="path">where to write to</param>
+		/// <returns>is Success</returns>
 		Task<bool> WriteStreamAsync(Stream stream, string path);
+		
 		StorageInfo Info(string path);
 
 		DateTime SetLastWriteTime(string path, DateTime? dateTime = null);

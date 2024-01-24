@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -36,6 +37,7 @@ public class ExifToolServiceTest
 		}
 
 	}
+	
 	[TestMethod]
 	public async Task WriteTagsAndRenameThumbnailAsync__UnixOnly()
 	{
@@ -60,5 +62,35 @@ public class ExifToolServiceTest
 			null, "");
 		
 		Assert.AreEqual(false,result.Key);
+	}
+	
+	[TestMethod]
+	[ExpectedException(typeof(TaskCanceledException))]
+	public async Task WriteTagsAndRenameThumbnailAsync_TaskCanceledException__UnixOnly()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+		
+		var storage = new FakeIStorage(new List<string>{"/"}, 
+			new List<string>{"/image.jpg"}, new List<byte[]>
+			{
+				CreateAnImage.Bytes.ToArray()
+			});
+		
+		var service = new ExifToolService(new FakeSelectorStorage(storage), new AppSettings
+		{
+			ExifToolPath = _exifToolPath
+		}, new FakeIWebLogger());
+
+		using var cancelSource = new CancellationTokenSource();
+		var token = cancelSource.Token;
+		await cancelSource.CancelAsync();
+			
+		await service.WriteTagsAndRenameThumbnailAsync("/image.jpg", 
+			null, "", token);
+		// Cancel token
 	}
 }

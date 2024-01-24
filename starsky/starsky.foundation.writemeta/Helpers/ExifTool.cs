@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -56,8 +55,8 @@ namespace starsky.foundation.writemeta.Helpers
 
 			var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
 				!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
-
-			StreamSeekBegin(stream);
+			
+			stream.Seek(0, SeekOrigin.Begin);
 			
 			// Need to Dispose for Windows
 			inputStream.Close();
@@ -71,40 +70,41 @@ namespace starsky.foundation.writemeta.Helpers
 			
 			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
 		}
-
-		/// <summary>
-		/// Set stream to begin for use afterwards
-		/// </summary>
-		/// <param name="stream">memoryStream</param>
-		internal bool StreamSeekBegin(Stream stream)
-		{
-			try
-			{
-				stream.Seek(0, SeekOrigin.Begin);
-			}
-			catch ( ObjectDisposedException error)
-			{
-				_logger.LogError(error,"Catch-ed object ObjectDisposedException");
-				return false;
-			}
-			return true;
-		}
 		
+		/// <summary>
+		/// Need to dispose string afterwards yourself
+		/// </summary>
+		/// <param name="beforeFileHash">the before fileHash</param>
+		/// <param name="stream">stream</param>
+		/// <param name="isSuccess">isHashing success, otherwise skip this</param>
+		/// <param name="cancellationToken">cancel Token</param>
+		/// <returns></returns>
 		[SuppressMessage("ReSharper", "MustUseReturnValue")]
 		internal async Task<string> RenameThumbnailByStream(
 			string beforeFileHash, Stream stream, bool isSuccess, CancellationToken cancellationToken = default)
 		{
-			if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess ) return string.Empty;
+			if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess )
+			{
+				return string.Empty;
+			}
+			
 			var buffer = new byte[FileHash.MaxReadSize];
 			await stream.ReadAsync(buffer.AsMemory(0, FileHash.MaxReadSize), cancellationToken);
 			
 			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer), cancellationToken);
-			if ( string.IsNullOrEmpty(newHashCode)) return string.Empty;
+			if ( string.IsNullOrEmpty(newHashCode) )
+			{
+				return string.Empty;
+			}
 
-			if ( beforeFileHash == newHashCode ) return newHashCode;
+			if ( beforeFileHash == newHashCode )
+			{
+				return newHashCode;
+			}
 			
-			new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(
-				beforeFileHash, newHashCode);
+			var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage);
+			service.FileMove(beforeFileHash, newHashCode);
+			
 			return newHashCode;
 		}
 
@@ -162,7 +162,7 @@ namespace starsky.foundation.writemeta.Helpers
 
 
 		/// <summary>
-		/// Run Command async
+		/// Run Command async (and keep stream open)
 		/// </summary>
 		/// <param name="optionsArgs">exifTool args</param>
 		/// <returns>bool if success</returns>
