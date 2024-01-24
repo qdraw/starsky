@@ -94,7 +94,7 @@ namespace starskytest.starsky.feature.syncbackground.Helpers
 			await startupSync.PushToSockets(new List<FileIndexItem>());
 			var result =
 				( socketService as
-					FakeIWebSocketConnectionsService )!.FakeSendToAllAsync.Any();
+					FakeIWebSocketConnectionsService )!.FakeSendToAllAsync.Count != 0;
 			Assert.IsTrue(result);
 		}
 	}

@@ -22,12 +22,12 @@ namespace starsky.Controllers
 	public sealed class HealthController: Controller
 	{
 		private readonly HealthCheckService _service;
-		private readonly ApplicationInsightsJsHelper _applicationInsightsJsHelper;
+		private readonly ApplicationInsightsJsHelper? _applicationInsightsJsHelper;
 		private readonly ITelemetryService _telemetryService;
-		private readonly IMemoryCache _cache;
+		private readonly IMemoryCache? _cache;
 
 		public HealthController(HealthCheckService service, ITelemetryService telemetryService, 
-			ApplicationInsightsJsHelper applicationInsightsJsHelper = null, IMemoryCache memoryCache = null)
+			ApplicationInsightsJsHelper? applicationInsightsJsHelper = null, IMemoryCache? memoryCache = null)
 		{
 			_service = service;
 			_applicationInsightsJsHelper = applicationInsightsJsHelper;
@@ -193,7 +193,7 @@ namespace starsky.Controllers
 		/// <response code="400">Missing x-api-version header OR bad formatted version in header</response>
 		[HttpPost("/api/health/version")]
 		[AllowAnonymous]
-		public IActionResult Version(string version = null)
+		public IActionResult Version(string? version = null)
 		{
 			if ( string.IsNullOrEmpty(version) )
 			{

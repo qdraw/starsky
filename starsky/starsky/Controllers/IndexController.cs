@@ -41,7 +41,7 @@ namespace starsky.Controllers
 	    [ProducesResponseType(401)]
 	    public IActionResult Index(
             string f = "/", 
-            string colorClass = null,
+            string? colorClass = null,
             bool collections = true,
             bool hideDelete = true,
             SortType sort = SortType.FileName)
@@ -60,7 +60,7 @@ namespace starsky.Controllers
             
             if (singleItem is { IsDirectory: false })
             {
-	            singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem?.ParentDirectory);
+	            singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem?.ParentDirectory!);
                 return Json(singleItem);
             }
 

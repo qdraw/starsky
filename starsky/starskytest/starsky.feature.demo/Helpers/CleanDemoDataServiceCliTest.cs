@@ -91,7 +91,7 @@ public class CleanDemoDataServiceCliTest
 		var service = new CleanDemoDataServiceCli(_appSettings, httpClientHelper,
 			_selectorStorage, _logger!, _console, new FakeISynchronize());
 		
-		await service.SeedCli(new string[]{"-h"});
+		await service.SeedCli(["-h"]);
 
 		var fakeConsoleWrapper = _console as FakeConsoleWrapper;
 		var isTrue = fakeConsoleWrapper?.WrittenLines.Find(p => p.Contains("--help")) != null;
@@ -109,7 +109,7 @@ public class CleanDemoDataServiceCliTest
 		var service = new CleanDemoDataServiceCli(appSettings, httpClientHelper,
 			_selectorStorage, _logger!, _console, new FakeISynchronize());
 
-		await service.SeedCli(new string[]{"-h", "-v"});
+		await service.SeedCli(["-h", "-v"]);
 
 		Assert.IsTrue(appSettings.Verbose);
 	}

@@ -583,7 +583,7 @@ namespace starskytest.starsky.foundation.search.Services
 			};
 			_search.MatchSearch(model);
 
-			Assert.AreEqual(false, model.SearchIn.Any());
+			Assert.AreEqual(false, model.SearchIn.Count != 0);
 		}
 
 		[TestMethod]
@@ -1014,8 +1014,8 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task SearchService_Search_Percentage()
 		{
 			var results = await _search.Search("%", 0);
-			Assert.AreEqual(0,results?.FileIndexItems?.Count);
-			Assert.AreEqual("%",results?.SearchQuery);
+			Assert.AreEqual(0,results.FileIndexItems?.Count);
+			Assert.AreEqual("%",results.SearchQuery);
 		}
 
 

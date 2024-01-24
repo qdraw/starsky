@@ -10,7 +10,6 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -55,7 +54,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			return new Tuple<IQuery, IServiceScopeFactory>(query, serviceScopeFactory);
 		}
 		
-		private static IStorage GetStorage()
+		private static FakeIStorage GetStorage()
 		{
 			return new FakeIStorage(
 				new List<string>

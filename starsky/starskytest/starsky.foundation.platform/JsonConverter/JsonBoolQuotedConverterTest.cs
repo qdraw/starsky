@@ -7,6 +7,7 @@ using starsky.foundation.platform.JsonConverter;
 namespace starskytest.starsky.foundation.platform.JsonConverter
 {
 	[TestClass]
+	[SuppressMessage("Performance", "CA1869:Cache and reuse \'JsonSerializerOptions\' instances")]
 	public sealed class JsonBoolQuotedConverterTest
 	{
 		[TestMethod]

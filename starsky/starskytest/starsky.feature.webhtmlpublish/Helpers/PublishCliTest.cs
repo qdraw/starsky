@@ -18,7 +18,9 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 			var console = new FakeConsoleWrapper();
 
 			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
-				new AppSettings(), console, new FakeIWebLogger()).Publisher(new []{"-h"});
+				new AppSettings(), console, new FakeIWebLogger()).Publisher([
+				"-h"
+			]);
 			
 			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Starsky WebHtml Cli ~ Help:"));
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("  use -v -help to show settings: "));
@@ -29,7 +31,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 		{
 			var console = new FakeConsoleWrapper();
 			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
-				new AppSettings(), console, new FakeIWebLogger()).Publisher(new []{""});
+				new AppSettings(), console, new FakeIWebLogger()).Publisher([""
+			]);
 			
 			Assert.IsTrue(console.WrittenLines.FirstOrDefault()?.Contains("Please use the -p to add a path first"));
 		}
@@ -39,7 +42,9 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 		{
 			var console = new FakeConsoleWrapper();
 			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
-				new AppSettings(), console, new FakeIWebLogger()).Publisher(new []{"-p"});
+				new AppSettings(), console, new FakeIWebLogger()).Publisher([
+				"-p"
+			]);
 			
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("is not found"));
 		}
@@ -51,7 +56,9 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}));
 
 			await new PublishCli(fakeSelectorStorage, new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
-				new AppSettings(), console, new FakeIWebLogger()).Publisher(new []{"-p", "/test"});
+				new AppSettings(), console, new FakeIWebLogger()).Publisher([
+				"-p", "/test"
+			]);
 
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("done"));
 		}
@@ -64,7 +71,9 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 				new List<string>{$"{Path.DirectorySeparatorChar}test{Path.DirectorySeparatorChar}_settings.json"}));
 
 			await new PublishCli(fakeSelectorStorage, new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
-				new AppSettings(), console, new FakeIWebLogger()).Publisher(new []{"-p", Path.DirectorySeparatorChar + "test"});
+				new AppSettings(), console, new FakeIWebLogger()).Publisher([
+				"-p", Path.DirectorySeparatorChar + "test"
+			]);
 
 			Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("_settings.json"));
 		}

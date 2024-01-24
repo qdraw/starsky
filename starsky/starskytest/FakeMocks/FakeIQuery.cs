@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -385,7 +384,7 @@ namespace starskytest.FakeMocks
 			
 			var res =
 				_fakeCachedContent.Where(p => p.ParentDirectory == subPath).ToList();
-			return new Tuple<bool, List<FileIndexItem>>(res.Any(), res);
+			return new Tuple<bool, List<FileIndexItem>>(res.Count != 0, res);
 		}
 
 		public async Task<List<FileIndexItem>> AddParentItemsAsync(string subPath)
