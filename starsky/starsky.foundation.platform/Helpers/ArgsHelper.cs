@@ -622,8 +622,8 @@ namespace starsky.foundation.platform.Helpers
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLowerInvariant() == "--subpathrelative" || 
-					args[arg].ToLowerInvariant() == "-g") && (arg + 1) != args.Count)
+				if ((args[arg].Equals("--subpathrelative", StringComparison.InvariantCultureIgnoreCase) || 
+					args[arg].Equals("-g", StringComparison.InvariantCultureIgnoreCase) ) && (arg + 1) != args.Count)
 				{
 					subPathRelative = args[arg + 1];
 				}

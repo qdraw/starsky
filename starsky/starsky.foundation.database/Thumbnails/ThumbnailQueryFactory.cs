@@ -1,7 +1,5 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -35,9 +33,9 @@ namespace starsky.foundation.database.Thumbnails
 			}
 
 			// FakeIQuery should skip creation
-			var isAnyContentIncluded = _thumbnailQuery.GetReflectionFieldValue<List<ThumbnailItem>?>("_content")?.Any();
+			var isAnyContentIncluded = _thumbnailQuery.GetReflectionFieldValue<List<ThumbnailItem>?>("_content")?.Count != 0;
 			
-			if ( isAnyContentIncluded != true )
+			if ( !isAnyContentIncluded )
 			{
 				return Activator.CreateInstance(_thumbnailQuery.GetType(),
 					context, _serviceScopeFactory,_logger) as IThumbnailQuery;

@@ -92,7 +92,7 @@ namespace starskytest.Middleware
 			await iUserManager.SignUpAsync("test", "email", "test", "test");
 
 			// base64 dGVzdDp0ZXN0 > test:test
-			httpContext.Request.Headers["Authorization"] = "Basic dGVzdDp0ZXN0";
+			httpContext.Request.Headers.Authorization = "Basic dGVzdDp0ZXN0";
                 
 			// Call the middleware app
 			var basicAuthMiddleware = new BasicAuthenticationMiddleware(_onNext);

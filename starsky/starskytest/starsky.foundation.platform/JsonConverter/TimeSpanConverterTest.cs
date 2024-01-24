@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,6 +12,7 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 	/// ClassLibraries/Macross.Json.Extensions/Test/JsonTimeSpanConverterTests.cs
 	/// </summary>
 	[TestClass]
+	[SuppressMessage("Performance", "CA1869:Cache and reuse \'JsonSerializerOptions\' instances")]
 	public sealed class JsonTimeSpanConverterTests
 	{
 		[TestMethod]

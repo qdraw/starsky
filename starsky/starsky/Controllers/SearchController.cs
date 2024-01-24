@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,16 +62,16 @@ namespace starsky.Controllers
 	        
 			var relativeObject = new RelativeObjects{Args = args};
 
-			if (photoIndexOfQuery != searchViewModel.FileIndexItems.Count - 1 )
+			if (photoIndexOfQuery != searchViewModel.FileIndexItems?.Count - 1 )
 			{
-				relativeObject.NextFilePath = searchViewModel.FileIndexItems[photoIndexOfQuery + 1].FilePath;
-				relativeObject.NextHash = searchViewModel.FileIndexItems[photoIndexOfQuery + 1]?.FileHash;
+				relativeObject.NextFilePath = searchViewModel.FileIndexItems?[photoIndexOfQuery + 1].FilePath!;
+				relativeObject.NextHash = searchViewModel.FileIndexItems?[photoIndexOfQuery + 1].FileHash!;
 			}
 
 			if (photoIndexOfQuery >= 1)
 			{
-				relativeObject.PrevFilePath = searchViewModel.FileIndexItems[photoIndexOfQuery - 1]?.FilePath;
-				relativeObject.PrevHash = searchViewModel.FileIndexItems[photoIndexOfQuery - 1]?.FileHash;
+				relativeObject.PrevFilePath = searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FilePath!;
+				relativeObject.PrevHash = searchViewModel.FileIndexItems?[photoIndexOfQuery - 1].FileHash!;
 			}
 	        
 			return Json(relativeObject);
@@ -87,7 +86,7 @@ namespace starsky.Controllers
 		internal static int GetIndexFilePathFromSearch(SearchViewModel searchViewModel, string f)
 		{
 			var result = searchViewModel.FileIndexItems?.Find(p => p.FilePath == f);
-			var photoIndexOfQuery = searchViewModel.FileIndexItems?.IndexOf(result);
+			var photoIndexOfQuery = searchViewModel.FileIndexItems?.IndexOf(result!);
 			if ( result == null || photoIndexOfQuery == null) return -1;
 			return photoIndexOfQuery.Value;
 		}

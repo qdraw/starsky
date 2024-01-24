@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -23,7 +22,7 @@ namespace starskytest.FakeMocks
 		{
 			UrlCalled.Add(requestUri);
 
-			if ( !_inputDictionary.ContainsKey(requestUri) )
+			if ( !_inputDictionary.TryGetValue(requestUri, out var value) )
 			{
 				return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound){
 					Content = new StringContent("Not Found")
@@ -33,7 +32,7 @@ namespace starskytest.FakeMocks
 			var response =
 				new HttpResponseMessage(HttpStatusCode.OK)
 				{
-					Content = _inputDictionary[requestUri]
+					Content = value
 				};
 			return Task.FromResult(response);
 		}

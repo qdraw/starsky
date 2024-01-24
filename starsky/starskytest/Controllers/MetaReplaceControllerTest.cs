@@ -14,7 +14,6 @@ using starsky.Controllers;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
@@ -38,7 +37,7 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class MetaReplaceControllerTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;

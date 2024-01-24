@@ -310,11 +310,8 @@ namespace starskytest.FakeMocks
 
 		public bool WriteStream(Stream stream, string path)
 		{
-			if ( path == null )
-			{
-				throw new ArgumentNullException(nameof(path));
-			}
-			
+			ArgumentNullException.ThrowIfNull(path);
+
 			_outputSubPathFiles.Add(path);
 
 			stream.Seek(0, SeekOrigin.Begin);

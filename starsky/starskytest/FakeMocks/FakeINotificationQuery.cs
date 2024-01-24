@@ -74,10 +74,8 @@ namespace starskytest.FakeMocks
 			
 			foreach ( var contentItem in content )
 			{
-				if ( FakeContent.Contains(contentItem) )
-				{	
-					FakeContent.Remove(contentItem);
-				}
+				// Do not guard 'List.Remove(NotificationItem)' with 'List.Contains(NotificationItem)'
+				FakeContent.Remove(contentItem);
 			}
 			
 			return Task.CompletedTask;

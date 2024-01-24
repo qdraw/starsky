@@ -7,11 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starsky.feature.search.Interfaces;
 using starsky.feature.search.Services;
 using starsky.feature.search.ViewModels;
 using starskytest.FakeMocks;
@@ -21,8 +19,8 @@ namespace starskytest.Controllers
 	[TestClass]
 	public sealed class SearchControllerTest
 	{
-		private readonly IQuery _query;
-		private readonly ISearch _search;
+		private readonly Query _query;
+		private readonly SearchService _search; // or ISearch
 
 		public SearchControllerTest()
 		{
@@ -68,9 +66,9 @@ namespace starskytest.Controllers
 			// some values
 			Assert.AreEqual(1,searchViewResult?.SearchCount);
 			Assert.AreEqual(1,searchViewResult?.FileIndexItems?.Count);
-			Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal,searchViewResult?.SearchForOptions?[0]);
+			Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal,searchViewResult?.SearchForOptions[0]);
 			Assert.AreEqual("test",searchViewResult?.SearchQuery);
-			Assert.AreEqual(nameof(FileIndexItem.Tags),searchViewResult?.SearchIn?[0]);
+			Assert.AreEqual(nameof(FileIndexItem.Tags),searchViewResult?.SearchIn[0]);
 
 			await _query.RemoveItemAsync(item0);
 		}
@@ -208,12 +206,12 @@ namespace starskytest.Controllers
 		}
         
 		[TestMethod]
-		public void RemoveCache_cacheCleared()
+		public async Task RemoveCache_cacheCleared()
 		{
 			var controller = new SearchController(_search);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			_search.Search("1234567890987654");
+			await _search.Search("1234567890987654");
 	        
 			var jsonResult = controller.RemoveCache("1234567890987654") as JsonResult;
 			var resultValue = jsonResult!.Value as string;

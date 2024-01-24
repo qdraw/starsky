@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
@@ -20,7 +19,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	public sealed class QueryGetAllFilesTest
 	{
 		private readonly IMemoryCache _memoryCache;
-		private readonly IQuery _query;
+		private readonly Query _query;
 
 		public QueryGetAllFilesTest()
 		{

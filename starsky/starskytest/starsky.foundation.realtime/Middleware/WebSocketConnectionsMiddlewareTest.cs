@@ -82,7 +82,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		public async Task WebSocketConnectionValidateOrigin()
 		{
 			var httpContext = new DefaultHttpContext();
-			httpContext.Request.Headers["Origin"] = "fake";
+			httpContext.Request.Headers.Origin = "fake";
 			
 			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null!,
 				new WebSocketConnectionsOptions

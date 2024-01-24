@@ -16,7 +16,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 	[TestClass]
 	public sealed class OverlayImageTest
 	{
-		private readonly IStorage _storage;
+		private readonly FakeIStorage _storage;
 		private readonly ISelectorStorage _selectorStorage;
 
 		public OverlayImageTest()

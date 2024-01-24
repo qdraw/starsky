@@ -20,14 +20,14 @@ namespace starsky.Controllers
 	public sealed class GeoController : Controller
 	{
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
-		private readonly IMemoryCache _cache;
+		private readonly IMemoryCache? _cache;
 		private readonly IStorage _iStorage;
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly IWebLogger _logger;
 
 		public GeoController(IUpdateBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage, 
-			IMemoryCache memoryCache, IWebLogger logger, IServiceScopeFactory serviceScopeFactory)
+			IMemoryCache? memoryCache, IWebLogger logger, IServiceScopeFactory serviceScopeFactory)
 		{
 			_bgTaskQueue = queue;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -89,7 +89,7 @@ namespace starsky.Controllers
 					nameof(GeoSyncFolder), operationId);
 				
 				var geoBackgroundTask = _serviceScopeFactory.CreateScope().ServiceProvider
-					.GetService<IGeoBackgroundTask>();
+					.GetRequiredService<IGeoBackgroundTask>();
 				var result = await geoBackgroundTask.GeoBackgroundTaskAsync(f, index,
 					overwriteLocationNames);
 				

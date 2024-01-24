@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		[TestMethod]
 		public void ParseFileName_DefaultDate()
 		{
-			var structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
+			const string structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
 			var importItem = new StructureService(new FakeIStorage(), structure);
 			var fileName = importItem.ParseFileName(new DateTime(), 
 				string.Empty, "jpg" );
@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		[TestMethod]
 		public void ParseFileName_LotsOfEscapeChars()
 		{
-			var structure = "/yyyyMMdd_HHmmss_\\\\\\h\\\\\\m.ext";
+			const string structure = "/yyyyMMdd_HHmmss_\\\\\\h\\\\\\m.ext";
 			var importItem = new StructureService(new FakeIStorage(), structure);
 			var fileName = importItem.ParseFileName(new DateTime(), 
 				string.Empty, "jpg" );
@@ -36,7 +36,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		[TestMethod]
 		public void ParseFileName_FileNameWithAppendix()
 		{
-			var structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_\\d.ext";
+			const string structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_\\d.ext";
 			var importItem = new StructureService(new FakeIStorage(), structure);
 			var fileName = importItem.ParseFileName(new DateTime(), 
 				string.Empty, "jpg" );
@@ -46,7 +46,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		[TestMethod]
 		public void ParseFileName_FileNameBase()
 		{
-			var structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			const string structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			var importItem = new StructureService(new FakeIStorage(), structure);
 			var fileName = importItem.ParseFileName(
 				new DateTime(2020, 01, 01, 01, 01, 01, kind: DateTimeKind.Local), 
@@ -68,7 +68,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		[TestMethod]
 		public void ParseSubfolders_TestFolder_RealFs()
 		{
-			var structure = "/\\te\\s*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			const string structure = "/\\te\\s*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 
 			var storage = new StorageSubPathFilesystem(new AppSettings
 			{
@@ -86,7 +86,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		[TestMethod]
 		public void ParseSubfolders_Asterisk_Test_Folder()
 		{
-			var structure = "/\\t*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			const string structure = "/\\t*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var storage = new FakeIStorage(
 				new List<string>{"/", "/test","/something"},
@@ -122,7 +122,7 @@ namespace starskytest.starsky.foundation.storage.Services
 				new List<string>{"/"},
 				new List<string>());
 			
-			var structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			const string structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
 				new DateTime(2020, 01, 01, 
@@ -138,7 +138,7 @@ namespace starskytest.starsky.foundation.storage.Services
 				new List<string>{"/", "/any"},
 				new List<string>());
 			
-			var structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			const string structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
 				new DateTime(2020, 01, 01, 
@@ -155,7 +155,7 @@ namespace starskytest.starsky.foundation.storage.Services
 					"/2020/01/2020_01_01 test","/2020/01/2020_01_01 test/ignore"},
 				new List<string>());
 			
-			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
 				new DateTime(2020, 01, 01, 
@@ -171,7 +171,7 @@ namespace starskytest.starsky.foundation.storage.Services
 				new List<string>{"/", "/2020","/2020/01","/2020/01/2020_01_01", "/2020/01/2020_01_01 test"},
 				new List<string>());
 			
-			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 			
 			var result = new StructureService(storage,structure).ParseSubfolders(
 				new DateTime(2020, 01, 01, 
@@ -186,7 +186,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>());
 			
-			var structure = "/{filenamebase}/file.ext";
+			const string structure = "/{filenamebase}/file.ext";
+			
 			var result = new StructureService(storage,structure).ParseSubfolders(
 				new DateTime(2020, 01, 01, 
 					01, 01, 01, kind: DateTimeKind.Local),"test");
@@ -199,7 +200,8 @@ namespace starskytest.starsky.foundation.storage.Services
 			var storage = new FakeIStorage(new List<string>{"/"},
 				new List<string>());
 			
-			var structure = "/con\\ten\\t.ext/file.ext";
+			const string structure = "/con\\ten\\t.ext/file.ext";
+			
 			var result = new StructureService(storage,structure).ParseSubfolders(
 				new DateTime(2020, 01, 01,
 					01, 01, 01, kind: DateTimeKind.Local),"test");
@@ -210,7 +212,8 @@ namespace starskytest.starsky.foundation.storage.Services
 		[ExpectedException(typeof(FieldAccessException))]
 		public void ParseSubfolders_FieldAccessException_String()
 		{
-			var structure = "";
+			const string structure = "";
+			
 			new StructureService(new FakeIStorage(), structure).ParseSubfolders(
 				new DateTime(2020, 01, 01, 
 					01, 01, 01, kind: DateTimeKind.Local));
@@ -221,7 +224,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		[ExpectedException(typeof(FieldAccessException))]
 		public void ParseSubfolders_FieldAccessException_DotExt()
 		{
-			var structure = "/.ext";
+			const string structure = "/.ext";
 			new StructureService(new FakeIStorage(), structure).ParseSubfolders(
 				new DateTime(2020, 01, 01,
 					01, 01, 01, kind: DateTimeKind.Local));
@@ -239,11 +242,11 @@ namespace starskytest.starsky.foundation.storage.Services
 			// ExpectedException
 		}
 
-
 		[TestMethod]
 		public void ParseSubfolders_Int_Null()
 		{
-			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			
 			var result = new StructureService(new FakeIStorage(),structure).ParseSubfolders(null);
 			Assert.IsNull(result);
 		}

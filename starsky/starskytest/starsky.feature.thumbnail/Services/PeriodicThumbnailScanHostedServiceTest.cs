@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -266,8 +265,8 @@ public class PeriodicThumbnailScanHostedServiceTest
 			token
 		});
 			
-		Assert.IsTrue(!logger.TrackedInformation.Any());
-		Assert.IsTrue(!logger.TrackedExceptions.Any());
+		Assert.IsTrue(logger.TrackedInformation.Count == 0);
+		Assert.IsTrue(logger.TrackedExceptions.Count == 0);
 
 	}
 }

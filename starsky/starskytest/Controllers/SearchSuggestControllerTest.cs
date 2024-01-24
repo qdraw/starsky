@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -76,7 +75,7 @@ namespace starskytest.Controllers
 			var result = await controller.Suggest(string.Empty) as JsonResult;
 			var list = result!.Value as List<string>;
 	        
-			Assert.IsFalse(list!.Any());
+			Assert.IsFalse(list!.Count != 0);
 		}
 
 		[TestMethod]
