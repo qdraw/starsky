@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Services;
@@ -29,7 +31,7 @@ namespace starskytest.starsky.foundation.storage.Services
 			var iStorageFake = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes.ToArray()}
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()}
 			);
 			var fileHashCode = new FileHash(iStorageFake).GetHashCode("/test.jpg",0);
 	        
@@ -55,6 +57,18 @@ namespace starskytest.starsky.foundation.storage.Services
 			var fileHashCode = new FileHash(iStorage).GetHashCode(new []{createAnImage.DbPath});
 			Assert.IsTrue(fileHashCode[0].Value);
 			Assert.AreEqual(26,fileHashCode[0].Key.Length);
+		}
+		
+		[TestMethod]
+		public async Task CalculateHashAsync_Dispose()
+		{
+			var stream = new MemoryStream();
+			
+			await FileHash.CalculateHashAsync(stream);
+			
+			Assert.IsFalse(stream.CanSeek);
+			Assert.IsFalse(stream.CanRead);
+			Assert.IsFalse(stream.CanWrite);
 		}
 	}
 }

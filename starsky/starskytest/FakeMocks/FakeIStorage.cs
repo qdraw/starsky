@@ -257,6 +257,12 @@ namespace starskytest.FakeMocks
 
 		}
 
+		/// <summary>
+		/// Read Stream (and keep open)
+		/// </summary>
+		/// <param name="path">location</param>
+		/// <param name="maxRead">how many bytes are read (default all or -1)</param>
+		/// <returns>Stream with data (non-disposed)</returns>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( !ExistFile(path) )
@@ -334,6 +340,12 @@ namespace starskytest.FakeMocks
 			return true;
 		}
 
+		/// <summary>
+		/// Write and dispose afterwards
+		/// </summary>
+		/// <param name="stream">stream</param>
+		/// <param name="path">where to write to</param>
+		/// <returns>is Success</returns>
 		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
 			return Task.FromResult(WriteStream(stream, path));

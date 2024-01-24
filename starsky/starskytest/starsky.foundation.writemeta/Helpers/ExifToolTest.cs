@@ -86,6 +86,25 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			Assert.AreEqual(0,result.Length);
 		}
+		
+		[TestMethod]
+		public async Task ExifTool_RenameThumbnailByStream_NotDisposed_CanWrite()
+		{
+			var appSettings = new AppSettings
+			{
+				ExifToolPath = "Z://Non-exist",
+			};
+
+			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test.jpg"}, 
+				new List<byte[]>{CreateAnImage.Bytes.ToArray()});
+
+			var stream = new MemoryStream();
+			await new ExifTool(fakeStorage, fakeStorage, appSettings, new FakeIWebLogger())
+				.RenameThumbnailByStream("OLDHASH",stream,true);
+			
+			Assert.IsTrue(stream.CanWrite);
+		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]

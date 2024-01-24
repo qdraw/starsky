@@ -171,6 +171,12 @@ namespace starsky.foundation.storage.Services
 			}
 		}
 
+		/// <summary>
+		/// And close input stream afterwards
+		/// </summary>
+		/// <param name="stream">memory or filestream</param>
+		/// <param name="cancellationToken">cancel token</param>
+		/// <returns>fileHash</returns>
 		public static async Task<string> CalculateHashAsync(Stream stream, 
 			CancellationToken cancellationToken = default)
 		{
@@ -190,6 +196,7 @@ namespace starsky.foundation.storage.Services
 					}
 
 					md5.TransformFinalBlock(block, 0, 0);
+					
 					stream.Close();
 
 					var hash = md5.Hash;

@@ -41,7 +41,6 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
 		}
 		
-		
 		/// <summary>
 		/// WriteTagsAndRenameThumbnailAsyncTest
 		/// </summary>
