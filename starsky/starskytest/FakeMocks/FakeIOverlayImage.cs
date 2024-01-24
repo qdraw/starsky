@@ -43,7 +43,7 @@ namespace starskytest.FakeMocks
 		{
 			if ( itemFilePath == "/corrupt.jpg" || itemFilePath == "corrupt")
 			{
-				await _storage.WriteStreamAsync(new MemoryStream(new CreateAnImageCorrupt().Bytes),
+				await _storage.WriteStreamAsync(new MemoryStream(new CreateAnImageCorrupt().Bytes.ToArray()),
 					outputFullFilePath);
 				return true;
 			}
