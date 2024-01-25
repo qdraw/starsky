@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -71,7 +72,8 @@ namespace starskytest.root
 			Assert.IsNotNull(env);
 		}
 
-		private static IEnumerable<object?>? GetMiddlewareInstance(IApplicationBuilder app)
+		[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Local")]
+		private static List<object?>? GetMiddlewareInstance(IApplicationBuilder app)
 		{
 			const string middlewareTypeName = "Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware";
 			var appBuilderType = typeof(ApplicationBuilder);
@@ -134,7 +136,7 @@ namespace starskytest.root
 		{
 			var storage = new StorageHostFullPathFilesystem();
 			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "wwwroot"));
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "clientapp", "build"));
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "clientapp", "build", "assets"));
 			
 			var startup = new Startup();
 			var serviceCollection = new ServiceCollection();
@@ -176,7 +178,7 @@ namespace starskytest.root
 			
 			var storage = new StorageHostFullPathFilesystem();
 			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "wwwroot"));
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "clientapp", "build"));
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "clientapp", "build", "assets"));
 
 			var result = startup.SetupStaticFiles(applicationBuilder);
 			Assert.IsNotNull(result);

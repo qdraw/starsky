@@ -343,8 +343,7 @@ namespace starsky
 
 	        // Check if clientapp is build and use the assets folder
 	        if ( !Directory.Exists(Path.Combine(
-		            _appSettings.BaseDirectoryProject, "clientapp", "build",
-		            "assets")) )
+		            _appSettings.BaseDirectoryProject, "clientapp", "build", "assets")) )
 	        {
 		        return result;
 	        }
