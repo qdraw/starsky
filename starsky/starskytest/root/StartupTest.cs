@@ -132,21 +132,24 @@ namespace starskytest.root
 		[TestMethod]
 		public void BasicFlow_Assets()
 		{
+			var storage = new StorageHostFullPathFilesystem();
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "wwwroot"));
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "clientapp", "build"));
+			
 			var startup = new Startup();
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddSingleton<AppSettings, AppSettings>();
 			var serviceProvider = serviceCollection.BuildServiceProvider();
 			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
-			
-			var storage = new StorageHostFullPathFilesystem();
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "wwwroot"));
-			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "clientapp", "build"));
 
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			startup.ConfigureServices(serviceCollection);
 			var result = startup.SetupStaticFiles(applicationBuilder);
 
 			Assert.IsNotNull(result);
+
+			Console.WriteLine("result:");
+			Console.WriteLine("1: " +result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
 			
 			Assert.IsTrue(result.Item1);
 			Assert.IsTrue(result.Item2);
@@ -177,6 +180,9 @@ namespace starskytest.root
 
 			var result = startup.SetupStaticFiles(applicationBuilder);
 			Assert.IsNotNull(result);
+			
+			Console.WriteLine("result:");
+			Console.WriteLine("1: " +result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
 			
 			Assert.IsTrue(result.Item1);
 			Assert.IsTrue(result.Item2);
