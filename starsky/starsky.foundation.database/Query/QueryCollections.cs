@@ -6,11 +6,10 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
-    public partial class Query
+    public partial class Query // QueryCollections
     {
-	    private static List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList)
+	    internal static List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList)
         {
-            
             // Get a list of duplicate items
             var stackItemsByFileCollectionName = databaseSubFolderList
 	            .GroupBy(item => item.FileCollectionName)
@@ -30,8 +29,9 @@ namespace starsky.foundation.database.Query
             {
 	            var duplicateItems = databaseSubFolderList.Where(p => 
                     p.FileCollectionName == stackItemByName.FileCollectionName).ToList();
+	            
                 // The idea to pick thumbnail based images first, followed by non-thumb supported
-                // when not pick alphabetaly > todo implement this
+                // when not pick alphabetically
 
                 querySubFolderList.AddRange(duplicateItems.Where(item => 
 	                ExtensionRolesHelper.IsExtensionThumbnailSupported(item.FileName)));
