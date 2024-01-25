@@ -121,7 +121,7 @@ namespace starsky.feature.rename.Services
 						.Replace(inputFileSubPath, toFileSubPath);
 					p.ParentDirectory = parentDirectory;
 					p.Status = FileIndexItem.ExifStatus.Ok;
-					p.Tags = p.Tags?.Replace(TrashKeyword.TrashKeywordString, string.Empty);
+					p.Tags = p.Tags!.Replace(TrashKeyword.TrashKeywordString, string.Empty);
 				}
 			);
 
@@ -209,14 +209,14 @@ namespace starsky.feature.rename.Services
 				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
 				
 				// skip for files
-				if ( detailView == null )
+				if ( detailView?.FileIndexItem == null )
 				{
 					// do NOT set null because you move to location that currently doesn't exist
 					// and avoid mixing up the order of files
 					continue;
 				}
 				// dirs are mergeable, when it isn't a directory
-				if ( detailView.FileIndexItem?.IsDirectory == false )
+				if ( detailView.FileIndexItem.IsDirectory == false )
 				{
 					toFileSubPaths[i] = null;
 				}
