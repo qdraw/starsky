@@ -138,7 +138,6 @@ namespace starskytest.starsky.foundation.search.Services
 					IsDirectory = false
 				});
 			}
-            
 
 			if (string.IsNullOrEmpty(await _query.GetSubPathByHashAsync("cityloop9")))
 			{
@@ -478,19 +477,32 @@ namespace starskytest.starsky.foundation.search.Services
 		public async Task SearchService_SearchInUrlTest()
 		{
 			await InsertSearchData();
-			// Not 3, because one file is marked as deleted!
-			// todo: check the value of this one
-			Assert.AreEqual(5, (await _search.Search("-inurl:/stations")).SearchCount);
-			Assert.AreEqual(5, (await _search.Search("-inurl:\"/stations\"")).SearchCount);
+			
+			// expect 5
+			var expectedCount = _dbContext.FileIndex.Count(p => 
+				p.ParentDirectory!.StartsWith("/stations"));
+
+			var stationsQueryResult =
+				await _search.Search("-inurl:/stations");
+			Assert.AreEqual(expectedCount, stationsQueryResult.SearchCount);
+			
+			var stationsQueryQuoteResult =
+				 await _search.Search("-inurl:\"/stations\"");
+			Assert.AreEqual(expectedCount, stationsQueryQuoteResult.SearchCount);
 		}
 
 		[TestMethod]
 		public async Task SearchService_SearchNarrowFileNameTags()
 		{
 			await InsertSearchData();
-			// Not 2 > but needs to be narrow
-			// todo: check the value of this one
-			Assert.AreEqual(1, (await _search.Search("lelystad -ParentDirectory:/stations2")).SearchCount);
+			
+			var expectedCount = _dbContext.FileIndex.Count(p => p.Tags!.Contains("lelystad") 
+				&& p.ParentDirectory!.Contains("stations2"));
+			
+			var item =
+				await _search.Search("lelystad -ParentDirectory:/stations2");
+			
+			Assert.AreEqual(expectedCount, item.SearchCount);
 		}
         
 		[TestMethod]
