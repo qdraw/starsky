@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Globalization;
 using System.IO;
@@ -56,7 +55,7 @@ namespace starsky
 		{
 			if ( !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__appsettingspath")) )
 			{
-				Console.WriteLine("app__appsettingspath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
+				Console.WriteLine("app__appSettingsPath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
 			}
 			_configuration = SetupAppSettings.AppSettingsToBuilder(args).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
@@ -82,7 +81,8 @@ namespace starsky
             // LoggerFactory
             services.AddTelemetryLogging(_appSettings);
             
-            var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName?.Split(",").FirstOrDefault();
+            var foundationDatabaseName = typeof(ApplicationDbContext)
+	            .Assembly.FullName?.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
 			EfCoreMigrationsOnProject(services).ConfigureAwait(false);

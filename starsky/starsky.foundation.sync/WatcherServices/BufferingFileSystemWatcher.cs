@@ -409,6 +409,7 @@ namespace starsky.foundation.sync.WatcherServices
 	        eventHandler(this, e);
 	        return false;
         }
+        
         internal bool? InvokeHandler(ErrorEventHandler? eventHandler, ErrorEventArgs e)
         {
 	        if ( eventHandler == null )
@@ -428,12 +429,26 @@ namespace starsky.foundation.sync.WatcherServices
         }
         // end InvokeHandlers
 
+        /// <summary>
+        /// Status if is Disposed
+        /// </summary>
+        internal bool IsDisposed { get; set; } = false;
+
+        /// <summary>
+        /// Dispose and unsubscribe all events
+        /// </summary>
+        /// <param name="disposing">is disposing</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _cancellationTokenSource.Cancel();
-                _cancellationTokenSource.Dispose();
+	            IsDisposed = true;
+	            if ( !_cancellationTokenSource.IsCancellationRequested )
+	            {
+		            _cancellationTokenSource.Cancel();
+	            }
+	            
+	            _cancellationTokenSource.Dispose();
                 _containedFsw.Dispose();
             }
             base.Dispose(disposing);
