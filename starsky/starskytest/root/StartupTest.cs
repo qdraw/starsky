@@ -7,8 +7,10 @@ using System.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Options;
@@ -77,7 +79,9 @@ namespace starskytest.root
 		{
 			const string middlewareTypeName = "Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware";
 			var appBuilderType = typeof(ApplicationBuilder);
-			var middlewareField = appBuilderType.GetField("_components", BindingFlags.Instance | BindingFlags.NonPublic);
+			const BindingFlags bindingTypes1 = BindingFlags.Instance |
+			                                  BindingFlags.NonPublic;
+			var middlewareField = appBuilderType.GetField("_components", bindingTypes1);
 			var components = middlewareField?.GetValue(app);
 
 			if (components != null)
@@ -94,9 +98,11 @@ namespace starskytest.root
 				var status = new List<object?>();
 				foreach ( var middleware in middlewares )
 				{
-
 					var type = middleware.Target?.GetType();
-					var privatePropertyInfo = type?.GetField("_args", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+					const BindingFlags bindingTypes = BindingFlags.Instance |
+						BindingFlags.NonPublic |
+						BindingFlags.Public;
+					var privatePropertyInfo = type?.GetField("_args", bindingTypes);
 					var privateFieldValue =
 						privatePropertyInfo?.GetValue(middleware.Target) as object[];
 					
@@ -221,6 +227,20 @@ namespace starskytest.root
 			Assert.IsTrue(result.Item1);
 			Assert.IsTrue(result.Item2);
 			Assert.IsFalse(result.Item3);
+		}
+
+		[TestMethod]
+		public void PrepareResponse_CheckValues()
+		{
+			var httpContext = new DefaultHttpContext();
+			var context = new StaticFileResponseContext(httpContext,
+				new NotFoundFileInfo("test"));
+			// Act
+			Startup.PrepareResponse(context);
+			// Assert
+			Assert.IsNotNull(context.Context.Response.Headers.Expires);
+			Assert.AreEqual("public, max-age=31536000", 
+				context.Context.Response.Headers.CacheControl.ToString());
 		}
 	}
 }

@@ -361,7 +361,7 @@ namespace starsky
 	        return result;
         }
         
-        void PrepareResponse(StaticFileResponseContext ctx)
+        internal static void PrepareResponse(StaticFileResponseContext ctx)
         {
 	        // Cache static files for 356 days
 	        ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddDays(365)
