@@ -1,4 +1,4 @@
-name: Auto Update Swagger
+name: 'Update Swagger definitions'
 
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Setup .NET Core
+    - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.101
