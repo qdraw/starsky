@@ -196,5 +196,31 @@ namespace starskytest.root
 			Assert.IsTrue(value?.Value.RequestPath.HasValue);
 			Assert.AreEqual("/assets", value?.Value.RequestPath.Value);
 		}
+		
+		[TestMethod]
+		public void BasicFlow_Assets_NotFound()
+		{
+			var startup = new Startup();
+			var serviceCollection = new ServiceCollection();
+			serviceCollection.AddSingleton<AppSettings, AppSettings>();
+			var serviceProvider = serviceCollection.BuildServiceProvider();
+			var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
+			
+			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
+			startup.ConfigureServices(serviceCollection);
+			
+			var storage = new StorageHostFullPathFilesystem();
+			storage.CreateDirectory(Path.Combine(new AppSettings().BaseDirectoryProject, "wwwroot"));
+
+			var result = startup.SetupStaticFiles(applicationBuilder,"not-found-folder-name");
+			Assert.IsNotNull(result);
+			
+			Console.WriteLine("result:");
+			Console.WriteLine("1: " +result.Item1 + " 2: " + result.Item2 + " 3: " + result.Item3);
+			
+			Assert.IsTrue(result.Item1);
+			Assert.IsTrue(result.Item2);
+			Assert.IsFalse(result.Item3);
+		}
 	}
 }

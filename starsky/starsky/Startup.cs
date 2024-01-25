@@ -308,8 +308,9 @@ namespace starsky
         /// Add Static Files to the application
         /// </summary>
         /// <param name="app">Application builder</param>
+        /// <param name="assetsName">assetsName</param>
         /// <returns>1. bool = local dir 2. wwwroot in assembly 3. clientapp</returns>
-        internal (bool,bool,bool) SetupStaticFiles(IApplicationBuilder app)
+        internal (bool,bool,bool) SetupStaticFiles(IApplicationBuilder app, string assetsName = "assets")
         {
 	        var result = ( false, false, false );
 
@@ -343,7 +344,7 @@ namespace starsky
 
 	        // Check if clientapp is build and use the assets folder
 	        if ( !Directory.Exists(Path.Combine(
-		            _appSettings.BaseDirectoryProject, "clientapp", "build", "assets")) )
+		            _appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)) )
 	        {
 		        return result;
 	        }
@@ -352,7 +353,7 @@ namespace starsky
 		        {
 			        OnPrepareResponse = PrepareResponse,
 			        FileProvider = new PhysicalFileProvider(
-				        Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "assets")),
+				        Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)),
 			        RequestPath = $"/assets",
 		        }
 	        );
