@@ -453,7 +453,7 @@
           ],
           "responses": {
             "200": {
-              "description": "successful login",
+              "description": "Successful login",
               "headers": {},
               "content": {
                 "application/json": {
@@ -483,7 +483,7 @@
               "unresolvedReference": false
             },
             "401": {
-              "description": "login failed",
+              "description": "Login failed",
               "headers": {},
               "content": {
                 "application/json": {
@@ -513,7 +513,7 @@
               "unresolvedReference": false
             },
             "405": {
-              "description": "ValidateAntiForgeryToken",
+              "description": "ValidateAntiForgeryToken error",
               "headers": {},
               "content": {
                 "application/json": {
@@ -543,7 +543,7 @@
               "unresolvedReference": false
             },
             "423": {
-              "description": "login failed due lock",
+              "description": "Login failed due lock",
               "headers": {},
               "content": {},
               "links": {},
@@ -551,7 +551,7 @@
               "unresolvedReference": false
             },
             "500": {
-              "description": "login failed due signIn errors",
+              "description": "Login failed due signIn errors",
               "headers": {},
               "content": {},
               "links": {},
@@ -584,7 +584,7 @@
           "parameters": [],
           "responses": {
             "200": {
-              "description": "successful logout",
+              "description": "Successful logout",
               "headers": {},
               "content": {},
               "links": {},
