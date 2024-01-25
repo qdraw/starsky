@@ -674,5 +674,20 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.Dispose();
 			watcher.Dispose();
 		}
+
+		[TestMethod]
+		[SuppressMessage("Usage", "S3966:Objects should not be disposed more than once")]
+		public void DisposeDouble()
+		{
+			var watcher = new FileSystemWatcher(_tempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			
+			wrapper.Dispose();
+			Assert.IsTrue(wrapper.IsDisposed);
+
+			wrapper.Dispose();
+			
+			Assert.IsTrue(wrapper.IsDisposed);
+		}
 	}
 }

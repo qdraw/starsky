@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using Microsoft.ApplicationInsights;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +35,7 @@ namespace starsky.foundation.database.Helpers
 			return new ApplicationDbContext(BuilderDbFactorySwitch());
 		}
 
-		internal ServerVersion GetServerVersionMySql()
+		private ServerVersion GetServerVersionMySql()
 		{
 			try
 			{
@@ -50,6 +49,12 @@ namespace starsky.foundation.database.Helpers
 			return new MariaDbServerVersion("10.2");
 		}
 		
+		/// <summary>
+		/// Setup database connection
+		/// </summary>
+		/// <param name="foundationDatabaseName">Assembly name, used for running migrations</param>
+		/// <returns></returns>
+		/// <exception cref="AggregateException">Missing arguments</exception>
 		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string? foundationDatabaseName = "")
 		{
 			switch ( _appSettings.DatabaseType )
@@ -110,6 +115,15 @@ namespace starsky.foundation.database.Helpers
 			return true;
 		}
 
+		/// <summary>
+		/// Setup database connection
+		/// use boot parameters to run with EF Migrations and a direct connection
+		/// ENABLE_DEFAULT_DATABASE: SQLite
+		/// ENABLE_MYSQL_DATABASE: MySql
+		/// In runtime those parameters are not needed and not useful.
+		/// </summary>
+		/// <param name="foundationDatabaseName">Assembly name, used for migrations</param>
+		/// <exception cref="AggregateException">services is null</exception>
 		public void BuilderDb(string? foundationDatabaseName = "")
 		{
 			if ( _services == null ) throw new AggregateException("services is missing");
@@ -145,7 +159,7 @@ namespace starsky.foundation.database.Helpers
 					}));
 #endif
 
-			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
+			_services.AddScoped(_ => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
 		}
 
 	}

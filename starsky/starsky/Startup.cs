@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Globalization;
 using System.IO;
@@ -46,6 +45,9 @@ namespace starsky
         private readonly IConfigurationRoot _configuration;
         private AppSettings? _appSettings;
         
+        /// <summary>
+        /// application/xhtml+xml image/svg+xml
+        /// </summary>
 		private static readonly string[] CompressionMimeTypes =
 		[
 			"application/xhtml+xml",
@@ -56,7 +58,7 @@ namespace starsky
 		{
 			if ( !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__appsettingspath")) )
 			{
-				Console.WriteLine("app__appsettingspath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
+				Console.WriteLine("app__appSettingsPath: " + Environment.GetEnvironmentVariable("app__appsettingspath"));
 			}
 			_configuration = SetupAppSettings.AppSettingsToBuilder(args).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
@@ -82,7 +84,8 @@ namespace starsky
             // LoggerFactory
             services.AddTelemetryLogging(_appSettings);
             
-            var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName?.Split(",").FirstOrDefault();
+            var foundationDatabaseName = typeof(ApplicationDbContext)
+	            .Assembly.FullName?.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
 			EfCoreMigrationsOnProject(services).ConfigureAwait(false);
@@ -263,43 +266,8 @@ namespace starsky
 	        new SwaggerSetupHelper(_appSettings!).Add02AppUseSwaggerAndUi(app);
 			
 			app.UseContentSecurityPolicy();
-
-			void PrepareResponse(StaticFileResponseContext ctx)
-			{
-				// Cache static files for 356 days
-				ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddDays(365)
-					.ToString("R", CultureInfo.InvariantCulture));
-				ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=31536000");
-			}
 			
-	        // Allow Current Directory and wwwroot in Base Directory
-	        app.UseStaticFiles(new StaticFileOptions
-		        {
-			        OnPrepareResponse = PrepareResponse
-	        });
-    
-	        // Use in wwwroot in build directory; the default option assumes Current Directory
-	        if ( _appSettings != null && Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )
-	        {
-		        app.UseStaticFiles(new StaticFileOptions
-		        {
-			        OnPrepareResponse = PrepareResponse,
-			        FileProvider = new PhysicalFileProvider(
-				        Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot"))
-		        });
-	        }
-			
-			if ( _appSettings != null && Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "assets")) )
-			{
-				app.UseStaticFiles(new StaticFileOptions
-					{
-						OnPrepareResponse = PrepareResponse,
-						FileProvider = new PhysicalFileProvider(
-							Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "assets")),
-						RequestPath = $"/assets",
-					}
-				);
-			}
+			SetupStaticFiles(app);
 
 			app.UseAuthentication();
             app.UseBasicAuthentication();
@@ -334,6 +302,71 @@ namespace starsky
 		        var onStoppedSync = new FlushApplicationInsights(app);
 		        applicationLifetime.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
+        }
+
+        /// <summary>
+        /// Add Static Files to the application
+        /// </summary>
+        /// <param name="app">Application builder</param>
+        /// <param name="assetsName">assetsName</param>
+        /// <returns>1. bool = local dir 2. wwwroot in assembly 3. clientapp</returns>
+        internal (bool,bool,bool) SetupStaticFiles(IApplicationBuilder app, string assetsName = "assets")
+        {
+	        var result = ( false, false, false );
+
+	        // Allow Current Directory and wwwroot in Base Directory
+	        // AppSettings can be null when running tests
+	        if ( _appSettings?.AddSwaggerExportExitAfter != true )
+	        {
+		        app.UseStaticFiles(new StaticFileOptions
+		        {
+			        OnPrepareResponse = PrepareResponse
+		        });
+		        result.Item1 = true;
+	        }
+
+	        if ( _appSettings == null )
+	        {
+		        return result;
+	        }
+	        
+	        // Use in wwwroot in build directory; the default option assumes Current Directory
+	        if ( Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )
+	        {
+		        app.UseStaticFiles(new StaticFileOptions
+		        {
+			        OnPrepareResponse = PrepareResponse,
+			        FileProvider = new PhysicalFileProvider(
+				        Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot"))
+		        });
+		        result.Item2 = true;
+	        }
+
+	        // Check if clientapp is build and use the assets folder
+	        if ( !Directory.Exists(Path.Combine(
+		            _appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)) )
+	        {
+		        return result;
+	        }
+	        
+	        app.UseStaticFiles(new StaticFileOptions
+		        {
+			        OnPrepareResponse = PrepareResponse,
+			        FileProvider = new PhysicalFileProvider(
+				        Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)),
+			        RequestPath = $"/assets",
+		        }
+	        );
+	        result.Item3 = true;
+	        return result;
+        }
+        
+        internal static void PrepareResponse(StaticFileResponseContext ctx)
+        {
+	        // Cache static files for 356 days
+	        ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddDays(365)
+		        .ToString("R", CultureInfo.InvariantCulture));
+	        ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=31536000");
         }
         
         /// <summary>

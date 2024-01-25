@@ -34,12 +34,12 @@ namespace starsky.Controllers
 		/// <summary>
 		/// Check the account status of the current logged in user
 		/// </summary>
-		/// <response code="200">logged in</response>
-		/// <response code="401">when not logged in</response>
+		/// <response code="200">Logged in</response>
+		/// <response code="401">When not logged in</response>
 		/// <response code="406">There are no accounts, you must create an account first</response>
-		/// <response code="409">Current User does not exist in database</response>
-		/// <response code="503">database connection error</response>
-		/// <returns>account name, id, and create date</returns>
+		/// <response code="409">The Current User does not exist in database</response>
+		/// <response code="503">Database Connection Error</response>
+		/// <returns>account name, id, and create date as json</returns>
 		[HttpGet("/api/account/status")]
 		[ProducesResponseType(typeof(UserIdentifierStatusModel), 200)]
 		[ProducesResponseType(typeof(string), 401)]
@@ -121,11 +121,11 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="model">Email, password and remember me bool</param>
         /// <returns>Login status</returns>
-        /// <response code="200">successful login</response>
-        /// <response code="401">login failed</response>
-        /// <response code="405">ValidateAntiForgeryToken</response>
-        /// <response code="423">login failed due lock</response>
-        /// <response code="500">login failed due signIn errors</response>
+        /// <response code="200">Successful login</response>
+        /// <response code="401">Login failed</response>
+        /// <response code="405">ValidateAntiForgeryToken error</response>
+        /// <response code="423">Login failed due lock</response>
+        /// <response code="500">Login failed due signIn errors</response>
         [HttpPost("/api/account/login")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),401)]
@@ -162,8 +162,8 @@ namespace starsky.Controllers
         /// <summary>
         /// Logout the current HttpContext out
         /// </summary>
-        /// <returns></returns>
-        /// <response code="200">successful logout</response>
+        /// <returns>Login Status</returns>
+        /// <response code="200">Successful logout</response>
         [HttpPost("/api/account/logout")]
         [ProducesResponseType(200)]
         [AllowAnonymous]
@@ -178,7 +178,7 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="returnUrl">insert url to redirect</param>
         /// <response code="302">redirect to return url</response>
-        /// <returns></returns>
+        /// <returns>Redirect to login page</returns>
         [HttpGet("/account/logout")]
         [ProducesResponseType(200)]
         [AllowAnonymous]
@@ -193,7 +193,7 @@ namespace starsky.Controllers
         /// Update password for current user
         /// </summary>
         /// <param name="model">Password, ChangedPassword and ChangedConfirmPassword</param>
-        /// <returns>Login status</returns>
+        /// <returns>Change secret status</returns>
         /// <response code="200">successful login</response>
         /// <response code="400">Model is not correct</response>
         /// <response code="401"> please login first or your current password is not correct</response>
