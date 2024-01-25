@@ -45,6 +45,9 @@ namespace starsky
         private readonly IConfigurationRoot _configuration;
         private AppSettings? _appSettings;
         
+        /// <summary>
+        /// application/xhtml+xml image/svg+xml
+        /// </summary>
 		private static readonly string[] CompressionMimeTypes =
 		[
 			"application/xhtml+xml",
@@ -273,10 +276,13 @@ namespace starsky
 			}
 			
 	        // Allow Current Directory and wwwroot in Base Directory
-	        app.UseStaticFiles(new StaticFileOptions
+	        if ( _appSettings?.AddSwaggerExportExitAfter != true )
+	        {
+		        app.UseStaticFiles(new StaticFileOptions
 		        {
 			        OnPrepareResponse = PrepareResponse
-	        });
+		        });
+	        }
     
 	        // Use in wwwroot in build directory; the default option assumes Current Directory
 	        if ( _appSettings != null && Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )

@@ -34,12 +34,12 @@ namespace starsky.Controllers
 		/// <summary>
 		/// Check the account status of the current logged in user
 		/// </summary>
-		/// <response code="200">logged in</response>
-		/// <response code="401">when not logged in</response>
+		/// <response code="200">Logged in</response>
+		/// <response code="401">When not logged in</response>
 		/// <response code="406">There are no accounts, you must create an account first</response>
-		/// <response code="409">Current User does not exist in database</response>
-		/// <response code="503">database connection error</response>
-		/// <returns>account name, id, and create date</returns>
+		/// <response code="409">The Current User does not exist in database</response>
+		/// <response code="503">Database Connection Error</response>
+		/// <returns>account name, id, and create date as json</returns>
 		[HttpGet("/api/account/status")]
 		[ProducesResponseType(typeof(UserIdentifierStatusModel), 200)]
 		[ProducesResponseType(typeof(string), 401)]
