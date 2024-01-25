@@ -1004,19 +1004,23 @@ namespace starskytest.starsky.feature.rename.Services
 		{
 			// At the moment there is no check for case sensitive file or filenames
 			
-			await CreateFoldersAndFilesInDatabase();
-			
-			var storage = new FakeIStorage(new List<string>{"/exist", _fileInExist.FilePath!});
-			var renameService = new RenameService(_query, storage);
+			const string beforePath = "/test/case_sensitive.jpg";
+			const string afterPath = "/test/Case_Sensitive.jpg";
 
-			var newPath = _fileInExist.FilePath?.Replace("exist", "Exist");
-			await renameService.Rename(_fileInExist.FilePath, newPath);
-
-			var before = await _query.GetObjectByFilePathAsync(_fileInExist.FilePath!);
-			Assert.IsNull(before);
+			var storage = new FakeIStorage(new List<string>{"/exist", beforePath});
+			var query =
+				new FakeIQuery(
+					new List<FileIndexItem> { new FileIndexItem(beforePath) });
 			
-			var after = await _query.GetObjectByFilePathAsync(newPath!);
-			Assert.AreEqual(newPath, after!.FilePath);
+			var renameService = new RenameService(query, storage);
+
+			await renameService.Rename(beforePath, afterPath);
+
+			var beforeItem = await query.GetObjectByFilePathAsync(beforePath);
+			Assert.IsNull(beforeItem);
+			
+			var after = await query.GetObjectByFilePathAsync(afterPath);
+			Assert.AreEqual(afterPath, after!.FilePath);
 		}
 	}
 }
