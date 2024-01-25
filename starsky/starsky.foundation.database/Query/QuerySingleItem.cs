@@ -76,6 +76,7 @@ namespace starsky.foundation.database.Query
             var objectByFilePath = GetObjectByFilePath("/");
             if ( fileName == string.Empty && parentFolder == "/" && objectByFilePath != null)
             {
+	            // This is for HOME only
 	            return new DetailView
 	            {
 		            FileIndexItem = objectByFilePath,

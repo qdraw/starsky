@@ -95,7 +95,7 @@ namespace starsky.feature.rename.Services
 			List<FileIndexItem> fileIndexResultsList, DetailView detailView, string toFileSubPath)
 		{
 			// Rename parent item >eg the folder or file
-			detailView.FileIndexItem.SetFilePath(toFileSubPath);
+			detailView.FileIndexItem!.SetFilePath(toFileSubPath);
 			detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 			
 			fileIndexItems.Add(detailView.FileIndexItem);
@@ -117,11 +117,11 @@ namespace starsky.feature.rename.Services
 			// Rename child items
 			fileIndexItems.ForEach(p =>
 				{
-					var parentDirectory = p.ParentDirectory
+					var parentDirectory = p.ParentDirectory!
 						.Replace(inputFileSubPath, toFileSubPath);
 					p.ParentDirectory = parentDirectory;
 					p.Status = FileIndexItem.ExifStatus.Ok;
-					p.Tags = p.Tags.Replace(TrashKeyword.TrashKeywordString, string.Empty);
+					p.Tags = p.Tags?.Replace(TrashKeyword.TrashKeywordString, string.Empty);
 				}
 			);
 
@@ -216,7 +216,7 @@ namespace starsky.feature.rename.Services
 					continue;
 				}
 				// dirs are mergeable, when it isn't a directory
-				if ( detailView.FileIndexItem.IsDirectory == false )
+				if ( detailView.FileIndexItem?.IsDirectory == false )
 				{
 					toFileSubPaths[i] = null;
 				}
@@ -291,7 +291,9 @@ namespace starsky.feature.rename.Services
 				
 				// when it is a file update the 'to paths'
 				var collectionPaths = _query.SingleItem(inputFileSubPaths[i], 
-					null, true, false).FileIndexItem.CollectionPaths;
+					null, true, false)?.FileIndexItem?.CollectionPaths;
+				collectionPaths ??= [];
+				
 				inputCollectionFileSubPaths.AddRange(collectionPaths);
 
 				for ( var j = 0; j < collectionPaths.Count; j++ )
@@ -397,7 +399,7 @@ namespace starsky.feature.rename.Services
 			fileIndexItems.ForEach(p =>
 				{
 					p.ParentDirectory =
-						p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
+						p.ParentDirectory?.Replace(inputFileSubPath, toFileSubPath);
 					p.Status = FileIndexItem.ExifStatus.Ok;
 				}
 			);
@@ -488,11 +490,11 @@ namespace starsky.feature.rename.Services
 			
 			// from/input cache should be cleared
 			var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
-			_query.RemoveCacheParentItem(inputParentSubFolder);
+			_query.RemoveCacheParentItem(inputParentSubFolder!);
 
 			// clear cache // parentSubFolder (to FileSubPath parents)
 			var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
-			_query.RemoveCacheParentItem(toParentSubFolder); 
+			_query.RemoveCacheParentItem(toParentSubFolder!); 
 					
 			// Check if the parent folder exist in the database // parentSubFolder
 			await _query.AddParentItemsAsync(toParentSubFolder);
@@ -500,7 +502,7 @@ namespace starsky.feature.rename.Services
 			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
 				detailView, toFileSubPath);
 			
-			// First update database and then update for diskwatcher
+			// First update database and then update for disk watcher
 			_iStorage.FileMove(inputFileSubPath, toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
 		}
