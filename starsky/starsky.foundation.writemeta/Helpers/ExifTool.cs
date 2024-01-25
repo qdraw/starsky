@@ -43,14 +43,29 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="command">exifTool command line args</param>
 		/// <param name="cancellationToken">to cancel</param>
 		/// <returns>true=success, newFileHash</returns>
-		[SuppressMessage("ReSharper", "InvertIf")]
 		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, 
 			string? beforeFileHash, string command, CancellationToken cancellationToken = default)
+		{
+			try
+			{
+				return await WriteTagsAndRenameThumbnailInternalAsync(subPath, beforeFileHash, command, cancellationToken);
+			}
+			catch ( ObjectDisposedException )
+			{
+				return await WriteTagsAndRenameThumbnailInternalAsync(subPath, beforeFileHash, command, cancellationToken);
+			}
+		}
+
+		[SuppressMessage("ReSharper", "InvertIf")]
+		private async Task<KeyValuePair<bool, string>>
+			WriteTagsAndRenameThumbnailInternalAsync(string subPath,
+				string? beforeFileHash, string command,
+				CancellationToken cancellationToken = default)
 		{
 			var inputStream = _iStorage.ReadStream(subPath);
 			beforeFileHash ??= ( await new FileHash(_iStorage).GetHashCodeAsync(subPath) ).Key;
 			
-			var runner = new StreamToStreamRunner(_appSettings, inputStream,_logger);
+			var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
 			var stream = await runner.RunProcessAsync(command);
 
 			var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
@@ -70,7 +85,7 @@ namespace starsky.foundation.writemeta.Helpers
 			
 			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
 		}
-		
+
 		/// <summary>
 		/// Need to dispose string afterwards yourself
 		/// </summary>

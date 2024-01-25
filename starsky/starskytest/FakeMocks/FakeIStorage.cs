@@ -72,17 +72,21 @@ namespace starskytest.FakeMocks
 		
 
 		private readonly Exception? _exception;
-		
+		public int ExceptionCount { get; set;  }
 
-		
 		public bool ExistFile(string path)
 		{
 			return _outputSubPathFiles.Contains(path);
 		}
 		public bool ExistFolder(string path)
 		{
-			if ( _exception != null ) throw _exception;
-			return _outputSubPathFolders.Contains(path);
+			if ( _exception == null )
+			{
+				return _outputSubPathFolders.Contains(path);
+			}
+			
+			ExceptionCount++;
+			throw _exception;
 		}
 
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
@@ -265,6 +269,12 @@ namespace starskytest.FakeMocks
 		/// <returns>Stream with data (non-disposed)</returns>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
+			if ( _exception != null )
+			{
+				ExceptionCount++;
+				throw _exception;
+			}
+			
 			if ( !ExistFile(path) )
 			{
 				return Stream.Null;
