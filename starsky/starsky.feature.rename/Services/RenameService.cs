@@ -290,9 +290,9 @@ namespace starsky.feature.rename.Services
 				}
 				
 				// when it is a file update the 'to paths'
-				var collectionPaths = _query.SingleItem(inputFileSubPaths[i], 
-					null, true, false)?.FileIndexItem?.CollectionPaths;
-				collectionPaths ??= [];
+				var querySingleItemCollections = _query.SingleItem(inputFileSubPaths[i],
+					null, true, false);
+				var collectionPaths = querySingleItemCollections!.FileIndexItem!.CollectionPaths;
 				
 				inputCollectionFileSubPaths.AddRange(collectionPaths);
 
