@@ -158,7 +158,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				exceptionMessage = e.Message;
 			}
 			
-			Assert.AreEqual("Cannot access a disposed object.\nObject name: 'disposed'.", exceptionMessage);
+			Assert.IsTrue(exceptionMessage.StartsWith("Cannot access a disposed object."));
+			Assert.IsTrue(exceptionMessage.EndsWith("Object name: 'disposed'."));
 			
 			// Retry two times
 			Assert.AreEqual(2,storage.ExceptionCount);
