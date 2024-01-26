@@ -21,21 +21,22 @@ public class ExifToolServiceTest
 
 	public ExifToolServiceTest()
 	{
-		if ( !new AppSettings().IsWindows )
+		if ( new AppSettings().IsWindows )
 		{
-			var stream = StringToStreamHelper.StringToStream("#!/bin/bash\necho Fake ExifTool");
-			_exifToolPath = Path.Join(new CreateAnImage().BasePath, "exiftool-tmp");
-			new StorageHostFullPathFilesystem().WriteStream(stream,
-				_exifToolPath);
-
-			var result = Command.Run("chmod", "+x",
-				_exifToolPath).Task.Result;
-			if ( !result.Success )
-			{
-				throw new FileNotFoundException(result.StandardError);
-			}
+			return;
 		}
+		
+		var stream = StringToStreamHelper.StringToStream("#!/bin/bash\necho Fake ExifTool");
+		_exifToolPath = Path.Join(new CreateAnImage().BasePath, "exiftool-tmp");
+		new StorageHostFullPathFilesystem().WriteStream(stream,
+			_exifToolPath);
 
+		var result = Command.Run("chmod", "+x",
+			_exifToolPath).Task.Result;
+		if ( !result.Success )
+		{
+			throw new FileNotFoundException(result.StandardError);
+		}
 	}
 	
 	[TestMethod]

@@ -137,5 +137,33 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Assert.AreEqual(0, result.Length);
 		}
 
+		[TestMethod]
+		public async Task WriteTagsAndRenameThumbnailAsync_Disposed()
+		{
+			var storage =
+				new FakeIStorage(new ObjectDisposedException("disposed"));
+			
+			var exifTool = new ExifTool(storage, 
+				storage, 
+				new AppSettings(), new FakeIWebLogger());
+
+			var exceptionMessage = string.Empty;
+			try
+			{
+				await exifTool.WriteTagsAndRenameThumbnailAsync("test.jpg", null, "");
+			}
+			catch ( ObjectDisposedException e )
+			{
+				// Expected
+				exceptionMessage = e.Message;
+			}
+			
+			Assert.IsTrue(exceptionMessage.StartsWith("Cannot access a disposed object."));
+			Assert.IsTrue(exceptionMessage.EndsWith("Object name: 'disposed'."));
+			
+			// Retry two times
+			Assert.AreEqual(2,storage.ExceptionCount);
+		}
+
 	}
 }

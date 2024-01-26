@@ -963,8 +963,6 @@ namespace starskytest.starsky.feature.rename.Services
 
 			var renameFs = await new RenameService(_query, iStorage)
 				.Rename("/source_folder_2", "/target_folder_4");
-
-
 			
 			var countTargetChildItem = (await _query.GetAllRecursiveAsync())
 				.Where(p => p.FilePath == "/target_folder_4/test.jpg").ToList();
@@ -1001,6 +999,28 @@ namespace starskytest.starsky.feature.rename.Services
 			// expect exception
 		}
 
-		// todo: add this RenameFsTest_MergeToLowerPath
+		[TestMethod]
+		public async Task RenameFsTest_MergeToLowerPath()
+		{
+			// At the moment there is no check for case sensitive file or filenames
+			
+			const string beforePath = "/test/case_sensitive.jpg";
+			const string afterPath = "/test/Case_Sensitive.jpg";
+
+			var storage = new FakeIStorage(new List<string>{"/exist", beforePath});
+			var query =
+				new FakeIQuery(
+					new List<FileIndexItem> { new FileIndexItem(beforePath) });
+			
+			var renameService = new RenameService(query, storage);
+
+			await renameService.Rename(beforePath, afterPath);
+
+			var beforeItem = await query.GetObjectByFilePathAsync(beforePath);
+			Assert.IsNull(beforeItem);
+			
+			var after = await query.GetObjectByFilePathAsync(afterPath);
+			Assert.AreEqual(afterPath, after!.FilePath);
+		}
 	}
 }
