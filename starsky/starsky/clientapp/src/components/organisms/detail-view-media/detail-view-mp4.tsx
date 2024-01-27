@@ -12,6 +12,7 @@ import Notification, {
 import Preloader from "../../atoms/preloader/preloader";
 import { GetVideoClassName } from "./shared/get-video-class-name";
 import { PlayPause } from "./shared/play-pause";
+import { setDefaultEffect } from "./shared/set-default-effect";
 import { TimeUpdate } from "./shared/time-update";
 import { UpdateProgressByClick } from "./shared/update-progress-by-click";
 import { Waiting } from "./shared/waiting";
@@ -50,33 +51,14 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   );
 
   useEffect(() => {
-    const downloadApiLocal = new UrlQuery().UrlDownloadPhotoApi(
-      new URLPath().encodeURI(
-        new URLPath().getFilePath(history.location.search)
-      ),
-      false,
-      true
+    setDefaultEffect(
+      history.location.search,
+      setDownloadPhotoApi,
+      videoRef,
+      scrubberRef,
+      progressRef,
+      timeRef
     );
-    setDownloadPhotoApi(downloadApiLocal);
-
-    if (
-      !videoRef.current ||
-      !scrubberRef.current ||
-      !progressRef.current ||
-      !timeRef.current
-    ) {
-      return;
-    }
-
-    videoRef.current.setAttribute("src", downloadApiLocal);
-    videoRef.current.load();
-
-    // after a location change
-    progressRef.current.removeAttribute("max");
-    videoRef.current.currentTime = 0;
-    scrubberRef.current.style.left = "0%";
-    progressRef.current.value = 0;
-    timeRef.current.innerHTML = "";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [new URLPath().getFilePath(history.location.search)]);
 
