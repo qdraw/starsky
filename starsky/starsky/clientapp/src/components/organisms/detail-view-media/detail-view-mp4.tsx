@@ -3,7 +3,6 @@ import { DetailViewContext } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import { secondsToHours } from "../../../shared/date";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
@@ -11,31 +10,24 @@ import Notification, {
   NotificationType
 } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
-
-function GetVideoClass(isPaused: boolean, isStarted: boolean): string {
-  if (isPaused) {
-    if (isStarted) {
-      return "video play";
-    } else {
-      return "video first";
-    }
-  } else {
-    return "video pause";
-  }
-}
+import { GetVideoClassName } from "./shared/get-video-class-name";
+import { PlayPause } from "./shared/play-pause";
+import { TimeUpdate } from "./shared/time-update";
 
 const DetailViewMp4: React.FunctionComponent = memo(() => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
+
+  const MessageVideoNotFound = language.text(
+    "Deze video is niet gevonden",
+    "This video is not found"
+  );
+
   const MessageVideoPlayBackError = language.text(
     "Er is iets mis met het afspelen van deze video. " +
       "Probeer eens via het menu 'Meer' en 'Download'.",
     "There is something wrong with the playback of this video.  Try 'More' and 'Download'. "
-  );
-  const MessageVideoNotFound = language.text(
-    "Deze video is niet gevonden",
-    "This video is not found"
   );
 
   const history = useLocation();
@@ -110,80 +102,24 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     // when video ends
     videoRefCurrent.addEventListener("ended", setPausedTrue);
     // As the video is playing, update the progress bar
-    videoRefCurrent.addEventListener("timeupdate", timeUpdate);
+    videoRefCurrent.addEventListener("timeupdate", () =>
+      TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef)
+    );
     videoRefCurrent.addEventListener("waiting", waiting);
 
     return () => {
       // Unbind the event listener on clean up
       if (!videoRefCurrent) return;
       videoRefCurrent.removeEventListener("ended", setPausedTrue);
-      videoRefCurrent.removeEventListener("timeupdate", timeUpdate);
+      videoRefCurrent.removeEventListener("timeupdate", () =>
+        TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef)
+      );
       videoRefCurrent.removeEventListener("waiting", waiting);
     };
   }, [videoRefCurrent]);
 
   function setPausedTrue() {
     setPaused(true);
-  }
-
-  function playPause() {
-    if (!videoRef.current) return;
-    if (videoRef.current.play === undefined) {
-      setIsError(MessageVideoPlayBackError);
-      return;
-    }
-
-    setStarted(true);
-
-    if (paused) {
-      const promise = videoRef.current.play();
-
-      promise?.catch(() => {
-        setIsError(MessageVideoPlayBackError);
-      });
-
-      setPaused(false);
-      setIsLoading(true);
-      return;
-    }
-    setPaused(true);
-    videoRef.current.pause();
-  }
-
-  function timeUpdate() {
-    if (
-      !videoRef.current ||
-      !progressRef.current ||
-      !scrubberRef.current ||
-      !timeRef.current
-    )
-      return;
-
-    // For mobile browsers, ensure that the progress element's max attribute is set
-    if (
-      !progressRef.current.getAttribute("max") &&
-      !isNaN(videoRef.current.duration)
-    ) {
-      progressRef.current.setAttribute(
-        "max",
-        videoRef.current.duration.toString()
-      );
-    }
-
-    progressRef.current.value = videoRef.current.currentTime;
-
-    // scrubber bol
-    const srubberPercentage =
-      (progressRef.current.value / videoRef.current.duration) * 100;
-    scrubberRef.current.style.left = srubberPercentage + "%";
-
-    // time
-    timeRef.current.innerHTML = `${secondsToHours(
-      videoRef.current.currentTime
-    )} / ${secondsToHours(videoRef.current.duration)}`;
-
-    // to disable the loading is slow
-    setIsLoading(false);
   }
 
   function getMousePosition(event: React.MouseEvent | MouseEvent) {
@@ -231,14 +167,44 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
       {!isError ? (
         <figure
           data-test="video"
-          className={GetVideoClass(paused, started)}
+          className={GetVideoClassName(paused, started)}
           onKeyDown={(event) => {
-            event.key === "Enter" && playPause();
-            event.key === "Enter" && timeUpdate();
+            event.key === "Enter" &&
+              PlayPause(
+                videoRef,
+                setIsError,
+                MessageVideoPlayBackError,
+                setStarted,
+                paused,
+                setPaused,
+                setIsLoading
+              );
+            event.key === "Enter" &&
+              TimeUpdate(
+                videoRef,
+                setIsLoading,
+                progressRef,
+                scrubberRef,
+                timeRef
+              );
           }}
           onClick={() => {
-            playPause();
-            timeUpdate();
+            PlayPause(
+              videoRef,
+              setIsError,
+              MessageVideoPlayBackError,
+              setStarted,
+              paused,
+              setPaused,
+              setIsLoading
+            );
+            TimeUpdate(
+              videoRef,
+              setIsLoading,
+              progressRef,
+              scrubberRef,
+              timeRef
+            );
           }}
         >
           <video
@@ -256,9 +222,28 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
           <div className="controls">
             <button
               className={paused ? "play" : "pause"}
-              onClick={playPause}
+              onClick={() =>
+                PlayPause(
+                  videoRef,
+                  setIsError,
+                  MessageVideoPlayBackError,
+                  setStarted,
+                  paused,
+                  setPaused,
+                  setIsLoading
+                )
+              }
               onKeyDown={(event) => {
-                event.key === "Enter" && playPause();
+                event.key === "Enter" &&
+                  PlayPause(
+                    videoRef,
+                    setIsError,
+                    MessageVideoPlayBackError,
+                    setStarted,
+                    paused,
+                    setPaused,
+                    setIsLoading
+                  );
               }}
               type="button"
             >

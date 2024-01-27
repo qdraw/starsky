@@ -8,7 +8,7 @@ import {
   parseRelativeDate,
   parseTime,
   parseTimeHour,
-  secondsToHours
+  SecondsToHours
 } from "./date";
 import { SupportedLanguages } from "./language";
 
@@ -256,21 +256,21 @@ describe("date", () => {
     });
   });
 
-  describe("secondsToHours", () => {
+  describe("SecondsToHours", () => {
     it("3:01", () => {
-      const result = secondsToHours(60 * 3 + 1);
+      const result = SecondsToHours(60 * 3 + 1);
       expect(result).toBe("3:01"); // 3 minutes and one second
     });
     it("3:11", () => {
-      const result = secondsToHours(60 * 3 + 11);
+      const result = SecondsToHours(60 * 3 + 11);
       expect(result).toBe("3:11"); // 3 minutes and 11 seconds
     });
     it("1:00:00", () => {
-      const result = secondsToHours(3600);
+      const result = SecondsToHours(3600);
       expect(result).toBe("1:00:00"); // 1 hour
     });
     it("NaN", () => {
-      const result = secondsToHours(NaN);
+      const result = SecondsToHours(NaN);
       expect(result).toBe("0:00"); // return 0 when its NaN
     });
   });
