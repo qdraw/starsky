@@ -3,6 +3,7 @@ import { DetailViewContext } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location/use-location";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
+import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
@@ -10,11 +11,11 @@ import Notification, {
   NotificationType
 } from "../../atoms/notification/notification";
 import Preloader from "../../atoms/preloader/preloader";
+import { Controls } from "./shared/controls";
 import { GetVideoClassName } from "./shared/get-video-class-name";
 import { PlayPause } from "./shared/play-pause";
 import { setDefaultEffect } from "./shared/set-default-effect";
 import { TimeUpdate } from "./shared/time-update";
-import { UpdateProgressByClick } from "./shared/update-progress-by-click";
 import { Waiting } from "./shared/waiting";
 
 const DetailViewMp4: React.FunctionComponent = memo(() => {
@@ -22,15 +23,9 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
-  const MessageVideoNotFound = language.text(
-    "Deze video is niet gevonden",
-    "This video is not found"
-  );
-
-  const MessageVideoPlayBackError = language.text(
-    "Er is iets mis met het afspelen van deze video. " +
-      "Probeer eens via het menu 'Meer' en 'Download'.",
-    "There is something wrong with the playback of this video.  Try 'More' and 'Download'. "
+  const MessageVideoNotFound = language.key(localization.MessageVideoNotFound);
+  const MessageVideoPlayBackError = language.key(
+    localization.MessageVideoPlayBackError
   );
 
   const history = useLocation();
@@ -177,53 +172,17 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
             />
             <source src={downloadPhotoApi} type="video/mp4" />
           </video>
-          <div className="controls">
-            <button
-              className={paused ? "play" : "pause"}
-              onClick={() =>
-                PlayPause(
-                  videoRef,
-                  setIsError,
-                  MessageVideoPlayBackError,
-                  setStarted,
-                  paused,
-                  setPaused,
-                  setIsLoading
-                )
-              }
-              onKeyDown={(event) => {
-                event.key === "Enter" &&
-                  PlayPause(
-                    videoRef,
-                    setIsError,
-                    MessageVideoPlayBackError,
-                    setStarted,
-                    paused,
-                    setPaused,
-                    setIsLoading
-                  );
-              }}
-              type="button"
-            >
-              <span className="icon"></span>
-              {paused ? "Play" : "Pause"}
-            </button>
-            <span ref={timeRef} data-test="video-time" className="time"></span>
-            <div className="progress">
-              <span ref={scrubberRef} className="scrubber"></span>
-              <progress
-                ref={progressRef}
-                onClick={(event) => UpdateProgressByClick(videoRef, event)}
-                className="progress"
-                value="0"
-                onKeyDown={(event) => {
-                  event.key === "Enter" && UpdateProgressByClick(videoRef);
-                }}
-              >
-                <span id="progress-bar"></span>
-              </progress>
-            </div>
-          </div>
+          <Controls
+            progressRef={progressRef}
+            scrubberRef={scrubberRef}
+            videoRef={videoRef}
+            paused={paused}
+            setPaused={setPaused}
+            setIsError={setIsError}
+            setStarted={setStarted}
+            setIsLoading={setIsLoading}
+            timeRef={timeRef}
+          />
         </figure>
       ) : null}
     </>
