@@ -13,6 +13,8 @@ import Preloader from "../../atoms/preloader/preloader";
 import { GetVideoClassName } from "./shared/get-video-class-name";
 import { PlayPause } from "./shared/play-pause";
 import { TimeUpdate } from "./shared/time-update";
+import { UpdateProgressByClick } from "./shared/update-progress-by-click";
+import { Waiting } from "./shared/waiting";
 
 const DetailViewMp4: React.FunctionComponent = memo(() => {
   // content
@@ -105,7 +107,9 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     videoRefCurrent.addEventListener("timeupdate", () =>
       TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef)
     );
-    videoRefCurrent.addEventListener("waiting", waiting);
+    videoRefCurrent.addEventListener("waiting", () =>
+      Waiting(videoRef, setIsLoading)
+    );
 
     return () => {
       // Unbind the event listener on clean up
@@ -114,42 +118,14 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
       videoRefCurrent.removeEventListener("timeupdate", () =>
         TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef)
       );
-      videoRefCurrent.removeEventListener("waiting", waiting);
+      videoRefCurrent.removeEventListener("waiting", () =>
+        Waiting(videoRef, setIsLoading)
+      );
     };
   }, [videoRefCurrent]);
 
   function setPausedTrue() {
     setPaused(true);
-  }
-
-  function getMousePosition(event: React.MouseEvent | MouseEvent) {
-    const target = event.target as HTMLProgressElement;
-    if (!target.offsetLeft) return 0.1;
-    return (
-      (event.pageX -
-        (target.offsetLeft + (target.offsetParent as HTMLElement).offsetLeft)) /
-      target.offsetWidth
-    );
-  }
-
-  function updateProgressByClick(event?: React.MouseEvent) {
-    if (!videoRef.current || !event?.target) return;
-    const mousePosition = getMousePosition(event);
-
-    const result = isNaN(mousePosition)
-      ? mousePosition * videoRef.current.duration
-      : 0;
-    console.log("result", result);
-
-    videoRef.current.currentTime = result;
-  }
-
-  function waiting() {
-    if (!videoRef.current) return;
-    if (videoRef.current.networkState === videoRef.current.NETWORK_LOADING) {
-      // The user agent is actively trying to download data.
-      setIsLoading(true);
-    }
   }
 
   return (
@@ -255,11 +231,11 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
               <span ref={scrubberRef} className="scrubber"></span>
               <progress
                 ref={progressRef}
-                onClick={updateProgressByClick}
+                onClick={(event) => UpdateProgressByClick(videoRef, event)}
                 className="progress"
                 value="0"
                 onKeyDown={(event) => {
-                  event.key === "Enter" && updateProgressByClick();
+                  event.key === "Enter" && UpdateProgressByClick(videoRef);
                 }}
               >
                 <span id="progress-bar"></span>
