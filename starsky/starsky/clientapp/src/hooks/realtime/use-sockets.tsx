@@ -36,7 +36,7 @@ const useSockets = (): IUseSockets => {
   useInterval(doIntervalCheck, startDiffTime);
 
   function doIntervalCheck() {
-    if (!isEnabled.current || !ws.current || !ws.current.close) {
+    if (!isEnabled.current || !ws.current?.close) {
       return;
     }
 

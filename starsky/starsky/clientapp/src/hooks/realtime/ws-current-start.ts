@@ -23,7 +23,7 @@ export function HandleKeepAliveServerMessage(
   setKeepAliveServerTime: Dispatch<SetStateAction<string>>,
   item: any
 ) {
-  if (!isKeepAliveMessage(item) || !item.data || !item.data.dateTime) return;
+  if (!isKeepAliveMessage(item) || !item.data?.dateTime) return;
   setKeepAliveServerTime(item.data.dateTime);
 }
 
