@@ -183,6 +183,14 @@
     "en": "Delete immediately",
     "nl": "Verwijder onmiddellijk"
   },
+  "MessageVideoPlayBackError": {
+    "en": "There is something wrong with the playback of this video.  Try 'More' and 'Download'. ",
+    "nl": "Er is iets mis met het afspelen van deze video. Probeer eens via het menu 'Meer' en 'Download'."
+  },
+  "MessageVideoNotFound": {
+    "en": "This video is not found",
+    "nl": "Deze video is niet gevonden"
+  },
   "temp1": {
     "en": "",
     "nl": ""

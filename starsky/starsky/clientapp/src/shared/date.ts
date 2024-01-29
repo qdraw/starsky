@@ -211,7 +211,7 @@ const parseTimeHour = (dateTime: string | undefined): number => {
  * Convert seconds to hours
  * @param seconds number of seconds
  */
-const secondsToHours = (seconds: number): string => {
+const SecondsToHours = (seconds: number): string => {
   if (isNaN(seconds)) return "0:00";
   const time = new Date(0);
   time.setUTCSeconds(seconds);
@@ -225,6 +225,7 @@ const secondsToHours = (seconds: number): string => {
 export {
   DifferenceInDate,
   IsEditedNow,
+  SecondsToHours,
   isValidDate,
   leftPad,
   parseDate,
@@ -233,6 +234,5 @@ export {
   parseDateYear,
   parseRelativeDate,
   parseTime,
-  parseTimeHour,
-  secondsToHours
+  parseTimeHour
 };
