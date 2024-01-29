@@ -7,7 +7,7 @@ export function PlayPause(
   setPaused: React.Dispatch<React.SetStateAction<boolean>>,
   setIsLoading: (value: React.SetStateAction<boolean>) => void
 ) {
-  console.log(videoRef);
+  console.log(videoRef?.current?.play);
 
   if (!videoRef.current) return;
   if (videoRef.current.play === undefined) {
