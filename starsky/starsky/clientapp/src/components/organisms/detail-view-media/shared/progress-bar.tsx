@@ -14,14 +14,13 @@ export const ProgressBar: React.FunctionComponent<IProgressBarProps> = ({
   return (
     <div className="progress">
       <span ref={scrubberRef} className="scrubber"></span>
+      {/* NOSONAR(S1082) */}
       <progress
+        data-test="progress-element"
         ref={progressRef}
         onClick={(event) => UpdateProgressByClick(videoRef, event)}
         className="progress"
         value="0"
-        onKeyDown={(event) => {
-          event.key === "Enter" && UpdateProgressByClick(videoRef);
-        }}
       >
         <span id="progress-bar"></span>
       </progress>

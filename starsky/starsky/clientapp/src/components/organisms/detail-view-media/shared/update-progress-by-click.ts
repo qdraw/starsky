@@ -5,12 +5,12 @@ export function UpdateProgressByClick(
   event?: React.MouseEvent
 ) {
   if (!videoRef.current || !event?.target) return;
+
   const mousePosition = GetMousePosition(event);
 
-  const result = isNaN(mousePosition)
+  const result = !isNaN(mousePosition)
     ? mousePosition * videoRef.current.duration
     : 0;
-  console.log("result", result);
 
   videoRef.current.currentTime = result;
 }
