@@ -5,6 +5,7 @@ using helpers;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.ProjectModel;
+using Serilog;
 
 // ReSharper disable once CheckNamespace
 namespace build;
@@ -125,10 +126,10 @@ public sealed class Build : NukeBuild
 		{
 			if ( NoClient )
 			{
-				Console.WriteLine("--no-client flag is used");
+				Log.Information("--no-client flag is used");
 				return;
 			}
-			Console.WriteLine("> client");
+			Log.Information("> client");
 			ShowSettingsInfo();
 			ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 			ClientHelper.NpmPreflight();
@@ -140,33 +141,33 @@ public sealed class Build : NukeBuild
 			}
 			else
 			{
-				Console.WriteLine("Test skipped due --no-unit-tests flag");
+				Log.Information("Test skipped due --no-unit-tests flag");
 			}
 		});
 
 	void ShowSettingsInfo()
 	{
-		Console.WriteLine("SolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
+		Log.Information("SolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
 			
-		Console.WriteLine("---");
-		Console.WriteLine(IsUnitTestDisabled()
+		Log.Information("---");
+		Log.Information(IsUnitTestDisabled()
 			? "Unit test disabled"
 			: "Unit test enabled");
 				
-		Console.WriteLine(NoSonar
+		Log.Information(NoSonar
 			? "Sonar disabled"
 			: "Sonar enabled");
 
-		Console.WriteLine("Branch:");
-		Console.WriteLine(GetBranchName());
+		Log.Information("Branch:");
+		Log.Information(GetBranchName());
 
-		Console.WriteLine("Runtime:");
+		Log.Information("Runtime:");
 		foreach ( var runtime in GetRuntimesWithoutGeneric() )
 		{
-			Console.WriteLine(runtime);
+			Log.Information(runtime);
 		}
 
-		Console.WriteLine("---");
+		Log.Information("---");
 	}
 		
 	Target ShowSettingsInformation => _ => _

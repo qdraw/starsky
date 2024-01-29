@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Serilog;
 
 namespace helpers
 {
@@ -7,7 +8,7 @@ namespace helpers
 	{
 		static void Information(string value)
 		{
-			Console.WriteLine(value);
+			Log.Information(value);
 		}
 	
 		static bool FileExists(string value)
