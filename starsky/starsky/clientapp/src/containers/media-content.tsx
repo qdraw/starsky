@@ -70,9 +70,7 @@ const MediaContent: React.FC = () => {
       {pageType === PageType.ApplicationException ? (
         <ApplicationException></ApplicationException>
       ) : null}
-      {pageType === PageType.Archive &&
-      archive &&
-      archive.fileIndexItems !== undefined ? (
+      {pageType === PageType.Archive && archive?.fileIndexItems ? (
         <ArchiveContextWrapper {...archive} />
       ) : null}
       {pageType === PageType.DetailView && detailView ? (

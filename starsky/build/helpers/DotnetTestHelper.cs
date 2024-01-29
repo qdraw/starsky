@@ -3,6 +3,7 @@ using System.IO;
 using build;
 using Nuke.Common.IO;
 using Nuke.Common.Tools.DotNet;
+using Serilog;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
@@ -12,7 +13,7 @@ namespace helpers
 	{
 		static void Information(string input)
 		{
-			Console.WriteLine(input);
+			Log.Information(input);
 		}
 
 		static bool DirectoryExists(string path)
