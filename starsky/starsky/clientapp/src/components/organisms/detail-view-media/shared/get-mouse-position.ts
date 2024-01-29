@@ -1,7 +1,7 @@
 export function GetMousePosition(event: React.MouseEvent | MouseEvent) {
   const targetElement = event.target as HTMLProgressElement;
 
-  const offsetParent = targetElement.offsetParent as HTMLElement;
+  const offsetParent = targetElement?.offsetParent as HTMLElement;
   const offsetParentLeft = offsetParent?.offsetLeft;
 
   console.log(offsetParentLeft);
