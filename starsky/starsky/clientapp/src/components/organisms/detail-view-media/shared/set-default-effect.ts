@@ -1,7 +1,7 @@
 import { URLPath } from "../../../../shared/url-path";
 import { UrlQuery } from "../../../../shared/url-query";
 
-export function setDefaultEffect(
+export function SetDefaultEffect(
   historyLocationSearch: string,
   setDownloadPhotoApi: React.Dispatch<React.SetStateAction<string>>,
   videoRef: React.RefObject<HTMLVideoElement>,

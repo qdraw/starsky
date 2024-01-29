@@ -14,7 +14,7 @@ import Preloader from "../../atoms/preloader/preloader";
 import { Controls } from "./shared/controls";
 import { GetVideoClassName } from "./shared/get-video-class-name";
 import { PlayPause } from "./shared/play-pause";
-import { setDefaultEffect } from "./shared/set-default-effect";
+import { SetDefaultEffect } from "./shared/set-default-effect";
 import { TimeUpdate } from "./shared/time-update";
 import { Waiting } from "./shared/waiting";
 
@@ -46,7 +46,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   );
 
   useEffect(() => {
-    setDefaultEffect(
+    SetDefaultEffect(
       history.location.search,
       setDownloadPhotoApi,
       videoRef,
