@@ -70,18 +70,29 @@ describe("TimeUpdate function", () => {
     expect(secondsToHoursSpy).toHaveBeenCalledTimes(2); // Once for current time, once for duration
   });
 
-  // it("should set max attribute for progress element if not set", () => {
-  //   // Set up valid values for refs
-  //   videoRef.current.duration = 100;
+  it("should set max attribute for progress element if not set", () => {
+    // Set up valid values for refs
+    videoRef = {
+      current: {
+        duration: 100
+      } as any
+    };
 
-  //   // Remove the max attribute from the progress element
-  //   progressRef.current.removeAttribute("max");
+    const setAttributeSpy = jest.fn();
+    progressRef = {
+      current: {
+        value: 0,
+        getAttribute: jest.fn(),
+        setAttribute: setAttributeSpy
+      } as any
+    };
 
-  //   act(() => {
-  //     TimeUpdate(videoRef, setIsLoadingMock, progressRef, scrubberRef, timeRef);
-  //   });
+    act(() => {
+      TimeUpdate(videoRef, setIsLoadingMock, progressRef, scrubberRef, timeRef);
+    });
 
-  //   // Assert that max attribute was set
-  //   expect(progressRef.current.getAttribute("max")).toBe("100");
-  // });
+    // Assert that max attribute was set
+    expect(setAttributeSpy).toHaveBeenCalledTimes(1);
+    expect(setAttributeSpy).toHaveBeenCalledWith("max", "100");
+  });
 });
