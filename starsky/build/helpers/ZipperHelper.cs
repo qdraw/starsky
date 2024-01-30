@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using build;
 using Serilog;
 
@@ -45,9 +44,10 @@ namespace helpers
 	
 		public static void ZipRuntimes(List<string> getRuntimesWithoutGeneric)
 		{
-			if ( !getRuntimesWithoutGeneric.Any() )
+			if ( getRuntimesWithoutGeneric.Count == 0 )
 			{
-				Log.Information("There are no runtime specific items selected");
+				Log.Information("There are no runtime specific items selected\n" +
+				                "So skip ZipRuntimes");
 				return;
 			}
 
@@ -82,7 +82,8 @@ namespace helpers
 			if ( noUnitTest )
 			{
 				Log.Information(">> ZipHtmlCoverageReport " +
-				                  "is disable due the --no-unit-test flag");
+				                  "is disable due the --no-unit-test flag\n" +
+				                  "So skip ZipHtmlCoverageReport");
 				return;
 			}
 		

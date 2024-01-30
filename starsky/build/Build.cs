@@ -77,6 +77,11 @@ public sealed class Build : NukeBuild
 		
 	[Parameter("Overwrite branch name")] 
 	readonly string Branch;
+	
+	/// <summary>
+	/// Overwrite Branch name
+	/// </summary>
+	/// <returns>only if overwritten</returns>
 	string GetBranchName()
 	{
 		var branchName = Branch;
@@ -126,15 +131,17 @@ public sealed class Build : NukeBuild
 		{
 			if ( NoClient )
 			{
-				Log.Information("--no-client flag is used");
+				Log.Information("--no-client flag is used\n so skip Client build");
 				return;
 			}
-			Log.Information("> client");
+			Log.Information("> Continue with Client build");
+			
 			ShowSettingsInfo();
 			ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 			ClientHelper.NpmPreflight();
 			ClientHelper.ClientCiCommand();
 			ClientHelper.ClientBuildCommand();
+			
 			if ( !IsUnitTestDisabled() )
 			{
 				ClientHelper.ClientTestCommand();
@@ -147,24 +154,40 @@ public sealed class Build : NukeBuild
 
 	void ShowSettingsInfo()
 	{
-		Log.Information("SolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
-			
 		Log.Information("---");
+		Log.Information("Settings:");
+		
+		Log.Information("SolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
+		
+		Log.Information(NoClient
+			? "Client is disabled"
+			: "Client is enabled");
+		
 		Log.Information(IsUnitTestDisabled()
 			? "Unit test disabled"
 			: "Unit test enabled");
+		
+		Log.Information(IsPublishDisabled()	
+			? "Publish disabled"
+			: "Publish enabled");
 				
 		Log.Information(NoSonar
-			? "Sonar disabled"
-			: "Sonar enabled");
+			? "Sonarcloud scan disabled"
+			: "Sonarcloud scan enabled");
 
-		Log.Information("Branch:");
-		Log.Information(GetBranchName());
-
-		Log.Information("Runtime:");
-		foreach ( var runtime in GetRuntimesWithoutGeneric() )
+		if ( !string.IsNullOrEmpty(GetBranchName()) )
 		{
-			Log.Information(runtime);
+			Log.Information("(Overwrite) Branch:");
+			Log.Information(GetBranchName());
+		}
+
+		if ( GetRuntimesWithoutGeneric().Count != 0 )
+		{
+			Log.Information("(Set) Runtime:");
+			foreach ( var runtime in GetRuntimesWithoutGeneric() )
+			{
+				Log.Information(runtime);
+			}
 		}
 
 		Log.Information("---");
@@ -222,7 +245,7 @@ public sealed class Build : NukeBuild
 		.DependsOn(SonarBuildTest)
 		.Executes(() =>
 		{
-			if ( !GetRuntimesWithoutGeneric().Any() || IsPublishDisabled() )
+			if ( GetRuntimesWithoutGeneric().Count == 0 || IsPublishDisabled() )
 			{
 				if ( IsPublishDisabled() )
 				{
@@ -230,7 +253,9 @@ public sealed class Build : NukeBuild
 					return;
 				}
 
-				Log.Information("There are no runtime specific items selected");
+				Log.Information("There are no runtime specific items selected\n " +
+				                "So skip BuildNetCoreRuntimeSpecific");
+				
 				return;
 			}
 				
