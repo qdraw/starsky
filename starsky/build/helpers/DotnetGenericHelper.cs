@@ -65,7 +65,7 @@ namespace helpers
 			catch ( Exception exception)
 			{
 				Log.Information("--");
-				Log.Error(exception.Message);
+				Log.Information(exception.Message);
 				Log.Information("-- continue");
 			}
 
