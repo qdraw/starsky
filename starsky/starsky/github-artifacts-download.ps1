@@ -95,10 +95,27 @@ if ([string]::IsNullOrWhitespace($token)){
 } 
 
 # Define the API URL
-$ActionsWorkflowUrl = "https://api.github.com/repos/qdraw/starsky/actions/workflows/" + $workFlowId + "/runs?status=completed&per_page=1&exclude_pull_requests=true"
+function Get-Workflow-Url {
+    param(
+        [string]$WorkflowId,
+        [string]$Status,
+        [string]$Branch
+    )
+
+    $ActionsWorkflowUrl = "https://api.github.com/repos/qdraw/starsky/actions/workflows/${WorkflowId}/runs?status=${Status}&per_page=1&exclude_pull_requests=true"
+
+    if (-not [string]::IsNullOrEmpty($Branch)) {
+        $ActionsWorkflowUrl += "&branch=${Branch}"
+    }
+
+    return $ActionsWorkflowUrl
+}
+
+$ActionsWorkflowUrlCompleted = Get-Workflow-Url -WorkflowId $WorkflowId -Status "completed" -Branch ""
+$ActionsWorkflowUrlInProgress = Get-Workflow-Url -WorkflowId $WorkflowId -Status "in_progress" -Branch ""
 
 # Define the API status code variable
-$ApiGatewayStatusCode = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrl -Headers @{Authorization = "Token " + $token}).StatusCode
+$ApiGatewayStatusCode = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token}).StatusCode
 
 # Check if the API status code is 401 or 404
 if ($ApiGatewayStatusCode -eq 401 -or $ApiGatewayStatusCode -eq 404) {
@@ -106,8 +123,45 @@ if ($ApiGatewayStatusCode -eq 401 -or $ApiGatewayStatusCode -eq 404) {
   exit 1
 }
 
+# check if is in progress
+function Wait-For-WorkflowCompletion {
+    param(
+        [string]$StarskyGitHubPAT,
+        [string]$ActionsWorkflowUrlInProgress
+    )
+
+    $MaxRetries = 5
+    $RetryCount = 0
+
+    while ($true) {
+        $ResultActionsInProgressWorkflow = Invoke-RestMethod -Uri $ActionsWorkflowUrlInProgress -Headers @{
+            Authorization = "Token " + $StarskyGitHubPAT
+        }
+
+        $totalCount = $ResultActionsInProgressWorkflow.total_count
+
+        if ($totalCount -ne 0) {
+            $RetryCountDisplay = $RetryCount + 1
+            Write-Output "Workflow runs in progress. Retrying $RetryCountDisplay/$MaxRetries in 10 seconds..."
+            Start-Sleep -Seconds 10
+        }
+        else {
+            break
+        }
+
+        $RetryCount++
+        if ($RetryCount -eq $MaxRetries) {
+            Write-Output "Skip retry to get the in-progress function, continue with the latest finished build"
+            break
+        }
+    }
+}
+
+Wait-For-WorkflowCompletion -StarskyGitHubPAT $token -ActionsWorkflowURLInProgress $ActionsWorkflowUrlInProgress
+
+
 # Get the latest workflow run information
-$LatestRun = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrl -Headers @{Authorization = "Token " + $token} | ConvertFrom-Json).workflow_runs[0]
+$LatestRun = (Invoke-WebRequest -Method GET -Uri $ActionsWorkflowUrlCompleted -Headers @{Authorization = "Token " + $token} | ConvertFrom-Json).workflow_runs[0]
 
 
 # Get the latest workflow run ID

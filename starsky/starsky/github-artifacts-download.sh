@@ -128,15 +128,28 @@ fi
 
 echo ""
 
-ACTIONS_WORKFLOW_URL="https://api.github.com/repos/qdraw/starsky/actions/workflows/"$WORKFLOW_ID"/runs?status=completed&per_page=1&exclude_pull_requests=true"
-if [ ! -z $BRANCH ]; then
-    ACTIONS_WORKFLOW_URL=$ACTIONS_WORKFLOW_URL"&branch="$BRANCH
-fi
+
+GET_WORKFLOW_URL_FN() {
+    local WORKFLOW_ID=$1
+    local STATUS=$2
+    local BRANCH=$3
+
+    local ACTIONS_WORKFLOW_URL_LOCAL="https://api.github.com/repos/qdraw/starsky/actions/workflows/${WORKFLOW_ID}/runs?status=${STATUS}&per_page=1&exclude_pull_requests=true"
+
+    if [ ! -z $BRANCH ]; then
+        ACTIONS_WORKFLOW_URL_LOCAL="${ACTIONS_WORKFLOW_URL_LOCAL}&branch=${BRANCH}"
+    fi
+
+    echo $ACTIONS_WORKFLOW_URL_LOCAL
+}
+
+ACTIONS_WORKFLOW_URL_COMPLETED=$(GET_WORKFLOW_URL_FN $WORKFLOW_ID "completed" $BRANCH)
+ACTIONS_WORKFLOW_URL_IN_PROGRESS=$(GET_WORKFLOW_URL_FN $WORKFLOW_ID "in_progress" $BRANCH)
 
 # First check if output is not an 401 or 404
 API_GATEWAY_STATUS_CODE=$(curl --write-out %{http_code} \
     -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer "$STARSKY_GITHUB_PAT --silent --output /dev/null $ACTIONS_WORKFLOW_URL)
+    -H "Authorization: Bearer "$STARSKY_GITHUB_PAT --silent --output /dev/null $ACTIONS_WORKFLOW_URL_COMPLETED)
 if [[ "$API_GATEWAY_STATUS_CODE" -ne 200 ]] && [[ "$API_GATEWAY_STATUS_CODE" -ne 404 ]] ; then
   echo "FAIL: Github token is invalid \$STARSKY_GITHUB_PAT"
   exit 1
@@ -145,12 +158,42 @@ elif [[ "$API_GATEWAY_STATUS_CODE" -eq 404 ]] ; then
   exit 1
 fi
 
-echo "V: "$VERSION
-echo "OUT" $OUTPUT_DIR
-echo ">: "$ACTIONS_WORKFLOW_URL
-RESULT_ACTIONS_WORKFLOW=$(curl --user :$STARSKY_GITHUB_PAT -sS $ACTIONS_WORKFLOW_URL)
 
-ARTIFACTS_URL=$(grep -E -o "\"artifacts_url\":.+\"" <<< $RESULT_ACTIONS_WORKFLOW)
+WAIT_FOR_WORKFLOW_COMPLETION_FN() {
+    local STARSKY_GITHUB_PAT_LOCAL="$1"
+    local ACTIONS_WORKFLOW_URL_INPROGRESS_LOCAL="$2"
+    local MAX_RETRIES_LOCAL=5
+    local RETRY_COUNT_LOCAL=0
+
+    while true; do
+        RESULT_ACTIONS_INPROGRESS_WORKFLOW=$(curl --user :$STARSKY_GITHUB_PAT_LOCAL -sS $ACTIONS_WORKFLOW_URL_INPROGRESS_LOCAL)
+
+        total_count=$(echo "$RESULT_ACTIONS_INPROGRESS_WORKFLOW" | grep -o '"total_count": [0-9]*' | cut -d' ' -f2)
+
+        if [ "$total_count" -ne 0 ]; then
+            RETRY_COUNT_LOCAL_DISPLAY=$((RETRY_COUNT_LOCAL + 1))
+            echo "Workflow runs in progress. Retrying $RETRY_COUNT_LOCAL_DISPLAY/$MAX_RETRIES_LOCAL in 10 seconds..."
+            sleep 10
+        else
+            break
+        fi
+
+        RETRY_COUNT_LOCAL=$((RETRY_COUNT_LOCAL + 1))
+        if [ "$RETRY_COUNT_LOCAL" -eq "$MAX_RETRIES_LOCAL" ]; then
+            echo "Skip retry to get the in progress function, continue with latest finished build"
+            break
+        fi
+    done
+}
+
+WAIT_FOR_WORKFLOW_COMPLETION_FN "$STARSKY_GITHUB_PAT" "$ACTIONS_WORKFLOW_URL_IN_PROGRESS"
+
+echo "VERSION: "$VERSION
+echo "OUT" $OUTPUT_DIR
+echo ">: "$ACTIONS_WORKFLOW_URL_COMPLETED
+RESULT_ACTIONS_COMPLETED_WORKFLOW=$(curl --user :$STARSKY_GITHUB_PAT -sS $ACTIONS_WORKFLOW_URL_COMPLETED)
+
+ARTIFACTS_URL=$(grep -E -o "\"artifacts_url\":.+\"" <<< $RESULT_ACTIONS_COMPLETED_WORKFLOW)
 ARTIFACTS_URL=$(grep -E -o "https:\/\/(\w|\.|\/)+" <<< $ARTIFACTS_URL)
 ARTIFACTS_URL=($ARTIFACTS_URL) # make array
 ARTIFACTS_URL="${ARTIFACTS_URL[0]}" # first of array
@@ -163,7 +206,7 @@ fi
 
 echo ">: "$ARTIFACTS_URL
 
-CREATED_AT=$(grep -E -o "\"created_at\": \"(\d|-|T|:)+" <<< $RESULT_ACTIONS_WORKFLOW)
+CREATED_AT=$(grep -E -o "\"created_at\": \"(\d|-|T|:)+" <<< $RESULT_ACTIONS_COMPLETED_WORKFLOW)
 echo ">: "$CREATED_AT "UTC"
 
 RESULT_ARTIFACTS=$(curl --user :$STARSKY_GITHUB_PAT -sS $ARTIFACTS_URL)
@@ -234,14 +277,14 @@ fi
 for VERSION_ZIP in "${VERSION_ZIP_ARRAY[@]}";
 do
     if [ -f "${OUTPUT_DIR}/${VERSION_ZIP}" ]; then
-        rm ${OUTPUT_ZIP_PATH}
+        rm ${OUTPUT_ZIP_PATH} || true
     fi
 done    
 
 # contains an zip in a zip
 unzip -q -o -j "${OUTPUT_ZIP_PATH}" -d "${OUTPUT_DIR}temp"
 
-echo ${VERSION_ZIP_ARRAY[*]}
+echo "VERSION_ZIP_ARRAY" ${VERSION_ZIP_ARRAY[*]}
 
 OUTPUT_APP_PATH=false
 for VERSION_ZIP in "${VERSION_ZIP_ARRAY[@]}";
@@ -250,7 +293,7 @@ do
         # move file 
         OUTPUT_APP_PATH="${OUTPUT_DIR}${VERSION_ZIP}"
         mv "${OUTPUT_DIR}temp/${VERSION_ZIP}" "${OUTPUT_APP_PATH}"
-        rm "${OUTPUT_ZIP_PATH}"
+        rm "${OUTPUT_ZIP_PATH}" || true
         rm -rf "${OUTPUT_DIR}temp"
         echo "SUCCESS: ${OUTPUT_APP_PATH} is downloaded"  
     fi
