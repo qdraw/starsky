@@ -58,7 +58,7 @@ jobs:
       - name: Build
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --no-publish --no-dependencies
+        run: bash build.sh --no-publish --no-dependencies --no-sonar
         
       - uses: codecov/codecov-action@v3
         with:
