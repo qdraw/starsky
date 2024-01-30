@@ -18,6 +18,7 @@ on:
     - '.github/workflows/**'
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'
+  workflow_run:
 
 jobs:
   build:
