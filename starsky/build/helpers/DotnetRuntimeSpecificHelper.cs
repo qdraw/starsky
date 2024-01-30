@@ -98,6 +98,7 @@ namespace helpers
 		
 		/// <summary>
 		/// Specific build for runtime
+		/// Runs the command: dotnet build
 		/// </summary>
 		/// <param name="solution">the solution file (sln)</param>
 		/// <param name="configuration">Config file</param>
@@ -107,26 +108,34 @@ namespace helpers
 		{
 			Log.Information("> dotnet build next for: solution: " + solution + " runtime: " + runtime);
 			
-			// OverwriteRuntimeIdentifier is done via Directory.Build.props
-			// search for: dotnet build
 			DotNetBuild(p => p
 				.SetProjectFile(solution)
-				// include restore
+				// Implicit restore here, since .NET 8 self contained is disabled
+				// in dotnet restore and there a no options to enable it
 				.EnableNoLogo()
 				.DisableRunCodeAnalysis()
 				.EnableSelfContained()
 				.SetConfiguration(configuration)
 				.SetProcessArgumentConfigurator(args => 
 					args
+						// OverwriteRuntimeIdentifier is done via Directory.Build.props
 						// Building a solution with a specific RuntimeIdentifier is not supported
+						// Dont use SetRuntime
 						.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
 						// Warnings are disabled because in Generic build they are already checked
 						.Add("-v q")
 						.Add("/p:WarningLevel=0")
+						// SonarQube analysis is done in the generic build
 						.Add("/p:noSonar=true")
 				));
 		}
 
+		/// <summary>
+		/// Runs the command: dotnet publish
+		/// For RuntimeSpecific
+		/// </summary>
+		/// <param name="configuration">Release</param>
+		/// <param name="runtime">runtime identifier</param>
 		public static void PublishNetCoreGenericCommand(Configuration configuration, string runtime)
 		{
 			foreach ( var publishProject in Build.PublishProjectsList )
