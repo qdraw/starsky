@@ -19,7 +19,7 @@ on:
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'
     
-  workflow_run:
+  workflow_dispatch:
 
 jobs:
   build:
