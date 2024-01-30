@@ -46,14 +46,7 @@ namespace starsky.foundation.writemeta.Helpers
 		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, 
 			string? beforeFileHash, string command, CancellationToken cancellationToken = default)
 		{
-			try
-			{
-				return await WriteTagsAndRenameThumbnailInternalAsync(subPath, beforeFileHash, command, cancellationToken);
-			}
-			catch ( ObjectDisposedException )
-			{
-				return await WriteTagsAndRenameThumbnailInternalAsync(subPath, beforeFileHash, command, cancellationToken);
-			}
+			return await WriteTagsAndRenameThumbnailInternalAsync(subPath, beforeFileHash, command, cancellationToken);
 		}
 
 		[SuppressMessage("ReSharper", "InvertIf")]

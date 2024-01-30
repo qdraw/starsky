@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,16 +39,9 @@ public class ExifToolServiceTest
 			throw new FileNotFoundException(result.StandardError);
 		}
 	}
-	
-	[TestMethod]
-	public async Task WriteTagsAndRenameThumbnailAsync__UnixOnly()
+
+	private async Task WriteTagsAndRenameThumbnailAsyncUnixPrivateTest()
 	{
-		if ( new AppSettings().IsWindows )
-		{
-			Assert.Inconclusive("This test if for Unix Only");
-			return;
-		}
-		
 		var storage = new FakeIStorage(new List<string>{"/"}, 
 			new List<string>{"/image.jpg"}, new List<byte[]>
 			{
@@ -58,11 +52,30 @@ public class ExifToolServiceTest
 		{
 			ExifToolPath = _exifToolPath
 		}, new FakeIWebLogger());
-		
 		var result = await service.WriteTagsAndRenameThumbnailAsync("/image.jpg", 
 			null, "");
 		
 		Assert.AreEqual(false,result.Key);
+	}
+	
+	[TestMethod]
+	public async Task WriteTagsAndRenameThumbnailAsync__UnixOnly()
+	{
+		if ( new AppSettings().IsWindows )
+		{
+			Assert.Inconclusive("This test if for Unix Only");
+			return;
+		}
+
+		try
+		{
+			await WriteTagsAndRenameThumbnailAsyncUnixPrivateTest();
+		}
+		catch ( ObjectDisposedException )
+		{
+			Console.WriteLine("Retry due ObjectDisposedException");
+			await WriteTagsAndRenameThumbnailAsyncUnixPrivateTest();
+		}
 	}
 	
 	[TestMethod]
