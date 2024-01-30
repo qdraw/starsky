@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using build;
 using Nuke.Common.IO;
