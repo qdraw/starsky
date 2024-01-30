@@ -111,7 +111,7 @@ namespace helpers
 			Run(Build.JavaBaseCommand, "-version");
 		}
 
-		private static string GetSonarToken()
+		public static string GetSonarToken()
 		{
 			var sonarToken = EnvironmentVariable("STARSKY_SONAR_TOKEN");
 			if( string.IsNullOrEmpty(sonarToken) ) {
@@ -119,12 +119,16 @@ namespace helpers
 			}
 			return sonarToken;
 		}
+
+		public static string GetSonarKey()
+		{
+			return EnvironmentVariable("STARSKY_SONAR_KEY");
+		}
 	
 		public static bool SonarBegin(bool noUnitTest, bool noSonar, string branchName, string clientAppProject, string coverageFile)
 		{
-			var key = EnvironmentVariable("STARSKY_SONAR_KEY");
 			
-			Information($">> SonarQube key={key}");
+			Information($">> SonarQube key={GetSonarKey()}");
 			
 			var sonarToken = GetSonarToken();
 
@@ -135,8 +139,8 @@ namespace helpers
 				url = "https://sonarcloud.io";
 			}
 
-			if( string.IsNullOrEmpty(key) || string.IsNullOrEmpty(sonarToken) || string.IsNullOrEmpty(organisation) ) {
-				Information($">> SonarQube is disabled $ key={key}|token={sonarToken}|organisation={organisation}");
+			if( string.IsNullOrEmpty(GetSonarKey()) || string.IsNullOrEmpty(sonarToken) || string.IsNullOrEmpty(organisation) ) {
+				Information($">> SonarQube is disabled $ key={GetSonarKey()}|token={sonarToken}|organisation={organisation}");
 				return false;
 			}
 
@@ -192,7 +196,7 @@ namespace helpers
 				.Append($"begin ")
 				// .Append($"/d:sonar.verbose=true ") 
 				.Append($"/d:sonar.host.url={url} ")
-				.Append($"/k:{key} ")
+				.Append($"/k:{GetSonarKey()} ")
 				.Append($"/n:Starsky ")
 				.Append($"/d:sonar.token={sonarToken} ")
 				.Append($"/o:" + organisation +" ")

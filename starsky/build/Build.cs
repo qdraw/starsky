@@ -160,20 +160,22 @@ public sealed class Build : NukeBuild
 		Log.Information("SolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
 		
 		Log.Information(NoClient
-			? "Client is disabled"
-			: "Client is enabled");
+			? "Client is: disabled"
+			: "Client is: enabled");
 		
 		Log.Information(IsUnitTestDisabled()
-			? "Unit test disabled"
-			: "Unit test enabled");
+			? "Unit test: disabled"
+			: "Unit test: enabled");
 		
 		Log.Information(IsPublishDisabled()	
-			? "Publish disabled"
-			: "Publish enabled");
+			? "Publish: disabled"
+			: "Publish: enabled");
 				
-		Log.Information(NoSonar
-			? "Sonarcloud scan disabled"
-			: "Sonarcloud scan enabled");
+		Log.Information( NoSonar ||
+		                string.IsNullOrEmpty(SonarQube.GetSonarKey()) ||
+		                string.IsNullOrEmpty(SonarQube.GetSonarToken() )
+			? "Sonarcloud scan: disabled"
+			: "Sonarcloud scan: enabled");
 
 		if ( !string.IsNullOrEmpty(GetBranchName()) )
 		{
@@ -186,7 +188,7 @@ public sealed class Build : NukeBuild
 			Log.Information("(Set) Runtime:");
 			foreach ( var runtime in GetRuntimesWithoutGeneric() )
 			{
-				Log.Information(runtime);
+				Log.Information($"- {runtime}");
 			}
 		}
 
@@ -264,14 +266,12 @@ public sealed class Build : NukeBuild
 
 			foreach ( var runtime in GetRuntimesWithoutGeneric() )
 			{
-				DotnetRuntimeSpecificHelper.RestoreNetCoreCommand(Solution, runtime);
 				DotnetRuntimeSpecificHelper.BuildNetCoreCommand(Solution, Configuration, runtime);
 				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Configuration, runtime);
 			}
 			
 			DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
 				"generic-netcore",GetRuntimesWithoutGeneric());
-				
 		});
 		
 	// ReSharper disable once UnusedMember.Local

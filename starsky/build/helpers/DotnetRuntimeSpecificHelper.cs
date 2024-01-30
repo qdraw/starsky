@@ -95,41 +95,47 @@ namespace helpers
 			}
 
 		}
-
-		public static void RestoreNetCoreCommand(Solution solution, string runtime)
-		{
-			Log.Information("> dotnet restore next for: solution: " + solution + " runtime: " + runtime);
-			// OverwriteRuntimeIdentifier is done via Directory.Build.props
-			DotNetRestore(p => p
-				.SetProjectFile(solution)
-				.SetRuntime(runtime)
-				.SetProcessArgumentConfigurator(args => args
-					.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
-					.Add("/p:noSonar=true")));
-		}
-
-		public static void BuildNetCoreCommand(Solution solution, Configuration configuration, string runtime)
+		
+		/// <summary>
+		/// Specific build for runtime
+		/// Runs the command: dotnet build
+		/// </summary>
+		/// <param name="solution">the solution file (sln)</param>
+		/// <param name="configuration">Config file</param>
+		/// <param name="runtime">which runtime e.g. linux-arm or osx-x64</param>
+		public static void BuildNetCoreCommand(Solution solution, Configuration 
+			configuration, string runtime)
 		{
 			Log.Information("> dotnet build next for: solution: " + solution + " runtime: " + runtime);
 			
-			// OverwriteRuntimeIdentifier is done via Directory.Build.props
-			// search for: dotnet build
 			DotNetBuild(p => p
 				.SetProjectFile(solution)
-				.EnableNoRestore()
+				// Implicit restore here, since .NET 8 self contained is disabled
+				// in dotnet restore and there a no options to enable it
 				.EnableNoLogo()
 				.DisableRunCodeAnalysis()
+				.EnableSelfContained()
 				.SetConfiguration(configuration)
 				.SetProcessArgumentConfigurator(args => 
 					args
+						// OverwriteRuntimeIdentifier is done via Directory.Build.props
+						// Building a solution with a specific RuntimeIdentifier is not supported
+						// Dont use SetRuntime
 						.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
 						// Warnings are disabled because in Generic build they are already checked
 						.Add("-v q")
 						.Add("/p:WarningLevel=0")
+						// SonarQube analysis is done in the generic build
 						.Add("/p:noSonar=true")
 				));
 		}
 
+		/// <summary>
+		/// Runs the command: dotnet publish
+		/// For RuntimeSpecific
+		/// </summary>
+		/// <param name="configuration">Release</param>
+		/// <param name="runtime">runtime identifier</param>
 		public static void PublishNetCoreGenericCommand(Configuration configuration, string runtime)
 		{
 			foreach ( var publishProject in Build.PublishProjectsList )
@@ -154,7 +160,10 @@ namespace helpers
 					.SetProject(publishProjectFullPath)
 					.SetRuntime(runtime)
 					.EnableNoLogo()
-					.SetProcessArgumentConfigurator(args => args.Add("/p:noSonar=true"))
+					.SetProcessArgumentConfigurator(args => 
+						args.Add("/p:noSonar=true")
+							.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
+						)
 				);
 			}
 		}
