@@ -74,7 +74,7 @@ namespace helpers
 			{
 				$"-reports:{rootDirectory}/starskytest/*coverage.*.xml",
 				$"-targetdir:{rootDirectory}/starskytest/",
-				$"-reporttypes:Cobertura;SonarQube"
+				"-reporttypes:Cobertura;SonarQube"
 			};
 		
 			Palmmedia.ReportGenerator.Core.Program.Main(args);
@@ -91,8 +91,8 @@ namespace helpers
 			if (!FileExists(outputCoverageFile)) {
 				throw new FileNotFoundException($"Missing Cobertura coverage file {outputCoverageFile}");
 			}
+			
 			Information($"Cobertura Coverage file is ready: {outputCoverageFile}");
-
 		}
 	}
 	

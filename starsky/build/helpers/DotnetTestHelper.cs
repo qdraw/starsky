@@ -56,12 +56,12 @@ namespace helpers
 				
 				var runSettingsFile = Path.Combine(
 					WorkingDirectory.GetSolutionParentFolder(), "build.vstest.runsettings");
-				Console.WriteLine("runSettingsFile " + runSettingsFile);
+				
+				Log.Information("runSettingsFile " + runSettingsFile);
 				
 				// search for: dotnet test
-				DotNetTest(_ => _
+				DotNetTest(p => p
 					.SetConfiguration(configuration)
-					// .SetProcessArgumentConfigurator()
 					.EnableNoRestore()
 					.EnableNoBuild()
 					.SetVerbosity(DotNetVerbosity.Normal)

@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using build;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Serilog;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static build.Build;
 
@@ -13,7 +13,7 @@ namespace helpers
 	{
 		public static void RestoreNetCoreCommand(Solution solution)
 		{
-			Console.WriteLine("solution: " + solution);
+			Log.Information("solution: " + solution);
 			DotNetRestore(p => p
 				.SetProjectFile(solution.Path)
 			);
@@ -22,7 +22,7 @@ namespace helpers
 		public static void BuildNetCoreGenericCommand(Solution solution,
 			Configuration configuration)
 		{
-			DotNetBuild(_ => _
+			DotNetBuild(p => p
 				.SetConfiguration(configuration)
 				.EnableNoRestore()
 				.EnableNoLogo()
@@ -43,20 +43,20 @@ namespace helpers
 		{
 			if ( noDependencies )
 			{
-				Console.WriteLine("skip --no-dependencies");
+				Log.Information("skip --no-dependencies");
 				return;
 			}
 			
 			var genericDepsFullPath = Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
-			Console.WriteLine($"genericDepsFullPath: {genericDepsFullPath}");
+			Log.Information($"genericDepsFullPath: {genericDepsFullPath}");
 		
 			try
 			{
 				Environment.SetEnvironmentVariable("app__DependenciesFolder",genericDepsFullPath);
-				Console.WriteLine("Next: DownloadDependencies");
-				Console.WriteLine("Run: " + Path.Combine(WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj));
+				Log.Information("Next: DownloadDependencies");
+				Log.Information("Run: " + Path.Combine(WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj));
 
-				DotNetRun(_ =>  _
+				DotNetRun(p =>  p
 					.SetConfiguration(configuration)
 					.EnableNoRestore()
 					.EnableNoBuild()
@@ -64,15 +64,15 @@ namespace helpers
 			}
 			catch ( Exception exception)
 			{
-				Console.WriteLine("--");
-				Console.WriteLine(exception.Message);
-				Console.WriteLine("-- continue");
+				Log.Information("--");
+				Log.Error(exception.Message);
+				Log.Information("-- continue");
 			}
 
 			Environment.SetEnvironmentVariable("app__DependenciesFolder", string.Empty);
 
-			Console.WriteLine($"   genericDepsFullPath: {genericDepsFullPath}");
-			Console.WriteLine("DownloadDependencies done");
+			Log.Information($"   genericDepsFullPath: {genericDepsFullPath}");
+			Log.Information("DownloadDependencies done");
 		}
 
 		public static void PublishNetCoreGenericCommand(Solution solution,
@@ -80,7 +80,7 @@ namespace helpers
 		{
 			if ( isPublishDisabled )
 			{
-				Console.WriteLine("Skip: PublishNetCoreGenericCommand isPublishDisabled");
+				Log.Information("Skip: PublishNetCoreGenericCommand isPublishDisabled");
 				return;
 			}
 			
@@ -94,7 +94,7 @@ namespace helpers
 					WorkingDirectory.GetSolutionParentFolder(),
 					GenericRuntimeName);
 
-				DotNetPublish(_ => _
+				DotNetPublish(p => p
 					.SetConfiguration(configuration)
 					.EnableNoRestore()
 					.EnableNoBuild()

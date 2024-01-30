@@ -4,10 +4,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using build;
+using Serilog;
 
 namespace helpers
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1118:Add a 'protected' constructor or the 'static' keyword to the class declaration", Justification = "Not production code.")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "S1118:Add a 'protected' constructor " +
+		"or the 'static' keyword to the class declaration", Justification = "Not production code.")]
 	public sealed class ZipperHelper
 	{
 
@@ -16,7 +18,7 @@ namespace helpers
 		static string BasePath()
 		{
 			return Directory.GetParent(AppDomain.CurrentDomain
-				.BaseDirectory).Parent.Parent.Parent.FullName;
+				.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
 		}
 	
 		public static void ZipGeneric()
@@ -36,7 +38,7 @@ namespace helpers
 				File.Delete(zipPath);
 			}
 		
-			Console.WriteLine($"next: {Build.GenericRuntimeName} zip  ~ {fromFolder} -> {zipPath}");
+			Log.Information($"next: {Build.GenericRuntimeName} zip  ~ {fromFolder} -> {zipPath}");
 			ZipFile.CreateFromDirectory(fromFolder, 
 				zipPath);
 		}
@@ -45,7 +47,7 @@ namespace helpers
 		{
 			if ( !getRuntimesWithoutGeneric.Any() )
 			{
-				Console.WriteLine("There are no runtime specific items selected");
+				Log.Information("There are no runtime specific items selected");
 				return;
 			}
 
@@ -66,7 +68,8 @@ namespace helpers
 					File.Delete(zipPath);
 				}
 
-				Console.WriteLine($"next: {runtime} zip ~ {runtimeFullPath} -> {zipPath}");
+				Log.Information($"next: {runtime} zip ~ {runtimeFullPath} -> {zipPath}");
+				
 				ZipFile.CreateFromDirectory(runtimeFullPath, zipPath);
 			}
 		}
@@ -78,7 +81,7 @@ namespace helpers
 		{
 			if ( noUnitTest )
 			{
-				Console.WriteLine(">> ZipHtmlCoverageReport " +
+				Log.Information(">> ZipHtmlCoverageReport " +
 				                  "is disable due the --no-unit-test flag");
 				return;
 			}
@@ -95,10 +98,9 @@ namespace helpers
 				File.Delete(zipPath);
 			}
 		
-			Console.WriteLine($"next: zip {fromFolder} -> {zipPath}");
+			Log.Information($"next: zip {fromFolder} -> {zipPath}");
 			ZipFile.CreateFromDirectory(fromFolder, 
 				zipPath);
 		}
 	}
-	
 }

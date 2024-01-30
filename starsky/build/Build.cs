@@ -121,7 +121,7 @@ public sealed class Build : NukeBuild
 	/// </summary>
 	public const string JavaBaseCommand = "java";
 
-	Target Client => _ => _
+	Target Client => p => p
 		.Executes(() =>
 		{
 			if ( NoClient )
@@ -170,13 +170,13 @@ public sealed class Build : NukeBuild
 		Log.Information("---");
 	}
 		
-	Target ShowSettingsInformation => _ => _
+	Target ShowSettingsInformation => p => p
 		.Executes(ShowSettingsInfo);
 
 	/// <summary>
 	/// Default Target
 	/// </summary>
-	Target Compile => _ => _
+	Target Compile => p => p
 		.DependsOn(ShowSettingsInformation)
 		.DependsOn(Client)
 		.DependsOn(SonarBuildTest)
@@ -184,7 +184,7 @@ public sealed class Build : NukeBuild
 		.DependsOn(CoverageReport)
 		.DependsOn(Zip);
 		
-	Target SonarBuildTest => _ => _
+	Target SonarBuildTest => p => p
 		.DependsOn(Client)
 		.Executes(() =>
 		{
@@ -207,7 +207,7 @@ public sealed class Build : NukeBuild
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
 		"S1144:UnusedMember.Local", Justification = "Not production code.")]
 	// ReSharper disable once UnusedMember.Local
-	Target DownloadDependencies => _ => _
+	Target DownloadDependencies => p => p
 		.Executes(() =>
 		{
 			DotnetGenericHelper.DownloadDependencies(Solution,Configuration, 
@@ -218,7 +218,7 @@ public sealed class Build : NukeBuild
 				
 		});
 
-	Target BuildNetCoreRuntimeSpecific => _ => _
+	Target BuildNetCoreRuntimeSpecific => p => p
 		.DependsOn(SonarBuildTest)
 		.Executes(() =>
 		{
@@ -226,11 +226,11 @@ public sealed class Build : NukeBuild
 			{
 				if ( IsPublishDisabled() )
 				{
-					Console.WriteLine("Publish is disabled " + IsPublishDisabled());
+					Log.Information("Publish is disabled " + IsPublishDisabled());
 					return;
 				}
 
-				Console.WriteLine("There are no runtime specific items selected");
+				Log.Information("There are no runtime specific items selected");
 				return;
 			}
 				
@@ -252,7 +252,7 @@ public sealed class Build : NukeBuild
 	// ReSharper disable once UnusedMember.Local
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
 		"S1144:UnusedMember.Local", Justification = "Not production code.")]
-	Target BuildNetCore => _ => _
+	Target BuildNetCore => p => p
 		.Executes(() =>
 		{
 			ShowSettingsInfo();
@@ -264,14 +264,14 @@ public sealed class Build : NukeBuild
 	// ReSharper disable once UnusedMember.Local
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
 		"S1144:UnusedMember.Local", Justification = "Not production code.")]
-	Target TestNetCore => _ => _
+	Target TestNetCore => p => p
 		.Executes(() =>
 		{
 			ShowSettingsInfo();
 			DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
 		});
 		
-	Target Zip => _ => _
+	Target Zip => p => p
 		.DependsOn(Client)
 		.DependsOn(SonarBuildTest)
 		.DependsOn(BuildNetCoreRuntimeSpecific)
@@ -279,7 +279,7 @@ public sealed class Build : NukeBuild
 		{
 			if ( IsPublishDisabled() )
 			{
-				Console.WriteLine("Publish is disabled " + IsPublishDisabled());
+				Log.Information("Publish is disabled " + IsPublishDisabled());
 				return;
 			}
 				
@@ -291,7 +291,7 @@ public sealed class Build : NukeBuild
 	/// <summary>
 	/// Generates html coverage report
 	/// </summary>
-	Target CoverageReport => _ => _
+	Target CoverageReport => p => p
 		.DependsOn(Client)
 		.DependsOn(SonarBuildTest)
 		.Executes(() =>
