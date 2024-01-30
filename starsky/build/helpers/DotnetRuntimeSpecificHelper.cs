@@ -7,6 +7,7 @@ using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Serilog;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 namespace helpers
@@ -28,7 +29,7 @@ namespace helpers
 			{
 				var runtimeZip = $"{ZipperHelper.ZipPrefix}{runtime}.zip";
 			
-				Console.WriteLine("runtimeZip: " + runtimeZip + " exists:" + File.Exists(runtimeZip));
+				Log.Information("runtimeZip: " + runtimeZip + " exists:" + File.Exists(runtimeZip));
 				if (File.Exists(runtimeZip))
 				{
 					File.Delete(runtimeZip);
@@ -36,12 +37,12 @@ namespace helpers
 
 				if (Directory.Exists(Path.Combine(BasePath(), runtime)))
 				{
-					Console.WriteLine($"next rm folder - {Path.Combine(BasePath(), runtime)}");
+					Log.Information($"next rm folder - {Path.Combine(BasePath(), runtime)}");
 					Directory.Delete(Path.Combine(BasePath(), runtime),true);
 				}
 				else
 				{
-					Console.WriteLine($"folder is not removed - {Path.Combine(BasePath(), runtime)}");
+					Log.Information($"folder is not removed - {Path.Combine(BasePath(), runtime)}");
 				}
 
 				// get current netMoniker
@@ -53,12 +54,12 @@ namespace helpers
 				
 				if (Directory.Exists($"obj/Release/{netMoniker}/{runtime}"))
 				{
-					Console.WriteLine($"remove -> obj/Release/{netMoniker}/{runtime}");
+					Log.Information($"remove -> obj/Release/{netMoniker}/{runtime}");
 					Directory.Delete($"obj/Release/{netMoniker}/{runtime}",true);
 				}
 				else
 				{
-					Console.WriteLine($"folder is not removed -> obj/Release/{netMoniker}/{runtime}");
+					Log.Information($"folder is not removed -> obj/Release/{netMoniker}/{runtime}");
 				}
 			}
 		}
@@ -83,13 +84,13 @@ namespace helpers
 				if ( runtime.StartsWith("win") && Directory.Exists(Path.Combine(runtimeTempFolder, "exiftool-unix")) )
 				{
 					Directory.Delete(Path.Combine(runtimeTempFolder, "exiftool-unix"), true);
-					Console.WriteLine("removed exiftool-unix for windows");
+					Log.Information("removed exiftool-unix for windows");
 				}
 				// ReSharper disable once InvertIf
 				if ( runtime.StartsWith("win") && File.Exists(Path.Combine(runtimeTempFolder, "exiftool.tar.gz")) )
 				{
 					File.Delete(Path.Combine(runtimeTempFolder, "exiftool.tar.gz"));
-					Console.WriteLine("removed exiftool.tar.gz for windows");
+					Log.Information("removed exiftool.tar.gz for windows");
 				}
 			}
 
@@ -97,7 +98,7 @@ namespace helpers
 
 		public static void RestoreNetCoreCommand(Solution solution, string runtime)
 		{
-			Console.WriteLine("> dotnet restore next for: solution: " + solution + " runtime: " + runtime);
+			Log.Information("> dotnet restore next for: solution: " + solution + " runtime: " + runtime);
 			// OverwriteRuntimeIdentifier is done via Directory.Build.props
 			DotNetRestore(p => p
 				.SetProjectFile(solution)
@@ -109,7 +110,7 @@ namespace helpers
 
 		public static void BuildNetCoreCommand(Solution solution, Configuration configuration, string runtime)
 		{
-			Console.WriteLine("> dotnet build next for: solution: " + solution + " runtime: " + runtime);
+			Log.Information("> dotnet build next for: solution: " + solution + " runtime: " + runtime);
 			
 			// OverwriteRuntimeIdentifier is done via Directory.Build.props
 			// search for: dotnet build
@@ -133,7 +134,7 @@ namespace helpers
 		{
 			foreach ( var publishProject in Build.PublishProjectsList )
 			{
-				Console.WriteLine(">> next publishProject: " + publishProject + " runtime: " + runtime);
+				Log.Information(">> next publishProject: " + publishProject + " runtime: " + runtime);
 				
 				var publishProjectFullPath = Path.Combine(
 					WorkingDirectory.GetSolutionParentFolder(),

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Serilog;
 
 namespace helpers
 {
@@ -8,7 +9,7 @@ namespace helpers
 	{
 		static void Information(string value)
 		{
-			Console.WriteLine(value);
+			Log.Information(value);
 		}
 
 		public static string GenerateHtml(bool noUnitTest)
@@ -22,7 +23,7 @@ namespace helpers
 			Information(">> Next: MergeCoverageFiles ");
 
 			var rootDirectory = Directory.GetParent(AppDomain.CurrentDomain
-				.BaseDirectory).Parent.Parent.Parent.FullName;
+				.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
 			var outputCoverageFile = Path.Combine(rootDirectory,
 				"./starskytest/coverage-merge-cobertura.xml");
 
@@ -39,10 +40,11 @@ namespace helpers
 			{
 				$"-reports:{outputCoverageFile}", 
 				$"-targetdir:{reportFolder}",
-				$"-reporttypes:HtmlInline"
+				"-reporttypes:HtmlInline"
 			};
 
 			Palmmedia.ReportGenerator.Core.Program.Main(args);
+			
 			Information(">> ReportGenerator done");
 
 			return reportFolder;

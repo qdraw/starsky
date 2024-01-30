@@ -21,7 +21,7 @@ namespace helpers
 		/// <summary>
 		/// @see: https://www.nuget.org/packages/dotnet-sonarscanner
 		/// </summary>
-		public const string SonarQubePackageVersion = "6.0.0";
+		public const string SonarQubePackageVersion = "6.1.0";
 		
 		public const string SonarQubeDotnetSonarScannerApi = "https://api.nuget.org/v3-flatcontainer/dotnet-sonarscanner/index.json";
 
@@ -66,12 +66,10 @@ namespace helpers
 			DotNet($"new tool-manifest --force", rootDirectory, envs, null, true);
 
 			Log.Information("Next: Install Sonar tool");
-			DotNetToolInstall(_ => _
+			DotNetToolInstall(p => p
 				.SetPackageName(SonarQubePackageName)
-				//.SetProcessArgumentConfigurator(_ => _.Add("-d"))
 				.SetProcessWorkingDirectory(rootDirectory)
 				.SetVersion(SonarQubePackageVersion));
-		
 		}
 
 		private static string EnvironmentVariable(string input)
@@ -99,9 +97,10 @@ namespace helpers
 			{
 				Log.Warning($"Please upgrade to the latest version " +
 				            $"of dotnet-sonarscanner {latestVersionByApi} \n\n" +
-				            "see: \n" +
-				            "starsky/build/helpers/SonarQube.cs \n" + 
-				            "and: SonarQubePackageVersion");
+				            "Update the following values: \n" +
+				            $"- build/helpers/SonarQube.cs -> SonarQubePackageVersion to {latestVersionByApi} \n" + 
+							"The _build project will auto update: \n" +
+				            "-  .config/dotnet-tools.json");
 			}
 		}
 		
