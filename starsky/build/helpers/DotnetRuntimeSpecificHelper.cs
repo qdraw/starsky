@@ -95,20 +95,15 @@ namespace helpers
 			}
 
 		}
-
-		public static void RestoreNetCoreCommand(Solution solution, string runtime)
-		{
-			Log.Information("> dotnet restore next for: solution: " + solution + " runtime: " + runtime);
-			// OverwriteRuntimeIdentifier is done via Directory.Build.props
-			DotNetRestore(p => p
-				.SetProjectFile(solution)
-				.SetRuntime(runtime)
-				.SetProcessArgumentConfigurator(args => args
-					.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
-					.Add("/p:noSonar=true")));
-		}
-
-		public static void BuildNetCoreCommand(Solution solution, Configuration configuration, string runtime)
+		
+		/// <summary>
+		/// Specific build for runtime
+		/// </summary>
+		/// <param name="solution">the solution file (sln)</param>
+		/// <param name="configuration">Config file</param>
+		/// <param name="runtime">which runtime e.g. linux-arm or osx-x64</param>
+		public static void BuildNetCoreCommand(Solution solution, Configuration 
+			configuration, string runtime)
 		{
 			Log.Information("> dotnet build next for: solution: " + solution + " runtime: " + runtime);
 			
@@ -116,12 +111,14 @@ namespace helpers
 			// search for: dotnet build
 			DotNetBuild(p => p
 				.SetProjectFile(solution)
-				.EnableNoRestore()
+				// include restore
 				.EnableNoLogo()
 				.DisableRunCodeAnalysis()
+				.EnableSelfContained()
 				.SetConfiguration(configuration)
 				.SetProcessArgumentConfigurator(args => 
 					args
+						// Building a solution with a specific RuntimeIdentifier is not supported
 						.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
 						// Warnings are disabled because in Generic build they are already checked
 						.Add("-v q")
@@ -154,7 +151,10 @@ namespace helpers
 					.SetProject(publishProjectFullPath)
 					.SetRuntime(runtime)
 					.EnableNoLogo()
-					.SetProcessArgumentConfigurator(args => args.Add("/p:noSonar=true"))
+					.SetProcessArgumentConfigurator(args => 
+						args.Add("/p:noSonar=true")
+							.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
+						)
 				);
 			}
 		}

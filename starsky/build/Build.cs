@@ -264,14 +264,12 @@ public sealed class Build : NukeBuild
 
 			foreach ( var runtime in GetRuntimesWithoutGeneric() )
 			{
-				DotnetRuntimeSpecificHelper.RestoreNetCoreCommand(Solution, runtime);
 				DotnetRuntimeSpecificHelper.BuildNetCoreCommand(Solution, Configuration, runtime);
 				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Configuration, runtime);
 			}
 			
 			DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
 				"generic-netcore",GetRuntimesWithoutGeneric());
-				
 		});
 		
 	// ReSharper disable once UnusedMember.Local

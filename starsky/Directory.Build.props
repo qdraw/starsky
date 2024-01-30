@@ -1,5 +1,6 @@
 <Project>
   <PropertyGroup>
-    <RuntimeIdentifier>$(OverwriteRuntimeIdentifier)</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(OverwriteRuntimeIdentifier)' != ''">$(OverwriteRuntimeIdentifier)</RuntimeIdentifier>
+    <SelfContained Condition="'$(OverwriteRuntimeIdentifier)' != ''">true</SelfContained>
   </PropertyGroup>
 </Project>
