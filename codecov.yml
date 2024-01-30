@@ -1,0 +1,37 @@
+coverage:
+  precision: 2
+  round: down
+  range: "80...100"  
+  ignore:
+    - "**/build/*"
+    - "**/build/helpers/*"
+    - "**/documentation/*"
+    - "**/Interfaces/IQuery.cs"
+    - "**/setupTests.js"
+    - "**/react-app-env.d.ts"
+    - "**/service-worker.ts"
+    - "webhtmlcli/**/*.js"
+    - "**/wwwroot/js/**/*"
+    - "**/*/Migrations/*"
+    - "**/*spec.tsx"
+    - "**/*stories.tsx"
+    - "**/*spec.ts"
+    - "**/src/main.tsx"
+    - "**/src/index.tsx"
+    - "**/src/style/css/vendor/*"
+    - "**/node_modules/*"
+    - "**/prestorybook.js"
+    - "**/vite.config.ts"
+    - "**/.storybook/**"
+    - "**/jest.setup.ts"
+    - "**/_bigimages-helper.js"
+  status:
+    project:  
+      default: 
+        target: auto
+        threshold: 8%
+        base: auto 
+        # advanced settings
+        branches: 
+          - master
+

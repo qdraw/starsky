@@ -18,6 +18,8 @@ on:
     - '.github/workflows/**'
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'
+    
+  workflow_dispatch:
 
 jobs:
   build:
@@ -56,7 +58,7 @@ jobs:
       - name: Build
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh
+        run: bash build.sh --no-publish --no-dependencies --no-sonar
         
       - uses: codecov/codecov-action@v3
         with:

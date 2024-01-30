@@ -3,4 +3,12 @@
 Analyzing the source code before compilation provides a highly scalable method of
 security code review and helps ensure that secure coding policies are being followed.
 
-[See Static Application Security Testing in Technolgies for more information about the tools that are used](technologies/static-application-security-testing/readme.md)
+## The following tools are used:
+
+### [Sonarcloud/Sonarqube ](sonarcloud.md)
+
+### [Codecov ](codecov.md)
+
+### [CodeQL ](codeql.md)
+
+### [Snyk ](snyk.md)
