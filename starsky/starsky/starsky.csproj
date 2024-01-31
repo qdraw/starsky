@@ -113,9 +113,6 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <None Remove="gatekeeper-mac-os-helper.command" />
-        <Content Include="gatekeeper-mac-os-helper.command">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
 		<None Remove="service-deploy-windows.ps1" />
 		<Content Include="service-deploy-windows.ps1">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
