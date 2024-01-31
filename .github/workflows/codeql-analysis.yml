@@ -65,7 +65,7 @@ jobs:
     - name: BuildNetCore
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target=BuildNetCore --no-sonar
+      run: bash build.sh --Target=BuildNetCore --no-sonar --no-dependencies --no-publish
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
