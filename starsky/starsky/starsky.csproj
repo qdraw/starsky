@@ -31,6 +31,9 @@
     <ItemGroup>
         <None Remove="Properties\.gitkeep" />
         <None Remove="generic-site\**" />
+        <None Update="mac-self-codesign.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     
     <ItemGroup Condition="!Exists('Properties/launchSettings.json')">
