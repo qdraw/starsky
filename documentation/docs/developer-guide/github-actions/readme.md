@@ -15,6 +15,28 @@ Build, test, and deploy your code right from GitHub.
 -   [Docker Hub on new version (Create Release on tag for docker hub)](#create-release-on-tag-for-docker-hub)
 -   [Docker unstable build (Docker buildx multi-arch CI unstable master)](#docker-buildx-multi-arch-ci-unstable-master)
 
+
+## Table of Contents
+
+1. [Create Desktop Release on tag for .Net Core and Electron](#create-desktop-release-on-tag-for-net-core-and-electron)
+2. [Docker Hub on new version (Create Release on tag for Docker Hub)](#create-release-on-tag-for-docker-hub)
+3. [Docker unstable build (Docker buildx multi-arch CI unstable master)](#docker-buildx-multi-arch-ci-unstable-master)
+4. [Auto upgrade .NET SDK version](#auto-upgrade-net-sdk-version)
+5. [Application Version Auto update](#application-version-auto-update)
+6. [Auto update Nuget packages list](#auto-update-nuget-packages-list)
+7. [Auto Update Swagger](#auto-update-swagger)
+8. [Auto clientapp create Vite upgrade](#auto-clientapp-create-react-app-upgrade)
+9. [Auto Documentation create Docusaurus upgrade](#auto-documentation-create-docusaurus-upgrade)
+10. [ClientApp React Linux CI](#clientapp-react-linux-ci)
+11. [ClientApp React Windows CI](#clientapp-react-windows-ci)
+12. [CodeQL analysis](#codeql-analysis)
+13. [Documentation to GitHub Pages](#documentation-to-github-pages)
+14. [End-to-End on Ubuntu CI](#end2end-on-ubuntu-ci)
+15. [End-to-End on Windows CI](#end2end-on-windows-ci)
+16. [Create Release on tag for Docker Hub](#create-release-on-tag-for-docker-hub)
+
+
+
 # All github actions used by this project
 
 There are multiple github actions used by this project. Bellow is a list of all github actions and a short on alphabet order.
@@ -80,9 +102,9 @@ npm run nuget-package-list
 
 > [auto-update-swagger-dotnet.yml](https://github.com/qdraw/starsky/actions/workflows/auto-update-swagger-dotnet.yml)
 
-## auto clientapp create react app upgrade [Change to VITE]
+## auto clientapp create Vite upgrade
 
-Bootstrap the client react app with the latest create react app version
+Bootstrap the client app with the latest Vite version
 
 [![auto clientapp create react app upgrade](https://github.com/qdraw/starsky/actions/workflows/auto-upgrade-clientapp-create-react-app.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/auto-upgrade-clientapp-create-react-app.yml)
 
@@ -142,11 +164,17 @@ npm run test:ci
 
 Run CodeQL analysis on push and pull request
 
+[![end2end on ubuntu-ci](https://github.com/qdraw/starsky/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/codeql-analysis.yml)
+
+
 > [codeql-analysis.yml](https://github.com/qdraw/starsky/actions/workflows/codeql-analysis.yml)
 
 ## Documentation to github pages
 
 Deploy docs site to github pages
+
+[![end2end on ubuntu-ci](https://github.com/qdraw/starsky/actions/workflows/documentation-gh-pages.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/documentation-gh-pages.yml)
+
 
 > [documentation-gh-pages.yml](https://github.com/qdraw/starsky/actions/workflows/documentation-gh-pages.yml)
 
@@ -175,6 +203,8 @@ See [Cypress Dashboard](https://cloud.cypress.io/projects/1yeai3/runs) and click
 On tag push create a release for docker hub
 runs on release of a new stable version
 
+[![Create Release on tag for docker hub](https://github.com/qdraw/starsky/actions/workflows/release-on-tag-docker-hub.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/release-on-tag-docker-hub.yml)
+
 > [release-on-tag-docker-hub.yml](https://github.com/qdraw/starsky/actions/workflows/release-on-tag-docker-hub.yml)
 
 ## Create Desktop Release on tag for .Net Core and Electron
@@ -183,11 +213,15 @@ Build the .NET runtime for Linux, Windows and Mac OS
 And build Electron
 Only create release when a new tag is pushed
 
+[![Create Release on tag for docker hub](https://github.com/qdraw/starsky/actions/workflows/release-on-tag-netcore-desktop-electron.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/release-on-tag-netcore-desktop-electron.yml)
+
 > [release-on-tag-netcore-desktop-electron.yml](https://github.com/qdraw/starsky/actions/workflows/release-on-tag-netcore-desktop-electron.yml)
 
 ## Docker buildx multi-arch CI unstable master
 
 Build docker images for testing
+
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starsky-docker-buildx.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starsky-docker-buildx.yml)
 
 > [starsky-docker-buildx.yml](https://github.com/qdraw/starsky/actions/workflows/starsky-docker-buildx.yml)
 
@@ -196,6 +230,9 @@ Build docker images for testing
 CI build for .NET Core on Ubuntu
 Builds and runs unit tests in international mode and locale NL_nl due dot and comma issues
 
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starsky-dotnetcore-ubuntu.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starsky-dotnetcore-ubuntu.yml)
+
+
 > [starsky-dotnetcore-ubuntu.yml](https://github.com/qdraw/starsky/actions/workflows/starsky-dotnetcore-ubuntu.yml)
 
 ## Starsky .NET Core (Windows)
@@ -203,12 +240,15 @@ Builds and runs unit tests in international mode and locale NL_nl due dot and co
 CI build for .NET Core on Windows
 Builds and runs unit tests
 
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starsky-dotnetcore-windows.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starsky-dotnetcore-windows.yml)
+
 > [starsky-dotnetcore-windows.yml](https://github.com/qdraw/starsky/actions/workflows/starsky-dotnetcore-windows.yml)
 
 ## Starsky SonarQube ClientApp NetCore Analyze PR
 
 Analyze the code with SonarQube on Pull Request
-Runs only on pull requests
+
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starsky-sonarqube-clientapp-netcore.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starsky-sonarqube-clientapp-netcore.yml)
 
 > [starsky-sonarqube-clientapp-netcore.yml](https://github.com/qdraw/starsky/actions/workflows/starsky-sonarqube-clientapp-netcore.yml)
 
@@ -222,6 +262,8 @@ Smoke tests for the starsky-tools
 -   mock service
 -   thumbnail
 
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starsky-tools-node-smoke-test.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starsky-tools-node-smoke-test.yml)
+
 > [starsky-tools-node-smoke-test.yml](https://github.com/qdraw/starsky/actions/workflows/starsky-tools-node-smoke-test.yml)
 
 ## starskyDesktop Electron PR (Missing .NET dependency)
@@ -229,10 +271,15 @@ Smoke tests for the starsky-tools
 Build the Electron app on pull request without .NET so faster but does not run the app
 For Windows and Mac OS builds the app and runs the unit tests
 
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/starskyapp-electron-pr-build-mac-win.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/starskyapp-electron-pr-build-mac-win.yml)
+
 > [starskyapp-electron-pr-build-mac-win.yml](https://github.com/qdraw/starsky/actions/workflows/starskyapp-electron-pr-build-mac-win.yml)
 
 ## storybook clientapp netlify
 
 Deploy storybook of clientapp to netlify
+
+[![Docker buildx multi-arch CI unstable master](https://github.com/qdraw/starsky/actions/workflows/storybook-clientapp-netlify.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/storybook-clientapp-netlify.yml)
+
 
 > [storybook-clientapp-netlify.yml](https://github.com/qdraw/starsky/actions/workflows/storybook-clientapp-netlify.yml)
