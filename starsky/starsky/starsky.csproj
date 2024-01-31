@@ -13,7 +13,7 @@
         <!-- due missing support of ts4.1-->
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
         <SynchReleaseVersion>false</SynchReleaseVersion>
-        <!-- maybe needed for mac os https://www.kenmuse.com/blog/notarizing-dotnet-console-apps-for-macos/ --> 
+        <!-- maybe needed for mac os https://www.kenmuse.com/blog/notarizing-dotnet-console-apps-for-macos/ -->
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
         <IncludeSymbolsInSingleFile>false</IncludeSymbolsInSingleFile>
         <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
@@ -29,15 +29,15 @@
         <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     </PropertyGroup>
     <ItemGroup>
-        <None Remove="Properties\.gitkeep" />
-        <None Remove="generic-site\**" />
+        <None Remove="Properties\.gitkeep"/>
+        <None Remove="generic-site\**"/>
         <None Update="mac-self-codesign.sh">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
-    
+
     <ItemGroup Condition="!Exists('Properties/launchSettings.json')">
-        <ContentWithTargetPath Include="Properties/default-init-launchSettings.json" TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+        <ContentWithTargetPath Include="Properties/default-init-launchSettings.json" TargetPath="../../../Properties/launchSettings%(Extension)" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 
     <PropertyGroup>
@@ -53,15 +53,15 @@
         <!--disable TC completely, use this MSBuild property-->
         <TieredCompilation>false</TieredCompilation>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
-        <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0"/>
+        <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
     <!-- generate xml file for swagger -->
     <PropertyGroup>
@@ -81,46 +81,45 @@
         <Content Include="pm2-restore-x-rights.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="pm2-install-latest-release.sh" />
+        <None Remove="pm2-install-latest-release.sh"/>
         <Content Include="pm2-install-latest-release.sh">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="pm2-warmup.ps1" />
+        <None Remove="pm2-warmup.ps1"/>
         <Content Include="pm2-warmup.ps1">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="pm2-download-azure-devops.sh" />
+        <None Remove="pm2-download-azure-devops.sh"/>
         <Content Include="pm2-download-azure-devops.sh">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="cleanup-build-tools.sh" />
+        <None Remove="cleanup-build-tools.sh"/>
         <Content Include="cleanup-build-tools.sh">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="github-artifacts-download.sh" />
+        <None Remove="github-artifacts-download.sh"/>
         <Content Include="github-artifacts-download.sh">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="service-cron-restart.sh" />
+        <None Remove="service-cron-restart.sh"/>
         <Content Include="service-cron-restart.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="service-deploy-systemd.sh" />
+        <None Remove="service-deploy-systemd.sh"/>
         <Content Include="service-deploy-launchctl-mac-os.sh">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="service-deploy-systemd.sh">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <None Remove="gatekeeper-mac-os-helper.command" />
-		<None Remove="service-deploy-windows.ps1" />
-		<Content Include="service-deploy-windows.ps1">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>		
-        <Content Update="appsettings.default.json">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <None Remove="service-deploy-windows.ps1"/>
+        <Content Include="service-deploy-windows.ps1">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Remove="generic-site\**" />
+        <Content Update="appsettings.default.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Remove="generic-site\**"/>
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">
@@ -132,61 +131,61 @@
         <PreserveCompilationReferences>true</PreserveCompilationReferences>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\starsky.feature.demo\starsky.feature.demo.csproj" />
-        <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj" />
-        <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
-        <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj" />
-        <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
-        <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj" />
-        <ProjectReference Include="..\starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj" />
-        <ProjectReference Include="..\starsky.feature.realtime\starsky.feature.realtime.csproj" />
-        <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj" />
-        <ProjectReference Include="..\starsky.feature.search\starsky.feature.search.csproj" />
-        <ProjectReference Include="..\starsky.feature.settings\starsky.feature.settings.csproj" />
-        <ProjectReference Include="..\starsky.feature.syncbackground\starsky.feature.syncbackground.csproj" />
-        <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj" />
-        <ProjectReference Include="..\starsky.feature.trash\starsky.feature.trash.csproj" />
-        <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
-        <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj" />
-        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-        <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
-        <ProjectReference Include="..\starsky.foundation.native\starsky.foundation.native.csproj" />
-        <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
-        <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
-        <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj" />
-        <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj" />
-        <ProjectReference Include="..\starskycore\starskycore.csproj" />
+        <ProjectReference Include="..\starsky.feature.demo\starsky.feature.demo.csproj"/>
+        <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj"/>
+        <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj"/>
+        <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj"/>
+        <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj"/>
+        <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj"/>
+        <ProjectReference Include="..\starsky.feature.packagetelemetry\starsky.feature.packagetelemetry.csproj"/>
+        <ProjectReference Include="..\starsky.feature.realtime\starsky.feature.realtime.csproj"/>
+        <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj"/>
+        <ProjectReference Include="..\starsky.feature.search\starsky.feature.search.csproj"/>
+        <ProjectReference Include="..\starsky.feature.settings\starsky.feature.settings.csproj"/>
+        <ProjectReference Include="..\starsky.feature.syncbackground\starsky.feature.syncbackground.csproj"/>
+        <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj"/>
+        <ProjectReference Include="..\starsky.feature.trash\starsky.feature.trash.csproj"/>
+        <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.native\starsky.foundation.native.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj"/>
+        <ProjectReference Include="..\starskycore\starskycore.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Remove="clientapp\build\*.*" />
+        <Content Remove="clientapp\build\*.*"/>
         <Content Include="clientapp\build\*.*">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Remove="clientapp\build\assets\*.*" />
+        <Content Remove="clientapp\build\assets\*.*"/>
         <Content Include="clientapp\build\assets\*.*">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
     <ItemGroup>
-        <Compile Remove="clientapp\node_modules\**" />
-        <Compile Remove="clientapp\coverage\**" />
-        <Compile Remove="generic-site\**" />
+        <Compile Remove="clientapp\node_modules\**"/>
+        <Compile Remove="clientapp\coverage\**"/>
+        <Compile Remove="generic-site\**"/>
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Remove="clientapp\node_modules\**" />
-        <EmbeddedResource Remove="clientapp\coverage\**" />
-        <EmbeddedResource Remove="generic-site\**" />
+        <EmbeddedResource Remove="clientapp\node_modules\**"/>
+        <EmbeddedResource Remove="clientapp\coverage\**"/>
+        <EmbeddedResource Remove="generic-site\**"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Remove="clientapp\node_modules\**" />
+        <Content Remove="clientapp\node_modules\**"/>
     </ItemGroup>
     <ItemGroup>
-        <None Remove="clientapp\node_modules\**" />
-        <None Remove="clientapp\coverage\**" />
+        <None Remove="clientapp\node_modules\**"/>
+        <None Remove="clientapp\coverage\**"/>
     </ItemGroup>
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="generic-site\appsettings.base.json" />
-      <_ContentIncludedByDefault Remove="generic-site\appsettings.Development.json" />
+        <_ContentIncludedByDefault Remove="generic-site\appsettings.base.json"/>
+        <_ContentIncludedByDefault Remove="generic-site\appsettings.Development.json"/>
     </ItemGroup>
     <PropertyGroup>
         <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
@@ -194,12 +193,12 @@
 
     <!--    for azure creates the folders after build-->
     <Target Name="MakeMyDir" AfterTargets="Publish">
-        <MakeDir Directories="$(OutDir)thumbnailTempFolder" />
-        <WriteLinesToFile File="$(OutDir)thumbnailTempFolder\.gitkeep" Lines="keep this directory" Overwrite="False" />
-        <MakeDir Directories="$(OutDir)storageFolder" />
-        <WriteLinesToFile File="$(OutDir)storageFolder\.gitkeep" Lines="keep this directory" Overwrite="False" />
-        <MakeDir Directories="$(OutDir)temp" />
-        <WriteLinesToFile File="$(OutDir)temp\.gitkeep" Lines="keep this directory" Overwrite="False" />
+        <MakeDir Directories="$(OutDir)thumbnailTempFolder"/>
+        <WriteLinesToFile File="$(OutDir)thumbnailTempFolder\.gitkeep" Lines="keep this directory" Overwrite="False"/>
+        <MakeDir Directories="$(OutDir)storageFolder"/>
+        <WriteLinesToFile File="$(OutDir)storageFolder\.gitkeep" Lines="keep this directory" Overwrite="False"/>
+        <MakeDir Directories="$(OutDir)temp"/>
+        <WriteLinesToFile File="$(OutDir)temp\.gitkeep" Lines="keep this directory" Overwrite="False"/>
     </Target>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
