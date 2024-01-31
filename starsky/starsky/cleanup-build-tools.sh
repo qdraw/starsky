@@ -4,7 +4,7 @@
 # docker system prune -a -f
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-NET_MONIKER="net6.0"
+NET_MONIKER="net8.0"
 
 if [ -d $HOME"/.sonar" ] 
 then

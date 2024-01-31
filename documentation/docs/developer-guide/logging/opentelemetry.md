@@ -52,15 +52,15 @@ The following settings can be used:
 
 use for example this file name: appsettings.machinename.json
 
-### Order of appsettings patch files
+### Order of appSettings patch files
 
 1.  You can use `appsettings.json` inside the application folder to set base settings.
     The order of this files is used to get the values from the appsettings
-    -    `/bin/Debug/net6.0/appsettings.patch.json`
-    -    `/bin/Debug/net6.0/appsettings.default.json`
-    -    `/bin/Debug/net6.0/appsettings.computername.patch.json`
-    -    `/bin/Debug/net6.0/appsettings.json`
-    -    `/bin/Debug/net6.0/appsettings.computername.json`
+    -    `/bin/Debug/net8.0/appsettings.patch.json`
+    -    `/bin/Debug/net8.0/appsettings.default.json`
+    -    `/bin/Debug/net8.0/appsettings.computername.patch.json`
+    -    `/bin/Debug/net8.0/appsettings.json`
+    -    `/bin/Debug/net8.0/appsettings.computername.json`
 
 ```json
 {
