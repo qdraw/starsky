@@ -39,6 +39,16 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 - [x] (Added) _Back-end_ Add support for OpenTelemetry (server side only) (PR #1323)
 - [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.100 (Runtime: 8.0.1) (PR #1335)
+- [x] (Fixed) Feature/202401 fix runtime & update end2end (PR #1355)
+- [x] (Fixed) Build project more clear info object (PR #1354)
+- [x] (Fixed) Move to Serilog (_build only) && update dotnet-sonarscan to the latest version (PR #1353)
+- [x] (Changed) Rename codecov.yml, update rules & add documentation for static code analysis (PR #1352)
+- [x] (Changed) Code smell: optional chain expression (PR #1351)
+- [x] (Changed) detail view mp4 refactor & fix video scroll click (PR #1350)
+- [x] (Fixed) Swagger autogen is broken after .NET 8 upgrade (PR #1348)
+- [x] (Changed) Update npm (PR #1347)
+- [x] (Fixed) .NET 8 Code smells (PR #1346, 1345, 1344)
+- [x] (Security) Bump vite, actions/cache, ws, Client App (PR #1343, 1342, 1341, 1339, 1338)
 
 ## version 0.5.14 - 2023-12-29 {#v0.5.14}
 
