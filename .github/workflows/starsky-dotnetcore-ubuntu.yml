@@ -20,7 +20,6 @@ on:
     - '**.cshtml'
     - '**.cs'
     - '**.sln'
-    - '**.cake'
     - '**.json'
 
 jobs:

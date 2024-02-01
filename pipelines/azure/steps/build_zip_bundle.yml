@@ -4,7 +4,7 @@ parameters:
 steps:
 
   - task: PowerShell@2
-    displayName: 'Cake Zip'
+    displayName: 'Nuke Zip'
     inputs:
       filePath: 'starsky/build.ps1'
       arguments: '${{ parameters.runtimeArg }} --target Zip  --skip --no-logo'

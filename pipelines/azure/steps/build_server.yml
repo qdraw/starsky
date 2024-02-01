@@ -6,7 +6,7 @@ parameters:
 
 steps:
   - task: DotNetCoreCLI@2
-    displayName: "[Cake/server] dotnet tool restore"
+    displayName: "[Nuke/server] dotnet tool restore"
     continueOnError: true
     inputs:
       command: custom
@@ -17,7 +17,7 @@ steps:
   - template: /pipelines/azure/steps/cache_dependencies.yml
 
   - task: PowerShell@2
-    displayName: "Cake SonarBuildTest (with tests) "
+    displayName: "Nuke SonarBuildTest (with tests) "
     condition: and(succeeded(), eq('${{ parameters.vstest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
@@ -29,7 +29,7 @@ steps:
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
   - task: PowerShell@2
-    displayName: "Cake SonarBuildTest --no-unit-tests"
+    displayName: "Nuke SonarBuildTest --no-unit-tests"
     condition: and(succeeded(), ne('${{ parameters.vstest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
@@ -40,10 +40,10 @@ steps:
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
   - task: PowerShell@2
-    displayName: "Cake BuildNetCoreRuntimeSpecific"
+    displayName: "Nuke BuildNetCoreRuntimeSpecific"
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific  --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific  --skip --no-logo --ready-to-run'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 

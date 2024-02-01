@@ -288,10 +288,6 @@ paket-files/
 __pycache__/
 *.pyc
 
-# Cake - Uncomment if you are using it
-# tools/**
-# !tools/packages.config
-
 # Telerik's JustMock configuration file
 *.jmconfig
 
@@ -388,7 +384,6 @@ starsky-linux-x64.zip
 starsky-generic-netcore*.zip
 starsky-netframework-msbuild.zip
 
-**/Cake/*
 **/tools/nuget.exe
 **/tools/packages.config*
 **/tools/Addins/*/**
