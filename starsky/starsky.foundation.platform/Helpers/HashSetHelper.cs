@@ -6,8 +6,18 @@ using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
 {
-	public static class HashSetHelper
+	public static partial class HashSetHelper
 	{
+		/// <summary>
+		/// Precompiled regex for splitting comma separated string
+		/// </summary>
+		/// <returns>Regex object</returns>
+		[GeneratedRegex(
+			@",\s",
+			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase,
+			matchTimeoutMilliseconds: 200)]
+		private static partial Regex DotCommaRegex();
+
 		/// <summary>
 		/// Split dot comma space string (used for tags) to unique list
 		/// </summary>
@@ -22,10 +32,7 @@ namespace starsky.foundation.platform.Helpers
 
 			var keywords = ReplaceSingleCommaWithCommaWithSpace(inputKeywords);
 
-			var dotCommaRegex = new Regex(@",\s",
-				RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
-
-			var keywordList = dotCommaRegex.Split(keywords);
+			var keywordList = DotCommaRegex().Split(keywords);
 
 			keywordList = TrimCommaInList(keywordList);
 
@@ -47,7 +54,7 @@ namespace starsky.foundation.platform.Helpers
 		{
 			// unescaped regex: (,(?=\S)|:)
 			var pattern = new Regex("(,(?=\\S)|:)",
-				RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
+				RegexOptions.None, TimeSpan.FromMilliseconds(100));
 			keywords = pattern.Replace(keywords, ", ");
 			return keywords;
 		}
@@ -60,11 +67,11 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns></returns>
 		private static string[] TrimCommaInList(string[] keywordList)
 		{
-			for ( int i = 0; i < keywordList.Length; i++ )
+			for ( var i = 0; i < keywordList.Length; i++ )
 			{
 				var keyword = keywordList[i];
 
-				char[] comma = { ',' };
+				char[] comma = [','];
 				keyword = keyword.TrimEnd(comma);
 				keyword = keyword.TrimStart(comma);
 
@@ -82,12 +89,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>string with comma separated values</returns>
 		public static string HashSetToString(HashSet<string>? hashSetKeywords)
 		{
-			if ( hashSetKeywords == null )
-			{
-				return string.Empty;
-			}
-
-			return ListToString(hashSetKeywords.ToList());
+			return hashSetKeywords == null ? string.Empty : ListToString(hashSetKeywords.ToList());
 		}
 
 		/// <summary>
@@ -95,7 +97,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="listKeywords">The list keywords</param>
 		/// <returns></returns>
-		public static string ListToString(List<string>? listKeywords)
+		internal static string ListToString(List<string>? listKeywords)
 		{
 			if ( listKeywords == null )
 			{
