@@ -119,7 +119,7 @@ git clone "https://github.com/qdraw/starsky.git"
 
 2.  On your laptop (x86/x64 machine). Get the `dotnet` 6.0 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
-3.  Compile the Starsky-installation on your x86/x64 machine first. The cake build script with parameters can be used to build for this runtime.
+3.  Compile the Starsky-installation on your x86/x64 machine first. The Nuke build script with parameters can be used to build for this runtime.
 
 _Using bash_
 
@@ -253,7 +253,7 @@ If you prefer a Powershell script, you could use `pm2-warmup.ps1`
 
 The scripts that are used to create a full build. (Linux has `libunwind8` and `gettext` as dependency)
 
-The Cake script provide options to build for specific runtimes.
+The Nuke script (build.sh/build.ps1) provide options to build for specific runtimes.
 
 ### To build server app for Mac OS
 

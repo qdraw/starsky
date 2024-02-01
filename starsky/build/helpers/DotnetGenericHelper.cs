@@ -11,14 +11,24 @@ namespace helpers
 {
 	public static class DotnetGenericHelper
 	{
+		/// <summary>
+		/// dotnet restore for generic
+		/// </summary>
+		/// <param name="solution">solution file .sln</param>
 		public static void RestoreNetCoreCommand(Solution solution)
 		{
-			Log.Information("solution: " + solution);
+			Log.Information("dotnet restore: solution: " + solution);
+			
 			DotNetRestore(p => p
 				.SetProjectFile(solution.Path)
 			);
 		}
 	
+		/// <summary>
+		/// dotnet build for generic helper
+		/// </summary>
+		/// <param name="solution">the solution</param>
+		/// <param name="configuration">Debug or Release</param>
 		public static void BuildNetCoreGenericCommand(Solution solution,
 			Configuration configuration)
 		{
@@ -32,18 +42,17 @@ namespace helpers
 		/// <summary>
 		/// Download Exiftool and geo deps
 		/// </summary>
-		/// <param name="solution">where</param>
 		/// <param name="configuration">is Release</param>
 		/// <param name="geoCliCsproj">geo.csproj file</param>
-		/// <param name="noDependencies">skip this step if true</param>
+		/// <param name="noDependencies">skip this step if true (external deps)</param>
 		/// <param name="genericNetcoreFolder">genericNetcoreFolder</param>
-		public static void DownloadDependencies(Solution solution,
-			Configuration configuration, string geoCliCsproj, bool noDependencies,
+		public static void DownloadDependencies(Configuration configuration, 
+			string geoCliCsproj, bool noDependencies,
 			string genericNetcoreFolder)
 		{
 			if ( noDependencies )
 			{
-				Log.Information("skip --no-dependencies");
+				Log.Information("skip the flag: --no-dependencies is used");
 				return;
 			}
 			
@@ -54,7 +63,9 @@ namespace helpers
 			{
 				Environment.SetEnvironmentVariable("app__DependenciesFolder",genericDepsFullPath);
 				Log.Information("Next: DownloadDependencies");
-				Log.Information("Run: " + Path.Combine(WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj));
+				Log.Information("Run: " + Path.Combine(
+					WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj)
+				);
 
 				DotNetRun(p =>  p
 					.SetConfiguration(configuration)
@@ -75,8 +86,7 @@ namespace helpers
 			Log.Information("DownloadDependencies done");
 		}
 
-		public static void PublishNetCoreGenericCommand(Solution solution,
-			Configuration configuration, bool isPublishDisabled)
+		public static void PublishNetCoreGenericCommand(Configuration configuration, bool isPublishDisabled)
 		{
 			if ( isPublishDisabled )
 			{
@@ -111,5 +121,4 @@ namespace helpers
 				?.Parent?.Parent?.Parent?.FullName;
 		}
 	}
-	
 }

@@ -438,7 +438,7 @@ _Known issues #1106, #1107 and #1108_
 - [x] (Changed) _Back-end_ Upgrade Electron to 16.x and Electron Builder to 22.14.x (PR #571)
 - [x] (Breaking change) _Back-end_ rename "/api/sync/mkdir" to /api/disk/mkdir (PR #574)
 - [x] (Breaking change) _Back-end_ rename "/api/sync/rename" to /api/disk/rename (PR #574)
-- [x] (Changed) _Tools_ Upgrade local build tools Cake and dotnet-reportgenerator-globaltool and dotnet-sonarscanner (PR #575)
+- [x] (Changed) _Tools_ Upgrade local build tools Cake __(Cake isn't used anymore)__ and dotnet-reportgenerator-globaltool and dotnet-sonarscanner (PR #575)
 - [x] (Changed) _Back-end_ Avoid Disposed Query objects in syncWatcherConnector (PR #575)
 - [x] (Changed) _Back-end_ change FileSystemWatcher to BufferingFileSystemWatcher (PR #575)
 - [x] (Changed) _Back-end_ Add filter for FileSystemWatcher spamming with lots of events (PR #575)
@@ -1389,7 +1389,7 @@ _Version number does not match SemVer_
 - fix init sqlite for legacy app
 - add: replace `{AssemblyDirectory}` in `AppSettingsPublishProfiles.Path`
 - change settings to enable swagger: use now `app__AddSwagger` to enable
-- Create build scripts using Cake
+- Create build scripts using Cake __(Cake isn't used anymore)__
 - _Legacy starsky.netframework_ 0.1.3 release included
 
 ## version 0.1.2 - 2019-02-01

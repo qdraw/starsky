@@ -98,6 +98,10 @@
             "type": "string"
           }
         },
+        "ReadyToRun": {
+          "type": "boolean",
+          "description": "Enable Ready to run builds"
+        },
         "Root": {
           "type": "string",
           "description": "Root directory during build execution"

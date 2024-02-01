@@ -1,4 +1,4 @@
-name: Starsky .NET Core (Ubuntu)
+name: Ubuntu .NET build
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,8 +20,8 @@ on:
     - '**.cshtml'
     - '**.cs'
     - '**.sln'
-    - '**.cake'
     - '**.json'
+    - '**.csproj'
 
 jobs:
   build:
@@ -35,7 +35,7 @@ jobs:
     
     - uses: actions/checkout@v4
     
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.101

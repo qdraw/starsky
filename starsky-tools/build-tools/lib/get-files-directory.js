@@ -21,7 +21,6 @@ async function getFiles(dir) {
 				dirent.name != "linux-arm64" &&
 				dirent.name != "coverage" &&
 				dirent.name != "coverage-report" &&
-				dirent.name != "Cake" &&
 				dirent.name != "linux-arm" &&
 				dirent.name != "dist"
 				? getFiles(res)

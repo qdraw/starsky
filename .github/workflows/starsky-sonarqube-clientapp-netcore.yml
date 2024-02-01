@@ -1,4 +1,4 @@
-name: Starsky SonarQube ClientApp NetCore Analyze PR
+name: SonarQube ClientApp .NET Analyze
 
 on:
   workflow_dispatch:
