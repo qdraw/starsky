@@ -15,21 +15,24 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>list/hashset with items in string</returns>
 		public static HashSet<string> StringToHashSet(string inputKeywords)
 		{
-			if ( string.IsNullOrEmpty(inputKeywords) ) return new HashSet<string>();
-			
+			if ( string.IsNullOrEmpty(inputKeywords) )
+			{
+				return [];
+			}
+
 			var keywords = ReplaceSingleCommaWithCommaWithSpace(inputKeywords);
 
-			var dotcommaRegex = new Regex(@",\s", 
-				RegexOptions.None, TimeSpan.FromMilliseconds(100));
+			var dotCommaRegex = new Regex(@",\s",
+				RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
 
-			var keywordList = dotcommaRegex.Split(keywords);
+			var keywordList = dotCommaRegex.Split(keywords);
 
 			keywordList = TrimCommaInList(keywordList);
 
 			// remove only leading and trailing whitespaces,
 			keywordList = keywordList.Select(t => t.Trim()).ToArray();
 
-			HashSet<string> keywordsHashSet = new HashSet<string>(from x in keywordList
+			var keywordsHashSet = new HashSet<string>(from x in keywordList
 				select x);
 
 			return keywordsHashSet;
@@ -43,8 +46,8 @@ namespace starsky.foundation.platform.Helpers
 		private static string ReplaceSingleCommaWithCommaWithSpace(string keywords)
 		{
 			// unescaped regex: (,(?=\S)|:)
-			Regex pattern = new Regex("(,(?=\\S)|:)", 
-				RegexOptions.None, TimeSpan.FromMilliseconds(100));
+			var pattern = new Regex("(,(?=\\S)|:)",
+				RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
 			keywords = pattern.Replace(keywords, ", ");
 			return keywords;
 		}
@@ -61,7 +64,7 @@ namespace starsky.foundation.platform.Helpers
 			{
 				var keyword = keywordList[i];
 
-				char[] comma = {','};
+				char[] comma = { ',' };
 				keyword = keyword.TrimEnd(comma);
 				keyword = keyword.TrimStart(comma);
 
@@ -77,7 +80,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="hashSetKeywords">import hashset</param>
 		/// <returns>string with comma separated values</returns>
-		public static string HashSetToString(HashSet<string> hashSetKeywords)
+		public static string HashSetToString(HashSet<string>? hashSetKeywords)
 		{
 			if ( hashSetKeywords == null )
 			{
@@ -92,22 +95,23 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="listKeywords">The list keywords</param>
 		/// <returns></returns>
-		public static string ListToString(List<string> listKeywords)
+		public static string ListToString(List<string>? listKeywords)
 		{
-
 			if ( listKeywords == null )
 			{
 				return string.Empty;
 			}
 
 			var toBeAddedKeywordsStringBuilder = new StringBuilder();
-			foreach ( var keyword in listKeywords.Where(keyword => !string.IsNullOrWhiteSpace(keyword)) )
+			foreach ( var keyword in listKeywords.Where(keyword =>
+				         !string.IsNullOrWhiteSpace(keyword)) )
 			{
 				if ( keyword != listKeywords.LastOrDefault() )
 				{
 					toBeAddedKeywordsStringBuilder.Append(keyword + ", ");
 					continue;
 				}
+
 				toBeAddedKeywordsStringBuilder.Append(keyword);
 			}
 
