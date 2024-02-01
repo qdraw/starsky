@@ -174,13 +174,13 @@ public sealed class FileHash
 	}
 
 	/// <summary>
-	/// And you need close input stream afterwards
 	/// Does NOT seek at 0
 	/// </summary>
 	/// <param name="stream">memory or filestream</param>
+	/// <param name="dispose">dispose afterwards</param>
 	/// <param name="cancellationToken">cancel token</param>
 	/// <returns>fileHash</returns>
-	public static async Task<string> CalculateHashAsync(Stream stream,
+	public static async Task<string> CalculateHashAsync(Stream stream, bool dispose = true,
 		CancellationToken cancellationToken = default)
 	{
 		var block =
@@ -200,7 +200,11 @@ public sealed class FileHash
 
 				md5.TransformFinalBlock(block, 0, 0);
 
-				stream.Close();
+				if ( dispose )
+				{
+					stream.Close();
+					await stream.DisposeAsync();
+				}
 
 				var hash = md5.Hash;
 				return Base32.Encode(hash!);

@@ -60,7 +60,7 @@ public sealed class ExifTool : IExifTool
 			CancellationToken cancellationToken = default)
 	{
 		var inputStream = _iStorage.ReadStream(subPath);
-		beforeFileHash ??= await FileHash.CalculateHashAsync(inputStream, cancellationToken);
+		beforeFileHash ??= await FileHash.CalculateHashAsync(inputStream, false, cancellationToken);
 
 		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
 		var stream = await runner.RunProcessAsync(command);
@@ -107,7 +107,7 @@ public sealed class ExifTool : IExifTool
 		await stream.ReadAsync(buffer.AsMemory(0, FileHash.MaxReadSize), cancellationToken);
 
 		var newHashCode =
-			await FileHash.CalculateHashAsync(new MemoryStream(buffer), cancellationToken);
+			await FileHash.CalculateHashAsync(new MemoryStream(buffer), true, cancellationToken);
 		if ( string.IsNullOrEmpty(newHashCode) )
 		{
 			return string.Empty;
