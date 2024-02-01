@@ -57,15 +57,28 @@ public sealed class Build : NukeBuild
 	[Parameter("Skip clientside code")] 
 	readonly bool NoClient;
 		
-	[Parameter("Skip Dependencies download e.g. exiftool / geo data, nuget/npm deps are always installed")] 
+	/// <summary>
+	/// --no-dependencies
+	/// Only applies for External dependencies
+	/// Nuget & NPM dependencies are always installed
+	/// </summary>
+	[Parameter("Skip Dependencies download e.g. exiftool / " +
+	           "geo data, nuget/npm deps are always installed")] 
 	readonly bool NoDependencies;
 		
+	/// <summary>
+	/// --no-unit-test, --no-unit-tests, --no-test, --no-tests
+	/// </summary>
+	/// <returns></returns>
 	bool IsUnitTestDisabled()
 	{
 		// --no-unit-test, --no-unit-tests, --no-test, --no-tests
 		return NoUnitTest || NoUnitTests || NoTest || NoTests;
 	}
 		
+	/// <summary>
+	/// --no-publish
+	/// </summary>
 	[Parameter("Skip Publish step")] 
 	readonly bool NoPublish;
 		
@@ -75,6 +88,10 @@ public sealed class Build : NukeBuild
 		return NoPublish;
 	}
 		
+	/// <summary>
+	/// Overwrite Branch name
+	/// </summary>
+	/// <returns>only if overwritten</returns>
 	[Parameter("Overwrite branch name")] 
 	readonly string Branch;
 	
@@ -91,6 +108,10 @@ public sealed class Build : NukeBuild
 		return branchName;
 	}
 		
+	/// <summary>
+	/// Only the OS specific runtimes, so skip generic-netcore
+	/// </summary>
+	/// <returns>Only OS specific runtimes</returns>
 	List<string> GetRuntimesWithoutGeneric()
 	{
 		return Runtime.Split(",", 
@@ -98,9 +119,15 @@ public sealed class Build : NukeBuild
 			.ToList();
 	}
 
+	/// <summary>
+	/// Solution .sln file
+	/// </summary>
 	[Solution(SuppressBuildProjectCheck = true)] 
 	readonly Solution Solution;
 
+	/// <summary>
+	/// List of output projects
+	/// </summary>
 	public static readonly List<string> PublishProjectsList = new List<string>
 	{
 		"starskyadmincli",
@@ -118,7 +145,15 @@ public sealed class Build : NukeBuild
 	/// Npm and node are required for preflight checks and building frontend code
 	/// </summary>
 	public const string NpmBaseCommand = "npm";
+	
+	/// <summary>
+	/// Node name
+	/// </summary>
 	public const string NodeBaseCommand = "node";
+	
+	/// <summary>
+	/// Client App folder
+	/// </summary>
 	public const string ClientAppFolder = "starsky/clientapp";
 		
 	/// <summary>
@@ -157,6 +192,8 @@ public sealed class Build : NukeBuild
 		Log.Information("---");
 		Log.Information("Settings:");
 		
+		Log.Information($"Current RID: {RuntimeIdentifier.GetCurrentRuntimeIdentifier()}");
+		
 		Log.Information("SolutionParentFolder: " + WorkingDirectory.GetSolutionParentFolder());
 		
 		Log.Information(NoClient
@@ -176,6 +213,9 @@ public sealed class Build : NukeBuild
 		                string.IsNullOrEmpty(SonarQube.GetSonarToken() )
 			? "Sonarcloud scan: disabled"
 			: "Sonarcloud scan: enabled");
+		
+		Log.Information(NoDependencies ? "External dependencies: disabled" : 
+			"External dependencies: enabled");
 
 		if ( !string.IsNullOrEmpty(GetBranchName()) )
 		{
@@ -217,16 +257,17 @@ public sealed class Build : NukeBuild
 			ProjectCheckNetCoreCommandHelper.ProjectCheckNetCoreCommand();
 			DotnetGenericHelper.RestoreNetCoreCommand(Solution);
 			SonarQube.InstallSonarTool(IsUnitTestDisabled(), NoSonar);
-			SonarQube.SonarBegin(IsUnitTestDisabled(),NoSonar,GetBranchName(), ClientHelper.GetClientAppFolder(),
+			SonarQube.SonarBegin(IsUnitTestDisabled(),NoSonar,GetBranchName(), 
+				ClientHelper.GetClientAppFolder(),
 				"starskytest/coverage-merge-sonarqube.xml");
 			DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 			DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
-			DotnetGenericHelper.DownloadDependencies(Solution,Configuration, 
+			DotnetGenericHelper.DownloadDependencies(Configuration, 
 				"starskygeocli/starskygeocli.csproj",NoDependencies, 
 				"generic-netcore");
 			MergeCoverageFiles.Merge(IsUnitTestDisabled());
 			SonarQube.SonarEnd(IsUnitTestDisabled(),NoSonar);
-			DotnetGenericHelper.PublishNetCoreGenericCommand(Solution, Configuration, IsPublishDisabled());
+			DotnetGenericHelper.PublishNetCoreGenericCommand(Configuration, IsPublishDisabled());
 		});
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", 
@@ -235,7 +276,7 @@ public sealed class Build : NukeBuild
 	Target DownloadDependencies => p => p
 		.Executes(() =>
 		{
-			DotnetGenericHelper.DownloadDependencies(Solution,Configuration, 
+			DotnetGenericHelper.DownloadDependencies(Configuration, 
 				"starskygeocli/starskygeocli.csproj",NoDependencies, 
 				"generic-netcore");
 			DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
