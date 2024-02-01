@@ -14,201 +14,206 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using static Medallion.Shell.Shell;
 
-namespace starsky.foundation.writemeta.Helpers
+namespace starsky.foundation.writemeta.Helpers;
+
+/// <summary>
+/// Only for writing commands 
+/// Check for mapping objects to exifTool commandline args -> 'ExifToolCmdHelper'
+/// </summary>
+public sealed class ExifTool : IExifTool
 {
-	/// <summary>
-	/// Only for writing commands 
-	/// Check for mapping objects to exifTool commandline args -> 'ExifToolCmdHelper'
-	/// </summary>
-	public sealed class ExifTool : IExifTool
+	private readonly AppSettings _appSettings;
+	private readonly IStorage _iStorage;
+	private readonly IStorage _thumbnailStorage;
+	private readonly IWebLogger _logger;
+
+	public ExifTool(IStorage sourceStorage, IStorage thumbnailStorage, AppSettings appSettings,
+		IWebLogger logger)
 	{
-		private readonly AppSettings _appSettings;
-		private readonly IStorage _iStorage;
-		private readonly IStorage _thumbnailStorage;
-		private readonly IWebLogger _logger;
+		_appSettings = appSettings;
+		_iStorage = sourceStorage;
+		_thumbnailStorage = thumbnailStorage;
+		_logger = logger;
+	}
 
-		public ExifTool(IStorage sourceStorage, IStorage thumbnailStorage, AppSettings appSettings, IWebLogger logger)
+	/// <summary>
+	/// Write commands to ExifTool for ReadStream
+	/// </summary>
+	/// <param name="subPath">the location</param>
+	/// <param name="beforeFileHash">thumbnail fileHash</param>
+	/// <param name="command">exifTool command line args</param>
+	/// <param name="cancellationToken">to cancel</param>
+	/// <returns>true=success, newFileHash</returns>
+	public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(
+		string subPath,
+		string? beforeFileHash, string command, CancellationToken cancellationToken = default)
+	{
+		return await WriteTagsAndRenameThumbnailInternalAsync(subPath, beforeFileHash, command,
+			cancellationToken);
+	}
+
+	[SuppressMessage("ReSharper", "InvertIf")]
+	[SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
+	private async Task<KeyValuePair<bool, string>>
+		WriteTagsAndRenameThumbnailInternalAsync(string subPath,
+			string? beforeFileHash, string command,
+			CancellationToken cancellationToken = default)
+	{
+		var inputStream = _iStorage.ReadStream(subPath);
+		beforeFileHash ??= await FileHash.CalculateHashAsync(inputStream, cancellationToken);
+
+		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
+		var stream = await runner.RunProcessAsync(command);
+
+		var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
+			!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
+
+		stream.Seek(0, SeekOrigin.Begin);
+
+		// Need to Dispose for Windows
+		inputStream.Close();
+
+		if ( stream.Length <= 15 && ( await StreamToStringHelper.StreamToStringAsync(stream, true) )
+		    .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase) )
 		{
-			_appSettings = appSettings;
-			_iStorage = sourceStorage;
-			_thumbnailStorage = thumbnailStorage;
-			_logger = logger;
+			_logger.LogError(
+				$"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
+			return new KeyValuePair<bool, string>(false, beforeFileHash);
 		}
 
-		/// <summary>
-		/// Write commands to ExifTool for ReadStream
-		/// </summary>
-		/// <param name="subPath">the location</param>
-		/// <param name="beforeFileHash">thumbnail fileHash</param>
-		/// <param name="command">exifTool command line args</param>
-		/// <param name="cancellationToken">to cancel</param>
-		/// <returns>true=success, newFileHash</returns>
-		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, 
-			string? beforeFileHash, string command, CancellationToken cancellationToken = default)
+		return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath),
+			newHashCode);
+	}
+
+	/// <summary>
+	/// Need to dispose string afterwards yourself
+	/// </summary>
+	/// <param name="beforeFileHash">the before fileHash</param>
+	/// <param name="stream">stream</param>
+	/// <param name="isSuccess">isHashing success, otherwise skip this</param>
+	/// <param name="cancellationToken">cancel Token</param>
+	/// <returns></returns>
+	[SuppressMessage("ReSharper", "MustUseReturnValue")]
+	internal async Task<string> RenameThumbnailByStream(
+		string beforeFileHash, Stream stream, bool isSuccess,
+		CancellationToken cancellationToken = default)
+	{
+		if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess )
 		{
-			return await WriteTagsAndRenameThumbnailInternalAsync(subPath, beforeFileHash, command, cancellationToken);
+			return string.Empty;
 		}
 
-		[SuppressMessage("ReSharper", "InvertIf")]
-		private async Task<KeyValuePair<bool, string>>
-			WriteTagsAndRenameThumbnailInternalAsync(string subPath,
-				string? beforeFileHash, string command,
-				CancellationToken cancellationToken = default)
+		var buffer = new byte[FileHash.MaxReadSize];
+		await stream.ReadAsync(buffer.AsMemory(0, FileHash.MaxReadSize), cancellationToken);
+
+		var newHashCode =
+			await FileHash.CalculateHashAsync(new MemoryStream(buffer), cancellationToken);
+		if ( string.IsNullOrEmpty(newHashCode) )
 		{
-			var inputStream = _iStorage.ReadStream(subPath);
-			beforeFileHash ??= ( await new FileHash(_iStorage).GetHashCodeAsync(subPath) ).Key;
-			
-			var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
-			var stream = await runner.RunProcessAsync(command);
-
-			var newHashCode = await RenameThumbnailByStream(beforeFileHash, stream,
-				!beforeFileHash.Contains(FileHash.GeneratedPostFix), cancellationToken);
-			
-			stream.Seek(0, SeekOrigin.Begin);
-			
-			// Need to Dispose for Windows
-			inputStream.Close();
-
-			if ( stream.Length <= 15 && (await StreamToStringHelper.StreamToStringAsync(stream))
-			    .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase))
-			{
-				_logger.LogError($"[WriteTagsAndRenameThumbnailAsync] Fake Exiftool detected {subPath}");
-				return new KeyValuePair<bool, string>(false, beforeFileHash);
-			}
-			
-			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
+			return string.Empty;
 		}
 
-		/// <summary>
-		/// Need to dispose string afterwards yourself
-		/// </summary>
-		/// <param name="beforeFileHash">the before fileHash</param>
-		/// <param name="stream">stream</param>
-		/// <param name="isSuccess">isHashing success, otherwise skip this</param>
-		/// <param name="cancellationToken">cancel Token</param>
-		/// <returns></returns>
-		[SuppressMessage("ReSharper", "MustUseReturnValue")]
-		internal async Task<string> RenameThumbnailByStream(
-			string beforeFileHash, Stream stream, bool isSuccess, CancellationToken cancellationToken = default)
+		if ( beforeFileHash == newHashCode )
 		{
-			if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess )
-			{
-				return string.Empty;
-			}
-			
-			var buffer = new byte[FileHash.MaxReadSize];
-			await stream.ReadAsync(buffer.AsMemory(0, FileHash.MaxReadSize), cancellationToken);
-			
-			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer), cancellationToken);
-			if ( string.IsNullOrEmpty(newHashCode) )
-			{
-				return string.Empty;
-			}
-
-			if ( beforeFileHash == newHashCode )
-			{
-				return newHashCode;
-			}
-			
-			var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage);
-			service.FileMove(beforeFileHash, newHashCode);
-			
 			return newHashCode;
 		}
 
-		/// <summary>
-		/// Write commands to ExifTool for ReadStream
-		/// </summary>
-		/// <param name="subPath">the location</param>
-		/// <param name="command">exifTool command line args</param>
-		/// <returns>true=success</returns>
-		public async Task<bool> WriteTagsAsync(string subPath, string command)
-		{
-			var inputStream = _iStorage.ReadStream(subPath);
-		
-			var runner = new StreamToStreamRunner(_appSettings, inputStream,_logger);
-			var stream = await runner.RunProcessAsync(command);
+		var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage);
+		service.FileMove(beforeFileHash, newHashCode);
 
-			// Need to Dispose for Windows
-			inputStream.Close();
-			return await _iStorage.WriteStreamAsync(stream, subPath);
-		}
-
-		/// <summary>
-		/// Write commands to ExifTool for ThumbnailWriteStream (Does NOT work with mono/legacy)
-		/// </summary>
-		/// <param name="fileHash">the location</param>
-		/// <param name="command">exifTool command line args</param>
-		/// <returns>true=success</returns>
-		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
-		{
-			var inputStream = _thumbnailStorage.ReadStream(fileHash);
-			var runner = new StreamToStreamRunner(_appSettings, inputStream,_logger);
-			var stream = await runner.RunProcessAsync(command);
-			// Need to Dispose for Windows
-			inputStream.Close();
-			return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
-		}
-
+		return newHashCode;
 	}
-	
+
 	/// <summary>
-	/// Handle ExifTool Streaming
+	/// Write commands to ExifTool for ReadStream
 	/// </summary>
-	internal class StreamToStreamRunner
+	/// <param name="subPath">the location</param>
+	/// <param name="command">exifTool command line args</param>
+	/// <returns>true=success</returns>
+	public async Task<bool> WriteTagsAsync(string subPath, string command)
 	{
-		private readonly Stream _src;
-		private readonly AppSettings _appSettings;
-		private readonly IWebLogger _logger;
+		var inputStream = _iStorage.ReadStream(subPath);
 
-		public StreamToStreamRunner(AppSettings appSettings, Stream src, IWebLogger logger)
+		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
+		var stream = await runner.RunProcessAsync(command);
+
+		// Need to Dispose for Windows
+		inputStream.Close();
+		return await _iStorage.WriteStreamAsync(stream, subPath);
+	}
+
+	/// <summary>
+	/// Write commands to ExifTool for ThumbnailWriteStream (Does NOT work with mono/legacy)
+	/// </summary>
+	/// <param name="fileHash">the location</param>
+	/// <param name="command">exifTool command line args</param>
+	/// <returns>true=success</returns>
+	public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
+	{
+		var inputStream = _thumbnailStorage.ReadStream(fileHash);
+		var runner = new StreamToStreamRunner(_appSettings, inputStream, _logger);
+		var stream = await runner.RunProcessAsync(command);
+		// Need to Dispose for Windows
+		inputStream.Close();
+		return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
+	}
+}
+
+/// <summary>
+/// Handle ExifTool Streaming
+/// </summary>
+internal class StreamToStreamRunner
+{
+	private readonly Stream _src;
+	private readonly AppSettings _appSettings;
+	private readonly IWebLogger _logger;
+
+	public StreamToStreamRunner(AppSettings appSettings, Stream src, IWebLogger logger)
+	{
+		_src = src ?? throw new ArgumentNullException(nameof(src));
+		_appSettings = appSettings;
+		_logger = logger;
+	}
+
+	/// <summary>
+	/// Run Command async (and keep stream open)
+	/// </summary>
+	/// <param name="exifToolInputArguments">exifTool args</param>
+	/// <returns>bool if success</returns>
+	/// <exception cref="ArgumentException">if exifTool is missing</exception>
+	public async Task<Stream> RunProcessAsync(string exifToolInputArguments)
+	{
+		var argumentsWithPipeEnd = $"{exifToolInputArguments} -o - -";
+
+		var memoryStream = new MemoryStream();
+
+		try
 		{
-			_src = src ?? throw new ArgumentNullException(nameof(src));
-			_appSettings = appSettings;
-			_logger = logger;
+			// run with pipes
+			var command = Default.Run(_appSettings.ExifToolPath,
+				options:
+				opts => { opts.StartInfo(si => si.Arguments = argumentsWithPipeEnd); });
+
+			command.RedirectFrom(_src);
+			command.RedirectTo(memoryStream);
+
+			var result = await command.Task;
+
+			if ( _appSettings.IsVerbose() )
+			{
+				_logger.LogInformation($"[RunProcessAsync] ~ exifTool {exifToolInputArguments} " +
+				                       $"run with result: {result.Success} ~ ");
+			}
+
+			memoryStream.Seek(0, SeekOrigin.Begin);
+
+			return memoryStream;
 		}
-
-
-		/// <summary>
-		/// Run Command async (and keep stream open)
-		/// </summary>
-		/// <param name="optionsArgs">exifTool args</param>
-		/// <returns>bool if success</returns>
-		/// <exception cref="ArgumentException">if exifTool is missing</exception>
-		public async Task<Stream> RunProcessAsync(string optionsArgs)
+		catch ( Win32Exception exception )
 		{
-			var args = $"{optionsArgs} -o - -";
-
-			var ms = new MemoryStream();
-
-			try
-			{
-
-				// run with pipes
-				var cmd = Default.Run(_appSettings.ExifToolPath, options: opts =>
-				{
-					opts.StartInfo(si => si.Arguments = args);
-				});
-
-				cmd.RedirectFrom(_src);
-				cmd.RedirectTo(ms);
-
-				var result = await cmd.Task;
-				
-				if ( _appSettings.IsVerbose() ) _logger.LogInformation($"[RunProcessAsync] ~ exifTool {optionsArgs} " +
-					$"run with result: {result.Success} ~ ");
-	
-				ms.Seek(0, SeekOrigin.Begin);
-
-				return ms;
-			}
-			catch (Win32Exception ex)
-			{
-				throw new ArgumentException("Error when trying to start the exifTool process.  " +
-				                            "Please make sure exifTool is installed, and its path is properly " +
-				                            "specified in the options.", ex);
-			}
+			throw new ArgumentException("Error when trying to start the exifTool process.  " +
+			                            "Please make sure exifTool is installed, and its path is properly " +
+			                            "specified in the options.", exception);
 		}
-			
 	}
 }

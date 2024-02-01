@@ -16,28 +16,30 @@ namespace starsky.foundation.writemeta.Services
 	{
 		private readonly ExifTool _exifTool;
 
-		public ExifToolHostStorageService(ISelectorStorage selectorStorage, 
+		public ExifToolHostStorageService(ISelectorStorage selectorStorage,
 			AppSettings appSettings, IWebLogger webLogger)
 		{
 			var iStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			var thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_exifTool = new ExifTool(iStorage, thumbnailStorage, appSettings, webLogger);
 		}
-		
+
 		public async Task<bool> WriteTagsAsync(string subPath, string command)
 		{
-			return await _exifTool.WriteTagsAsync(subPath,command);
+			return await _exifTool.WriteTagsAsync(subPath, command);
 		}
 
-		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, string? beforeFileHash,
+		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(
+			string subPath, string? beforeFileHash,
 			string command, CancellationToken cancellationToken = default)
 		{
-			return await _exifTool.WriteTagsAndRenameThumbnailAsync(subPath,beforeFileHash,command, cancellationToken);
+			return await _exifTool.WriteTagsAndRenameThumbnailAsync(subPath, beforeFileHash,
+				command, cancellationToken);
 		}
-		
+
 		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
 		{
-			return await _exifTool.WriteTagsThumbnailAsync(fileHash,command);
+			return await _exifTool.WriteTagsThumbnailAsync(fileHash, command);
 		}
 	}
 }
