@@ -3,6 +3,10 @@ parameters:
   displayName: Run unit tests & sonar scan?
   type: boolean
   default: true
+- name: readyToRunEnabled
+  displayName: Enable ReadyToRun .NET feature
+  type: boolean
+  default: true
 
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -78,6 +82,7 @@ stages:
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
         vstest: ${{ parameters.unitTestsEnabled }}
+        readyToRunEnabled: ${{ parameters.readyToRunEnabled }}
         nugetPackages: $(NUGET_PACKAGES)
 
     - template: /pipelines/azure/steps/coverage_report_merge.yml

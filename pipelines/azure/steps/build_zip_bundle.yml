@@ -7,6 +7,6 @@ steps:
     displayName: 'Nuke Zip'
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} --target Zip  --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --target Zip --skip --no-logo'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'

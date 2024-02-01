@@ -1,6 +1,7 @@
 parameters:
   sonarqube: true
   vstest: true
+  readyToRunEnabled: true
   runtimeArg: '--runtime "linux-arm,linux-arm64"'
   nugetPackages: $(Pipeline.Workspace)/.nuget/packages
 
@@ -24,7 +25,7 @@ steps:
       SONAR_TOKEN: $(STARSKY_SONAR_TOKEN)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target SonarBuildTest  --branch "$(Build.SourceBranch)"  --skip --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --target SonarBuildTest --branch "$(Build.SourceBranch)" --skip --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
@@ -35,15 +36,25 @@ steps:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target SonarBuildTest --branch "$(Build.SourceBranch)" --skip  --no-logo'
+      arguments: '${{ parameters.runtimeArg }} --no-unit-tests --target SonarBuildTest --branch "$(Build.SourceBranch)" --skip --no-logo'
+      pwsh: true
+      workingDirectory: "$(Build.SourcesDirectory)/starsky/"
+
+  - task: PowerShell@2
+    displayName: "Nuke BuildNetCoreRuntimeSpecific --ready-to-run"
+    condition: and(succeeded(), eq('${{ parameters.readyToRunEnabled }}', true) )
+    inputs:
+      filePath: "starsky/build.ps1"
+      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific --skip --no-logo --ready-to-run'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
   - task: PowerShell@2
     displayName: "Nuke BuildNetCoreRuntimeSpecific"
+    condition: and(succeeded(), ne('${{ parameters.readyToRunEnabled }}', true) )
     inputs:
       filePath: "starsky/build.ps1"
-      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific  --skip --no-logo --ready-to-run'
+      arguments: '${{ parameters.runtimeArg }} --target BuildNetCoreRuntimeSpecific --skip --no-logo'
       pwsh: true
       workingDirectory: "$(Build.SourcesDirectory)/starsky/"
 
