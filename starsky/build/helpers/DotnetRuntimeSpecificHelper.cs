@@ -95,7 +95,7 @@ namespace helpers
 			}
 
 		}
-		
+
 		/// <summary>
 		/// Specific build for runtime
 		/// Runs the command: dotnet build
@@ -103,10 +103,16 @@ namespace helpers
 		/// <param name="solution">the solution file (sln)</param>
 		/// <param name="configuration">Config file</param>
 		/// <param name="runtime">which runtime e.g. linux-arm or osx-x64</param>
+		/// <param name="isReadyToRunEnabled">Is Ready To Run Enabled</param>
 		public static void BuildNetCoreCommand(Solution solution, Configuration 
-			configuration, string runtime)
+			configuration, string runtime, bool isReadyToRunEnabled)
 		{
 			Log.Information("> dotnet build next for: solution: " + solution + " runtime: " + runtime);
+			
+			var readyToRunArgument =
+				RuntimeIdentifier.IsReadyToRunSupported(runtime) && isReadyToRunEnabled
+					? "-p:PublishReadyToRun=true"
+					: "";
 			
 			DotNetBuild(p => p
 				.SetProjectFile(solution)
@@ -127,6 +133,7 @@ namespace helpers
 						.Add("/p:WarningLevel=0")
 						// SonarQube analysis is done in the generic build
 						.Add("/p:noSonar=true")
+						.Add(readyToRunArgument)
 				));
 		}
 
@@ -136,11 +143,14 @@ namespace helpers
 		/// </summary>
 		/// <param name="configuration">Release</param>
 		/// <param name="runtime">runtime identifier</param>
-		public static void PublishNetCoreGenericCommand(Configuration configuration, string runtime)
+		/// <param name="isReadyToRunEnabled">Is Ready To Run Enabled</param>
+		public static void PublishNetCoreGenericCommand(Configuration configuration, 
+			string runtime, bool isReadyToRunEnabled)
 		{
 			foreach ( var publishProject in Build.PublishProjectsList )
 			{
-				Log.Information(">> next publishProject: " + publishProject + " runtime: " + runtime);
+				Log.Information(">> next publishProject: " + 
+				                publishProject + " runtime: " + runtime);
 				
 				var publishProjectFullPath = Path.Combine(
 					WorkingDirectory.GetSolutionParentFolder(),
@@ -149,7 +159,12 @@ namespace helpers
 				var outputFullPath = Path.Combine(
 					WorkingDirectory.GetSolutionParentFolder(),
 					runtime);
-					
+
+				var readyToRunArgument =
+					RuntimeIdentifier.IsReadyToRunSupported(runtime) && isReadyToRunEnabled
+						? "-p:PublishReadyToRun=true"
+						: "";
+				
 				DotNetPublish(p => p
 					.SetConfiguration(configuration)
 					.EnableNoRestore()
@@ -163,6 +178,7 @@ namespace helpers
 					.SetProcessArgumentConfigurator(args => 
 						args.Add("/p:noSonar=true")
 							.Add($"/p:OverwriteRuntimeIdentifier={runtime}")
+							.Add(readyToRunArgument)
 						)
 				);
 			}

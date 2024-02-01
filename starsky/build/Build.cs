@@ -107,6 +107,25 @@ public sealed class Build : NukeBuild
 		}
 		return branchName;
 	}
+	
+	/// <summary>
+	/// Enable for Ready to run build
+	/// Only is combination is supported
+	/// @see: https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run
+	/// for build combinations, if not supported, it will auto skip
+	/// </summary>
+	/// <returns>true if explicit enabled</returns>
+	[Parameter("Enable Ready to run builds")] 
+	readonly bool ReadyToRun;
+	
+	/// <summary>
+	/// --ready-to-run
+	/// </summary>
+	/// <returns></returns>
+	public bool IsReadyToRunEnabled()
+	{
+		return ReadyToRun;
+	}
 		
 	/// <summary>
 	/// Only the OS specific runtimes, so skip generic-netcore
@@ -140,6 +159,11 @@ public sealed class Build : NukeBuild
 		"starskythumbnailmetacli",
 		"starsky"
 	};
+
+	/// <summary>
+	/// Link to GeoCli.csproj
+	/// </summary>
+	const string GeoCliCsproj = "starskygeocli/starskygeocli.csproj";
     
 	/// <summary>
 	/// Npm and node are required for preflight checks and building frontend code
@@ -216,7 +240,10 @@ public sealed class Build : NukeBuild
 		
 		Log.Information(NoDependencies ? "External dependencies: disabled" : 
 			"External dependencies: enabled");
-
+		
+		Log.Information(NoDependencies ? "External dependencies: disabled" : 
+			"External dependencies: enabled");
+		
 		if ( !string.IsNullOrEmpty(GetBranchName()) )
 		{
 			Log.Information("(Overwrite) Branch:");
@@ -262,9 +289,8 @@ public sealed class Build : NukeBuild
 				"starskytest/coverage-merge-sonarqube.xml");
 			DotnetGenericHelper.BuildNetCoreGenericCommand(Solution,Configuration);
 			DotnetTestHelper.TestNetCoreGenericCommand(Configuration,IsUnitTestDisabled());
-			DotnetGenericHelper.DownloadDependencies(Configuration, 
-				"starskygeocli/starskygeocli.csproj",NoDependencies, 
-				"generic-netcore");
+			DotnetGenericHelper.DownloadDependencies(Configuration, GeoCliCsproj
+				,NoDependencies, GenericRuntimeName);
 			MergeCoverageFiles.Merge(IsUnitTestDisabled());
 			SonarQube.SonarEnd(IsUnitTestDisabled(),NoSonar);
 			DotnetGenericHelper.PublishNetCoreGenericCommand(Configuration, IsPublishDisabled());
@@ -278,9 +304,9 @@ public sealed class Build : NukeBuild
 		{
 			DotnetGenericHelper.DownloadDependencies(Configuration, 
 				"starskygeocli/starskygeocli.csproj",NoDependencies, 
-				"generic-netcore");
+				GenericRuntimeName);
 			DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
-				"generic-netcore",GetRuntimesWithoutGeneric());
+				GenericRuntimeName,GetRuntimesWithoutGeneric());
 				
 		});
 
@@ -307,12 +333,14 @@ public sealed class Build : NukeBuild
 
 			foreach ( var runtime in GetRuntimesWithoutGeneric() )
 			{
-				DotnetRuntimeSpecificHelper.BuildNetCoreCommand(Solution, Configuration, runtime);
-				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Configuration, runtime);
+				DotnetRuntimeSpecificHelper.BuildNetCoreCommand(Solution, Configuration, 
+					runtime, IsReadyToRunEnabled());
+				DotnetRuntimeSpecificHelper.PublishNetCoreGenericCommand(Configuration, 
+					runtime, IsReadyToRunEnabled());
 			}
 			
 			DotnetRuntimeSpecificHelper.CopyDependenciesFiles(NoDependencies,
-				"generic-netcore",GetRuntimesWithoutGeneric());
+				GenericRuntimeName,GetRuntimesWithoutGeneric());
 		});
 		
 	// ReSharper disable once UnusedMember.Local
