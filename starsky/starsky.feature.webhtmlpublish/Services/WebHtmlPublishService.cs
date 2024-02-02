@@ -228,7 +228,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    // add to IClonable
 		    foreach (var item in viewModel.FileIndexItems)
 		    {
-			    item.FileName = _appSettings.GenerateSlug(item.FileCollectionName, true) + 
+			    item.FileName = GenerateSlugHelper.GenerateSlug(item.FileCollectionName!, true) + 
 			                    Path.GetExtension(item.FileName);
 		    }
             
@@ -401,7 +401,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    {
 		    var fileNames = renderCopyResult.Where(p => p.Value).Select(p => p.Key).ToList();
 
-		    var slugItemName = _appSettings.GenerateSlug(itemName, true);
+		    var slugItemName = GenerateSlugHelper.GenerateSlug(itemName, true);
 		    var filePaths = fileNames.Select(p => Path.Combine(fullFileParentFolderPath, slugItemName, p)).ToList();
 
 		    new Zipper().CreateZip(fullFileParentFolderPath, filePaths, fileNames,

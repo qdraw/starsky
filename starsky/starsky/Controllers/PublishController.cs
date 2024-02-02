@@ -28,8 +28,9 @@ namespace starsky.Controllers
 		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IWebLogger _webLogger;
 
-		public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight, 
-			IWebHtmlPublishService publishService, IMetaInfo metaInfo, ISelectorStorage selectorStorage,
+		public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight,
+			IWebHtmlPublishService publishService, IMetaInfo metaInfo,
+			ISelectorStorage selectorStorage,
 			IUpdateBackgroundTaskQueue queue, IWebLogger webLogger)
 		{
 			_appSettings = appSettings;
@@ -72,7 +73,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(void), 401)]
 		[HttpPost("/api/publish/create")]
 		[Produces("application/json")]
-		public async Task<IActionResult> PublishCreateAsync(string f, string itemName, 
+		public async Task<IActionResult> PublishCreateAsync(string f, string itemName,
 			string publishProfileName, bool force = false)
 		{
 			var (isValid, preflightErrors) = _publishPreflight.IsProfileValid(publishProfileName);
@@ -80,9 +81,9 @@ namespace starsky.Controllers
 			{
 				return BadRequest(preflightErrors);
 			}
-			
+
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
-			var info =  await _metaInfo.GetInfoAsync(inputFilePaths, false);
+			var info = await _metaInfo.GetInfoAsync(inputFilePaths, false);
 			if ( info.TrueForAll(p =>
 				    p.Status != FileIndexItem.ExifStatus.Ok &&
 				    p.Status != FileIndexItem.ExifStatus.ReadOnly) )
@@ -90,11 +91,12 @@ namespace starsky.Controllers
 				return NotFound(info);
 			}
 
-			var slugItemName = _appSettings.GenerateSlug(itemName, true);
-			_webLogger.LogInformation($"[/api/publish/create] Press publish: {slugItemName} {f} {DateTime.UtcNow}");
+			var slugItemName = GenerateSlugHelper.GenerateSlug(itemName, true);
+			_webLogger.LogInformation(
+				$"[/api/publish/create] Press publish: {slugItemName} {f} {DateTime.UtcNow}");
 
-			var location = Path.Combine(_appSettings.TempFolder,slugItemName );
-			
+			var location = Path.Combine(_appSettings.TempFolder, slugItemName);
+
 			if ( CheckIfNameExist(slugItemName) )
 			{
 				if ( !force ) return Conflict($"name {slugItemName} exist");
@@ -104,17 +106,18 @@ namespace starsky.Controllers
 			// Creating Publish is a background task
 			await _bgTaskQueue.QueueBackgroundWorkItemAsync(async _ =>
 			{
-				var renderCopyResult = await _publishService.RenderCopy(info, 
+				var renderCopyResult = await _publishService.RenderCopy(info,
 					publishProfileName, itemName, location);
-				await _publishService.GenerateZip(_appSettings.TempFolder, itemName, 
-					renderCopyResult,true );	
-				_webLogger.LogInformation($"[/api/publish/create] done: {itemName} {DateTime.UtcNow}");
-			},publishProfileName + "_" + itemName);
-			
+				await _publishService.GenerateZip(_appSettings.TempFolder, itemName,
+					renderCopyResult, true);
+				_webLogger.LogInformation(
+					$"[/api/publish/create] done: {itemName} {DateTime.UtcNow}");
+			}, publishProfileName + "_" + itemName);
+
 			// Get the zip 	by	[HttpGet("/export/zip/{f}.zip")]
 			return Json(slugItemName);
 		}
-		
+
 		/// <summary>
 		/// To give the user UI feedback when submitting the itemName
 		/// True is not to continue with this name
@@ -128,13 +131,13 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(void), 401)]
 		public IActionResult Exist(string itemName)
 		{
-			return Json(CheckIfNameExist(_appSettings.GenerateSlug(itemName)));
+			return Json(CheckIfNameExist(GenerateSlugHelper.GenerateSlug(itemName)));
 		}
 
 		private bool CheckIfNameExist(string slugItemName)
 		{
 			if ( string.IsNullOrEmpty(slugItemName) ) return true;
-			var location = Path.Combine(_appSettings.TempFolder,slugItemName );
+			var location = Path.Combine(_appSettings.TempFolder, slugItemName);
 			return _hostStorage.ExistFolder(location) || _hostStorage.ExistFile(location + ".zip");
 		}
 
@@ -144,9 +147,10 @@ namespace starsky.Controllers
 			{
 				_hostStorage.FolderDelete(location);
 			}
+
 			if ( _hostStorage.ExistFile(location + ".zip") )
 			{
-				_hostStorage.FileDelete(location+ ".zip");
+				_hostStorage.FileDelete(location + ".zip");
 			}
 		}
 	}

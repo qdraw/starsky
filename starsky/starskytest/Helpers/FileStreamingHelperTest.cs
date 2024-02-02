@@ -97,7 +97,7 @@ namespace starskytest.Helpers
 		{
 			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 			httpContext.Request.Headers["filename"] = "2018-07-20 20.14.52.jpg"; //Set header
-			var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
+			var result = FileStreamingHelper.HeaderFileName(httpContext.Request);
 			Assert.AreEqual("2018-07-20-201452.jpg",result);    
 		}
         
@@ -106,7 +106,7 @@ namespace starskytest.Helpers
 		{
 			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 			httpContext.Request.Headers["filename"] = "UPPERCASE.jpg"; //Set header
-			var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
+			var result = FileStreamingHelper.HeaderFileName(httpContext.Request);
 			Assert.AreEqual("UPPERCASE.jpg",result);    
 		}
 
@@ -115,7 +115,7 @@ namespace starskytest.Helpers
 		{
 			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 			httpContext.Request.Headers["filename"] = "MjAxOC0wNy0yMCAyMC4xNC41Mi5qcGc="; //Set header
-			var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
+			var result = FileStreamingHelper.HeaderFileName(httpContext.Request);
 			Assert.AreEqual("2018-07-20-201452.jpg",result);    
 		}
         
@@ -124,7 +124,7 @@ namespace starskytest.Helpers
 		{
 			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 			httpContext.Request.Headers["filename"] = "VVBQRVJDQVNFLkpQRw=="; //Set header
-			var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
+			var result = FileStreamingHelper.HeaderFileName(httpContext.Request);
 			Assert.AreEqual("UPPERCASE.JPG",result);    
 		}
 		

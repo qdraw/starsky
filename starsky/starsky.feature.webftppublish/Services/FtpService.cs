@@ -16,6 +16,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starsky.feature.webftppublish.Services
 {
 	[Service(typeof(IFtpService), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -45,7 +46,7 @@ namespace starsky.feature.webftppublish.Services
 		/// <param name="storage">storage provider for source files</param>
 		/// <param name="console"></param>
 		/// <param name="webRequest"></param>
-		public FtpService(AppSettings appSettings, IStorage storage, IConsole console, 
+		public FtpService(AppSettings appSettings, IStorage storage, IConsole console,
 			IFtpWebRequestFactory webRequest)
 		{
 			_appSettings = appSettings;
@@ -58,7 +59,7 @@ namespace starsky.feature.webftppublish.Services
 
 			// Replace WebFtpNoLogin
 			_webFtpNoLogin = $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
-			
+
 			_appSettingsCredentials[0] = HttpUtility.UrlDecode(_appSettingsCredentials[0]);
 			_appSettingsCredentials[1] = HttpUtility.UrlDecode(_appSettingsCredentials[1]);
 		}
@@ -72,8 +73,8 @@ namespace starsky.feature.webftppublish.Services
 		/// <returns>true == success</returns>
 		public bool Run(string parentDirectory, string slug, Dictionary<string, bool> copyContent)
 		{
-			foreach ( var thisDirectory in 
-				CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
+			foreach ( var thisDirectory in
+			         CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
 			{
 				_console.Write(",");
 				if ( DoesFtpDirectoryExist(thisDirectory) ) continue;
@@ -102,7 +103,7 @@ namespace starsky.feature.webftppublish.Services
 		/// <param name="copyContent"></param>
 		/// <returns></returns>
 		[SuppressMessage("Usage", "S3267:Loops should be simplified with LINQ expressions ")]
-		internal IEnumerable<string> CreateListOfRemoteDirectories(string parentDirectory, 
+		internal IEnumerable<string> CreateListOfRemoteDirectories(string parentDirectory,
 			string slug, Dictionary<string, bool> copyContent)
 		{
 			var pushDirectory = _webFtpNoLogin + "/" + slug;
@@ -112,20 +113,21 @@ namespace starsky.feature.webftppublish.Services
 				_webFtpNoLogin, // <= the base dir
 				pushDirectory // <= current log item
 			};
-			
+
 			// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach ( var copyItem in copyContent.Where(p => p.Value) )
 			{
 				var parentItems = Breadcrumbs.BreadcrumbHelper(copyItem.Key);
-				foreach ( var item in parentItems.Where(p => p != Path.DirectorySeparatorChar.ToString()) )
+				foreach ( var item in parentItems.Where(p =>
+					         p != Path.DirectorySeparatorChar.ToString()) )
 				{
-					if ( _storage.ExistFolder(parentDirectory + item ) )
+					if ( _storage.ExistFolder(parentDirectory + item) )
 					{
 						createThisDirectories.Add(pushDirectory + "/" + item);
 					}
 				}
 			}
-			
+
 			return new HashSet<string>(createThisDirectories).ToList();
 		}
 
@@ -133,7 +135,8 @@ namespace starsky.feature.webftppublish.Services
 		/// Makes a list of 'full file paths' of files on disk to copy
 		/// </summary>
 		/// <returns></returns>
-		internal static HashSet<string> CreateListOfRemoteFiles(Dictionary<string, bool> copyContent)
+		internal static HashSet<string> CreateListOfRemoteFiles(
+			Dictionary<string, bool> copyContent)
 		{
 			var copyThisFiles = copyContent
 				.Where(p => p.Value)
@@ -149,14 +152,15 @@ namespace starsky.feature.webftppublish.Services
 		/// <param name="slug">name</param>
 		/// <param name="copyThisFilesSubPaths">list of files (subPath style)</param>
 		/// <returns>false = fail</returns>
-		internal bool MakeUpload( string parentDirectory, string slug, IEnumerable<string> copyThisFilesSubPaths)
+		internal bool MakeUpload(string parentDirectory, string slug,
+			IEnumerable<string> copyThisFilesSubPaths)
 		{
 			foreach ( var item in copyThisFilesSubPaths )
 			{
 				const string pathDelimiter = "/";
-				var toFtpPath =  PathHelper.RemoveLatestSlash(_webFtpNoLogin) + pathDelimiter +
-				                 _appSettings.GenerateSlug(slug,true) + pathDelimiter +
-				                 item;
+				var toFtpPath = PathHelper.RemoveLatestSlash(_webFtpNoLogin) + pathDelimiter +
+				                GenerateSlugHelper.GenerateSlug(slug, true) + pathDelimiter +
+				                item;
 
 				_console.Write(".");
 
@@ -164,12 +168,14 @@ namespace starsky.feature.webftppublish.Services
 				{
 					return Upload(parentDirectory, item, toFtpPath);
 				}
+
 				RetryHelper.Do(LocalUpload, TimeSpan.FromSeconds(10));
-				
+
 				if ( _storage.ExistFile(parentDirectory + item) ) continue;
 				_console.WriteLine($"Fail > upload file => {item} {toFtpPath}");
 				return false;
 			}
+
 			return true;
 		}
 
@@ -181,19 +187,21 @@ namespace starsky.feature.webftppublish.Services
 		/// <param name="subPath">on disk</param>
 		/// <param name="toFtpPath">ftp path eg ftp://service.nl/drop/test//index.html</param>
 		/// <returns></returns>
-		private bool Upload(string parentDirectory,  string subPath, string toFtpPath)
+		private bool Upload(string parentDirectory, string subPath, string toFtpPath)
 		{
-			if(!_storage.ExistFile(parentDirectory + subPath)) return false;
-			
-			var  request = _webRequest.Create(toFtpPath);
-			request.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
-			request.Method = WebRequestMethods.Ftp.UploadFile;  
+			if ( !_storage.ExistFile(parentDirectory + subPath) ) return false;
 
-			using (Stream fileStream = _storage.ReadStream(parentDirectory + subPath))
-			using (Stream ftpStream = request.GetRequestStream())
+			var request = _webRequest.Create(toFtpPath);
+			request.Credentials =
+				new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
+			request.Method = WebRequestMethods.Ftp.UploadFile;
+
+			using ( Stream fileStream = _storage.ReadStream(parentDirectory + subPath) )
+			using ( Stream ftpStream = request.GetRequestStream() )
 			{
 				fileStream.CopyTo(ftpStream);
 			}
+
 			return true;
 		}
 
@@ -208,7 +216,8 @@ namespace starsky.feature.webftppublish.Services
 			try
 			{
 				var request = _webRequest.Create(dirPath);
-				request.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
+				request.Credentials = new NetworkCredential(_appSettingsCredentials[0],
+					_appSettingsCredentials[1]);
 				request.Method = WebRequestMethods.Ftp.ListDirectory;
 				request.GetResponse();
 				return true;
@@ -224,14 +233,14 @@ namespace starsky.feature.webftppublish.Services
 		/// </summary>
 		/// <param name="directory">ftp path with directory name eg ftp://service.nl/drop</param>
 		/// <returns></returns>
-		internal bool CreateFtpDirectory(string directory) 
+		internal bool CreateFtpDirectory(string directory)
 		{
 			try
 			{
 				// create the directory
 				var requestDir = _webRequest.Create(directory);
 				requestDir.Method = WebRequestMethods.Ftp.MakeDirectory;
-				requestDir.Credentials = new NetworkCredential(_appSettingsCredentials[0], 
+				requestDir.Credentials = new NetworkCredential(_appSettingsCredentials[0],
 					_appSettingsCredentials[1]);
 				requestDir.UsePassive = true;
 				requestDir.UseBinary = true;
@@ -244,13 +253,12 @@ namespace starsky.feature.webftppublish.Services
 
 				return true;
 			}
-			catch (WebException ex)
+			catch ( WebException ex )
 			{
-				var ftpWebResponse = (FtpWebResponse)ex.Response;
+				var ftpWebResponse = ( FtpWebResponse )ex.Response;
 				ftpWebResponse?.Close();
 				return ftpWebResponse?.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable;
 			}
 		}
-		
 	}
 }
