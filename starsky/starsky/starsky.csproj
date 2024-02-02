@@ -60,8 +60,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0"/>
-        <!--     SQLitePCLRaw.lib.e_sqlite3 && https://github.com/ericsink/SQLitePCL.raw   -->
-        <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
     <!-- generate xml file for swagger -->
