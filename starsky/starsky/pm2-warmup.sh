@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## WARMUP WITHOUT LOGIN
+## WARMUP WITHOUT LOGIN /api/account/status
 
 ARGUMENTS=("$@")
 
