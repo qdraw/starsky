@@ -48,7 +48,7 @@ namespace starsky.foundation.platform.Helpers
 
 		
 		/// <summary>
-		/// To replace: 'test,fake with test, fake' - Regex
+		/// To replace: 'test,fake' with 'test, fake' - Regex
 		/// unescaped regex: (,(?=\S)|:)
 		/// Precompiled Regex.Replace
 		/// </summary>
@@ -60,7 +60,7 @@ namespace starsky.foundation.platform.Helpers
 		private static partial Regex SingleCommaWithCommaWithSpaceRegex();
 		
 		/// <summary>
-		/// To replace: test,fake with test, fake
+		/// To replace: 'test,fake' with 'test, fake'
 		/// </summary>
 		/// <param name="keywords">input string</param>
 		/// <returns>comma separated string</returns>
