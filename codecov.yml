@@ -34,4 +34,6 @@ coverage:
         # advanced settings
         branches: 
           - master
-
+    patch:
+      default:
+        target: 85%
