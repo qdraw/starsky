@@ -31,12 +31,6 @@ public class PathHelperTests
 	[ExpectedException(typeof(RegexMatchTimeoutException))]
 	public async Task GetFileName_ReturnsFileName_WithMaliciousInput_UnixOnly()
 	{
-		if ( new AppSettings().IsWindows )
-		{
-			Assert.Inconclusive("Test is Linux & Mac OS Only");
-			return;
-		}
-		
 		// Act and Assert
 		var test = await 
 			StreamToStringHelper.StreamToStringAsync(
@@ -44,8 +38,14 @@ public class PathHelperTests
 		var test2 = await
 			StreamToStringHelper.StreamToStringAsync(
 				new MemoryStream(CreateAnImageA6600.Bytes.ToArray()));
+
+		var result = string.Empty;
+		for ( var i = 0; i < 100; i++ )
+		{
+			result += test + test2 + test + test;
+		}
 		
-		PathHelper.GetFileName(test + test2 + test + test,1);
+		PathHelper.GetFileName(result);
 	}
 	
 	[TestMethod]

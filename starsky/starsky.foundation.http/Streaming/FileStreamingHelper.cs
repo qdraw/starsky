@@ -18,15 +18,14 @@ namespace starsky.foundation.http.Streaming
     public static class FileStreamingHelper
     {
         private static readonly FormOptions DefaultFormOptions = new FormOptions();
-        
+
         /// <summary>
         /// Support for plain text input and base64 strings
         /// Use for single files only
         /// </summary>
         /// <param name="request">HttpRequest </param>
-        /// <param name="appSettings">application settings</param>
         /// <returns></returns>
-        public static string HeaderFileName(HttpRequest request, AppSettings appSettings)
+        public static string HeaderFileName(HttpRequest request)
         {
 	        // > when you do nothing
 	        if (string.IsNullOrEmpty(request.Headers["filename"]))
@@ -34,12 +33,12 @@ namespace starsky.foundation.http.Streaming
             
 	        // file without base64 encoding; return slug based url
 	        if (Base64Helper.TryParse(request.Headers["filename"]).Length == 0)
-		        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]),
+		        return GenerateSlugHelper.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]),
 			               true, false, true) + Path.GetExtension(request.Headers["filename"]);
             
 	        var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
 	        var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
-	        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders),
+	        return GenerateSlugHelper.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders),
 		               true, false, true) + Path.GetExtension(requestHeaders);
         }
         
@@ -49,7 +48,7 @@ namespace starsky.foundation.http.Streaming
             // The Header 'filename' is for uploading on file without a form.
             return await StreamFile(request.ContentType, request.Body, 
 	            appSettings, 
-	            selectorStorage, HeaderFileName(request, appSettings));            
+	            selectorStorage, HeaderFileName(request));            
         }
 
         [SuppressMessage("Usage", "S125:Remove this commented out code")]
@@ -105,7 +104,7 @@ namespace starsky.foundation.http.Streaming
                     var sourceFileName = contentDisposition.FileName.ToString().Replace("\"", string.Empty);
                     var inputExtension = Path.GetExtension(sourceFileName).Replace("\n",string.Empty);
 
-                    var tempHash = appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName),
+                    var tempHash = GenerateSlugHelper.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName),
 	                    true, false, true); // underscore allowed
                     var randomFolderName = "stream_" +
                                            Base32.Encode(FileHash.GenerateRandomBytes(4));

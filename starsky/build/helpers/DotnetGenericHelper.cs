@@ -18,12 +18,12 @@ namespace helpers
 		public static void RestoreNetCoreCommand(Solution solution)
 		{
 			Log.Information("dotnet restore: solution: " + solution);
-			
+
 			DotNetRestore(p => p
 				.SetProjectFile(solution.Path)
 			);
 		}
-	
+
 		/// <summary>
 		/// dotnet build for generic helper
 		/// </summary>
@@ -46,7 +46,7 @@ namespace helpers
 		/// <param name="geoCliCsproj">geo.csproj file</param>
 		/// <param name="noDependencies">skip this step if true (external deps)</param>
 		/// <param name="genericNetcoreFolder">genericNetcoreFolder</param>
-		public static void DownloadDependencies(Configuration configuration, 
+		public static void DownloadDependencies(Configuration configuration,
 			string geoCliCsproj, bool noDependencies,
 			string genericNetcoreFolder)
 		{
@@ -55,25 +55,28 @@ namespace helpers
 				Log.Information("skip the flag: --no-dependencies is used");
 				return;
 			}
-			
-			var genericDepsFullPath = Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
+
+			var genericDepsFullPath =
+				Path.Combine(BasePath(), genericNetcoreFolder, "dependencies");
 			Log.Information($"genericDepsFullPath: {genericDepsFullPath}");
-		
+
 			try
 			{
-				Environment.SetEnvironmentVariable("app__DependenciesFolder",genericDepsFullPath);
+				Environment.SetEnvironmentVariable("app__DependenciesFolder", genericDepsFullPath);
 				Log.Information("Next: DownloadDependencies");
 				Log.Information("Run: " + Path.Combine(
-					WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj)
+					WorkingDirectory.GetSolutionParentFolder(), geoCliCsproj)
 				);
 
-				DotNetRun(p =>  p
+				DotNetRun(p => p
 					.SetConfiguration(configuration)
 					.EnableNoRestore()
 					.EnableNoBuild()
-					.SetProjectFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(),geoCliCsproj)));
+					.SetApplicationArguments("--runtime linux-x64,win-x64")
+					.SetProjectFile(Path.Combine(WorkingDirectory.GetSolutionParentFolder(),
+						geoCliCsproj)));
 			}
-			catch ( Exception exception)
+			catch ( Exception exception )
 			{
 				Log.Information("--");
 				Log.Information(exception.Message);
@@ -86,14 +89,15 @@ namespace helpers
 			Log.Information("DownloadDependencies done");
 		}
 
-		public static void PublishNetCoreGenericCommand(Configuration configuration, bool isPublishDisabled)
+		public static void PublishNetCoreGenericCommand(Configuration configuration,
+			bool isPublishDisabled)
 		{
 			if ( isPublishDisabled )
 			{
 				Log.Information("Skip: PublishNetCoreGenericCommand isPublishDisabled");
 				return;
 			}
-			
+
 			foreach ( var publishProject in PublishProjectsList )
 			{
 				var publishProjectFullPath = Path.Combine(
@@ -114,7 +118,7 @@ namespace helpers
 					.EnableNoLogo());
 			}
 		}
-	
+
 		static string BasePath()
 		{
 			return Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)

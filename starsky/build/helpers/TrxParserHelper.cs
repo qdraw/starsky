@@ -68,14 +68,14 @@ public static class TrxParserHelper
 			return;
 		}
 
-		Log.Error("\nFailed tests:\n");
+		Log.Information("\nFailed tests:\n");
 
 		foreach ( var result in results )
 		{
 			Log.Error($"Test Name: {result.Item1}");
 			Log.Error($"Message: {result.Item2}");
 			Log.Error($"Stack Trace: {result.Item3}");
-			Log.Error("------------------------");
+			Log.Information("------------------------");
 		}
 	}
 }

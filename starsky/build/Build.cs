@@ -166,6 +166,15 @@ public sealed class Build : NukeBuild
 	};
 
 	/// <summary>
+	/// If the project: '.NET ReadyToRun' is enabled for faster startup
+	/// Only if supported & feature flag is enabled
+	/// </summary>
+	public static readonly List<string> ReadyToRunProjectsList = new List<string>
+	{
+		"starsky", "starskyimportercli", "starskywebftpcli"
+	};
+
+	/// <summary>
 	/// Link to GeoCli.csproj
 	/// </summary>
 	const string GeoCliCsproj = "starskygeocli/starskygeocli.csproj";
@@ -250,7 +259,7 @@ public sealed class Build : NukeBuild
 		Log.Information(NoDependencies
 			? "External dependencies: disabled"
 			: "External dependencies: enabled");
-		
+
 		Log.Information(IsReadyToRunEnabled()
 			? "ReadyToRun faster startup: enabled"
 			: "ReadyToRun faster startup: disabled");
@@ -302,8 +311,8 @@ public sealed class Build : NukeBuild
 				Configuration);
 			DotnetTestHelper.TestNetCoreGenericCommand(Configuration,
 				IsUnitTestDisabled());
-			DotnetGenericHelper.DownloadDependencies(Configuration, GeoCliCsproj
-				, NoDependencies, GenericRuntimeName);
+			DotnetGenericHelper.DownloadDependencies(Configuration, GeoCliCsproj, 
+				NoDependencies, GenericRuntimeName);
 			MergeCoverageFiles.Merge(IsUnitTestDisabled());
 			SonarQube.SonarEnd(IsUnitTestDisabled(), NoSonar);
 			DotnetGenericHelper.PublishNetCoreGenericCommand(Configuration,

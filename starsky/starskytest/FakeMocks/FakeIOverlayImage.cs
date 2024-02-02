@@ -21,14 +21,14 @@ namespace starskytest.FakeMocks
 		}
 		public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
 		{
-			return new OverlayImage(null,new AppSettings()).FilePathOverlayImage(
+			return new OverlayImage(null).FilePathOverlayImage(
 				sourceFilePath, profile);
 		}
 
 		public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath,
 			AppSettingsPublishProfiles profile)
 		{
-			return new OverlayImage(null,new AppSettings()).FilePathOverlayImage(outputParentFullFilePathFolder,
+			return new OverlayImage(null).FilePathOverlayImage(outputParentFullFilePathFolder,
 				sourceFilePath, profile);
 		}
 

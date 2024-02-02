@@ -6,8 +6,19 @@ using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
 {
-	public static class HashSetHelper
+	public static partial class HashSetHelper
 	{
+		/// <summary>
+		/// Precompiled regex for splitting comma separated string
+		/// Regex.Split
+		/// </summary>
+		/// <returns>Regex object</returns>
+		[GeneratedRegex(
+			@",\s",
+			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase,
+			matchTimeoutMilliseconds: 200)]
+		private static partial Regex DotCommaRegex();
+
 		/// <summary>
 		/// Split dot comma space string (used for tags) to unique list
 		/// </summary>
@@ -15,38 +26,47 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>list/hashset with items in string</returns>
 		public static HashSet<string> StringToHashSet(string inputKeywords)
 		{
-			if ( string.IsNullOrEmpty(inputKeywords) ) return new HashSet<string>();
-			
+			if ( string.IsNullOrEmpty(inputKeywords) )
+			{
+				return [];
+			}
+
 			var keywords = ReplaceSingleCommaWithCommaWithSpace(inputKeywords);
 
-			var dotcommaRegex = new Regex(@",\s", 
-				RegexOptions.None, TimeSpan.FromMilliseconds(100));
-
-			var keywordList = dotcommaRegex.Split(keywords);
+			var keywordList = DotCommaRegex().Split(keywords);
 
 			keywordList = TrimCommaInList(keywordList);
 
 			// remove only leading and trailing whitespaces,
 			keywordList = keywordList.Select(t => t.Trim()).ToArray();
 
-			HashSet<string> keywordsHashSet = new HashSet<string>(from x in keywordList
+			var keywordsHashSet = new HashSet<string>(from x in keywordList
 				select x);
 
 			return keywordsHashSet;
 		}
 
+		
 		/// <summary>
-		/// To replace: test,fake with test, fake
+		/// To replace: 'test,fake' with 'test, fake' - Regex
+		/// unescaped regex: (,(?=\S)|:)
+		/// Precompiled Regex.Replace
+		/// </summary>
+		/// <returns>Regex object</returns>
+		[GeneratedRegex(
+			"(,(?=\\S)|:)",
+			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase,
+			matchTimeoutMilliseconds: 200)]
+		private static partial Regex SingleCommaWithCommaWithSpaceRegex();
+		
+		/// <summary>
+		/// To replace: 'test,fake' with 'test, fake'
 		/// </summary>
 		/// <param name="keywords">input string</param>
 		/// <returns>comma separated string</returns>
 		private static string ReplaceSingleCommaWithCommaWithSpace(string keywords)
 		{
-			// unescaped regex: (,(?=\S)|:)
-			Regex pattern = new Regex("(,(?=\\S)|:)", 
-				RegexOptions.None, TimeSpan.FromMilliseconds(100));
-			keywords = pattern.Replace(keywords, ", ");
-			return keywords;
+			return SingleCommaWithCommaWithSpaceRegex().Replace(keywords, ", ");
 		}
 
 		/// <summary>
@@ -57,11 +77,11 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns></returns>
 		private static string[] TrimCommaInList(string[] keywordList)
 		{
-			for ( int i = 0; i < keywordList.Length; i++ )
+			for ( var i = 0; i < keywordList.Length; i++ )
 			{
 				var keyword = keywordList[i];
 
-				char[] comma = {','};
+				char[] comma = [','];
 				keyword = keyword.TrimEnd(comma);
 				keyword = keyword.TrimStart(comma);
 
@@ -77,14 +97,9 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="hashSetKeywords">import hashset</param>
 		/// <returns>string with comma separated values</returns>
-		public static string HashSetToString(HashSet<string> hashSetKeywords)
+		public static string HashSetToString(HashSet<string>? hashSetKeywords)
 		{
-			if ( hashSetKeywords == null )
-			{
-				return string.Empty;
-			}
-
-			return ListToString(hashSetKeywords.ToList());
+			return hashSetKeywords == null ? string.Empty : ListToString(hashSetKeywords.ToList());
 		}
 
 		/// <summary>
@@ -92,22 +107,23 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		/// <param name="listKeywords">The list keywords</param>
 		/// <returns></returns>
-		public static string ListToString(List<string> listKeywords)
+		internal static string ListToString(List<string>? listKeywords)
 		{
-
 			if ( listKeywords == null )
 			{
 				return string.Empty;
 			}
 
 			var toBeAddedKeywordsStringBuilder = new StringBuilder();
-			foreach ( var keyword in listKeywords.Where(keyword => !string.IsNullOrWhiteSpace(keyword)) )
+			foreach ( var keyword in listKeywords.Where(keyword =>
+				         !string.IsNullOrWhiteSpace(keyword)) )
 			{
 				if ( keyword != listKeywords.LastOrDefault() )
 				{
 					toBeAddedKeywordsStringBuilder.Append(keyword + ", ");
 					continue;
 				}
+
 				toBeAddedKeywordsStringBuilder.Append(keyword);
 			}
 
