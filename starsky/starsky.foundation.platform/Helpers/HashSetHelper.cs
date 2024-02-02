@@ -10,6 +10,7 @@ namespace starsky.foundation.platform.Helpers
 	{
 		/// <summary>
 		/// Precompiled regex for splitting comma separated string
+		/// Regex.Split
 		/// </summary>
 		/// <returns>Regex object</returns>
 		[GeneratedRegex(
@@ -45,6 +46,19 @@ namespace starsky.foundation.platform.Helpers
 			return keywordsHashSet;
 		}
 
+		
+		/// <summary>
+		/// To replace: 'test,fake with test, fake' - Regex
+		/// unescaped regex: (,(?=\S)|:)
+		/// Precompiled Regex.Replace
+		/// </summary>
+		/// <returns>Regex object</returns>
+		[GeneratedRegex(
+			"(,(?=\\S)|:)",
+			RegexOptions.CultureInvariant | RegexOptions.IgnoreCase,
+			matchTimeoutMilliseconds: 200)]
+		private static partial Regex SingleCommaWithCommaWithSpaceRegex();
+		
 		/// <summary>
 		/// To replace: test,fake with test, fake
 		/// </summary>
@@ -52,11 +66,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>comma separated string</returns>
 		private static string ReplaceSingleCommaWithCommaWithSpace(string keywords)
 		{
-			// unescaped regex: (,(?=\S)|:)
-			var pattern = new Regex("(,(?=\\S)|:)",
-				RegexOptions.None, TimeSpan.FromMilliseconds(100));
-			keywords = pattern.Replace(keywords, ", ");
-			return keywords;
+			return SingleCommaWithCommaWithSpaceRegex().Replace(keywords, ", ");
 		}
 
 		/// <summary>
