@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,25 +5,32 @@ using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
 {
-	public static class PathHelper
+	public static partial class PathHelper
 	{
+		/// <summary>
+		/// Regex to match a base64 string
+		/// unescaped:
+		/// [^/]+(?=(?:\.[^.]+)?$)
+		/// </summary>
+		/// <returns>Regex object</returns>
+		[GeneratedRegex(
+			"[^/]+(?=(?:\\.[^.]+)?$)",
+			RegexOptions.CultureInvariant,
+			matchTimeoutMilliseconds: 300)]
+		private static partial Regex GetFileNameRegex();
+		
 		/// <summary>
 		/// Return value (works for POSIX/Windows paths)
 		/// </summary>
 		/// <param name="filePath">path to parse</param>
-		/// <param name="timeOut">default timeout (to avoid ReDoS vulnerability)</param>
 		/// <returns></returns>
-		public static string GetFileName(string? filePath, int timeOut = 5000)
+		public static string GetFileName(string? filePath)
 		{
 			if ( string.IsNullOrEmpty(filePath)  )
 			{
 				return string.Empty;
 			}
-			
-			// unescaped:
-			// [^/]+(?=(?:\.[^.]+)?$)
-			return Regex.Match(filePath, "[^/]+(?=(?:\\.[^.]+)?$)", 
-				RegexOptions.Compiled, TimeSpan.FromMilliseconds(timeOut)).Value;
+			return GetFileNameRegex().Match(filePath).Value;
 		}
 
 		/// <summary>
