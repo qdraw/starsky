@@ -20,6 +20,7 @@ namespace starsky.foundation.platform.Helpers
 			{
 				return Array.Empty<byte>();
 			}
+
 			return Convert.FromBase64String(inputString);
 		}
 
@@ -45,9 +46,10 @@ namespace starsky.foundation.platform.Helpers
 			var bytes = TryParse(fromBase64String);
 			return bytes;
 		}
-		
+
 		/// <summary>
 		/// Regex to match a base64 string
+		/// Regex.IsMatch (pre compiled regex)
 		/// </summary>
 		/// <returns>Regex object</returns>
 		[GeneratedRegex(
@@ -76,6 +78,5 @@ namespace starsky.foundation.platform.Helpers
 		{
 			return Convert.ToBase64String(bytes);
 		}
-
 	}
 }
