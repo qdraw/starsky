@@ -1,6 +1,3 @@
-using System;
-using System.Text.RegularExpressions;
-
 namespace starsky.foundation.platform.Helpers;
 
 public static class GenerateSlugHelper
@@ -17,22 +14,11 @@ public static class GenerateSlugHelper
 		bool toLowerCase = true, bool allowAtSign = false)
 	{
 		var text = toLowerCase ? phrase.ToLowerInvariant() : phrase;
-		var regexTimespan = TimeSpan.FromMilliseconds(100);
-
-		var charAllowLowerCase = allowUnderScore ? "_" : string.Empty;
-		var charAllowAtSign = allowAtSign ? "@" : string.Empty;
-
-		var matchNotRegexString = @"[^a-zA-Z0-9\s-" + charAllowLowerCase + charAllowAtSign + "]";
-
-		text = Regex.Replace(text, matchNotRegexString, string.Empty,
-			RegexOptions.None, regexTimespan);
-		//						^^^ remove invalid characters
-		text = Regex.Replace(text, @"\s+", " ",
-			RegexOptions.None, regexTimespan).Trim(); // single space
+		text = GenerateSlugHelperStaticRegex.CleanReplaceInvalidCharacters(text, allowAtSign, allowUnderScore);
+		text = GenerateSlugHelperStaticRegex.CleanSpace(text);
+		
 		text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim(); // cut and trim
-		text = Regex.Replace(text, @"\s", "-", RegexOptions.None,
-			regexTimespan); // insert hyphens
-		text = text.Replace("---", "-"); // for example: "test[space]-[space]test"
+		text = GenerateSlugHelperStaticRegex.ReplaceSpaceWithHyphen(text);
 		text = text.Trim('-'); // remove trailing hyphens
 		return text;
 	}
