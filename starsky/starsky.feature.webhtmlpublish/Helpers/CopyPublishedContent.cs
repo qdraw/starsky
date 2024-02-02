@@ -13,12 +13,10 @@ namespace starsky.feature.webhtmlpublish.Helpers
 	{
 		private readonly IStorage _hostStorage;
 		private readonly ToCreateSubfolder _toCreateSubfolder;
-		private readonly AppSettings _appSettings;
 
-		public CopyPublishedContent(AppSettings appSettings, ToCreateSubfolder toCreateSubfolder,
+		public CopyPublishedContent(ToCreateSubfolder toCreateSubfolder,
 			ISelectorStorage selectorStorage)
 		{
-			_appSettings = appSettings;
 			_toCreateSubfolder = toCreateSubfolder;
 			if ( selectorStorage == null ) return;
 			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);

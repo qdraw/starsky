@@ -16,14 +16,12 @@ namespace starsky.feature.webhtmlpublish.Services
 	[Service(typeof(IOverlayImage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class OverlayImage : IOverlayImage
 	{
-		private readonly AppSettings _appSettings;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _hostFileSystem;
 
-		public OverlayImage(ISelectorStorage selectorStorage, AppSettings appSettings)
+		public OverlayImage(ISelectorStorage selectorStorage)
 		{
-			_appSettings = appSettings;
 			if ( selectorStorage == null ) return;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);

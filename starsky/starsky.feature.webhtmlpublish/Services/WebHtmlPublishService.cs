@@ -62,7 +62,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _overlayImage = overlayImage;
 		    _publishManifest = new PublishManifest(_hostFileSystemStorage);
 		    _toCreateSubfolder = new ToCreateSubfolder(_hostFileSystemStorage);
-		    _copyPublishedContent = new CopyPublishedContent(_appSettings, _toCreateSubfolder, 
+		    _copyPublishedContent = new CopyPublishedContent(_toCreateSubfolder, 
 			    selectorStorage);
 		    _logger = logger;
 		    _thumbnailService = thumbnailService;

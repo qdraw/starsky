@@ -21,7 +21,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 				Path.Combine(contentPath, "copy.jsx")
 			}, new List<byte[]> { Array.Empty<byte>() });
 			
-			var service = new CopyPublishedContent(new AppSettings(), new ToCreateSubfolder(fakeStorage),
+			var service = new CopyPublishedContent(new ToCreateSubfolder(fakeStorage),
 				new FakeSelectorStorage(fakeStorage));
 
 			var content = service.CopyContent(

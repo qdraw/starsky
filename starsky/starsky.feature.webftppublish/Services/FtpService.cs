@@ -22,7 +22,6 @@ namespace starsky.feature.webftppublish.Services
 	[Service(typeof(IFtpService), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class FtpService : IFtpService
 	{
-		private readonly AppSettings _appSettings;
 		private readonly IStorage _storage;
 		private readonly IConsole _console;
 		private readonly IFtpWebRequestFactory _webRequest;
@@ -49,12 +48,11 @@ namespace starsky.feature.webftppublish.Services
 		public FtpService(AppSettings appSettings, IStorage storage, IConsole console,
 			IFtpWebRequestFactory webRequest)
 		{
-			_appSettings = appSettings;
 			_storage = storage;
 			_console = console;
 			_webRequest = webRequest;
 
-			var uri = new Uri(_appSettings.WebFtp);
+			var uri = new Uri(appSettings.WebFtp);
 			_appSettingsCredentials = uri.UserInfo.Split(":".ToCharArray());
 
 			// Replace WebFtpNoLogin
