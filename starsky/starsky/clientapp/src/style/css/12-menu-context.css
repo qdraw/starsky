@@ -75,6 +75,13 @@
   background-color: transparent;
   display: inline-block;
   position: relative;
+  color: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .menu-context .menu-options .menu-option > button {
+    color: #fff;
+  }
 }
 
 .menu-context .menu-options .menu-option:nth-child(even) {

@@ -1,24 +1,22 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"editor.codeActionsOnSave": {
-			"source.organizeImports": true,
-			"source.fixAll": true,
-			"source.fixAll.eslint": true
-		},
-		"editor.formatOnPaste": true,
-		"editor.tabSize": 2,
-		"editor.detectIndentation": false,
-    "editor.insertSpaces": true,
-    "editor.formatOnSave": true,
-    "typescript.preferences.quoteStyle": "double",
-    "typescript.updateImportsOnFileMove.enabled": "always",
-    "cSpell.words": [
-      "Starsky"
+    "folders": [
+        {
+            "path": "."
+        }
     ],
-	}
+    "settings": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll": "explicit",
+            "source.fixAll.eslint": "explicit"
+        },
+        "editor.formatOnPaste": true,
+        "editor.tabSize": 2,
+        "editor.detectIndentation": false,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": true,
+        "typescript.preferences.quoteStyle": "double",
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "cSpell.words": ["Starsky"]
+    }
 }
