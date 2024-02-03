@@ -1,20 +1,13 @@
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
-import {
-  SimpleSpanProcessor,
-  WebTracerProvider
-} from "@opentelemetry/sdk-trace-web";
+import { SimpleSpanProcessor, WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
 import { Resource } from "@opentelemetry/resources";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { FetchInstrumentation } from "@opentelemetry/instrumentation-fetch";
 import * as React from "react";
-import { GetCookie } from "../../get-cookie.ts";
+import { GetCookie } from "../cookie/get-cookie.ts";
 
-export default function TraceProvider({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+export default function TraceProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const collectorExporter = new OTLPTraceExporter({
     headers: {
       "X-XSRF-TOKEN": GetCookie("X-XSRF-TOKEN")
