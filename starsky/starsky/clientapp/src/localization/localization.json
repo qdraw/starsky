@@ -1,198 +1,238 @@
 {
-  "MessageMoveFolderIntoTrashIntroText": {
-    "en": "Are you sure you want to move this folder into the trash?",
-    "nl": "Weet u zeker dat u deze map naar de prullenbak wilt verplaatsen?"
-  },
-  "MessageCancel": {
-    "en": "Cancel",
-    "nl": "Annuleren"
-  },
-  "MessageTrash": {
-    "en": "Trash",
-    "nl": "Prullenbak"
-  },
-  "MessageMoveToTrash": {
-    "en": "Move to trash",
-    "nl": "Verplaatsen naar prullenbak"
-  },
-  "MessageMoveCurrentFolderToTrash": {
-    "en": "Move current folder to trash",
-    "nl": "Huidige map naar prullenbak"
-  },
-  "MessageMove": {
-    "en": "Move",
-    "nl": "Verplaatsen"
-  },
-  "MessageTo": {
-    "en": "to",
-    "nl": "naar"
-  },
-  "MessageRestoreFromTrash": {
-    "en": "Restore from trash",
-    "nl": "Herstellen uit prullenbak"
-  },
-  "MessageSynchronizeManually": {
-    "en": "Synchronize manually",
-    "nl": "Handmatig synchroniseren"
-  },
-  "MessageDownload": {
-    "en": "Download",
-    "nl": "Download"
-  },
-  "MessagePublish": {
-    "en": "Publish",
-    "nl": "Publiceren"
-  },
-  "MessageReadOnlyFile": {
-    "en": "Read only file",
-    "nl": "Alleen-lezen bestand"
-  },
-  "MessageNotFoundSourceMissing": {
-    "en": "Not found. Source missing.",
-    "nl": "Niet gevonden. Bron ontbreekt."
-  },
-  "MessageServerInputError": {
-    "en": "Something is wrong with the input",
-    "nl": "Er is iets mis met de input"
-  },
-  "MessageIsInTheTrash": {
-    "en": "Is in the trash",
-    "nl": "Staat in de prullenbak"
-  },
-  "MessageDeletedRestoreInstruction": {
-    "en": "'Restore from Trash' to edit the item",
-    "nl": "'Zet terug uit prullenbak' om het item te bewerken"
-  },
-  "MessageHome": {
-    "en": "Home",
-    "nl": "Home"
-  },
-  "MessagePhotosOfThisWeek": {
-    "en": "Photos of this week",
-    "nl": "Foto's van deze week"
-  },
-  "MessageImport": {
-    "en": "Import",
-    "nl": "Importeren"
-  },
-  "MessagePreferences": {
-    "en": "Preferences",
-    "nl": "Voorkeuren"
-  },
-  "MessageLogout": {
-    "en": "Logout",
-    "nl": "Uitloggen"
-  },
-  "MessageSaved": {
-    "en": "Saved",
-    "nl": "Opgeslagen"
-  },
-  "MessageCloseDetailScreenDialog": {
-    "en": "Close detail screen",
-    "nl": "Sluit detailscherm"
-  },
-  "MessageCloseDialogBackToFolder": {
-    "en": "Parent folder",
-    "nl": "Terug naar map"
-  },
-  "MessageIncludingColonWord": {
-    "en": "Including: ",
-    "nl": "Inclusief: "
-  },
-  "MessageAddLocation": {
-    "en": "Add location",
-    "nl": "Voeg locatie toe"
-  },
-  "MessageUpdateLocation": {
-    "en": "Update location",
-    "nl": "Werk locatie bij"
-  },
-  "MessageViewLocation": {
-    "en": "View location",
-    "nl": "Bekijk locatie"
-  },
-  "MessageErrorGenericFail": {
-    "en": "Something went wrong with the update. Please try again",
-    "nl": "Er is iets misgegaan met het updaten. Probeer het opnieuw"
-  },
-  "MessageNoPhotosInFolder": {
-    "en": "There are no photos in this folder",
-    "nl": "Er zijn geen foto's in deze map"
-  },
-  "MessageNewUserNoPhotosInFolder": {
-    "en": "New? Set your drive location in the settings.",
-    "nl": "Nieuw? Stel je schijflocatie in de instellingen."
-  },
-  "MessageItemsOutsideFilter": {
-    "en": "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'",
-    "nl": "Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'"
-  },
-  "MessageSelectPresentPerfect": {
-    "en": "selected",
-    "nl": "geselecteerd"
-  },
-  "MessageSelectAction": {
-    "en": "Select",
-    "nl": "Selecteer"
-  },
-  "MessageNoneSelected": {
-    "en": "Nothing selected",
-    "nl": "Niets geselecteerd"
-  },
-  "MessageUndoSelection": {
-    "en": "Undo selection",
-    "nl": "Undo selectie"
-  },
-  "MessageSelectAll": {
-    "en": "Select all",
-    "nl": "Alles selecteren"
-  },
-  "MessageSelectFurther": {
-    "en": "Select further",
-    "nl": "Verder selecteren"
-  },
-  "MessageGoToParentFolder": {
-    "en": "Go to parent folder",
-    "nl": "Ga naar bovenliggende map"
-  },
-  "MessageMkdir": {
-    "en": "Create folder",
-    "nl": "Map maken"
-  },
-  "MessageDisplayOptions": {
-    "en": "Display options",
-    "nl": "Weergave opties"
-  },
-  "MessageRenameDir": {
-    "en": "Rename",
-    "nl": "Naam wijzigen"
-  },
-  "MessageLabels": {
-    "en": "Labels",
-    "nl": "Labels"
-  },
-  "MessageRenameFileName": {
-    "en": "Rename file name",
-    "nl": "Bestandsnaam wijzigen"
-  },
-  "MessageRotateToRight": {
-    "en": "Rotation to the right",
-    "nl": "Rotatie naar rechts"
-  },
-  "MessageDeleteImmediately": {
-    "en": "Delete immediately",
-    "nl": "Verwijder onmiddellijk"
-  },
-  "MessageVideoPlayBackError": {
-    "en": "There is something wrong with the playback of this video.  Try 'More' and 'Download'. ",
-    "nl": "Er is iets mis met het afspelen van deze video. Probeer eens via het menu 'Meer' en 'Download'."
-  },
-  "MessageVideoNotFound": {
-    "en": "This video is not found",
-    "nl": "Deze video is niet gevonden"
-  },
-  "temp1": {
-    "en": "",
-    "nl": ""
-  }
+    "MessageMoveFolderIntoTrashIntroText": {
+        "en": "Are you sure you want to move this folder into the trash?",
+        "nl": "Weet u zeker dat u deze map naar de prullenbak wilt verplaatsen?"
+    },
+    "MessageCancel": {
+        "en": "Cancel",
+        "nl": "Annuleren"
+    },
+    "MessageTrash": {
+        "en": "Trash",
+        "nl": "Prullenbak"
+    },
+    "MessageMoveToTrash": {
+        "en": "Move to trash",
+        "nl": "Verplaatsen naar prullenbak"
+    },
+    "MessageMoveCurrentFolderToTrash": {
+        "en": "Move current folder to trash",
+        "nl": "Huidige map naar prullenbak"
+    },
+    "MessageMove": {
+        "en": "Move",
+        "nl": "Verplaatsen"
+    },
+    "MessageTo": {
+        "en": "to",
+        "nl": "naar"
+    },
+    "MessageRestoreFromTrash": {
+        "en": "Restore from trash",
+        "nl": "Herstellen uit prullenbak"
+    },
+    "MessageSynchronizeManually": {
+        "en": "Synchronize manually",
+        "nl": "Handmatig synchroniseren"
+    },
+    "MessageDownload": {
+        "en": "Download",
+        "nl": "Download"
+    },
+    "MessagePublish": {
+        "en": "Publish",
+        "nl": "Publiceren"
+    },
+    "MessageReadOnlyFile": {
+        "en": "Read only file",
+        "nl": "Alleen-lezen bestand"
+    },
+    "MessageNotFoundSourceMissing": {
+        "en": "Not found. Source missing.",
+        "nl": "Niet gevonden. Bron ontbreekt."
+    },
+    "MessageServerInputError": {
+        "en": "Something is wrong with the input",
+        "nl": "Er is iets mis met de input"
+    },
+    "MessageIsInTheTrash": {
+        "en": "Is in the trash",
+        "nl": "Staat in de prullenbak"
+    },
+    "MessageDeletedRestoreInstruction": {
+        "en": "'Restore from Trash' to edit the item",
+        "nl": "'Zet terug uit prullenbak' om het item te bewerken"
+    },
+    "MessageHome": {
+        "en": "Home",
+        "nl": "Home"
+    },
+    "MessagePhotosOfThisWeek": {
+        "en": "Photos of this week",
+        "nl": "Foto's van deze week"
+    },
+    "MessageImport": {
+        "en": "Import",
+        "nl": "Importeren"
+    },
+    "MessagePreferences": {
+        "en": "Preferences",
+        "nl": "Voorkeuren"
+    },
+    "MessageLogout": {
+        "en": "Logout",
+        "nl": "Uitloggen"
+    },
+    "MessageSaved": {
+        "en": "Saved",
+        "nl": "Opgeslagen"
+    },
+    "MessageCloseDetailScreenDialog": {
+        "en": "Close detail screen",
+        "nl": "Sluit detailscherm"
+    },
+    "MessageCloseDialogBackToFolder": {
+        "en": "Parent folder",
+        "nl": "Terug naar map"
+    },
+    "MessageIncludingColonWord": {
+        "en": "Including: ",
+        "nl": "Inclusief: "
+    },
+    "MessageAddLocation": {
+        "en": "Add location",
+        "nl": "Voeg locatie toe"
+    },
+    "MessageUpdateLocation": {
+        "en": "Update location",
+        "nl": "Werk locatie bij"
+    },
+    "MessageViewLocation": {
+        "en": "View location",
+        "nl": "Bekijk locatie"
+    },
+    "MessageErrorGenericFail": {
+        "en": "Something went wrong with the update. Please try again",
+        "nl": "Er is iets misgegaan met het updaten. Probeer het opnieuw"
+    },
+    "MessageNoPhotosInFolder": {
+        "en": "There are no photos in this folder",
+        "nl": "Er zijn geen foto's in deze map"
+    },
+    "MessageNewUserNoPhotosInFolder": {
+        "en": "New? Set your drive location in the settings.",
+        "nl": "Nieuw? Stel je schijflocatie in de instellingen."
+    },
+    "MessageItemsOutsideFilter": {
+        "en": "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'",
+        "nl": "Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'"
+    },
+    "MessageSelectPresentPerfect": {
+        "en": "selected",
+        "nl": "geselecteerd"
+    },
+    "MessageSelectAction": {
+        "en": "Select",
+        "nl": "Selecteer"
+    },
+    "MessageNoneSelected": {
+        "en": "Nothing selected",
+        "nl": "Niets geselecteerd"
+    },
+    "MessageUndoSelection": {
+        "en": "Undo selection",
+        "nl": "Undo selectie"
+    },
+    "MessageSelectAll": {
+        "en": "Select all",
+        "nl": "Alles selecteren"
+    },
+    "MessageSelectFurther": {
+        "en": "Select further",
+        "nl": "Verder selecteren"
+    },
+    "MessageGoToParentFolder": {
+        "en": "Go to parent folder",
+        "nl": "Ga naar bovenliggende map"
+    },
+    "MessageMkdir": {
+        "en": "Create folder",
+        "nl": "Map maken"
+    },
+    "MessageDisplayOptions": {
+        "en": "Display options",
+        "nl": "Weergave opties"
+    },
+    "MessageRenameDir": {
+        "en": "Rename",
+        "nl": "Naam wijzigen"
+    },
+    "MessageLabels": {
+        "en": "Labels",
+        "nl": "Labels"
+    },
+    "MessageRenameFileName": {
+        "en": "Rename file name",
+        "nl": "Bestandsnaam wijzigen"
+    },
+    "MessageRotateToRight": {
+        "en": "Rotation to the right",
+        "nl": "Rotatie naar rechts"
+    },
+    "MessageDeleteImmediately": {
+        "en": "Delete immediately",
+        "nl": "Verwijder onmiddellijk"
+    },
+    "MessageVideoPlayBackError": {
+        "en": "There is something wrong with the playback of this video.  Try 'More' and 'Download'. ",
+        "nl": "Er is iets mis met het afspelen van deze video. Probeer eens via het menu 'Meer' en 'Download'."
+    },
+    "MessageVideoNotFound": {
+        "en": "This video is not found",
+        "nl": "Deze video is niet gevonden"
+    },
+    "ColorClassColour0": {
+        "en": "Colorless",
+        "nl": "Kleurloos"
+    },
+    "ColorClassColour1": {
+        "en": "Pink",
+        "nl": "Roze"
+    },
+    "ColorClassColour2": {
+        "en": "Red",
+        "nl": "Rood"
+    },
+    "ColorClassColour3": {
+        "en": "Orange",
+        "nl": "Oranje"
+    },
+    "ColorClassColour4": {
+        "en": "Yellow",
+        "nl": "Geel"
+    },
+    "ColorClassColour5": {
+        "en": "Green",
+        "nl": "Groen"
+    },
+    "ColorClassColour6": {
+        "en": "Azure",
+        "nl": "Azuur"
+    },
+    "ColorClassColour7": {
+        "en": "Blue",
+        "nl": "Blauw"
+    },
+    "ColorClassColour8": {
+        "en": "Grey",
+        "nl": "Grijs"
+    },
+    "ColorClassColourResetFilter": {
+        "en": "Reset filter",
+        "nl": "Herstel filter"
+    },
+    "temp1": {
+        "en": "",
+        "nl": ""
+    }
 }
